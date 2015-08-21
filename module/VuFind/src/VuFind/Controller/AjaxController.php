@@ -636,11 +636,15 @@ class AjaxController extends AbstractBase
             $tag = $this->params()->fromPost('tag', '');
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             if (strlen($tag) > 0) { // don't add empty tags
-                $driver->addTags($user, $tagParser->parse($tag));
+                if ('false' === $this->params()->fromPost('remove', 'false')) {
+                    $driver->addTags($user, $tagParser->parse($tag));
+                } else {
+                    $driver->deleteTags($user, $tagParser->parse($tag));
+                }
             }
         } catch (\Exception $e) {
             return $this->output(
-                $this->translate('Failed'),
+                ('development' == APPLICATION_ENV) ? $e->getMessage() : 'Failed',
                 self::STATUS_ERROR
             );
         }
@@ -655,27 +659,36 @@ class AjaxController extends AbstractBase
      */
     protected function getRecordTagsAjax()
     {
+        $user = $this->getUser();
+        $is_me_id = null === $user ? null : $user->id;
         // Retrieve from database:
         $tagTable = $this->getTable('Tags');
         $tags = $tagTable->getForResource(
             $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', 'VuFind')
+            $this->params()->fromQuery('source', 'VuFind'),
+            0, null, null, 'count', $is_me_id
         );
 
         // Build data structure for return:
         $tagList = [];
         foreach ($tags as $tag) {
-            $tagList[] = ['tag' => $tag->tag, 'cnt' => $tag->cnt];
+            $tagList[] = [
+                'tag'   => $tag->tag,
+                'cnt'   => $tag->cnt,
+                'is_me' => $tag->is_me == 1 ? true : false
+            ];
         }
 
-        // If we don't have any tags, provide a user-appropriate message:
-        if (empty($tagList)) {
-            $msg = $this->translate('No Tags') . ', ' .
-                $this->translate('Be the first to tag this record') . '!';
-            return $this->output($msg, self::STATUS_ERROR);
-        }
-
-        return $this->output($tagList, self::STATUS_OK);
+        // Set layout to render the page inside a lightbox:
+        $this->layout()->setTemplate('layout/lightbox');
+        $view = $this->createViewModel(
+            [
+                'tagList' => $tagList,
+                'loggedin' => null !== $user
+            ]
+        );
+        $view->setTemplate('record/taglist');
+        return $view;
     }
 
     /**
@@ -1338,6 +1351,7 @@ class AjaxController extends AbstractBase
                 'result' => $this->translate('Done'),
                 'result_additional' => $html,
                 'needs_redirect' => $export->needsRedirect($format),
+                'export_type' => $export->getBulkExportType($format),
                 'result_url' => $url
             ], self::STATUS_OK
         );

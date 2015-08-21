@@ -18,7 +18,7 @@
     $lastLimit = $options->getLastLimit();
 ?>
 <? if ($this->searchType == 'advanced'): ?>
-  <div id="searchForm" class="navbar-form navbar-left">
+  <div id="searchForm" class="navbar-form navbar-left flip">
     <? $tabs = $this->render('search/searchTabs'); ?>
     <? if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><? endif; ?>
       <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
@@ -30,7 +30,7 @@
     <? if (!empty($tabs)): ?></div><? endif; ?>
   </div>
 <? else: ?>
-  <form role="search" class="navbar-form navbar-left" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm" autocomplete="off">
+  <form role="search" class="navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm" autocomplete="off">
     <?= $this->render('search/searchTabs'); ?>
     <input class="form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
     <? if ($handlerCount > 1): ?>
@@ -44,7 +44,7 @@
     <? endif; ?>
     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> <?=$this->transEsc("Find")?></button>
     <? if ($advSearch): ?>
-      <a href="<?=$this->url($advSearch)?>" class="btn btn-link"><?=$this->transEsc("Advanced")?></a>
+      <a href="<?=$this->url($advSearch)?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
     <? endif; ?>
 
     <? $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>

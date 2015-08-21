@@ -143,8 +143,7 @@ class ILLRequests extends AbstractRequestBase
                 // If the user input contains a value not found in the session
                 // whitelist, something has been tampered with -- abort the process.
                 if (!in_array($info, $this->getSession()->validIds)) {
-                    $flashMsg->setNamespace('error')
-                        ->addMessage('error_inconsistent_parameters');
+                    $flashMsg->addMessage('error_inconsistent_parameters', 'error');
                     return [];
                 }
             }
@@ -154,9 +153,7 @@ class ILLRequests extends AbstractRequestBase
                 ['details' => $details, 'patron' => $patron]
             );
             if ($cancelResults == false) {
-                $flashMsg->setNamespace('error')->addMessage(
-                    'ill_request_cancel_fail'
-                );
+                $flashMsg->addMessage('ill_request_cancel_fail', 'error');
             } else {
                 if ($cancelResults['count'] > 0) {
                     // TODO : add a mechanism for inserting tokens into translated
@@ -164,16 +161,14 @@ class ILLRequests extends AbstractRequestBase
                     $msg = $this->getController()->translate(
                         'ill_request_cancel_success_items'
                     );
-                    $flashMsg->setNamespace('info')->addMessage(
-                        $cancelResults['count'] . ' ' . $msg
+                    $flashMsg->addMessage(
+                        $cancelResults['count'] . ' ' . $msg, 'success'
                     );
                 }
                 return $cancelResults;
             }
         } else {
-            $flashMsg->setNamespace('error')->addMessage(
-                'ill_request_empty_selection'
-            );
+            $flashMsg->addMessage('ill_request_empty_selection', 'error');
         }
         return [];
     }

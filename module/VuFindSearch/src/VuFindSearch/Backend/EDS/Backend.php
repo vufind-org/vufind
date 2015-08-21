@@ -419,7 +419,7 @@ class Backend extends AbstractBackend
             // Check to see if the token expiration time is greater than the current
             // time.  If the token is expired or within 5 minutes of expiring,
             // generate a new one.
-            if (!empty($currentToken) && (time() <= ($expirationTime - (60*5)))) {
+            if (!empty($currentToken) && (time() <= ($expirationTime - (60 * 5)))) {
                 return $currentToken;
             }
         }

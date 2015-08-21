@@ -1,0 +1,39 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/daia.xsl"?>
+<daia xmlns="http://ws.gbv.de/daia/" timestamp="2015-03-18T11:49:40Z" version="0.5">
+    <institution href="http://www.example-library.edu" id="http://uri.gbv.de/organization/isil/DE-000">Example Library for DAIA Tests</institution>
+    <document href="http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081" id="http://uri.gbv.de/document/opac-de-000:ppn:027586081">
+        <item href="http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081" id="http://uri.gbv.de/document/opac-de-000:epn:711134758">
+            <label>ABC 12</label>
+            <department href="http://www.example-library.edu" id="http://uri.gbv.de/organization/isil/DE-000">Example Library for DAIA Tests</department>
+            <storage>Abteilung III</storage>
+            <available href="http://opac.example-library.edu/loan/REQ?EPN=711134758" delay="unknown" service="presentation" />
+            <available href="http://opac.example-library.edu/loan/REQ?EPN=711134758" delay="unknown" service="loan" />
+            <available href="http://opac.example-library.edu/loan/REQ?EPN=711134758" delay="unknown" service="interloan" />
+        </item>
+        <item href="http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081" id="http://uri.gbv.de/document/opac-de-000:epn:711134766">
+            <label>DEF 34</label>
+            <department href="http://www.example-library.edu" id="http://uri.gbv.de/organization/isil/DE-000">Example Library for DAIA Tests</department>
+            <storage>Abteilung III</storage>
+            <available service="presentation" />
+            <available service="loan">
+                <limitation>mit Zustimmung</limitation>
+            </available>
+            <available service="interloan">
+                <limitation>nur Kopie</limitation>
+            </available>
+        </item>
+        <item href="http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081" id="http://uri.gbv.de/document/opac-de-000:epn:7111347777">
+            <label>GHI 56</label>
+            <department href="http://www.example-library.edu" id="http://uri.gbv.de/organization/isil/DE-000">Example Library for DAIA Tests</department>
+            <storage>Abteilung III</storage>
+            <unavailable expected="2115-02-09" service="presentation" />
+            <unavailable expected="2115-02-09" service="loan" />
+            <unavailable expected="2115-02-09" service="interloan" />
+        </item>
+    </document>
+</daia>

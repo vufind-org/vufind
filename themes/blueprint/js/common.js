@@ -1,4 +1,4 @@
-/*global getLightbox, path, vufindString*/
+/*global getLightbox, isPhoneNumberValid, path, vufindString*/
 
 /**
  * Initialize common functions and event handlers.
@@ -10,14 +10,6 @@ $.ajaxSetup({cache: false});
 $.validator.setDefaults({
     errorClass: 'invalid'
 });
-
-// add a modified version of the original phoneUS rule
-// to accept only 10-digit phone numbers
-$.validator.addMethod("phoneUS", function(phone_number, element) {
-    phone_number = phone_number.replace(/[\-\s().]+/g, "");
-    return this.optional(element) || phone_number.length > 9 &&
-        phone_number.match(/^(\([2-9]\d{2}\)|[2-9]\d{2})[2-9]\d{2}\d{4}$/);
-}, 'Please specify a valid phone number');
 
 function toggleMenu(elemId) {
     var elem = $("#"+elemId);
@@ -296,6 +288,30 @@ function setupOrFacets() {
       $facet.before('<input type="checkbox" onChange="updateOrFacets($(this).next(\'a\').attr(\'href\'), this)"/>');
     }
   }
+}
+
+// Phone number validation
+var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"];
+var libphoneErrorStrings = ["Phone number invalid", "Invalid country calling code", "Invalid region code", "The string supplied did not seem to be a phone number", "The string supplied is too long to be a phone number", "The string supplied is too short to be a phone number", "Phone number too short after IDD"];
+function phoneNumberFormHandler(numID, regionCode) {
+  var phoneInput = document.getElementById(numID);
+  var number = phoneInput.value;
+  var valid = isPhoneNumberValid(number, regionCode);
+  if(valid !== true) {
+    if(typeof valid === 'string') {
+      for(var i=libphoneErrorStrings.length;i--;) {
+        if(valid.match(libphoneErrorStrings[i])) {
+          valid = vufindString[libphoneTranslateCodes[i]];
+        }
+      }
+    } else {
+      valid = vufindString['libphonenumber_invalid'];
+    }
+    $(phoneInput).siblings('.phone-error').html(valid);
+  } else {
+    $(phoneInput).siblings('.phone-error').html('');
+  }
+  return valid == true;
 }
 
 $(document).ready(function(){

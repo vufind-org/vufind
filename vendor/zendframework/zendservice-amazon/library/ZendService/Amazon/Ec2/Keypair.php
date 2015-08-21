@@ -11,7 +11,6 @@
 namespace ZendService\Amazon\Ec2;
 
 use ZendService\Amazon;
-use ZendService\Amazon\Ec2\Exception;
 
 /**
  * An Amazon EC2 interface to create, delete and describe Ec2 KeyPairs.
@@ -36,7 +35,7 @@ class Keypair extends AbstractEc2
 
         $params['Action'] = 'CreateKeyPair';
 
-        if(!$keyName) {
+        if (!$keyName) {
             throw new Exception\InvalidArgumentException('Invalid Key Name');
         }
 
@@ -66,11 +65,11 @@ class Keypair extends AbstractEc2
         $params = array();
 
         $params['Action'] = 'DescribeKeyPairs';
-        if(is_array($keyName) && !empty($keyName)) {
-            foreach($keyName as $k=>$name) {
+        if (is_array($keyName) && !empty($keyName)) {
+            foreach ($keyName as $k=>$name) {
                 $params['KeyName.' . ($k+1)] = $name;
             }
-        } elseif($keyName) {
+        } elseif ($keyName) {
             $params['KeyName.1'] = $keyName;
         }
 
@@ -105,7 +104,7 @@ class Keypair extends AbstractEc2
 
         $params['Action'] = 'DeleteKeyPair';
 
-        if(!$keyName) {
+        if (!$keyName) {
             throw new Exception\InvalidArgumentException('Invalid Key Name');
         }
 

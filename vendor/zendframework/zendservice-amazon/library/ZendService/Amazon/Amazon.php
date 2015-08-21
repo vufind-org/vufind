@@ -14,7 +14,6 @@ use DOMDocument;
 use DOMXPath;
 use Zend\Crypt\Hmac;
 use ZendRest\Client\RestClient;
-use ZendService\Amazon\Exception;
 
 /**
  * @category   Zend
@@ -82,8 +81,9 @@ class Amazon
         $this->appId = (string) $appId;
         $this->_secretKey = $secretKey;
 
-        if (!is_null($version))
+        if (!is_null($version)) {
             self::setVersion($version);
+        }
 
         $countryCode = (string) $countryCode;
         if (!isset($this->_baseUriList[$countryCode])) {
@@ -173,7 +173,7 @@ class Amazon
      */
     public function getRestClient()
     {
-        if($this->_rest === null) {
+        if ($this->_rest === null) {
             $this->_rest = new RestClient();
         }
         return $this->_rest;
@@ -219,7 +219,7 @@ class Amazon
 
         $options = array_merge($defaultOptions, $options);
 
-        if($this->_secretKey !== null) {
+        if ($this->_secretKey !== null) {
             $options['Timestamp'] = gmdate("Y-m-d\TH:i:s\Z");
             ksort($options);
             $options['Signature'] = self::computeSignature($this->_baseUri, $this->_secretKey, $options);
@@ -255,7 +255,7 @@ class Amazon
     {
         ksort($options);
         $params = array();
-        foreach($options AS $k => $v) {
+        foreach ($options as $k => $v) {
             $params[] = $k."=".rawurlencode($v);
         }
 
@@ -282,7 +282,7 @@ class Amazon
             $code = $xpath->query('//az:Error/az:Code/text()')->item(0)->data;
             $message = $xpath->query('//az:Error/az:Message/text()')->item(0)->data;
 
-            switch($code) {
+            switch ($code) {
                 case 'AWS.ECommerceService.NoExactMatches':
                     break;
                 default:

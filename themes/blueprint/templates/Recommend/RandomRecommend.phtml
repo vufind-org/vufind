@@ -9,32 +9,16 @@
       <?if($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"):?>
 
         <? /* Display thumbnail if appropriate: */ ?>
-        <? $smallThumb = $this->record($driver)->getThumbnail('small'); $mediumThumb = $this->record($driver)->getThumbnail('medium'); ?>
-        <? if ($smallThumb): ?>
-          <a href="<?=$this->recordLink()->getUrl($driver)?>">
-           <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($smallThumb);?>"/>
-          </a>
-        <?elseif($mediumThumb):?>
-          <a href="<?=$this->recordLink()->getUrl($driver)?>">
-            <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
-          </a>
-        <? else: ?>
-          <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-        <? endif; ?>
+        <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLink()->getUrl($driver)); ?>
 
       <?endif;?>
 
        <?if($this->recommend->getDisplayMode() === "standard" || $this->recommend->getDisplayMode() === "mixed"):?>
             <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>
             <span class="<?=$this->record($driver)->getFormatClass($format)?>">
-            <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title"><?
-              $summTitle = $driver->getTitle();
-              if (!empty($summTitle)) {
-                  echo $this->escapeHtml($this->truncate($summTitle, 180));
-              } else {
-                  echo $this->transEsc('Title not available');
-              }
-            ?></a>
+            <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title">
+              <?=$this->record($driver)->getTitleHtml()?>
+            </a>
             </span>
             <? $summAuthor = $driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
             <br />

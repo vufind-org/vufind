@@ -1,4 +1,4 @@
-/*global __dialogHandle, displayFormError, extractController, extractSource, getLightbox, path, toggleMenu*/
+/*global __dialogHandle, displayFormError, extractController, extractSource, getLightbox, path, refreshTagList, toggleMenu*/
 
 /**
  * Functions and event handlers specific to record pages.
@@ -41,7 +41,7 @@ function setUpCheckRequest() {
     $('.checkRequest').each(function(i) {
         if($(this).hasClass('checkRequest')) {
             $(this).addClass('ajax_hold_availability');
-            var isValid = checkRequestIsValid(this, this.href, 'Hold', 
+            var isValid = checkRequestIsValid(this, this.href, 'Hold',
                 'checkRequest ajax_hold_availability', 'holdBlocked');
         }
     });
@@ -49,7 +49,7 @@ function setUpCheckRequest() {
         if($(this).hasClass('checkStorageRetrievalRequest')) {
             $(this).addClass('ajax_storage_retrieval_request_availability');
             var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
-                'checkStorageRetrievalRequest ajax_storage_retrieval_request_availability', 
+                'checkStorageRetrievalRequest ajax_storage_retrieval_request_availability',
                 'storageRetrievalRequestBlocked');
         }
     });
@@ -57,7 +57,7 @@ function setUpCheckRequest() {
         if($(this).hasClass('checkILLRequest')) {
             $(this).addClass('ajax_ill_request_availability');
             var isValid = checkRequestIsValid(this, this.href, 'ILLRequest',
-                'checkILLRequest ajax_ill_request_availability', 
+                'checkILLRequest ajax_ill_request_availability',
                 'ILLRequestBlocked');
         }
     });
@@ -127,6 +127,25 @@ function registerAjaxCommentRecord() {
         });
         return false;
     });
+}
+
+function ajaxTagUpdate(tag, remove) {
+  if(typeof remove === "undefined") {
+    remove = false;
+  }
+  var recordId = $('#record_id').val();
+  var recordSource = $('.hiddenSource').val();
+  $.ajax({
+    url:path+'/AJAX/JSON?method=tagRecord',
+    type:'POST',
+    data:{
+      tag:'"'+tag.replace(/\+/g, ' ')+'"',
+      id:recordId,
+      source:recordSource,
+      remove:remove
+    },
+    complete:refreshTagList
+  });
 }
 
 $(document).ready(function(){

@@ -7,6 +7,9 @@
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Your Fines')?></h2>
+
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
   <? if (empty($this->fines)): ?>
     <?=$this->transEsc('You do not have any fines')?>
   <? else: ?>
@@ -25,7 +28,7 @@
         <td>
           <? if (empty($record['title'])): ?>
             <?=$this->transEsc('not_applicable')?>
-          <? elseif (!is_object($record['driver'])): ?>
+          <? elseif (!isset($record['driver']) || !is_object($record['driver'])): ?>
             <?=$this->escapeHtml(trim($record['title'], '/:'))?>
           <? else: ?>
             <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>

@@ -11,7 +11,6 @@
 namespace ZendService\Amazon\S3;
 
 use ZendService\Amazon;
-use ZendService\Amazon\S3\Exception;
 
 /**
  * Amazon S3 PHP stream wrapper
@@ -180,7 +179,6 @@ class Stream
         // buffer AND if the range end position is less than or equal to the object's
         // size returned by S3
         if (($this->_position == 0) || (($range_end > strlen($this->_objectBuffer)) && ($range_end <= $this->_objectSize))) {
-
             $headers = array(
                 'Range' => "bytes=$range_start-$range_end"
             );
@@ -319,13 +317,13 @@ class Stream
         $stat['blksize'] = 0;
         $stat['blocks'] = 0;
 
-    if(($slash = strchr($this->_objectName, '/')) === false || $slash == strlen($this->_objectName)-1) {
-        /* bucket */
+        if (($slash = strchr($this->_objectName, '/')) === false || $slash == strlen($this->_objectName)-1) {
+            /* bucket */
         $stat['mode'] |= 040000;
-    } else {
-        $stat['mode'] |= 0100000;
-    }
-           $info = $this->_s3->getInfo($this->_objectName);
+        } else {
+            $stat['mode'] |= 0100000;
+        }
+        $info = $this->_s3->getInfo($this->_objectName);
         if (!empty($info)) {
             $stat['size']  = $info['size'];
             $stat['atime'] = time();
@@ -393,7 +391,6 @@ class Stream
      */
     public function dir_opendir($path, $options)
     {
-
         if (preg_match('@^([a-z0-9+.]|-)+://$@', $path)) {
             $this->_bucketList = $this->_getS3Client($path)->getBuckets();
         } else {
@@ -428,14 +425,14 @@ class Stream
         $stat['blksize'] = 0;
         $stat['blocks'] = 0;
 
-    $name = $this->_getNamePart($path);
-    if(($slash = strchr($name, '/')) === false || $slash == strlen($name)-1) {
-        /* bucket */
+        $name = $this->_getNamePart($path);
+        if (($slash = strchr($name, '/')) === false || $slash == strlen($name)-1) {
+            /* bucket */
         $stat['mode'] |= 040000;
-    } else {
-        $stat['mode'] |= 0100000;
-    }
-           $info = $this->_getS3Client($path)->getInfo($name);
+        } else {
+            $stat['mode'] |= 0100000;
+        }
+        $info = $this->_getS3Client($path)->getInfo($name);
 
         if (!empty($info)) {
             $stat['size']  = $info['size'];

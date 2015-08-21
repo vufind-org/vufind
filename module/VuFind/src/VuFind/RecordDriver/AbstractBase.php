@@ -159,7 +159,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function getSortTitle()
     {
         // Child classes should override this with smarter behavior, and the "strip
-        // articles" logic probably belongs in a more appropriate place, but for now,
+        // articles" logic probably belongs in a more appropriate place, but for now
         // in the absence of a better plan, we'll just use the XSLT Importer's strip
         // articles functionality.
         return ArticleStripper::stripArticles($this->getBreadcrumb());
@@ -171,15 +171,18 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param int    $list_id ID of list to load tags from (null for all lists)
      * @param int    $user_id ID of user to load tags from (null for all users)
      * @param string $sort    Sort type ('count' or 'tag')
+     * @param int    $ownerId ID of user to check for ownership
      *
      * @return array
      */
-    public function getTags($list_id = null, $user_id = null, $sort = 'count')
-    {
+    public function getTags($list_id = null, $user_id = null, $sort = 'count',
+        $ownerId = null
+    ) {
         $tags = $this->getDbTable('Tags');
         return $tags->getForResource(
-            $this->getUniqueId(), $this->getResourceSource(), 0, $list_id, $user_id,
-            $sort
+            $this->getUniqueId(),
+            $this->getResourceSource(),
+            0, $list_id, $user_id, $sort, $ownerId
         );
     }
 
@@ -199,6 +202,25 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         );
         foreach ($tags as $tag) {
             $resource->addTag($tag, $user);
+        }
+    }
+
+    /**
+     * Remove tags from the record.
+     *
+     * @param \VuFind\Db\Row\User $user The user posting the tag
+     * @param array               $tags The user-provided tags
+     *
+     * @return void
+     */
+    public function deleteTags($user, $tags)
+    {
+        $resources = $this->getDbTable('Resource');
+        $resource = $resources->findResource(
+            $this->getUniqueId(), $this->getResourceSource()
+        );
+        foreach ($tags as $tag) {
+            $resource->deleteTag($tag, $user);
         }
     }
 
@@ -362,43 +384,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Does the OpenURL configuration indicate that we should display OpenURLs in
-     * the specified context?
-     *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
-     * @return bool
-     */
-    public function openURLActive($area)
-    {
-        // Doesn't matter the target area if no OpenURL resolver is specified:
-        if (!isset($this->mainConfig->OpenURL->url)) {
-            return false;
-        }
-
-        // If a setting exists, return that:
-        $key = 'show_in_' . $area;
-        if (isset($this->mainConfig->OpenURL->$key)) {
-            return $this->mainConfig->OpenURL->$key;
-        }
-
-        // If we got this far, use the defaults -- true for results, false for
-        // everywhere else.
-        return ($area == 'results');
-    }
-
-    /**
-     * Should we display regular URLs when an OpenURL is present?
-     *
-     * @return bool
-     */
-    public function replaceURLsWithOpenURL()
-    {
-        return isset($this->mainConfig->OpenURL->replace_other_urls)
-            ? $this->mainConfig->OpenURL->replace_other_urls : false;
-    }
-
-    /**
      * Returns true if the record supports real-time AJAX status lookups.
      *
      * @return bool
@@ -406,6 +391,26 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function supportsAjaxStatus()
     {
         return false;
+    }
+
+    /**
+     * Checks the current record if it's supported for generating OpenURLs.
+     *
+     * @return bool
+     */
+    public function supportsOpenUrl()
+    {
+        return true;
+    }
+
+    /**
+     * Checks the current record if it's supported for generating COinS-OpenURLs.
+     *
+     * @return bool
+     */
+    public function supportsCoinsOpenUrl()
+    {
+        return true;
     }
 
     /**

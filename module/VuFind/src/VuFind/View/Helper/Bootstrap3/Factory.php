@@ -67,6 +67,11 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $left = !isset($config->Site->sidebarOnLeft)
             ? false : $config->Site->sidebarOnLeft;
-        return new LayoutClass($left);
+        $offcanvas = !isset($config->Site->offcanvas)
+            ? false : $config->Site->offcanvas;
+        // The right-to-left setting is injected into the layout by the Bootstrapper;
+        // pull it back out here to avoid duplicate effort.
+        $layout = $sm->getServiceLocator()->get('viewmanager')->getViewModel();
+        return new LayoutClass($left, $offcanvas, $layout->rtl);
     }
 }

@@ -1028,6 +1028,54 @@ div.record img.qrcode {
 .holdsMessage {
     margin-top: 1em;
 }
+.phone-error {
+    color:red;
+    margin-left:80px;
+}
+#tagRecord {
+    display: inline-block;
+    padding-top: 4px;
+}
+.record-tag,
+.record-tag * {
+    display: inline-block;
+    vertical-align: top;
+}
+.record-tag {
+    float: left;
+    margin: 0 4px;
+    padding-top: 4px;
+    padding-right: 1px;
+    padding-bottom: 0;
+    padding-left: 6px;
+}
+.record-tag .badge {
+    background-color: #DDD;
+    border: 0;
+    border-radius: 1em;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 8pt;
+    margin-top: -2px;
+    background-position: 85%;
+    padding-top: 4px;
+    padding-left: .5em;
+    padding-bottom: 4px;
+    padding-right: 20px;
+}
+.record-tag span.badge {
+    padding-top: 2px;
+    padding-left: 4px;
+    padding-bottom: 2px;
+    padding-right: 4px;
+}
+.record-tag.selected {
+    background: #619144;
+    border-radius: 3px;
+}
+.record-tag.selected a {
+    color: #FFF;
+}
 
 /* hack to hide redundant titles introduced by syndetics plus */
 #syn_nyreview .syn_title,

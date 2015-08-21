@@ -1,6 +1,6 @@
 <?php
 /**
- * Polaris ILS Driver (POCA)
+ * Polaris ILS Driver
  *
  * PHP version 5
  *
@@ -120,9 +120,12 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function makeRequest($api_query, $http_method = "GET",
         $patronpassword = "", $json = false
     ) {
-        // TODO, just make this for this one call
+
+        // auth has to be in GMT, otherwise use config-level TZ
+        $site_config_TZ = date_default_timezone_get();
         date_default_timezone_set('GMT');
         $date = date("D, d M Y H:i:s T");
+        date_default_timezone_set($site_config_TZ);
 
         $url = $this->ws_host . $this->ws_app . $api_query;
 
@@ -149,6 +152,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $client->setEncType('application/json');
             }
 
+            // httpService doesn't explicitly support PUT, so add this:
+            if ($http_method == 'PUT') {
+                $http_headers[] = "Content-Length: " . strlen($json_data);
+            }
             $client->setHeaders($http_headers);
             $client->setMethod($http_method);
             $result = $client->send();
@@ -173,9 +180,32 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function formatJSONTime($jsontime)
     {
         preg_match('/Date\((\d+)\-(\d){2}(\d){2}\)/', $jsontime, $matches);
-        $matchestmp = intval($matches[1]/1000);
-        $date = gmdate("n-j-Y", $matchestmp);
+        if (count($matches) > 0) {
+            $matchestmp = intval($matches[1] / 1000);
+            $date = date("n-j-Y", $matchestmp);
+        } else {
+            $date = 'n/a';
+        }
         return $date;
+    }
+
+    /**
+     * Encode from human-readable date to text like Date(1360051200000-0800)
+     *
+     * @param string $date Input
+     *
+     * @return string
+     */
+    public function encodeJSONTime($date)
+    {
+        // auth has to be in GMT, otherwise use config-level TZ
+        //$site_config_TZ = date_default_timezone_get();
+        //date_default_timezone_set('GMT');
+        $unix_time = strtotime($date);
+        //date_default_timezone_set($site_config_TZ);
+
+        $json_time = "/Date(" . $unix_time . "000)/";
+        return $json_time;
     }
 
     /**
@@ -191,22 +221,28 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $holds = [];
         $response = $this->makeRequest(
-            "patron/{$patron['cat_username']}/holdrequests/active", 'GET',
+            "patron/{$patron['cat_username']}/holdrequests/all", 'GET',
             $patron['cat_password']
         );
         $holds_response_array = $response->PatronHoldRequestsGetRows;
         foreach ($holds_response_array as $holds_response) {
+            // only display item if it is NOT expired
+            if ($holds_response->StatusID > 8) {
+                continue;
+            }
 
             $create = $this->formatJSONTime($holds_response->ActivationDate);
             $expire = $this->formatJSONTime($holds_response->ExpirationDate);
+
             $holds[] = [
-                'id'             => $holds_response->BibID,
+                'type'     => $holds_response->StatusDescription,
+                'id'       => $holds_response->BibID,
                 'location' => $holds_response->PickupBranchName,
-                'reqnum'     => $holds_response->HoldRequestID,
-                'expire'     => $expire,
-                'create'     => $create,
+                'reqnum'   => $holds_response->HoldRequestID,
+                'expire'   => $expire,
+                'create'   => $create,
                 'position' => $holds_response->QueuePosition,
-                'title'      => $holds_response->Title,
+                'title'    => $holds_response->Title,
             ];
 
         }
@@ -239,6 +275,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             if (($holdings_response->CircStatus == 'In')
                 || ($holdings_response->CircStatus == 'Just Returned')
                 || ($holdings_response->CircStatus == 'On Shelf')
+                || ($holdings_response->CircStatus == 'Available - Check shelves')
             ) {
                 $availability = 1;
             }
@@ -250,15 +287,20 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $holding[] = [
                 'availability' => $availability,
-                'id'                 => $id,
-                'status'         => $holdings_response->CircStatus,
+                'id'         => $id,
+                'status'     => $holdings_response->CircStatus,
                 'location'   => $holdings_response->LocationName,
-                //'reserve'      => 'No',
+                //'reserve'  => 'No',
                 'callnumber' => $holdings_response->CallNumber,
                 'duedate'    => $duedate,
                 //'number'   => $holdings_response->ItemsIn,
-                'number'         => $copy_count,
-                'barcode'    => $holdings_response->Barcode,
+                'number'     => $copy_count,
+                'barcode'         => $holdings_response->Barcode,
+                'shelf_location'  => $holdings_response->ShelfLocation,
+                'collection_name' => $holdings_response->CollectionName,
+                //'per_item_holdable' => $per_item_holdable,
+                //'designation' => $designation,
+                'holdable' => $holdings_response->Holdable,
             ];
 
         }
@@ -345,29 +387,55 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // all activations are for now(), for now.
         // microtime is msec or sec?? seems to have changed
         $activationdate = '/Date(' . intval(microtime(true) * 1000) . ')/';
+        if (empty($holdDetails['barcode'])) {
+            $holdDetails['barcode'] = '';
+        }
 
         $jsonrequest = [
-            'PatronID' => $holdDetails['patron']['id'],
-            'BibID'      => $holdDetails['id'],
-            'ItemBarcode'  => '',
+            'PatronID'     => $holdDetails['patron']['id'],
+            'BibID'        => $holdDetails['id'],
+            'ItemBarcode'  => $holdDetails['barcode'],
             'VolumeNumber' => '',
             'Designation'  => '',
-            'PickupOrgID'       => $holdDetails['pickUpLocation'],
-            'IsBorrowByMail'    => '0',
-            'PatronNotes'       => $holdDetails['comment'],
-            'ActivationDate'    => $activationdate,
-            'WorkstationID'     => $workstationid,
-            'UserID'                    => $userid,
+            'PickupOrgID'     => $holdDetails['pickUpLocation'],
+            'IsBorrowByMail'  => '0',
+            'PatronNotes'     => $holdDetails['comment'],
+            'ActivationDate'  => $activationdate,
+            'WorkstationID'   => $workstationid,
+            'UserID'          => $userid,
             'RequestingOrgID' => $this->ws_requestingorgid,
-            'TargetGUID'            => '',
+            'TargetGUID'      => '',
         ];
 
         $response = $this->makeRequest('holdrequest', 'POST', '', $jsonrequest);
 
         if ($response->StatusValue == 1) {
-            return ['success' => true,  'sysMessage' => $response->Message];
+            return [ 'success' => true,  'sysMessage' => $response->Message ];
+        } elseif ($response->StatusValue == 5) {
+            // auto say "yes" to Conditional: Accept even with existing holds
+            // response
+            $reply_jsonrequest = [
+                // apparent bug in API, TxnGroupQualifer missing final "i"
+                'TxnGroupQualifier' => $response->TxnGroupQualifer,
+                'TxnQualifier' => $response->TxnQualifier,
+                'RequestingOrgID' => $this->ws_requestingorgid,
+                'Answer' => 1,
+                'State' => 5,
+            ];
+
+            $reply_response = $this->makeRequest(
+                "holdrequest/{$response->RequestGUID}", 'PUT', '',
+                $reply_jsonrequest
+            );
+      
+            if ($reply_response->StatusValue == 1) {
+                // auto-reply success
+                  return [ 'success' => true,  'sysMessage' => $response->Message ];
+            } else {
+                  return [ 'success' => false, 'sysMessage' => $response->Message ];
+            }
         } else {
-            return ['success' => false, 'sysMessage' => $response->Message];
+            return [ 'success' => false, 'sysMessage' => $response->Message ];
         }
 
     }
@@ -398,7 +466,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             // hardcoded pickup locations in the .ini file? or...
             foreach ($this->ws_pickUpLocations as $code => $library) {
                 $locations[] = [
-                    'locationID'            => $code,
+                    'locationID'      => $code,
                     'locationDisplay' => $library
                 ];
             }
@@ -408,7 +476,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $locations_response_array = $response->OrganizationsGetRows;
             foreach ($locations_response_array as $location_response) {
                 $locations[] = [
-                    'locationID'            => $location_response->OrganizationID,
+                    'locationID'      => $location_response->OrganizationID,
                     'locationDisplay' => $location_response->Name,
                 ];
             }
@@ -516,30 +584,463 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $user = [];
 
-        $user['id']                     = $response->PatronID;
-        $user['firstname']      = null;
-        $user['lastname']       = null;
-        $user['cat_username'] = $response->Barcode;
+        $user['id']           = $response->PatronID;
+        $user['firstname']    = null;
+        $user['lastname']     = null;
+        $user['cat_username'] = $response->PatronBarcode;
         $user['cat_password'] = $password;
-        $user['email']              = null;
-        $user['major']              = null;
-        $user['college']            = null;
+        $user['email']        = null;
+        $user['major']        = null;
+        $user['college']      = null;
 
         return $user;
     }
 
     /**
+     * Get Patron Fines
+     *
+     * This is responsible for retrieving all fines by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's fines on success.
+     */
+    public function getMyFines($patron)
+    {
+        $fineList = [];
+
+        $response = $this->makeRequest(
+            "patron/{$patron['cat_username']}/account/outstanding", 'GET',
+            $patron['cat_password']
+        );
+        $fines_response_array = $response->PatronAccountGetRows;
+
+        foreach ($fines_response_array as $fines_response) {
+            $fineList[] = [
+            // fees in vufind are in pennies
+            'amount'   => $fines_response->TransactionAmount * 100,
+            'checkout' => $this->formatJSONTime($fines_response->CheckOutDate),
+            'fine'     => $fines_response->FeeDescription,
+            'balance'  => $fines_response->OutstandingAmount * 100,
+            'duedate'    => $this->formatJSONTime($fines_response->DueDate),
+            'createdate' => $this->formatJSONTime($fines_response->TransactionDate),
+            'id'    => $fines_response->BibID,
+            'title' => $fines_response->Title,
+            ];
+        }
+
+        return $fineList;
+
+    }
+    /**
      * Get Patron Profile
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
-     * @param array $userinfo The patron array
+     * @param array $patron The patron array
      *
      * @throws ILSException
-     * @return array          Array of the patron's profile data on success.
+     * @return array Array of the patron's profile data on success.
      */
-    public function getMyProfile($userinfo)
+    public function getMyProfile($patron)
     {
-        return $userinfo;
+        // firstname, lastname, address1, address2, zip, phone, group
+        $response = $this->makeRequest(
+            "patron/{$patron['cat_username']}/basicdata", 'GET',
+            $patron['cat_password']
+        );
+        $profile_response = $response->PatronBasicData;
+        $profile = [
+          'firstname' => $profile_response->NameFirst,
+          'lastname'  => $profile_response->NameLast,
+          'phone'     => $profile_response->PhoneNumber,
+        ];
+        return $profile;
+    }
+
+    /**
+     * Get Patron Transactions
+     *
+     * This is responsible for retrieving all transactions (i.e. checked out items)
+     * by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed Array of associative arrays of the patron's transactions on
+     * success.
+     */
+    public function getMyTransactions($patron)
+    {
+        // duedate, id, barcode, renew (count), request (pending count),
+        // volume (vol number), publication_year, renewable, message, title, item_id
+        // polaris apis: PatronItemsOutGet, Patron_RewewBlocksGet
+        $transactions = [];
+        $response = $this->makeRequest(
+            "patron/{$patron['cat_username']}/itemsout/all", 'GET',
+            $patron['cat_password']
+        );
+
+        foreach ($response->PatronItemsOutGetRows as $trResponse) {
+            // any more renewals available?
+            if (($trResponse->RenewalLimit - $trResponse->RenewalCount) > 0) {
+                $renewable = true;
+            } else {
+                $renewable = false;
+            }
+            $transactions[] = [
+                'duedate' => $this->formatJSONTime($trResponse->DueDate),
+                'id'      => $trResponse->BibID,
+                'barcode' => $trResponse->Barcode,
+                'renew'   => $trResponse->RenewalCount,
+                'renewLimit' => $trResponse->RenewalLimit,
+                'renewable' => $renewable,
+                'title'   => $trResponse->Title,
+                'item_id' => $trResponse->ItemID,
+            ];
+        }
+        return $transactions;
+    }
+
+    /**
+     * Renew My Items
+     *
+     * Function for attempting to renew a patron's items.  The data in
+     * $renewDetails['details'] is determined by getRenewDetails().
+     *
+     * @param array $renewDetails An array of data required for renewing items
+     * including the Patron ID and an array of renewal IDS
+     *
+     * @return array              An array of renewal information keyed by item ID
+     */
+    public function renewMyItems($renewDetails)
+    {
+        $renew_ids = $renewDetails['details'];
+        $patron = $renewDetails['patron'];
+        $count = 0;
+        $item_response = [];
+        $item_blocks = [];
+
+        foreach ($renew_ids as $renew_id) {
+            $jsonrequest = [];
+            $jsonrequest['Action'] = 'renew';
+            $jsonrequest['LogonBranchID']      = '1';
+            $jsonrequest['LogonUserID']        = '1';
+            $jsonrequest['LogonWorkstationID'] = '1';
+            $jsonrequest['RenewData']['IgnoreOverrideErrors'] = 'true';
+
+            $response = $this->makeRequest(
+                "patron/{$patron['cat_username']}/itemsout/$renew_id", 'PUT',
+                $patron['cat_password'], $jsonrequest
+            );
+            if ($response->PAPIErrorCode == 0) {
+                $count++;
+                $item_response[$renew_id] = [
+                'success'  => true,
+                'new_date' => $this->formatJSONTime(
+                    $response->ItemRenewResult->DueDateRows[0]->DueDate
+                ),
+                'item_id'  =>
+                    $response->ItemRenewResult->DueDateRows[0]->ItemRecordID,
+                ];
+            } elseif ($response->PAPIErrorCode == -2) {
+                $item_blocks[$renew_id]
+                    = $response->ItemRenewResult->BlockRows[0]->ErrorDesc;
+                $item_response[$renew_id] = [
+                'success'  => -1,
+                'new_date' => false,
+                'item_id' => $response->ItemRenewResult->BlockRows[0]->ItemRecordID,
+                'sysMessage' => $response->ItemRenewResult->BlockRows[0]->ErrorDesc,
+                ];
+            }
+
+        }
+        $result = [
+            'count' => $count, 'details' => $item_response,
+            'blocks' => $item_blocks
+        ];
+
+        return $result;
+    }
+
+    /**
+     * Get Renew Details
+     *
+     * In order to renew an item, Voyager requires the patron details and an item
+     * id. This function returns the item id as a string which is then used
+     * as submitted form data in checkedOut.php. This value is then extracted by
+     * the RenewMyItems function.
+     *
+     * @param array $checkOutDetails An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getRenewDetails($checkOutDetails)
+    {
+        $renewDetails = $checkOutDetails['item_id'];
+        return $renewDetails;
+    }
+
+    /**
+     * Cancel Holds
+     *
+     * Attempts to Cancel a hold or recall on a particular item. The
+     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array An array of data on each request including whether or not it
+     * was successful and a system message (if available)
+     */
+    public function cancelHolds($cancelDetails)
+    {
+        $hold_ids = $cancelDetails['details'];
+        $patron = $cancelDetails['patron'];
+        $count = 0;
+        $item_response = [];
+
+        foreach ($hold_ids as $hold_id) {
+            $response = $this->makeRequest(
+                "patron/{$patron['cat_username']}/holdrequests/$hold_id/cancelled"
+                . "?wsid=1&userid=1", 'PUT', $patron['cat_password']
+            );
+
+            if ($response->PAPIErrorCode == 0) {
+                $count++;
+                $item_response[$hold_id] = [
+                'success' => true,
+                'status'  => 'hold_cancel_success'
+                ];
+            } else {
+                $item_response[$hold_id] = [
+                'success' => false,
+                'status'  => 'hold_cancel_fail',
+                'sysMessage' => 'Failure calling ILS to cancel hold'
+                ];
+            }
+        }
+
+        $result = [ 'count' => $count, 'items' => $item_response ];
+        return $result;
+    }
+
+    /**
+     * Get Cancel Hold Details
+     *
+     * @param array $holdDetails An array of item data
+     *
+     * @return string Data for use in a form field (just request id is all Polaris
+     * needs)
+     */
+    public function getCancelHoldDetails($holdDetails)
+    {
+        return $holdDetails['reqnum'];
+    }
+
+    /**
+     * Get Checkout History
+     *
+     * Returns the patrons checkout / reading history
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed Array of the patron's checkouts on success.
+     */
+    public function getCheckoutHistory($patron)
+    {
+        // get number of pages, only get most recent max 200 items (last 2 pages)
+        // TODO: use real pagination, not just recent items.
+        $items_per_page = 100;
+
+        $response = $this->makeRequest(
+            "patron/{$patron['cat_username']}/readinghistory?rowsperpage=1&page=-1",
+            'GET', $patron['cat_password']
+        );
+
+        // error code returns number of results
+        $count = $response->PAPIErrorCode;
+
+        if ($count == 0) {
+            return;
+        }
+
+        $pages = ceil($count / $items_per_page);
+
+        $penultimate_page = $pages - 1;
+
+        if ($penultimate_page > 0) {
+            $page_offset = $penultimate_page;
+        } else {
+            $page_offset = $pages;
+        }
+
+        while ($page_offset <= $pages) {
+            $response = $this->makeRequest(
+                "patron/{$patron['cat_username']}/readinghistory?rowsperpage="
+                . "$items_per_page&page=$page_offset", 'GET',
+                $patron['cat_password']
+            );
+    
+            $checkout_history_array = $response->PatronReadingHistoryGetRows;
+            foreach ($checkout_history_array as $checkout_response) {
+                $date = $this->formatJSONTime($checkout_response->CheckOutDate);
+                $checkouts[] = [
+                   'id' => $checkout_response->BibID,
+                   'title' => $checkout_response->Title,
+                   'format' => $checkout_response->FormatDescription,
+                   'location' => $checkout_response->LoaningBranchName,
+                   'date' => $date,
+                   'author' => $checkout_response->Author,
+                   ];
+            }
+            $page_offset++;
+        }
+        // show most recent checkouts first
+        $checkouts = array_reverse($checkouts);
+
+        return $checkouts;
+    }
+
+    /**
+     * Get Hold Count
+     *
+     * Returns the count of a hold based on API call to bibid
+     *
+     * @param array $id bib id
+     *
+     * @return string count of holds
+     */
+    public function getHoldCount($id)
+    {
+        $response = $this->makeRequest("bib/$id");
+        $holdings_response_array = $response->BibGetRows;
+        $hold_count = 0;
+        foreach ($holdings_response_array as $response) {
+            if ($response->ElementID == '8') {
+                // that's the current holds field, could also be pulled by label
+                // instead?
+                if ($response->Value > 0) {
+                    $hold_count = $response->Value;
+                }
+                break;
+            }
+        }
+        return $hold_count;
+    }
+
+    /**
+     * Suspend Holds
+     *
+     * Attempts to Suspend a hold or recall on a particular item. The
+     * data in $suspendDetails['details'] is determined by getSuspendHoldDetails().
+     *
+     * @param array $suspendDetails An array of item and patron data
+     *
+     * @return array An array of data on each request including whether or not it
+     * was successful and a system message (if available)
+     */
+    public function suspendHolds($suspendDetails)
+    {
+        $hold_ids = $suspendDetails['details'];
+        $patron = $suspendDetails['patron'];
+
+        $jsondate = $this->encodeJSONTime($suspendDetails['date']);
+
+        $count = 0;
+        $item_response = [];
+
+        foreach ($hold_ids as $hold_id) {
+            $jsonrequest = [
+                 'UserID' => '1',
+                 'ActivationDate' => "$jsondate"
+                ];
+    
+            $response = $this->makeRequest(
+                "patron/{$patron['cat_username']}/holdrequests/$hold_id/inactive",
+                'PUT', $patron['cat_password'], $jsonrequest
+            );
+
+            if ($response->PAPIErrorCode == 0) {
+                $count++;
+                $item_response[$hold_id] = [
+                  'success' => true,
+                  'status'  => 'hold_suspend_success'
+                ];
+            } else {
+                $item_response[$hold_id] = [
+                'success' => false,
+                'status'  => 'hold_suspend_fail',
+                'sysMessage' => 'Failure calling ILS to suspend hold'
+                ];
+            }
+        }
+
+        $result = [ 'count' => $count, 'items' => $item_response ];
+        return $result;
+    }
+
+    /**
+     * Get Suspend Hold Details
+     *
+     * @param array $holdDetails An array of item data
+     *
+     * @return string Data for use in a form field (just request id is all Polaris
+     * needs)
+     */
+    public function getSuspendHoldDetails($holdDetails)
+    {
+        return $holdDetails['reqnum'];
+    }
+
+    /**
+     * Reactivate Holds
+     *
+     * Attempts to Reactivate a hold or recall on a particular item. The
+     * data in $reactivateDetails['details'] is determined by
+     * getReactivateHoldDetails().
+     *
+     * @param array $reactivateDetails An array of item and patron data
+     *
+     * @return array An array of data on each request including whether or not it
+     * was successful and a system message (if available)
+     */
+    public function reactivateHolds($reactivateDetails)
+    {
+        $hold_ids = $reactivateDetails['details'];
+        $patron = $reactivateDetails['patron'];
+
+        $date = date("d/M/Y");
+        $jsondate = $this->encodeJSONTime($date);
+
+        $count = 0;
+        $item_response = [];
+
+        foreach ($hold_ids as $hold_id) {
+            $jsonrequest = [
+                 'UserID' => '1',
+                 'ActivationDate' => "$jsondate"
+                 ];
+    
+            $response = $this->makeRequest(
+                "patron/{$patron['cat_username']}/holdrequests/$hold_id/active",
+                'PUT', $patron['cat_password'], $jsonrequest
+            );
+
+            if ($response->PAPIErrorCode == 0) {
+                $count++;
+                $item_response[$hold_id] = [
+                  'success' => true,
+                  'status'  => 'hold_reactivate_success'
+                ];
+            } else {
+                $item_response[$hold_id] = [
+                'success' => false,
+                'status'  => 'hold_reactivate_fail',
+                'sysMessage' => 'Failure calling ILS to reactivate hold'
+                ];
+            }
+        }
+
+        $result = [ 'count' => $count, 'items' => $item_response ];
+        return $result;
     }
 }

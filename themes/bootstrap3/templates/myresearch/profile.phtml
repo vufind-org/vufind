@@ -16,6 +16,9 @@
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h2><?=$this->transEsc('Your Profile')?></h2>
     <?=$this->flashmessages();?>
+
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
     <table class="table table-striped">
       <?
         echo $this->renderArray(
@@ -33,7 +36,7 @@
               ? $this->profile['home_library'] : $this->defaultPickupLocation
         ?>
         <td>
-          <form id="profile_form" class="form-inline" action="" method="post">
+          <form id="profile_form" class="form-inline" method="post">
             <select id="home_library" name="home_library" class="form-control">
               <? foreach ($this->pickup as $lib): ?>
                 <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>

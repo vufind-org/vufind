@@ -23,6 +23,9 @@
       <? if ($this->ils()->checkCapability('getMyProfile')): ?>
         <li<?=$this->active == 'profile' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-profile')?>"><?=$this->transEsc('Profile')?></a></li>
       <? endif; ?>
+      <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
+        <li<?=$this->active == 'librarycards' ? ' class="active"' : ''?>><a href="<?=$this->url('librarycards-home')?>"><?=$this->transEsc('Library Cards')?></a></li>
+      <? endif; ?>
     <? endif; ?>
     <li<?=$this->active == 'history' ? ' class="active"' : ''?>><a href="<?=$this->url('search-history')?>?require_login"><?=$this->transEsc('history_saved_searches')?></a></li>
   </ul>
@@ -47,7 +50,7 @@
       <? endforeach; ?>
       <li>
         <a href="<?=$this->url('editList', array('id'=>'NEW'))?>" title="<?=$this->transEsc('Create a List') ?>">
-          <?=$this->transEsc('Create a List') ?> 
+          <?=$this->transEsc('Create a List') ?>
         </a>
         <img src="<?=$this->imagelink('silk/add.png')?>" style="margin-left:2px;vertical-align:text-bottom"/>
       </li>

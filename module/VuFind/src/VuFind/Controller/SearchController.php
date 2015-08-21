@@ -123,12 +123,10 @@ class SearchController extends AbstractSearch
                     $view->to, $view->from, $view->message,
                     $view->url, $this->getViewRenderer(), $view->subject, $cc
                 );
-                $this->flashMessenger()->setNamespace('info')
-                    ->addMessage('email_success');
+                $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirect()->toUrl($view->url);
             } catch (MailException $e) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($e->getMessage());
+                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             }
         }
         return $view;
@@ -452,8 +450,7 @@ class SearchController extends AbstractSearch
             ->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('too_many_reserves');
+            $this->flashMessenger()->addMessage('too_many_reserves', 'info');
         }
 
         // Use standard search action with override parameter to show results:
@@ -461,6 +458,10 @@ class SearchController extends AbstractSearch
 
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;
+
+        // Set up RSS feed title just in case:
+        $this->getViewRenderer()->plugin('resultfeed')
+            ->setOverrideTitle('Reserves Search Results');
 
         // Call rather than forward, so we can use custom template
         $view = $this->resultsAction();
@@ -473,12 +474,16 @@ class SearchController extends AbstractSearch
             $view->course = $result[0]['course'];
         }
 
-        // Customize the URL helper to make sure it builds proper reserves URLs:
-        $url = $view->results->getUrlQuery();
-        $url->setDefaultParameter('course', $course);
-        $url->setDefaultParameter('inst', $inst);
-        $url->setDefaultParameter('dept', $dept);
-        $url->setSuppressQuery(true);
+        // Customize the URL helper to make sure it builds proper reserves URLs
+        // (but only do this if we have access to a results object, which we
+        // won't in RSS mode):
+        if (isset($view->results)) {
+            $url = $view->results->getUrlQuery();
+            $url->setDefaultParameter('course', $course);
+            $url->setDefaultParameter('inst', $inst);
+            $url->setDefaultParameter('dept', $dept);
+            $url->setSuppressQuery(true);
+        }
         return $view;
     }
 

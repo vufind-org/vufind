@@ -1,0 +1,20 @@
+sudo: false
+language: php
+php:
+  - 5.4
+
+env:
+  - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
+
+before_script:
+  - pear install pear/PHP_CodeSniffer
+  - pear channel-discover pear.phing.info
+  - pear install phing/phing
+  - composer global require fabpot/php-cs-fixer
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - phpenv rehash
+
+script:
+  - phpunit --stderr --configuration module/VuFind/tests/phpunit.xml
+  - phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php $PWD/module
+  - phing php-cs-fixer-dryrun
