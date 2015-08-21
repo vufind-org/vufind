@@ -49,7 +49,7 @@ function html_entity_decode(string, quote_style) {
 
 // Turn GET string into array
 function deparam(url) {
-  if(!url.match(/\?/)) {
+  if(!url.match(/\?|&/)) {
     return [];
   }
   var request = {};
@@ -219,15 +219,13 @@ function registerLightboxEvents() {
   var modal = $("#modal");
   // New list
   $('#make-list').click(function() {
-    var parts = this.href.split('?');
-    var get = deparam(parts[1]);
+    var get = deparam(this.href);
     get['id'] = 'NEW';
     return Lightbox.get('MyResearch', 'EditList', get);
   });
   // New account link handler
   $('.createAccountLink').click(function() {
-    var parts = this.href.split('?');
-    var get = deparam(parts[1]);
+    var get = deparam(this.href);
     return Lightbox.get('MyResearch', 'Account', get);
   });
   $('.back-to-login').click(function() {
@@ -537,6 +535,10 @@ $(document).ready(function() {
   Lightbox.addFormCallback('accountForm', newAccountHandler);
   Lightbox.addFormCallback('bulkDelete', function(html) {
     location.reload();
+  });
+  Lightbox.addFormCallback('bulkSave', function(html) {
+    Lightbox.addCloseAction(updatePageForLogin);
+    Lightbox.confirm(vufindString['bulk_save_success']);
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
