@@ -1,0 +1,102 @@
+<!-- start of Ead result-narrow.phtml -->
+<div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
+  <div class="col-xs-12 narrow-collapse-toggle"> 
+    <div class="col-sm-8 col-md-10">
+      <i class="fa fa-arrow-right"></i>
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+      <?
+        $summHighlightedTitle = $this->driver->getHighlightedTitle();
+        $summTitle = $this->driver->getTitle();
+        if (!empty($summHighlightedTitle)) {
+          echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+        } else if (!empty($summTitle)) {
+          echo $this->escapeHtml($this->truncate($summTitle, 180));
+        } else {
+          echo $this->transEsc('Title not available');
+        }
+      ?>
+      </a>
+      <div class="dateyeartype">
+        <div class="resultItemFormat"><?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?></div>
+        <? if ($results = $this->driver->getInstitutions()): ?>
+          <? foreach($results as $index => $institution): ?>
+          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", array(), $this->translate($institution))?>
+          <? endforeach; ?>
+        <? endif; ?>
+
+        <? if ($this->driver->isCollection()): ?>
+          <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+        <? else: ?>
+          <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
+          <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
+            $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
+            echo !empty($summHighlightedAuthor)
+                ? $this->highlight($summHighlightedAuthor)
+                : $this->escapeHtml($summAuthor);
+          ?></a>
+          <? endif; ?>
+        
+          <? if ($dates = $this->driver->getResultDateRange()): ?>
+            <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
+          <? endif; ?>
+        <? endif; ?>
+      </div>
+    </div>
+    <div class="col-sm-4 col-md-2">
+      <?=$this->record($this->driver)->getOnlineUrls('results')?>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <div class="narrow-collapse-data col-xs-12 hidden">
+    <div class="col-xs-7 col-sm-push-4">
+    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+    <? if ($summary): ?>
+      <div class="truncate-field wide">
+        <p class="summary"><?=$summary?></p>
+      </div>
+    <? endif; ?>
+    </div>
+    <div class="col-xs-3 col-sm-4 col-sm-pull-7 resultThumb">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <? $img = $this->recordImage($this->record($this->driver))?>
+      <?= $img->render('list', array('medium' => array('w' => 300, 'h' => 300))) ?>
+    </div>
+    <div class="clearfix visible-xs"></div>
+    <div class="col-xs-12 col-sm-1 hidden-print add-to-favorite-col">
+          <? /* Display qrcode if appropriate: */ ?>
+      <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+        <?
+          // Add JS Variables for QrCode
+          $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
+        ?>
+        <div class="hidden-xs">
+          <i class="fa fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
+          <div class="qrcode hidden">
+            <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+          </div><br/>
+        </div>
+      <? endif; ?>
+
+      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <? /* Add to favorites */ ?>
+       <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
+      <? endif; ?>
+
+      <? $openUrl = $this->driver->getOpenURL(); ?>
+      <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+    </div>
+    <div class="col-xs-12 col-sm-12">
+      <? /* Saved lists */ ?>
+      <div class="savedLists alert alert-info hidden">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+      <?=$this->record($this->driver)->getPreviews()?>
+      <? if ($this->layout()->templateDir === 'list'): ?>
+        <?=$this->render('list/list-notes.phtml')?>
+      <? endif; ?>
+    </div>
+  </div>
+</div>
+<!-- End of Ead result-narrow.phtml -->
+

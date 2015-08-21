@@ -2,15 +2,13 @@
     padding-top: 8px;
     padding-bottom: 8px;
     margin-bottom: 5px;
+    border-bottom: 1px solid @gray-lighter;
     &:first-child {
         padding-top: 8px;
         
     }
-    &:nth-child(odd) {
-        background: whitesmoke;   
-    }
-    @media(max-width: @screen-xs-max) {
-        border-bottom: none;   
+    & .narrow-collapse-toggle:hover {
+        cursor: pointer;
     }
     & .authorize {
         position: absolute;
