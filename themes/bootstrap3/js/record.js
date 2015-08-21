@@ -60,8 +60,8 @@ function setUpCheckRequest() {
 
 function registerTabEvents() {
   // register the record comment form to be submitted via AJAX
-  $('form[name="commentRecord"]').unbind('submit').submit(function() {
-    return registerAjaxCommentRecord('form[name="commentRecord"]');
+  $('form.comment').unbind('submit').submit(function() {
+    return registerAjaxCommentRecord(this);
   });
 
   setUpCheckRequest();

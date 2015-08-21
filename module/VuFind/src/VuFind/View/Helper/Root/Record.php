@@ -313,7 +313,7 @@ class Record extends AbstractHelper
     public function getTitleHtml($maxLength = 180)
     {
         $highlightedTitle = $this->driver->tryMethod('getHighlightedTitle');
-        $title = $this->driver->tryMethod('getTitle');
+        $title = trim($this->driver->tryMethod('getTitle'));
         if (!empty($highlightedTitle)) {
             $highlight = $this->getView()->plugin('highlight');
             $addEllipsis = $this->getView()->plugin('addEllipsis');
