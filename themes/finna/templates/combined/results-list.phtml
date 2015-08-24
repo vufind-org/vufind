@@ -4,6 +4,9 @@
   $params = $results->getParams();
   $lookfor = $params->getDisplayQuery();
   $recordTotal = $results->getResultTotal();
+  $filtersActive
+     = $this->layout()->savedTabs
+     && isset($this->layout()->savedTabs[$searchClassId]);
 
   // More link should use default limit, not custom limit:
   $limit = $params->getLimit();
@@ -12,6 +15,10 @@
   $url = $results->getUrlQuery();
   $url->setSearchId($searchClassId, null);
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $url->setPage(1);
+
+  $url = $results->getUrlQuery();
+  $url->removeAllFilters();
+  $removeFiltersUrl = $this->url('combined-results') . $url->setPage(1);
 ?>
 <div class="row">
   <div class="col-xs-12 combined-titles">
@@ -49,6 +56,13 @@
 </div>
 <? /* End Listing Options */ ?>
 
+<? if ($filtersActive): ?>
+<div class="alert alert-info filters-active">
+  <a href="<?= $moreUrl ?>"><?= $this->transEsc('Active filters') ?></a>
+  <a href="<?= $removeFiltersUrl ?>" title="<?= $this->transEsc('Remove filters') ?>"><i class="fa fa-times"></i></a>
+</div>
+<? endif ?>
+
 <? if ($recordTotal < 1): ?>
   <p class="alert alert-danger">
     <? if (isset($view->overrideEmptyMessage)): ?>
@@ -80,6 +94,7 @@
       'searchClassId' => $searchClassId
     );
   ?>
+  <?= $this->authorizationNote($searchClassId) ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
   
   <div class="clearfix">

@@ -6,6 +6,7 @@
     $results = $view->results;
     $params = $results->getParams();
     $lookfor = $params->getDisplayQuery();
+    $handler = $params->getSearchHandler();
 
     $searchIds = null;
     if ($ids = $params->getCombinedSearchIds()) {
@@ -19,14 +20,16 @@
     $searchClassIdEncoded = urlencode($searchClassId);
     $searchClassIdHtmlEscaped = $this->escapeHtml($searchClassId);
     $lookforEncoded = urlencode($lookfor);
+    $handlerEncoded = urlencode($handler);
     $loadJs = <<<JS
 $(document).ready(function() {
-    var url = path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
-    $('#combined_$searchClassIdHtmlEscaped').load(url, '', function(responseText) {
+    var holder = $('#combined_$searchClassIdHtmlEscaped');
+    var url = path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded&type=$handlerEncoded$searchIds';
+    holder.load(url, '', function(responseText) {
         if (responseText.length == 0) {
-            $('#combined_$searchClassIdHtmlEscaped').hide();
+            holder.hide();
         } else {
-            finna.combinedResults.init($('#combined_$searchClassIdHtmlEscaped'));
+            finna.combinedResults.init(holder);
         }
     });
 });

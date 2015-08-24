@@ -24,7 +24,7 @@ finna.openUrl = (function() {
         var openUrl = element.children('span.openUrl:first').attr('title');
         element.removeClass('openUrlEmbed').hide();
         loadResolverLinks(element.next('div.resolver').removeClass('hidden'), openUrl, params.searchClassId);
-    }
+    };
 
     var initLinks = function() {
         $('a.openUrlEmbed').each(function(ind, e) {
@@ -38,7 +38,7 @@ finna.openUrl = (function() {
         initLinks: initLinks,
         init: function() {
             initLinks();
-        },
+        }
     };
 
     return my;
