@@ -20,24 +20,17 @@
     $searchClassIdHtmlEscaped = $this->escapeHtml($searchClassId);
     $lookforEncoded = urlencode($lookfor);
     $loadJs = <<<JS
-var url = path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
-$('#combined_$searchClassIdHtmlEscaped').load(url, '', function(responseText) {
-    if (responseText.length == 0) {
-        $('#combined_$searchClassIdHtmlEscaped').hide();
-    }
-    $('a.openUrlEmbed').foreach(function() {
-        finna.openurl.initLinks();
+$(document).ready(function() {
+    var url = path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
+    $('#combined_$searchClassIdHtmlEscaped').load(url, '', function(responseText) {
+        if (responseText.length == 0) {
+            $('#combined_$searchClassIdHtmlEscaped').hide();
+        } else {
+            finna.combinedResults.init($('#combined_$searchClassIdHtmlEscaped'));
+        }
     });
 });
 JS;
-
-    // Set up Javascript for use below:
-    $loadJs = "var holder = $('#combined_" . $this->escapeHtml($searchClassId) . "');"
-        . 'var url = path + "/Combined/Result?id=' . urlencode($searchClassId)
-        . '&lookfor=' . urlencode($lookfor)
-        . $searchIds
-        . '";'
-        . "\$('#combined_" . $this->escapeHtml($searchClassId) . "').load(url, '', function(responseText) { if (responseText.length == 0) { $('#combined_" . $this->escapeHtml($searchClassId) . "').hide(); } else { finna.combinedResults.init(holder);}});";
 ?>
 <div class="row">
   <div class="col-xs-12 combined-titles">
@@ -52,5 +45,5 @@ JS;
   </div>
 </div>
 
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(function(){' . $loadJs . '});', 'SET')?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 <noscript><?=$this->transEsc('Please enable JavaScript.')?></noscript>

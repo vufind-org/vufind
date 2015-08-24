@@ -65,3 +65,4 @@ class SearchTabsRecommendations extends \Zend\View\Helper\AbstractHelper
         return isset($this->recommendationConfig) ? $this->recommendationConfig : [];
     }
 }
+

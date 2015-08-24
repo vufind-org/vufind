@@ -6,9 +6,9 @@
       </div>
       <div class="col-xs-12 col-md-11">
         <a class="title" href="<?=$this->escapeHtmlAttr($this->tab['url'])?>">
-          <?=$this->translate('search_tab_recommendation_title', ['%%lookfor%%' => $this->lookfor, '%%handler%%' => $this->handler, '%%tab%%' => $this->transEsc($this->tab['label']), '%%count%%' => $this->results->getResultTotal()]) ?>
+          <?=$this->translate('search_tabs_recommendation_title_html', ['%%lookfor%%' => $this->lookfor, '%%handler%%' => $this->handler, '%%tab%%' => $this->transEsc($this->tab['label']), '%%count%%' => $this->results->getResultTotal()]) ?>
         </a>
-        <span class="count"><?=$this->transEsc('search_tab_recommendation_count', ['%%count%%' => $this->localizedNumber($this->results->getResultTotal())]) ?></span>
+        <span class="count"><?=$this->transEsc('search_tabs_recommendation_count', ['%%count%%' => $this->localizedNumber($this->results->getResultTotal())]) ?></span>
         <? $i = 1; ?>
         <? foreach ($this->results->getResults() as $current): ?>
           <div class="row result clearfix">
