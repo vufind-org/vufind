@@ -134,6 +134,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             "onCampus" => true,
             "didYouMean" => false,
             "filterList" => null,
+            "pcAvailability" => false,
             "pageNumber" => 1,
             "limit" => 20,
             "sort" => null,
@@ -286,6 +287,17 @@ class Connector implements \Zend\Log\LoggerAwareInterface
                 }
             }
 
+            // QUERYSTRING: pcAvailability
+            // by default, PrimoCentral only returns matches,
+            // which are available via Holdingsfile
+            // pcAvailability = false
+            // By setting this value to true, also matches, which
+            // are NOT available via Holdingsfile are returned
+            // (yes, right, set this to true - thats ExLibris Logic)
+            if ($args["pcAvailability"]) {
+                $qs[] = "pcAvailability=true";
+            }
+
             // QUERYSTRING: indx (start record)
             $recordStart = $args["pageNumber"];
             if ($recordStart != 1) {
@@ -309,6 +321,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             // QUERYSTRING: loc
             // all primocentral queries need this
             $qs[] = "loc=adaptor,primo_central_multiple_fe";
+
 
             if ($this->debug) {
                 print "URL: " . implode('&', $qs);
