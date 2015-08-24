@@ -467,12 +467,10 @@ class AjaxController extends \VuFind\Controller\AjaxController
             return $this->output('', self::STATUS_OK);
         }
         $searchClass = $params->getSearchClassId();
-        // Don't return recommendations for combined view or search types other than
-        // basic search. Or if there's nothing configured.
-        if ($searchClass == 'Combined' || $params->getSearchType() != 'basic'
-            || empty(
-                $config->SearchTabsRecommendations->recommendations[$searchClass]
-            )
+        // Don't return recommendations if not configured or for combined view
+        // or for search types other than basic search.
+        if (empty($config->SearchTabsRecommendations->recommendations[$searchClass])
+            || $searchClass == 'Combined' || $params->getSearchType() != 'basic'
         ) {
             return $this->output('', self::STATUS_OK);
         }
