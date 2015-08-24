@@ -431,6 +431,38 @@ function ajaxLogin(form) {
   });
 }
 
+function registerLightboxLinks(parent, id) {
+  if(typeof parent === "undefined") {
+    parent = document;
+    id = $(this).closest('.record').find('.hiddenId').val();
+  }
+  // Cite lightbox
+  $(parent).find('.cite-record').unbind('click').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Cite', {id: id});
+  });
+  // Mail lightbox
+  $(parent).find('.mail-record').unbind('click').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Email', {id: id});
+  });
+  // Save lightbox
+  $(parent).find('.save-record').unbind('click').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Save', {id: id});
+  });
+  // SMS lightbox
+  $(parent).find('.sms-record').unbind('click').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'SMS', {id: id});
+  });
+  // Tag lightbox
+  $(parent).find('.tagRecord').unbind('click').click(function() {
+    var parts = this.href.split('/');
+    return Lightbox.get(parts[parts.length-3], 'AddTag', {id: id});
+  });
+}
+
 $(document).ready(function() {
   // Off canvas
   if($('.sidebar').length > 0) {
@@ -584,27 +616,35 @@ $(document).ready(function() {
    ******************************/
   Lightbox.addOpenAction(registerLightboxEvents);
 
-  Lightbox.addFormCallback('newList', Lightbox.changeContent);
+  // Form callbacks
   Lightbox.addFormCallback('accountForm', newAccountHandler);
   Lightbox.addFormCallback('bulkDelete', function(html) {
     location.reload();
-  });
-  Lightbox.addFormCallback('bulkSave', function(html) {
-    Lightbox.addCloseAction(updatePageForLogin);
-    Lightbox.confirm(vufindString['bulk_save_success']);
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
   });
+  Lightbox.addFormCallback('bulkSave', function(html) {
+    Lightbox.addCloseAction(updatePageForLogin);
+    Lightbox.confirm(vufindString['bulk_save_success']);
+  });
+  Lightbox.addFormCallback('emailRecord', function() {
+    Lightbox.confirm(vufindString['bulk_email_success']);
+  });
   Lightbox.addFormCallback('emailSearch', function(html) {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
-  Lightbox.addFormCallback('saveRecord', function(html) {
-    Lightbox.close();
+  Lightbox.addFormCallback('newList', Lightbox.changeContent);
+  Lightbox.addFormCallback('saveRecord', function() {
+    Lightbox.confirm(vufindString['bulk_save_success']);
     checkSaveStatuses();
   });
+  Lightbox.addFormCallback('smsRecord', function() {
+    Lightbox.confirm(vufindString['sms_success']);
+  });
 
+  // Form handlers
   Lightbox.addFormHandler('exportForm', function(evt) {
     $.ajax({
       url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),

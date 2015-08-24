@@ -1,47 +1,10 @@
-/*global path, registerAjaxCommentRecord, registerTabEvents*/
+/*global path, registerAjaxCommentRecord, registerLightboxLinks, registerTabEvents*/
 
 function showhideTabs(tabid) {
   //console.log(tabid);
   $('#'+tabid).parents('.search_tabs').find('.tab-pane.active').removeClass('active');
   $('#'+tabid+'-tab').addClass('active');
   $('#'+tabid).tab('show');
-}
-
-function registerFLLightbox(longNode, div_id) {
-  // Cite lightbox
-  $(longNode).find('#cite-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Cite', {id:div_id});
-  });
-  // Mail lightbox
-  $(longNode).find('#mail-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Email', {id:div_id});
-  });
-  // Save lightbox
-  $(longNode).find('#save-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Save', {id:div_id});
-  });
-  // SMS lightbox
-  $(longNode).find('#sms-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'SMS', {id:div_id});
-  });
-  // Tag lightbox
-  $(longNode).find('.tagRecord').click(function() {
-    var parts = this.href.split('/');
-    var id = $(this).closest('.record').find('.hiddenId')[0].value;
-    return Lightbox.get(parts[parts.length-3], 'AddTag', {id:id});
-  });
-  // Form handlers
-  Lightbox.addFormCallback('saveRecord',  function() { Lightbox.confirm(vufindString['bulk_save_success']); });
-  Lightbox.addFormCallback('smsRecord',   function() { Lightbox.confirm(vufindString['sms_success']); });
-  Lightbox.addFormCallback('emailRecord', function() { Lightbox.confirm(vufindString['bulk_email_success']); });
-  Lightbox.addFormCallback('tagRecord',   function() {
-    refreshTagList(true, longNode);
-    Lightbox.confirm(vufindString['add_tag_success']);
-  });
 }
 
 function ajaxFLLoadTab(tabid, reload) {
@@ -109,7 +72,11 @@ $(document).ready(function() {
             if (response.status == 'OK') {
               longNode.html(response.data);
               loadingNode.addClass("hidden");
-              registerFLLightbox(longNode, div_id);
+              registerLightboxLinks(longNode, div_id);
+              Lightbox.addFormCallback('tagRecord',   function() {
+                refreshTagList(true, longNode);
+                Lightbox.confirm(vufindString['add_tag_success']);
+              });
               $('.search_tabs .recordTabs a').unbind('click').click(function() {
                 return ajaxFLLoadTab($(this).attr('id'));
               });

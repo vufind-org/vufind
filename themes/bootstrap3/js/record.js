@@ -131,31 +131,7 @@ $(document).ready(function(){
   });
 
   /* --- LIGHTBOX --- */
-  // Cite lightbox
-  $('#cite-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Cite', {id:id});
-  });
-  // Mail lightbox
-  $('#mail-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Email', {id:id});
-  });
-  // Save lightbox
-  $('#save-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Save', {id:id});
-  });
-  // SMS lightbox
-  $('#sms-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'SMS', {id:id});
-  });
-  $('.tagRecord').click(function() {
-    var id = $('.hiddenId')[0].value;
-    var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3], 'AddTag', {id:id});
-  });
+  registerLightboxLinks(document, id);
   // Form handlers
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.confirm(vufindString['bulk_email_success']);
