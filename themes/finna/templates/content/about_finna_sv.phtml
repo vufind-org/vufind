@@ -147,6 +147,9 @@
         <p>&nbsp;</p>
         <h2>Finna är mer än en söktjänst</h2>
         <p>Med Finna kan du inte bara hitta, utan också använda material. I Finna kan man bl.a. reservera material och förnya lån från följande <strong>bibliotek:</strong></p>
+        <? if (isset($loginTargets)): ?>
+        <?= $this->partial('about_finna-login.phtml', ['loginTargets' => $loginTargets]) ?>
+        <? endif ?>
         <p>Om du har det aktuella bibliotekets lånekort kan du använda tjänsterna genom att <a href="https://www.finna.fi/MyResearch/Home?lng=sv">logga in på Finna.</a></p>
         <p>Man kan ansöka om behörighet till vissa <strong>arkivmaterial</strong> via länkarna i posten.</p>
         <p>I framtiden kommer man också att kunna använda <strong>museernas</strong> digitala tjänster i Finna.</p>

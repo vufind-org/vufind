@@ -54,6 +54,7 @@ class ContentController extends \VuFind\Controller\AbstractBase
         $themeInfo  = $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
         $translator = $this->getServiceLocator()->get('VuFind\Translator');
         $language   = $translator->getLocale();
+        $action = "{$page}Action";
 
         if (!is_null(
             $themeInfo->findContainingTheme(
@@ -63,7 +64,11 @@ class ContentController extends \VuFind\Controller\AbstractBase
             $page = "{$page}_$language";
         }
 
-        return $this->createViewModel(['page' => $page]);
+        $view = $this->createViewModel(['page' => $page]);
+        if (method_exists($this, $action)) {
+            $view = call_user_func([$this, $action], $view);
+        }
+        return $view;
     }
 
     /**
@@ -82,5 +87,23 @@ class ContentController extends \VuFind\Controller\AbstractBase
             return $this->createHttpNotFoundModel($response);
         }
         return $this->createConsoleNotFoundModel($response);
+    }
+
+    /**
+     * Inject list of login drivers to About Finna page.
+     *
+     * @param Zend\View\Model\ViewModel $view View
+     *
+     * @return Zend\View\Model\ViewModel
+     */
+// @codingStandardsIgnoreStart - method name not in camelCase
+    public function about_finnaAction($view)
+    {
+// @codingStandardsIgnoreEnd - method name not in camelCase
+        $catalog = $this->getILS();
+        if ($catalog->checkCapability('getLoginDrivers')) {
+            $view->loginTargets = $catalog->getLoginDrivers();
+        }
+        return $view;
     }
 }
