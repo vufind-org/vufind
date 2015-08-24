@@ -168,8 +168,9 @@ $config = [
             'search_results' => [
                 'abstract_factories' => ['Finna\Search\Results\PluginFactory'],
                 'factories' => [
+                    'combined' => 'Finna\Search\Results\Factory::getCombined',
                     'solr' => 'Finna\Search\Results\Factory::getSolr',
-                    'primo' => 'Finna\Search\Results\Factory::getPrimo'
+                    'primo' => 'Finna\Search\Results\Factory::getPrimo',
                 ]
             ],
             'content_covers' => [

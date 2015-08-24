@@ -3,6 +3,7 @@ return array(
     'extends' => 'bootstrap3',
     'helpers' => array(
         'factories' => array(
+            'authorizationNote' => 'Finna\View\Helper\Root\Factory::getAuthorizationNote',
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
@@ -19,6 +20,7 @@ return array(
             'primo' => 'Finna\View\Helper\Root\Factory::getPrimo',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
+            'searchbox' => 'Finna\View\Helper\Root\Factory::getSearchBox',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
         ),
         'invokables' => array(
@@ -41,11 +43,13 @@ return array(
     ),
     'js' => array(
         'finna.js',
+        'finna-combined-results.js',
         'image-popup.js',
         'finna-adv-search.js',
         'finna-daterange-vis.js',
         'finna-feed.js',
         'finna-layout.js',
+        'finna-openurl.js',
         'finna-persona.js',
         'finna-common.js',
         'finna-user-profile.js',

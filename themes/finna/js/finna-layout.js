@@ -1,4 +1,6 @@
 finna.layout = (function() {
+    var refreshPage = false;
+
     var initResizeListener = function() {
         var intervalId = false;
         $(window).on("resize", function(e) {
@@ -148,15 +150,6 @@ finna.layout = (function() {
                 var cnt = $('<span class="cnt">(' + childrenCnt + ')</span>');
                 cnt.insertAfter(moreLink.first().children().first());
             }
-        });
-    };
-    
-    var initOpenUrlLinks = function() {
-        var links = $('a.openUrlEmbed');
-        links.each(function(ind, e) {
-            $(e).one('inview', function() {
-                $(this).click();
-            });
         });
     };
     
@@ -363,16 +356,94 @@ finna.layout = (function() {
       }
     };
 
+    var initSaveRecordLinks = function(holder) {
+        if (typeof(holder) == "undefined") {
+            holder = $("body");
+        }
+        holder.find('.save-record').one("click", function() {
+            var parts = this.href.split('/');
+            return finna.layout.lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+        });
+    };
+
+    var checkSaveStatuses = function(holder) {
+        // Global checkSaveStatus is overridden by this method in finna.js
+        if (typeof(holder) == "undefined") {
+            holder = $("body");
+        }
+
+        var data = $.map(holder.find('.result,.record'), function(i) {
+            if($(i).find('.hiddenId').length == 0 || $(i).find('.hiddenSource').length == 0) {
+                return false;
+            }
+            return {'id':$(i).find('.hiddenId').val(), 'source':$(i).find('.hiddenSource')[0].value};
+        });
+
+        if (data.length) {
+            var ids = [];
+            var srcs = [];
+            for (var i = 0; i < data.length; i++) {
+                ids[i] = data[i].id;
+                srcs[i] = data[i].source;
+            }
+            $.ajax({
+                dataType: 'json',
+                url: path + '/AJAX/JSON?method=getSaveStatuses',
+                data: {id:ids, 'source':srcs},
+                success: function(response) {
+                    if(response.status == 'OK') {
+                        holder.find('.savedLists > ul').empty();
+                        $.each(response.data, function(i, result) {
+                            var $container = holder.find('input[value="' + result.record_id + '"]').closest(".result");
+                            if ($container.length) {
+                                $container = $container.find(".savedLists");
+                            }
+                            if ($container.length == 0) { // Record view
+                                $container = $('#savedLists');
+                            }
+                            var $ul = $container.children('ul:first');
+                            if ($ul.length == 0) {
+                                $container.append('<ul></ul>');
+                                $ul = $container.children('ul:first');
+                            }
+                            var html = '<li><a href="' + path + '/MyResearch/MyList/' + result.list_id + '">'
+                                + result.list_title + '</a></li>';
+                            $ul.append(html);
+                            $container.removeClass('hidden');
+                        });
+                    }
+                }
+            });
+            initSaveRecordLinks(holder);
+        }
+    };
+
+    var initAuthorizationNotification = function() {
+        $(".authorization-notification .modal-link").one("click", function() {
+            refreshPage = true;
+            return Lightbox.get('MyResearch','UserLogin');
+        });
+    };
+
+    var isPageRefreshNeeded = function() {
+        return refreshPage;
+    };
+
     var my = {
+        isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
+        initAuthorizationNotification: initAuthorizationNotification,
         initTruncate: initTruncate,
+        lightbox: Lightbox,
+        checkSaveStatuses: checkSaveStatuses,
+        initSaveRecordLinks: initSaveRecordLinks,
         init: function() {
             $('select.jumpMenu').unbind('change').change(function() { $(this).closest('form').submit(); });
             $('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });
 
             initAnchorNavigationLinks();
             initFixFooter();
-            initOpenUrlLinks();
+            
             initHideDetails();
 
             initTruncatedRecordImageNavi();
