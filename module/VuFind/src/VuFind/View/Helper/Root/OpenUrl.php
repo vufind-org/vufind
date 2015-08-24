@@ -120,9 +120,6 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         $embed = (isset($this->config->embed) && !empty($this->config->embed));
-        if ($embed) {
-            $counter++;
-        }
 
         $embedAutoLoad = isset($this->config->embed_auto_load)
             ? $this->config->embed_auto_load : false;
