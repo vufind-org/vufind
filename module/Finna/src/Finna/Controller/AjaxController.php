@@ -27,7 +27,8 @@
  */
 namespace Finna\Controller;
 use Zend\Cache\StorageFactory,
-    Zend\Feed\Reader\Reader;
+    Zend\Feed\Reader\Reader,
+    Zend\Http\Request as HttpRequest;
 
 /**
  * This controller handles Finna AJAX functionality
@@ -431,6 +432,111 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         // output HTML encoded in JSON object
         return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
+     * Retrieve recommendations for results in other tabs
+     *
+     * @return \Zend\Http\Response
+     */
+    public function getSearchTabsRecommendationsAjax()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (empty($config->SearchTabsRecommendations->recommendations)) {
+            return $this->output('', self::STATUS_OK);
+        }
+
+        $id = $this->params()->fromPost(
+            'searchHash', $this->params()->fromQuery('searchHash')
+        );
+
+        $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager');
+        $search = $table->get('Search')->select(['finna_search_id' => $id])
+            ->current();
+        if (empty($search)) {
+            return $this->output('Search not found', self::STATUS_ERROR);
+        }
+
+        $minSO = $search->getSearchObject();
+        $results = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager');
+        $savedSearch = $minSO->deminify($results);
+        $params = $savedSearch->getParams();
+        $lookfor = $params->getQuery()->getString();
+        if (!$lookfor) {
+            return $this->output('', self::STATUS_OK);
+        }
+        $searchClass = $params->getSearchClassId();
+        // Don't return recommendations for combined view or search types other than
+        // basic search. Or if there's nothing configured.
+        if ($searchClass == 'Combined' || $params->getSearchType() != 'basic'
+            || empty(
+                $config->SearchTabsRecommendations->recommendations[$searchClass]
+            )
+        ) {
+            return $this->output('', self::STATUS_OK);
+        }
+
+        $view = $this->getViewRenderer();
+        $view->results = $savedSearch;
+        $searchTabsHelper = $this->getViewRenderer()->plugin('searchtabs');
+        $searchTabsHelper->setView($view);
+        $tabs = $searchTabsHelper(
+            $searchClass,
+            $lookfor,
+            $params->getQuery()->getHandler()
+        );
+
+        $html = '';
+        $recommendations = array_map(
+            'trim',
+            explode(
+                ',',
+                $config->SearchTabsRecommendations->recommendations[$searchClass]
+            )
+        );
+        foreach ($recommendations as $recommendation) {
+            if ($searchClass == $recommendation) {
+                // Who would want this?
+                continue;
+            }
+            foreach ($tabs as $tab) {
+                if ($tab['class'] == $recommendation) {
+                    $uri = new \Zend\Uri\Uri($tab['url']);
+                    $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+                    $otherResults = $runner->run(
+                        $uri->getQueryAsArray(),
+                        $tab['class'],
+                        function ($runner, $params, $searchId) use ($config) {
+                            $params->setLimit(
+                                isset(
+                                    $config->SearchTabsRecommendations->count
+                                ) ? $config->SearchTabsRecommendations->count : 2
+                            );
+                            $params->setPage(1);
+                            $params->resetFacetConfig();
+                            $options = $params->getOptions();
+                            $options->disableHighlighting();
+                        }
+                    );
+                    if ($otherResults instanceof \VuFind\Search\EmptySet\Results) {
+                        continue;
+                    }
+
+                    $html .= $this->getViewRenderer()->partial(
+                        'Recommend/SearchTabs.phtml',
+                        [
+                            'tab' => $tab,
+                            'lookfor' => $lookfor,
+                            'handler' => $params->getQuery()->getHandler(),
+                            'results' => $otherResults
+                        ]
+                    );
+                }
+            }
+        }
+
+         return $this->output($html, self::STATUS_OK);
     }
 
     /**

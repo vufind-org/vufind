@@ -1,5 +1,7 @@
 <? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
 <? $showCheckboxes = !isset($this->hideCartControls) && $this->cart()->isActive() ?>
+<? $resultCount = $this->results->getResults(); ?>
+<? $recommendationConfig = $this->searchTabsRecommendations()->getConfig(); ?>
 <? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
   $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
   <div id="result<?=$i++ ?>" class="row result clearfix">
@@ -13,4 +15,9 @@
     </div>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>
+  <? if (!empty($recommendationConfig['recommendations'][$this->results->getParams()->getSearchClassId()]) && ($recordNumber == (isset($recommendationConfig['position']) ? $recommendationConfig['position'] - 1 : 4) || $recordNumber == $resultCount)): ?>
+    <div id="search-tabs-recommendations-holder" data-search-hash="<?=$this->escapeHtmlAttr($this->results->getSearchHash())?>"></div>
+    <? // Make sure OpenURL resolution support is loaded, since recommendations may include OpenURL even if main search results don't ?>
+    <? $this->headScript()->appendFile("openurl.js"); ?>
+  <? endif; ?>
 <? endforeach; ?>

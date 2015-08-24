@@ -155,8 +155,25 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $locator->get('VuFind\SessionManager'),
             $locator->get('VuFind\DbTablePluginManager'),
             $locator->get('VuFind\SearchResultsPluginManager'),
-            $config, $sm->get('url')
+            $config,
+            $sm->get('url')
         );
+    }
+
+    /**
+     * Construct the SearchTabs helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SearchTabs
+     */
+    public static function getSearchTabsRecommendations(ServiceManager $sm)
+    {
+        $locator = $sm->getServiceLocator();
+        $config = $locator->get('VuFind\Config')->get('config');
+        $recommendationConfig = isset($config->SearchTabsRecommendations)
+            ? $config->SearchTabsRecommendations->toArray() : [];
+        return new SearchTabsRecommendations($recommendationConfig);
     }
 
     /**

@@ -1,4 +1,7 @@
 <?
+    // Make sure OpenURL support is loaded
+    $this->headScript()->appendFile("openurl.js");
+
     $view = $currentSearch['view'];
     $results = $view->results;
     $params = $results->getParams();
@@ -11,6 +14,22 @@
          $searchIds .= ($searchId . urlencode("$backend:$search"));
       }
     }
+
+    // Set up Javascript for use below:
+    $searchClassIdEncoded = urlencode($searchClassId);
+    $searchClassIdHtmlEscaped = $this->escapeHtml($searchClassId);
+    $lookforEncoded = urlencode($lookfor);
+    $loadJs = <<<JS
+var url = path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
+$('#combined_$searchClassIdHtmlEscaped').load(url, '', function(responseText) {
+    if (responseText.length == 0) {
+        $('#combined_$searchClassIdHtmlEscaped').hide();
+    }
+    $('a.openUrlEmbed').foreach(function() {
+        finna.openurl.initLinks();
+    });
+});
+JS;
 
     // Set up Javascript for use below:
     $loadJs = "var holder = $('#combined_" . $this->escapeHtml($searchClassId) . "');"

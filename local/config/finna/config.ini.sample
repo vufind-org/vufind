@@ -121,8 +121,8 @@ keepAlive = 60
 limit_by_path = true
 ; If VuFind is only accessed via HTTPS, this setting can be enabled to disallow
 ; the browser from ever sending cookies over an unencrypted connection (i.e.
-; before being redirected to HTTPS). Default is false. 
-;only_secure = true  
+; before being redirected to HTTPS). Default is false.
+;only_secure = true
 ; Set the domain used for cookies (sometimes useful for sharing the cookies across
 ; subdomains); by default, cookies will be restricted to the current hostname.
 ;domain = ".example.edu"
@@ -167,7 +167,7 @@ loadNoILSOnFailure = true
 ; default is "all"
 holds_mode = "driver"
 
-; List of content types for which holds, title holds, 
+; List of content types for which holds, title holds,
 ; call slips and UB requests are disallowed.
 ; This setting is only used when holds_mode and/or title_level_holds_mode is "driver".
 disable_driver_hold_actions[] = "1/Book/eBook/"
@@ -182,7 +182,7 @@ allow_holds_override = true
 ; default is false
 cancel_holds_enabled = true
 
-; Determines if storage retrieval requests can be cancelled or not. 
+; Determines if storage retrieval requests can be cancelled or not.
 ; Options are true or false.
 ; default is false
 cancel_storage_retrieval_requests_enabled = true
@@ -191,7 +191,7 @@ cancel_storage_retrieval_requests_enabled = true
 ; default is false
 renewals_enabled = true
 
-; Determines if title level holds are displayed or not. 
+; Determines if title level holds are displayed or not.
 ; Legal values:
 ; - disabled (Never show title Holds - Default)
 ; - always (Always show title Holds)
@@ -330,7 +330,7 @@ user_email_in_from = true
 user_email_in_to = false
 ; Populate the "from" field with this value if user_email_in_from is false and/or no
 ; user is logged in:
-;default_from = "no-reply@myuniversity.edu" 
+;default_from = "no-reply@myuniversity.edu"
 ; Should we hide the "from" field in email forms? If no from field is visible, emails
 ; will be sent based on user_email_in_from and default_from above, with the email
 ; setting from the [Site] section used as a last resort.
@@ -539,9 +539,9 @@ feedcachetime = 1440
 ; See www.hathitrust.org/rights_database#Attributes for full details
 ;HathiRights    = pd,ic-world,cc-by,cc-by-nd,cc-by-nc-nd,cc-by-nc,cc-by-nc-sa,cc-by-sa,cc-zero,und-world
 
-; Possible GoogleBooks options full,partial,noview 
+; Possible GoogleBooks options full,partial,noview
 ; Default is "full,partial" if unset here.
-; see code.google.com/apis/books/docs/dynamic-links.html#JSONformat 
+; see code.google.com/apis/books/docs/dynamic-links.html#JSONformat
 ;GoogleOptions  = full,partial
 
 ; OpenLibrary currently offers the same options/default as GoogleBooks (above):
@@ -926,7 +926,7 @@ marc_links = "760,762,765,767,770,772,775,776,780,785"
 ; as returned by the catalog.
 hide_holdings[] = "World Wide Web"
 
-; You can use this setting to specify how grouped holdings details are displayed 
+; You can use this setting to specify how grouped holdings details are displayed
 ; by default. Available options:
 ;    collapse     - Collapse all details
 ;    expand-first - Expand first group, collapse others (default)
@@ -980,7 +980,7 @@ lcc = "By Call Number"
 ;dewey = "By Call Number"
 
 ; This section controls the return of extra columns for the different browses.
-; The key is the browse index, the value is a colon-separated string of extra 
+; The key is the browse index, the value is a colon-separated string of extra
 ; Solr fields to return for display to the user.
 [AlphaBrowse_Extras]
 title = "author:format:publishDate"
@@ -1100,6 +1100,16 @@ tags = disabled
 ;Solr = tabs_local
 ;Primo = tabs_pci
 
+; Recommendations that include a couple of results from other tabs when doing a
+; basic search.
+[SearchTabsRecommendations]
+; Show Primo recommendations for the Solr tab
+recommendations[Solr] = 'Primo'
+; Position of the recommendations block in the result list relative to normal results
+position = 5
+; Number of recommendations to show per source
+count = 2
+
 ; Uncomment portions of this section to label searches from particular sources in the
 ; search history display.  Keys are search backend names, values are labels for use in
 ; the user interface (subject to translation).
@@ -1112,7 +1122,7 @@ tags = disabled
 ; Use Piwik for visitor tracking
 [Piwik]
 url = https://piwik.finna.fi/
-;site_id = 1 
+;site_id = 1
 ;token_auth = ...
 
 [bX]
