@@ -29,18 +29,10 @@ function ajaxFLLoadTab(tabid, reload) {
       success: function(data) {
         $('#'+tabid+'-tab').html(data);
         showhideTabs(tabid);
+        registerTabEvents();
         if(typeof syn_get_widget === "function") {
           syn_get_widget();
         }
-        refreshCommentList(id, source, '#'+tabid+'-tab');
-        $('#'+tabid+'-tab').find('input[type=submit]').unbind('click').click(function() {
-          if($.trim($(this).siblings('textarea').val()) == '') {
-            Lightbox.displayError(vufindString['add_comment_fail_blank']);
-          } else {
-            registerAjaxCommentRecord('#'+tabid+'-tab');
-          }
-          return false;
-        });
       }
     });
   } else {
