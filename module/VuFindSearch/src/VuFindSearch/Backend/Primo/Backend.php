@@ -232,8 +232,8 @@ class Backend extends AbstractBackend
             'query', 'facets', 'filterList', 'groupFilters', 'rangeFilters'
         ];
         foreach ($params as $key => $param) {
-            $options[$key] =
-                in_array($key, $arraySettings) ? $param : $param[0];
+            $options[$key]
+                = in_array($key, $arraySettings) ? $param : $param[0];
         }
 
         // Use special facet pcAvailabilty if it has been set
