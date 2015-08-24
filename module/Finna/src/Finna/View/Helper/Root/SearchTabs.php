@@ -164,11 +164,11 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                     }
                 }
                 $url = $parts['path'];
-                if (count($params)) {
+                if (!empty($params)) {
                     $url .= '?' . http_build_query($params);
                 }
                 if ($filterQuery) {
-                    $url .= (count($params) ? '&' : '?') . $filterQuery;
+                    $url .= (!empty($params) ? '&' : '?') . $filterQuery;
                 }
                 $tab['url'] = $url;
             }
