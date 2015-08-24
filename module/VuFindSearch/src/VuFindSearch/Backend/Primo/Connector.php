@@ -322,7 +322,6 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             // all primocentral queries need this
             $qs[] = "loc=adaptor,primo_central_multiple_fe";
 
-
             if ($this->debug) {
                 print "URL: " . implode('&', $qs);
 
