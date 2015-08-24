@@ -131,7 +131,7 @@ $(document).ready(function(){
   });
 
   /* --- LIGHTBOX --- */
-  registerLightboxLinks(document, id);
+  registerLightboxRecordActions(document, id);
   // Form handlers
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.confirm(vufindString['bulk_email_success']);

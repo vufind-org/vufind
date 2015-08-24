@@ -431,7 +431,7 @@ function ajaxLogin(form) {
   });
 }
 
-function registerLightboxLinks(parent, id) {
+function registerLightboxRecordActions(parent, id) {
   if(typeof parent === "undefined") {
     parent = document;
     id = $(this).closest('.record').find('.hiddenId').val();

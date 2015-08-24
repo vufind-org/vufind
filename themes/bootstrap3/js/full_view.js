@@ -1,4 +1,4 @@
-/*global path, registerAjaxCommentRecord, registerLightboxLinks, registerTabEvents*/
+/*global path, registerAjaxCommentRecord, registerLightboxRecordActions, registerTabEvents*/
 
 function showhideTabs(tabid) {
   //console.log(tabid);
@@ -72,7 +72,7 @@ $(document).ready(function() {
             if (response.status == 'OK') {
               longNode.html(response.data);
               loadingNode.addClass("hidden");
-              registerLightboxLinks(longNode, div_id);
+              registerLightboxRecordActions(longNode, div_id);
               Lightbox.addFormCallback('tagRecord',   function() {
                 refreshTagList(true, longNode);
                 Lightbox.confirm(vufindString['add_tag_success']);
