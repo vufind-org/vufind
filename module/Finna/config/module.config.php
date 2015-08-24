@@ -242,7 +242,17 @@ $config = [
                 'defaultTab' => null,
             ],
         ],
-    ]
+    ],
+    
+    // Authorization configuration:
+    'zfc_rbac' => [
+        'vufind_permission_provider_manager' => [
+            'factories' => [
+                'authenticationStrategy' => 'Finna\Role\PermissionProvider\Factory::getAuthenticationStrategy'
+            ],
+        ],
+    ],
+
 ];
 
 return $config;
