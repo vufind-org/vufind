@@ -100,9 +100,16 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         $activeSearchClass, $query, $handler, $type = 'basic', $savedSearches = []
     ) {
         $this->activeSearchClass = $activeSearchClass;
-        $helper = $this->getView()->results->getUrlQuery();
 
         $tabs = parent::__invoke($activeSearchClass, $query, $handler, $type);
+        if ($type == 'advanced') {
+            $tabs = array_filter(
+                $tabs,
+                function ($tab) {
+                    return strtolower($tab['class']) != 'combined';
+                }
+            );
+        }
         $searchTable = $this->table->get('Search');
 
         foreach ($tabs as &$tab) {
@@ -123,6 +130,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                 $filterQuery = false;
                 $searchClass = $tab['class'];
                 if (isset($savedSearches[$searchClass])) {
+                    $helper = $this->getView()->results->getUrlQuery();
                     $searchId = $savedSearches[$tab['class']];
                     $searchSettings = $this->getSearchSettings($searchId);
                     $targetClass = $tab['class'];
@@ -155,9 +163,12 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                             );
                     }
                 }
-                $url = $parts['path'] . '?' . http_build_query($params);
+                $url = $parts['path'];
+                if (count($params)) {
+                    $url .= '?' . http_build_query($params);
+                }
                 if ($filterQuery) {
-                    $url .= '&' . $filterQuery;
+                    $url .= (count($params) ? '&' : '?') . $filterQuery;
                 }
                 $tab['url'] = $url;
             }
