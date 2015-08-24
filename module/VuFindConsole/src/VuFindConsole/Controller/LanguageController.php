@@ -101,7 +101,7 @@ class LanguageController extends AbstractBase
         $argv = $this->consoleOpts->getRemainingArgs();
         if (!isset($argv[0])) {
             Console::writeLine(
-                "Usage: {$_SERVER['argv'][0]} [source] [target]"
+                "Usage: {$_SERVER['argv'][0]} [target]"
             );
             Console::writeLine("\ttarget - the target key to remove");
             return $this->getFailureResponse();
