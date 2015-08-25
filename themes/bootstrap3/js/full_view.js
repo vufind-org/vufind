@@ -11,8 +11,8 @@ function ajaxFLLoadTab(tabid, reload) {
   if(typeof reload === "undefined") {
     reload = false;
   }
-  var id = $('#'+tabid).parent().parent().parent().find(".hiddenId")[0].value;
-  var source = $('#'+tabid).parent().parent().parent().find(".hiddenSource")[0].value;
+  var id = $('#'+tabid).closest('.record').find(".hiddenId")[0].value;
+  var source = $('#'+tabid).closest('.record').find(".hiddenSource")[0].value;
   var urlroot;
   if (source == 'VuFind') {
     urlroot = 'Record';
@@ -27,9 +27,11 @@ function ajaxFLLoadTab(tabid, reload) {
       type: 'POST',
       data: {tab: tab},
       success: function(data) {
-        $('#'+tabid+'-tab').html(data);
-        showhideTabs(tabid);
-        registerTabEvents();
+        if (data.length > 0) {
+          $('#'+tabid+'-tab').html(data);
+          showhideTabs(tabid);
+          registerTabEvents();
+        }
         if(typeof syn_get_widget === "function") {
           syn_get_widget();
         }
