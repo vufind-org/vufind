@@ -98,19 +98,19 @@ class Export
      */
     public function getBulkUrl($view, $format, $ids)
     {
-    $params = [];
-    $params[] = 'f=' . urlencode($format);
-    foreach ($ids as $id) {
-           $params[] = urlencode('i[]') . '=' . urlencode($id);
+        $params = [];
+        $params[] = 'f=' . urlencode($format);
+        foreach ($ids as $id) {
+            $params[] = urlencode('i[]') . '=' . urlencode($id);
        }
-       $serverUrlHelper = $view->plugin('serverurl');
-       $urlHelper = $view->plugin('url');
-       $url = $serverUrlHelper($urlHelper('cart-doexport'))
-           . '?' . implode('&', $params);
-    
-       return $this->needsRedirect($format)
-           ? $this->getRedirectUrl($format, $url) : $url;
-    }
+        $serverUrlHelper = $view->plugin('serverurl');
+        $urlHelper = $view->plugin('url');
+        $url = $serverUrlHelper($urlHelper('cart-doexport'))
+            . '?' . implode('&', $params);
+
+        return $this->needsRedirect($format)
+            ? $this->getRedirectUrl($format, $url) : $url;
+     }
     
     /**
      * Build callback URL for export.
