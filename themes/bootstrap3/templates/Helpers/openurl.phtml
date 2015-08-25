@@ -4,13 +4,14 @@
     $classes = "fulltext openUrlEmbed openurl_id:{$this->openUrlId}"
       . ($this->openUrlEmbedAutoLoad ? ' openUrlEmbedAutoLoad' : '');
     $class = ' class="' . $classes . '"';
-    $class_ft = ' class="imagebased ' . $classes . '"';
+    $class_ib = ' class="imagebased ' . $classes . '"';
   } elseif ($this->openUrlWindow) {
-    $class = ' class="fulltext openUrlWindow window_settings:' . $this->escapeHtmlAttr($this->openUrlWindow) . '"';
-    $class_ft = ' class="imagebased fulltext openUrlWindow window_settings:' . $this->escapeHtmlAttr($this->openUrlWindow) . '"';
+    $classes = 'fulltext openUrlWindow window_settings:' . $this->escapeHtmlAttr($this->openUrlWindow);
+    $class = ' class="' . $classes . '"';
+    $class_ib = ' class="imagebased ' . $classes . '"';
   } else {
     $class = '';
-    $class_ft = '';
+    $class_ib = '';
   }
 ?>
 
@@ -36,7 +37,7 @@
 <? endif; ?>
 
 <? if ($this->openUrlImageBasedBase): ?>
-    <a href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $this->openUrlImageBased)?>"<?=$class_ft?>>
+    <a href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $this->openUrlImageBased)?>"<?=$class_ib?>>
         <img id="openurlimage<?=$this->driver->getUniqueId()?>" data-recordid="<?=$this->driver->getUniqueId()?>" src="<?=$this->escapeHtmlAttr($this->openUrlImageBasedBase)?>&<?=$this->escapeHtmlAttr($this->openUrlImageBased)?>" alt="<?=$this->transEsc('Get full text')?>" />
     </a>
 <? endif; ?>
