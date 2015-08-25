@@ -1,0 +1,15 @@
+/* Hacks for IE8 */
+
+#feedbackTabText {
+  width: 86px;
+  height: 30px;
+  margin-top: -88px;
+  margin-left: 0px;
+  position: relative;
+  text-indent: 0;
+  text-align: center;
+  color: white;
+  font: bold 15px/30px 'lucida sans', 'trebuchet MS', 'Tahoma';
+  z-index: 10;
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)"; /* Internet Explorer */
+}

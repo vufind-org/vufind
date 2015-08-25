@@ -1,0 +1,39 @@
+<?
+  echo $this->headLink()->appendStylesheet('slick/slick.css');
+  echo $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'slick/slick.js', 'SET');
+?>
+<h4><?=$this->transEsc('Similar Items')?></h4>
+<? $similarRecords = $this->tab->getResults(); ?>
+<? if (!empty($similarRecords)): ?>
+  <div id="similar-items-carousel">
+    <? foreach ($similarRecords as $index=>$data): ?>
+      <div>
+        <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
+          <? $thumb = $this->record($data)->getThumbnail('large'); ?>
+          <img src="<?=$thumb ?>" title="<?=$data->getTitle() ?>"/>
+          <div class="content">
+            <? $formats = $data->getFormats(); ?>
+            <i class="fa fa-x<? if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><? endif; ?>"></i>
+            <b><?=$this->escapeHtml($data->getTitle())?></b>
+            <? $author = $data->getPrimaryAuthor(); if (!empty($author)): ?>
+              <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($author);?>
+            <? endif; ?>
+            <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
+              <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+            <? endif; ?>
+          </div>
+        </a>
+      </div>
+    <? endforeach; ?>
+  </div>
+<? $carouselJS = <<<JS
+$('#similar-items-carousel').slick({
+  dots:true,
+  slidesToShow: 4,
+  slidesToScroll: 4
+});
+JS;
+    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $carouselJS, 'SET'); ?>
+<? else: ?>
+  <p><?=$this->transEsc('Cannot find similar records')?></p>
+<? endif; ?>

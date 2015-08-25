@@ -1,0 +1,6 @@
+/** Hacks for IE */
+
+/* Left align citations */
+.ui-dialog-content.ui-widget-content {
+  text-align:left;
+}

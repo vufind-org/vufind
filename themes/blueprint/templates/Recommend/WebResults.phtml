@@ -1,0 +1,23 @@
+<? $searchObject = $this->recommend->getResults(); $results = $searchObject->getResults(); if (!empty($results)): ?>
+<div class="sidegroup">
+  <h4><?=$this->transEsc('Library Web Search')?></h4>
+
+  <ul class="similar">
+    <? foreach ($results as $driver): ?>
+    <li>
+      <a href="<?=$this->escapeHtmlAttr($driver->getUrl())?>" class="title">
+        <?=$this->record($driver)->getTitleHtml()?>
+      </a>
+      <? $snippet = $driver->getHighlightedSnippet(); ?>
+      <? $summary = $driver->getSummary(); ?>
+      <? if (!empty($snippet)): ?>
+        <br /><?=$this->highlight($snippet['snippet'])?>
+      <? elseif (!empty($summary)): ?>
+        <br /><?=$this->escapeHtml($summary[0])?>
+      <? endif; ?>
+    </li>
+    <? endforeach; ?>
+  </ul>
+  <p><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('Find More')?>...</a></p>
+</div>
+<? endif ?>

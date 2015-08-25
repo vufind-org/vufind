@@ -1,0 +1,161 @@
+/** GENERAL **/
+div.main {
+  padding-top:2px;
+}
+.inspector_container,.bottom {
+  position:relative;
+  clear:both;
+}
+
+/** SIDE BAR **/
+.side_nav {
+  display:table;
+  position:relative;
+  float:left;
+  width:150px;
+  text-align:center;
+  border-right:5px solid #EEE;
+  padding:9px 5px 0 0;
+  margin:3px 0 0 0;
+  overflow:hidden;
+} 
+.side_nav a.top {
+  float:left;
+  display:inline-block;
+  width:50%;
+  height:20px;
+  padding:6px 0 0 0;
+  margin:0 0 4px 0;
+}
+.side_nav a.top.selected {
+  color:#060;
+  text-decoration:none;
+  border-top:3px solid #AB6;
+  cursor:default;
+  padding:3px 0 0 0;
+  font-weight:bold;
+}
+.side-loading {
+  display:block;
+  background:#EEE;
+  border-radius:3px;
+  margin:6px 2px 0 0;
+}
+.page_list {
+  clear:both;
+  display:block;
+  width:150px;
+  height:100%;
+  margin:0;
+  padding:0;
+  overflow-y:scroll;
+}
+
+/** PAGE AND DOC ICONS **/
+.page_link {
+  clear:both;
+  display:block;
+  text-align:center;
+  padding:10px 2px;
+  margin:3px 0;
+  border-radius:3px;
+  cursor:pointer;
+  width:125px;
+}
+.page_link:not(.selected):hover {
+  background:#EEE;
+}
+.page_list .selected,.doc_list .selected {
+  background:#E6EFC2;
+  border: 2px solid #C6D880;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  padding:8px 0;
+  cursor:default;
+}
+.page_link img,.page_link div {
+  display:block;
+  margin:3px auto;
+}
+.doc_list .pdf {
+  background:url('../images/small/pdf.png');
+  width:70px;
+  height:87px;
+}
+.doc_list .doc {
+  background:url('../images/small/doc.png');
+  width:116px;
+  height:85px;
+}
+
+/** MAIN VIEW **/
+.view {
+  display:block;
+  float:right;
+  width:756px;
+  padding:0 5px;
+  margin:0;
+}
+.view .navigation {
+  display:block;
+  width:100%;
+  margin:0 0 1px 0;
+  padding:0;
+  border-bottom:1px solid #C6D880;
+  text-align:center;
+}
+.view .navigation a {
+  display:inline-block;
+  padding:0;
+  width:144px;
+  padding:10px 0;
+  text-align:center;
+  border:1px solid #C6D880;
+  border-bottom:0;
+  margin:0 1px;
+  cursor:pointer;
+}
+.view .navigation a.selected {
+  background:#E6EFC2;
+  padding:13px 0 10px 0;
+  color:#060;
+  text-decoration:none;
+  font-weight:bold;
+}
+.preview {
+  overflow-y:auto;
+}
+#preview {
+  display:block;
+  max-width:100%;
+  margin:auto;
+}
+
+/** VARIOUS VIEWS **/
+.information {
+  padding:0 2em;
+  font-size:12pt;
+}
+.information p {
+  margin:0 2em;
+  text-indent:-1em;
+}
+.information h2 {
+  text-align:center;
+  text-indent:0;
+}
+.zoomFrame {
+  width:754px;
+  height:700px;
+  position:relative;
+}
+
+/** INSPECTOR IMAGES **/
+.turn_left,.turn_right {
+  width:32px;
+  height:32px;
+  background:url('../images/rotate_anticlockwise.png');
+}
+.turn_right {
+  background:url('../images/rotate_clockwise.png');
+}

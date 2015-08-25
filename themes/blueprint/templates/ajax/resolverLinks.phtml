@@ -1,0 +1,48 @@
+<div>
+  <? if (!empty($this->electronic)): ?>
+    <div class="openurls">
+      <strong><?=$this->transEsc('Electronic')?></strong>
+      <ul>
+        <? foreach ($this->electronic as $link): ?>
+          <li>
+            <? if (!empty($link['href'])): ?>
+              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"<?=!empty($link['access'])?' class="access-'.$link['access'].'"':''?>><?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a> <?=isset($link['coverage'])?$this->escapeHtml($link['coverage']):''?>
+            <? else: ?>
+              <?=isset($link['title'])?$this->escapeHtml($link['title']):''?> <?=isset($link['coverage'])?$this->escapeHtml($link['coverage']):''?>
+            <? endif; ?>
+          </li>
+        <? endforeach; ?>
+      </ul>
+    </div>
+  <? endif; ?>
+  <? if (!empty($this->print)): ?>
+    <div class="openurls">
+      <strong><?=$this->transEsc('Holdings')?></strong>
+      <ul>
+        <? foreach ($this->print as $link): ?>
+          <li>
+            <? if (!empty($link['href'])): ?>
+              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"<?=!empty($link['access'])?' class="access-'.$link['access'].'"':''?>><?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a> <?=isset($link['coverage'])?$this->escapeHtml($link['coverage']):''?>
+            <? else: ?>
+              <?=isset($link['title'])?$this->escapeHtml($link['title']):''?> <?=isset($link['coverage'])?$this->escapeHtml($link['coverage']):''?>
+            <? endif; ?>
+          </li>
+        <? endforeach; ?>
+      </ul>
+    </div>
+  <? endif; ?>
+  <div class="openurls">
+    <strong><a href="<?=$this->escapeHtmlAttr($this->openUrlBase)?>?<?=$this->escapeHtmlAttr($this->openUrl)?>"><?=$this->transEsc('More options')?></a></strong>
+    <? if (!empty($this->services)): ?>
+      <ul>
+        <? foreach ($this->services as $link): ?>
+          <? if (!empty($link['href'])): ?>
+            <li>
+              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"<?=!empty($link['access'])?' class="access-'.$link['access'].'"':''?>><?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
+            </li>
+          <? endif; ?>
+        <? endforeach; ?>
+      </ul>
+    <? endif; ?>
+  </div>
+</div>
