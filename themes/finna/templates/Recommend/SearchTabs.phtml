@@ -1,0 +1,20 @@
+<? if ($this->results->getResultTotal() > 0): ?>
+  <div class="search-tabs-recommendations">
+    <div class="row">
+      <div class="hidden-xs hidden-sm col-md-1">
+        <span class="iconlabel tab-icon format-journal">&nbsp;</span>
+      </div>
+      <div class="col-xs-12 col-md-11">
+        <a class="title" href="<?=$this->escapeHtmlAttr($this->tab['url'])?>">
+          <?=$this->translate('search_tabs_recommendation_title_html', ['%%lookfor%%' => $this->lookfor, '%%handler%%' => $this->handler, '%%tab%%' => $this->transEsc($this->tab['label']), '%%count%%' => $this->results->getResultTotal()]) ?>
+        </a>
+        <span class="count"><?=$this->transEsc('search_tabs_recommendation_count', ['%%count%%' => $this->localizedNumber($this->results->getResultTotal())]) ?></span>
+        <? foreach ($this->results->getResults() as $current): ?>
+          <div class="row result clearfix">
+            <?=$this->record($current)->getSearchResult('list')?>
+          </div>
+        <? endforeach; ?>
+      </div>
+    </div>
+  </div>
+<? endif; ?>

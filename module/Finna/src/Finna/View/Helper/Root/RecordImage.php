@@ -123,6 +123,9 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
         $view = $this->getView();
         $urlHelper = $this->getView()->plugin('url');
         $numOfImages = $this->record->getNumOfRecordImages('large');
+        if ($view->layout()->templateDir === 'combined') {
+            $numOfImages = min(1, $numOfImages);
+        }
 
         $params = $this->record->getRecordImage('small');
         unset($params['url']);

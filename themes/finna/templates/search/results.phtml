@@ -57,8 +57,7 @@
   $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
-  $this->headScript()->appendFile("check_item_statuses.js");
-  $this->headScript()->appendFile("check_save_statuses.js");
+  $this->headScript()->appendFile("finna-search-tabs-recommendations.js");
 ?>
     <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
       <? foreach ($this->results->getRecommendations('top') as $current): ?>
@@ -94,17 +93,22 @@
       <? if (isset($this->parseError)): ?>
         <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
       <? endif; ?>
-      <?=$this->search()->renderSpellingSuggestions($this->transEsc('nohit_spelling') . ':', $this->results, $this); ?>
-      <? foreach ($this->results->getRecommendations('top') as $current): ?>
+      <? foreach (($top = $this->results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
       <? endforeach; ?>
       <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
-        <?=$this->recommend($current)?>
+        <? if (!in_array($current, $top)): ?>
+          <?=$this->recommend($current)?>
+        <? endif; ?>
       <? endforeach; ?>
+      <? if ($this->searchTabsRecommendations()->getConfig($this->params->getSearchClassId())): ?>
+        <div id="search-tabs-recommendations-holder" data-search-hash="<?=$this->escapeHtmlAttr($this->results->getSearchHash())?>"></div>
+      <? endif; ?>
     <? else: ?>
     <div class="row">
       <form class="form-inline col-xs-12" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
+         <?= $this->authorizationNote($searchClassId) ?>
         <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
       </form>
@@ -129,7 +133,7 @@
       <div class="<?=$this->layoutClass('mainbody')?> text-center">
         <?=$pagination ?>
       </div>
-    </div>        
+    </div>
   </div>
 </div>
 <? endif; ?>
