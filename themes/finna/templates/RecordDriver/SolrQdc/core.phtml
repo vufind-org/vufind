@@ -81,7 +81,7 @@
         <? if (isset($abstracts[$this->layout()->userLang])): ?>
             <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
           <? else: ?>
-            <?=implode('', array_map(array($this, 'escapeHtml'), $abstracts))?>
+            <?=implode('<br><br>', array_map(array($this, 'escapeHtml'), $abstracts))?>
           <? endif; ?>
         </p>
       </div>

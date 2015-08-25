@@ -341,6 +341,9 @@ finna.layout = (function() {
         $('.autocomplete').typeahead('val', '');
         $('.clear-button').addClass('hidden');
         $('#searchForm_lookfor').focus();
+      });     
+      $('.autocomplete').on('typeahead:selected', function () {
+        $('.navbar-form').submit();
       });
     };
 

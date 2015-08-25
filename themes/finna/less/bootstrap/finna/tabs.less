@@ -40,6 +40,12 @@
                     border: none;
                 }
             }
+            &:not(.active) > a {
+                transition: background-color 0.1s linear;
+                &:hover, &:active {
+                    background: darken(@link-color,4%);   
+                }
+            }
         }
     }
 }
