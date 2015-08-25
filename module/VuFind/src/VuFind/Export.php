@@ -85,7 +85,7 @@ class Export
         return $this->bulkOptions;
     }
 
-    /** 
+    /**
      * Get the URL for bulk export.
      *
      * @param \Zend\View\Renderer\RendererInterface $view   View object (needed for
@@ -102,7 +102,7 @@ class Export
         $params[] = 'f=' . urlencode($format);
         foreach ($ids as $id) {
             $params[] = urlencode('i[]') . '=' . urlencode($id);
-       }
+        }
         $serverUrlHelper = $view->plugin('serverurl');
         $urlHelper = $view->plugin('url');
         $url = $serverUrlHelper($urlHelper('cart-doexport'))
