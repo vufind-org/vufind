@@ -18,54 +18,27 @@ finna.openUrl = (function() {
             }
         });
     };
-    
-    var initLinks = function(holder) {
-        if (typeof(holder) == "undefined") {
-            holder = $("body");
-        }
 
-        // assign action to the openUrlWindow link class
-        holder.find('a.openUrlWindow').one("click", function(){
-            var params = extractClassParams(this);
-            var settings = params.window_settings;
-            window.open($(this).attr('href'), 'openurl', settings);
-            return false;
-        });
-        
-        // assign action to the openUrlEmbed link class
-        holder.find('a.openUrlEmbed').one("click", function(){
-            var params = extractClassParams(this);
-            var openUrl = $(this).children('span.openUrl:first').attr('title');
-            $(this).hide();
-            loadResolverLinks(
-                holder.find($(this).parent().find(".resolver"))
-                    .removeClass('hidden'), openUrl,params.searchClassId
-            );
-            return false;
-        });
-        
-        holder.find('a.openUrlEmbed').each(function(ind, e) {
+    var embedOpenUrlLinks = function (element) {
+        var params = extractClassParams(this);
+        var openUrl = element.children('span.openUrl:first').attr('title');
+        element.removeClass('openUrlEmbed').hide();
+        loadResolverLinks(element.next('div.resolver').removeClass('hidden'), openUrl, params.searchClassId);
+    };
+
+    var initLinks = function() {
+        $('a.openUrlEmbed').each(function(ind, e) {
             $(e).one("inview", function(){
-                $(this).click();
+                embedOpenUrlLinks($(this));
             });
         });
     };
 
-    var triggerAutoLoad = function(holder) {
-        if (typeof(holder) == "undefined") {
-            holder = $("body");
-        }
-
-        holder.find('a.openUrlEmbed.openUrlEmbedAutoLoad').trigger("click");
-    };
-
     var my = {
         initLinks: initLinks,
-        triggerAutoLoad: triggerAutoLoad,
         init: function() {
             initLinks();
-            triggerAutoLoad();
-        },
+        }
     };
 
     return my;

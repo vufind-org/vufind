@@ -22,6 +22,7 @@ return array(
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
             'searchbox' => 'Finna\View\Helper\Root\Factory::getSearchBox',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
+            'searchTabsRecommendations' => 'Finna\View\Helper\Root\Factory::getSearchTabsRecommendations',
         ),
         'invokables' => array(
             'checkboxFacetCounts' =>
@@ -48,6 +49,7 @@ return array(
         'finna-adv-search.js',
         'finna-daterange-vis.js',
         'finna-feed.js',
+        'finna-item-status.js',
         'finna-layout.js',
         'finna-openurl.js',
         'finna-persona.js',

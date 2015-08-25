@@ -6,7 +6,6 @@ var finna = (function() {
             var modules = [
                 'advSearch',
                 'bx',
-                'combinedResults',
                 'common',
                 'dateRangeVis',
                 'feed',
@@ -16,7 +15,8 @@ var finna = (function() {
                 'myList',
                 'openUrl',
                 'persona',
-                'record'
+                'record',
+                'searchTabsRecommendations'
             ];
 
             $.each(modules, function(ind, module) {
@@ -33,7 +33,7 @@ var finna = (function() {
 $(document).ready(function() {
     finna.init();
 
-    // Override global checkSaveStatus
+    // Override global checkSaveStatuses
     checkSaveStatuses = finna.layout.checkSaveStatuses;
 
     // Override global callback that is executed after a Lightbox login
