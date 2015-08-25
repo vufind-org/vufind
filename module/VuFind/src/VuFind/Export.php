@@ -54,6 +54,13 @@ class Export
     protected $exportConfig;
 
     /**
+     * Bulk options (initialized to boolean false, populated later)
+     *
+     * @var array|bool
+     */
+    protected $bulkOptions = false;
+
+    /**
      * Constructor
      *
      * @param Config $mainConfig   Main VuFind configuration
@@ -66,30 +73,16 @@ class Export
     }
 
     /**
-     * Get the URL for bulk export.
+     * @deprecated
+     * 
+     * Get bulk export options.
      *
-     * @param \Zend\View\Renderer\RendererInterface $view   View object (needed for
-     * URL generation)
-     * @param string                                $format Export format being used
-     * @param array                                 $ids    Array of IDs to export
-     * (in source|id format)
-     *
-     * @return string
+     * @return array
      */
-    public function getBulkUrl($view, $format, $ids)
+    public function getBulkOptions()
     {
-        $params = [];
-        $params[] = 'f=' . urlencode($format);
-        foreach ($ids as $id) {
-            $params[] = urlencode('i[]') . '=' . urlencode($id);
-        }
-        $serverUrlHelper = $view->plugin('serverurl');
-        $urlHelper = $view->plugin('url');
-        $url = $serverUrlHelper($urlHelper('cart-doexport'))
-            . '?' . implode('&', $params);
-
-        return $this->needsRedirect($format)
-            ? $this->getRedirectUrl($format, $url) : $url;
+        $this->bulkOptions = $this->getActiveFormats('bulk');
+        return $this->bulkOptions;
     }
 
     /**
@@ -264,7 +257,7 @@ class Export
      */
     public function getFormatsForRecords($drivers)
     {
-        $formats = $this->getActiveFormats('bulkExport');
+        $formats = $this->getActiveFormats('bulk');
         foreach ($drivers as $driver) {
             // Filter out unsupported export formats:
             $newFormats = [];
@@ -355,8 +348,6 @@ class Export
             }
             $active = array_unique($active);
         }
-         
         return $active;
     }
-
 }
