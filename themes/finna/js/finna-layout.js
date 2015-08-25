@@ -360,7 +360,7 @@ finna.layout = (function() {
         if (typeof(holder) == "undefined") {
             holder = $("body");
         }
-        holder.find('.save-record').unbind("click").click(function() {
+        holder.find('.save-record').click(function() {
             var parts = this.href.split('/');
             return finna.layout.lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
         });
@@ -418,10 +418,33 @@ finna.layout = (function() {
         }
     };
 
-    var initAuthorizationNotification = function() {
-        $(".authorization-notification .modal-link").unbind("click").click(function() {
+    var initAuthorizationNotification = function(holder) {
+        if (typeof(holder) == "undefined") {
+            holder = $("body");
+        }
+        holder.find(".authorization-notification .modal-link").click(function() {
             refreshPage = true;
             return Lightbox.get('MyResearch','UserLogin');
+        });
+    };
+
+    var initLightbox = function(holder) {
+        if (typeof(holder) == "undefined") {
+            // This msut be called with a holder. Defaults are done in lightbox.js.
+            return;
+        }
+        // This part copied from lightbox.js. TODO: refactor
+        /**
+         * If a link with the class .modal-link triggers the lightbox,
+         * look for a title="" to use as our lightbox title.
+         */
+        holder.find('.modal-link,.help-link').click(function() {
+            var title = $(this).attr('title');
+            if(typeof title === "undefined") {
+                title = $(this).html();
+            }
+            $('#modal .modal-title').html(title);
+            Lightbox.titleSet = true;
         });
     };
 
@@ -437,6 +460,7 @@ finna.layout = (function() {
         lightbox: Lightbox,
         checkSaveStatuses: checkSaveStatuses,
         initSaveRecordLinks: initSaveRecordLinks,
+        initLightbox: initLightbox,
         init: function() {
             $('select.jumpMenu').unbind('change').change(function() { $(this).closest('form').submit(); });
             $('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });

@@ -16,7 +16,6 @@ finna.searchTabsRecommendations = (function() {
                 finna.layout.initSaveRecordLinks(holder);
                 finna.itemStatus.initItemStatuses();
                 finna.itemStatus.initDedupRecordSelection();
-                finna.layout.initSaveRecordLinks(holder);
                 finna.layout.checkSaveStatuses(holder);
           }
         });
