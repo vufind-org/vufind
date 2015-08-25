@@ -21,7 +21,7 @@
  *
  * @category VuFind2
  * @package  Search_Solr
- * @author Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -32,7 +32,7 @@ namespace Finna\Search\SolrAuthor;
  *
  * @category VuFind2
  * @package  Search_Solr
- * @author Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
