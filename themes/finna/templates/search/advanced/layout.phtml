@@ -8,7 +8,8 @@
   // Search type and tabs
   $this->searchType = 'advanced';
   $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">' . $this->translate('Advanced Search') . '</h1></div>';
-  $this->layout()->finnaMainTabs = $this->render('search/searchTabs');
+  $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, []);
+  $this->layout()->finnaMainTabs = $this->render('search/searchTabs', ['searchTabs' => $searchTabs]);
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li>';
