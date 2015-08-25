@@ -1,4 +1,3 @@
-<? $this->headScript()->appendFile("finna-record.js"); ?>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <div class="col-sm-2">
     <div class="cover-wrapper">
@@ -82,7 +81,7 @@
         <? if (isset($abstracts[$this->layout()->userLang])): ?>
             <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
           <? else: ?>
-            <?=implode('', array_map(array($this, 'escapeHtml'), $abstracts))?>
+            <?=implode('<br><br>', array_map(array($this, 'escapeHtml'), $abstracts))?>
           <? endif; ?>
         </p>
       </div>

@@ -155,8 +155,25 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $locator->get('VuFind\SessionManager'),
             $locator->get('VuFind\DbTablePluginManager'),
             $locator->get('VuFind\SearchResultsPluginManager'),
-            $config, $sm->get('url')
+            $config,
+            $sm->get('url')
         );
+    }
+
+    /**
+     * Construct the SearchTabs helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SearchTabs
+     */
+    public static function getSearchTabsRecommendations(ServiceManager $sm)
+    {
+        $locator = $sm->getServiceLocator();
+        $config = $locator->get('VuFind\Config')->get('config');
+        $recommendationConfig = isset($config->SearchTabsRecommendations)
+            ? $config->SearchTabsRecommendations->toArray() : [];
+        return new SearchTabsRecommendations($recommendationConfig);
     }
 
     /**
@@ -265,5 +282,35 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         return new ImageSrc(
             $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
         );
+    }
+
+    /**
+     * Construct the SearchBox helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SearchBox
+     */
+    public static function getSearchBox(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config');
+        return new SearchBox(
+            $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
+            $config->get('searchbox')->toArray()
+        );
+    }
+
+    /**
+     * Construct the authorization notification helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return AuthorizationNotification
+     */
+    public static function getAuthorizationNote(ServiceManager $sm)
+    {
+        $authService
+            = $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService');
+        return new AuthorizationNotification($authService);
     }
 }

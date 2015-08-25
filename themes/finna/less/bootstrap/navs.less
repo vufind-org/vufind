@@ -8,6 +8,19 @@
 .recordTabs.nav {
     margin-top: 20px;   
 }
+// add classes when there are too many tabs to fit on the screen
+.tabs-responsive {
+    width: 100%;
+    overflow-x: scroll;
+    &::-webkit-scrollbar {
+        display: none;   
+    }
+    @media (max-width: @screen-xs-max) {
+        & > .recordTabs {
+            width: 150%;
+        }
+    }
+}
 .nav {
   margin-bottom: 10px;
   margin-top: 10px;
@@ -77,11 +90,26 @@
 // Give the tabs something to sit on
 .nav-tabs {
   border-bottom: 3px solid @nav-tabs-border-color;
+  // style 5 tabs to make sure they stay as tabs
+  li:first-child:nth-last-child(5), li:first-child:nth-last-child(5) ~ li {
+    @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+      max-width: 110px;
+    }
+    @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+      max-width: 140px;
+      & a {
+        font-size: 1em;   
+      }
+      & > a > i {
+        display: block;
+        text-align: center;
+      }   
+    }
+  }
   > li {
     float: left;
     // Make the list-items overlay the bottom border
     margin-bottom: -3px;
-
     // Actual tabs (as links)
     > a {
       font-size: 1.1em;

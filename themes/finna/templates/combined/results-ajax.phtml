@@ -1,8 +1,12 @@
 <?
+    // Make sure OpenURL support is loaded
+    $this->headScript()->appendFile("openurl.js");
+
     $view = $currentSearch['view'];
     $results = $view->results;
     $params = $results->getParams();
     $lookfor = $params->getDisplayQuery();
+    $handler = $params->getSearchHandler();
 
     $searchIds = null;
     if ($ids = $params->getCombinedSearchIds()) {
@@ -13,11 +17,23 @@
     }
 
     // Set up Javascript for use below:
-    $loadJs = 'var url = path + "/Combined/Result?id=' . urlencode($searchClassId)
-        . '&lookfor=' . urlencode($lookfor)
-        . $searchIds
-        . '";'
-        . "\$('#combined_" . $this->escapeHtml($searchClassId) . "').load(url, '', function(responseText) { if (responseText.length == 0) $('#combined_" . $this->escapeHtml($searchClassId) . "').hide(); });";
+    $searchClassIdEncoded = urlencode($searchClassId);
+    $searchClassIdHtmlEscaped = $this->escapeHtml($searchClassId);
+    $lookforEncoded = urlencode($lookfor);
+    $handlerEncoded = urlencode($handler);
+    $loadJs = <<<JS
+$(document).ready(function() {
+    var holder = $('#combined_$searchClassIdHtmlEscaped');
+    var url = path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded&type=$handlerEncoded$searchIds';
+    holder.load(url, '', function(responseText) {
+        if (responseText.length == 0) {
+            holder.hide();
+        } else {
+            finna.combinedResults.init(holder);
+        }
+    });
+});
+JS;
 ?>
 <div class="row">
   <div class="col-xs-12 combined-titles">
@@ -32,5 +48,5 @@
   </div>
 </div>
 
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(function(){' . $loadJs . '});', 'SET')?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 <noscript><?=$this->transEsc('Please enable JavaScript.')?></noscript>

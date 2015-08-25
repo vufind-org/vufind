@@ -308,13 +308,17 @@
         border-bottom-right-radius: 10px;
         margin-bottom: 10px;
         height: 33px;
-        
+        transition: background-color .1s linear;
+        &:hover, &:active, &:hover:before, &:active:before {
+            background-color: darken(@brand-primary, 6%);   
+        }
         & option:checked {
             background: @btn-primary-bg;
             color: @body-bg;
         }   
     }
     &.controls:before {
+        transition: background-color .1s linear;
         background: @btn-primary-bg;
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
