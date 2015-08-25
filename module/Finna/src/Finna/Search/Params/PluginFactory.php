@@ -54,7 +54,7 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
         $options = $serviceLocator->getServiceLocator()
             ->get('VuFind\SearchOptionsPluginManager')->get($requestedName);
 
-        if ($name === 'solr') {
+        if ($name === 'solr' || $name == 'solrauthor') {
             // Clone the options instance in case caller modifies it:
             return new \Finna\Search\Solr\Params(
                 clone($options),
