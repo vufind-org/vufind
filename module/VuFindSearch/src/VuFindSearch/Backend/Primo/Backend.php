@@ -237,8 +237,7 @@ class Backend extends AbstractBackend
         }
 
         // Use special facet pcAvailabilty if it has been set
-        if (array_key_exists('filterList', $params)
-            && array_key_exists('pcAvailability', $params['filterList'])
+        if (isset($params['filterList']['pcAvailability'])
         ) {
             unset($options['filterList']['pcAvailability']);
             $options['pcAvailability'] = true;
