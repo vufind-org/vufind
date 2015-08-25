@@ -110,7 +110,7 @@ class Export
 
         return $this->needsRedirect($format)
             ? $this->getRedirectUrl($format, $url) : $url;
-     }
+}
     
     /**
      * Build callback URL for export.
