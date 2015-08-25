@@ -74,6 +74,9 @@
 
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
+      <? if (count($this->tabs) > 3): ?>
+      <div class="tabs-responsive">
+      <? endif; ?>
       <ul class="recordTabs nav nav-tabs hidden-print">
         <? foreach ($this->tabs as $tab => $obj): ?>
         <? // add current tab to breadcrumbs if applicable:
@@ -92,6 +95,9 @@
           <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<?= count($comments) ?>)<? endif; ?></a>
         </li>
         <? endforeach; ?>
+        <? if (count($this->tabs) > 3): ?>
+        </div>
+        <? endif; ?>
       </ul>
     <? endif; ?>
 

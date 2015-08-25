@@ -56,6 +56,12 @@ class PluginFactory extends \VuFind\Search\Options\PluginFactory
             return new \Finna\Search\Favorites\Options(
                 $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );
+        } else if ($name == 'combined') {
+            $this->defaultNamespace = 'Finna\Search';
+            $class = $this->getClassName($name, $requestedName);
+            return new $class(
+               $serviceLocator->getServiceLocator()->get('VuFind\Config')
+            );
         }
 
         return parent::createServiceWithName(

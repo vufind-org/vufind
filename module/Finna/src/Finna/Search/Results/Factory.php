@@ -70,13 +70,27 @@ class Factory extends \VuFind\Search\Results\Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Solr
+     * @return Primo
      */
     public static function getPrimo(ServiceManager $sm)
     {
         $factory = new PluginFactory();
         $primo = $factory->createServiceWithName($sm, 'primo', 'Primo');
         return Factory::initUrlQueryHelper($primo, $sm);
+    }
+
+    /**
+     * Factory for Combined results object.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Combined
+     */
+    public static function getCombined(ServiceManager $sm)
+    {
+        $factory = new PluginFactory();
+        $combined = $factory->createServiceWithName($sm, 'combined', 'Combined');
+        return Factory::initUrlQueryHelper($combined, $sm);
     }
 
     /**
