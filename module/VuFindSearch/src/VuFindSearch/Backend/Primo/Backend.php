@@ -225,13 +225,22 @@ class Backend extends AbstractBackend
 
         // Convert the options:
         $options = [];
+
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
         $arraySettings = [
             'query', 'facets', 'filterList', 'groupFilters', 'rangeFilters'
         ];
         foreach ($params as $key => $param) {
-            $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
+            $options[$key]
+                = in_array($key, $arraySettings) ? $param : $param[0];
+        }
+
+        // Use special facet pcAvailabilty if it has been set
+        if (isset($params['filterList']['pcAvailability'])
+        ) {
+            unset($options['filterList']['pcAvailability']);
+            $options['pcAvailability'] = true;
         }
 
         return $options;
