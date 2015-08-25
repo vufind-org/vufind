@@ -118,7 +118,8 @@ function phoneNumberFormHandler(numID, regionCode) {
  * is called and the 'shown' lightbox event is triggered
  */
 function bulkActionSubmit($form) {
-  var submit = $form.find('[type="submit"][clicked=true]').attr('name');
+  var button = $form.find('[type="submit"][clicked=true]');
+  var submit = button.attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
     Lightbox.displayError(vufindString['bulk_noitems_advice']);
@@ -132,6 +133,8 @@ function bulkActionSubmit($form) {
     }
     document.location.href = url;
   } else {
+    $('#modal .modal-title').html(button.attr('title'));
+    Lightbox.titleSet = true;
     Lightbox.submit($form, Lightbox.changeContent);
   }
   return false;
