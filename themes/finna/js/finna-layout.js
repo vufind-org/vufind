@@ -360,13 +360,14 @@ finna.layout = (function() {
         if (typeof(holder) == "undefined") {
             holder = $("body");
         }
-        holder.find('.save-record').one("click", function() {
+        holder.find('.save-record').unbind("click").click(function() {
             var parts = this.href.split('/');
             return finna.layout.lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
         });
     };
 
     var checkSaveStatuses = function(holder) {
+        // This function may be called directly or via redirection in finna.js
         if (typeof(holder) == "undefined") {
             holder = $("body");
         }
@@ -418,7 +419,7 @@ finna.layout = (function() {
     };
 
     var initAuthorizationNotification = function() {
-        $(".authorization-notification .modal-link").one("click", function() {
+        $(".authorization-notification .modal-link").unbind("click").click(function() {
             refreshPage = true;
             return Lightbox.get('MyResearch','UserLogin');
         });
@@ -454,6 +455,7 @@ finna.layout = (function() {
             initScrollLinks();
             initSearchboxFunctions();
             checkSaveStatuses();
+            initAuthorizationNotification();
         }
     };
 

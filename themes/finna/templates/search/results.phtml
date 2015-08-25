@@ -57,8 +57,6 @@
   $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
-  $this->headScript()->appendFile("check_item_statuses.js");
-  $this->headScript()->appendFile("check_save_statuses.js");
   $this->headScript()->appendFile("finna-search-tabs-recommendations.js");
 ?>
     <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
@@ -103,7 +101,7 @@
           <?=$this->recommend($current)?>
         <? endif; ?>
       <? endforeach; ?>
-      <? if ($this->searchTabsRecommendations()->getConfig($this->results->getParams()->getSearchClassId())): ?>
+      <? if ($this->searchTabsRecommendations()->getConfig($this->params->getSearchClassId())): ?>
         <div id="search-tabs-recommendations-holder" data-search-hash="<?=$this->escapeHtmlAttr($this->results->getSearchHash())?>"></div>
       <? endif; ?>
     <? else: ?>

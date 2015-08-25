@@ -9,7 +9,6 @@
           <?=$this->translate('search_tabs_recommendation_title_html', ['%%lookfor%%' => $this->lookfor, '%%handler%%' => $this->handler, '%%tab%%' => $this->transEsc($this->tab['label']), '%%count%%' => $this->results->getResultTotal()]) ?>
         </a>
         <span class="count"><?=$this->transEsc('search_tabs_recommendation_count', ['%%count%%' => $this->localizedNumber($this->results->getResultTotal())]) ?></span>
-        <? $i = 1; ?>
         <? foreach ($this->results->getResults() as $current): ?>
           <div class="row result clearfix">
             <?=$this->record($current)->getSearchResult('list')?>
