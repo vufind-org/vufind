@@ -258,7 +258,7 @@ finna.layout = (function() {
               nonChecked = false;
             }
         });
-        if (nonChecked == true) {
+        if (nonChecked) {
           $('.mylist-functions button, .mylist-functions select').attr("disabled", true);
           $('.mylist-functions .jump-menu-style').addClass('disabled');
         }
@@ -433,7 +433,7 @@ finna.layout = (function() {
 
     var initLightbox = function(holder) {
         if (typeof(holder) == "undefined") {
-            // This msut be called with a holder. Defaults are done in lightbox.js.
+            // This must be called with a holder. Defaults are done in lightbox.js.
             return;
         }
         // This part copied from lightbox.js. TODO: refactor
