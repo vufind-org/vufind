@@ -106,7 +106,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
             $tabs = array_filter(
                 $tabs,
                 function ($tab) {
-                    return strtolower($tab['class']) != 'combined';
+                    return strcasecmp($tab['class'], 'combined') != 0;
                 }
             );
         }
