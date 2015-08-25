@@ -27,7 +27,8 @@
   <input type="hidden" name="join" value="AND" />
       <?
         $this->searchType = 'advanced';
-        $this->layout()->finnaMainTabs = $this->render('search/searchTabs');
+        $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, []);
+        $this->layout()->finnaMainTabs = $this->render('search/searchTabs', ['searchTabs' => $searchTabs]);
         $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3>' . $this->transEsc('Advanced Search from Primo') . '</h3></div>';
       ?>
       <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
