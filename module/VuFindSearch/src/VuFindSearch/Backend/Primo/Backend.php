@@ -240,6 +240,7 @@ class Backend extends AbstractBackend
         if (array_key_exists('filterList', $params)
             && array_key_exists('pcAvailability', $params['filterList'])
         ) {
+            unset($options['filterList']['pcAvailability']);
             $options['pcAvailability'] = true;
         }
 
