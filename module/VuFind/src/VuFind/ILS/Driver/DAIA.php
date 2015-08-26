@@ -522,19 +522,19 @@ class DAIA extends AbstractBase implements
                         && $doc["id"] == $this->generateURI($id)
                     ) {
                         // we've found the document element with the matching URI
-			// if the document has an item, then we return it
-			if(isset($doc["item"])) {
-				return $doc;
-			}
+                        // if the document has an item, then we return it
+                        if (isset($doc["item"])) {
+                            return $doc;
+                        }
                     }
                 }
             } elseif (array_key_exists("document", $docs)) {
                 // since a document exists but multiQuery is disabled, the first
                 // document is returned if it contains an item
-		$doc = array_shift($docs['document']);
-		if(isset($doc["item"])) {
-			return $doc;
-		}
+                $doc = array_shift($docs['document']);
+                if (isset($doc["item"])) {
+                    return $doc;
+                }
             }            
             // no (id matching) document element found
             return null;
@@ -603,8 +603,10 @@ class DAIA extends AbstractBase implements
 
         // restructure the array, moving single elements to their parent's index [0]
         $restructure = function ($array) use (&$restructure) {
-            $elements
-                = ["document", "item", "available", "unavailable", "limitation", "message"];
+            $elements = [
+                "document", "item", "available", "unavailable", "limitation",
+                "message"
+            ];
             foreach ($array as $key => $value) {
                 if (is_array($value)) {
                     $value = $restructure($value);
