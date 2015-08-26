@@ -45,7 +45,20 @@ finna.layout = (function() {
       if ($(".record-information").height() > 350 && $(".show-details-button")[0]) {
         $(".record-information .record-details-more").addClass('hidden');
         $(".record-information .show-details-button").removeClass('hidden');
+        $(".description").addClass('too-long');
       }
+      $('.show-details-button').click (function() {
+        $(".record-information .record-details-more").toggleClass('hidden');
+        $('.description .more-link.wide').click();
+        $(this).toggleClass('hidden');
+        $(".hide-details-button").toggleClass("hidden");
+      });
+      $('.hide-details-button').click (function() {
+        $(".record-information .record-details-more").toggleClass('hidden');
+        $('.description .less-link.wide').click();
+        $(this).toggleClass('hidden');
+        $(".show-details-button").toggleClass("hidden");
+      });
     };
 
     var initTruncate = function(holder) {

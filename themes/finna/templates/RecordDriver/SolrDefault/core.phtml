@@ -607,7 +607,8 @@
       <? endif; ?>
       </tbody>
     </table>
-    <button class="btn show-details-button hidden" onClick="$('.record-details-more').toggleClass('hidden');$(this).toggleClass('hidden');$('.show-details-button i').toggleClass('fa-flip-vertical');return false;">Näytä kaikki tiedot <i class="fa fa-arrow-down"></i></button>
+    <button class="btn show-details-button hidden"><?=$this->transesc('show_more_details');?> <i class="fa fa-arrow-down"></i></button>
+    <button class="btn hide-details-button hidden"><?=$this->transesc('show_less_details');?> <i class="fa fa-arrow-up"></i></button>
     <?/* End Main Details */?>
   </div>
 </div>
