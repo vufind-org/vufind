@@ -463,7 +463,7 @@ abstract class Results implements ServiceLocatorAwareInterface
         }
 
         // Build the standard paginator control:
-        $nullAdapter = "Zend\Paginator\Adapter\Null";
+        $nullAdapter = "Zend\Paginator\Adapter\NullFill";
         $paginator = new Paginator(new $nullAdapter($total));
         $paginator->setCurrentPageNumber($this->getParams()->getPage())
             ->setItemCountPerPage($this->getParams()->getLimit())

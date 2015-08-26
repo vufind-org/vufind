@@ -1,0 +1,7 @@
+<? if (count($loginTargets)): ?>
+<ul class="about-login-targets">
+  <? foreach ($loginTargets as $target): ?>
+  <li><?=$this->transEsc("source_$target", null, $target)?></li>
+  <? endforeach ?>
+</ul>
+<? endif ?>

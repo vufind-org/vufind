@@ -7,7 +7,7 @@
       <? endif; ?>
     <? endforeach; ?>
 
-    <ul class="dropdown-menu">
+    <ul class="dropdown-menu" role="menu">
       <? foreach ($viewList as $viewType => $viewData): ?>
         <li role="menuitem">
           <a href="<? if (!$viewData['selected']): ?> <?=$this->results->getUrlQuery()->setViewParam($viewType)?><? else: ?>#<? endif; ?>" title="<?=$this->transEsc($viewData['desc'])?>" ><i class="fa fa-<?=$viewType ?>"></i> <?=$this->transEsc('Show As '.$viewData['desc'])?></a>

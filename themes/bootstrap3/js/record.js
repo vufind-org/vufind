@@ -94,7 +94,7 @@ function refreshCommentList(recordId, recordSource) {
 
 function registerAjaxCommentRecord() {
   // Form submission
-  $('form[name="commentRecord"]').unbind('submit').submit(function(){
+  $('form.comment').unbind('submit').submit(function(){
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
@@ -110,7 +110,6 @@ function registerAjaxCommentRecord() {
       data: data,
       dataType: 'json',
       success: function(response) {
-        var form = 'form[name="commentRecord"]';
         if (response.status == 'OK') {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');

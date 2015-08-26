@@ -16,7 +16,7 @@
     <? if (!$this->auth()->getManager()->supportsRecovery()): ?>
       <div class="error"><?=$this->transEsc('recovery_disabled') ?></div>
     <? else: ?>
-      <form data-ajax="false" action="" method="post">
+      <form data-ajax="false" method="post">
         <?=$this->auth()->getPasswordRecoveryForm() ?>
       </form>
     <? endif; ?>

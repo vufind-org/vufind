@@ -16,7 +16,7 @@ language           = Language
 original_lng_str_mv = original_work_language
 subtitle_lng_str_mv = subtitle_language
 main_date_str      = "Year"
-search_sdaterange_mv = "Main Year"
+search_daterange_mv = "Main Year"
 genre_facet        = Genre
 era_facet          = Era
 geographic_facet   = Region
@@ -71,7 +71,7 @@ hierarchicalFacetSortOptions[building] = top
 newItems[] = first_indexed
 ; Date visualisations 
 dateVis[] = main_date_str
-dateRangeVis = search_sdaterange_mv:main_date_str
+dateRangeVis = search_daterange_mv:main_date_str
 
 ; This section is reserved for special boolean facets.  These are displayed
 ; as checkboxes.  If the box is checked, the filter on the left side of the
@@ -101,7 +101,7 @@ top_cols = 3
 ; to false or omit to disable ORed facets.
 orFacets = *
 ; Do we want any facets to be collapsed by default?
-collapsedFacets = sector_str_mv, building, author2Str, language, original_lng_str_mv, subtitle_lng_str_mv, main_date_str, search_sdaterange_mv, genre_facet, era_facet, geographic_facet, topic_facet, hierarchy_parent_title, first_indexed, category_str_mv
+collapsedFacets = sector_str_mv, building, author2Str, language, original_lng_str_mv, subtitle_lng_str_mv, main_date_str, search_daterange_mv, genre_facet, era_facet, geographic_facet, topic_facet, hierarchy_parent_title, first_indexed, category_str_mv
 ; Any fields listed below will be treated as hierarchical rather than plain facets:
 hierarchicalFacets = building,format,sector_str_mv,category_str_mv
 

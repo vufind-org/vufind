@@ -65,8 +65,8 @@
     <div class="<?=$this->layoutClass('mainbody')?>">
       <input type="hidden" name="sort" value="relevance">
       <div class="clearfix">
-        <h2 class="pull-left"><?=$this->transEsc('Advanced Search')?></h2>
-        <div id="groupJoin" class="form-inline pull-right">
+        <h2 class="pull-left flip"><?=$this->transEsc('Advanced Search')?></h2>
+        <div id="groupJoin" class="form-inline pull-right flip">
           <label for="groupJoinOptions"><?=$this->transEsc("search_match")?>:</label>
           <select id="groupJoinOptions" name="join" class="form-control">
             <option value="AND"<? if($searchDetails && $searchDetails->getOperator()=='ALL'):?> selected<?endif?>><?= $this->transEsc('group_AND') ?></option>
@@ -141,13 +141,13 @@
       </div>
       <div class="clearfix">
         <input class="btn btn-default clear-btn" type="button" value="<?= $this->transEsc('Clear')?>">
-        <input class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>">
+        <input class="btn btn-primary pull-right flip" type="submit" value="<?= $this->transEsc('Find')?>">
       </div>
       <? if (isset($this->extraAdvancedControls)): ?>
         <?=$this->extraAdvancedControls ?>
         <div class="clearfix">
           <input class="btn btn-default clear-btn" type="button" value="<?= $this->transEsc('Clear')?>">
-          <input class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>">
+          <input class="btn btn-primary pull-right flip" type="submit" value="<?= $this->transEsc('Find')?>">
         </div>
       <? endif; ?>
     </div>

@@ -1,0 +1,182 @@
+.main.template-dir-search.template-name-home,
+.sidebar {
+    & .list-group-item:not(.title).daterange.expand {
+        @media (min-width: @screen-sm-min) {
+            box-shadow: -4px 0px 13px -5px #000;
+            padding: 10px;
+            z-index: 4;
+            @media (min-width: @screen-lg-min) {
+                width: 1140px;
+                margin-left: -883px;
+            }
+            @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+                 width: 940px;
+                 margin-left: -733px;
+            }
+            @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+                width: 720px;
+                margin-left: -568px;
+            }
+            transition: box .3s linear;
+            & .timeline_within {
+                margin-left: 10px;   
+            }
+        }
+    }
+    & .daterange-facet {
+        & .list-group-item:not(.title).daterange {
+            padding-top: 10px;
+            background-color: whitesmoke;
+            padding: 3px 10px;
+        }
+
+        & .fa.timeline {
+            margin-left: 10px;
+        }
+        & .submit .fa {
+            margin-right: 5px;
+        }
+        & .daterange-vis {
+            padding-top: 5px;
+            & button {
+                margin-left: 10px;
+                margin-top: 1px;
+                margin-bottom: 10px;
+                @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+                    margin-left: 0;   
+                }
+            }
+            & .range-type {
+                margin: 5px 0px;
+                clear: both;
+            }
+            & .form-ui {
+                
+                & .year-range {
+                    float: left;
+                    margin-bottom: 10px;
+                }
+                & .year-separator {
+                    color: @gray;
+                }
+                & label {
+                    color: white;
+                    & input {
+                        color: blue;
+                    }
+                }
+                & .submit {
+                    margin-top: 0;
+                    margin-left: 15px;
+                    background-color: @btn-primary-bg;
+                }
+            }
+            & .content {
+                clear: both;
+                position: relative;
+                height: 114px;
+
+                & .date-vis {
+                    width: 100%;
+                    height: 110px;
+                    cursor: crosshair;
+                    background: @body-bg;
+                }
+                border-radius: 5px 5px 5px 5px;
+                & .fa-spinner {
+                    display: none;
+                    width: 20px;
+                    height: 20px;
+                    left: 45%;
+                    top: -60px;
+                    position: relative;
+                }
+                &.loading .fa-spinner {
+                    display: block;
+                }
+            }
+            & .navigation {
+                    margin-top: -4px;
+                    padding-top: 7px;
+                    color: @link-color;
+                    width: 100%;
+                    display: inline-block;
+                    background: @body-bg;
+                    padding-left: 1%;  
+
+                    
+                    & .zoom-out, .zoom-in, .prev, .next {
+                        font-size: 1.1em;
+                        float: left;
+                        display: inline-block;
+                    }
+                    & .zoom-out {
+                        margin-right: 5px; 
+                    }
+                    & .zoom-in {
+                        margin-left: 5px;
+                        margin-right: 3px;
+                    }
+                    & .expand-modal {
+                        float: right;
+                        margin-right: 9px;
+                        font-size: .8em;
+                        margin-top: 4px;
+                        @media (max-width: @screen-xs-max) {
+                           display: none;
+                        }
+                    }
+                    & .fa {
+                        cursor: pointer;
+                        font-size: 1.5em;
+                    }
+            }
+
+        }
+        & .daterange-form {
+            display: block;
+            overflow: auto;
+            & .submit {
+                float: right;
+                background-color: @btn-primary-bg;
+            }
+            & .range-type {
+                margin-top: 10px;
+                clear: both;
+            }
+        }
+        & .btn-primary {
+            font-size: 1em;
+            font-weight: bold;
+            padding: 4px 8px;
+        }
+        & input[type=text] {
+            width: 48px;
+            border-radius: 4px 4px 4px 4px;
+            padding: 5px;
+            box-shadow: 0 3px 11px -8px #808080;
+            border: 1px solid #CCCCCC;
+            &.error {
+                border: solid 2px red;
+            }
+        }
+    }
+    &.sidebar-on-left {
+        & .list-group-item:not(.title).daterange.expand {
+            margin-left: 0;
+            @media (min-width: @screen-sm-min) {
+                box-shadow: 4px 0px 13px -5px #000;
+            }
+        }
+    }
+}
+.template-dir-primo {
+    & .sidebar .daterange-facet .form-ui {
+        & .year-range {
+            float: left;
+        }
+        & .submit {
+            margin-top: 0;
+        }
+    }
+}

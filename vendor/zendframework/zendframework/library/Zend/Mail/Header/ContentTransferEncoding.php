@@ -21,9 +21,9 @@ class ContentTransferEncoding implements HeaderInterface
         '8bit',
         'quoted-printable',
         'base64',
+        'binary',
         /*
          * not implemented:
-         * 'binary',
          * x-token: 'X-'
          */
     );
@@ -40,8 +40,8 @@ class ContentTransferEncoding implements HeaderInterface
 
     public static function fromString($headerLine)
     {
-        $headerLine = iconv_mime_decode($headerLine, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, 'UTF-8');
         list($name, $value) = GenericHeader::splitHeaderLine($headerLine);
+        $value = HeaderWrap::mimeDecodeValue($value);
 
         // check to ensure proper header type for this factory
         if (strtolower($name) !== 'content-transfer-encoding') {

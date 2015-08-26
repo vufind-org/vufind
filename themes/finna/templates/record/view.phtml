@@ -2,6 +2,9 @@
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
   $this->headScript()->appendFile("check_save_statuses.js");
+  if ($this->driver->getResourceSource() == 'Primo') {
+    $this->headScript()->appendFile("finna-bx.js");
+  }
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
     echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
@@ -71,6 +74,9 @@
 
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
+      <? if (count($this->tabs) > 3): ?>
+      <div class="tabs-responsive">
+      <? endif; ?>
       <ul class="recordTabs nav nav-tabs hidden-print">
         <? foreach ($this->tabs as $tab => $obj): ?>
         <? // add current tab to breadcrumbs if applicable:
@@ -89,6 +95,9 @@
           <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<?= count($comments) ?>)<? endif; ?></a>
         </li>
         <? endforeach; ?>
+        <? if (count($this->tabs) > 3): ?>
+        </div>
+        <? endif; ?>
       </ul>
     <? endif; ?>
 
@@ -102,12 +111,16 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
-    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->escapeHtmlAttr($this->driver->getResourceSource()) == 'VuFind' ): ?>
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind'): ?>
       <?=$this->render('record/record-organisation-menu.phtml') ?>
     <? endif; ?>
     <? foreach ($this->related()->getList($this->driver) as $current): ?>
       <?=$this->related()->render($current)?>
     <? endforeach; ?>
+    <? if ($this->driver->getResourceSource() == 'Primo'): ?>
+      <div id="bx-recommendations-holder">
+      </div>
+    <? endif; ?>
   </div>
  </div>
 </div>

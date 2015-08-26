@@ -24,8 +24,11 @@
     -moz-osx-font-smoothing: grayscale;
     text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 }
-[class^="fa-"]:hover, [class*=" fa-"]:hover {
+a [class^="fa-"]:hover, a [class*=" fa-"]:hover {
     cursor: pointer;
+}
+.disabled > a [class^="fa-"]:hover, .disabled a [class*=" fa-"]:hover {
+    cursor: not-allowed;   
 }
 .iconlabel {
   color: @gray;
@@ -173,6 +176,12 @@ table .iconlabel {
     &:hover {
         cursor: pointer;    
     }
+}
+.fa-checkbox_checked:before {
+	content: "\e61a";
+}
+.fa-checkbox:before {
+	content: "\e61b";
 }
 .fa-external-link:before, .openUrlEmbed:before {
     font-size: 1.3em;
@@ -455,7 +464,7 @@ table .iconlabel {
 .icon-smallpress:before {
     content: "\e007";
 }
-.iconlabel.format-1document:before, .iconlabel.format-1documentarchive:before, .iconlabel.format-1documentarchivematerial:before, .iconlabel.format-1documentarchiveitem:before, .iconlabel.format-1documentarchivefonds:before, .iconlabel.format-1documentarchiveseries:before, .iconlabel.format-1documentarchivecollection:before, .iconlabel.format-1documentdigitizedarchiveitem:before {
+.fa.fa-TOC:before, .iconlabel.format-1document:before, .iconlabel.format-1documentarchive:before, .iconlabel.format-1documentarchivematerial:before, .iconlabel.format-1documentarchiveitem:before, .iconlabel.format-1documentarchivefonds:before, .iconlabel.format-1documentarchiveseries:before, .iconlabel.format-1documentarchivecollection:before, .iconlabel.format-1documentdigitizedarchiveitem:before {
     content: "\e006";
 }
 .iconlabel.format-0note:before, .iconlabel.format-0manuscript:before, .iconlabel.format-0musicalscore:before {
@@ -569,15 +578,6 @@ table .iconlabel {
 }
 .recordcover-holder:hover .fa-magnify {
     opacity: 1;
-}
-
-.fa-zoom-in:before {
-    font-family: 'icomoon';
-    content: '\e606';
-    color: #fff;
-    padding: 3px;
-    background: rgba(1,1,1,0.05);
-
 }
 
 /* HIDING ICONS and custom styles for some occurences */

@@ -5,7 +5,7 @@
     & ul.nav-tabs {
         border-bottom: none;
         margin: 0 0 0 15px;
-        
+
             @media(max-width: @screen-xs-max) {
             margin-left: 0;
             }
@@ -28,7 +28,7 @@
                     max-width: 100px;
                     padding: 8px 10px;
                     font-size: .9em;
-                    display: inline-flex;
+                    display: block;
                     line-height: 1.3em;
                 }
             }
@@ -40,17 +40,23 @@
                     border: none;
                 }
             }
+            &:not(.active) > a {
+                transition: background-color 0.1s linear;
+                &:hover, &:active {
+                    background: darken(@link-color,4%);   
+                }
+            }
         }
     }
-}
-.main.template-name-advanced .finna-main-tabs {
-    padding-top: 25px;
 }
 
 #record-tabs {
     margin-bottom: 20px;
+    & div.dataTables_info {
+        white-space: normal;
+    }
     & #commentList {
-      margin-bottom: 20px;  
+        margin-bottom: 20px;
     }
     & .comment-wrapper {
         background: @brand-third;
@@ -62,7 +68,28 @@
             border-bottom: 2px solid @body-bg;
         }
         & .comment-text {
-            padding-top: 5px;   
+            padding-top: 5px;
         }
+    }
+}
+
+.search-tabs-recommendations {
+    border-top: 3px solid @brand-primary;
+    border-bottom: 3px solid @brand-primary;
+    padding: @padding-base-vertical 0 @padding-base-vertical @padding-large-horizontal;
+
+    a.title {
+        font-size: 1.333em;
+        line-height: 1.1em;
+        font-weight: 400;
+    }
+
+    .count {
+        color: @text-muted;
+    }
+
+    .tab-icon:before {
+        color: @gray-mid-light;
+        font-size: 2.5em;
     }
 }

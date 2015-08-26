@@ -75,6 +75,7 @@ highlighting = true
 [SpecialFacets]
 ; Any fields listed below will be treated as date ranges rather than plain facets:
 dateRange[] = creationdate
+dateRangeVis = creationdate:creationdate
 
 ; The order of display is as shown below
 ; The name of the index field is on the left

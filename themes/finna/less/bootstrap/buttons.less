@@ -128,7 +128,7 @@
     box-shadow: 0px 15px 20px -12px #000;
     z-index: 1;
     @media (max-width: @screen-sm-min) {
-        top: 41px;   
+        top: 37px;   
     }
 }
 .searchbox, .checkboxFilter {
@@ -209,6 +209,38 @@
     }
 }
 
+//== Styling Finna radiobuttons
+.radiobutton {
+    font-size: 14px;
+    font-weight: normal;
+
+    & :last-child {
+        padding-bottom: 5px;
+    }
+    & input {
+        border: none;
+        background: transparent;
+        margin-right: 10px;
+        margin-top: 4px;
+    }
+    & input:before {
+        content: "\e61b";
+        font-family: 'icomoon';
+        font-size: 18px;       
+        margin: -3px 0px 0px -3px;
+        position: absolute;
+        background: @body-bg;
+        border-radius: 50%;
+        color: @gray-light;
+        transition: color .1s linear;
+    }
+    & input:checked:before  {
+        font-family: 'icomoon';
+        content: "\e61a";
+        color: @link-color;
+    }
+}
+
 // Default styling of Finna Jump menus
 
 .jump-menu-style {
@@ -276,13 +308,17 @@
         border-bottom-right-radius: 10px;
         margin-bottom: 10px;
         height: 33px;
-        
+        transition: background-color .1s linear;
+        &:hover, &:active, &:hover:before, &:active:before {
+            background-color: darken(@brand-primary, 6%);   
+        }
         & option:checked {
             background: @btn-primary-bg;
             color: @body-bg;
         }   
     }
     &.controls:before {
+        transition: background-color .1s linear;
         background: @btn-primary-bg;
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;

@@ -8,7 +8,8 @@
   // Search type and tabs
   $this->searchType = 'advanced';
   $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">' . $this->translate('Advanced Search') . '</h1></div>';
-  $this->layout()->finnaMainTabs = $this->render('search/searchTabs');
+  $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, []);
+  $this->layout()->finnaMainTabs = $this->render('search/searchTabs', ['searchTabs' => $searchTabs]);
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li>';
@@ -27,7 +28,31 @@
         $groups = $searchDetails->getQueries();
     }
     $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
+
+    // Handle range filters:
+    //   1. search_daterange_mv is editable with a slider in the UI
+    //   2. Possible other range filters are displayed (without sliders)
+    //      in the list of other active filters and can only be toggled off
+
+    // Build a request object of range filters and init params
+    $req = new \Zend\Stdlib\Parameters();
+    $reqRanges = [];
+    foreach ($ranges as $range) {
+       if (!isset($range['values']) || $range['values'][0] == '' || $range['values'][1] == '') {
+          continue;
+       }
+       $field = $range['field'];
+       $reqRanges[] = $field;
+       $req->set("{$field}from", $range['values'][0]);
+       $req->set("{$field}to", $range['values'][1]);
+    }
+    $req->set('daterange', $reqRanges);
+    $this->saved->getParams()->initDateFilters($req);
+
     $searchFilters = $this->saved->getParams()->getFilterList();
+    // Remove date range filter (search_daterange_mv) so that it does not get included
+    // in the  list of active filters
+    $searchFilters = $this->saved->getParams()->removeDatarangeFilter($searchFilters);
   } else {
     $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
   }
@@ -36,6 +61,8 @@
   $this->headScript()->appendFile(
     isset($this->advancedSearchJsOverride) ? $this->advancedSearchJsOverride : 'advanced_search.js'
   );
+  $this->headScript()->appendFile('finna-daterange-vis.js');
+
   // Step 2: Build the page
   $this->headScript()->appendScript(
     $this->partial(

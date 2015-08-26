@@ -86,7 +86,7 @@ class NewItems extends AbstractPlugin
         $limit = $params->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
-            $flash->setNamespace('info')->addMessage('too_many_new_items');
+            $flash->addMessage('too_many_new_items', 'info');
         }
 
         return $bibIDs;

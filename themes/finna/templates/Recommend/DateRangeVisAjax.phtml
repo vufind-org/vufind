@@ -1,0 +1,58 @@
+<div class="daterange-vis">
+  <form action="<?= $this->formAction; ?>" class="year-form">
+    <div class="form-ui">
+	  <div class="year-range">
+	    <input class="year-from" type="text" value="<?= $this->from; ?>">
+	    <span class="year-separator">&ndash;</span>
+	    <input class="year-to" type="text" value="<?= $this->to; ?>">
+	  </div>
+	  <button class="btn btn-primary submit" type="submit">
+      <i class="fa fa-search"></i><span><?= $this->translate($this->submitLabel); ?></span>
+    </button>
+    </div>
+    <div class="content">
+      <? $this->headScript()->appendFile('vendor/jquery.colorhelpers.js'); ?>
+      <? $this->headScript()->appendFile('vendor/jquery.flot.js'); ?>
+      <? $this->headScript()->appendFile('vendor/jquery.flot.selection.js'); ?>
+      <? $this->headScript()->appendFile('finna-daterange-vis.js'); ?>
+      <div class="date-vis"></div>
+      <i class="fa fa-spinner fa-spin"></i>
+    </div>
+    <div class="navigation">
+      <div class="zoom-in"><i class="fa fa-zoom-in"></i></div>
+      <div class="zoom-out"><i class="fa fa-zoom-out"></i></div>
+      <div class="prev"><i class="fa fa-arrow-left"></i></div>
+      <div class="next"><i class="fa fa-arrow-right"></i></div>
+      <div class="expand-modal"><i class="fa fa-expand"></i></div>
+    </div>
+    <? if ($backend != 'primo' && (!isset($hideType) || !$hideType)): ?>
+    <div class="range-type">
+      <label class="radiobutton" for="radio_overlap">
+        <input class="timeline_overlap" type="radio" name="type" id="radio_overlap" value="overlap"<?= !$this->type || $this->type == 'overlap' ? ' checked="checked"' : ''; ?>/><?= $this->translate('Timeline overlap'); ?>
+      </label>
+      <label class="radiobutton" for="radio_within">
+        <input class="timeline_within" type="radio" name="type" id="radio_within" value="within"<?= $this->type == 'within' ? ' checked="checked"' : ''; ?>/><?= $this->translate('Timeline within'); ?>
+      </label>
+    </div>
+    <? endif; ?>
+  </form>
+</div>
+<?
+$script = <<<JS
+$(document).ready(function() {
+  finna.dateRangeVis.initVis(
+      '{$backend}',
+      '{$daterangeFacet}',
+      '{$searchParams}',
+      '{$baseParams}',
+      $('.daterange-vis'),
+JS;
+
+$script .= isset($this->plotFrom) ? "{$this->plotFrom}," : 'false,';
+$script .= isset($this->plotTo) ? "{$this->plotTo}," : 'false,';
+$script .= isset($this->plotImmediately) ? "true" : "false";
+$script .= '
+  );
+});';
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

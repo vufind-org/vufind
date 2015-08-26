@@ -27,7 +27,8 @@
  */
 namespace Finna\Controller;
 use Zend\Cache\StorageFactory,
-    Zend\Feed\Reader\Reader;
+    Zend\Feed\Reader\Reader,
+    Zend\Http\Request as HttpRequest;
 
 /**
  * This controller handles Finna AJAX functionality
@@ -125,6 +126,93 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Retrieve bX recommendations
+     *
+     * @return \Zend\Http\Response
+     */
+    public function getBxRecommendationsAjax()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (!isset($config->bX['token'])) {
+            return $this->output('bX support not enabled', self::STATUS_ERROR);
+        }
+
+        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
+        $parts = explode('|', $id, 2);
+        if (count($parts) < 2) {
+            $source = 'VuFind';
+            $id = $parts[0];
+        } else {
+            $source = $parts[0];
+            $id = $parts[1];
+        }
+
+        $driver = $this->getServiceLocator()->get('VuFind\RecordLoader')
+            ->load($id, $source);
+        $openUrl = $driver->tryMethod('getOpenUrl', [true]);
+        if (empty($openUrl)) {
+            return $this->output([], self::STATUS_OK);
+        }
+
+        $params = http_build_query(
+            [
+                'token' => $config->bX['token'],
+                'format' => 'xml',
+                'source' => isset($config->bX['source']) ? $config->bX['source']
+                    : 'global',
+                'maxRecords' => isset($config->bX['maxRecords'])
+                    ? $config->bX['maxRecords'] : '5',
+                'threshold' => isset($config->bX['threshold'])
+                    ? $config->bX['threshold'] : '50'
+            ]
+        );
+        $openUrl .= '&res_dat=' . urlencode($params);
+
+        $baseUrl = isset($config->bX['baseUrl'])
+            ? $config->bX['baseUrl']
+            : 'http://recommender.service.exlibrisgroup.com/service/recommender/'
+            . 'openurl';
+
+        // Create Proxy Request
+        $httpService = $this->getServiceLocator()->get('\VuFind\Http');
+        $client = $httpService->createClient("$baseUrl?$openUrl");
+        $result = $client->setMethod('GET')->send();
+
+        if ($result->isSuccess()) {
+            // Even if we get a response, make sure it's a 'good' one.
+            if ($result->getStatusCode() != 200) {
+                return $this->output(
+                    'bX request failed, response code ' . $result->getStatusCode(),
+                    self::STATUS_ERROR
+                );
+            }
+        } else {
+            return $this->output(
+                'bX request failed: ' . $result->getStatusCode()
+                . ': ' . $result->getReasonPhrase(),
+                self::STATUS_ERROR
+            );
+        }
+        $xml = simplexml_load_string($result->getBody());
+        $recommendations = [];
+        $jnl = 'info:ofi/fmt:xml:xsd:journal';
+        $xml->registerXPathNamespace('jnl', $jnl);
+        foreach ($xml->xpath('//jnl:journal') as $journal) {
+            $item = $this->convertToArray($journal, $jnl);
+            if (!isset($item['authors']['author'][0])) {
+                $item['authors']['author'] = [$item['authors']['author']];
+            }
+            $item['openurl'] = $this->createBxOpenUrl($item);
+            $recommendations[] = $item;
+        }
+        $html = $this->getViewRenderer()->partial(
+            'Recommend/bx.phtml',
+            ['recommendations' => $recommendations]
+        );
+        return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
      * Return rendered HTML for record image popup.
      *
      * @return mixed
@@ -187,7 +275,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     /**
      * Return record description in JSON format.
      *
-     * @return mixed \Zend\Http\Response
+     * @return \Zend\Http\Response
      */
     public function getDescriptionAjax()
     {
@@ -247,7 +335,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     /**
      * Return rendered HTML for my lists navigation.
      *
-     * @return mixed \Zend\Http\Response
+     * @return \Zend\Http\Response
      */
     public function getMyListsAjax()
     {
@@ -347,9 +435,112 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Retrieve recommendations for results in other tabs
+     *
+     * @return \Zend\Http\Response
+     */
+    public function getSearchTabsRecommendationsAjax()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (empty($config->SearchTabsRecommendations->recommendations)) {
+            return $this->output('', self::STATUS_OK);
+        }
+
+        $id = $this->params()->fromPost(
+            'searchHash', $this->params()->fromQuery('searchHash')
+        );
+
+        $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager');
+        $search = $table->get('Search')->select(['finna_search_id' => $id])
+            ->current();
+        if (empty($search)) {
+            return $this->output('Search not found', self::STATUS_ERROR);
+        }
+
+        $minSO = $search->getSearchObject();
+        $results = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager');
+        $savedSearch = $minSO->deminify($results);
+        $params = $savedSearch->getParams();
+        $lookfor = $params->getQuery()->getString();
+        if (!$lookfor) {
+            return $this->output('', self::STATUS_OK);
+        }
+        $searchClass = $params->getSearchClassId();
+        // Don't return recommendations if not configured or for combined view
+        // or for search types other than basic search.
+        if (empty($config->SearchTabsRecommendations->recommendations[$searchClass])
+            || $searchClass == 'Combined' || $params->getSearchType() != 'basic'
+        ) {
+            return $this->output('', self::STATUS_OK);
+        }
+
+        $view = $this->getViewRenderer();
+        $view->results = $savedSearch;
+        $searchTabsHelper = $this->getViewRenderer()->plugin('searchtabs');
+        $searchTabsHelper->setView($view);
+        $tabs = $searchTabsHelper(
+            $searchClass,
+            $lookfor,
+            $params->getQuery()->getHandler()
+        );
+
+        $html = '';
+        $recommendations = array_map(
+            'trim',
+            explode(
+                ',',
+                $config->SearchTabsRecommendations->recommendations[$searchClass]
+            )
+        );
+        foreach ($recommendations as $recommendation) {
+            if ($searchClass == $recommendation) {
+                // Who would want this?
+                continue;
+            }
+            foreach ($tabs as $tab) {
+                if ($tab['class'] == $recommendation) {
+                    $uri = new \Zend\Uri\Uri($tab['url']);
+                    $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+                    $otherResults = $runner->run(
+                        $uri->getQueryAsArray(),
+                        $tab['class'],
+                        function ($runner, $params, $searchId) use ($config) {
+                            $params->setLimit(
+                                isset(
+                                    $config->SearchTabsRecommendations->count
+                                ) ? $config->SearchTabsRecommendations->count : 2
+                            );
+                            $params->setPage(1);
+                            $params->resetFacetConfig();
+                            $options = $params->getOptions();
+                            $options->disableHighlighting();
+                        }
+                    );
+                    if ($otherResults instanceof \VuFind\Search\EmptySet\Results) {
+                        continue;
+                    }
+
+                    $html .= $this->getViewRenderer()->partial(
+                        'Recommend/SearchTabs.phtml',
+                        [
+                            'tab' => $tab,
+                            'lookfor' => $lookfor,
+                            'handler' => $params->getQuery()->getHandler(),
+                            'results' => $otherResults
+                        ]
+                    );
+                }
+            }
+        }
+
+         return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
      * Update or create a list object.
      *
-     * @return mixed \Zend\Http\Response
+     * @return \Zend\Http\Response
      */
     public function editListAjax()
     {
@@ -397,7 +588,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     /**
      * Update list resource note.
      *
-     * @return mixed \Zend\Http\Response
+     * @return \Zend\Http\Response
      */
     public function editListResourceAjax()
     {
@@ -452,7 +643,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     /**
      * Add resources to a list.
      *
-     * @return mixed \Zend\Http\Response
+     * @return \Zend\Http\Response
      */
     public function addToListAjax()
     {
@@ -778,6 +969,78 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Convert XML to array for bX recommendations
+     *
+     * @param \simpleXMLElement $xml XML to convert
+     * @param string            $ns  Optional namespace for nodes
+     *
+     * @return array
+     */
+    protected function convertToArray($xml, $ns = '')
+    {
+        $result = [];
+        foreach ($xml->children($ns) as $node) {
+            $children = $node->children($ns);
+            if (count($children) > 0) {
+                $item = $this->convertToArray($node, $ns);
+            } else {
+                $item = (string)$node;
+            }
+            $key = $node->getName();
+            if (isset($result[$key])) {
+                if (!is_array($result[$key])) {
+                    $result[$key] = [$result[$key]];
+                }
+                $result[$key][] = $item;
+            } else {
+                $result[$key] = $item;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Create OpenURL for a bX recommendation
+     *
+     * @param array $item Recommendation fields
+     *
+     * @return string
+     */
+    protected function createBxOpenUrl($item)
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (!isset($config->OpenURL['url'])) {
+            return '';
+        }
+
+        if (!empty($this->config->OpenURL['rfr_id'])) {
+            $coinsID = $this->config->OpenURL['rfr_id'];
+        } elseif (!empty($this->config->COINS['identifier'])) {
+            $coinsID = $this->config->COINS['identifier'];
+        } else {
+            $coinsID = 'finna.fi';
+        }
+
+        $params = [
+            'ctx_ver' => 'Z39.88-2004',
+            'ctx_enc' => 'info:ofi/enc:UTF-8',
+            'rfr_id' => "info:sid/{$coinsID}:generator",
+            'rft_val_fmt' => 'info:ofi/fmt:kev:mtx:journal'
+        ];
+
+        foreach ($item as $key => $value) {
+            if ($key == 'authors') {
+                foreach ($value['author'][0] as $auKey => $auValue) {
+                    $params["rft.$auKey"] = $auValue;
+                }
+            } else {
+                $params["rft.$key"] = $value;
+            }
+        }
+        return $config->OpenURL['url'] . '?' . http_build_query($params);
+    }
+
+    /**
      * Utility function for extracting an image URL from a HTML snippet.
      *
      * @param string $html HTML snippet.
@@ -820,5 +1083,90 @@ class AjaxController extends \VuFind\Controller\AjaxController
             }
         }
         return $img ? $img->getAttribute('src') : null;
+    }
+
+    /**
+     * Return data for data range visualization module in JSON format.
+     *
+     * @return mixed
+     */
+    public function dateRangeVisualAjax()
+    {
+        $backend = $this->params()->fromQuery('backend');
+        if (!$backend) {
+            $backend = 'solr';
+        }
+        $isSolr = $backend == 'solr';
+
+        $configFile = $isSolr ? 'facets' : 'Primo';
+        $config
+            = $this->getServiceLocator()->get('VuFind\Config')->get($configFile);
+        if (!isset($config->SpecialFacets->dateRangeVis)) {
+            return $this->output([], self::STATUS_ERROR);
+        }
+
+        list($filterField, $facet)
+            = explode(':', $config->SpecialFacets->dateRangeVis);
+
+        $this->writeSession();  // avoid session write timing bug
+        $facetList = $this->getFacetList($isSolr, $filterField, $facet);
+
+        if (empty($facetList)) {
+            return $this->output([], self::STATUS_OK);
+        }
+
+        $res = [];
+        $min = PHP_INT_MAX;
+        $max = -$min;
+
+        foreach ($facetList as $f) {
+            $count = $f['count'];
+            $val = $f['displayText'];
+            // Only retain numeric values
+            if (!preg_match("/^-?[0-9]+$/", $val)) {
+                continue;
+            }
+            $min = min($min, (int)$val);
+            $max = max($max, (int)$val);
+            $res[] = [$val, $count];
+        }
+        $res = [$facet => ['data' => $res, 'min' => $min, 'max' => $max]];
+        return $this->output($res, self::STATUS_OK);
+    }
+
+    /**
+     * Return facet data (labels, counts, min/max values) for a search.
+     * Used by dateRangeVisualAjax.
+     *
+     * @param boolean $solr  Solr search?
+     * @param string  $field Index field to be used in faceting
+     * @param string  $facet Facet
+     * @param string  $query Search query
+     *
+     * @return array
+     */
+    protected function getFacetList($solr, $field, $facet, $query = false)
+    {
+        $results = $this->getResultsManager()->get($solr ? 'Solr' : 'Primo');
+        $params = $results->getParams();
+
+        if (!$query) {
+            $query = $this->getRequest()->getQuery();
+        }
+        $params->addFacet($field);
+        $params->initFromRequest($query);
+
+        if ($solr) {
+            $facets = $results->getFullFieldFacets(
+                [$facet], false, -1, 'count'
+            );
+            $facetList = $facets[$facet]['data']['list'];
+        } else {
+            $results->performAndProcessSearch();
+            $facets = $results->getFacetlist([$facet => $facet]);
+            $facetList = $facets[$facet]['list'];
+        }
+
+        return $facetList;
     }
 }
