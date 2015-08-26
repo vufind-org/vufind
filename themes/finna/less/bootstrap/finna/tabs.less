@@ -71,17 +71,25 @@
             padding-top: 5px;
         }
     }
+    & #toc-tab, ul.toc {
+        margin-left: 10px;
+    }
 }
 
 .search-tabs-recommendations {
-    border-top: 3px solid @brand-primary;
-    border-bottom: 3px solid @brand-primary;
-    padding: @padding-base-vertical 0 @padding-base-vertical @padding-large-horizontal;
+    border-top: 2px solid @brand-primary;
+    border-bottom: 2px solid @brand-primary;
+    padding: @padding-large-horizontal 0 0 0;
 
     a.title {
         font-size: 1.333em;
         line-height: 1.1em;
         font-weight: 400;
+        display: inline-block;
+        margin-bottom: 5px;
+        & .searchterms {
+            font-weight: bold;   
+        }
     }
 
     .count {
