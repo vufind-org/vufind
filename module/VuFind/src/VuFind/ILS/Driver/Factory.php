@@ -139,6 +139,20 @@ class Factory
     }
 
     /**
+     * Factory for PICA driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return PICA
+     */
+    public static function getPICA(ServiceManager $sm)
+    {
+        return new PICA(
+            $sm->getServiceLocator()->get('VuFind\DateConverter')
+        );
+    }
+
+    /**
      * Factory for Unicorn driver.
      *
      * @param ServiceManager $sm Service manager.

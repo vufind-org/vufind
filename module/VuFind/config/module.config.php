@@ -380,6 +380,7 @@ $config = [
                     'horizonxmlapi' => 'VuFind\ILS\Driver\Factory::getHorizonXMLAPI',
                     'multibackend' => 'VuFind\ILS\Driver\Factory::getMultiBackend',
                     'noils' => 'VuFind\ILS\Driver\Factory::getNoILS',
+                    'pica' => 'VuFind\ILS\Driver\Factory::getPICA',
                     'unicorn' => 'VuFind\ILS\Driver\Factory::getUnicorn',
                     'voyager' => 'VuFind\ILS\Driver\Factory::getVoyager',
                     'voyagerrestful' => 'VuFind\ILS\Driver\Factory::getVoyagerRestful',
