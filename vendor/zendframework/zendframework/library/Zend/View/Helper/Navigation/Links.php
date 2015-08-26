@@ -167,7 +167,7 @@ class Links extends AbstractHelper
                 foreach ($pages as $page) {
                     $r = $this->renderLink($page, $attrib, $relation);
                     if ($r) {
-                        $output .= $indent . $r . self::EOL;
+                        $output .= $indent . $r . PHP_EOL;
                     }
                 }
             }
@@ -176,7 +176,7 @@ class Links extends AbstractHelper
         $this->root = null;
 
         // return output (trim last newline by spec)
-        return strlen($output) ? rtrim($output, self::EOL) : '';
+        return strlen($output) ? rtrim($output, PHP_EOL) : '';
     }
 
     /**
@@ -338,7 +338,7 @@ class Links extends AbstractHelper
             }
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -492,7 +492,7 @@ class Links extends AbstractHelper
 
         switch (count($found)) {
             case 0:
-                return null;
+                return;
             case 1:
                 return $found[0];
             default:
@@ -525,7 +525,7 @@ class Links extends AbstractHelper
 
         switch (count($found)) {
             case 0:
-                return null;
+                return;
             case 1:
                 return $found[0];
             default:
@@ -564,7 +564,7 @@ class Links extends AbstractHelper
 
         switch (count($found)) {
             case 0:
-                return null;
+                return;
             case 1:
                 return $found[0];
             default:
@@ -711,7 +711,7 @@ class Links extends AbstractHelper
         }
 
         // nothing found
-        return null;
+        return;
     }
 
     /**
