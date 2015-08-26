@@ -144,6 +144,18 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             if (!$params['openUrlImageBased']) {
                 $params['openUrlImageBased'] = $this->recordDriver->getOpenUrl();
             }
+
+            // Concatenate image based OpenUrl base and OpenUrl
+            // to a usable image reference
+            if (false !== strpos('?', $params['openUrlImageBasedBase'])) {
+                $params['openUrlImageBasedComplete']
+                    = $params['openUrlImageBasedBase']
+                    . '&' . $params['openUrlImageBased'];
+            } else {
+                $params['openUrlImageBasedComplete']
+                    = $params['openUrlImageBasedBase']
+                    . '?' . $params['openUrlImageBased'];
+            }
         }
 
         return $params;

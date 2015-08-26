@@ -38,7 +38,7 @@
 
 <? if ($this->openUrlImageBasedBase): ?>
     <a href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $this->openUrlImageBased)?>"<?=$class_ib?>>
-        <img id="openurlimage<?=$this->driver->getUniqueId()?>" data-recordid="<?=$this->driver->getUniqueId()?>" src="<?=$this->escapeHtmlAttr($this->openUrlImageBasedBase)?>&<?=$this->escapeHtmlAttr($this->openUrlImageBased)?>" alt="<?=$this->transEsc('Get full text')?>" />
+        <img id="openurlimage<?=$this->openUrlId?>" data-recordid="<?=$this->driver->getUniqueId()?>" src="<?=$this->escapeHtmlAttr($this->openUrlImageBasedComplete)?>" alt="<?=$this->transEsc('Get full text')?>" />
     </a>
 <? endif; ?>
 
