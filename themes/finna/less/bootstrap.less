@@ -399,21 +399,27 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .summary {
     color: @gray-light;
     font-size: 1.05em;
-    margin-bottom: 0px;
+    margin-bottom: 10px;
 }
 .show-details-button, .hide-details-button {
-    margin-top: 0px;
+    margin-top: 5px;
     margin-bottom: 5px;
     cursor: pointer;
     padding-left: 0;
     background: @body-bg;
     color: @link-color;
+    width: 100%;
+    background-color: whitesmoke;
+    text-transform: uppercase;
+    font-size: .9em;
     &:hover {
         color: @link-color;   
     }
 }
+
+.show-details
 .record-details {
-    margin:10px 0px;  
+    margin: 10px 0px;  
 }
 .physical-details {
     color: @gray-light;
@@ -1184,7 +1190,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     color: @gray-light; 
     font-size: 1.05em; 
     line-height: 1.35em;
-    margin-bottom: 0px;
+    margin-bottom: 10px;
 }
 .primo-available-online {
     & p {
@@ -1245,27 +1251,13 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
 .truncate-field {
     overflow: hidden;
 }
-.more-link.dots:after {
-    content: '...';
-    position: absolute;
-    right: 15px;
-    width: 100px;
-    margin-top: -28px;
-    background: #fff;
-    padding-left: 14px;
-    color: gray;
-    background: -moz-linear-gradient(left,  rgba(255,255,255,0.2) 0%, rgba(255,255,255,1) 12%, rgba(255,255,255,1) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,0.2)), color-stop(12%,rgba(255,255,255,1)), color-stop(100%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(left,  rgba(255,255,255,0.2) 0%,rgba(255,255,255,1) 12%,rgba(255,255,255,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(left,  rgba(255,255,255,0.2) 0%,rgba(255,255,255,1) 12%,rgba(255,255,255,1) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(left,  rgba(255,255,255,0.2) 0%,rgba(255,255,255,1) 12%,rgba(255,255,255,1) 100%); /* IE10+ */
-    background: linear-gradient(to right,  rgba(255,255,255,0.2) 0%,rgba(255,255,255,1) 12%,rgba(255,255,255,1) 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#33ffffff', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
-}
+
 .more-link, .less-link {
-    padding: 0px 0px 5px;
+    padding: 2px 0px 5px;
     display: inline-block;
     color: @link-color;
+    text-transform: uppercase;
+    font-size: .9em;
     &:hover {
         cursor:pointer;
     }
@@ -1297,6 +1289,23 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         float: right;
         margin-right: 2px;
         color: @gray-light;
+    }
+}
+.description.too-long {
+ 
+    & .more-link.wide {
+        margin-top: 10px;
+        height: 1px;
+        .box-shadow(1px 3px 58px 18px @body-bg);
+        & i {
+            display: none;
+        }
+        &:after {
+            border: none;
+        }
+    }
+    & .less-link.wide {
+        display: none !important;
     }
 }
 .less-link i {
