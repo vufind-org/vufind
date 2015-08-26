@@ -116,7 +116,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     {
         $params = [
             'openUrlImageBasedMode' => $this->getImageBasedLinkingMode(),
-            'openUrlImageBased' => null
+            'openUrlImageBasedSrc' => null
         ];
 
         if (null === $imagebased) {
@@ -134,28 +134,18 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                      dyn_graphic in config file.'
                 );
             }
-            $params['openUrlImageBasedBase'] = $this->config->dyn_graphic;
-            $params['openUrlImageBased'] = $this->recordDriver
-                ->tryMethod('getImageBasedOpenUrl');
 
-            // Fallback to normal OpenUrl if no specific image based open url
-            // is defined or if the method to get a specific image based
-            // open url is missing or not supported by the RecordDriver
-            if (!$params['openUrlImageBased']) {
-                $params['openUrlImageBased'] = $this->recordDriver->getOpenUrl();
-            }
+            // Check if we have an image-specific OpenURL to use to override
+            // the default value when linking the image.
+            $params['openUrlImageBasedOverride'] = $this->recordDriver
+                ->tryMethod('getImageBasedOpenUrl');
 
             // Concatenate image based OpenUrl base and OpenUrl
             // to a usable image reference
-            if (false !== strpos('?', $params['openUrlImageBasedBase'])) {
-                $params['openUrlImageBasedComplete']
-                    = $params['openUrlImageBasedBase']
-                    . '&' . $params['openUrlImageBased'];
-            } else {
-                $params['openUrlImageBasedComplete']
-                    = $params['openUrlImageBasedBase']
-                    . '?' . $params['openUrlImageBased'];
-            }
+            $base = $this->config->dyn_graphic;
+            $params['openUrlImageBasedSrc'] = $base
+                . ((false !== strpos('?', $base)) ? '&' : '?')
+                . $params['openUrlImageBased'];
         }
 
         return $params;
@@ -215,8 +205,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             'openUrlGraphicHeight' => empty($this->config->graphic_height)
                 ? false : $this->config->graphic_height,
             'openUrlEmbed' => $embed,
-            'openUrlEmbedAutoLoad' => $embedAutoLoad,
-            'openUrlId' => $counter
+            'openUrlEmbedAutoLoad' => $embedAutoLoad
         ] + $this->getImageBasedParams($imagebased);
 
         // Render the subtemplate:
