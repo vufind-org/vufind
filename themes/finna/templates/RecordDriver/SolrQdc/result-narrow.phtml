@@ -1,10 +1,5 @@
-<!-- start of Default result-list.phtml -->
-<? 
-    $formats = $this->driver->tryMethod('getFormats');
-    $this->record($this->driver)->getFormatClass(end($formats)) === '0database' ? $database = 'true' :  $database = 'false';
-    $this->record($this->driver)->getFormatClass(end($formats)) === '1journaleserial' ? $ejournal = 'true' :  $ejournal = 'false';
-    
-?>
+<!-- start of QDC result-list.phtml -->
+
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
   <div class="col-xs-12 narrow-collapse-toggle"> 
       <div class="col-sm-6 col-md-8">
@@ -95,7 +90,6 @@
   </div>
   <div class="clearfix"></div>
   <div class="narrow-collapse-data col-xs-12">
-  <? if  ($database === 'false' && $ejournal === 'false'): ?>
     <div class="col-xs-9 col-sm-push-2">
         <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
             <div class="resultClassification">
@@ -133,53 +127,25 @@
               </div>
             <? endforeach; ?>
           <? endif; ?>
-      
-      <div class="holding-details">
-      <?
-      /* Display information on duplicate records if available */
-      $dedupData = $this->driver->getDedupData();
-      if (count($dedupData) > 1): ?>
-        <div class="dedupInformation">
-            <select class="dedup-select form-control" role="listbox" aria-haspopup="true">
-            <? foreach ($dedupData as $source => $current): ?>
-              <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>" role="option"><?=$this->transEsc("source_$source", null, $source) ?></option>
-            <? endforeach; ?>
-            </select>
+      <? if ($abstracts = $this->driver->getAbstracts()): ?>
+        <div class="truncate-field wide">
+          <p class="summary">
+          <? if (isset($abstracts[$this->layout()->userLang])): ?>
+              <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
+            <? else: ?>
+              <?=implode('', array_map(array($this, 'escapeHtml'), $abstracts))?>
+            <? endif; ?>
+          </p>
         </div>
       <? else: ?>
-        <?
-          if (!empty($dedupData)) {
-            reset($dedupData);
-            $source = key($dedupData);
-          } else {
-            $source = $this->driver->tryMethod('getDataSource');
-          }
-        ?>
-        <? if ($source): ?>
-          <div class="dedupInformation">
-            <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
-          </div>
-        <? endif; ?>
+         <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+         <? if ($summary): ?>
+         <div class="truncate-field wide">
+            <p class="summary"><?=$summary ?></p>
+         </div>
+         <? endif; ?>
       <? endif; ?>
-
-      <div class="callnumAndLocation ajax-availability<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
-        <span class="availability-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/></span>
-        <? if ($this->driver->supportsAjaxStatus()): ?>
-          <strong class="hideIfDetailed"></strong>
-          <span class="callnumber ajax-availability hidden">
-          </span>
-          <span class="location ajax-availability hidden">
-          </span>
-          <div class="locationDetails clearfix"></div>
-        <? else: ?>
-          <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
-            <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
-          <? endif; ?>
-        <? endif; ?>
-        <div class="no-holdings<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
-          <?=$this->transEsc('No Holdings Available')?>
-        </div>
-      </div>
+      <div class="holding-details">
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Saved lists */ ?>
       <div class="savedLists alert alert-info hidden">
@@ -198,13 +164,7 @@
       <? $img = $this->recordImage($this->record($this->driver))?>
       <?= $img->render('list', array('medium' => array('w' => 250))) ?>
   </div>
-  <? endif; ?><? /* this will end layout for format other than database or e-magazines */ ?>
-  <? if ($database == 'true'): ?>
-    <?=$this->partial('RecordDriver/SolrDefault/result-narrow-database.phtml'); ?>
-  <? endif; ?>
-  <? if ($ejournal == 'true'): ?>
-    <?=$this->partial('RecordDriver/SolrDefault/result-narrow-ejournal.phtml'); ?>
-  <? endif; ?>
+
   <? endif; ?>
   <div class="clearfix visible-xs"></div>
   <div class="col-xs-12 col-sm-1 hidden-print add-to-favorite-col">
@@ -243,5 +203,5 @@
   </div>
   </div>
 </div>
-<!-- End of Default result-list.phtml -->
+<!-- start of QDC result-list.phtml -->
 

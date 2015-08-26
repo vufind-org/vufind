@@ -366,8 +366,9 @@ finna.layout = (function() {
     var initNarrowList = function () {
         $('.narrow-collapse-toggle').click(function(event) {
             if ((event.target.nodeName) != 'A' && (event.target.nodeName) != 'MARK') {
-              $(this).nextAll('.narrow-collapse-data').first().toggleClass('hidden');
+              $(this).nextAll('.narrow-collapse-data').first().slideToggle(120, 'linear');
               $('.fa-arrow-right', this).toggleClass('fa-arrow-down');
+              $(this).parent().parent().toggleClass('open');
             }
         });
     };

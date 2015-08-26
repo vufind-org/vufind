@@ -1,14 +1,16 @@
 .row.result.narrow-list-view {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    margin-bottom: 5px;
-    border-bottom: 1px solid @gray-lighter;
-    &:first-child {
-        padding-top: 8px;
-        
+    padding-top: 6px;
+    padding-bottom: 6px;
+    margin-bottom: 2px;
+//    border-bottom: 1px solid @gray-lighter;
+    transition: background .1s linear;
+    background: rgba(100,100,100,0.04);
+    &.open {
+        background: @body-bg;   
     }
-    & .narrow-collapse-toggle:hover {
-        cursor: pointer;
+    &:first-child {
+        padding-top: 6px;
+        
     }
     & .authorize {
         position: absolute;
@@ -22,11 +24,15 @@
         }
     }
     & .fa-info-database, .fa-browse-database {
-        font-size: 1.4em;    
+        margin-right: 3px;    
     }
     .narrow-collapse-toggle {
-        transition: background .1s linear;
-
+        a.title {
+            font-size: 1.25em;   
+        }
+        &:hover {
+            cursor: pointer;
+        }
         & a:hover {
                 background: transparent;   
         }
@@ -59,7 +65,17 @@
         }
     }
     .narrow-collapse-data {
+        display: none;
+        & .resultClassification {
+            margin-bottom: 10px;   
+        }
+        & .holding-details {
+            margin-top: 0;   
+        }
         margin-top: 15px;
+        & .summary {
+            line-height: 1.4em;   
+        }
         & .table-condensed tbody>tr>th {
             width: 150px;   
         }
