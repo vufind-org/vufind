@@ -157,7 +157,7 @@ function registerUpdateCart($form) {
 
 $(document).ready(function() {
   // Record buttons
-  $cartId = $('.cartId');
+  var $cartId = $('.cartId');
   if($cartId.length > 0) {
     $cartId.each(function() {
       var cartId = this.value.split('|');
