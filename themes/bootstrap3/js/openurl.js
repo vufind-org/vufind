@@ -20,8 +20,9 @@ function loadResolverLinks($target, openUrl) {
 
 function embedOpenUrlLinks(element) {
     var openUrl = element.children('span.openUrl:first').attr('title');
-    element.removeClass('openUrlEmbed').hide();
-    loadResolverLinks(element.next('div.resolver').removeClass('hidden'), openUrl);
+    var group = element.parents('.openUrlGroup');
+    group.find('.openUrlEmbed').removeClass('openUrlEmbed').hide();
+    loadResolverLinks(group.next('div.resolver').removeClass('hidden'), openUrl);
 }
 
 $(document).ready(function() {
