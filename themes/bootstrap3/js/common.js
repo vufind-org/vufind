@@ -331,7 +331,7 @@ function updatePageForLogin() {
 
   // refresh the comment list so the "Delete" links will show
   $('.commentList').each(function(){
-    var recordSource = extractSource($('#record'));
+    var recordSource = $(this).closest('.record').find('.hiddenSource').val();
     refreshCommentList(recordId, recordSource);
   });
 
