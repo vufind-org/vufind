@@ -110,14 +110,12 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      * @param bool $imagebased Indicates if an image based link
      * should be displayed or not (null for system default)
      *
-     * @return array
+     * @return void
      */
-    protected function getImageBasedParams($imagebased)
+    protected function addImageBasedParams($imagebased, & $params)
     {
-        $params = [
-            'openUrlImageBasedMode' => $this->getImageBasedLinkingMode(),
-            'openUrlImageBasedSrc' => null
-        ];
+        $params['openUrlImageBasedMode'] = $this->getImageBasedLinkingMode();
+        $params['openUrlImageBasedSrc'] = null;
 
         if (null === $imagebased) {
             $imagebased = $this->imageBasedLinkingIsActive();
@@ -143,9 +141,11 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             // Concatenate image based OpenUrl base and OpenUrl
             // to a usable image reference
             $base = $this->config->dyn_graphic;
+            $imageOpenUrl = $params['openUrlImageBasedOverride']
+                ? $params['openUrlImageBasedOverride'] : $params['openUrl'];
             $params['openUrlImageBasedSrc'] = $base
                 . ((false !== strpos('?', $base)) ? '&' : '?')
-                . $params['openUrlImageBased'];
+                . $imageOpenUrl;
         }
 
         return $params;
@@ -206,7 +206,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                 ? false : $this->config->graphic_height,
             'openUrlEmbed' => $embed,
             'openUrlEmbedAutoLoad' => $embedAutoLoad
-        ] + $this->getImageBasedParams($imagebased);
+        ];
+        $this->addImageBasedParams($imagebased, $params);
 
         // Render the subtemplate:
         return $this->context->__invoke($this->getView())->renderInContext(
