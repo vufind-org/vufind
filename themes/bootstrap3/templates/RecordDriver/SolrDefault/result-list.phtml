@@ -1,17 +1,13 @@
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
   <div class="row">
-    <div class="col-sm-2 col-xs-3 left">
+    <div>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-        <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-          <img class="recordcover" src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
-        <? else: ?>
-          <img class="recordcover" src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-        <? endif; ?>
-      </a>
     </div>
-    <div class="col-sm-7 col-xs-6 middle">
+    <? if ($cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver))): ?>
+      <div class="col-sm-2 col-xs-3 left"><?=$cover ?></div>
+    <? endif ?>
+    <div class="<?=$cover ? 'col-sm-7 col-xs-6' : 'col-sm-9 col-xs-9'?> middle">
       <div>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
           <?=$this->record($this->driver)->getTitleHtml()?>
@@ -70,27 +66,26 @@
 
       <?
       /* Display information on duplicate records if available */
-      $dedupData = $this->driver->getDedupData();
-      if ($dedupData): ?>
-      <div class="dedupInformation">
-      <?
-        $i = 0;
-        foreach ($dedupData as $source => $current) {
-          if (++$i == 1) {
-            ?><span class="currentSource"><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc("source_$source", array(), $source)?></a></span><?
-          } else {
-            if ($i == 2) {
-              ?> <span class="otherSources">(<?=$this->transEsc('Other Sources')?>: <?
+      if ($dedupData = $this->driver->getDedupData()): ?>
+        <div class="dedupInformation">
+        <?
+          $i = 0;
+          foreach ($dedupData as $source => $current) {
+            if (++$i == 1) {
+              ?><span class="currentSource"><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc("source_$source", array(), $source)?></a></span><?
             } else {
-              ?>, <?
+              if ($i == 2) {
+                ?> <span class="otherSources">(<?=$this->transEsc('Other Sources')?>: <?
+              } else {
+                ?>, <?
+              }
+              ?><a href="<?=$this->recordLink()->getUrl($current['id'])?>"><?=$this->transEsc("source_$source", array(), $source)?></a><?
             }
-            ?><a href="<?=$this->recordLink()->getUrl($current['id'])?>"><?=$this->transEsc("source_$source", array(), $source)?></a><?
           }
-        }
-        if ($i > 1) {
-          ?>)</span><?
-        }?>
-      </div>
+          if ($i > 1) {
+            ?>)</span><?
+          }?>
+        </div>
       <? endif; ?>
 
       <div class="callnumAndLocation ajax-availability hidden">
@@ -115,14 +110,15 @@
             but even if we don't plan to display the link, we still want to get the $openUrl
             value for use in generating a COinS (Z3988) tag -- see bottom of file.
           */
-        $openUrl = $this->driver->getOpenURL();
-        $openUrlActive = $this->driver->openURLActive('results');
-        $urls = $this->record($this->driver)->getLinkDetails();
+        $openUrl = $this->openUrl($this->driver, 'results');
+        $openUrlActive = $openUrl->isActive();
+        // Account for replace_other_urls setting
+        $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+
         if ($openUrlActive || !empty($urls)): ?>
         <? if ($openUrlActive): ?>
           <br/>
-          <?=$this->openUrl($openUrl)?>
-          <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
+          <?=$openUrl->renderTemplate()?>
         <? endif; ?>
         <? if (!is_array($urls)) $urls = array();
           if(!$this->driver->isCollection()):
@@ -181,7 +177,7 @@
         <? endforeach; ?>
       <? endif; ?>
 
-      <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
     </div>
   </div>
 </div>

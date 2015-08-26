@@ -130,8 +130,10 @@ class SolrMarc extends SolrDefault
             }
         }
 
-        // Send back everything we collected:
-        return $retval;
+        // Remove duplicates and then send back everything we collected:
+        return array_map(
+            'unserialize', array_unique(array_map('serialize', $retval))
+        );
     }
 
     /**

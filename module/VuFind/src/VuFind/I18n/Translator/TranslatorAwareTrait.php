@@ -125,8 +125,11 @@ trait TranslatorAwareTrait
      */
     protected function translateString($str, $tokens = [], $default = null)
     {
-        $msg = null === $this->translator
-            ? $str : $this->translator->translate($str);
+        // Figure out the text domain for the string:
+        list($domain, $str) = $this->extractTextDomain($str);
+
+        $msg = (null === $this->translator)
+            ? $str : $this->translator->translate($str, $domain);
 
         // Did the translation fail to change anything?  If so, use default:
         if (null !== $default && $msg == $str) {
@@ -144,5 +147,22 @@ trait TranslatorAwareTrait
         }
 
         return $msg;
+    }
+
+    /**
+     * Given a translation string with or without a text domain, return an
+     * array with the raw string and the text domain separated.
+     *
+     * @param string $str String to parse
+     *
+     * @return array
+     */
+    protected function extractTextDomain($str)
+    {
+        $parts = explode('::', $str);
+        if (count($parts) == 2) {
+            return $parts;
+        }
+        return ['default', $str];
     }
 }

@@ -7,14 +7,7 @@
   }
 ?>
 <? /* Display thumbnail if appropriate: */ ?>
-<? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
-<? if ($mediumThumb): ?>
-  <? if ($largeThumb): ?><a rel="external" href="<?=$this->escapeHtmlAttr($largeThumb)?>"><? endif; ?>
-    <div class="recordcover">
-      <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
-    </div>
-  <? if ($largeThumb): ?></a><? endif; ?>
-<? endif; ?>
+<?=$this->record($this->driver)->getCover('core', 'medium', $this->record($this->driver)->getThumbnail('large')); ?>
 
 <h3><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
 
@@ -140,18 +133,19 @@
   <? endif; ?>
 
   <?
-      $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
+      $openUrl = $this->openUrl($this->driver, 'record');
+      $openUrlActive = $openUrl->isActive();
       // Account for replace_other_urls setting
-      $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
+      $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
   ?>
-  <? if (!empty($urls) || $openUrl): ?>
+  <? if (!empty($urls) || $openUrlActive): ?>
     <dt><?=$this->transEsc('Online Access')?>: </dt>
     <dd>
       <? foreach ($urls as $current): ?>
         <p><a rel="external" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a></p>
       <? endforeach; ?>
-      <? if ($openUrl): ?>
-        <?=$this->openUrl($openUrl)?><br/>
+      <? if ($openUrlActive): ?>
+        <?=$openUrl->renderTemplate()?><br/>
       <? endif; ?>
     </dd>
   <? endif; ?>
