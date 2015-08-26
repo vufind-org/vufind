@@ -51,8 +51,11 @@ class ExtendedIniNormalizer
         $dir = rtrim($dir, '/');
         $handle = opendir($dir);
         while ($file = readdir($handle)) {
-            if (substr($file, -4) == '.ini') {
-                $this->normalizeFile($dir . '/' . $file);
+            $full = $dir . '/' . $file;
+            if ($file != '.' && $file != '..' && is_dir($full)) {
+                $this->normalizeDirectory($full);
+            } else if (substr($file, -4) == '.ini') {
+                $this->normalizeFile($full);
             }
         }
         closedir($handle);
