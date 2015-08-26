@@ -171,9 +171,6 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     public function renderTemplate($imagebased = null)
     {
-        // Static counter to ensure that each OpenURL gets a unique ID.
-        static $counter = 0;
-
         if (null !== $this->config && isset($this->config->url)) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
@@ -183,9 +180,6 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         $embed = (isset($this->config->embed) && !empty($this->config->embed));
-        if ($embed) {
-            $counter++;
-        }
 
         $embedAutoLoad = isset($this->config->embed_auto_load)
             ? $this->config->embed_auto_load : false;

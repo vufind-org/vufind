@@ -18,6 +18,12 @@ function loadResolverLinks($target, openUrl) {
     });
 }
 
+function embedOpenUrlLinks(element) {
+    var openUrl = element.children('span.openUrl:first').attr('title');
+    element.removeClass('openUrlEmbed').hide();
+    loadResolverLinks(element.next('div.resolver').removeClass('hidden'), openUrl);
+}
+
 $(document).ready(function() {
     // assign action to the openUrlWindow link class
     $('a.openUrlWindow').click(function(){
@@ -28,11 +34,8 @@ $(document).ready(function() {
     });
 
     // assign action to the openUrlEmbed link class
-    $('a.openUrlEmbed').click(function(){
-        var params = extractClassParams(this);
-        var openUrl = $(this).children('span.openUrl:first').attr('title');
-        $(this).hide();
-        loadResolverLinks($('#openUrlEmbed'+params.openurl_id).removeClass('hidden'), openUrl);
+    $('a.openUrlEmbed').click(function() {
+        embedOpenUrlLinks($(this));
         return false;
     });
 
