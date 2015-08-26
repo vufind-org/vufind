@@ -252,7 +252,6 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
         $items = array();
         $this->getContainer()->ksort();
         foreach ($this as $item) {
-            var_dump ($this->view->render('../js/'+$item->source));
             if (!$this->isValid($item)) {
                 continue;
             }
