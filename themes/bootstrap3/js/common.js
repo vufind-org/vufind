@@ -50,7 +50,7 @@ function html_entity_decode(string, quote_style)
 
 // Turn GET string into array
 function deparam(url) {
-  if(!url.match(/\?/)) {
+  if(!url.match(/\?|&/)) {
     return [];
   }
   var request = {};
@@ -118,7 +118,8 @@ function phoneNumberFormHandler(numID, regionCode) {
  * is called and the 'shown' lightbox event is triggered
  */
 function bulkActionSubmit($form) {
-  var submit = $form.find('[type="submit"][clicked=true]').attr('name');
+  var button = $form.find('[type="submit"][clicked=true]');
+  var submit = button.attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
     Lightbox.displayError(vufindString['bulk_noitems_advice']);
@@ -132,6 +133,8 @@ function bulkActionSubmit($form) {
     }
     document.location.href = url;
   } else {
+    $('#modal .modal-title').html(button.attr('title'));
+    Lightbox.titleSet = true;
     Lightbox.submit($form, Lightbox.changeContent);
   }
   return false;
@@ -140,15 +143,13 @@ function registerLightboxEvents() {
   var modal = $("#modal");
   // New list
   $('#make-list').click(function() {
-    var parts = this.href.split('?');
-    var get = deparam(parts[1]);
+    var get = deparam(this.href);
     get['id'] = 'NEW';
     return Lightbox.get('MyResearch', 'EditList', get);
   });
   // New account link handler
   $('.createAccountLink').click(function() {
-    var parts = this.href.split('?');
-    var get = deparam(parts[1]);
+    var get = deparam(this.href);
     return Lightbox.get('MyResearch', 'Account', get);
   });
   $('.back-to-login').click(function() {
@@ -455,6 +456,10 @@ $(document).ready(function() {
   Lightbox.addFormCallback('accountForm', newAccountHandler);
   Lightbox.addFormCallback('bulkDelete', function(html) {
     location.reload();
+  });
+  Lightbox.addFormCallback('bulkSave', function(html) {
+    Lightbox.addCloseAction(updatePageForLogin);
+    Lightbox.confirm(vufindString['bulk_save_success']);
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();

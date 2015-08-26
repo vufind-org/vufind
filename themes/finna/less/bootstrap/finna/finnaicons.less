@@ -24,8 +24,11 @@
     -moz-osx-font-smoothing: grayscale;
     text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 }
-[class^="fa-"]:hover, [class*=" fa-"]:hover {
+a [class^="fa-"]:hover, a [class*=" fa-"]:hover {
     cursor: pointer;
+}
+.disabled > a [class^="fa-"]:hover, .disabled a [class*=" fa-"]:hover {
+    cursor: not-allowed;   
 }
 .iconlabel {
   color: @gray;

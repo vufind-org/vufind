@@ -1,7 +1,21 @@
-<? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
-<? $showCheckboxes = !isset($this->hideCartControls) && $this->cart()->isActive() ?>
+<?
+  if (!isset($this->indexStart)) {
+    $this->indexStart = 0;
+  }
+  $showCheckboxes = !isset($this->hideCartControls) && $this->cart()->isActive();
+  $resultCount = $this->results->getResults();
+  $recommendationConfig = $this->searchTabsRecommendations()->getConfig();
+  $needRecommendationHolder = $this->results->getStartRecord() == 1 && !empty($recommendationConfig['recommendations'][$this->results->getParams()->getSearchClassId()]);
+  $haveRecommendationHolder = false;
+?>
 <? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
   $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
+  <? if ($needRecommendationHolder && ($recordNumber == (isset($recommendationConfig['position']) ? $recommendationConfig['position'] : 4) || $recordNumber == $resultCount)): ?>
+    <div id="search-tabs-recommendations-holder" data-search-hash="<?=$this->escapeHtmlAttr($this->results->getSearchHash())?>"></div>
+    <? // Make sure OpenURL resolution support is loaded, since recommendations may include OpenURL even if main search results don't ?>
+    <? $this->headScript()->appendFile("openurl.js"); ?>
+    <? $haveRecommendationHolder = true; ?>
+  <? endif; ?>
   <div id="result<?=$i++ ?>" class="row result clearfix">
     <div class="col-xs-1 hidden-print<? if ($showCheckboxes): ?> checkbox<? endif; ?> sr-only">
       <label>
@@ -14,3 +28,8 @@
     <?=$this->record($current)->getSearchResult('list')?>
   </div>
 <? endforeach; ?>
+<? if ($needRecommendationHolder && !$haveRecommendationHolder): ?>
+  <div id="search-tabs-recommendations-holder" data-search-hash="<?=$this->escapeHtmlAttr($this->results->getSearchHash())?>"></div>
+  <? // Make sure OpenURL resolution support is loaded, since recommendations may include OpenURL even if main search results don't ?>
+  <? $this->headScript()->appendFile("openurl.js"); ?>
+<? endif; ?>

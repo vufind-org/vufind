@@ -15,6 +15,10 @@
     .combined-search-results {
         margin: 10px 0 15px;
     }
+    & .result .combined-save-record {
+        margin-top: 10px;
+        font-size: 1.05em;
+    }
     & h4 {
         display: inline;   
     }
@@ -50,6 +54,25 @@
                 margin-top: 20px;
                 border-bottom: none;
             }
+        }
+    }
+    & .image-popup-trigger img {
+        @media(max-width:@screen-sm-max) and (min-width: @screen-sm-min) {
+            box-shadow: none;
+        }
+    }
+    & .image-popup-trigger .iconlabel:before {
+        font-size: 22px;
+        top: 27%;
+        left: 39%;
+        @media(max-width:@screen-md-max) and (min-width: @screen-md-min) {
+            top: 19%;
+            left: 37%;
+        }
+    }
+    & .filters-active {
+        & .fa {
+            float: right;
         }
     }
 }
