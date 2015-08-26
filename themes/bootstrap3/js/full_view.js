@@ -21,7 +21,7 @@ function ajaxFLLoadTab(tabid, reload) {
   }
   var tab = tabid.split('_');
   tab = tab[0];
-  if(reload || $('#'+tabid+'-tab').is(':empty')) {
+  if(!$('#'+tabid).hasClass('noajax') && (reload || $('#'+tabid+'-tab').is(':empty'))) {
     $.ajax({
       url: path + '/' + urlroot + '/' + id + '/AjaxTab',
       type: 'POST',
