@@ -352,7 +352,12 @@ function updatePageForLogin() {
   }
   if(typeof ajaxFLLoadTab == "function") {
     var $activeTab = $('.search_tabs .recordTabs li.active a');
-    ajaxFLLoadTab($activeTab.attr('id'), true);
+    if($activeTab.length === 0) {
+      $activeTab = $('.panel-heading:not(.collapsed)');
+      ajaxFLLoadTab($activeTab.data('target').substring(1), true);
+    } else {
+      ajaxFLLoadTab($activeTab.attr('id'), true);
+    }
   }
   // Refresh tag list
   if(typeof refreshTagList === "function") {

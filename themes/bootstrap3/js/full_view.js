@@ -67,7 +67,7 @@ $(document).ready(function() {
               longNode.html(response.data);
               loadingNode.addClass("hidden");
               registerLightboxRecordActions(longNode, div_id);
-              Lightbox.addFormCallback('tagRecord',   function() {
+              Lightbox.addFormCallback('tagRecord', function() {
                 refreshTagList(true, longNode);
                 Lightbox.confirm(vufindString['add_tag_success']);
               });
@@ -75,7 +75,9 @@ $(document).ready(function() {
                 return ajaxFLLoadTab($(this).attr('id'));
               });
               longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(function() {
-                return registerAjaxCommentRecord(longNode.find('[id^=usercomment]').find('input[type=submit]').closest('form'));
+                return registerAjaxCommentRecord(
+                  longNode.find('[id^=usercomment]').find('input[type=submit]').closest('form')
+                );
               });
             }
           }

@@ -22,7 +22,6 @@
 
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
-  </div>
 <div class="panel-group" id="accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>">
   <div class="panel panel-default">
     <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-target="#title-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" style="cursor: pointer">
@@ -95,4 +94,5 @@
 </div>
 
   <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
+  </div>
 </div>
