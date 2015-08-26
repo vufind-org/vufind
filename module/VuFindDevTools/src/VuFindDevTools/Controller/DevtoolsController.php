@@ -148,11 +148,9 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     /**
      * Get text domains for a language.
      *
-     * @param string $lang Language to load
-     *
      * @return array
      */
-    protected function getTextDomains($lang)
+    protected function getTextDomains()
     {
         static $domains = false;
         if (!$domains) {
@@ -182,7 +180,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     protected function loadLanguage(ExtendedIni $loader, $lang)
     {
         $base = $loader->load($lang, null);
-        foreach ($this->getTextDomains($lang) as $domain) {
+        foreach ($this->getTextDomains() as $domain) {
             $current = $loader->load($lang, $domain);
             foreach ($current as $k => $v) {
                 if ($k != '@parent_ini') {
