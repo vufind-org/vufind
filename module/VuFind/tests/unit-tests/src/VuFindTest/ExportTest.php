@@ -82,7 +82,7 @@ class ExportTest extends \PHPUnit_Framework_TestCase
             ],
         ];
         $export = $this->getExport($config);
-        $this->assertEquals(['foo', 'bar'], $export->getActiveFormats('bulkExport'));
+        $this->assertEquals(['foo', 'bar'], $export->getActiveFormats('bulk'));
     }
 
     /**
