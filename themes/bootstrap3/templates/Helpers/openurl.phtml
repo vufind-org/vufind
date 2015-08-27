@@ -37,11 +37,11 @@
   <? endif; ?>
 
   <? if ($this->openUrlImageBasedSrc): ?>
-      <? $ibOpenUrl = $this->openUrlImageBasedOverride ? $this->openUrlImageBasedOverride : $this->openUrl; ?>
-      <a href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $ibOpenUrl)?>"<?=$class_ib?>>
-        <span title="<?=$this->escapeHtmlAttr($ibOpenUrl)?>" class="openUrl"></span>
-        <img data-recordid="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" src="<?=$this->escapeHtmlAttr($this->openUrlImageBasedSrc)?>" alt="<?=$this->transEsc('Get full text')?>" />
-      </a>
+    <? $ibOpenUrl = $this->openUrlImageBasedOverride ? $this->openUrlImageBasedOverride : $this->openUrl; ?>
+    <a href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $ibOpenUrl)?>"<?=$class_ib?>>
+      <span title="<?=$this->escapeHtmlAttr($ibOpenUrl)?>" class="openUrl"></span>
+      <img data-recordid="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" src="<?=$this->escapeHtmlAttr($this->openUrlImageBasedSrc)?>" alt="<?=$this->transEsc('Get full text')?>" />
+    </a>
   <? endif; ?>
 </span>
 
