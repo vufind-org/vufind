@@ -1,21 +1,20 @@
 <?
   $this->headScript()->appendFile("openurl.js");
+  $classes = '';
   if ($this->openUrlEmbed) {
-    $classes = "fulltext openUrlEmbed"
-      . ($this->openUrlEmbedAutoLoad ? ' openUrlEmbedAutoLoad' : '');
-    $class = ' class="' . $classes . '"';
-    $class_ib = ' class="imagebased ' . $classes . '"';
+    $classes = "fulltext";
   } elseif ($this->openUrlWindow) {
     $classes = 'fulltext openUrlWindow window_settings:' . $this->escapeHtmlAttr($this->openUrlWindow);
+  }
+  if (!empty($classes)) {
     $class = ' class="' . $classes . '"';
     $class_ib = ' class="imagebased ' . $classes . '"';
   } else {
-    $class = '';
-    $class_ib = '';
+    $class = $class_ib = '';
   }
 ?>
 
-<span class="openUrlGroup">
+<span class="openUrlGroup<? if ($this->openUrlEmbed): ?> openUrlEmbed<? if ($this->openUrlEmbedAutoLoad): ?> openUrlEmbedAutoLoad<? endif; ?><? endif; ?>">
   <? if (!$this->openUrlImageBasedSrc || $this->openUrlImageBasedMode == 'both'): ?>
   <a href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $this->openUrl)?>"<?=$class?>>
     <? /* put the openUrl here in a span (COinS almost) so we can retrieve it later */ ?>

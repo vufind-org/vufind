@@ -21,8 +21,13 @@ function loadResolverLinks($target, openUrl) {
 function embedOpenUrlLinks(element) {
     var openUrl = element.children('span.openUrl:first').attr('title');
     var group = element.parents('.openUrlGroup');
-    group.find('.openUrlEmbed').removeClass('openUrlEmbed').hide();
-    loadResolverLinks(group.next('div.resolver').removeClass('hidden'), openUrl);
+    group.removeClass('openUrlEmbed').addClass('hidden');
+    var target = group.next('div.resolver');
+    // If the target is already visible, a previous click has populated it;
+    // don't waste time doing redundant work.
+    if (target.hasClass('hidden')) {
+        loadResolverLinks(target.removeClass('hidden'), openUrl);
+    }
 }
 
 $(document).ready(function() {
@@ -35,10 +40,10 @@ $(document).ready(function() {
     });
 
     // assign action to the openUrlEmbed link class
-    $('a.openUrlEmbed').click(function() {
+    $('.openUrlEmbed a').click(function() {
         embedOpenUrlLinks($(this));
         return false;
     });
 
-    $('a.openUrlEmbed.openUrlEmbedAutoLoad').trigger("click");
+    $('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger("click");
 });
