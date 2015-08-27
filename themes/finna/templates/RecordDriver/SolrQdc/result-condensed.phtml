@@ -1,0 +1,207 @@
+<!-- start of QDC result-condensed.phtml -->
+
+<div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
+  <div class="col-xs-12 condensed-collapse-toggle">
+      <div class="col-sm-6 col-md-8">
+        <i class="fa fa-arrow-right"></i>
+          <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+            <?=$this->record($this->driver)->getTitleHtml()?>
+          </a>
+          <div class="resultOtherLinks">
+          <div class="resultItemFormat"><?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?></div>
+          <? if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
+              <? $prevOtherLinkHeading = ''; ?>
+              <? foreach ($results as $result): ?>
+                <?=$prevOtherLinkHeading != $result['heading'] ? $this->transEsc('link_' . $result['heading'], null, $result['heading']) : '&nbsp;' ?>
+                <? if (!empty($result['isn'])): ?>
+                  <? $otherLinkTitle = !empty($result['title']) ? $result['title'] : $result['isn']; ?>
+                  <a title="<?=$this->escapeHtmlAttr($otherLinkTitle) ?>" href="<?=$this->record($this->driver)->getLink('isn', $result['isn']) ?>">
+                    <?=$this->escapeHtml($otherLinkTitle); ?>
+                  </a>
+                <? elseif (!empty($result['title'])): ?>
+                  <a title="<?=$this->escapeHtmlAttr($result['title']) ?>" href="<?=$this->record($this->driver)->getLink('title', $result['title']) ?>">
+                    <?=$this->escapeHtml($result['title']); ?>
+                  </a>
+                <? endif; ?>
+                <? if (!empty($result['author'])): ?>
+                  (<?=$this->escapeHtml($result['author']); ?>)
+                <? endif; ?>
+              <? endforeach; ?>
+            <? endif; ?>
+
+            <? if($this->driver->isCollection()): ?>
+              <?=implode('<br>', $this->driver->getSummary()); ?>
+            <? else: ?>
+              <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
+                <? $authorForSearch = $this->driver->tryMethod('getPrimaryAuthorForSearch'); ?>
+                <a href="<?=$this->record($this->driver)->getLink('author', $authorForSearch ? $authorForSearch : $summAuthor)?>"><?=$this->escapeHtml($summAuthor) ?></a>
+              <? else: ?>
+                <? $authors = $this->driver->tryMethod('getNonPresenterAuthors'); if (!empty($authors)): ?>
+                <div class="truncate-field" data-rows="2">
+                  <? foreach ($authors as $i => $author): ?>
+                    <?=$i > 0 ? ' ; ' : '' ?>
+                    <a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>">
+                      <?=$this->escapeHtml($author['name']) ?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role']) ?><? endif; ?>
+                    </a>
+                  <? endforeach; ?>
+                </div>
+                <? endif; ?>
+              <? endif; ?>
+              <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
+              <? if (!empty($journalTitle)): ?>
+                <?=!empty($summAuthor) ? '' : ' '?>
+                <?
+                $parentId = $this->driver->getHierarchyParentId();
+                $parentLink = false;
+                if ($parentId) {
+                  try {
+                    $parentLink = $this->recordLink()->getUrl("VuFind|{$parentId[0]}");
+                  } catch (Exception $e) {
+                    // Probably parent record doesn't exist, fall back to linking by title
+                  }
+                }
+                if ($parentLink === false) {
+                  $parentLink = $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle));
+                }
+                ?>
+                <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $parentLink . '">' . $this->highlight($journalTitle) . '</a>';?>
+                <? $ref = $this->driver->getContainerReference(); if (!empty($ref)): ?>
+                  <?=$this->escapeHtml($ref); ?>
+                <? else: ?>
+                  <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
+                <? endif; ?>
+              <? elseif (!empty($summDate)): ?>
+                <?=!empty($summAuthor) ? '' : ' '?>
+                <span class="publish-year"><?=$this->escapeHtml($summDate[0])?></span>
+              <? endif; ?>
+          </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <?=$this->record($this->driver)->getOnlineUrls('results')?>
+        <?=$this->record($this->driver)->getPreviews()?>
+        <? /*** TODO how to show if this database usage needs authorizing
+                <? if  ($database == 'true') && ($authorize == 'true') :?>
+          <span class="authorize">
+            <i class="fa fa-lock"></i>
+          </span>
+        <? endif; ?>
+        ***/ ?>
+      </div>
+  </div>
+  <div class="clearfix"></div>
+  <div class="condensed-collapse-data col-xs-12">
+    <div class="col-xs-9 col-sm-push-2">
+        <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
+            <div class="resultClassification">
+              <?=$this->transEsc('Classification') ?>:
+              <?
+                $result = '';
+                $i = 0;
+                $more = false;
+                foreach ($classifications as $class => $field) {
+                  $result .= $i++ > 0 ? ', ' : '';
+                  foreach ($field as $j => $subfield) {
+                    if ($j > 0) {
+                      $more = true;
+                      break;
+                    }
+                    $result .= $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
+                  }
+                }
+                if ($more) {
+                  $result .= '&hellip;';
+                }
+              ?>
+              <?=$result ?>
+            </div>
+        <? endif; ?>
+
+
+          <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
+            <? foreach ($summInCollection as $collId => $collText): ?>
+              <div>
+                <b><?=$this->transEsc("in_collection_label")?></b>
+                <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+                  <?=$this->escapeHtml($collText)?>
+                </a>
+              </div>
+            <? endforeach; ?>
+          <? endif; ?>
+      <? if ($abstracts = $this->driver->getAbstracts()): ?>
+        <div class="truncate-field wide">
+          <p class="summary">
+          <? if (isset($abstracts[$this->layout()->userLang])): ?>
+              <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
+            <? else: ?>
+              <?=implode('', array_map(array($this, 'escapeHtml'), $abstracts))?>
+            <? endif; ?>
+          </p>
+        </div>
+      <? else: ?>
+         <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+         <? if ($summary): ?>
+         <div class="truncate-field wide">
+            <p class="summary"><?=$summary ?></p>
+         </div>
+         <? endif; ?>
+      <? endif; ?>
+      <div class="holding-details">
+      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <? /* Saved lists */ ?>
+      <div class="savedLists alert alert-info hidden">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+      <? endif; ?>
+      <? if ($this->layout()->templateDir === 'list'): ?>
+        <?=$this->render('list/list-notes.phtml')?>
+      <? endif; ?>
+    </div>
+
+  </div>
+  <div class="col-xs-3 col-sm-2 col-sm-pull-9 resultThumb">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <? $img = $this->recordImage($this->record($this->driver))?>
+      <?= $img->render('list', array('medium' => array('w' => 250))) ?>
+  </div>
+
+  <? endif; ?>
+  <div class="clearfix visible-xs"></div>
+  <div class="col-xs-12 col-sm-1 hidden-print add-to-favorite-col">
+      <? /* Display qrcode if appropriate: */ ?>
+      <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+        <?
+          // Add JS Variables for QrCode
+          $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
+        ?>
+        <div class="hidden-xs">
+          <i class="fa fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
+          <div class="qrcode hidden">
+            <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+          </div><br/>
+        </div>
+      <? endif; ?>
+
+      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <? /* Add to favorites */ ?>
+        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
+      <? endif; ?>
+      <? /* Hierarchy tree link */ ?>
+      <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+        <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+          <div class="hierarchyTreeLink">
+            <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
+            <i class="fa fa-sitemap"></i>
+            <a class="hierarchyTreeLinkText modal-link" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
+              <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
+            </a>
+          </div>
+        <? endforeach; ?>
+      <? endif; ?>
+
+      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+  </div>
+  </div>
+</div>
+<!-- start of QDC result-condensed.phtml -->
+

@@ -372,6 +372,16 @@ finna.layout = (function() {
       }
     };
 
+    var initCondensedList = function () {
+        $('.condensed-collapse-toggle').click(function(event) {
+            if ((event.target.nodeName) != 'A' && (event.target.nodeName) != 'MARK') {
+              $(this).nextAll('.condensed-collapse-data').first().slideToggle(120, 'linear');
+              $('.fa-arrow-right', this).toggleClass('fa-arrow-down');
+              $(this).parent().parent().toggleClass('open');
+            }
+        });
+    };
+
     var initSaveRecordLinks = function(holder) {
         if (typeof(holder) == "undefined") {
             holder = $("body");
@@ -507,6 +517,7 @@ finna.layout = (function() {
             initResizeListener();
             initScrollLinks();
             initSearchboxFunctions();
+            initCondensedList();
             checkSaveStatuses();
             initAuthorizationNotification();
         }
