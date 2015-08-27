@@ -72,7 +72,7 @@ class ExportTest extends \PHPUnit_Framework_TestCase
         $config = [
             'Export' => [
                 'foo' => 'record,bulk',
-                'bar' => 'record,bulk'',
+                'bar' => 'record,bulk',
                 'baz' => 0,
                 'xyzzy' => 1,
             ],
