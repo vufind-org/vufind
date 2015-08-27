@@ -38,12 +38,12 @@
 <? endif; ?>
 <? foreach ($holdings as $holding): ?>
 <h4>
-<? $locationText = $this->transEsc('location_' . $holding['location'], array(), $holding['location']); ?>
-<? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
-  <a href="<?=$holding['locationhref']?>" rel="external"><?=$locationText?></a>
-<? else: ?>
-  <?=$locationText?>
-<? endif; ?>
+  <? $locationText = $this->transEsc('location_' . $holding['location'], array(), $holding['location']); ?>
+  <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
+    <a href="<?=$holding['locationhref']?>" rel="external"><?=$locationText?></a>
+  <? else: ?>
+    <?=$locationText?>
+  <? endif; ?>
 </h4>
 <table class="holdings" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
