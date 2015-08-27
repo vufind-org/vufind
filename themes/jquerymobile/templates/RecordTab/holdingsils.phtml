@@ -38,12 +38,11 @@
 <? endif; ?>
 <? foreach ($holdings as $holding): ?>
 <h4>
-<? if ($holding['locationhref']): ?>
-  <a href="<?=$item['locationhref']?>" target="_blank">
-    <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
-  </a>
+<? $locationText = $this->transEsc('location_' . $holding['location'], array(), $holding['location']); ?>
+<? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
+  <a href="<?=$holding['locationhref']?>" rel="external"><?=$locationText?></a>
 <? else: ?>
-  <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
+  <?=$locationText?>
 <? endif; ?>
 </h4>
 <table class="holdings" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
