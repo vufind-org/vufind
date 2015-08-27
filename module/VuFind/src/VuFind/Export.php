@@ -82,7 +82,7 @@ class Export
      */
     public function getBulkOptions()
     {
-        return $this->getActiveFormats('bulk');      
+        return $this->getActiveFormats('bulk');
     }
 
     /**
@@ -257,7 +257,6 @@ class Export
     {
         // Get an array of enabled export formats (from config, or use defaults
         // if nothing in config array).
-       
         $active = $this->getActiveFormats('record');
         
         // Loop through all possible formats:
@@ -350,7 +349,7 @@ class Export
      *
      * @return array
      */
-    public function getActiveFormats($context='record') 
+    public function getActiveFormats($context = 'record') 
     {
         if (in_array($context, $this->activeFormats)) {
             return $this->activeFormats[$context];
@@ -361,7 +360,7 @@ class Export
         : ['RefWorks' => 'record', 'EndNote' => 'record'];
     
         $this->activeFormats[$context] = [];
-        foreach ($formatSettings as $format=>$allowedContexts) {
+        foreach ($formatSettings as $format => $allowedContexts) {
             if (strpos($allowedContexts, $context) !== false
                 || ($context == 'record' && $allowedContexts == 1)
             ) {
