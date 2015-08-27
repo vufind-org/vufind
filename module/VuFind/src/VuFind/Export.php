@@ -349,7 +349,7 @@ class Export
      *
      * @return array
      */
-    public function getActiveFormats($context = 'record') 
+    public function getActiveFormats($context = 'record')
     {
         if (in_array($context, $this->activeFormats)) {
             return $this->activeFormats[$context];
