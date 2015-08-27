@@ -354,7 +354,7 @@ finna.layout = (function() {
         $('.autocomplete').typeahead('val', '');
         $('.clear-button').addClass('hidden');
         $('#searchForm_lookfor').focus();
-      });     
+      });
       $('.autocomplete').on('typeahead:selected', function () {
         $('.navbar-form').submit();
       });
@@ -468,6 +468,18 @@ finna.layout = (function() {
         return refreshPage;
     };
 
+    var updateLoginName = function() {
+        $.ajax({
+            dataType: 'json',
+            url: path + '/AJAX/JSON?method=getUserDisplayName',
+            success: function (response) {
+                if (response.status == 'OK') {
+                    $('.logoutOptions .username').text(response.data);
+                }
+            }
+        });
+    }
+
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -477,6 +489,7 @@ finna.layout = (function() {
         checkSaveStatuses: checkSaveStatuses,
         initSaveRecordLinks: initSaveRecordLinks,
         initLightbox: initLightbox,
+        updateLoginName: updateLoginName,
         init: function() {
             $('select.jumpMenu').unbind('change').change(function() { $(this).closest('form').submit(); });
             $('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });
