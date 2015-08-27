@@ -54,7 +54,8 @@ class Export
     protected $exportConfig;
 
     /**
-     * Property to cache active formats (initialized to empty array , populated later)
+     * Property to cache active formats 
+     * (initialized to empty array , populated later)
      *
      * @var array
      */
@@ -73,9 +74,9 @@ class Export
     }
 
     /**
-     * @deprecated
-     * 
      * Get bulk export options.
+     *
+     * @deprecated use getActiveFormats($context) instead
      *
      * @return array
      */
@@ -342,7 +343,15 @@ class Export
             ? $this->mainConfig->BulkExport->defaultType : 'link';
     }
 
-    public function getActiveFormats($context='record') {
+    /**
+     * Get active export formats for the given context.
+     *
+     * @param string $context Export context (i.e. record, bulk)
+     *
+     * @return array
+     */
+    public function getActiveFormats($context='record') 
+    {
         if (in_array($context, $this->activeFormats)) {
             return $this->activeFormats[$context];
         }
@@ -353,9 +362,9 @@ class Export
     
         $this->activeFormats[$context] = [];
         foreach ($formatSettings as $format=>$allowedContexts) {
-            if (strpos($allowedContexts,$context) !== false
-                    || ($context == 'record' && $allowedContexts == 1))
-            {
+            if (strpos($allowedContexts, $context) !== false
+                || ($context == 'record' && $allowedContexts == 1)
+            ) {
                 $this->activeFormats[$context][] = $format;
             }
         }
@@ -364,19 +373,20 @@ class Export
         if ($context == 'bulk') {
     
             if (isset($this->mainConfig->BulkExport->enabled)
-                    && isset($this->mainConfig->BulkExport->options)
-                    && $this->mainConfig->BulkExport->enabled
+                && isset($this->mainConfig->BulkExport->options)
+                && $this->mainConfig->BulkExport->enabled
             ) {
                 $config = explode(':', $this->mainConfig->BulkExport->options);
                 foreach ($config as $option) {
                     if (isset($this->mainConfig->Export->$option)
-                            && $this->mainConfig->Export->$option == true
+                        && $this->mainConfig->Export->$option == true
                     ) {
                         $this->activeFormats[$context][] = $option;
                     }
                 }
             }
-            $this->activeFormats[$context] = array_unique($this->activeFormats[$context]);
+            $this->activeFormats[$context]
+                = array_unique($this->activeFormats[$context]);
         }
         return $this->activeFormats[$context];
     }
