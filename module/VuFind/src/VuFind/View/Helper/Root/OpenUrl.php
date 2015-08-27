@@ -107,8 +107,9 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Support method for renderTemplate() -- process image based parameters.
      *
-     * @param bool $imagebased Indicates if an image based link
+     * @param bool  $imagebased Indicates if an image based link
      * should be displayed or not (null for system default)
+     * @param array $params     OpenUrl parameters set so far
      *
      * @return void
      */
