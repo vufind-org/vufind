@@ -54,12 +54,12 @@ class Export
     protected $exportConfig;
 
     /**
-     * Bulk options (initialized to boolean false, populated later)
+     * Property to cache active formats (initialized to empty array , populated later)
      *
-     * @var array|bool
+     * @var array
      */
-    protected $bulkOptions = false;
-
+    protected $activeFormats = [];
+    
     /**
      * Constructor
      *
@@ -81,8 +81,7 @@ class Export
      */
     public function getBulkOptions()
     {
-        $this->bulkOptions = $this->getActiveFormats('bulk');
-        return $this->bulkOptions;
+        return $this->getActiveFormats('bulk');      
     }
 
     /**
@@ -344,16 +343,20 @@ class Export
     }
 
     public function getActiveFormats($context='record') {
+        if (in_array($context, $this->activeFormats)) {
+            return $this->activeFormats[$context];
+        }
+        
         $formatSettings = isset($this->mainConfig->Export)
         ? $this->mainConfig->Export->toArray()
         : ['RefWorks' => 'record', 'EndNote' => 'record'];
     
-        $active = [];
+        $this->activeFormats[$context] = [];
         foreach ($formatSettings as $format=>$allowedContexts) {
             if (strpos($allowedContexts,$context) !== false
                     || ($context == 'record' && $allowedContexts == 1))
             {
-                $active[] = $format;
+                $this->activeFormats[$context][] = $format;
             }
         }
          
@@ -369,12 +372,12 @@ class Export
                     if (isset($this->mainConfig->Export->$option)
                             && $this->mainConfig->Export->$option == true
                     ) {
-                        $active[] = $option;
+                        $this->activeFormats[$context][] = $option;
                     }
                 }
             }
-            $active = array_unique($active);
+            $this->activeFormats[$context] = array_unique($this->activeFormats[$context]);
         }
-        return $active;
+        return $this->activeFormats[$context];
     }
 }
