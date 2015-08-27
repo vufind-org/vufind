@@ -361,7 +361,7 @@ class Export
         }
          
         // for legacy settings [BulkExport]
-        if ($context == 'bulkExport') {
+        if ($context == 'bulk') {
     
             if (isset($this->mainConfig->BulkExport->enabled)
                     && isset($this->mainConfig->BulkExport->options)
