@@ -1,3 +1,4 @@
+<!-- Start of Default result-condensed-ejournal.phtml -->
 <div class="col-xs-12 col-sm-11">
 <table class="table table-condensed">
   <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
@@ -6,7 +7,7 @@
       <td><? foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br/><? endforeach; ?></td>
     </tr>
   <? endif; ?>
-  
+
   <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
     <tr class="recordPublications">
       <th><?=$this->transEsc('Publisher')?>: </th>
@@ -39,7 +40,7 @@
       </td>
     </tr>
   <? endif; ?>
-  
+
   <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
     <tr>
       <th><?=$this->transEsc('Subjects')?>:</th>
@@ -58,6 +59,7 @@
       </td>
     </tr>
   <? endif; ?>
-  
+
 </table>
 </div>
+<!-- End of Default result-condensed-ejournal.phtml -->

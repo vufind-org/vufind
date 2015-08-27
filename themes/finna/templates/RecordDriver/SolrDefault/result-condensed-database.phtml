@@ -1,3 +1,4 @@
+<!-- Start of Default result-condensed-database.phtml -->
 <? $subjects = $this->driver->getAllSubjectHeadings(); ?>
 <div class="col-xs-12 <?= !empty($subjects) ? 'col-sm-8' : 'col-sm-11' ?>">
   <div class="description">
@@ -9,9 +10,9 @@
         <? endforeach; ?>
       </p>
   <? endif; ?>
-  </div> 
+  </div>
 </div>
-  
+
 <? if (!empty($subjects)): ?>
 <div class="col-xs-12 col-sm-3">
   <h5><?=$this->transEsc('Subjects')?>: </h5>
@@ -28,3 +29,4 @@
     <? endforeach; ?>
 </div>
 <? endif; ?>
+<!-- End of Default result-condensed-database.phtml -->
