@@ -70,13 +70,9 @@ class ExportTest extends \PHPUnit_Framework_TestCase
     public function testGetActiveFormats()
     {
         $config = [
-            'BulkExport' => [
-                'enabled' => 1,
-                'options' => 'foo:bar:baz',
-            ],
             'Export' => [
-                'foo' => 1,
-                'bar' => 1,
+                'foo' => record,bulk,
+                'bar' => record,bulk,
                 'baz' => 0,
                 'xyzzy' => 1,
             ],
