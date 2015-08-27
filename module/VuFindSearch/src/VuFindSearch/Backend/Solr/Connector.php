@@ -71,9 +71,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     const MAX_GET_URL_LENGTH = 2048;
 
     /**
-     * URL of SOLR core.
+     * URL or an array of alternative URLs of the SOLR core.
      *
-     * @var string
+     * @var string|array
      */
     protected $url;
 
@@ -117,9 +117,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param string     $url       SOLR base URL
-     * @param HandlerMap $map       Handler map
-     * @param string     $uniqueKey Solr field used to store unique identifier
+     * @param string|array $url       SOLR core URL or an array of alternative URLs
+     * @param HandlerMap   $map       Handler map
+     * @param string       $uniqueKey Solr field used to store unique identifier
      *
      * @return void
      */
@@ -248,29 +248,39 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $handler = 'update', ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
-        $url    = "{$this->url}/{$handler}";
-        if (count($params) > 0) {
-            $url .= '?' . implode('&', $params->request());
+
+        $urlArray = is_array($this->url) ? $this->url : [$this->url];
+        $exception = null;
+        foreach ($urlArray as $url) {
+            $url .= "/$handler";
+            if (count($params) > 0) {
+                $url .= '?' . implode('&', $params->request());
+            }
+            $client = $this->createClient($url, 'POST');
+            switch ($format) {
+            case 'xml':
+                $client->setEncType('text/xml; charset=UTF-8');
+                $body = $document->asXML();
+                break;
+            case 'json':
+                $client->setEncType('application/json');
+                $body = $document->asJSON();
+                break;
+            default:
+                throw new InvalidArgumentException(
+                    "Unable to serialize to selected format: {$format}"
+                );
+            }
+            $client->setRawBody($body);
+            $client->getRequest()->getHeaders()
+                ->addHeaderLine('Content-Length', strlen($body));
+            try {
+                return $this->send($client);
+            } catch (\Exception $e) {
+                $exception = $e;
+            }
         }
-        $client = $this->createClient($url, 'POST');
-        switch ($format) {
-        case 'xml':
-            $client->setEncType('text/xml; charset=UTF-8');
-            $body = $document->asXML();
-            break;
-        case 'json':
-            $client->setEncType('application/json');
-            $body = $document->asJSON();
-            break;
-        default:
-            throw new InvalidArgumentException(
-                "Unable to serialize to selected format: {$format}"
-            );
-        }
-        $client->setRawBody($body);
-        $client->getRequest()->getHeaders()
-            ->addHeaderLine('Content-Length', strlen($body));
-        return $this->send($client);
+        throw $exception;
     }
 
     /**
@@ -344,27 +354,34 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      */
     public function query($handler, ParamBag $params)
     {
-
-        $url         = $this->url . '/' . $handler;
         $paramString = implode('&', $params->request());
         if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
         } else {
             $method = Request::METHOD_GET;
         }
+        $urlArray = is_array($this->url) ? $this->url : [$this->url];
+        $exception = '';
+        foreach ($urlArray as $url) {
+            $url .= "/$handler";
+            if ($method === Request::METHOD_POST) {
+                $client = $this->createClient($url, $method);
+                $client->setRawBody($paramString);
+                $client->setEncType(HttpClient::ENC_URLENCODED);
+                $client->setHeaders(['Content-Length' => strlen($paramString)]);
+            } else {
+                $url = $url . '?' . $paramString;
+                $client = $this->createClient($url, $method);
+            }
 
-        if ($method === Request::METHOD_POST) {
-            $client = $this->createClient($url, $method);
-            $client->setRawBody($paramString);
-            $client->setEncType(HttpClient::ENC_URLENCODED);
-            $client->setHeaders(['Content-Length' => strlen($paramString)]);
-        } else {
-            $url = $url . '?' . $paramString;
-            $client = $this->createClient($url, $method);
+            $this->debug(sprintf('Query %s', $paramString));
+            try {
+                return $this->send($client);
+            } catch (\Exception $e) {
+                $exception = $e;
+            }
         }
-
-        $this->debug(sprintf('Query %s', $paramString));
-        return $this->send($client);
+        throw $exception;
     }
 
     /**
