@@ -352,38 +352,40 @@ $(document).ready(function() {
     });
 
   // Search autocomplete
-  $('.autocomplete').typeahead(
-    {
-      highlight: true,
-      minLength: 3
-    }, {
-      displayKey:'val',
-      source: function(query, cb) {
-        var searcher = extractClassParams('.autocomplete');
-        $.ajax({
-          url: path + '/AJAX/JSON',
-          data: {
-            q:query,
-            method:'getACSuggestions',
-            searcher:searcher['searcher'],
-            type:$('#searchForm_type').val()
-          },
-          dataType:'json',
-          success: function(json) {
-            if (json.status == 'OK' && json.data.length > 0) {
-              var datums = [];
-              for (var i=0;i<json.data.length;i++) {
-                datums.push({val:json.data[i]});
+  $('.autocomplete').each(function (i, element) {
+    $(element).typeahead(
+      {
+        highlight: true,
+        minLength: 3
+      }, {
+        displayKey:'val',
+        source: function(query, cb) {
+          var searcher = extractClassParams(element);
+          $.ajax({
+            url: path + '/AJAX/JSON',
+            data: {
+              q:query,
+              method:'getACSuggestions',
+              searcher:searcher['searcher'],
+              type:searcher['type'] ? searcher['type'] : $('#searchForm_type').val()
+            },
+            dataType:'json',
+            success: function(json) {
+              if (json.status == 'OK' && json.data.length > 0) {
+                var datums = [];
+                for (var i=0;i<json.data.length;i++) {
+                  datums.push({val:json.data[i]});
+                }
+                cb(datums);
+              } else {
+                cb([]);
               }
-              cb(datums);
-            } else {
-              cb([]);
             }
-          }
-        });
+          });
+        }
       }
-    }
-  );
+    );
+  });
   $('#searchForm_type').change(function() {
     var query = $('#searchForm_lookfor').val();
     $('#searchForm_lookfor').focus().typeahead('val', '').typeahead('val', query);
