@@ -39,6 +39,26 @@ namespace Finna\Db\Row;
 class User extends \VuFind\Db\Row\User
 {
     /**
+     * Get a display name
+     *
+     * @return string
+     */
+    public function getDisplayName()
+    {
+        if ($this->firstname && $this->lastname) {
+            return $this->firstname . ' ' . $this->lastname;
+        }
+        if ($this->firstname || $this->lastname) {
+            return $this->firstname . $this->lastname;
+        }
+        if ($this->email) {
+            return $this->email;
+        };
+        list(,$username) = explode(':', $this->username);
+        return $username;
+    }
+
+    /**
      * Get all of the lists associated with this user.
      *
      * @return \Zend\Db\ResultSet\AbstractResultSet
