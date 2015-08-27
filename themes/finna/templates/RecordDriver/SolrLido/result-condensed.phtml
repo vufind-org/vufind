@@ -1,6 +1,6 @@
-<!-- start of Ead result-narrow.phtml -->
+<!-- start of Ead result-condensed.phtml -->
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
-  <div class="col-xs-12 narrow-collapse-toggle"> 
+  <div class="col-xs-12 condensed-collapse-toggle">
     <div class="col-sm-8 col-md-10">
       <i class="fa fa-arrow-right"></i>
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
@@ -35,7 +35,7 @@
                 : $this->escapeHtml($summAuthor);
           ?></a>
           <? endif; ?>
-        
+
           <? if ($dates = $this->driver->getResultDateRange()): ?>
             <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
           <? endif; ?>
@@ -47,7 +47,7 @@
     </div>
   </div>
   <div class="clearfix"></div>
-  <div class="narrow-collapse-data col-xs-12">
+  <div class="condensed-collapse-data col-xs-12">
     <div class="col-xs-7 col-sm-push-4">
     <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
     <? if ($summary): ?>
@@ -98,5 +98,5 @@
     </div>
   </div>
 </div>
-<!-- End of Ead result-narrow.phtml -->
+<!-- End of Ead result-condensed.phtml -->
 

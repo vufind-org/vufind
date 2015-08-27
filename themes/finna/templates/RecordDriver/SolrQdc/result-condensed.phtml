@@ -1,7 +1,7 @@
 <!-- start of QDC result-list.phtml -->
 
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
-  <div class="col-xs-12 narrow-collapse-toggle"> 
+  <div class="col-xs-12 condensed-collapse-toggle">
       <div class="col-sm-6 col-md-8">
         <i class="fa fa-arrow-right"></i>
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
@@ -79,7 +79,7 @@
       <div class="col-sm-6 col-md-4">
         <?=$this->record($this->driver)->getOnlineUrls('results')?>
         <?=$this->record($this->driver)->getPreviews()?>
-        <? /*** TODO how to show if this database usage needs authorizing       
+        <? /*** TODO how to show if this database usage needs authorizing
                 <? if  ($database == 'true') && ($authorize == 'true') :?>
           <span class="authorize">
             <i class="fa fa-lock"></i>
@@ -89,7 +89,7 @@
       </div>
   </div>
   <div class="clearfix"></div>
-  <div class="narrow-collapse-data col-xs-12">
+  <div class="condensed-collapse-data col-xs-12">
     <div class="col-xs-9 col-sm-push-2">
         <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
             <div class="resultClassification">
@@ -115,7 +115,7 @@
               <?=$result ?>
             </div>
         <? endif; ?>
-  
+
 
           <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
             <? foreach ($summInCollection as $collId => $collText): ?>
@@ -156,7 +156,7 @@
         <?=$this->render('list/list-notes.phtml')?>
       <? endif; ?>
     </div>
-    
+
   </div>
   <div class="col-xs-3 col-sm-2 col-sm-pull-9 resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
