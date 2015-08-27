@@ -144,7 +144,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             $imageOpenUrl = $params['openUrlImageBasedOverride']
                 ? $params['openUrlImageBasedOverride'] : $params['openUrl'];
             $params['openUrlImageBasedSrc'] = $base
-                . ((false !== strpos('?', $base)) ? '&' : '?')
+                . ((false !== strpos('?', $base)) ? '?' : '&')
                 . $imageOpenUrl;
         }
 
