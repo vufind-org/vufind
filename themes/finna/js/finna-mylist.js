@@ -24,7 +24,12 @@ finna.myList = (function() {
         };
 
         if (type != 'add-list') {
-            listParams['desc'] = processHTMLforSave($('.list-description span').html());
+            var description = processHTMLforSave($('.list-description span').html());
+            if (description == vufindString.add_list_description) {
+                listParams['desc'] = '';
+            } else {
+                listParams['desc'] = description;
+            }
         }
 
         if (type == 'title') {
@@ -157,7 +162,13 @@ finna.myList = (function() {
     };
 
     var listDescriptionChanged = function() {
-        $('.list-description span').data('empty', '0');
+        var description = $('.list-description span');
+        if (description.html() == '') {
+            description.data('empty', '1');
+            description.html(vufindString.add_list_description);
+        } else {
+            description.data('empty', '0');
+        }
     };
 
     var newListAdded = function(data) {
@@ -221,7 +232,7 @@ finna.myList = (function() {
                 'finish': function(e) {
                     if (typeof(e) === 'undefined' || !e.cancel) {
                         if (e.value == '' && e.target.data('empty') == '1') {
-                            e.target.text(vufindString.add_note);
+                            e.target.text(vufindString.add_list_description);
                             return;
                         }
                         updateList({}, listDescriptionChanged, 'desc');
