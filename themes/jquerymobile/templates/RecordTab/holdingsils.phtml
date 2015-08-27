@@ -37,7 +37,15 @@
     <a rel="external" class="holdPlace" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold, false)?>"><?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
 <? foreach ($holdings as $holding): ?>
-<h4><?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?></h4>
+<h4>
+<? if ($holding['locationhref']): ?>
+  <a href="<?=$item['locationhref']?>" target="_blank">
+    <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
+  </a>
+<? else: ?>
+  <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
+<? endif; ?>
+</h4>
 <table class="holdings" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
@@ -96,6 +104,9 @@
                 <a rel="external" class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getRequestUrl($row['link'], false)?>"><span><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></span></a>
               <? endif; ?>
             <? endif; ?>
+          <? endif; ?>
+          <? if (isset($row['limitation'])): ?>
+            <span><?=$this->escapeHtml($row['limitation'])?></span>
           <? endif; ?>
         </td>
       </tr>
