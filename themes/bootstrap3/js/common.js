@@ -229,8 +229,8 @@ function ajaxLogin(form) {
   });
 }
 
-$(document).ready(function() {
-  // Off canvas
+// Ready functions
+function setupOffcanvas() {
   if($('.sidebar').length > 0) {
     $('[data-toggle="offcanvas"]').click(function () {
       $('body.offcanvas').toggleClass('active');
@@ -246,12 +246,9 @@ $(document).ready(function() {
   } else {
     $('[data-toggle="offcanvas"]').addClass('hidden');
   }
-
-  // support "jump menu" dropdown boxes
-  $('select.submit-on-select').change(function(){ $(this).parent('form').submit(); });
-
-  // Highlight previous links, grey out following
-  $('.backlink')
+}
+function bindBacklink(i, elem) {
+  $(elem)
     .mouseover(function() {
       // Underline back
       var t = $(this);
@@ -280,42 +277,55 @@ $(document).ready(function() {
         t = t.next();
       } while(t.length > 0);
     });
+}
+function bindAutocomplete(i, element) {
+  $(element).typeahead(
+    {
+      highlight: true,
+      minLength: 3
+    }, {
+      displayKey:'val',
+      source: function(query, cb) {
+        var searcher = extractClassParams(element);
+        $.ajax({
+          url: path + '/AJAX/JSON',
+          data: {
+            q:query,
+            method:'getACSuggestions',
+            searcher:searcher['searcher'],
+            type:searcher['type'] ? searcher['type'] : $('#searchForm_type').val()
+          },
+          dataType:'json',
+          success: function(json) {
+            if (json.status == 'OK' && json.data.length > 0) {
+              var datums = [];
+              for (var i=0;i<json.data.length;i++) {
+                datums.push({val:json.data[i]});
+              }
+              cb(datums);
+            } else {
+              cb([]);
+            }
+          }
+        });
+      }
+    }
+  );
+}
+
+$(document).ready(function() {
+  // Off canvas
+  setupOffcanvas();
+
+  // support "jump menu" dropdown boxes
+  $('select.submit-on-select').change(function(){ $(this).parent('form').submit(); });
+
+  // Highlight previous links, grey out following
+  $('.backlink').each(bindBacklink);
 
   // Search autocomplete
-  $('.autocomplete').each(function (i, element) {
-    $(element).typeahead(
-      {
-        highlight: true,
-        minLength: 3
-      }, {
-        displayKey:'val',
-        source: function(query, cb) {
-          var searcher = extractClassParams(element);
-          $.ajax({
-            url: path + '/AJAX/JSON',
-            data: {
-              q:query,
-              method:'getACSuggestions',
-              searcher:searcher['searcher'],
-              type:searcher['type'] ? searcher['type'] : $('#searchForm_type').val()
-            },
-            dataType:'json',
-            success: function(json) {
-              if (json.status == 'OK' && json.data.length > 0) {
-                var datums = [];
-                for (var i=0;i<json.data.length;i++) {
-                  datums.push({val:json.data[i]});
-                }
-                cb(datums);
-              } else {
-                cb([]);
-              }
-            }
-          });
-        }
-      }
-    );
-  });
+  $('.autocomplete').each(bindAutocomplete);
+  // Refresh suggestions when search type changed
   $('#searchForm_type').change(function() {
     var query = $('#searchForm_lookfor').val();
     $('#searchForm_lookfor').focus().typeahead('val', '').typeahead('val', query);
