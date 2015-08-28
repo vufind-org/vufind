@@ -887,12 +887,8 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemLocationLink($item)
     {
-        if (isset($item['storage'])
-            && array_key_exists('href', $item['storage'])
-        ) {
-            return $item['storage']['href'];
-        }
-        return false;
+        return isset($item['storage']['href'])
+            ? $item['storage']['href'] : false;
     }
 
     /**

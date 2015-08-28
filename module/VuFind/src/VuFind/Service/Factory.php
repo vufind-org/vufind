@@ -462,6 +462,25 @@ class Factory
     }
 
     /**
+     * Construct the ProxyManager configuration.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \ProxyManager\Configuration
+     */
+    public static function getProxyConfig(ServiceManager $sm)
+    {
+        $config = new \ProxyManager\Configuration();
+        $cacheManager = $sm->get('VuFind\CacheManager');
+        $dir = $cacheManager->getCacheDir() . 'objects';
+        $config->setProxiesTargetDir($dir);
+        if (APPLICATION_ENV != 'development') {
+            spl_autoload_register($config->getProxyAutoloader());
+        }
+        return $config;
+    }
+
+    /**
      * Construct the recaptcha helper
      *
      * @param ServiceManager $sm Service manager.
