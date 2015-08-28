@@ -407,6 +407,95 @@ var Lightbox = {
   }
 };
 
+// Lightbox
+/*
+ * This function adds jQuery events to elements in the lightbox
+ *
+ * This is a default open action, so it runs every time changeContent
+ * is called and the 'shown' lightbox event is triggered
+ */
+function bulkActionSubmit($form) {
+  var button = $form.find('[type="submit"][clicked=true]');
+  var submit = button.attr('name');
+  var checks = $form.find('input.checkbox-select-item:checked');
+  if(checks.length == 0 && submit != 'empty') {
+    Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    return false;
+  }
+  if (submit == 'print') {
+    //redirect page
+    var url = path+'/Records/Home?print=true';
+    for(var i=0;i<checks.length;i++) {
+      url += '&id[]='+checks[i].value;
+    }
+    document.location.href = url;
+  } else {
+    $('#modal .modal-title').html(button.attr('title'));
+    Lightbox.titleSet = true;
+    Lightbox.submit($form, Lightbox.changeContent);
+  }
+  return false;
+}
+function registerLightboxEvents() {
+  var modal = $("#modal");
+  // New list
+  $('#make-list').click(function() {
+    var get = deparam(this.href);
+    get['id'] = 'NEW';
+    return Lightbox.get('MyResearch', 'EditList', get);
+  });
+  // New account link handler
+  $('.createAccountLink').click(function() {
+    var get = deparam(this.href);
+    return Lightbox.get('MyResearch', 'Account', get);
+  });
+  $('.back-to-login').click(function() {
+    Lightbox.getByUrl(Lightbox.openingURL);
+    return false;
+  });
+  // Select all checkboxes
+  $(modal).find('.checkbox-select-all').change(function() {
+    $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
+  });
+  $(modal).find('.checkbox-select-item').change(function() {
+    $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
+  });
+  // Highlight which submit button clicked
+  $(modal).find("form [type=submit]").click(function() {
+    // Abort requests triggered by the lightbox
+    $('#modal .fa-spinner').remove();
+    // Remove other clicks
+    $(modal).find('[type="submit"][clicked=true]').attr('clicked', false);
+    // Add useful information
+    $(this).attr("clicked", "true");
+    // Add prettiness
+    if($(modal).find('.has-error,.sms-error').length == 0 && !$(this).hasClass('dropdown-toggle')) {
+      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+    }
+  });
+  /**
+   * Hide the header in the lightbox content
+   * if it matches the title bar of the lightbox
+   */
+  var header = $('#modal .modal-title').html();
+  var contentHeader = $('#modal .modal-body h2');
+  contentHeader.each(function(i,op) {
+    if (op.innerHTML == header) {
+      $(op).hide();
+    }
+  });
+}
+function newAccountHandler(html) {
+  var params = deparam(Lightbox.openingURL);
+  if (params['subaction'] != 'UserLogin') {
+    Lightbox.getByUrl(Lightbox.openingURL);
+    Lightbox.openingURL = false;
+    Lightbox.refreshOnClose = true;
+  } else {
+    window.location.reload();
+  }
+}
+
 /**
  * This is where you add click events to open the lightbox.
  * We do it here so that non-JS users still have a good time.
