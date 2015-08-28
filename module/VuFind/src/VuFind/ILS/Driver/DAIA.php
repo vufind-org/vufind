@@ -675,7 +675,11 @@ class DAIA extends AbstractBase implements
                 // get location link
                 $result_item["locationhref"] = $this->getItemLocationLink($item);
                 // get limitation
-                $result_item["limitation"] = $this->getItemLimitation($item['available'][0]['limitation']);
+                if (isset($item['available'][0]['limitation'])) {
+                    $result_item['limitation'] = $this->getItemLimitation(
+                        $item['available'][0]['limitation']
+                    );
+                }
                 // status and availability will be calculated in own function
                 $result_item = $this->getItemStatus($item) + $result_item;
                 // add result_item to the result array
