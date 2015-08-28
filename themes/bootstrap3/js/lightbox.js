@@ -9,6 +9,7 @@ var Lightbox = {
   lastURL: false,
   lastPOST: false,
   openingURL: false,
+  refreshOnClose: false,
   shown: false,      // Is the lightbox deployed?
   XHR: false,        // Used for current in-progress XHR lightbox request
   openStack: [],     // Array of functions to be called after changeContent or the lightbox event 'shown'
@@ -125,18 +126,23 @@ var Lightbox = {
    * so it always runs when the lightbox is closed.
    */
   closeActions: function() {
-    Lightbox.shown = false;
-    Lightbox.openingURL = false;
-    // Clean out stack
-    while(Lightbox.closeStack.length > 0) {
-      var f = Lightbox.closeStack.pop();
-      f();
+    if (Lightbox.refreshOnClose) {
+      window.location.reload();
+    } else {
+      Lightbox.shown = false;
+      Lightbox.openingURL = false;
+      Lightbox.refreshOnClose = true;
+      // Clean out stack
+      while(Lightbox.closeStack.length > 0) {
+        var f = Lightbox.closeStack.pop();
+        f();
+      }
+      if(this.XHR) { this.XHR.abort(); }
+      // Reset content so we start fresh when we open a lightbox
+      $('#modal').removeData('modal');
+      $('#modal').find('.modal-title').html('');
+      $('#modal').find('.modal-body').html(vufindString.loading + "...");
     }
-    if(this.XHR) { this.XHR.abort(); }
-    // Reset content so we start fresh when we open a lightbox
-    $('#modal').removeData('modal');
-    $('#modal').find('.modal-title').html('');
-    $('#modal').find('.modal-body').html(vufindString.loading + "...");
   },
   /**
    * Call all the functions we need for when the modal loads

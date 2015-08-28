@@ -157,53 +157,14 @@ function registerLightboxEvents() {
     }
   });
 }
-function updatePageForLogin() {
-  // Hide "log in" options and show "log out" options:
-  $('#loginOptions').addClass('hidden');
-  $('.logoutOptions').removeClass('hidden');
-
-  var recordId = $('#record_id').val();
-
-  // Update user save statuses if the current context calls for it:
-  if (typeof(checkSaveStatuses) == 'function') {
-    checkSaveStatuses();
-  }
-
-  // refresh the comment list so the "Delete" links will show
-  $('.commentList').each(function(){
-    var recordSource = extractSource($('#record'));
-    refreshCommentList(recordId, recordSource);
-  });
-
-  var summon = false;
-  $('.hiddenSource').each(function(i, e) {
-    if(e.value == 'Summon') {
-      summon = true;
-      // If summon, queue reload for when we close
-      Lightbox.addCloseAction(function(){document.location.reload(true);});
-    }
-  });
-
-  // Refresh tab content
-  var recordTabs = $('.recordTabs');
-  if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
-    var tab = recordTabs.find('.active a').attr('id');
-    ajaxLoadTab(tab);
-  }
-
-  // Refresh tag list
-  if(typeof refreshTagList === "function") {
-    refreshTagList(true);
-  }
-}
 function newAccountHandler(html) {
-  updatePageForLogin();
   var params = deparam(Lightbox.openingURL);
   if (params['subaction'] != 'UserLogin') {
     Lightbox.getByUrl(Lightbox.openingURL);
     Lightbox.openingURL = false;
+    Lightbox.refreshOnClose = true;
   } else {
-    Lightbox.close();
+    window.location.reload();
   }
 }
 
@@ -244,12 +205,12 @@ function ajaxLogin(form) {
           data: params,
           success: function(response) {
             if (response.status == 'OK') {
-              updatePageForLogin();
               // and we update the modal
               var params = deparam(Lightbox.lastURL);
               if (params['subaction'] == 'UserLogin') {
-                Lightbox.close();
+                window.location.reload();
               } else {
+                Lightbox.refreshOnClose = true;
                 Lightbox.getByUrl(
                   Lightbox.lastURL,
                   Lightbox.lastPOST,
@@ -429,7 +390,7 @@ $(document).ready(function() {
     location.reload();
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
-    Lightbox.addCloseAction(updatePageForLogin);
+    Lightbox.refreshOnClose = true;
     Lightbox.confirm(vufindString['bulk_save_success']);
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
