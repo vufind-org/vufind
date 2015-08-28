@@ -122,7 +122,6 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             $imagebased = $this->imageBasedLinkingIsActive();
         }
 
-        $imagebasedopenurl = null;
         if ($imagebased) {
             if (!isset($this->config->dynamic_graphic)) {
                 // if imagebased linking is forced by the template, but it is not
