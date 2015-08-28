@@ -672,6 +672,8 @@ class DAIA extends AbstractBase implements
                 $result_item["callnumber"] = $this->getItemCallnumber($item);
                 // get location
                 $result_item["location"] = $this->getItemLocation($item);
+                // get location link
+                $result_item["locationhref"] = $this->getItemLocationLink($item);
                 // status and availability will be calculated in own function
                 $result_item = $this->getItemStatus($item) + $result_item;
                 // add result_item to the result array
@@ -868,6 +870,19 @@ class DAIA extends AbstractBase implements
             return $item['department']['content'];
         }
         return "Unknown";
+    }
+
+    /**
+     * Returns the value for "location" href in VuFind getStatus/getHolding array
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return string
+     */
+    protected function getItemLocationLink($item)
+    {
+        return isset($item['storage']['href'])
+            ? $item['storage']['href'] : false;
     }
 
     /**

@@ -49,7 +49,14 @@
   <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
 <? endif; ?>
 <? foreach ($holdings as $holding): ?>
-<h3><?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?></h3>
+<h3>
+  <? $locationText = $this->transEsc('location_' . $holding['location'], array(), $holding['location']); ?>
+  <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
+    <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
+  <? else: ?>
+    <?=$locationText?>
+  <? endif; ?>
+</h3>
 <table class="table table-striped" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
