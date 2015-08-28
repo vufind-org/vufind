@@ -131,7 +131,6 @@ var Lightbox = {
     } else {
       Lightbox.shown = false;
       Lightbox.openingURL = false;
-      Lightbox.refreshOnClose = true;
       // Clean out stack
       while(Lightbox.closeStack.length > 0) {
         var f = Lightbox.closeStack.pop();
