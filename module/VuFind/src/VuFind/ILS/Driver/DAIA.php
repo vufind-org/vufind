@@ -94,8 +94,8 @@ class DAIA extends AbstractBase implements
      * @var array
      */
     protected $contentTypesRequest = [
-        "xml"  => "application/xml",
-        "json" => "application/json",
+        'xml'  => 'application/xml',
+        'json' => 'application/json',
     ];
 
     /**
@@ -141,24 +141,24 @@ class DAIA extends AbstractBase implements
                 $this->config['DAIA']['daiaResponseFormat']
             );
         } else {
-            $this->debug("No daiaResponseFormat setting found, using default: xml");
-            $this->daiaResponseFormat = "xml";
+            $this->debug('No daiaResponseFormat setting found, using default: xml');
+            $this->daiaResponseFormat = 'xml';
         }
         if (isset($this->config['DAIA']['daiaIdPrefix'])) {
             $this->daiaIdPrefix = $this->config['DAIA']['daiaIdPrefix'];
         } else {
-            $this->debug("No daiaIdPrefix setting found, using default: ppn:");
-            $this->daiaIdPrefix = "ppn:";
+            $this->debug('No daiaIdPrefix setting found, using default: ppn:');
+            $this->daiaIdPrefix = 'ppn:';
         }
         if (isset($this->config['DAIA']['multiQuery'])) {
             $this->multiQuery = $this->config['DAIA']['multiQuery'];
         } else {
-            $this->debug("No multiQuery setting found, using default: false");
+            $this->debug('No multiQuery setting found, using default: false');
         }
         if (isset($this->config['DAIA']['daiaContentTypes'])) {
             $this->contentTypesResponse = $this->config['DAIA']['daiaContentTypes'];
         } else {
-            $this->debug("No ContentTypes for response defined. Accepting any.");
+            $this->debug('No ContentTypes for response defined. Accepting any.');
         }
     }
 
@@ -330,9 +330,9 @@ class DAIA extends AbstractBase implements
     {
         try {
             return $this->dateConverter
-                ->convertToDisplayDate("Y-m-d", $date);
+                ->convertToDisplayDate('Y-m-d', $date);
         } catch (\Exception $e) {
-            $this->debug("Date conversion failed: " . $e->getMessage());
+            $this->debug('Date conversion failed: ' . $e->getMessage());
             return '';
         }
     }
@@ -360,13 +360,13 @@ class DAIA extends AbstractBase implements
     protected function doHTTPRequest($id)
     {
         $http_headers = [
-            "Content-type: " . $this->contentTypesRequest[$this->daiaResponseFormat],
-            "Accept: " .  $this->contentTypesRequest[$this->daiaResponseFormat],
+            'Content-type: ' . $this->contentTypesRequest[$this->daiaResponseFormat],
+            'Accept: ' .  $this->contentTypesRequest[$this->daiaResponseFormat],
         ];
 
         $params = [
-            "id" => $id,
-            "format" => $this->daiaResponseFormat,
+            'id' => $id,
+            'format' => $this->daiaResponseFormat,
         ];
 
         try {
@@ -395,14 +395,14 @@ class DAIA extends AbstractBase implements
                 $contentTypesResponse = array_map(
                     'trim',
                     explode(
-                        ",",
+                        ',',
                         $this->contentTypesResponse[$this->daiaResponseFormat]
                     )
                 );
                 list($responseMediaType, $responseEncoding) = array_pad(
                     explode(
-                        ";",
-                        $result->getHeaders()->get("ContentType")->getFieldValue(),
+                        ';',
+                        $result->getHeaders()->get('ContentType')->getFieldValue(),
                         2
                     ),
                     2,
@@ -410,9 +410,9 @@ class DAIA extends AbstractBase implements
                 ); // workaround to avoid notices if encoding is not set in header
                 if (!in_array(trim($responseMediaType), $contentTypesResponse)) {
                     throw new ILSException(
-                        "DAIA-ResponseFormat not supported. Received: " .
-                        $responseMediaType . " - " .
-                        "Expected: " .
+                        'DAIA-ResponseFormat not supported. Received: ' .
+                        $responseMediaType . ' - ' .
+                        'Expected: ' .
                         $this->contentTypesResponse[$this->daiaResponseFormat]
                     );
                 }
@@ -450,9 +450,9 @@ class DAIA extends AbstractBase implements
     {
         $multiURI = '';
         foreach ($ids as $id) {
-            $multiURI .= $this->generateURI($id) . "|";
+            $multiURI .= $this->generateURI($id) . '|';
         }
-        return rtrim($multiURI, "|");
+        return rtrim($multiURI, '|');
     }
 
     /**
@@ -509,30 +509,30 @@ class DAIA extends AbstractBase implements
 
         if (count($docs)) {
             // check for error messages and write those to log
-            if (array_key_exists("message", $docs)) {
-                $this->logMessages($docs["message"], "document");
+            if (array_key_exists('message', $docs)) {
+                $this->logMessages($docs['message'], 'document');
             }
 
             // do DAIA documents exist?
-            if (array_key_exists("document", $docs) && $this->multiQuery) {
+            if (array_key_exists('document', $docs) && $this->multiQuery) {
                 // now loop through the found DAIA documents
-                foreach ($docs["document"] as $doc) {
+                foreach ($docs['document'] as $doc) {
                     // DAIA documents should use URIs as value for id
-                    if (isset($doc["id"])
-                        && $doc["id"] == $this->generateURI($id)
+                    if (isset($doc['id'])
+                        && $doc['id'] == $this->generateURI($id)
                     ) {
                         // we've found the document element with the matching URI
                         // if the document has an item, then we return it
-                        if (isset($doc["item"])) {
+                        if (isset($doc['item'])) {
                             return $doc;
                         }
                     }
                 }
-            } elseif (array_key_exists("document", $docs)) {
+            } elseif (array_key_exists('document', $docs)) {
                 // since a document exists but multiQuery is disabled, the first
                 // document is returned if it contains an item
                 $doc = array_shift($docs['document']);
-                if (isset($doc["item"])) {
+                if (isset($doc['item'])) {
                     return $doc;
                 }
             }
@@ -569,8 +569,8 @@ class DAIA extends AbstractBase implements
                             ['storage', 'limitation', 'department', 'institution']
                         ) && strlen($domNode->nodeValue))) {
                         if (trim($node->textContent)) {
-                            $domNode->setAttribute("content", $node->textContent);
-                            $node->nodeValue = "";
+                            $domNode->setAttribute('content', $node->textContent);
+                            $node->nodeValue = '';
                         }
                     }
                 }
@@ -590,7 +590,7 @@ class DAIA extends AbstractBase implements
                 if (is_array($value)) {
                     $value = $merge($value);
                 }
-                if ($key === "@attributes") {
+                if ($key === '@attributes') {
                     $array = array_merge($array, $value);
                     unset($array[$key]);
                 } else {
@@ -604,8 +604,8 @@ class DAIA extends AbstractBase implements
         // restructure the array, moving single elements to their parent's index [0]
         $restructure = function ($array) use (&$restructure) {
             $elements = [
-                "document", "item", "available", "unavailable", "limitation",
-                "message"
+                'document', 'item', 'available', 'unavailable', 'limitation',
+                'message'
             ];
             foreach ($array as $key => $value) {
                 if (is_array($value)) {
@@ -640,40 +640,40 @@ class DAIA extends AbstractBase implements
         $doc_id = null;
         $doc_href = null;
         $doc_message = null;
-        if (array_key_exists("id", $daiaArray)) {
-            $doc_id = $daiaArray["id"];
+        if (array_key_exists('id', $daiaArray)) {
+            $doc_id = $daiaArray['id'];
         }
-        if (array_key_exists("href", $daiaArray)) {
+        if (array_key_exists('href', $daiaArray)) {
             // url of the document (not needed for VuFind)
-            $doc_href = $daiaArray["href"];
+            $doc_href = $daiaArray['href'];
         }
-        if (array_key_exists("message", $daiaArray)) {
+        if (array_key_exists('message', $daiaArray)) {
             // log messages for debugging
-            $this->logMessages($daiaArray['message'], "document");
+            $this->logMessages($daiaArray['message'], 'document');
         }
         // if one or more items exist, iterate and build result-item
-        if (array_key_exists("item", $daiaArray)) {
+        if (array_key_exists('item', $daiaArray)) {
             $number = 0;
-            foreach ($daiaArray["item"] as $item) {
+            foreach ($daiaArray['item'] as $item) {
                 $result_item = [];
-                $result_item["id"] = $id;
-                $result_item["item_id"] = $item["id"];
+                $result_item['id'] = $id;
+                $result_item['item_id'] = $item['id'];
                 // custom DAIA field used in getHoldLink()
-                $result_item["ilslink"]
+                $result_item['ilslink']
                     = (isset($item['href']) ? $item['href'] : $doc_href);
                 // count items
                 $number++;
-                $result_item["number"] = $this->getItemNumber($item, $number);
+                $result_item['number'] = $this->getItemNumber($item, $number);
                 // set default value for barcode
-                $result_item["barcode"] = $this->getItemBarcode($item);
+                $result_item['barcode'] = $this->getItemBarcode($item);
                 // set default value for reserve
-                $result_item["reserve"] = $this->getItemReserveStatus($item);
+                $result_item['reserve'] = $this->getItemReserveStatus($item);
                 // get callnumber
-                $result_item["callnumber"] = $this->getItemCallnumber($item);
+                $result_item['callnumber'] = $this->getItemCallnumber($item);
                 // get location
-                $result_item["location"] = $this->getItemLocation($item);
+                $result_item['location'] = $this->getItemLocation($item);
                 // get location link
-                $result_item["locationhref"] = $this->getItemLocationLink($item);
+                $result_item['locationhref'] = $this->getItemLocationLink($item);
                 // status and availability will be calculated in own function
                 $result_item = $this->getItemStatus($item) + $result_item;
                 // add result_item to the result array
@@ -698,14 +698,14 @@ class DAIA extends AbstractBase implements
         $duedate = null;
         $availableLink = '';
         $queue = '';
-        if (array_key_exists("available", $item)) {
+        if (array_key_exists('available', $item)) {
             if (count($item['available']) === 1) {
                 $availability = true;
             } else {
                 // check if item is loanable or presentation
-                foreach ($item["available"] as $available) {
+                foreach ($item['available'] as $available) {
                     // attribute service can be set once or not
-                    if (isset($available["service"])
+                    if (isset($available['service'])
                         && in_array(
                             $available['service'],
                             ['loan', 'presentation', 'openaccess']
@@ -714,7 +714,7 @@ class DAIA extends AbstractBase implements
                         // set item available if service is loan, presentation or
                         // openaccess
                         $availability = true;
-                        if ($available['service'] == "loan"
+                        if ($available['service'] == 'loan'
                             && isset($available['service']['href'])
                         ) {
                             // save the link to the ils if we have a href for loan
@@ -730,21 +730,21 @@ class DAIA extends AbstractBase implements
 
                     // log messages for debugging
                     if (isset($available['message'])) {
-                        $this->logMessages($available['message'], "item->available");
+                        $this->logMessages($available['message'], 'item->available');
                     }
                 }
             }
         }
-        if (array_key_exists("unavailable", $item)) {
-            foreach ($item["unavailable"] as $unavailable) {
+        if (array_key_exists('unavailable', $item)) {
+            foreach ($item['unavailable'] as $unavailable) {
                 // attribute service can be set once or not
-                if (isset($unavailable["service"])
+                if (isset($unavailable['service'])
                     && in_array(
                         $unavailable['service'],
                         ['loan', 'presentation', 'openaccess']
                     )
                 ) {
-                    if ($unavailable['service'] == "loan"
+                    if ($unavailable['service'] == 'loan'
                         && isset($unavailable['service']['href'])
                     ) {
                         //save the link to the ils if we have a href for loan service
@@ -757,21 +757,21 @@ class DAIA extends AbstractBase implements
                     }
                 }
                 // attribute expected is mandatory for unavailable element
-                if (isset($unavailable["expected"])) {
+                if (isset($unavailable['expected'])) {
                     try {
                         $duedate = $this->dateConverter
                             ->convertToDisplayDate(
-                                "Y-m-d", $unavailable['expected']
+                                'Y-m-d', $unavailable['expected']
                             );
                     } catch (\Exception $e) {
-                        $this->debug("Date conversion failed: " . $e->getMessage());
+                        $this->debug('Date conversion failed: ' . $e->getMessage());
                         $duedate = null;
                     }
                 }
 
                 // attribute queue can be set
-                if (isset($unavailable["queue"])) {
-                    $queue = $unavailable["queue"];
+                if (isset($unavailable['queue'])) {
+                    $queue = $unavailable['queue'];
                 }
 
                 // log messages for debugging
@@ -792,10 +792,10 @@ class DAIA extends AbstractBase implements
             $return['ilslink'] = $availableLink;
         }
 
-        $return["status"]          = $status;
-        $return["availability"]    = $availability;
-        $return["duedate"]         = $duedate;
-        $return["requests_placed"] = $queue;
+        $return['status']          = $status;
+        $return['availability']    = $availability;
+        $return['duedate']         = $duedate;
+        $return['requests_placed'] = $queue;
 
         return $return;
     }
@@ -822,7 +822,7 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemBarcode($item)
     {
-        return "1";
+        return '1';
     }
 
     /**
@@ -834,7 +834,7 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemReserveStatus($item)
     {
-        return "N";
+        return 'N';
     }
 
     /**
@@ -846,9 +846,9 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemCallnumber($item)
     {
-        return array_key_exists("label", $item) && !empty($item['label'])
+        return array_key_exists('label', $item) && !empty($item['label'])
             ? $item['label']
-            : "Unknown";
+            : 'Unknown';
     }
 
     /**
@@ -869,7 +869,7 @@ class DAIA extends AbstractBase implements
         ) {
             return $item['department']['content'];
         }
-        return "Unknown";
+        return 'Unknown';
     }
 
     /**
@@ -917,7 +917,7 @@ class DAIA extends AbstractBase implements
         foreach ($messages as $message) {
             if (isset($message['content'])) {
                 $this->debug(
-                    "Message in DAIA response (" . (string) $context . "): " .
+                    'Message in DAIA response (' . (string) $context . '): ' .
                     $message['content']
                 );
             }
