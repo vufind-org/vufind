@@ -105,11 +105,62 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Support method for renderTemplate() -- process image based parameters.
+     *
+     * @param bool  $imagebased Indicates if an image based link
+     * should be displayed or not (null for system default)
+     * @param array $params     OpenUrl parameters set so far
+     *
+     * @return void
+     */
+    protected function addImageBasedParams($imagebased, & $params)
+    {
+        $params['openUrlImageBasedMode'] = $this->getImageBasedLinkingMode();
+        $params['openUrlImageBasedSrc'] = null;
+
+        if (null === $imagebased) {
+            $imagebased = $this->imageBasedLinkingIsActive();
+        }
+
+        $imagebasedopenurl = null;
+        if ($imagebased) {
+            if (!isset($this->config->dynamic_image_url)) {
+                // if imagebased linking is forced by the template, but it is not
+                // configured properly, throw an exception
+                throw new \Exception(
+                    'Template tries to display OpenURL as image based link, but
+                     Image based linking is not configured! Please set parameter
+                     dynamic_image_url in config file.'
+                );
+            }
+
+            // Check if we have an image-specific OpenURL to use to override
+            // the default value when linking the image.
+            $params['openUrlImageBasedOverride'] = $this->recordDriver
+                ->tryMethod('getImageBasedOpenUrl');
+
+            // Concatenate image based OpenUrl base and OpenUrl
+            // to a usable image reference
+            $base = $this->config->dynamic_image_url;
+            $imageOpenUrl = $params['openUrlImageBasedOverride']
+                ? $params['openUrlImageBasedOverride'] : $params['openUrl'];
+            $params['openUrlImageBasedSrc'] = $base
+                . ((false === strpos($base, '?')) ? '?' : '&')
+                . $imageOpenUrl;
+        }
+
+        return $params;
+    }
+
+    /**
      * Public method to render the OpenURL template
+     *
+     * @param bool $imagebased Indicates if an image based link
+     * should be displayed or not (null for system default)
      *
      * @return string
      */
-    public function renderTemplate()
+    public function renderTemplate($imagebased = null)
     {
         if (null !== $this->config && isset($this->config->url)) {
             // Trim off any parameters (for legacy compatibility -- default config
@@ -157,11 +208,38 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             'openUrlEmbed' => $embed,
             'openUrlEmbedAutoLoad' => $embedAutoLoad
         ];
+        $this->addImageBasedParams($imagebased, $params);
 
         // Render the subtemplate:
         return $this->context->__invoke($this->getView())->renderInContext(
             'Helpers/openurl.phtml', $params
         );
+    }
+
+    /**
+     * Public method to check ImageBased Linking mode
+     *
+     * @return string|bool false if image based linking is not active,
+     * config image_based_linking_mode otherwise (default = 'both')
+     */
+    public function getImageBasedLinkingMode()
+    {
+        if ($this->imageBasedLinkingIsActive()
+            && isset($this->config->image_based_linking_mode)
+        ) {
+            return $this->config->image_based_linking_mode;
+        }
+        return $this->imageBasedLinkingIsActive() ? 'both' : false;
+    }
+
+    /**
+     * Public method to check if ImageBased Linking is enabled
+     *
+     * @return bool
+     */
+    public function imageBasedLinkingIsActive()
+    {
+        return isset($this->config->dynamic_image_url);
     }
 
     /**
