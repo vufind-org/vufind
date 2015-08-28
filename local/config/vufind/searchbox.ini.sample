@@ -1,0 +1,3 @@
+; Inherit main configuration
+[Parent_Config]
+relative_path = ../finna/searchbox.ini
