@@ -60,7 +60,8 @@
 ?>
 
 <?=$this->flashmessages()?>
-<form role="search" name="searchForm" id="advSearchForm" method="get" action="<?=$this->url($this->options->getSearchAction())?>">
+<div role="search">
+<form name="searchForm" id="advSearchForm" method="get" action="<?=$this->url($this->options->getSearchAction())?>">
   <div class="row">
     <div class="<?=$this->layoutClass('mainbody')?>">
       <input type="hidden" name="sort" value="relevance">
@@ -183,3 +184,4 @@
     </div>
   </div>
 </form>
+</div>
