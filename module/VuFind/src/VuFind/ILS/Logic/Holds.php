@@ -122,8 +122,9 @@ class Holds
             $retVal[$groupKey] = [
                 'items' => $items,
                 'location' => isset($items[0]['location'])
-                    ? $items[0]['location']
-                    : ''
+                    ? $items[0]['location'] : '',
+                'locationhref' => isset($items[0]['locationhref'])
+                    ? $items[0]['locationhref'] : ''
             ];
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {

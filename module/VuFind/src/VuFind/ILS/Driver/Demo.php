@@ -228,6 +228,8 @@ class Demo extends AbstractBase
     protected function getRandomHolding($id, $number, array $patron = null)
     {
         $status = $this->getFakeStatus();
+        $location = $this->getFakeLoc();
+        $locationhref = ($location === 'Campus A') ? 'http://campus-a' : false;
         return [
             'id'           => $id,
             'source'       => $this->getRecordSource(),
@@ -236,7 +238,8 @@ class Demo extends AbstractBase
             'barcode'      => sprintf("%08d", rand() % 50000),
             'availability' => $status == 'Available',
             'status'       => $status,
-            'location'     => $this->getFakeLoc(),
+            'location'     => $location,
+            'locationhref' => $locationhref,
             'reserve'      => (rand() % 100 > 49) ? 'Y' : 'N',
             'callnumber'   => $this->getFakeCallNum(),
             'duedate'      => '',
