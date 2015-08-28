@@ -23,31 +23,6 @@ function extractClassParams(str) {
   }
   return params;
 }
-function jqEscape(myid) {
-  return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g, "\\$&");
-}
-function html_entity_decode(string, quote_style)
-{
-  var hash_map = {},
-    symbol = '',
-    tmp_str = '',
-    entity = '';
-  tmp_str = string.toString();
-
-  delete(hash_map['&']);
-  hash_map['&'] = '&amp;';
-  hash_map['>'] = '&gt;';
-  hash_map['<'] = '&lt;';
-
-  for (symbol in hash_map) {
-    entity = hash_map[symbol];
-    tmp_str = tmp_str.split(entity).join(symbol);
-  }
-  tmp_str = tmp_str.split('&#039;').join("'");
-
-  return tmp_str;
-}
-
 // Turn GET string into array
 function deparam(url) {
   if(!url.match(/\?|&/)) {
@@ -85,19 +60,13 @@ function lessFacets(id) {
 }
 
 // Phone number validation
-var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"];
-var libphoneErrorStrings = ["Phone number invalid", "Invalid country calling code", "Invalid region code", "The string supplied did not seem to be a phone number", "The string supplied is too long to be a phone number", "The string supplied is too short to be a phone number", "Phone number too short after IDD"];
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
   var valid = isPhoneNumberValid(number, regionCode);
   if(valid != true) {
     if(typeof valid === 'string') {
-      for(var i=libphoneErrorStrings.length;i--;) {
-        if(valid.match(libphoneErrorStrings[i])) {
-          valid = vufindString[libphoneTranslateCodes[i]];
-        }
-      }
+      valid = vufindString[valid];
     } else {
       valid = vufindString['libphonenumber_invalid'];
     }

@@ -1,9 +1,32 @@
 
-/*global hierarchySettings, html_entity_decode, jqEscape, path, vufindString*/
+/*global hierarchySettings, jqEscape, path, vufindString*/
 
 
 var hierarchyID, recordID, htmlID, hierarchyContext;
 var baseTreeSearchFullURL;
+
+/* Utility functions */
+function htmlEncodeId(id)
+{
+  return id.replace(/\W/g, "-"); // Also change Hierarchy/TreeRenderer/JSTree.php
+}
+function html_entity_decode(string, quote_style)
+{
+  var hash_map = {
+    '&': '&amp;',
+    '>': '&gt;',
+    '<': '&lt;'
+  };
+  var tmp_str = string.toString();
+
+  for (var symbol in hash_map) {
+    var entity = hash_map[symbol];
+    tmp_str = tmp_str.split(entity).join(symbol);
+  }
+  tmp_str = tmp_str.split('&#039;').join("'");
+
+  return tmp_str;
+}
 
 function getRecord(recordID)
 {
@@ -40,11 +63,6 @@ function changeLimitReachedLabel(display)
   } else {
     $("#treeSearchLimitReached").addClass('hidden');
   }
-}
-
-function htmlEncodeId(id)
-{
-  return id.replace(/\W/g, "-"); // Also change Hierarchy/TreeRenderer/JSTree.php
 }
 
 var searchAjax = false;
@@ -140,11 +158,11 @@ $(document).ready(function()
   htmlID = htmlEncodeId(recordID);
   hierarchyContext = $("#hierarchyTree").find(".hiddenContext")[0].value;
 
-  $("#hierarchyLoading").removeClass('hide');  
+  $("#hierarchyLoading").removeClass('hide');
 
   $("#hierarchyTree")
     .bind("ready.jstree", function (event, data) {
-      $("#hierarchyLoading").addClass('hide');  
+      $("#hierarchyLoading").addClass('hide');
       var tree = $("#hierarchyTree").jstree(true);
       tree.select_node(htmlID);
       tree._open_to(htmlID);
