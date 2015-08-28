@@ -44,6 +44,26 @@ namespace Finna\View\Helper\Root;
 class Record extends \VuFind\View\Helper\Root\Record
 {
     /**
+     * Render the link of the specified type.
+     *
+     * @param string $type    Link type
+     * @param string $lookfor String to search for at link
+     *
+     * @return string
+     */
+    public function getLink($type, $lookfor)
+    {
+        $searchAction = isset($this->getView()->browse) && $this->getView()->browse
+            ? 'browse-' . $this->getView()->browse
+            : 'search-results'
+        ;
+        return $this->renderTemplate(
+            'link-' . $type . '.phtml',
+            ['lookfor' => $lookfor, 'searchAction' => $searchAction]
+        );
+    }
+
+    /**
      * Render an HTML checkbox control for the current record.
      *
      * @param string $idPrefix Prefix for checkbox HTML ids
