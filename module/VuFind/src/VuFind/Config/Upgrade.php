@@ -534,7 +534,7 @@ class Upgrade
             if (!$default) {
                 $this->addWarning(
                     'The [BulkExport] options setting is deprecated; please '
-                    . 'customize export.ini instead.'
+                    . 'customize the [Export] section instead.'
                 );
             }
             unset($newConfig['BulkExport']['options']);
