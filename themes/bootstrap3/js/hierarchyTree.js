@@ -1,6 +1,4 @@
-
-/*global hierarchySettings, jqEscape, path, vufindString*/
-
+/*global hierarchySettings, jqEscape, VUFIND */
 
 var hierarchyID, recordID, htmlID, hierarchyContext;
 var baseTreeSearchFullURL;
@@ -31,14 +29,14 @@ function html_entity_decode(string, quote_style)
 function getRecord(recordID)
 {
   $.ajax({
-    url: path + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
+    url: VUFIND.getPath() + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
     dataType: 'html',
     success: function(response) {
       if (response) {
         $('#hierarchyRecord').html(html_entity_decode(response));
-        // Remove the old path highlighting
+        // Remove the old VUFIND.getPath() highlighting
         $('#hierarchyTree a').removeClass("jstree-highlight");
-        // Add Current path highlighting
+        // Add Current VUFIND.getPath() highlighting
         var jsTreeNode = $(":input[value='"+recordID+"']").parent();
         jsTreeNode.children("a").addClass("jstree-highlight");
         jsTreeNode.parents("li").children("a").addClass("jstree-highlight");
@@ -82,7 +80,7 @@ function doTreeSearch()
       searchAjax.abort();
     }
     searchAjax = $.ajax({
-      "url" : path + '/Hierarchy/SearchTree?' + $.param({
+      "url" : VUFIND.getPath() + '/Hierarchy/SearchTree?' + $.param({
         'lookfor': keyword,
         'hierarchyID': hierarchyID,
         'type': $("#treeSearchType").val()
@@ -136,7 +134,7 @@ function buildJSONNodes(xml)
 }
 function buildTreeWithXml(cb)
 {
-  $.ajax({'url': path + '/Hierarchy/GetTree',
+  $.ajax({'url': VUFIND.getPath() + '/Hierarchy/GetTree',
     'data': {
       'hierarchyID': hierarchyID,
       'id': recordID,
@@ -199,7 +197,7 @@ $(document).ready(function()
       'core' : {
         'data' : function (obj, cb) {
           $.ajax({
-            'url': path + '/Hierarchy/GetTreeJSON',
+            'url': VUFIND.getPath() + '/Hierarchy/GetTreeJSON',
             'data': {
               'hierarchyID': hierarchyID,
               'id': recordID

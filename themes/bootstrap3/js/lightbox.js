@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, path, Recaptcha, vufindString */
+/*global checkSaveStatuses, console, deparam, Recaptcha, VUFIND */
 
 var Lightbox = {
   /**
@@ -141,7 +141,7 @@ var Lightbox = {
       // Reset content so we start fresh when we open a lightbox
       $('#modal').removeData('modal');
       $('#modal').find('.modal-title').html('');
-      $('#modal').find('.modal-body').html(vufindString.loading + "...");
+      $('#modal').find('.modal-body').html(VUFIND.translate('loading')+"...");
     }
   },
   /**
@@ -158,7 +158,7 @@ var Lightbox = {
    * This function changes the content of the lightbox to a message with a close button
    */
   confirm: function(message) {
-    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VUFIND.translate('close')+'</button>');
   },
   /**
    * Regexes a piece of html to find an error alert
@@ -189,9 +189,9 @@ var Lightbox = {
     $('#modal .modal-body .alert').remove();
     var html = $.parseHTML($('#modal .modal-body').html());
      // Empty or alert only, change to message with button
-    if($('#modal .modal-body').html() == vufindString.loading+"..."
+    if($('#modal .modal-body').html() == VUFIND.translate('loading')+"..."
       || (html.length == 1 && $(html).hasClass('alert-'+type))) {
-      Lightbox.changeContent('<div class="alert alert-'+type+'" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+      Lightbox.changeContent('<div class="alert alert-'+type+'" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VUFIND.translate('close')+'</button>');
     // Page without alert
     } else {
       $('#modal .modal-body').prepend('<div class="alert alert-'+type+' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><p class="message">'+message+'</p></div>');
@@ -265,7 +265,7 @@ var Lightbox = {
    */
   get: function(controller, action, get, post, callback) {
     // Build URL
-    var url = path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
+    var url = VUFIND.getPath()+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
     if(typeof get !== "undefined" && get !== {}) {
       url += '&'+$.param(get);
     }
@@ -403,7 +403,7 @@ var Lightbox = {
     } else {
       this.getByUrl(this.lastURL, {}, callback);
     }
-    $(this).find('.modal-body').html(vufindString.loading + "...");
+    $(this).find('.modal-body').html(VUFIND.translate('loading') + "...");
   }
 };
 
@@ -419,12 +419,12 @@ function bulkActionSubmit($form) {
   var submit = button.attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
-    Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    Lightbox.displayError(VUFIND.translate('bulk_noitems_advice'));
     return false;
   }
   if (submit == 'print') {
     //redirect page
-    var url = path+'/Records/Home?print=true';
+    var url = VUFIND.getPath()+'/Records/Home?print=true';
     for(var i=0;i<checks.length;i++) {
       url += '&id[]='+checks[i].value;
     }
@@ -534,14 +534,14 @@ $(document).ready(function() {
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
     Lightbox.refreshOnClose = true;
-    Lightbox.confirm(vufindString['bulk_save_success']);
+    Lightbox.confirm(VUFIND.translate('bulk_save_success'));
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
   });
   Lightbox.addFormCallback('emailSearch', function(html) {
-    Lightbox.confirm(vufindString['bulk_email_success']);
+    Lightbox.confirm(VUFIND.translate('bulk_email_success'));
   });
   Lightbox.addFormCallback('saveRecord', function(html) {
     Lightbox.close();
@@ -550,7 +550,7 @@ $(document).ready(function() {
 
   Lightbox.addFormHandler('exportForm', function(evt) {
     $.ajax({
-      url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
+      url: VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
       dataType:'json',
       data:Lightbox.getFormData($(evt.target)),

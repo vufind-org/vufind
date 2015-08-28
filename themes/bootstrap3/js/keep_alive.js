@@ -1,4 +1,4 @@
-/*global path, keepAliveInterval */
+/*global VUFIND.getPath(), keepAliveInterval */
 
 $(document).ready(function() {
   window.setInterval(function() {

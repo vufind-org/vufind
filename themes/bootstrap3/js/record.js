@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, userIsLoggedIn, vufindString */
+/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, VUFIND.getPath(), syn_get_widget, userIsLoggedIn, VUFIND */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -17,7 +17,7 @@ function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
   }
   vars['id'] = recordId;
 
-  var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
+  var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
   $.ajax({
     dataType: 'json',
     cache: false,
@@ -59,7 +59,7 @@ function setUpCheckRequest() {
 }
 
 function deleteRecordComment(element, recordId, recordSource, commentId) {
-  var url = path + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
+  var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
   $.ajax({
     dataType: 'json',
     url: url,
@@ -72,7 +72,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
 }
 
 function refreshCommentList(recordId, recordSource) {
-  var url = path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
+  var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
   $.ajax({
     dataType: 'json',
     url: url,
@@ -98,7 +98,7 @@ function registerAjaxCommentRecord() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
-    var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+    var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'commentRecord'});
     var data = {
       comment:form.comment.value,
       id:id,
@@ -156,7 +156,7 @@ function ajaxLoadTab(tabid) {
     return true;
   }
   $.ajax({
-    url: path + urlroot + '/AjaxTab',
+    url: VUFIND.getPath() + urlroot + '/AjaxTab',
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
@@ -179,7 +179,7 @@ function refreshTagList(loggedin) {
   var tagList = $('#tagList');
   if (tagList.length > 0) {
     tagList.empty();
-    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
     $.ajax({
       dataType: 'json',
       url: url,
@@ -231,7 +231,7 @@ $(document).ready(function(){
       $('#'+tabid).tab('show');
       return false;
     } else {
-      $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+vufindString['loading']+'...</div>');
+      $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+VUFIND.translate('loading')+'...</div>');
       $('#record-tabs .tab-pane.active').removeClass('active');
       $('#'+tabid+'-tab').addClass('active');
       return ajaxLoadTab(tabid);
@@ -266,7 +266,7 @@ $(document).ready(function(){
   });
   // Form handlers
   Lightbox.addFormCallback('emailRecord', function(){
-    Lightbox.confirm(vufindString['bulk_email_success']);
+    Lightbox.confirm(VUFIND.translate('bulk_email_success'));
   });
   Lightbox.addFormCallback('placeHold', function(html) {
     Lightbox.checkForError(html, function(html) {
@@ -277,22 +277,22 @@ $(document).ready(function(){
     });
   });
   Lightbox.addFormCallback('placeILLRequest', function() {
-    document.location.href = path+'/MyResearch/ILLRequests';
+    document.location.href = VUFIND.getPath()+'/MyResearch/ILLRequests';
   });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
-    document.location.href = path+'/MyResearch/StorageRetrievalRequests';
+    document.location.href = VUFIND.getPath()+'/MyResearch/StorageRetrievalRequests';
   });
   Lightbox.addFormCallback('saveRecord', function() {
     checkSaveStatuses();
     refreshTagList();
-    Lightbox.confirm(vufindString['bulk_save_success']);
+    Lightbox.confirm(VUFIND.translate('bulk_save_success'));
   });
   Lightbox.addFormCallback('smsRecord', function() {
-    Lightbox.confirm(vufindString['sms_success']);
+    Lightbox.confirm(VUFIND.translate('sms_success'));
   });
   // Tag lightbox
   Lightbox.addFormCallback('tagRecord', function(html) {
     refreshTagList(true);
-    Lightbox.confirm(vufindString['add_tag_success']);
+    Lightbox.confirm(VUFIND.translate('add_tag_success'));
   });
 });

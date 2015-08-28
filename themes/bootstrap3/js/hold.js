@@ -1,4 +1,4 @@
-/*global path */
+/*global VUFIND.getPath() */
 function setUpHoldRequestForm(recordId) {
   $('#requestGroupId').change(function() {
     var $emptyOption = $("#pickUpLocation option[value='']");
@@ -17,7 +17,7 @@ function setUpHoldRequestForm(recordId) {
       data: params,
       dataType: 'json',
       cache: false,
-      url: path + '/AJAX/JSON',
+      url: VUFIND.getPath() + '/AJAX/JSON',
       success: function(response) {
         if (response.status == 'OK') {
           var defaultValue = $('#pickUpLocation').data('default');
