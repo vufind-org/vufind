@@ -54,13 +54,13 @@ class Export
     protected $exportConfig;
 
     /**
-     * Property to cache active formats 
+     * Property to cache active formats
      * (initialized to empty array , populated later)
      *
      * @var array
      */
     protected $activeFormats = [];
-    
+
     /**
      * Constructor
      *
@@ -258,7 +258,7 @@ class Export
         // Get an array of enabled export formats (from config, or use defaults
         // if nothing in config array).
         $active = $this->getActiveFormats('record');
-        
+
         // Loop through all possible formats:
         $formats = [];
         foreach (array_keys($this->exportConfig->toArray()) as $format) {
@@ -351,41 +351,36 @@ class Export
      */
     public function getActiveFormats($context = 'record')
     {
-        if (in_array($context, $this->activeFormats)) {
-            return $this->activeFormats[$context];
-        }
-        
-        $formatSettings = isset($this->mainConfig->Export)
-        ? $this->mainConfig->Export->toArray()
-        : ['RefWorks' => 'record', 'EndNote' => 'record'];
-    
-        $this->activeFormats[$context] = [];
-        foreach ($formatSettings as $format => $allowedContexts) {
-            if (strpos($allowedContexts, $context) !== false
-                || ($context == 'record' && $allowedContexts == 1)
-            ) {
-                $this->activeFormats[$context][] = $format;
+        if (!isset($this->activeFormats[$context])) {
+            $formatSettings = isset($this->mainConfig->Export)
+                ? $this->mainConfig->Export->toArray()
+                : ['RefWorks' => 'record', 'EndNote' => 'record'];
+
+            $active = [];
+            foreach ($formatSettings as $format => $allowedContexts) {
+                if (strpos($allowedContexts, $context) !== false
+                    || ($context == 'record' && $allowedContexts == 1)
+                ) {
+                    $active[] = $format;
+                }
             }
-        }
-         
-        // for legacy settings [BulkExport]
-        if ($context == 'bulk') {
-    
-            if (isset($this->mainConfig->BulkExport->enabled)
-                && isset($this->mainConfig->BulkExport->options)
+
+            // for legacy settings [BulkExport]
+            if ($context == 'bulk'
+                && isset($this->mainConfig->BulkExport->enabled)
                 && $this->mainConfig->BulkExport->enabled
+                && isset($this->mainConfig->BulkExport->options)
             ) {
                 $config = explode(':', $this->mainConfig->BulkExport->options);
                 foreach ($config as $option) {
                     if (isset($this->mainConfig->Export->$option)
                         && $this->mainConfig->Export->$option == true
                     ) {
-                        $this->activeFormats[$context][] = $option;
+                        $active[] = $option;
                     }
                 }
             }
-            $this->activeFormats[$context]
-                = array_unique($this->activeFormats[$context]);
+            $this->activeFormats[$context] = array_unique($active);
         }
         return $this->activeFormats[$context];
     }
