@@ -86,7 +86,7 @@ function setupOrFacets() {
 
 // Record
 function refreshCommentList(recordId, recordSource, parent) {
-  var url = path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
+  var url = VUFIND.getPath+'/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
   $.ajax({
     dataType: 'json',
     url: url,
@@ -122,7 +122,7 @@ function refreshTagList(loggedin, parent) {
     : $(parent).find('.tagList');
   if ($tagList.length > 0) {
     $tagList.empty();
-    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    var url = VUFIND.getPath+'/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
     $.ajax({
       dataType: 'json',
       url: url,
@@ -147,7 +147,7 @@ function ajaxTagUpdate(link, tag, remove) {
   var recordId = $parent.find('.hiddenId').val();
   var recordSource = $parent.find('.hiddenSource').val();
   $.ajax({
-    url:path+'/AJAX/JSON?method=tagRecord',
+    url:VUFIND.getPath+'/AJAX/JSON?method=tagRecord',
     method:'POST',
     data:{
       tag:'"'+tag.replace(/\+/g, ' ')+'"',
@@ -169,7 +169,7 @@ function registerAjaxCommentRecord(form) {
   var $form = $(form);
   var id = $form.find('[name="id"]').val();
   var recordSource = $form.find('[name="source"]').val();
-  var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+  var url = VUFIND.getPath+'/AJAX/JSON?' + $.param({method:'commentRecord'});
   var data = {
     comment:$form.find('[name="comment"]').val(),
     id:id,
@@ -193,7 +193,7 @@ function registerAjaxCommentRecord(form) {
   return false;
 }
 function deleteRecordComment(element, recordId, recordSource, commentId) {
-  var url = path + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
+  var url = VUFIND.getPath+'/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
   $.ajax({
     dataType: 'json',
     url: url,
@@ -425,7 +425,7 @@ $(document).ready(function() {
       window.print();
     });
     // Make an ajax call to ensure that ajaxStop is triggered
-    $.getJSON(path + '/AJAX/JSON', {method: 'keepAlive'});
+    $.getJSON(VUFIND.getPath+'/AJAX/JSON', {method: 'keepAlive'});
   }
 
   // Advanced facets

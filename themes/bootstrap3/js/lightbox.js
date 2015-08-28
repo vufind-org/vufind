@@ -154,10 +154,13 @@ var Lightbox = {
     }
   },
   /**
-   * This function changes the content of the lightbox to a message with a close button
+   * These function changes the content of the lightbox to a message with a close button
    */
   confirm: function(message) {
     this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VUFIND.translate('close')+'</button>');
+  },
+  success: function(message) {
+    this.changeContent('<div class="alert alert-success">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VUFIND.translate('close')+'</button>');
   },
   /**
    * Regexes a piece of html to find an error alert
@@ -387,6 +390,7 @@ var Lightbox = {
     var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
     if($form.attr('action')) {
       // Parse action location
+      var path = VUFIND.getPath();
       var action = $form.attr('action').substring($form.attr('action').indexOf(path)+path.length+1);
       var params = action.split('?');
       action = action.split('/');
@@ -526,27 +530,54 @@ $(document).ready(function() {
    ******************************/
   Lightbox.addOpenAction(registerLightboxEvents);
 
-  Lightbox.addFormCallback('newList', Lightbox.changeContent);
+  // Form callbacks
   Lightbox.addFormCallback('accountForm', newAccountHandler);
   Lightbox.addFormCallback('bulkDelete', function(html) {
     location.reload();
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
     Lightbox.refreshOnClose = true;
-    Lightbox.confirm(VUFIND.translate('bulk_save_success'));
+    Lightbox.success(VUFIND.translate('bulk_save_success'));
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
   });
-  Lightbox.addFormCallback('emailSearch', function(html) {
-    Lightbox.confirm(VUFIND.translate('bulk_email_success'));
+  Lightbox.addFormCallback('emailRecord', function(){
+    Lightbox.success(VUFIND.translate('bulk_email_success'));
   });
-  Lightbox.addFormCallback('saveRecord', function(html) {
-    Lightbox.close();
+  Lightbox.addFormCallback('emailSearch', function(html) {
+    Lightbox.success(VUFIND.translate('bulk_email_success'));
+  });
+  Lightbox.addFormCallback('newList', Lightbox.changeContent);
+  Lightbox.addFormCallback('placeHold', function(html) {
+    Lightbox.checkForError(html, function(html) {
+      var divPattern = '<div class="alert alert-info">';
+      var fi = html.indexOf(divPattern);
+      var li = html.indexOf('</div>', fi+divPattern.length);
+      Lightbox.success(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
+    });
+  });
+  Lightbox.addFormCallback('placeILLRequest', function() {
+    document.location.href = VUFIND.getPath()+'/MyResearch/ILLRequests';
+  });
+  Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
+    document.location.href = VUFIND.getPath()+'/MyResearch/StorageRetrievalRequests';
+  });
+  Lightbox.addFormCallback('saveRecord', function() {
     checkSaveStatuses();
+    refreshTagList();
+    Lightbox.success(VUFIND.translate('bulk_save_success'));
+  });
+  Lightbox.addFormCallback('smsRecord', function() {
+    Lightbox.success(VUFIND.translate('sms_success'));
+  });
+  Lightbox.addFormCallback('tagRecord', function(html) {
+    refreshTagList(true);
+    Lightbox.success(VUFIND.translate('add_tag_success'));
   });
 
+  // Form handlers
   Lightbox.addFormHandler('exportForm', function(evt) {
     $.ajax({
       url: VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),

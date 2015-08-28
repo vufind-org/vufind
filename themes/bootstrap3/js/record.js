@@ -223,7 +223,7 @@ function ajaxTagUpdate(tag, remove) {
   var recordId = $('#record_id').val();
   var recordSource = $('.hiddenSource').val();
   $.ajax({
-    url:path+'/AJAX/JSON?method=tagRecord',
+    url:VUFIND.getPath+'/AJAX/JSON?method=tagRecord',
     method:'POST',
     data:{
       tag:'"'+tag.replace(/\+/g, ' ')+'"',
@@ -256,38 +256,5 @@ $(document).ready(function(){
       $('#'+tabid+'-tab').addClass('active');
       return ajaxLoadTab(tabid);
     }
-  });
-
-  /* --- LIGHTBOX --- */
-  // Form handlers
-  Lightbox.addFormCallback('emailRecord', function(){
-    Lightbox.confirm(VUFIND.translate('bulk_email_success'));
-  });
-  Lightbox.addFormCallback('placeHold', function(html) {
-    Lightbox.checkForError(html, function(html) {
-      var divPattern = '<div class="alert alert-info">';
-      var fi = html.indexOf(divPattern);
-      var li = html.indexOf('</div>', fi+divPattern.length);
-      Lightbox.confirm(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
-    });
-  });
-  Lightbox.addFormCallback('placeILLRequest', function() {
-    document.location.href = VUFIND.getPath()+'/MyResearch/ILLRequests';
-  });
-  Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
-    document.location.href = VUFIND.getPath()+'/MyResearch/StorageRetrievalRequests';
-  });
-  Lightbox.addFormCallback('saveRecord', function() {
-    checkSaveStatuses();
-    refreshTagList();
-    Lightbox.confirm(VUFIND.translate('bulk_save_success'));
-  });
-  Lightbox.addFormCallback('smsRecord', function() {
-    Lightbox.confirm(VUFIND.translate('sms_success'));
-  });
-  // Tag lightbox
-  Lightbox.addFormCallback('tagRecord', function(html) {
-    refreshTagList(true);
-    Lightbox.confirm(VUFIND.translate('add_tag_success'));
   });
 });
