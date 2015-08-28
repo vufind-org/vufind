@@ -124,13 +124,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
 
         $imagebasedopenurl = null;
         if ($imagebased) {
-            if (!isset($this->config->dynamic_image_url)) {
+            if (!isset($this->config->dynamic_graphic)) {
                 // if imagebased linking is forced by the template, but it is not
                 // configured properly, throw an exception
                 throw new \Exception(
                     'Template tries to display OpenURL as image based link, but
                      Image based linking is not configured! Please set parameter
-                     dynamic_image_url in config file.'
+                     dynamic_graphic in config file.'
                 );
             }
 
@@ -141,7 +141,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
 
             // Concatenate image based OpenUrl base and OpenUrl
             // to a usable image reference
-            $base = $this->config->dynamic_image_url;
+            $base = $this->config->dynamic_graphic;
             $imageOpenUrl = $params['openUrlImageBasedOverride']
                 ? $params['openUrlImageBasedOverride'] : $params['openUrl'];
             $params['openUrlImageBasedSrc'] = $base
@@ -239,7 +239,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     public function imageBasedLinkingIsActive()
     {
-        return isset($this->config->dynamic_image_url);
+        return isset($this->config->dynamic_graphic);
     }
 
     /**
