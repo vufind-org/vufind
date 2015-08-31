@@ -95,6 +95,7 @@ $config = [
             'cover' => 'Finna\Controller\CoverController',
             'feedback' => 'Finna\Controller\FeedbackController',
             'my-research' => 'Finna\Controller\MyResearchController',
+            'pci' => 'Finna\Controller\PCIController',
             'primo' => 'Finna\Controller\PrimoController',
             'primorecord' => 'Finna\Controller\PrimorecordController',
             'search' => 'Finna\Controller\SearchController',
@@ -258,7 +259,8 @@ $config = [
 ];
 
 $staticRoutes = [
-   'Browse/Database', 'Browse/Journal'
+   'Browse/Database', 'Browse/Journal',
+   'PCI/Home', 'PCI/Search', 'PCI/Record'
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
