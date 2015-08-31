@@ -365,7 +365,7 @@ var Lightbox = {
    *
    * This function gleans all the information in a form from the function above
    * Then it uses the action="..." attribute of the form to figure out where to send the data
-   * and the method=titel attribute to send it the proper way
+   * and the method="" attribute to send it the proper way
    *
    * Forms without an action="..." are submitted to the current URL.
    * In the case where we have a form with no action in the lightbox,
