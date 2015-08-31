@@ -135,7 +135,7 @@ var Lightbox = {
     if(this.XHR) { this.XHR.abort(); }
     // Reset content so we start fresh when we open a lightbox
     $('#modal').removeData('modal');
-    $('#modal').find('.modal-title').html('');
+    $('#modal').find('.modal-title').html('&nbsp;');
     $('#modal').find('.modal-body').html(vufindString.loading + "...");
   },
   /**
@@ -365,7 +365,7 @@ var Lightbox = {
    *
    * This function gleans all the information in a form from the function above
    * Then it uses the action="..." attribute of the form to figure out where to send the data
-   * and the method="" attribute to send it the proper way
+   * and the method=titel attribute to send it the proper way
    *
    * Forms without an action="..." are submitted to the current URL.
    * In the case where we have a form with no action in the lightbox,
@@ -416,7 +416,7 @@ $(document).ready(function() {
   $('#modal').on('hidden.bs.modal', Lightbox.closeActions);
   /**
    * If a link with the class .modal-link triggers the lightbox,
-   * look for a title="" to use as our lightbox title.
+   * look for a title="&nbsp;" to use as our lightbox title.
    */
   $('.modal-link,.help-link').click(function() {
     var title = $(this).attr('title');
