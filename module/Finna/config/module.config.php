@@ -85,6 +85,7 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
+            'browse' => 'Finna\Controller\Factory::getBrowseController',
             'record' => 'Finna\Controller\Factory::getRecordController',
         ],
         'invokables' => [
@@ -255,5 +256,12 @@ $config = [
     ],
 
 ];
+
+$staticRoutes = [
+   'Browse/Database', 'Browse/Journal'
+];
+
+$routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addStaticRoutes($config, $staticRoutes);
 
 return $config;

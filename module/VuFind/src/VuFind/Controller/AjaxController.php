@@ -519,23 +519,21 @@ class AjaxController extends AbstractBase
      */
     protected function output($data, $status)
     {
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
+        $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
         if ($this->outputMode == 'json') {
-            $response = $this->getResponse();
-            $headers = $response->getHeaders();
-            $headers->addHeaderLine(
-                'Content-type', 'application/javascript'
-            );
-            $headers->addHeaderLine(
-                'Cache-Control', 'no-cache, must-revalidate'
-            );
-            $headers->addHeaderLine(
-                'Expires', 'Mon, 26 Jul 1997 05:00:00 GMT'
-            );
-            $output = ['data' => $data,'status' => $status];
+            $headers->addHeaderLine('Content-type', 'application/javascript');
+            $output = ['data' => $data, 'status' => $status];
             if ('development' == APPLICATION_ENV && count(self::$php_errors) > 0) {
                 $output['php_errors'] = self::$php_errors;
             }
             $response->setContent(json_encode($output));
+            return $response;
+        } else if ($this->outputMode == 'plaintext') {
+            $headers->addHeaderLine('Content-type', 'text/plain');
+            $response->setContent($data ? $status . " $data" : $status);
             return $response;
         } else {
             throw new \Exception('Unsupported output mode: ' . $this->outputMode);
@@ -1290,6 +1288,53 @@ class AjaxController extends AbstractBase
             ),
             self::STATUS_OK
         );
+    }
+
+    /**
+     * Check status and return a status message for e.g. a load balancer.
+     *
+     * A simple OK as text/plain is returned if everything works properly.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function systemStatusAction()
+    {
+        $this->outputMode = 'plaintext';
+
+        // Check system status
+        $config = $this->getConfig();
+        if (!empty($config->System->healthCheckFile)
+            && file_exists($config->System->healthCheckFile)
+        ) {
+            return $this->output('Health check file exists', self::STATUS_ERROR);
+        }
+
+        // Test search index
+        try {
+            $results = $this->getResultsManager()->get('Solr');
+            $params = $results->getParams();
+            $params->setQueryIDs(['healthcheck']);
+            $results->performAndProcessSearch();
+        } catch (\Exception $e) {
+            return $this->output(
+                'Search index error: ' . $e->getMessage(), self::STATUS_ERROR
+            );
+        }
+
+        // Test database connection
+        try {
+            $sessionTable = $this->getTable('Session');
+            $sessionTable->getBySessionId('healthcheck', false);
+        } catch (\Exception $e) {
+            return $this->output(
+                'Database error: ' . $e->getMessage(), self::STATUS_ERROR
+            );
+        }
+
+        // This may be called frequently, don't leave sessions dangling
+        $this->getServiceLocator()->get('VuFind\SessionManager')->destroy();
+
+        return $this->output('', self::STATUS_OK);
     }
 
     /**

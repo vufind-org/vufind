@@ -71,9 +71,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     const MAX_GET_URL_LENGTH = 2048;
 
     /**
-     * URL of SOLR core.
+     * URL or an array of alternative URLs of the SOLR core.
      *
-     * @var string
+     * @var string|array
      */
     protected $url;
 
@@ -117,9 +117,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param string     $url       SOLR base URL
-     * @param HandlerMap $map       Handler map
-     * @param string     $uniqueKey Solr field used to store unique identifier
+     * @param string|array $url       SOLR core URL or an array of alternative URLs
+     * @param HandlerMap   $map       Handler map
+     * @param string       $uniqueKey Solr field used to store unique identifier
      *
      * @return void
      */
@@ -248,11 +248,11 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $handler = 'update', ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
-        $url    = "{$this->url}/{$handler}";
+        $urlSuffix = "/{$handler}";
         if (count($params) > 0) {
-            $url .= '?' . implode('&', $params->request());
+            $urlSuffix .= '?' . implode('&', $params->request());
         }
-        $client = $this->createClient($url, 'POST');
+        $client = $this->createClient(null, 'POST');
         switch ($format) {
         case 'xml':
             $client->setEncType('text/xml; charset=UTF-8');
@@ -270,7 +270,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $client->setRawBody($body);
         $client->getRequest()->getHeaders()
             ->addHeaderLine('Content-Length', strlen($body));
-        return $this->send($client);
+        return $this->trySolrUrls($client, $urlSuffix);
     }
 
     /**
@@ -344,8 +344,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      */
     public function query($handler, ParamBag $params)
     {
-
-        $url         = $this->url . '/' . $handler;
+        $urlSuffix = '/' . $handler;
         $paramString = implode('&', $params->request());
         if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
@@ -354,23 +353,55 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         }
 
         if ($method === Request::METHOD_POST) {
-            $client = $this->createClient($url, $method);
+            $client = $this->createClient(null, $method);
             $client->setRawBody($paramString);
             $client->setEncType(HttpClient::ENC_URLENCODED);
             $client->setHeaders(['Content-Length' => strlen($paramString)]);
         } else {
-            $url = $url . '?' . $paramString;
-            $client = $this->createClient($url, $method);
+            $urlSuffix .= '?' . $paramString;
+            $client = $this->createClient(null, $method);
         }
 
         $this->debug(sprintf('Query %s', $paramString));
-        return $this->send($client);
+        return $this->trySolrUrls($client, $urlSuffix);
+    }
+
+    /**
+     * Try all Solr URLs until we find one that works (or throw an exception).
+     *
+     * @param HttpClient $client    Prepared HTTP client
+     * @param string     $urlSuffix Suffix to append to all URLs tried.
+     *
+     * @return string Response body
+     *
+     * @throws RemoteErrorException  SOLR signaled a server error (HTTP 5xx)
+     * @throws RequestErrorException SOLR signaled a client error (HTTP 4xx)
+     */
+    protected function trySolrUrls($client, $urlSuffix)
+    {
+        // This exception should never get thrown; it's just a safety in case
+        // something unanticipated occurs.
+        $exception = new \Exception('Unexpected exception.');
+
+        // Loop through all base URLs and try them in turn until one works.
+        foreach ((array)$this->url as $base) {
+            $client->setUri($base . $urlSuffix);
+            try {
+                return $this->send($client);
+            } catch (\Exception $ex) {
+                $exception = $ex;
+            }
+        }
+
+        // If we got this far, everything failed -- throw the most recent
+        // exception caught above.
+        throw $exception;
     }
 
     /**
      * Send request the SOLR and return the response.
      *
-     * @param HttpClient $client Prepare HTTP client
+     * @param HttpClient $client Prepared HTTP client
      *
      * @return string Response body
      *
@@ -403,7 +434,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     /**
      * Create the HTTP client.
      *
-     * @param string $url    Target URL
+     * @param string $url    Target URL (null to leave unset)
      * @param string $method Request method
      *
      * @return HttpClient
@@ -413,7 +444,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $client = new HttpClient();
         $client->setAdapter($this->adapter);
         $client->setOptions(['timeout' => $this->timeout]);
-        $client->setUri($url);
+        if (null !== $url) {
+            $client->setUri($url);
+        }
         $client->setMethod($method);
         if ($this->proxy) {
             $this->proxy->proxify($client);

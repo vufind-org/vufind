@@ -12,14 +12,16 @@
     $searchClassIdHtmlEscaped = $this->escapeHtml($searchClassId);
     $lookforEncoded = urlencode($lookfor);
     $loadJs = <<<JS
-var url = path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
-$('#combined_$searchClassIdHtmlEscaped').load(url, '', function(responseText) {
-    if (responseText.length == 0) {
-        $('#combined_$searchClassIdHtmlEscaped').hide();
-    }
-    $('a.openUrlEmbed').click(function() {
-        embedOpenUrlLinks($(this));
-        return false;
+$(document).ready(function(){
+    var url = path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
+    $('#combined_$searchClassIdHtmlEscaped').load(url, '', function(responseText) {
+        if (responseText.length == 0) {
+            $('#combined_$searchClassIdHtmlEscaped').hide();
+        }
+        $('a.openUrlEmbed').click(function() {
+            embedOpenUrlLinks($(this));
+            return false;
+        });
     });
 });
 JS;
@@ -27,5 +29,5 @@ JS;
 ?>
 <h2><?=$this->transEsc($currentSearch['label'])?></h2>
 <p><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc("Loading")?>...</p>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(function(){' . $loadJs . '});', 'SET')?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 <noscript><?=$this->transEsc('Please enable JavaScript.')?></noscript>
