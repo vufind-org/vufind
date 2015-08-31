@@ -120,16 +120,16 @@ h3.introductionText > em {
     color: @link-color;   
 }
 .home-1 {
-    background-color: @home-1-background;
+    background: @home-1-background;
 }
 .home-2 {
-    background-color: @home-2-background;
+    background: @home-2-background;
 }
 .home-3 {
-    background-color: @home-3-background;
+    background: @home-3-background;
 }
 .home-4 {
-    background-color: @home-4-background;
+    background: @home-4-background;
 }
 .document-types {
     li {
@@ -725,7 +725,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   }
 }
 .search-controls {
-  margin-bottom: 15px;
+  margin-bottom: 25px;
   .alert {
     margin-bottom: 0;
   }
@@ -1518,5 +1518,10 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     .organisation-list-url {
         color: @link-color;
         margin-bottom: 25px;
+    }
+    & ul li {
+        list-style-type: disc;
+        margin-left: 15px;
+        margin-bottom: 3px;
     }
 }
