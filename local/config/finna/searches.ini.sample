@@ -432,6 +432,8 @@ Subject = "Solr:Subject:topic,genre,geographic,era"
 CallNumber = "SolrCN"
 ISN = "Solr:ISN:isbn,issn"
 ;tag = "Tag"
+Browse_Database = "SolrAutocomplete:Title:title:title:format:0/Database/"
+Browse_Journal = "SolrAutocomplete:Title:title:title:format:1/Journal/eSerial/"
 
 ; When snippets are enabled, this section can be used to display captions based on
 ; the Solr fields from which the snippets were obtained.  Keys are the names of Solr

@@ -1,4 +1,5 @@
 <?
+    $browse = isset($browse) ? $browse : false;
     // Set default value if necessary:
     if (!isset($this->searchClassId)) {
         $this->searchClassId = 'Solr';
@@ -11,11 +12,16 @@
         isset($this->searchIndex) ? $this->searchIndex : null
     );
     $handlerCount = count($handlers);
-    $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
+    $basicSearch = null;
+    if ($browse) {
+      $basicSearch = "browse-{$browse}";
+    } else {
+      $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
+    }
     $searchHome = $options->getSearchHomeAction();
     $advSearch = $options->getAdvancedSearchAction();
-    $lastSort = $options->getLastSort();
-    $lastLimit = $options->getLastLimit();
+    $lastSort = $browse ? null : $options->getLastSort();
+    $lastLimit = $browse ? null : $options->getLastLimit();
     $daterange
        = $this->params && method_exists($this->params, 'getSpatialDateRangeFilter')
        ? $this->params->getSpatialDateRangeFilter()
@@ -24,12 +30,14 @@
     // Set up Finna Main Tabs:
     $module = $this->layout()->templateDir;
     $action = $this->layout()->templateName;
-    if (($module === 'search' && $action === 'results' && $this->searchType != 'advanced')
-       || ($module === 'primo' && $action === 'search' && $this->searchType != 'advanced')
-       || ($module == 'combined' && $action == 'results')
-    ) {
-       $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $this->layout()->savedTabs);
-       $this->layout()->finnaMainTabs = $this->render('search/searchTabs', array('searchTabs' => $searchTabs));
+    if (!$browse) {
+      if (($module === 'search' && $action === 'results' && $this->searchType != 'advanced')
+         || ($module === 'primo' && $action === 'search' && $this->searchType != 'advanced')
+         || ($module == 'combined' && $action == 'results')
+      ) {
+         $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $this->layout()->savedTabs);
+         $this->layout()->finnaMainTabs = $this->render('search/searchTabs', array('searchTabs' => $searchTabs));
+      }
     }
 ?>
 <? if ($this->searchType != 'advanced'): ?>
@@ -68,7 +76,7 @@
       );
     ?>
      <? $defaultFilterState = $this->hasDefaultsApplied || $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
-     <? if (!empty($filterDetails) || !empty($this->savedSearches)): ?>
+     <? if (!$browse && (!empty($filterDetails) || !empty($this->savedSearches))): ?>
           <div class="checkbox<?=$defaultFilterState?' checked' : ''?>">
         <label>
           <input onChange="$('.applied-filter').click();$('.navbar-form .checkbox').toggleClass('checked');" type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters"/>
@@ -116,10 +124,10 @@
   <div class="row">
     <div class="col-xs-12 col-sm-10 col-md-8 col-lg-7 text-right">
       <? if ($this->primo()->isAvailable()) : ?>
-      <? if ($action === 'home' && $this->searchClassId === 'Solr') : ?>
+      <? if ($browse || ($action === 'home' && $this->searchClassId === 'Solr')) : ?>
       <a href="<?=$this->url('primo-home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Primo Search")?></a>
       <? endif; ?>
-      <? if ($action === 'home' && $this->searchClassId === 'Primo') : ?>
+      <? if ($browse || ($action === 'home' && $this->searchClassId === 'Primo')) : ?>
       <a href="<?=$this->url('home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Basic Search")?></a>
       <? endif; ?>
       <? endif; ?>

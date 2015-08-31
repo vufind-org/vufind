@@ -43,11 +43,57 @@ class Params extends \VuFind\Search\Solr\Params
 {
     use \Finna\Search\FinnaParams;
 
+    /**
+     * Search handler for browse actions
+     *
+     * @var string
+     */
+    protected $browseHandler;
+
     // Date range index field
     const SPATIAL_DATERANGE_FIELD = 'search_daterange_mv';
 
     // Date range index field (VuFind1)
     const SPATIAL_DATERANGE_FIELD_VF1 = 'search_sdaterange_mv';
+
+    /**
+     * Support method for initSearch() -- handle basic settings.
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return boolean True if search settings were found, false if not.
+     */
+    protected function initBasicSearch($request)
+    {
+        if ($handler = $request->get('browseHandler')) {
+            $this->setBrowseHandler($handler);
+        }
+        return parent::initBasicSearch($request);
+    }
+
+    /**
+     * Return the selected search handler (null for complex searches which have no
+     * single handler)
+     *
+     * @return string|null
+     */
+    public function getSearchHandler()
+    {
+        return $this->browseHandler ?: parent::getSearchHandler();
+    }
+
+    /**
+     * Set search handler for browse actions
+     *
+     * @param string $handler Hander
+     *
+     * @return string|null
+     */
+    public function setBrowseHandler($handler)
+    {
+        return $this->browseHandler = $handler;
+    }
 
     /**
      * Does the object already contain the specified filter?
