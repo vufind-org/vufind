@@ -556,54 +556,6 @@
         "description": "Class for representing ISBNs (a VuFind support library)"
     },
     {
-        "name": "vufind-org/vufindhttp",
-        "version": "v1.0.4",
-        "version_normalized": "1.0.4.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/vufind-org/vufindhttp.git",
-            "reference": "1b03d31c914faa6e50b6fe811fe609328d1d287b"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/1b03d31c914faa6e50b6fe811fe609328d1d287b",
-            "reference": "1b03d31c914faa6e50b6fe811fe609328d1d287b",
-            "shasum": ""
-        },
-        "require": {
-            "zendframework/zend-http": ">=2.2"
-        },
-        "require-dev": {
-            "zendframework/zend-uri": ">=2.2"
-        },
-        "time": "2015-03-10 16:22:47",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "VuFindHttp\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-2.0"
-        ],
-        "authors": [
-            {
-                "name": "David Maus",
-                "email": "maus@hab.de",
-                "role": "Developer"
-            },
-            {
-                "name": "Demian Katz",
-                "email": "demian.katz@villanova.edu",
-                "role": "Maintainer"
-            }
-        ],
-        "description": "VuFind 2.x HTTP service library",
-        "homepage": "http://vufind.org/"
-    },
-    {
         "name": "zendframework/zendrest",
         "version": "2.0.2",
         "version_normalized": "2.0.2.0",
@@ -1388,5 +1340,53 @@
             "framework",
             "zf2"
         ]
+    },
+    {
+        "name": "vufind-org/vufindhttp",
+        "version": "v2.0.0",
+        "version_normalized": "2.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/vufind-org/vufindhttp.git",
+            "reference": "781a14b4daccbf699eefaa22311de0b6307c20bd"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/781a14b4daccbf699eefaa22311de0b6307c20bd",
+            "reference": "781a14b4daccbf699eefaa22311de0b6307c20bd",
+            "shasum": ""
+        },
+        "require": {
+            "zendframework/zend-http": ">=2.2"
+        },
+        "require-dev": {
+            "zendframework/zend-uri": ">=2.2"
+        },
+        "time": "2015-08-28 14:44:20",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "VuFindHttp\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-2.0"
+        ],
+        "authors": [
+            {
+                "name": "David Maus",
+                "email": "maus@hab.de",
+                "role": "Developer"
+            },
+            {
+                "name": "Demian Katz",
+                "email": "demian.katz@villanova.edu",
+                "role": "Maintainer"
+            }
+        ],
+        "description": "VuFind 2.x HTTP service library",
+        "homepage": "http://vufind.org/"
     }
 ]

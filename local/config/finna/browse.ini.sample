@@ -1,0 +1,15 @@
+[General]
+Database = false
+Journal = false
+
+[Database]
+resultLimit = 100
+sort = title
+filter[] = 'format:0/Database/'
+type = 'Title'
+
+[Journal]
+resultLimit = 100
+sort = title
+filter[] = 'format:1/Journal/eSerial/'
+type = 'Title'

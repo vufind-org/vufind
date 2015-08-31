@@ -1,4 +1,7 @@
 <?
+  $browse = isset($browse) ? $browse : false;
+  $this->layout()->browse = $browse;
+
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
   if (isset($this->overrideTitle)) {
@@ -31,22 +34,24 @@
     $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Search') . ': ' . $this->escapeHtml($lookfor) . '</li>';
   }
 
-  // Set up Finna Main Header:
-  $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
-      'search/header.phtml',
-      array(
-        'results' => $this->results,
-        'params' => $this->params,
-        'lookfor' => $lookfor,
-        'overrideSearchHeading' => isset($this->overrideSearchHeading)
-          ? $this->overrideSearchHeading : null,
-        'startRecord' => $this->results->getStartRecord(),
-        'endRecord' => $this->results->getEndRecord(),
-        'recordsFound' => $this->results->getResultTotal() > 0,
-        'searchType' => $this->params->getsearchType(),
-        'lookfor' => $lookfor
-      )
-  );
+  if (!$browse) {
+    // Set up Finna Main Header:
+    $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
+        'search/header.phtml',
+        array(
+          'results' => $this->results,
+          'params' => $this->params,
+          'lookfor' => $lookfor,
+          'overrideSearchHeading' => isset($this->overrideSearchHeading)
+            ? $this->overrideSearchHeading : null,
+          'startRecord' => $this->results->getStartRecord(),
+          'endRecord' => $this->results->getEndRecord(),
+          'recordsFound' => $this->results->getResultTotal() > 0,
+          'searchType' => $this->params->getsearchType(),
+          'lookfor' => $lookfor
+        )
+     );
+  }
 
   // Set up Finna Main Tabs:
   //$this->layout()->finnaMainTabs = '...';
@@ -67,13 +72,15 @@
     <?=$this->flashmessages()?>
     <div class="hidden-print search-controls row">
       <? if ($recordTotal > 0): ?>
+        <? if (!$browse): ?>
         <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right">
           <?=$this->render('search/controls/view.phtml')?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/limit.phtml')?>
         </div>
-        <div class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8">
-            <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results))?>
+        <? endif; ?>
+        <div<?= !$browse ? ' class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8"' : '' ?>>
+            <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results, 'label' => $browse ? "browse_extended_" . ucfirst($browse) : 'Showing'))?>
         </div>
       <? endif; ?>
     </div>
@@ -101,7 +108,7 @@
           <?=$this->recommend($current)?>
         <? endif; ?>
       <? endforeach; ?>
-      <? if ($this->searchTabsRecommendations()->getConfig($this->params->getSearchClassId())): ?>
+      <? if (!$browse && $this->searchTabsRecommendations()->getConfig($this->params->getSearchClassId())): ?>
         <div id="search-tabs-recommendations-holder" data-search-hash="<?=$this->escapeHtmlAttr($this->results->getSearchHash())?>"></div>
       <? endif; ?>
     <? else: ?>
@@ -137,6 +144,7 @@
   </div>
 </div>
 <? endif; ?>
+<? if (!$browse): ?>
 <div class="container-fluid searchtools-background">
   <div class="container">
     <div class="row">
@@ -155,6 +163,7 @@
       </div>
   </div>
 </div>
+<? endif; ?>
 <div class="mobile-navigation brand-primary visible-xs">
   <ul>
     <li class="sidebar-navigation"><i class="fa fa-arrow-up fa-arrow-down"></i> <?=$this->transEsc('Narrow Search')?> <span class="active-filters hidden"><?=$this->transEsc('Active filters')?>: </span></li>

@@ -53,6 +53,7 @@ class SearchController extends \VuFind\Controller\SearchController
 
         $this->initCombinedViewFilters();
         $view = parent::resultsAction();
+        $view->browse = false;
         $this->initSavedTabs();
         return $view;
     }
@@ -146,5 +147,80 @@ class SearchController extends \VuFind\Controller\SearchController
         $view->schedule = $schedule;
         return $view;
     }
-}
 
+    /**
+     * Browse databases.
+     *
+     * @return mixed
+     */
+    public function databaseAction()
+    {
+        return $this->browse('Database');
+    }
+
+    /**
+     * Browse journals.
+     *
+     * @return mixed
+     */
+    public function journalAction()
+    {
+        return $this->browse('Journal');
+    }
+
+    /**
+     * Handler for database and journal browse actions.
+     *
+     * @param string $type Browse type
+     *
+     * @return mixed
+     */
+    protected function browse($type)
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('browse');
+        if (!isset($config['General'][$type]) || !$config['General'][$type]) {
+            throw new \Exception("Browse action $type is disabled");
+        }
+
+        if (!isset($config[$type])) {
+            throw new \Exception("Missing configuration for browse action: $type");
+        }
+
+        $config = $config[$type];
+        $query = $this->getRequest()->getQuery();
+        $query->set('view', 'condensed');
+        if (!$query->get('limit')) {
+            $query->set('limit', $config['resultLimit'] ?: 100);
+        }
+        if (!$query->get('sort')) {
+            $query->set('sort', $config['sort'] ?: 'title');
+        }
+        if (!$query->get('type')) {
+            $query->set('type', $config['type'] ?: 'Title');
+        }
+        $queryType = $query->get('type');
+
+        $query->set('hiddenFilters', $config['filter']->toArray() ?: []);
+        $query->set(
+            'recommendOverride',
+            ['side' => ["SideFacets:Browse{$type}:CheckboxFacets:facets-browse"]]
+        );
+
+        $view = $this->forwardTo('Search', 'Results');
+
+        $view->overrideTitle = "browse_extended_$type";
+        $type = strtolower($type);
+        $view->browse = $type;
+        $view->defaultBrowseHandler = $config['type'];
+
+        $view->results->getParams()->setBrowseHandler($queryType);
+
+        // Update last search URL
+        $view->results->getParams()->getOptions()->setBrowseAction("browse-$type");
+        $this->getSearchMemory()->forgetSearch();
+        $this->rememberSearch($view->results);
+
+        $view->results->getParams()->getQuery()->setHandler($queryType);
+        return $view;
+    }
+}
