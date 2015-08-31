@@ -1,5 +1,13 @@
 <?
-  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1><i class="fa fa-user"></i> ' . $this->transEsc('Your Account') . '</h1></div>';
+   $account = $this->auth()->getManager();
+   $logoutId = $this->personaAuth()->getUser() === null ? '' : ' id="persona-logout" ';
+   $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1><i class="fa fa-user"></i> ' . $this->transEsc('Your Account') . '</h1>';
+   if ($account->isLoggedIn()) {
+     $this->layout()->finnaMainHeader = $this->layout()->finnaMainHeader . '<a class="btn btn-primary pull-right modal-link"' . $logoutId . 'href="' . $this->url('myresearch-logout') . '" title="'.$this->transEsc('Log Out') . '"><i class="fa fa-sign-out"></i> ' . $this->transEsc('Log Out') . '</a></div>';
+   }  
+   else {
+     $this->layout()->finnaMainHeader = $this->layout()->finnaMainHeader . '</div>';
+   }
 ?>
 
 <div class="col-xs-12">
