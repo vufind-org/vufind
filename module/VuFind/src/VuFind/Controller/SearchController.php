@@ -417,6 +417,7 @@ class SearchController extends AbstractSearch
     {
         $results = $this->getResultsManager()->get('SolrReserves');
         $params = $results->getParams();
+        $params->recommendationsEnabled(true);
         $params->initFromRequest(
             new \Zend\Stdlib\Parameters(
                 $this->getRequest()->getQuery()->toArray()
