@@ -681,16 +681,16 @@
         },
         {
             "name": "vufind-org/vufindhttp",
-            "version": "v1.0.4",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindhttp.git",
-                "reference": "1b03d31c914faa6e50b6fe811fe609328d1d287b"
+                "reference": "781a14b4daccbf699eefaa22311de0b6307c20bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/1b03d31c914faa6e50b6fe811fe609328d1d287b",
-                "reference": "1b03d31c914faa6e50b6fe811fe609328d1d287b",
+                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/781a14b4daccbf699eefaa22311de0b6307c20bd",
+                "reference": "781a14b4daccbf699eefaa22311de0b6307c20bd",
                 "shasum": ""
             },
             "require": {
@@ -723,7 +723,7 @@
             ],
             "description": "VuFind 2.x HTTP service library",
             "homepage": "http://vufind.org/",
-            "time": "2015-03-10 16:22:47"
+            "time": "2015-08-28 14:44:20"
         },
         {
             "name": "zendframework/zendframework",
