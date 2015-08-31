@@ -1,0 +1,21 @@
+; Inherit main configuration
+[Parent_Config]
+relative_path = ../finna/facets.ini
+override_full_sections = "CheckboxFacets,BrowseDatabase,BrowseJournal"
+
+[Results_Settings]
+collapsedFacets = author2Str,genre_facet,language,topic_facet,first_indexed
+
+[CheckboxFacets]
+
+[BrowseDatabase]
+category_str_mv        = Category
+author2Str             = Author
+genre_facet            = Genre
+
+[BrowseJournal]
+category_str_mv        = Category
+language               = Language
+topic_facet            = Topic
+first_indexed          = "New Items in Index"
+

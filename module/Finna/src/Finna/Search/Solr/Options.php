@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for controllers.
+ * Solr aspect of the Search Multi-class (Options)
  *
  * PHP version 5
  *
@@ -20,52 +20,50 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search_Solr
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-namespace Finna\Controller;
-use Zend\ServiceManager\ServiceManager;
+namespace Finna\Search\Solr;
 
 /**
- * Factory for controllers.
+ * Solr Search Options
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search_Solr
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
- *
- * @codeCoverageIgnore
+ * @link     http://www.vufind.org  Main Page
  */
-class Factory
+class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Construct the BrowseController.
+     * Browse route
      *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return BrowseController
+     * @var string
      */
-    public static function getBrowseController(ServiceManager $sm)
+    protected $browseAction = null;
+
+    /**
+     * Set the route name for the browse action.
+     *
+     * @param string $action Route
+     *
+     * @return string
+     */
+    public function setBrowseAction($action)
     {
-        return new BrowseController(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
+        $this->browseAction = $action;
     }
 
     /**
-     * Construct the RecordController.
+     * Return the route name for the search results action.
      *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return RecordController
+     * @return string
      */
-    public static function getRecordController(ServiceManager $sm)
+    public function getSearchAction()
     {
-        return new RecordController(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
+        return $this->browseAction ?: parent::getSearchAction();
     }
 }

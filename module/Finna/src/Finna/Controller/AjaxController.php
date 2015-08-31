@@ -987,6 +987,78 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Get Autocomplete suggestions.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getACSuggestionsAjax()
+    {
+        if ($type = $this->getBrowseAction($this->getRequest())) {
+            $query = $this->getRequest()->getQuery();
+            $query->set('type', "Browse_$type");
+            $query->set('searcher', 'Solr');
+        }
+        return parent::getACSuggestionsAjax();
+    }
+
+    /**
+     * Get hierarchical facet data for jsTree
+     *
+     * Parameters:
+     * facetName  The facet to retrieve
+     * facetSort  By default all facets are sorted by count. Two values are available
+     * for alternative sorting:
+     *   top = sort the top level alphabetically, rest by count
+     *   all = sort all levels alphabetically
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getFacetDataAjax()
+    {
+        if ($type = $this->getBrowseAction($this->getRequest())) {
+            $config
+                = $this->getServiceLocator()->get('VuFind\Config')->get('browse');
+
+            if (!isset($config[$type])) {
+                return $this->output(
+                    "Missing configuration for browse action: $type",
+                    self::STATUS_ERROR
+                );
+            }
+
+            $config = $config[$type];
+            $query = $this->getRequest()->getQuery();
+            if (!$query->get('sort')) {
+                $query->set('sort', $config['sort'] ?: 'title');
+            }
+            if (!$query->get('type')) {
+                $query->set('type', $config['type'] ?: 'Title');
+            }
+            $query->set('browseHandler', $query->get('type'));
+            $query->set('hiddenFilters', $config['filter']->toArray());
+        }
+        return parent::getFacetDataAjax();
+    }
+
+    /**
+     * Return browse action from the request.
+     *
+     * @param Zend\Http\Request $request Request
+     *
+     * @return null|string Browse action or null if request is not a browse action
+     */
+    protected function getBrowseAction($request)
+    {
+        $referer = $request->getServer()->get('HTTP_REFERER');
+        $match = null;
+        $regex = '/^http[s]?:.*\/Browse\/(Database|Journal)[\/.*]?/';
+        if (preg_match($regex, $referer, $match)) {
+            return $match[1];
+        }
+        return null;
+    }
+
+    /**
      * Convert XML to array for bX recommendations
      *
      * @param \simpleXMLElement $xml XML to convert

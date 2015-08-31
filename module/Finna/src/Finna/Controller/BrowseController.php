@@ -1,8 +1,8 @@
 <?php
 /**
- * Factory for controllers.
+ * Browse Module Controller
  *
- * PHP version 5
+ * PHP Version 5
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -12,60 +12,51 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
  *
  * @category VuFind2
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace Finna\Controller;
-use Zend\ServiceManager\ServiceManager;
 
 /**
- * Factory for controllers.
+ * BrowseController Class
+ *
+ * Controls the alphabetical and Finna database & journal browsing features
  *
  * @category VuFind2
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
- *
- * @codeCoverageIgnore
+ * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
-class Factory
+class BrowseController extends \VuFind\Controller\BrowseController
 {
     /**
-     * Construct the BrowseController.
+     * Forward database browse to SearchController.
      *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return BrowseController
+     * @return mixed
      */
-    public static function getBrowseController(ServiceManager $sm)
+    public function databaseAction()
     {
-        return new BrowseController(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
+        return $this->forwardTo('Search', 'Database');
     }
 
     /**
-     * Construct the RecordController.
+     * Forward journal browse to SearchController.
      *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return RecordController
+     * @return mixed
      */
-    public static function getRecordController(ServiceManager $sm)
+    public function journalAction()
     {
-        return new RecordController(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
+        return $this->forwardTo('Search', 'Journal');
     }
 }
