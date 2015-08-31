@@ -1,7 +1,10 @@
 <?
   // Set page title.
   $this->headTitle($this->translate('An error has occurred'));
-
+  
+  // Disable top search box -- this page has a special layout.
+  $this->layout()->searchbox = false;
+  
   $this->layout()->breadcrumbs = '<li class="active">Error</li>';
 ?>
 <div class="alert alert-danger">
