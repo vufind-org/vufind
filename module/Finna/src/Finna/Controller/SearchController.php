@@ -155,7 +155,7 @@ class SearchController extends \VuFind\Controller\SearchController
      */
     public function databaseAction()
     {
-        return $this->browseAction('Database');
+        return $this->browse('Database');
     }
 
     /**
@@ -165,17 +165,17 @@ class SearchController extends \VuFind\Controller\SearchController
      */
     public function journalAction()
     {
-        return $this->browseAction('Journal');
+        return $this->browse('Journal');
     }
 
     /**
-     * Handler for database and journal browse features.
+     * Handler for database and journal browse actions.
      *
      * @param string $type Browse type
      *
      * @return mixed
      */
-    protected function browseAction($type)
+    protected function browse($type)
     {
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('browse');
         if (!isset($config['General'][$type]) || !$config['General'][$type]) {
