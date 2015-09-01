@@ -1,10 +1,10 @@
 <?php
 /**
- * ILS driver test
+ * Solr aspect of the Search Multi-class (Options)
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,30 +20,50 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Search_Solr
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFindTest\ILS\Driver;
-use VuFind\ILS\Driver\PICA;
+namespace Finna\Search\Solr;
 
 /**
- * ILS driver test
+ * Solr Search Options
  *
  * @category VuFind2
- * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Search_Solr
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class PICATest extends \VuFindTest\Unit\ILSDriverTestCase
+class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Browse route
+     *
+     * @var string
      */
-    public function __construct()
+    protected $browseAction = null;
+
+    /**
+     * Set the route name for the browse action.
+     *
+     * @param string $action Route
+     *
+     * @return string
+     */
+    public function setBrowseAction($action)
     {
-        $this->driver = new PICA();
+        $this->browseAction = $action;
+    }
+
+    /**
+     * Return the route name for the search results action.
+     *
+     * @return string
+     */
+    public function getSearchAction()
+    {
+        return $this->browseAction ?: parent::getSearchAction();
     }
 }

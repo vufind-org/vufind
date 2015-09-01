@@ -19,7 +19,7 @@
       <? elseif (!empty($urls)): ?>
         <? foreach ($urls as $i => $url): ?>
           <?=$i > 0 ? '<br/>' : '' ?>
-          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['desc']) ? $this->transEsc('link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?></a>
+          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><?=!empty($url['desc']) && $url['desc'] === 'Database Guide' ? '<i class="fa fa-info-database"></i> ' : ''?><?=!empty($url['desc']) && $url['desc'] === 'Database Interface' ? '<i class="fa fa-browse-database"></i> ' : ''?><?=!empty($url['desc']) && $url['desc'] != 'Database Guide' && $url['desc'] != 'Database Interface' ? '<i class="fa fa-external-link"></i> ' : ''?><?=!empty($url['desc']) ? $this->transEsc('link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?></a>
         <? endforeach; ?>
       <? endif; ?>
       </div>

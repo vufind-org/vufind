@@ -1,11 +1,13 @@
 <?
+  $browse = isset($browse) ? $browse : false;
+
   if (!isset($this->indexStart)) {
     $this->indexStart = 0;
   }
   $showCheckboxes = !isset($this->hideCartControls) && $this->cart()->isActive();
   $resultCount = $this->results->getResults();
   $recommendationConfig = $this->searchTabsRecommendations()->getConfig();
-  $needRecommendationHolder = $this->results->getStartRecord() == 1 && !empty($recommendationConfig['recommendations'][$this->results->getParams()->getSearchClassId()]);
+  $needRecommendationHolder = !$browse && $this->results->getStartRecord() == 1 && !empty($recommendationConfig['recommendations'][$this->results->getParams()->getSearchClassId()]);
   $haveRecommendationHolder = false;
 ?>
 <? $i = $this->indexStart; foreach ($this->results->getResults() as $current):

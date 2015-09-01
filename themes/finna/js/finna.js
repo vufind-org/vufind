@@ -55,5 +55,6 @@ $(document).ready(function() {
             $('.authorization-notification').hide();
         }
         updatePageForLogin_vf();
+        finna.layout.updateLoginName();
     };
 });

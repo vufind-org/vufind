@@ -42,6 +42,20 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Construct the BrowseController.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return BrowseController
+     */
+    public static function getBrowseController(ServiceManager $sm)
+    {
+        return new BrowseController(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+        );
+    }
+
+    /**
      * Construct the RecordController.
      *
      * @param ServiceManager $sm Service manager.

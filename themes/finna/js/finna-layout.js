@@ -45,7 +45,20 @@ finna.layout = (function() {
       if ($(".record-information").height() > 350 && $(".show-details-button")[0]) {
         $(".record-information .record-details-more").addClass('hidden');
         $(".record-information .show-details-button").removeClass('hidden');
+        $(".description").addClass('too-long');
       }
+      $('.show-details-button').click (function() {
+        $(".record-information .record-details-more").toggleClass('hidden');
+        $('.description .more-link.wide').click();
+        $(this).toggleClass('hidden');
+        $(".hide-details-button").toggleClass("hidden");
+      });
+      $('.hide-details-button').click (function() {
+        $(".record-information .record-details-more").toggleClass('hidden');
+        $('.description .less-link.wide').click();
+        $(this).toggleClass('hidden');
+        $(".show-details-button").toggleClass("hidden");
+      });
     };
 
     var initTruncate = function(holder) {
@@ -343,7 +356,7 @@ finna.layout = (function() {
         $('.autocomplete').typeahead('val', '');
         $('.clear-button').addClass('hidden');
         $('#searchForm_lookfor').focus();
-      });     
+      });
       $('.autocomplete').on('typeahead:selected', function () {
         $('.navbar-form').submit();
       });
@@ -361,6 +374,16 @@ finna.layout = (function() {
           $('[data-toggle="tooltip"]').tooltip('hide');
         }
       });
+    };
+
+    var initCondensedList = function () {
+        $('.condensed-collapse-toggle').click(function(event) {
+            if ((event.target.nodeName) != 'A' && (event.target.nodeName) != 'MARK') {
+              $(this).nextAll('.condensed-collapse-data').first().slideToggle(120, 'linear');
+              $('.fa-arrow-right', this).toggleClass('fa-arrow-down');
+              $(this).parent().parent().toggleClass('open');
+            }
+        });
     };
 
     var initSaveRecordLinks = function(holder) {
@@ -459,6 +482,18 @@ finna.layout = (function() {
         return refreshPage;
     };
 
+    var updateLoginName = function() {
+        $.ajax({
+            dataType: 'json',
+            url: path + '/AJAX/JSON?method=getUserDisplayName',
+            success: function (response) {
+                if (response.status == 'OK') {
+                    $('.logoutOptions .username').text(response.data);
+                }
+            }
+        });
+    }
+
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -468,6 +503,7 @@ finna.layout = (function() {
         checkSaveStatuses: checkSaveStatuses,
         initSaveRecordLinks: initSaveRecordLinks,
         initLightbox: initLightbox,
+        updateLoginName: updateLoginName,
         init: function() {
             $('select.jumpMenu').unbind('change').change(function() { $(this).closest('form').submit(); });
             $('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });
@@ -488,6 +524,7 @@ finna.layout = (function() {
 
             initScrollLinks();
             initSearchboxFunctions();
+            initCondensedList();
             checkSaveStatuses();
             initAuthorizationNotification();
         }

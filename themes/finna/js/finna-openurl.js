@@ -20,14 +20,25 @@ finna.openUrl = (function() {
     };
 
     var embedOpenUrlLinks = function (element) {
-        var params = extractClassParams(this);
+        // Extract the OpenURL associated with the clicked element:
         var openUrl = element.children('span.openUrl:first').attr('title');
-        element.removeClass('openUrlEmbed').hide();
-        loadResolverLinks(element.next('div.resolver').removeClass('hidden'), openUrl, params.searchClassId);
+
+        // Hide the controls now that something has been clicked:
+        var controls = element.parents('.openUrlControls');
+        controls.removeClass('openUrlEmbed').addClass('hidden');
+
+        // Locate the target area for displaying the results:
+        var target = controls.next('div.resolver');
+
+        // If the target is already visible, a previous click has populated it;
+        // don't waste time doing redundant work.
+        if (target.hasClass('hidden')) {
+            loadResolverLinks(target.removeClass('hidden'), openUrl);
+        }
     };
 
     var initLinks = function() {
-        $('a.openUrlEmbed').each(function(ind, e) {
+        $('.openUrlEmbed a').each(function(ind, e) {
             $(e).one("inview", function(){
                 embedOpenUrlLinks($(this));
             });
