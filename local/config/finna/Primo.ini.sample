@@ -119,6 +119,8 @@ special_facets      = daterange
 ; language files found in the web/lang directory.  By default, no facets are
 ; translated -- uncomment or add lines below to turn on this feature.
 translated_facets[] = tlevel
+translated_facets[] = rtype
+translated_facets[] = lang
 
 ; This section is reserved for special boolean facets.  These are displayed
 ; as checkboxes.  If the box is checked, the filter on the left side of the
