@@ -54,16 +54,19 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
   });
 }
 
-function refreshCommentList(recordId, recordSource) {
-  var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
+function refreshCommentList(recordId, recordSource, parent) {
+  var url = path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
   $.ajax({
     dataType: 'json',
     url: url,
     success: function(response) {
       // Update HTML
       if (response.status == 'OK') {
-        $('#commentList').empty();
-        $('#commentList').append(response.data);
+        $commentList = typeof parent === "undefined" || $(parent).find('.commentList').length === 0
+          ? $('.commentList')
+          : $(parent).find('.commentList');
+        $commentList.empty();
+        $commentList.append(response.data);
         $('input[type="submit"]').button('reset');
         $('.delete').unbind('click').click(function() {
           var commentId = $(this).attr('id').substr('recordComment'.length);
@@ -94,7 +97,7 @@ function registerAjaxCommentRecord() {
       dataType: 'json',
       success: function(response) {
         if (response.status == 'OK') {
-          refreshCommentList(id, recordSource);
+          refreshCommentList(id, recordSource, form);
           $(form).find('textarea[name="comment"]').val('');
           $(form).find('input[type="submit"]').button('loading');
         } else {
@@ -235,7 +238,7 @@ function ajaxTagUpdate(tag, remove) {
   });
 }
 
-$(document).ready(function(){
+function recordDocReady() {
   var id = $('.hiddenId')[0].value;
   registerRecordEvents(document, id);
   refreshCommentList(id, $('.hiddenSource').val());
