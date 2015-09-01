@@ -143,6 +143,7 @@ $config = [
             ],
             'recommend' => [
                 'factories' => [
+                    'collectionsidefacets' => 'Finna\Recommend\Factory::getCollectionSideFacets',
                     'sidefacets' => 'Finna\Recommend\Factory::getSideFacets',
                 ],
             ],

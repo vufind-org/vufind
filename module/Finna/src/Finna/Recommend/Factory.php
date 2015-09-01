@@ -45,6 +45,21 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Factory for CollectionSideFacets module.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return CollectionSideFacets
+     */
+    public static function getCollectionSideFacets(ServiceManager $sm)
+    {
+        return new CollectionSideFacets(
+            $sm->getServiceLocator()->get('VuFind\Config'),
+            $sm->getServiceLocator()->get('VuFind\HierarchicalFacetHelper')
+        );
+    }
+
+    /**
      * Factory for SideFacets module.
      *
      * @param ServiceManager $sm Service manager.
