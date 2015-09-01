@@ -34,6 +34,8 @@ use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 use VuFindSearch\Backend\Primo\QueryBuilder;
 use VuFindSearch\Backend\Primo\Backend;
 
+use VuFind\Search\Primo\InjectOnCampusListener;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
 
@@ -86,6 +88,8 @@ class PrimoBackendFactory implements FactoryInterface
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
+
+        $this->createListeners($backend);
         return $backend;
     }
 
@@ -102,6 +106,24 @@ class PrimoBackendFactory implements FactoryInterface
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
         return $backend;
+    }
+
+    /**
+     * Create listeners.
+     *
+     * @param Backend $backend Backend
+     *
+     * @return void
+     */
+    protected function createListeners(Backend $backend)
+    {
+        $events = $this->serviceLocator->get('SharedEventManager');
+
+        // Determines, if the OnCampusListener is necessary for the user
+        // if this returns false, the listener is not necessary
+        if ($this->needsOnCampusRange()) {
+            $this->getInjectOnCampusListener()->attach($events);
+        }
     }
 
     /**
@@ -159,6 +181,65 @@ class PrimoBackendFactory implements FactoryInterface
     }
 
     /**
+     * Determine the institution campusrange
+     *
+     * @return string
+     */
+    protected function getOnCampusRange()
+    {
+        $onCampusPermission
+            = isset($this->primoConfig->Institutions->onCampusPermission)
+            ? $this->primoConfig->Institutions->onCampusPermission : false;
+
+        if (false !== $onCampusPermission) {
+            return $onCampusPermission;
+        }
+
+        // If primoConfig->Institutions->onCampusPermission is not set
+        // no rule can get applied.
+        // So return null to indicate that nothing can get matched.
+        return null;
+    }
+
+    /**
+     * Determine if a campusrange from configuration is needed
+     *
+     * @return bool
+     */
+    protected function needsOnCampusRange()
+    {
+        $regex = isset($this->primoConfig->Institutions->regex)
+            ? $this->primoConfig->Institutions->regex : [];
+        $onCampusPermission
+            = isset($this->primoConfig->Institutions->onCampusPermission)
+            ? $this->primoConfig->Institutions->onCampusPermission : false;
+
+        // Configuration options should always get checked
+        if (in_array('/.*/', $regex) && false === $onCampusPermission) {
+            throw new \Exception(
+                'You are using a catch-all rule in your [Institutions] settings without '
+                . 'having set the onCampusPermission-Parameter. This configuration will '
+                . 'only show PrimoCentral results for onCampus=false, if the user is not '
+                . 'inside one [Institutions] IP range.'
+            );
+        }
+
+        $request = $this->serviceLocator->get('Request');
+        $ip = $request->getServer('REMOTE_ADDR');
+
+        // if the user has an IP, which is configured for a special Institution Range
+        // there is no additional check necessary
+        for ($i = 0; $i < count($regex); $i++) {
+            if (preg_match($regex[$i], $ip)
+                && $regex[$i] != '/.*/'
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    /**
      * Create the Primo query builder.
      *
      * @return QueryBuilder
@@ -183,5 +264,19 @@ class PrimoBackendFactory implements FactoryInterface
             return $driver;
         };
         return new RecordCollectionFactory($callback);
+    }
+
+    /**
+     * Get a OnCampus Listener
+     *
+     * @return InjectOnCampusListener
+     */
+    protected function getInjectOnCampusListener()
+    {
+        $listener = new InjectOnCampusListener($this->getOnCampusRange());
+        $listener->setAuthorizationService(
+            $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+        );
+        return $listener;
     }
 }
