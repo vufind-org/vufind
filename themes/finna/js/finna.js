@@ -11,6 +11,7 @@ var finna = (function() {
                 'feed',
                 'feedback',
                 'imagePopup',
+                'itemStatus',
                 'layout',
                 'myList',
                 'openUrl',
