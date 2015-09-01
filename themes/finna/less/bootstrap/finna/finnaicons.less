@@ -51,6 +51,9 @@ table .iconlabel {
   font-size: 1em;
 }
 .image-popup-trigger {
+        &:hover {
+            text-decoration: none;   
+        }
         & img {
             box-shadow: 0px 0px 0px 4px @gray-lighter inset;
             position: relative;
@@ -60,12 +63,13 @@ table .iconlabel {
         & .iconlabel {
             width: 100%;
             color: @body-bg;
+
             &:before {
                 padding-right: 3px;
                 position: absolute;
                 top: 26%;
                 left: 36%;
-                font-size: 3em;
+                font-size: 39px;
                 color: @gray-lighter;
                 z-index: 0;
                 @media (min-width:@screen-md-min) and (max-width:@screen-md-max) {
@@ -73,7 +77,7 @@ table .iconlabel {
                     left: 35%;
                 }
                 @media (max-width:@screen-sm-max) {
-                    font-size: 2em;
+                    font-size: 26px;
                 }
             }
         }
