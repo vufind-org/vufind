@@ -355,6 +355,7 @@ $(document).ready(function() {
   $('.autocomplete').each(function (i, element) {
     var op = $(element).autocomplete({
       maxResults: 10,
+      loadingString: vufindString['loading']+'...',
       handler: function(query, cb) {
         var searcher = extractClassParams(element);
         $.fn.autocomplete.ajax({
