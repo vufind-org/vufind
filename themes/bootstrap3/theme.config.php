@@ -8,6 +8,7 @@ return array(
         'compiled.css',
         'vendor/font-awesome.min.css',
         'vendor/bootstrap-slider.css',
+        'autocomplete.css',
         'print.css:print',
     ),
     'js' => array(
@@ -16,7 +17,7 @@ return array(
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
         //'vendor/bootlint.min.js',
-        'vendor/typeahead.js',
+        'autocomplete.js',
         'vendor/validator.min.js',
         'vendor/rc4.js',
         'common.js',
