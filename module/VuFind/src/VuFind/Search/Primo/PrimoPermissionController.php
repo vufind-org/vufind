@@ -61,7 +61,7 @@ class PrimoPermissionController
     /**
      * Constructor.
      *
-     * @param Zend\Config\Config|array $primoConfig Primo-Config for
+     * @param Zend\Config\Config|array $primoPermConfig Primo-Config for
      * InstitutionPermissions
      *
      * @return void
@@ -70,8 +70,9 @@ class PrimoPermissionController
     {
         $this->instCode = null;
         if (null === $primoPermConfig) {
-            throw new \Exception('The Primo Permission System has not been '
-                . 'configured. Please configure section [InstitutionPermission] '
+            throw new \Exception(
+                'The Primo Permission System has not been configured. '
+                . 'Please configure section [InstitutionPermission] '
                 . 'in Primo.ini.'
             );
         }
@@ -95,13 +96,12 @@ class PrimoPermissionController
             ? $this->primoConfig['code'] : [];
         $permRules = isset($this->primoConfig['permissionRule'])
             ? $this->primoConfig['permissionRule'] : [];
-        if ((
-            empty($codes) && empty($permRules)
-            && !(isset($this->primoConfig['defaultCode']))
-            )
+        if ((empty($codes) && empty($permRules)
+            && !(isset($this->primoConfig['defaultCode'])))
             || count($codes) != count($permRules)
         ) {
-            throw new \Exception('[InstitutionPermission] section in Primo.ini is not '
+            throw new \Exception(
+                '[InstitutionPermission] section in Primo.ini is not '
                 . 'configured properly. Please check the section.'
             );
         }

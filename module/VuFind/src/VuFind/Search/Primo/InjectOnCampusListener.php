@@ -115,10 +115,9 @@ class InjectOnCampusListener
                 if ($this->permissionController->checkDefaultPermission()) {
                     $this->isOnCampus = true;
                 }
-            }
+            } else if ($this->permissionController->isAuthenticated()) {
             // If its not the default user, check if the user has been authenticated
             // by a rule.
-            else if ($this->permissionController->isAuthenticated()) {
                 $this->isOnCampus = true;
             }
         }

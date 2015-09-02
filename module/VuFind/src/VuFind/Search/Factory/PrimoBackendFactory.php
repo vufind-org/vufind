@@ -171,7 +171,7 @@ class PrimoBackendFactory implements FactoryInterface
     /**
      * Determine the institution code
      *
-     * @return string
+     * @return     string
      * @depracated Use PrimoPermissionController instead!
      */
     protected function getInstCode()
