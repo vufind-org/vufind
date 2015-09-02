@@ -147,27 +147,16 @@ h3 {
 }
 
 /* --- Autocomplete --- */
-.twitter-typeahead {
-  vertical-align: top;
-  background-color: #fff;
-  border-radius: @border-radius-base;
-  @media (max-width: 767px) {width: 100%;}
-}
-.twitter-typeahead .tt-hint {display: none;}
-.tt-dropdown-menu {&:extend(.list-group);}
-.tt-suggestion {
-  &:extend(.list-group-item);
-  cursor: pointer;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  &.active {white-space: inherit;}
-  &.tt-cursor {
-    background-color: @brand-primary;
-    color: #fff;
-  }
+.autocomplete-results {
+  border: 1px solid @list-group-border;
+  border-radius: 4px;
 
-  p {margin: 0;}
+  .item {border-bottom-color: @list-group-border;}
+  .item:last-child {border: 0;}
+  .item:hover,
+  .item.selected {background: @brand-primary !important;}
 }
+
 
 /* --- Badges - blend the links in --- */
 .badge a {color: #fff;}
