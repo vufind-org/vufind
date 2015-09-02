@@ -214,9 +214,7 @@ class CartController extends AbstractBase
         $view->emailFormatOptions = $this->getEmailFormats();
         
         // Process form submission:
-        if (false) {
-        
-        //if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             
             // Build the URL to share:
             $params = [];
