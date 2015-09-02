@@ -32,12 +32,10 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\Backend\Primo\Connector;
 
+use VuFind\Search\Primo\PrimoPermissionController;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
-
-use ZfcRbac\Service\AuthorizationServiceAwareInterface,
-    ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Unit tests for OnCampus listener.
@@ -92,7 +90,10 @@ class OnCampusListenerTest extends TestCase
      */
     public function testAttachWithParameter()
     {
-        $listener = new InjectOnCampusListener('myUniversity.IPRANGE');
+        $mockPermController = $this->getMockBuilder('PrimoPermissionController')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $listener = new InjectOnCampusListener($mockPermController);
         $mock = $this->getMock('Zend\EventManager\SharedEventManagerInterface');
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
@@ -121,21 +122,24 @@ class OnCampusListenerTest extends TestCase
     }
 
     /**
-     * Test the listener if onCampus permission matches
+     * Test the listener if default permission rule applies
      *
      * @return void
      */
-    public function testOnCampusAuthSuccessfull()
+    public function testOnCampusDefaultSuccessfull()
     {
         $params   = new ParamBag([ ]);
-        $listener = new InjectOnCampusListener('myUniversity.IPRANGE');
-        $mockAuth = $this->getMockBuilder('ZfcRbac\Service\AuthorizationService')
+        $mockPermController
+            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionController')
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
-            ->with($this->equalTo('myUniversity.IPRANGE'))
+        $mockPermController->expects($this->any())->method('isOnDefaultPermission')
             ->will($this->returnValue(true));
-        $listener->setAuthorizationService($mockAuth);
+        $mockPermController->expects($this->any())->method('checkDefaultPermission')
+            ->will($this->returnValue(true));
+
+        $listener = new InjectOnCampusListener($mockPermController);
+
 
         $event    = new Event('pre', $this->backend, [ 'params' => $params]);
         $listener->onSearchPre($event);
@@ -147,22 +151,25 @@ class OnCampusListenerTest extends TestCase
     }
 
     /**
-     * Test the listener if onCampus permission does not match
+     * Test the listener if default permission rule applies and default permission
+     * is not enough to get Primo results
      *
      * @return void
      */
-    public function testOnCampusAuthNotSuccessfull()
+    public function testOnCampusDefaultNotSuccessfull()
     {
         $params   = new ParamBag([ ]);
-
-        $listener = new InjectOnCampusListener('myUniversity.IPRANGE');
-        $mockAuth = $this->getMockBuilder('ZfcRbac\Service\AuthorizationService')
+        $mockPermController
+            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionController')
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
-            ->with($this->equalTo('myUniversity.IPRANGE'))
+        $mockPermController->expects($this->any())->method('isOnDefaultPermission')
+            ->will($this->returnValue(true));
+        $mockPermController->expects($this->any())->method('checkDefaultPermission')
             ->will($this->returnValue(false));
-        $listener->setAuthorizationService($mockAuth);
+
+        $listener = new InjectOnCampusListener($mockPermController);
+
         $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
         $listener->onSearchPre($event);
 
@@ -171,21 +178,70 @@ class OnCampusListenerTest extends TestCase
     }
 
     /**
-     * Test the listener if onCampus permission does not exist
+     * Test the listener if certain rule applies (user is inside a configured
+     * network)
      *
      * @return void
      */
-    public function testOnCampusAuthNotExisting()
+    public function testOnCampusInsideNetwork()
+    {
+        $params   = new ParamBag([ ]);
+        $mockPermController
+            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionController')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockPermController->expects($this->any())->method('isOnDefaultPermission')
+            ->will($this->returnValue(false));
+        $mockPermController->expects($this->any())->method('isAuthenticated')
+            ->will($this->returnValue(true));
+
+        $listener = new InjectOnCampusListener($mockPermController);
+
+        $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
+        $listener->onSearchPre($event);
+
+        $onCampus   = $params->get('onCampus');
+        $this->assertEquals([0 => true], $onCampus);
+    }
+
+    /**
+     * Test the listener if certain rule applies (user is outside of any configured
+     * network)
+     *
+     * @return void
+     */
+    public function testOnCampusOutsideNetwork()
+    {
+        $params   = new ParamBag([ ]);
+        $mockPermController
+            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionController')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockPermController->expects($this->any())->method('isOnDefaultPermission')
+            ->will($this->returnValue(false));
+        $mockPermController->expects($this->any())->method('isAuthenticated')
+            ->will($this->returnValue(false));
+
+        $listener = new InjectOnCampusListener($mockPermController);
+
+        $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
+        $listener->onSearchPre($event);
+
+        $onCampus   = $params->get('onCampus');
+        $this->assertEquals([0 => false], $onCampus);
+    }
+
+    /**
+     * Test the listener if no permission controller exists
+     *
+     * @return void
+     */
+    public function testOnCampusNoPermissionController()
     {
         $params   = new ParamBag([ ]);
 
-        $listener = new InjectOnCampusListener('myUniversity.IPRANGE');
-        $mockAuth = $this->getMockBuilder('ZfcRbac\Service\AuthorizationService')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
-            ->will($this->returnValue(false));
-        $listener->setAuthorizationService($mockAuth);
+        $listener = new InjectOnCampusListener();
+
         $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
         $listener->onSearchPre($event);
 

@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\Primo;
 
+use VuFind\Search\Primo\PrimoPermissionController;
+
 use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
 
@@ -48,11 +50,11 @@ class InjectOnCampusListener
     use AuthorizationServiceAwareTrait;
 
     /**
-     * onCampus IP Range.
+     * Primo Permission Controller.
      *
-     * @var string
+     * @var PrimoPermissionController
      */
-    protected $onCampusIPRange;
+    protected $permissionController;
 
     /**
      * Is user on campus or not?
@@ -64,14 +66,26 @@ class InjectOnCampusListener
     /**
      * Constructor.
      *
-     * @param string $onCampusIPRange Name of the permission set
+     * @param PrimoPermissionController $ppc Primo Permission Controller
      *
      * @return void
      */
-    public function __construct($onCampusIPRange = null)
+    public function __construct($ppc = null)
     {
-        $this->onCampusIPRange = $onCampusIPRange;
+        $this->permissionController = $ppc;
         $this->isOnCampus = false;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param PrimoPermissionController $ppc Primo Permission Controller
+     *
+     * @return void
+     */
+    public function setPermissionController($ppc)
+    {
+        $this->permissionController = $ppc;
     }
 
     /**
@@ -87,22 +101,26 @@ class InjectOnCampusListener
     }
 
     /**
-     * Get the onCampus network
+     * Determines, which value is needed for the onCampus parameter
      *
      * @return void
      */
     protected function getOnCampus()
     {
-        $authService = $this->getAuthorizationService();
-
-        // if no authorization service is available, don't do anything
-        if (!$authService) {
-            return;
-        }
-
-        // otherwise the condition should match to apply the filter
-        if ($authService->isGranted($this->onCampusIPRange)) {
-            $this->isOnCampus = true;
+        if ($this->permissionController) {
+            // The user is getting authenticated as default user
+            if ($this->permissionController->isOnDefaultPermission()) {
+                // In this case we have to check, if the default user has enough
+                // permission to get all results
+                if ($this->permissionController->checkDefaultPermission()) {
+                    $this->isOnCampus = true;
+                }
+            }
+            // If its not the default user, check if the user has been authenticated
+            // by a rule.
+            else if ($this->permissionController->isAuthenticated()) {
+                $this->isOnCampus = true;
+            }
         }
     }
 

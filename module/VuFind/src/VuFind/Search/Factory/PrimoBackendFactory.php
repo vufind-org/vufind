@@ -35,6 +35,7 @@ use VuFindSearch\Backend\Primo\QueryBuilder;
 use VuFindSearch\Backend\Primo\Backend;
 
 use VuFind\Search\Primo\InjectOnCampusListener;
+use VuFind\Search\Primo\PrimoPermissionController;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
@@ -72,6 +73,13 @@ class PrimoBackendFactory implements FactoryInterface
     protected $primoConfig;
 
     /**
+     * Primo Permission Controller
+     *
+     * @var PrimoPermissionController
+     */
+    protected $primoPermissionController = null;
+
+    /**
      * Create the backend.
      *
      * @param ServiceLocatorInterface $serviceLocator Superior service manager
@@ -86,6 +94,17 @@ class PrimoBackendFactory implements FactoryInterface
         if ($this->serviceLocator->has('VuFind\Logger')) {
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }
+
+        if (isset($this->primoConfig->InstitutionPermission)) {
+            $permController = new PrimoPermissionController(
+                $this->primoConfig->InstitutionPermission
+            );
+            $permController->setAuthorizationService(
+                $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+            );
+            $this->primoPermissionController = $permController;
+        }
+
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
 
@@ -119,11 +138,7 @@ class PrimoBackendFactory implements FactoryInterface
     {
         $events = $this->serviceLocator->get('SharedEventManager');
 
-        // Determines, if the OnCampusListener is necessary for the user
-        // if this returns false, the listener is not necessary
-        if ($this->needsOnCampusRange()) {
-            $this->getInjectOnCampusListener()->attach($events);
-        }
+        $this->getInjectOnCampusListener()->attach($events);
     }
 
     /**
@@ -138,6 +153,9 @@ class PrimoBackendFactory implements FactoryInterface
             ? $this->primoConfig->General->apiId : null;
         $port = isset($this->primoConfig->General->port)
             ? $this->primoConfig->General->port : 1701;
+        $instCode = isset($this->primoPermissionController)
+            ? $this->primoPermissionController->getInstCode()
+            : $this->getInstCode();
 
         // Build HTTP client:
         $client = $this->serviceLocator->get('VuFind\Http')->createClient();
@@ -145,7 +163,7 @@ class PrimoBackendFactory implements FactoryInterface
             ? $this->primoConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);
 
-        $connector = new Connector($id, $this->getInstCode(), $client, $port);
+        $connector = new Connector($id, $instCode, $client, $port);
         $connector->setLogger($this->logger);
         return $connector;
     }
@@ -154,6 +172,7 @@ class PrimoBackendFactory implements FactoryInterface
      * Determine the institution code
      *
      * @return string
+     * @depracated Use PrimoPermissionController instead!
      */
     protected function getInstCode()
     {
@@ -180,65 +199,6 @@ class PrimoBackendFactory implements FactoryInterface
         );
     }
 
-    /**
-     * Determine the institution campusrange
-     *
-     * @return string
-     */
-    protected function getOnCampusRange()
-    {
-        $onCampusPermission
-            = isset($this->primoConfig->Institutions->onCampusPermission)
-            ? $this->primoConfig->Institutions->onCampusPermission : false;
-
-        if (false !== $onCampusPermission) {
-            return $onCampusPermission;
-        }
-
-        // If primoConfig->Institutions->onCampusPermission is not set
-        // no rule can get applied.
-        // So return null to indicate that nothing can get matched.
-        return null;
-    }
-
-    /**
-     * Determine if a campusrange from configuration is needed
-     *
-     * @return bool
-     */
-    protected function needsOnCampusRange()
-    {
-        $regex = isset($this->primoConfig->Institutions->regex)
-            ? $this->primoConfig->Institutions->regex : [];
-        $onCampusPermission
-            = isset($this->primoConfig->Institutions->onCampusPermission)
-            ? $this->primoConfig->Institutions->onCampusPermission : false;
-
-        // Configuration options should always get checked
-        if (in_array('/.*/', $regex) && false === $onCampusPermission) {
-            throw new \Exception(
-                'You are using a catch-all rule in your [Institutions] settings without '
-                . 'having set the onCampusPermission-Parameter. This configuration will '
-                . 'only show PrimoCentral results for onCampus=false, if the user is not '
-                . 'inside one [Institutions] IP range.'
-            );
-        }
-
-        $request = $this->serviceLocator->get('Request');
-        $ip = $request->getServer('REMOTE_ADDR');
-
-        // if the user has an IP, which is configured for a special Institution Range
-        // there is no additional check necessary
-        for ($i = 0; $i < count($regex); $i++) {
-            if (preg_match($regex[$i], $ip)
-                && $regex[$i] != '/.*/'
-            ) {
-                return false;
-            }
-        }
-
-        return true;
-    }
     /**
      * Create the Primo query builder.
      *
@@ -273,10 +233,7 @@ class PrimoBackendFactory implements FactoryInterface
      */
     protected function getInjectOnCampusListener()
     {
-        $listener = new InjectOnCampusListener($this->getOnCampusRange());
-        $listener->setAuthorizationService(
-            $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
-        );
+        $listener = new InjectOnCampusListener($this->primoPermissionController);
         return $listener;
     }
 }
