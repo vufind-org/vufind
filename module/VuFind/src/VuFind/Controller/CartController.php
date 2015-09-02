@@ -176,19 +176,24 @@ class CartController extends AbstractBase
      */
     public function emailAction()
     {
-        // Retrieve ID list:
-        $ids = is_null($this->params()->fromPost('selectAll'))
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
-
+        // Get the desired ID list:
+        $ids = $this->getIds();
+        
+        
         // Retrieve follow-up information if necessary:
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds');
         }
-        if (!is_array($ids) || empty($ids)) {
-            return $this->redirectToSource('error', 'bulk_noitems_advice');
-        }
 
+        if (!is_array($ids) || empty($ids)) {
+            $view = $this->createViewModel();
+            $listID = $this->params()->fromPost('listID', -1);
+        
+            $view->setVariable('listID', $listID);
+            $view->setTemplate('cart/export-all.phtml');
+            return $view;
+        }
+        
         // Force login if necessary:
         $config = $this->getConfig();
         if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
@@ -206,8 +211,11 @@ class CartController extends AbstractBase
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('email');
 
+        $view->emailFormatOptions = $this->getEmailFormats();
+        
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            
             // Build the URL to share:
             $params = [];
             foreach ($ids as $current) {
@@ -242,20 +250,36 @@ class CartController extends AbstractBase
      */
     public function printcartAction()
     {
-        $ids = is_null($this->params()->fromPost('selectAll'))
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        // Get the desired ID list:
+        $ids = $this->getIds();
+        
         if (!is_array($ids) || empty($ids)) {
-            return $this->redirectToSource('error', 'bulk_noitems_advice');
+            $view = $this->createViewModel();
+            $listID = $this->params()->fromPost('listID', -1);
+            
+            $view->setVariable('listID', $listID);
+            $view->setTemplate('cart/print-all.phtml');
+            return $view;
         }
+        
         $callback = function ($i) {
             return 'id[]=' . urlencode($i);
         };
         $query = '?print=true&' . implode('&', array_map($callback, $ids));
         $url = $this->url()->fromRoute('records-home') . $query;
+        
+        $allFromList = $this->params()->fromPost('allFromList');
+        if (isset($allFromList)) {
+            $view = $this->createViewModel();
+            $view->setTemplate('cart/print-url.phtml');
+            $view->setVariable('url', $url);
+            
+            return $view;
+        }
+        
         return $this->redirect()->toUrl($url);
     }
-
+    
     /**
      * Access export tools.
      *
@@ -274,18 +298,24 @@ class CartController extends AbstractBase
     public function exportAction()
     {
         // Get the desired ID list:
-        $ids = is_null($this->params()->fromPost('selectAll'))
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        $ids = $this->getIds();
+        
         if (!is_array($ids) || empty($ids)) {
-            return $this->redirectToSource('error', 'bulk_noitems_advice');
+            $view = $this->createViewModel();
+            $listID = $this->params()->fromPost('listID', -1);
+            
+            $view->setVariable('listID', $listID);
+            $view->setTemplate('cart/export-all.phtml');
+            return $view;
         }
-
+        
         // Get export tools:
         $export = $this->getExport();
 
         // Process form submission if necessary:
-        if ($this->formWasSubmitted('submit')) {
+        if (false) {
+        
+        //if ($this->formWasSubmitted('submit')) {
             $format = $this->params()->fromPost('format');
             $url = $export->getBulkUrl($this->getViewRenderer(), $format, $ids);
             if ($export->needsRedirect($format)) {

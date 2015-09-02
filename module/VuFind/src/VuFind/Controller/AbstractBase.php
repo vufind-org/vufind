@@ -29,6 +29,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Forbidden as ForbiddenException,
+    Zend\Stdlib\Parameters,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\MvcEvent,
     Zend\View\Model\ViewModel,
@@ -715,5 +716,78 @@ class AbstractBase extends AbstractActionController
     protected function clearFollowupUrl()
     {
         $this->followup()->clear('url');
+    }
+        
+    
+    protected function getEmailFormats() {
+        $export = $this->getServiceLocator()->get('VuFind\Export');
+        $exportOptions = $export->getFormatsForRecords($view->records);
+        $formatOptions = explode(':', $this->getConfig('config')->BulkExport->email);
+        $tmp = array_intersect($exportOptions, $formatOptions);
+        if (in_array('URL', $formatOptions)) {
+            $tmp[] = 'URL';
+        }
+    
+        return $tmp;
+    }
+    
+    protected function getExportDetails($records, $format) {
+    
+        $export = $this->getServiceLocator()->get('VuFind\Export');
+        $exportDetails = [
+                        'content'  => $this->exportRecords($records, $format),
+                        'mimeType' => $export->getMimeType($format),
+                        'filename' => $this->translate($export->getFilename($format))
+                        . '.' . $export->getFilenameExtension($format)
+        ];
+        return $exportDetails;
+    }
+    
+    protected function exportRecords($records, $format) {
+        // Actually export the records
+        $export = $this->getServiceLocator()->get('VuFind\Export');
+        $recordHelper = $this->getViewRenderer()->plugin('record');
+        $parts = [];
+        foreach ($records as $record) {
+            $parts[] = $recordHelper($record)->getExport($format);
+        }
+    
+        $exportedRecords = $export->processGroup($format, $parts);
+        return $exportedRecords;
+    }
+    
+    protected function getIds() {
+        $ids = [];
+        $allFromList = $this->params()->fromPost('allFromList');
+        
+        if(isset($allFromList)) {
+            $results = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
+            $params = $results->getParams();
+    
+            $parameters = new Parameters(
+                    $this->getRequest()->getQuery()->toArray()
+                    + $this->getRequest()->getPost()->toArray()
+                    );
+    
+            if ($allFromList != -1) {
+                $parameters->set('id', $allFromList);
+            }
+    
+            $params->initFromRequest($parameters);
+            $params->setLimit(999);
+    
+            $results->performAndProcessSearch();
+    
+            $ids = [];
+            foreach ($results->getResults() as $result) {
+                $ids[] = $result->getResourceSource() . "|" . $result->getUniqueID();
+            }
+    
+        } else {
+            $ids = $this->params()->fromPost('ids', []);
+        }
+    
+        return $ids;
     }
 }

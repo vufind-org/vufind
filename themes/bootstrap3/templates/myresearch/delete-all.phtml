@@ -1,0 +1,28 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Delete Favorites'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+    . '<li><a href="' .$this->url('cart-home'). '">' .$this->transEsc('Cart'). '</a></li> '
+    . '<li class="active">' . $this->transEsc('Export Favorites') . '</li>';
+?>
+<h2><?=$this->transEsc('Delete Favorites')?></h2>
+
+<?=$this->flashmessages()?>
+
+<form class="form-horizontal" method="post" action="<?=$this->url('cart-myresearchbulk')?>" name="deleteListForm" title="<?=$this->transEsc('Export Items')?>">	
+	<?=$this->translate('no_items_selected'); ?>
+  <ul>
+		<li>     
+    	<?=$this->translate('no_items_selected_option_select')?>
+    </li>
+    <li>
+      <?=$this->translate('no_items_selected_option_process_list')?>
+    </li>
+  </ul>
+	<br />
+	<input type="hidden" name="allFromList" value="<?=$this->listID?>" />
+	<input class="btn btn-default" type="submit" onclick="Lightbox.close()" value="<?=$this->transEsc('Select Items')?>"/>
+	<input class="btn btn-default" type="submit" name="email" value="<?=$this->transEsc('Process List')?>"/>
+</form>
