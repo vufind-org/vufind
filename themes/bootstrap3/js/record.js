@@ -55,7 +55,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
 }
 
 function refreshCommentList(recordId, recordSource, parent) {
-  var url = path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
+  var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
   $.ajax({
     dataType: 'json',
     url: url,
@@ -260,4 +260,4 @@ function recordDocReady() {
       return ajaxLoadTab(tabid);
     }
   });
-});
+}
