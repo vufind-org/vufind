@@ -352,38 +352,36 @@ $(document).ready(function() {
     });
 
   // Search autocomplete
-  $('.autocomplete').each(function (i, element) {
-    var op = $(element).autocomplete({
-      maxResults: 10,
-      loadingString: vufindString['loading']+'...',
-      handler: function(query, cb) {
-        var searcher = extractClassParams(element);
-        $.fn.autocomplete.ajax({
-          url: path + '/AJAX/JSON',
-          data: {
-            q:query,
-            method:'getACSuggestions',
-            searcher:searcher['searcher'],
-            type:searcher['type'] ? searcher['type'] : $(element).closest('.searchForm').find('.searchForm_type').val()
-          },
-          dataType:'json',
-          success: function(json) {
-            if (json.status == 'OK' && json.data.length > 0) {
-              var datums = [];
-              for (var i=0;i<json.data.length;i++) {
-                datums.push({
-                  val:json.data[i],
-                  //href:'http://google.com/?q='+encodeURI(json.data[i]),
-                });
-              }
-              cb(datums);
-            } else {
-              cb([]);
+  $('.autocomplete').autocomplete({
+    maxResults: 10,
+    loadingString: vufindString['loading']+'...',
+    handler: function(query, cb) {
+      var searcher = extractClassParams(this);
+      $.fn.autocomplete.ajax({
+        url: path + '/AJAX/JSON',
+        data: {
+          q:query,
+          method:'getACSuggestions',
+          searcher:searcher['searcher'],
+          type:searcher['type'] ? searcher['type'] : $(this).closest('.searchForm').find('.searchForm_type').val()
+        },
+        dataType:'json',
+        success: function(json) {
+          if (json.status == 'OK' && json.data.length > 0) {
+            var datums = [];
+            for (var i=0;i<json.data.length;i++) {
+              datums.push({
+                val:json.data[i],
+                //href:'http://google.com/?q='+encodeURI(json.data[i]),
+              });
             }
+            cb(datums);
+          } else {
+            cb([]);
           }
-        });
-      }
-    });
+        }
+      });
+    }
   });
   $('.searchForm_type').change(function() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
