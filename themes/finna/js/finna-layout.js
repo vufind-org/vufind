@@ -360,8 +360,8 @@ finna.layout = (function() {
       $('.autocomplete').on('typeahead:selected', function () {
         $('.navbar-form').submit();
       });
-    };   
-   
+    };
+
     var initToolTips = function () {
       $('[data-toggle="tooltip"]').tooltip({trigger:'click', viewport: '.container'});
       // prevent link opening if tooltip is placed inside link element
@@ -519,9 +519,7 @@ finna.layout = (function() {
             initMobileNarrowSearch();
             initCheckboxClicks();
             initToolTips();
-
             initResizeListener();
-
             initScrollLinks();
             initSearchboxFunctions();
             initCondensedList();
