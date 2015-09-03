@@ -196,7 +196,17 @@
         </div>
 
         <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
-      </div>
+    <?
+      $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);
+    ?>
+    <div class="dropdown">
+      <i class="fa fa-fw fa-trash-o"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
+        <?=$this->transEsc('Delete') ?>
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
+        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeJs($id) ?>','source':'<?=$this->escapeJs($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
+      </ul>
     </div>
   </div>
   <? if('full' != $dataView): ?>

@@ -59,10 +59,9 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($facetSettings->Advanced_Facet_Settings->translated_facets)
             && count($facetSettings->Advanced_Facet_Settings->translated_facets) > 0
         ) {
-            $list = $facetSettings->Advanced_Facet_Settings->translated_facets;
-            foreach ($list as $c) {
-                $this->translatedFacets[] = $c;
-            }
+            $this->setTranslatedFacets(
+                $facetSettings->Advanced_Facet_Settings->translated_facets->toArray()
+            );
         }
         if (isset($facetSettings->Advanced_Facet_Settings->special_facets)) {
             $this->specialAdvancedFacets
