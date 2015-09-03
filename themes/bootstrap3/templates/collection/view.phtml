@@ -95,4 +95,4 @@
     </div>
   <? endif; ?>
 </div>
-<script>$(document).ready(recordDocReady);</script>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready( recordDocReady );', 'SET'); ?>
