@@ -375,9 +375,16 @@ finna.layout = (function() {
     var initCondensedList = function () {
         $('.condensed-collapse-toggle').click(function(event) {
             if ((event.target.nodeName) != 'A' && (event.target.nodeName) != 'MARK') {
-              $(this).nextAll('.condensed-collapse-data').first().slideToggle(120, 'linear');
-              $('.fa-arrow-right', this).toggleClass('fa-arrow-down');
-              $(this).parent().parent().toggleClass('open');
+                $(this).nextAll('.condensed-collapse-data').first().slideToggle(120, 'linear');
+                $('.fa-arrow-right', this).toggleClass('fa-arrow-down');
+                var holder = $(this).parent().parent();
+                holder.toggleClass('open');
+                if (holder.hasClass('open') && !holder.hasClass('opened')) {
+                    holder.addClass('opened');
+                    finna.itemStatus.initItemStatuses(holder);
+                    finna.itemStatus.initDedupRecordSelection(holder);
+                }
+                $(this).parent().parent().toggleClass('open');
             }
         });
     };
@@ -388,7 +395,14 @@ finna.layout = (function() {
         }
         holder.find('.save-record').click(function() {
             var parts = this.href.split('/');
-            return finna.layout.lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+            var id = $(this).attr('id');
+            if (!id) {
+                id = $(this).data('id');
+            }
+            if (!id) {
+                return;
+            }
+            return finna.layout.lightbox.get(parts[parts.length-3],'Save',{id:id});
         });
     };
 
