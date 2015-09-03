@@ -385,9 +385,10 @@ $(document).ready(function() {
       }
     });
   });
-  $('#searchForm_type').change(function() {
-    var query = $('#searchForm_lookfor').val();
-    $('#searchForm_lookfor').focus().typeahead('val', '').typeahead('val', query);
+  $('.searchForm_type').change(function() {
+    var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
+    var query = $lookfor.val();
+    $lookfor.focus().typeahead('val', '').typeahead('val', query);
   });
 
   // Checkbox select all
