@@ -334,7 +334,7 @@ function updatePageForLogin() {
 
   // refresh the comment list so the "Delete" links will show
   $('.commentList').each(function(){
-    var recordSource = extractSource($('#record'));
+    var recordSource = $(this).closest('.record').find('.hiddenSource').val();
     refreshCommentList(recordId, recordSource);
   });
 
@@ -355,7 +355,12 @@ function updatePageForLogin() {
   }
   if(typeof ajaxFLLoadTab == "function") {
     var $activeTab = $('.search_tabs .recordTabs li.active a');
-    ajaxFLLoadTab($activeTab.attr('id'), true);
+    if($activeTab.length === 0) {
+      $activeTab = $('.panel-heading:not(.collapsed)');
+      ajaxFLLoadTab($activeTab.data('target').substring(1), true);
+    } else {
+      ajaxFLLoadTab($activeTab.attr('id'), true);
+    }
   }
   // Refresh tag list
   if(typeof refreshTagList === "function") {
@@ -432,6 +437,144 @@ function ajaxLogin(form) {
       }
     }
   });
+}
+
+/**
+ * Functions and event handlers specific to record pages.
+ */
+function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
+  var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
+  var vars = {}, hash;
+  var hashes = requestURL.slice(requestURL.indexOf('?') + 1).split('&');
+
+  for(var i = 0; i < hashes.length; i++)
+  {
+    hash = hashes[i].split('=');
+    var x = hash[0];
+    var y = hash[1];
+    vars[x] = y;
+  }
+  vars['id'] = recordId;
+
+  var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
+  $.ajax({
+    dataType: 'json',
+    cache: false,
+    url: url,
+    success: function(response) {
+      if (response.status == 'OK') {
+        if (response.data.status) {
+          $(element).removeClass('disabled')
+            .attr('title', response.data.msg)
+            .html('<i class="fa fa-flag"></i>&nbsp;'+response.data.msg);
+        } else {
+          $(element).remove();
+        }
+      } else if (response.status == 'NEED_AUTH') {
+        $(element).replaceWith('<span class="' + blockedClass + '">' + response.data.msg + '</span>');
+      }
+    }
+  });
+}
+function setUpCheckRequest() {
+  $('.checkRequest').each(function(i) {
+    if ($(this).hasClass('checkRequest')) {
+      var isValid = checkRequestIsValid(this, this.href, 'Hold', 'holdBlocked');
+    }
+  });
+  $('.checkStorageRetrievalRequest').each(function(i) {
+    if ($(this).hasClass('checkStorageRetrievalRequest')) {
+      var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
+          'StorageRetrievalRequestBlocked');
+    }
+  });
+  $('.checkILLRequest').each(function(i) {
+    if ($(this).hasClass('checkILLRequest')) {
+      var isValid = checkRequestIsValid(this, this.href, 'ILLRequest',
+          'ILLRequestBlocked');
+    }
+  });
+}
+function registerTabEvents(parent) {
+  if(typeof parent === "undefined") {
+    parent = document;
+  }
+  // register the record comment form to be submitted via AJAX
+  $(parent).find('form.comment').unbind('submit').submit(function() {
+    return registerAjaxCommentRecord(this);
+  });
+
+  setUpCheckRequest();
+
+  // Place a Hold
+  // Place a Storage Hold
+  // Place an ILL Request
+  $(parent).find('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').unbind('click').click(function() {
+    var parts = $(this).attr('href').split('?');
+    parts = parts[0].split('/');
+    var params = deparam($(this).attr('href'));
+    params.id = parts[parts.length-2];
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
+      Lightbox.checkForError(html, Lightbox.changeContent);
+    });
+  });
+}
+function registerLightboxRecordActions(parent, id) {
+  if(typeof parent === "undefined") {
+    parent = document;
+    id = $(this).closest('.record').find('.hiddenId').val();
+  }
+  // Cite lightbox
+  $(parent).find('.cite-record').unbind('click').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Cite', {id: id});
+  });
+  // Mail lightbox
+  $(parent).find('.mail-record').unbind('click').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Email', {id: id});
+  });
+  // Save lightbox
+  $(parent).find('.save-record').unbind('click').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Save', {id: id});
+  });
+  // SMS lightbox
+  $(parent).find('.sms-record').unbind('click').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'SMS', {id: id});
+  });
+  // Tag lightbox
+  $(parent).find('.tagRecord').unbind('click').click(function() {
+    var parts = this.href.split('/');
+    return Lightbox.get(parts[parts.length-3], 'AddTag', {id: id});
+  });
+  // Place a Hold
+  // Place a Storage Hold
+  // Place an ILL Request
+  $(parent).find('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').unbind('click').click(function() {
+    var parts = $(this).attr('href').split('?');
+    parts = parts[0].split('/');
+    var params = deparam($(this).attr('href'));
+    params.id = parts[parts.length-2];
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
+      Lightbox.checkForError(html, Lightbox.changeContent);
+    });
+  });
+
+  $(parent).find('form.comment input[type=submit]').unbind('click').click(function() {
+    if($.trim($(this).siblings('textarea').val()) == '') {
+      Lightbox.displayError(vufindString['add_comment_fail_blank']);
+    } else {
+      registerAjaxCommentRecord(parent);
+    }
+    return false;
+  });
+
+  refreshCommentList(id, $(parent).find('.hiddenSource').val(), parent);
+  setUpCheckRequest();
 }
 
 $(document).ready(function() {
@@ -590,27 +733,35 @@ $(document).ready(function() {
    ******************************/
   Lightbox.addOpenAction(registerLightboxEvents);
 
-  Lightbox.addFormCallback('newList', Lightbox.changeContent);
+  // Form callbacks
   Lightbox.addFormCallback('accountForm', newAccountHandler);
   Lightbox.addFormCallback('bulkDelete', function(html) {
     location.reload();
-  });
-  Lightbox.addFormCallback('bulkSave', function(html) {
-    Lightbox.addCloseAction(updatePageForLogin);
-    Lightbox.confirm(vufindString['bulk_save_success']);
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
   });
+  Lightbox.addFormCallback('bulkSave', function(html) {
+    Lightbox.addCloseAction(updatePageForLogin);
+    Lightbox.confirm(vufindString['bulk_save_success']);
+  });
+  Lightbox.addFormCallback('emailRecord', function() {
+    Lightbox.confirm(vufindString['bulk_email_success']);
+  });
   Lightbox.addFormCallback('emailSearch', function(html) {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
-  Lightbox.addFormCallback('saveRecord', function(html) {
-    Lightbox.close();
+  Lightbox.addFormCallback('newList', Lightbox.changeContent);
+  Lightbox.addFormCallback('saveRecord', function() {
+    Lightbox.confirm(vufindString['bulk_save_success']);
     checkSaveStatuses();
   });
+  Lightbox.addFormCallback('smsRecord', function() {
+    Lightbox.confirm(vufindString['sms_success']);
+  });
 
+  // Form handlers
   Lightbox.addFormHandler('exportForm', function(evt) {
     $.ajax({
       url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),

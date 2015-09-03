@@ -1,86 +1,5 @@
 /*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, userIsLoggedIn, vufindString */
 
-/**
- * Functions and event handlers specific to record pages.
- */
-function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
-  var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
-  var vars = {}, hash;
-  var hashes = requestURL.slice(requestURL.indexOf('?') + 1).split('&');
-
-  for(var i = 0; i < hashes.length; i++)
-  {
-    hash = hashes[i].split('=');
-    var x = hash[0];
-    var y = hash[1];
-    vars[x] = y;
-  }
-  vars['id'] = recordId;
-
-  var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
-  $.ajax({
-    dataType: 'json',
-    cache: false,
-    url: url,
-    success: function(response) {
-      if (response.status == 'OK') {
-        if (response.data.status) {
-          $(element).removeClass('disabled')
-            .attr('title', response.data.msg)
-            .html('<i class="fa fa-flag"></i>&nbsp;'+response.data.msg);
-        } else {
-          $(element).remove();
-        }
-      } else if (response.status == 'NEED_AUTH') {
-        $(element).replaceWith('<span class="' + blockedClass + '">' + response.data.msg + '</span>');
-      }
-    }
-  });
-}
-
-function setUpCheckRequest() {
-  $('.checkRequest').each(function(i) {
-    if ($(this).hasClass('checkRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'Hold', 'holdBlocked');
-    }
-  });
-  $('.checkStorageRetrievalRequest').each(function(i) {
-    if ($(this).hasClass('checkStorageRetrievalRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
-          'StorageRetrievalRequestBlocked');
-    }
-  });
-  $('.checkILLRequest').each(function(i) {
-    if ($(this).hasClass('checkILLRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'ILLRequest',
-          'ILLRequestBlocked');
-    }
-  });
-}
-
-function registerTabEvents() {
-  // register the record comment form to be submitted via AJAX
-  $('form.comment').unbind('submit').submit(function() {
-    return registerAjaxCommentRecord(this);
-  });
-
-  setUpCheckRequest();
-
-  // Place a Hold
-  // Place a Storage Hold
-  // Place an ILL Request
-  $('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').click(function() {
-    var parts = $(this).attr('href').split('?');
-    parts = parts[0].split('/');
-    var params = deparam($(this).attr('href'));
-    params.id = parts[parts.length-2];
-    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
-      Lightbox.checkForError(html, Lightbox.changeContent);
-    });
-  });
-}
-
 function ajaxLoadTab(tabid) {
   var id = $('.hiddenId')[0].value;
   // Try to parse out the controller portion of the URL. If this fails, or if
@@ -131,31 +50,7 @@ $(document).ready(function(){
   });
 
   /* --- LIGHTBOX --- */
-  // Cite lightbox
-  $('#cite-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Cite', {id:id});
-  });
-  // Mail lightbox
-  $('#mail-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Email', {id:id});
-  });
-  // Save lightbox
-  $('#save-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Save', {id:id});
-  });
-  // SMS lightbox
-  $('#sms-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'SMS', {id:id});
-  });
-  $('.tagRecord').click(function() {
-    var id = $('.hiddenId')[0].value;
-    var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3], 'AddTag', {id:id});
-  });
+  registerLightboxRecordActions(document, id);
   // Form handlers
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.confirm(vufindString['bulk_email_success']);
