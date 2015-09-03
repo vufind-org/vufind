@@ -67,11 +67,17 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $left = !isset($config->Site->sidebarOnLeft)
             ? false : $config->Site->sidebarOnLeft;
+        $mirror = !isset($config->Site->mirrorSidebarInRTL)
+            ? true : $config->Site->mirrorSidebarInRTL;
         $offcanvas = !isset($config->Site->offcanvas)
             ? false : $config->Site->offcanvas;
         // The right-to-left setting is injected into the layout by the Bootstrapper;
-        // pull it back out here to avoid duplicate effort.
+        // pull it back out here to avoid duplicate effort, then use it to apply
+        // the mirror setting appropriately.
         $layout = $sm->getServiceLocator()->get('viewmanager')->getViewModel();
-        return new LayoutClass($left, $offcanvas, $layout->rtl);
+        if ($layout->rtl && !$mirror) {
+            $left = !$left;
+        }
+        return new LayoutClass($left, $offcanvas);
     }
 }

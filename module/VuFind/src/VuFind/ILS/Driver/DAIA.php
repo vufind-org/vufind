@@ -399,7 +399,7 @@ class DAIA extends AbstractBase implements
                         $this->contentTypesResponse[$this->daiaResponseFormat]
                     )
                 );
-                list($responseMediaType, $responseEncoding) = array_pad(
+                list($responseMediaType) = array_pad(
                     explode(
                         ';',
                         $result->getHeaders()->get('ContentType')->getFieldValue(),
@@ -639,7 +639,6 @@ class DAIA extends AbstractBase implements
     {
         $doc_id = null;
         $doc_href = null;
-        $doc_message = null;
         if (array_key_exists('id', $daiaArray)) {
             $doc_id = $daiaArray['id'];
         }
