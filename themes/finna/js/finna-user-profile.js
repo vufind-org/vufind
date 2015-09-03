@@ -5,7 +5,7 @@ finna.userprofile = (function () {
         if ($('#delete-account-note').hasClass('process-logout')) {
             $('#delete-account-note').removeClass('process-logout');
             var timeoutID = window.setTimeout(function () {
-                if ($("#persona-logout").length) {
+                if ($(".persona-logout").length) {
                     navigator.id.logout();
                     finna.persona.personaLogout();
                 } else {

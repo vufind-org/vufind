@@ -32,25 +32,19 @@ finna.persona = (function(finna) {
         });
     };
 
-    var setLoginLink = function() {
-        var loginLink = document.getElementById('persona-login');
-        if (loginLink) {
-            loginLink.onclick = function() {
-                navigator.id.request();
-                return false;
-            };
-        }
+    var setupLoginLinks = function() {
+        $('.persona-login').click(function() {
+            navigator.id.request();
+            return false;
+        });
     };
 
-    var setLogoutLink = function() {
-        var logoutLink = document.getElementById('persona-logout');
-        if (logoutLink) {
-            logoutLink.onclick = function() {
-                navigator.id.logout();
-                personaLogout();
-                return false;
-            };
-        }
+    var setupLogoutLinks = function() {
+        $('.persona-logout').click(function() {
+            navigator.id.logout();
+            personaLogout();
+            return false;
+        });
     };
 
     var mozillaPersonaSetup = function(currentUser, autoLogoutEnabled) {
@@ -61,7 +55,7 @@ finna.persona = (function(finna) {
         navigator.id.watch({
             loggedInUser: currentUser,
             onlogin: function(assertion) {
-                $("#persona-login").addClass("persona-login-loading");
+                $(".persona-login").addClass("persona-login-loading");
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -96,14 +90,14 @@ finna.persona = (function(finna) {
                                 }
                             }
                         } else {
-                            $("#persona-login").removeClass("persona-login-loading");
+                            $(".persona-login").removeClass("persona-login-loading");
                             navigator.id.logout();
                             alert("Login failed");
                         }
                     },
                     error: function(xhr, status, err) {
                         navigator.id.logout();
-                        $("#persona-login").removeClass("persona-login-loading");
+                        $(".persona-login").removeClass("persona-login-loading");
                         alert("login failure: " + err);
                     }
                 });
@@ -116,8 +110,8 @@ finna.persona = (function(finna) {
             }
         });
 
-        setLoginLink();
-        setLogoutLink();
+        setupLoginLinks();
+        setupLogoutLinks();
     };
 
     var initPersona = function() {
@@ -126,16 +120,17 @@ finna.persona = (function(finna) {
             dataType: 'script',
             success: function() {
                 mozillaPersonaSetup(
-                        mozillaPersonaCurrentUser ? mozillaPersonaCurrentUser : null,
-                        mozillaPersonaAutoLogout ? true : false);
+                    mozillaPersonaCurrentUser ? mozillaPersonaCurrentUser : null,
+                    mozillaPersonaAutoLogout ? true : false
+                );
             }
         });
     };
 
 
     var my = {
-        setLogoutLink: setLogoutLink,
-        setLoginLink: setLoginLink,
+        setupLogoutLinks: setupLogoutLinks,
+        setupLoginLinks: setupLoginLinks,
         personaLogout: personaLogout,
         init: function() {
             initPersona();

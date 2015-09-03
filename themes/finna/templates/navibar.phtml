@@ -86,8 +86,8 @@
           <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" class="modal-link" title="<?=$this->transEsc("Your Account")?>"><strong><i class="fa fa-user"></i> <?=$this->transEsc("Your Account")?></strong><div class="description"><?=$this->transEsc("your_account_info")?></div></a>
         </li>
         <li role="menuitem" class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
-          <? $logoutId = $this->personaAuth()->getUser() === null ? '' : ' id="persona-logout" ' ?>
-          <a <?=$logoutId ?> href="<?=$this->url('myresearch-logout')?>" class="modal-link" title="<?=$this->transEsc("Log Out")?>"><strong><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></strong></a>
+          <? $logoutClass = $this->personaAuth()->getUser() === null ? '' : ' persona-logout' ?>
+          <a href="<?=$this->url('myresearch-logout')?>" class="modal-link<?=$logoutClass?>" title="<?=$this->transEsc("Log Out")?>"><strong><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></strong></a>
         </li>
       </ul>
     <? if(!$account->isLoggedIn()): ?></li><? endif; ?>

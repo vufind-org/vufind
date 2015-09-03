@@ -11,6 +11,16 @@
     font-weight: normal;
     font-style: normal;
 }
+@font-face {
+    font-family: 'Fontawesome';
+    src:url('../../../themes/finna/css/fonts/Fontawesome-webfont.eot?adcatf');
+    src:url('../../../themes/finna/css/fonts/Fontawesome-webfont.eot?#iefixadcatf') format('embedded-opentype'),
+    url('../../../themes/finna/css/fonts/Fontawesome-webfont.woff?adcatf') format('woff'),
+    url('../../../themes/finna/css/fonts/Fontawesome-webfont.ttf?adcatf') format('truetype'),
+    url('../../../themes/finna/css/fonts/Fontawesome-webfont.svg?adcatf#Fontawesome') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
 
 [class^="fa-"], [class*=" fa-"], .iconlabel:before, .slick-prev, .slick-next, .slick-dots li, .openUrlEmbed:before  {
     font-family: 'icomoon';
@@ -51,6 +61,9 @@ table .iconlabel {
   font-size: 1em;
 }
 .image-popup-trigger {
+        &:hover {
+            text-decoration: none;   
+        }
         & img {
             box-shadow: 0px 0px 0px 4px @gray-lighter inset;
             position: relative;
@@ -60,12 +73,13 @@ table .iconlabel {
         & .iconlabel {
             width: 100%;
             color: @body-bg;
+
             &:before {
                 padding-right: 3px;
                 position: absolute;
                 top: 26%;
                 left: 36%;
-                font-size: 3em;
+                font-size: 39px;
                 color: @gray-lighter;
                 z-index: 0;
                 @media (min-width:@screen-md-min) and (max-width:@screen-md-max) {
@@ -73,7 +87,7 @@ table .iconlabel {
                     left: 35%;
                 }
                 @media (max-width:@screen-sm-max) {
-                    font-size: 2em;
+                    font-size: 26px;
                 }
             }
         }

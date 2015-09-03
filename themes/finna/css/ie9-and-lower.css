@@ -20,4 +20,7 @@ body, th, td {
 .slider .slider-track, .slider .slider-track .slider-selection {	
 	filter: none;	
 }
-
+/* fallback for wrong positioning */
+.image-popup-trigger .iconlabel:before {
+	top: 40%;	
+}

@@ -28,7 +28,6 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace Finna\Recommend;
-use VuFind\Solr\Utils as SolrUtils;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -48,6 +47,7 @@ class SideFacets extends \VuFind\Recommend\SideFacets
     implements TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
+    use SideFacetsTrait;
 
     /**
      * New items facet configuration
@@ -80,33 +80,5 @@ class SideFacets extends \VuFind\Recommend\SideFacets
         if (isset($config->SpecialFacets->newItems)) {
             $this->newItemsFacets = $config->SpecialFacets->newItems->toArray();
         }
-    }
-
-    /**
-     * Get new items facets (facet titles)
-     *
-     * @return array
-     */
-    public function getNewItemsFacets()
-    {
-        $filters = $this->results->getParams()->getFilters();
-        $result = [];
-        foreach ($this->newItemsFacets as $current) {
-            $from = '';
-            if (isset($filters[$current])) {
-                foreach ($filters[$current] as $filter) {
-                    if ($range = SolrUtils::parseRange($filter)) {
-                        $from = $range['from'] == '*' ? '' : $range['from'];
-                        break;
-                    }
-                }
-            }
-            $translatable = '';
-            if (preg_match('/^NOW-(\w+)/', $from, $matches)) {
-                $translatable = 'new_items_' . strtolower($matches[1]);
-            }
-            $result[$current] = ['raw' => $from, 'translatable' => $translatable];
-        }
-        return $result;
     }
 }
