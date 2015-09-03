@@ -416,7 +416,7 @@ $(document).ready(function() {
   $('#modal').on('hidden.bs.modal', Lightbox.closeActions);
   /**
    * If a link with the class .modal-link triggers the lightbox,
-   * look for a title="&nbsp;" to use as our lightbox title.
+   * look for a title attribute to use as our lightbox title.
    */
   $('.modal-link,.help-link').click(function() {
     var title = $(this).attr('title');
