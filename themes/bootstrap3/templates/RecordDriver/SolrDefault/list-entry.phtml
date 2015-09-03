@@ -24,14 +24,15 @@
   </div>
   <? if('full' != $dataView): ?>
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$dataView ?>">
-      <?=$this->record($this->driver)->getTitleHtml()?>
+      <?=$this->record($this->driver)->getTitleHtml(85)?>
     </a>
     <div class="loading hidden">
       <i class="fa fa-spin fa-spinner"></i> <?=$this->transEsc("Loading")?>...
     </div>
-    <div class="short-view">
+    <div class="col-xs-11 short-view">
+  <? else: ?>
+    <div class="col-xs-11">
   <? endif; ?>
-  <div class="col-xs-11">
     <div class="row">
       <? if ($cover): ?>
         <div class="col-xs-2 left">
@@ -141,7 +142,6 @@
               <? endif; ?>
             <? endif; ?>
           </div>
-
           <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
                 but even if we don't plan to display the link, we still want to get the $openUrl
                 value for use in generating a COinS (Z3988) tag -- see bottom of file.
@@ -194,23 +194,11 @@
             <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
           </ul>
         </div>
-
         <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
-    <?
-      $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);
-    ?>
-    <div class="dropdown">
-      <i class="fa fa-fw fa-trash-o"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
-        <?=$this->transEsc('Delete') ?>
-      </a>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
-        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeJs($id) ?>','source':'<?=$this->escapeJs($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-        <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
-      </ul>
     </div>
   </div>
+ </div>
   <? if('full' != $dataView): ?>
-    </div>
-    <div class="long-view hidden"></div>
+    <div class="long-view col-xs-11 hidden"></div>
   <? endif; ?>
 </div>
