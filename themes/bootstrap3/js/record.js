@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, VUFIND.getPath(), syn_get_widget, userIsLoggedIn, VUFIND */
+/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, syn_get_widget, userIsLoggedIn, VUFIND */
 
 /**
  * Functions and event handlers specific to record pages.

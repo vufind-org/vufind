@@ -1,6 +1,6 @@
 <?
   $searchParams = $this->recommend->getSearchParams();
-  
+
   $this->headScript()->appendFile('https://maps.googleapis.com/maps/api/js?v=3.8&sensor=false&language='.$this->layout()->userLang);
   $this->headScript()->appendFile('https://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.9/src/markerclusterer_packed.js');
 ?>
@@ -79,7 +79,7 @@ ClusterIcon.prototype.onAdd = function () {
 };
 
 /**
- * Overriding the image VUFIND.getPath() for ssl
+ * Overriding the image path for ssl
  *
  * The default root name for the marker cluster images.
  *
@@ -111,7 +111,7 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
         mapTypeControl: true,
         mapTypeControlOptions: {
             style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-          },     
+          },
         mapTypeId: google.maps.MapTypeId.ROADMAP
       };
       map = new google.maps.Map(document.getElementById("map_canvas"),

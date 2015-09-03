@@ -1,4 +1,4 @@
-/*global VUFIND.getPath()*/
+/*global VUFIND */
 
 function checkSaveStatuses() {
   var data = $.map($('.result,.record'), function(i) {

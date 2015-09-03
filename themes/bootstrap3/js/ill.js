@@ -1,4 +1,4 @@
-/*global VUFIND.getPath() */
+/*global VUFIND */
 function setUpILLRequestForm(recordId) {
     $("#ILLRequestForm #pickupLibrary").change(function() {
         $("#ILLRequestForm #pickupLibraryLocation option").remove();

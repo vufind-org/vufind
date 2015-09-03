@@ -1,4 +1,4 @@
-/*global VUFIND.getPath() */
+/*global VUFIND */
 function setUpHoldRequestForm(recordId) {
   $('#requestGroupId').change(function() {
     var $emptyOption = $("#pickUpLocation option[value='']");

@@ -1,4 +1,4 @@
-/*global VUFIND.getPath()*/
+/*global VUFIND */
 
 function checkItemStatuses() {
   var id = $.map($('.ajaxItem'), function(i) {
