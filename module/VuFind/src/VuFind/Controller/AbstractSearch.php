@@ -224,6 +224,8 @@ class AbstractSearch extends AbstractBase
      */
     public function resultsAction()
     {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+
         $view = $this->createViewModel();
 
         // Handle saved search requests:
@@ -254,8 +256,17 @@ class AbstractSearch extends AbstractBase
             // catch exceptions more reliably:
             $results->performAndProcessSearch();
 
+            if (isset($config->Record->jump_to_single_search_result)  
+                && $config->Record->jump_to_single_search_result  
+                && $results->getResultTotal() == 1
+            ) {
+                $jumpto = 1;
+            } else {
+                $jumpto = null;
+            }
+            
             // If a "jumpto" parameter is set, deal with that now:
-            if ($jump = $this->processJumpTo($results)) {
+            if ($jump = $this->processJumpTo($results, $jumpto)) {
                 return $jump;
             }
 
@@ -316,7 +327,6 @@ class AbstractSearch extends AbstractBase
         }
 
         // Search toolbar
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         $view->showBulkOptions = isset($config->Site->showBulkOptions)
           && $config->Site->showBulkOptions;
 
@@ -328,15 +338,19 @@ class AbstractSearch extends AbstractBase
      * return view model, or ignore the parameter and return false.
      *
      * @param \VuFind\Search\Base\Results $results Search results object.
+     * @param null|int                    $jumpto  Jump to this search result.
      *
      * @return bool|\Zend\View\Model\ViewModel
      */
-    protected function processJumpTo($results)
+    protected function processJumpTo($results, $jumpto = null)
     {
         // Missing/invalid parameter?  Ignore it:
-        $jumpto = $this->params()->fromQuery('jumpto');
-        if (empty($jumpto) || !is_numeric($jumpto)) {
-            return false;
+        if ($jumpto === null) {
+            // Missing/invalid parameter?  Ignore it:
+            $jumpto = $this->params()->fromQuery('jumpto');
+            if (empty($jumpto) || !is_numeric($jumpto)) {
+                return false;
+            }
         }
 
         // Parameter out of range?  Ignore it:
