@@ -36,6 +36,7 @@ class Imap extends AbstractStorage implements Folder\FolderInterface, Writable\W
     protected static $knownFlags = array('\Passed'   => Mail\Storage::FLAG_PASSED,
                                           '\Answered' => Mail\Storage::FLAG_ANSWERED,
                                           '\Seen'     => Mail\Storage::FLAG_SEEN,
+                                          '\Unseen'   => Mail\Storage::FLAG_UNSEEN,
                                           '\Deleted'  => Mail\Storage::FLAG_DELETED,
                                           '\Draft'    => Mail\Storage::FLAG_DRAFT,
                                           '\Flagged'  => Mail\Storage::FLAG_FLAGGED);
@@ -47,6 +48,7 @@ class Imap extends AbstractStorage implements Folder\FolderInterface, Writable\W
     protected static $searchFlags = array('\Recent'   => 'RECENT',
                                            '\Answered' => 'ANSWERED',
                                            '\Seen'     => 'SEEN',
+                                           '\Unseen'   => 'UNSEEN',
                                            '\Deleted'  => 'DELETED',
                                            '\Draft'    => 'DRAFT',
                                            '\Flagged'  => 'FLAGGED');
@@ -386,7 +388,7 @@ class Imap extends AbstractStorage implements Folder\FolderInterface, Writable\W
         // TODO: we assume / as the hierarchy delim - need to get that from the folder class!
         if ($parentFolder instanceof Folder) {
             $folder = $parentFolder->getGlobalName() . '/' . $name;
-        } elseif ($parentFolder != null) {
+        } elseif ($parentFolder !== null) {
             $folder = $parentFolder . '/' . $name;
         } else {
             $folder = $name;

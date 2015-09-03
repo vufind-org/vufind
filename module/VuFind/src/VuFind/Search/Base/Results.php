@@ -463,7 +463,7 @@ abstract class Results implements ServiceLocatorAwareInterface
         }
 
         // Build the standard paginator control:
-        $nullAdapter = "Zend\Paginator\Adapter\Null";
+        $nullAdapter = "Zend\Paginator\Adapter\NullFill";
         $paginator = new Paginator(new $nullAdapter($total));
         $paginator->setCurrentPageNumber($this->getParams()->getPage())
             ->setItemCountPerPage($this->getParams()->getLimit())
@@ -611,14 +611,14 @@ abstract class Results implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
+     * Translate a string if a translator is available (proxies method in Options).
      *
      * @return string
      */
-    public function translate($msg)
+    public function translate()
     {
-        return $this->getOptions()->translate($msg);
+        return call_user_func_array(
+            [$this->getOptions(), 'translate'], func_get_args()
+        );
     }
 }

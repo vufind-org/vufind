@@ -207,11 +207,11 @@ class Writer
     {
         // Build a tab string so the equals signs line up attractively:
         $tabStr = '';
-        for ($i = strlen($key); $i < $tab; $i++) {
+        for ($i = strlen($key) + 1; $i < $tab; $i++) {
             $tabStr .= ' ';
         }
 
-        return $key . $tabStr . "= " . $this->buildContentValue($value);
+        return $key . $tabStr . " = " . $this->buildContentValue($value);
     }
 
     /**
