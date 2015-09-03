@@ -49,7 +49,6 @@ return array(
         'finna-adv-search.js',
         'finna-daterange-vis.js',
         'finna-feed.js',
-        'finna-item-status.js',
         'finna-layout.js',
         'finna-openurl.js',
         'finna-persona.js',

@@ -90,54 +90,63 @@ finna.itemStatus = (function() {
       }
     });
     item.data('xhr', xhr);
-  }
+  };
 
-  var initDedupRecordSelection = function () {
-    $('.dedup-select').change(function() {
-      var id = $(this).val();
-      var source = $(this).find('option:selected').data('source');
-      $.cookie('preferredRecordSource', source);
-
-      var recordContainer = $(this).closest('.record-container');
-      var oldRecordId = recordContainer.find('.hiddenId')[0].value;
-
-      // Update IDs of elements
-      recordContainer.find('.hiddenId').val(id);
-
-      // Update IDs of elements
-      recordContainer.find('[id="' + oldRecordId + '"]').each(function() {
-        $(this).attr('id', id);
-      });
-
-      // Update links as well
-      recordContainer.find('a').each(function() {
-        if (typeof $(this).attr('href') !== 'undefined') {
-          $(this).attr('href', $(this).attr('href').replace(oldRecordId, id));
+    var initDedupRecordSelection = function (holder) {
+        if (typeof holder === 'undefined') {
+            holder = $(document);
         }
-      })
 
-      recordContainer.find('.locationDetails').addClass('hidden');
-      recordContainer.find('.callnumber').removeClass('hidden');
-      recordContainer.find('.location').removeClass('hidden');
-      checkItemStatus(id);
-    });
-  }
+        holder.find('.dedup-select').change(function() {
+            var id = $(this).val();
+            var source = $(this).find('option:selected').data('source');
+            $.cookie('preferredRecordSource', source);
 
-  var initItemStatuses = function() {
-    $('.ajaxItem').each(function(ind, e) {
-      $(this).unbind('inview').one('inview', function() {
-        var id = $(this).find('.hiddenId')[0].value;
-        checkItemStatus(id);
-      });
-    });
-  }
+            var recordContainer = $(this).closest('.record-container');
+            var oldRecordId = recordContainer.find('.hiddenId')[0].value;
+
+            // Update IDs of elements
+            recordContainer.find('.hiddenId').val(id);
+
+            // Update IDs of elements
+            recordContainer.find('[id="' + oldRecordId + '"]').each(function() {
+                $(this).attr('id', id);
+            });
+
+            // Update links as well
+            recordContainer.find('a').each(function() {
+                if (typeof $(this).attr('href') !== 'undefined') {
+                    $(this).attr('href', $(this).attr('href').replace(oldRecordId, id));
+                }
+            });
+
+            recordContainer.find('.locationDetails').addClass('hidden');
+            recordContainer.find('.callnumber').removeClass('hidden');
+            recordContainer.find('.location').removeClass('hidden');
+            checkItemStatus(id);
+        });
+    };
+
+    var initItemStatuses = function(holder) {
+        if (typeof holder === 'undefined') {
+            holder = $(document);
+        }
+        holder.find('.ajaxItem').each(function(ind, e) {
+            $(this).one('inview', function() {
+                var id = $(this).find('.hiddenId')[0].value;
+                checkItemStatus(id);
+            });
+        });
+    };
 
   var my = {
     initItemStatuses: initItemStatuses,
     initDedupRecordSelection: initDedupRecordSelection,
     init: function() {
-      initItemStatuses();
-      initDedupRecordSelection();
+        if (!$(".results").hasClass("result-view-condensed")) {
+            initItemStatuses();
+            initDedupRecordSelection();
+        }
     }
   };
 
