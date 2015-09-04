@@ -5,9 +5,15 @@
     & ul.nav-tabs {
         border-bottom: none;
         margin: 0 0 0 15px;
-
             @media(max-width: @screen-xs-max) {
-            margin-left: 0;
+                margin-left: 0;  
+            }
+            @media(max-width: @screen-sm-max) {
+
+            display: flex;
+                & li {
+                    display: flex;
+                }
             }
 
         > li {
