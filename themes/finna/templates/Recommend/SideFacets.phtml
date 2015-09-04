@@ -57,7 +57,7 @@
 <? $module = $this->layout()->templateDir; ?>
 <?
    $daterangeFacetField = null;
-   if (in_array($module, ['solr', 'primo'])) {
+   if (in_array($module, ['search', 'primo'])) {
      $params = $this->results->getParams();
      $daterangeFacetField = $params->getSpatialDateRangeField();
      $plotFrom = null;
@@ -213,7 +213,7 @@ EOT
               'facetField' => 'search_sdaterange_mv',
               'filterField' => 'main_date_str',
               'type' => $type,
-              'backend' => $module,
+              'backend' => $module == 'search' ? 'solr' : $module,
               'daterangeFacet' => $daterangeFacetField,
               'plotFrom' => $plotFrom              
               ]);
