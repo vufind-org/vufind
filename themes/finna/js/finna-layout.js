@@ -388,7 +388,6 @@ finna.layout = (function() {
                     finna.itemStatus.initItemStatuses(holder);
                     finna.itemStatus.initDedupRecordSelection(holder);
                 }
-                $(this).parent().parent().toggleClass('open');
             }
         });
     };
