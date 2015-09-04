@@ -199,9 +199,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $xml->registerXPathNamespace('jnl', $jnl);
         foreach ($xml->xpath('//jnl:journal') as $journal) {
             $item = $this->convertToArray($journal, $jnl);
-            if (!isset($item['authors']['author'][0])) {
-                $item['authors']['author'] = [$item['authors']['author']];
-            }
+            unset($item['authors']['author']);
             $item['openurl'] = $this->createBxOpenUrl($item);
             $recommendations[] = $item;
         }
