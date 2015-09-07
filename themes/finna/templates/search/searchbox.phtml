@@ -8,16 +8,11 @@
     // Load search actions and settings (if any):
     $options = $this->searchOptions($this->searchClassId);
     $handlers = $this->searchbox()->getHandlers(
-        $this->searchClassId,
+        $browse ? "browse-{$browse}" : $this->searchClassId,
         isset($this->searchIndex) ? $this->searchIndex : null
     );
     $handlerCount = count($handlers);
-    $basicSearch = null;
-    if ($browse) {
-      $basicSearch = "browse-{$browse}";
-    } else {
-      $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
-    }
+    $basicSearch = 'combined-searchbox';
     $searchHome = $options->getSearchHomeAction();
     $advSearch = $options->getAdvancedSearchAction();
     $lastSort = $browse ? null : $options->getLastSort();
