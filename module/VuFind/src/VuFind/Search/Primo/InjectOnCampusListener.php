@@ -27,7 +27,6 @@
  */
 namespace VuFind\Search\Primo;
 
-use VuFind\Search\Primo\PrimoPermissionHandler;
 use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
 
@@ -65,13 +64,13 @@ class InjectOnCampusListener
     /**
      * Constructor.
      *
-     * @param PrimoPermissionController $ppc Primo Permission Controller
+     * @param PrimoPermissionHandler $pph Primo Permission Handler
      *
      * @return void
      */
-    public function __construct($ppc = null)
+    public function __construct($pph = null)
     {
-        $this->permissionController = $ppc;
+        $this->permissionController = $pph;
         $this->isOnCampus = false;
     }
 

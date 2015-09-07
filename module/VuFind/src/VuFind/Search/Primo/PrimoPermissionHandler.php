@@ -69,7 +69,7 @@ class PrimoPermissionHandler
     /**
      * Constructor.
      *
-     * @param Zend\Config\Config|array $primoConfig Primo-Config for
+     * @param Zend\Config\Config|array $primoPermConfig Primo-Config for
      * InstitutionPermissions
      *
      * @return void
@@ -81,9 +81,9 @@ class PrimoPermissionHandler
 
         // Check parameter, if its null, tell the user that something is wrong
         if (null === $primoPermConfig) {
-            throw new \Exception('The Primo Permission System has not been '
-                . 'configured. Please configure section [InstitutionPermission] '
-                . 'in Primo.ini.'
+            throw new \Exception(
+                'The Primo Permission System has not been configured. Please '
+                . 'configure section [InstitutionPermission] in Primo.ini.'
             );
         }
         if (is_array($primoPermConfig)) {
@@ -105,7 +105,8 @@ class PrimoPermissionHandler
         $permRules = isset($this->primoConfig['permissionRule'])
             ? $this->primoConfig['permissionRule'] : [];
         if (empty($permRules) && !(isset($this->primoConfig['defaultCode']))) {
-            throw new \Exception('[InstitutionPermission] section in Primo.ini is not '
+            throw new \Exception(
+                '[InstitutionPermission] section in Primo.ini is not '
                 . 'configured properly. Please check the section.'
             );
         }
