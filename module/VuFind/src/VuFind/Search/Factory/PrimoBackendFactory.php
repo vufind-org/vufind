@@ -35,7 +35,7 @@ use VuFindSearch\Backend\Primo\QueryBuilder;
 use VuFindSearch\Backend\Primo\Backend;
 
 use VuFind\Search\Primo\InjectOnCampusListener;
-use VuFind\Search\Primo\PrimoPermissionController;
+use VuFind\Search\Primo\PrimoPermissionHandler;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
@@ -73,11 +73,11 @@ class PrimoBackendFactory implements FactoryInterface
     protected $primoConfig;
 
     /**
-     * Primo Permission Controller
+     * Primo Permission Handler
      *
-     * @var PrimoPermissionController
+     * @var PrimoPermissionHandler
      */
-    protected $primoPermissionController = null;
+    protected $primoPermissionHandler = null;
 
     /**
      * Create the backend.
@@ -96,13 +96,13 @@ class PrimoBackendFactory implements FactoryInterface
         }
 
         if (isset($this->primoConfig->InstitutionPermission)) {
-            $permController = new PrimoPermissionController(
+            $permHandler = new PrimoPermissionHandler(
                 $this->primoConfig->InstitutionPermission
             );
-            $permController->setAuthorizationService(
+            $permHandler->setAuthorizationService(
                 $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
             );
-            $this->primoPermissionController = $permController;
+            $this->primoPermissionHandler = $permHandler;
         }
 
         $connector = $this->createConnector();
@@ -153,8 +153,8 @@ class PrimoBackendFactory implements FactoryInterface
             ? $this->primoConfig->General->apiId : null;
         $port = isset($this->primoConfig->General->port)
             ? $this->primoConfig->General->port : 1701;
-        $instCode = isset($this->primoPermissionController)
-            ? $this->primoPermissionController->getInstCode()
+        $instCode = isset($this->primoPermissionHandler)
+            ? $this->primoPermissionHandler->getInstCode()
             : $this->getInstCode();
 
         // Build HTTP client:
@@ -171,8 +171,8 @@ class PrimoBackendFactory implements FactoryInterface
     /**
      * Determine the institution code
      *
-     * @return     string
-     * @depracated Use PrimoPermissionController instead!
+     * @return string
+     * @depracated Use PrimoPermissionHandler instead!
      */
     protected function getInstCode()
     {
@@ -233,7 +233,7 @@ class PrimoBackendFactory implements FactoryInterface
      */
     protected function getInjectOnCampusListener()
     {
-        $listener = new InjectOnCampusListener($this->primoPermissionController);
+        $listener = new InjectOnCampusListener($this->primoPermissionHandler);
         return $listener;
     }
 }

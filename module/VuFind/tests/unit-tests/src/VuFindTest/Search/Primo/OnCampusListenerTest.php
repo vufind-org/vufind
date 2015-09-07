@@ -32,7 +32,7 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\Backend\Primo\Connector;
 
-use VuFind\Search\Primo\PrimoPermissionController;
+use VuFind\Search\Primo\PrimoPermissionHandler;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
@@ -130,12 +130,12 @@ class OnCampusListenerTest extends TestCase
     {
         $params   = new ParamBag([ ]);
         $mockPermController
-            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionController')
+            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionHandler')
             ->disableOriginalConstructor()
             ->getMock();
-        $mockPermController->expects($this->any())->method('isOnDefaultPermission')
+        $mockPermController->expects($this->any())->method('hasDefaultPermission')
             ->will($this->returnValue(true));
-        $mockPermController->expects($this->any())->method('checkDefaultPermission')
+        $mockPermController->expects($this->any())->method('hasPermission')
             ->will($this->returnValue(true));
 
         $listener = new InjectOnCampusListener($mockPermController);
@@ -160,12 +160,10 @@ class OnCampusListenerTest extends TestCase
     {
         $params   = new ParamBag([ ]);
         $mockPermController
-            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionController')
+            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionHandler')
             ->disableOriginalConstructor()
             ->getMock();
-        $mockPermController->expects($this->any())->method('isOnDefaultPermission')
-            ->will($this->returnValue(true));
-        $mockPermController->expects($this->any())->method('checkDefaultPermission')
+        $mockPermController->expects($this->any())->method('hasDefaultPermission')
             ->will($this->returnValue(false));
 
         $listener = new InjectOnCampusListener($mockPermController);
@@ -187,12 +185,12 @@ class OnCampusListenerTest extends TestCase
     {
         $params   = new ParamBag([ ]);
         $mockPermController
-            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionController')
+            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionHandler')
             ->disableOriginalConstructor()
             ->getMock();
-        $mockPermController->expects($this->any())->method('isOnDefaultPermission')
+        $mockPermController->expects($this->any())->method('hasDefaultPermission')
             ->will($this->returnValue(false));
-        $mockPermController->expects($this->any())->method('isAuthenticated')
+        $mockPermController->expects($this->any())->method('hasPermission')
             ->will($this->returnValue(true));
 
         $listener = new InjectOnCampusListener($mockPermController);
@@ -214,12 +212,12 @@ class OnCampusListenerTest extends TestCase
     {
         $params   = new ParamBag([ ]);
         $mockPermController
-            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionController')
+            = $this->getMockBuilder('VuFind\Search\Primo\PrimoPermissionHandler')
             ->disableOriginalConstructor()
             ->getMock();
-        $mockPermController->expects($this->any())->method('isOnDefaultPermission')
+        $mockPermController->expects($this->any())->method('hasDefaultPermission')
             ->will($this->returnValue(false));
-        $mockPermController->expects($this->any())->method('isAuthenticated')
+        $mockPermController->expects($this->any())->method('hasPermission')
             ->will($this->returnValue(false));
 
         $listener = new InjectOnCampusListener($mockPermController);

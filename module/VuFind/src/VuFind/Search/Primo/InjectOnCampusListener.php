@@ -27,8 +27,7 @@
  */
 namespace VuFind\Search\Primo;
 
-use VuFind\Search\Primo\PrimoPermissionController;
-
+use VuFind\Search\Primo\PrimoPermissionHandler;
 use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
 
@@ -109,15 +108,7 @@ class InjectOnCampusListener
     {
         if ($this->permissionController) {
             // The user is getting authenticated as default user
-            if ($this->permissionController->isOnDefaultPermission()) {
-                // In this case we have to check, if the default user has enough
-                // permission to get all results
-                if ($this->permissionController->checkDefaultPermission()) {
-                    $this->isOnCampus = true;
-                }
-            } else if ($this->permissionController->isAuthenticated()) {
-                // If its not the default user, check if the user has been authenticated
-                // by a rule.
+            if ($this->permissionController->hasPermission()) {
                 $this->isOnCampus = true;
             }
         }
