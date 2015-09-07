@@ -41,6 +41,29 @@ class CombinedController extends \VuFind\Controller\CombinedController
     use SearchControllerTrait;
 
     /**
+     * Action to process the combined search box.
+     *
+     * @return mixed
+     */
+    public function searchboxAction()
+    {
+        list($type, $target) = explode(':', $this->params()->fromQuery('type'), 2);
+        if ($type == 'VuFind') {
+            list($searchClassId, $type) = explode('|', $target);
+            if (preg_match('/^browse-(.*)$/', $searchClassId, $matches)) {
+                $searchClassId = 'Solr';
+                $params = $this->getRequest()->getQuery()->toArray();
+                $params['type'] = $type;
+                unset($params['activeSearchClassId']);
+                $base = $this->url()->fromRoute('browse-' . $matches[1]);
+                return $this->redirect()
+                    ->toUrl($base . '?' . http_build_query($params));
+            }
+        }
+        return parent::searchboxAction();
+    }
+
+    /**
      * Results action
      *
      * @return mixed
