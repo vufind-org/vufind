@@ -73,7 +73,8 @@ trait ILSFinna
         $fields = ['firstname', 'lastname', 'email', 'major', 'college'];
         foreach ($fields as $field) {
             // Special case: don't override existing email address:
-            if ($field == 'email' && !empty($user->email)) {
+            $email = trim($user->email);
+            if ($field == 'email' && !empty($email)) {
                 continue;
             }
             $user->$field = isset($info[$field]) ? $info[$field] : ' ';

@@ -143,6 +143,37 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return an associative array of image URLs associated with this record
+     * (key = URL, value = description).
+     *
+     * @param string $size Size of requested images
+     *
+     * @return array
+     */
+    public function getAllThumbnails($size = 'large')
+    {
+        $urls = [];
+        $url = '';
+        foreach ($this->getSimpleXML()->xpath(
+            '/lidoWrap/lido/administrativeMetadata/'
+            . 'resourceWrap/resourceSet/resourceRepresentation'
+        ) as $node) {
+            if ($node->linkResource) {
+                $attributes = $node->attributes();
+                if (!$attributes->type
+                    || (($size != 'large' && $attributes->type == 'thumb')
+                    || $size == 'large' && $attributes->type == 'large'
+                    || $attributes->type == 'zoomview')
+                ) {
+                    $url = (string)$node->linkResource;
+                    $urls[$url] = '';
+                }
+            }
+        }
+        return $urls;
+    }
+
+    /**
      * Get an array of alternative titles for the record.
      *
      * @return array
@@ -474,6 +505,22 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Get the main format.
+     *
+     * @return array
+     */
+    public function getMainFormat()
+    {
+        if (!isset($this->fields['format'])) {
+            return '';
+        }
+        $formats = $this->fields['format'];
+        $format = reset($formats);
+        $format = preg_replace('/^\d+\/([^\/]+)\/.*/', '\1', $format);
+        return $format;
+    }
+
+    /**
      * Get measurements and augment them data source specifically if needed.
      *
      * @return array
@@ -541,40 +588,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get subject dates
-     *
-     * @return array
-     */
-    public function getSubjectDates()
-    {
-        $results = [];
-        foreach ($this->getSimpleXML()->xpath(
-            'lido/descriptiveMetadata/objectRelationWrap/subjectWrap/'
-            . 'subjectSet/subject/subjectDate/displayDate'
-        ) as $node) {
-            $results[] = (string)$node;
-        }
-        return $results;
-    }
-
-    /**
-     * Get subject places
-     *
-     * @return array
-     */
-    public function getSubjectPlaces()
-    {
-        $results = [];
-        foreach ($this->getSimpleXML()->xpath(
-            'lido/descriptiveMetadata/objectRelationWrap/subjectWrap/'
-            . 'subjectSet/subject/subjectPlace/displayPlace'
-        ) as $node) {
-            $results[] = (string)$node;
-        }
-        return $results;
-    }
-
-    /**
      * Get subject actors
      *
      * @return array
@@ -585,6 +598,23 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
         foreach ($this->getSimpleXML()->xpath(
             'lido/descriptiveMetadata/objectRelationWrap/subjectWrap/'
             . 'subjectSet/subject/subjectActor/actor/nameActorSet/appellationValue'
+        ) as $node) {
+            $results[] = (string)$node;
+        }
+        return $results;
+    }
+
+    /**
+     * Get subject dates
+     *
+     * @return array
+     */
+    public function getSubjectDates()
+    {
+        $results = [];
+        foreach ($this->getSimpleXML()->xpath(
+            'lido/descriptiveMetadata/objectRelationWrap/subjectWrap/'
+            . 'subjectSet/subject/subjectDate/displayDate'
         ) as $node) {
             $results[] = (string)$node;
         }
@@ -609,33 +639,20 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get the web resource link from the record.
-     *
-     * @return mixed
-     */
-    public function getWebResource()
-    {
-        $url = $this->getSimpleXML()->xpath(
-            'lido/descriptiveMetadata/objectRelationWrap/relatedWorksWrap/'
-            . 'relatedWorkSet/relatedWork/object/objectWebResource'
-        );
-        return isset($url[0]) ? $url[0] : false;
-    }
-
-    /**
-     * Get the main format.
+     * Get subject places
      *
      * @return array
      */
-    public function getMainFormat()
+    public function getSubjectPlaces()
     {
-        if (!isset($this->fields['format'])) {
-            return '';
+        $results = [];
+        foreach ($this->getSimpleXML()->xpath(
+            'lido/descriptiveMetadata/objectRelationWrap/subjectWrap/'
+            . 'subjectSet/subject/subjectPlace/displayPlace'
+        ) as $node) {
+            $results[] = (string)$node;
         }
-        $formats = $this->fields['format'];
-        $format = reset($formats);
-        $format = preg_replace('/^\d+\/([^\/]+)\/.*/', '\1', $format);
-        return $format;
+        return $results;
     }
 
     /**
@@ -667,34 +684,17 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Return an associative array of image URLs associated with this record
-     * (key = URL, value = description).
+     * Get the web resource link from the record.
      *
-     * @param string $size Size of requested images
-     *
-     * @return array
+     * @return mixed
      */
-    public function getAllThumbnails($size = 'large')
+    public function getWebResource()
     {
-        $urls = [];
-        $url = '';
-        foreach ($this->getSimpleXML()->xpath(
-            '/lidoWrap/lido/administrativeMetadata/'
-            . 'resourceWrap/resourceSet/resourceRepresentation'
-        ) as $node) {
-            if ($node->linkResource) {
-                $attributes = $node->attributes();
-                if (!$attributes->type
-                    || (($size != 'large' && $attributes->type == 'thumb')
-                    || $size == 'large' && $attributes->type == 'large'
-                    || $attributes->type == 'zoomview')
-                ) {
-                    $url = (string)$node->linkResource;
-                    $urls[$url] = '';
-                }
-            }
-        }
-        return $urls;
+        $url = $this->getSimpleXML()->xpath(
+            'lido/descriptiveMetadata/objectRelationWrap/relatedWorksWrap/'
+            . 'relatedWorkSet/relatedWork/object/objectWebResource'
+        );
+        return isset($url[0]) ? $url[0] : false;
     }
 
     /**

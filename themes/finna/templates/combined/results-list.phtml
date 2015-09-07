@@ -15,6 +15,14 @@
   $url = $results->getUrlQuery();
   $url->setSearchId($searchClassId, null);
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $url->setPage(1);
+  // Use URL from search tab as "moreUrl" since it includes daterange type parameter
+  if (isset($this->layout()->searchTabs)) {
+    foreach ($this->layout()->searchTabs as $tab) {
+       if (strcasecmp($tab['class'], $searchClassId) === 0) {
+         $moreUrl = $tab['url'];
+       }
+    }
+  }
 
   $url = $results->getUrlQuery();
   $url->removeAllFilters();

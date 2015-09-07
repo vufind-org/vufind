@@ -1,6 +1,6 @@
 <?php
 /**
- * Helper to check if a translation is empty
+ * Module for storing local overrides for Finna Custom.
  *
  * PHP version 5
  *
@@ -20,36 +20,47 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Module
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://github.com/dmj/vf2-proxy
  */
-namespace Finna\View\Helper\Root;
+namespace FinnaCustom;
 
 /**
- * Helper to check if a translation is empty
+ * Module for storing local overrides for Finna Custom.
  *
  * @category VuFind2
- * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Module
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://github.com/dmj/vf2-proxy
  */
-class TranslationEmpty extends \Zend\View\Helper\AbstractHelper
-    implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class Module
 {
-    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    /**
+     * Get module configuration
+     *
+     * @return array
+     */
+    public function getConfig()
+    {
+        return include __DIR__ . '/config/module.config.php';
+    }
 
     /**
-     * Check if a translation is empty
+     * Get autoloader configuration
      *
-     * @param string|object $str String to translate
-     *
-     * @return bool
+     * @return array
      */
-    public function __invoke($str)
+    public function getAutoloaderConfig()
     {
-        return $this->translate($str, [], '') === '';
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
+                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
+                ],
+            ],
+        ];
     }
 }

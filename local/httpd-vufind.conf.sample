@@ -60,5 +60,5 @@ Alias /vufind2 /path-to/NDL-VuFind2/public
   # This line specifies additional Zend Framework 2 modules to load after the standard VuFind module.
   # Multiple modules may be specified separated by commas.  This mechanism can be used to override
   # core VuFind functionality without modifying core code.
-  SetEnv VUFIND_LOCAL_MODULES FinnaSearch,FinnaTheme,Finna
+  SetEnv VUFIND_LOCAL_MODULES FinnaSearch,FinnaTheme,Finna,FinnaCustom
 </Directory>
