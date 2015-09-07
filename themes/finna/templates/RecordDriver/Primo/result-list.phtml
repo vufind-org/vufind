@@ -130,6 +130,15 @@
           <p class="summary"><?=$summary;?></p>
         </div>
       <? endif; ?>
+      <?
+      $openUrl = $this->openUrl($driver, 'results');
+      $openUrlActive = $openUrl->isActive();
+      ?>
+       <? if ($openUrlActive) : ?>
+        <div class="more-options hidden-xs">
+          <? echo $openUrl->renderMoreOptions();?>
+        </div>
+       <? endif; ?>
     </div>
     <div class="<?= $combinedView ? 'hidden' : 'hidden-xs' ?> col-sm-1 col-sm-push-3 hidden-print">
       <? /* Display qrcode if appropriate: */ ?>
@@ -169,13 +178,6 @@
       <?=$this->record($this->driver)->getOnlineUrls('results')?>
     </div>
     <div class="col-xs-12">
-      <?
-      $openUrl = $this->openUrl($driver, 'results');
-      $openUrlActive = $openUrl->isActive();
-      if ($openUrlActive) {
-        echo $openUrl->renderMoreOptions();
-      }
-      ?>
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Saved lists */ ?>
         <div class="savedLists alert alert-info hidden col-md-11">
