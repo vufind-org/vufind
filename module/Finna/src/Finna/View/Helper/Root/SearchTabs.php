@@ -253,16 +253,20 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
             $settings = [];
             if (isset($params['filter'])) {
                 $settings['filters'] = $params['filter'];
+                $params = $savedSearch->getParams();
+                if ($daterange = $params->getSpatialDateRangeFilter()) {
+                    $daterangeField = $params->getSpatialDateRangeField();
+                    foreach ($settings['filters'] as $filter) {
+                        list($field, $val) = explode(':', $filter, 2);
+                        if ($field == $daterangeField) {
+                            $type = $daterange['type'];
+                            $settings['params']
+                                = ["{$daterangeField}_type" => $type];
+                            break;
+                        }
+                    }
+                }
             }
-
-            $params = $savedSearch->getParams();
-            $daterange = $params->getSpatialDateRangeFilter();
-            if ($daterange) {
-                $field = $params->getSpatialDateRangeField() . '_type';
-                $type = $daterange['type'];
-                $settings['params'] = [$field => $type];
-            }
-
             return $settings;
         }
         return false;

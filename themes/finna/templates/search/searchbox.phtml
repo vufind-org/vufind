@@ -37,6 +37,7 @@
       ) {
          $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $this->layout()->savedTabs);
          $this->layout()->finnaMainTabs = $this->render('search/searchTabs', array('searchTabs' => $searchTabs));
+         $this->layout()->searchTabs = $searchTabs;
       }
     }
 ?>
