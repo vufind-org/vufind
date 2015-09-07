@@ -50,7 +50,6 @@ class TranslationEmpty extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($str)
     {
-        return $this->translate($str, [], null)
-            == html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8');
+        return $this->translate($str, [], '') === '';
     }
 }
