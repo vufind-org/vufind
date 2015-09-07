@@ -74,6 +74,20 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return an associative array of image URLs associated with this record
+     * (key = URL, value = description).
+     *
+     * @param string $size Size of requested images
+     *
+     * @return array
+     */
+    public function getAllThumbnails($size = 'large')
+    {
+        return !empty($this->fields['thumbnail'])
+            ? [$this->fields['thumbnail'] => $this->fields['thumbnail']] : [];
+    }
+
+    /**
      * Return an external URL where a displayable description text
      * can be retrieved from, if available; false otherwise.
      *
