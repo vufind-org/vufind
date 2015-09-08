@@ -1,4 +1,4 @@
-/*global htmlEncode, VUFIND */
+/*global htmlEncode, VuFind */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];
@@ -6,7 +6,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
   $(data).each(function() {
     var html = '';
     if (!this.isApplied && counts) {
-      html = '<span class="badge" style="float: right">' + this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VUFIND.translate('number_thousands_separator'));
+      html = '<span class="badge" style="float: right">' + this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'));
       if (allowExclude) {
         var excludeURL = currentPath + this.exclude;
         excludeURL.replace("'", "\\'");

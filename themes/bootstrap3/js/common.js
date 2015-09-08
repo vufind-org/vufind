@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, refreshCommentList, refreshTagList, unescape, VUFIND */
+/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, refreshCommentList, refreshTagList, unescape, VuFind */
 
 function VF_NAMESPACE(p, s) {
   var path = p;
@@ -86,7 +86,7 @@ function setupOrFacets() {
 
 // Record
 function refreshCommentList(recordId, recordSource, parent) {
-  var url = VUFIND.getPath+'/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
+  var url = VuFind.getPath+'/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
   $.ajax({
     dataType: 'json',
     url: url,
@@ -122,7 +122,7 @@ function refreshTagList(loggedin, parent) {
     : $(parent).find('.tagList');
   if ($tagList.length > 0) {
     $tagList.empty();
-    var url = VUFIND.getPath+'/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    var url = VuFind.getPath+'/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
     $.ajax({
       dataType: 'json',
       url: url,
@@ -147,7 +147,7 @@ function ajaxTagUpdate(link, tag, remove) {
   var recordId = $parent.find('.hiddenId').val();
   var recordSource = $parent.find('.hiddenSource').val();
   $.ajax({
-    url:VUFIND.getPath+'/AJAX/JSON?method=tagRecord',
+    url:VuFind.getPath+'/AJAX/JSON?method=tagRecord',
     method:'POST',
     data:{
       tag:'"'+tag.replace(/\+/g, ' ')+'"',
@@ -169,7 +169,7 @@ function registerAjaxCommentRecord(form) {
   var $form = $(form);
   var id = $form.find('[name="id"]').val();
   var recordSource = $form.find('[name="source"]').val();
-  var url = VUFIND.getPath+'/AJAX/JSON?' + $.param({method:'commentRecord'});
+  var url = VuFind.getPath+'/AJAX/JSON?' + $.param({method:'commentRecord'});
   var data = {
     comment:$form.find('[name="comment"]').val(),
     id:id,
@@ -193,7 +193,7 @@ function registerAjaxCommentRecord(form) {
   return false;
 }
 function deleteRecordComment(element, recordId, recordSource, commentId) {
-  var url = VUFIND.getPath+'/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
+  var url = VuFind.getPath+'/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
   $.ajax({
     dataType: 'json',
     url: url,
@@ -212,9 +212,9 @@ function phoneNumberFormHandler(numID, regionCode) {
   var valid = isPhoneNumberValid(number, regionCode);
   if(valid != true) {
     if(typeof valid === 'string') {
-      valid = VUFIND.translate(valid);
+      valid = VuFind.translate(valid);
     } else {
-      valid = VUFIND.translate('libphonenumber_invalid');
+      valid = VuFind.translate('libphonenumber_invalid');
     }
     $(phoneInput).siblings('.help-block.with-errors').html(valid);
     $(phoneInput).closest('.form-group').addClass('sms-error');
@@ -228,7 +228,7 @@ function phoneNumberFormHandler(numID, regionCode) {
 // This is a full handler for the login form
 function ajaxLogin(form) {
   Lightbox.ajax({
-    url: VUFIND.getPath() + '/AJAX/JSON?method=getSalt',
+    url: VuFind.getPath() + '/AJAX/JSON?method=getSalt',
     dataType: 'json',
     success: function(response) {
       if (response.status == 'OK') {
@@ -257,7 +257,7 @@ function ajaxLogin(form) {
         // login via ajax
         Lightbox.ajax({
           type: 'POST',
-          url: VUFIND.getPath() + '/AJAX/JSON?method=login',
+          url: VuFind.getPath() + '/AJAX/JSON?method=login',
           dataType: 'json',
           data: params,
           success: function(response) {
@@ -345,7 +345,7 @@ function bindAutocomplete(i, element) {
       source: function(query, cb) {
         var searcher = extractClassParams(element);
         $.ajax({
-          url: VUFIND.getPath() + '/AJAX/JSON',
+          url: VuFind.getPath() + '/AJAX/JSON',
           data: {
             q:query,
             method:'getACSuggestions',
@@ -401,9 +401,9 @@ $(document).ready(function() {
   // handle QR code links
   $('a.qrcodeLink').click(function() {
     if ($(this).hasClass("active")) {
-      $(this).html(VUFIND.translate('qrcode_show')).removeClass("active");
+      $(this).html(VuFind.translate('qrcode_show')).removeClass("active");
     } else {
-      $(this).html(VUFIND.translate('qrcode_hide')).addClass("active");
+      $(this).html(VuFind.translate('qrcode_hide')).addClass("active");
     }
 
     var holder = $(this).next('.qrcode');
@@ -427,12 +427,12 @@ $(document).ready(function() {
       window.print();
     });
     // Make an ajax call to ensure that ajaxStop is triggered
-    $.getJSON(VUFIND.getPath+'/AJAX/JSON', {method: 'keepAlive'});
+    $.getJSON(VuFind.getPath+'/AJAX/JSON', {method: 'keepAlive'});
   }
 
   // Advanced facets
   $('.facetOR').click(function() {
-    $(this).closest('.collapse').html('<div class="list-group-item">'+VUFIND.translate('loading')+'...</div>');
+    $(this).closest('.collapse').html('<div class="list-group-item">'+VuFind.translate('loading')+'...</div>');
     window.location.assign($(this).attr('href'));
   });
 

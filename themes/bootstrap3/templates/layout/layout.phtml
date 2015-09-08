@@ -96,7 +96,7 @@
     ?>
     <?=$this->headScript()?>
     <script>
-      var VUFIND = new VF_NAMESPACE(
+      var VuFind = new VF_NAMESPACE(
         '<?=rtrim($this->url('home'), '/') ?>',
         <?=$this->jsTranslations()->getJSON() ?>
       );

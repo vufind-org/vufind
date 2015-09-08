@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, Recaptcha, VUFIND */
+/*global checkSaveStatuses, console, deparam, Recaptcha, VuFind */
 
 var Lightbox = {
   /**
@@ -140,7 +140,7 @@ var Lightbox = {
       // Reset content so we start fresh when we open a lightbox
       $('#modal').removeData('modal');
       $('#modal').find('.modal-title').html('');
-      $('#modal').find('.modal-body').html(VUFIND.translate('loading')+"...");
+      $('#modal').find('.modal-body').html(VuFind.translate('loading')+"...");
     }
   },
   /**
@@ -157,10 +157,10 @@ var Lightbox = {
    * These function changes the content of the lightbox to a message with a close button
    */
   confirm: function(message) {
-    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VUFIND.translate('close')+'</button>');
+    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VuFind.translate('close')+'</button>');
   },
   success: function(message) {
-    this.changeContent('<div class="alert alert-success">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VUFIND.translate('close')+'</button>');
+    this.changeContent('<div class="alert alert-success">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VuFind.translate('close')+'</button>');
   },
   /**
    * Regexes a piece of html to find an error alert
@@ -191,9 +191,9 @@ var Lightbox = {
     $('#modal .modal-body .alert').remove();
     var html = $.parseHTML($('#modal .modal-body').html());
      // Empty or alert only, change to message with button
-    if($('#modal .modal-body').html() == VUFIND.translate('loading')+"..."
+    if($('#modal .modal-body').html() == VuFind.translate('loading')+"..."
       || (html.length == 1 && $(html).hasClass('alert-'+type))) {
-      Lightbox.changeContent('<div class="alert alert-'+type+'" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VUFIND.translate('close')+'</button>');
+      Lightbox.changeContent('<div class="alert alert-'+type+'" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VuFind.translate('close')+'</button>');
     // Page without alert
     } else {
       $('#modal .modal-body').prepend('<div class="alert alert-'+type+' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><p class="message">'+message+'</p></div>');
@@ -267,7 +267,7 @@ var Lightbox = {
    */
   get: function(controller, action, get, post, callback) {
     // Build URL
-    var url = VUFIND.getPath()+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
+    var url = VuFind.getPath()+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
     if(typeof get !== "undefined" && get !== {}) {
       url += '&'+$.param(get);
     }
@@ -390,7 +390,7 @@ var Lightbox = {
     var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
     if($form.attr('action')) {
       // Parse action location
-      var path = VUFIND.getPath();
+      var path = VuFind.getPath();
       var action = $form.attr('action').substring($form.attr('action').indexOf(path)+path.length+1);
       var params = action.split('?');
       action = action.split('/');
@@ -406,7 +406,7 @@ var Lightbox = {
     } else {
       this.getByUrl(this.lastURL, {}, callback);
     }
-    $(this).find('.modal-body').html(VUFIND.translate('loading') + "...");
+    $(this).find('.modal-body').html(VuFind.translate('loading') + "...");
   }
 };
 
@@ -422,12 +422,12 @@ function bulkActionSubmit($form) {
   var submit = button.attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
-    Lightbox.displayError(VUFIND.translate('bulk_noitems_advice'));
+    Lightbox.displayError(VuFind.translate('bulk_noitems_advice'));
     return false;
   }
   if (submit == 'print') {
     //redirect page
-    var url = VUFIND.getPath()+'/Records/Home?print=true';
+    var url = VuFind.getPath()+'/Records/Home?print=true';
     for(var i=0;i<checks.length;i++) {
       url += '&id[]='+checks[i].value;
     }
@@ -537,17 +537,17 @@ $(document).ready(function() {
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
     Lightbox.refreshOnClose = true;
-    Lightbox.success(VUFIND.translate('bulk_save_success'));
+    Lightbox.success(VuFind.translate('bulk_save_success'));
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
   });
   Lightbox.addFormCallback('emailRecord', function(){
-    Lightbox.success(VUFIND.translate('bulk_email_success'));
+    Lightbox.success(VuFind.translate('bulk_email_success'));
   });
   Lightbox.addFormCallback('emailSearch', function(html) {
-    Lightbox.success(VUFIND.translate('bulk_email_success'));
+    Lightbox.success(VuFind.translate('bulk_email_success'));
   });
   Lightbox.addFormCallback('newList', Lightbox.changeContent);
   Lightbox.addFormCallback('placeHold', function(html) {
@@ -559,28 +559,28 @@ $(document).ready(function() {
     });
   });
   Lightbox.addFormCallback('placeILLRequest', function() {
-    document.location.href = VUFIND.getPath()+'/MyResearch/ILLRequests';
+    document.location.href = VuFind.getPath()+'/MyResearch/ILLRequests';
   });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
-    document.location.href = VUFIND.getPath()+'/MyResearch/StorageRetrievalRequests';
+    document.location.href = VuFind.getPath()+'/MyResearch/StorageRetrievalRequests';
   });
   Lightbox.addFormCallback('saveRecord', function() {
     checkSaveStatuses();
     refreshTagList();
-    Lightbox.success(VUFIND.translate('bulk_save_success'));
+    Lightbox.success(VuFind.translate('bulk_save_success'));
   });
   Lightbox.addFormCallback('smsRecord', function() {
-    Lightbox.success(VUFIND.translate('sms_success'));
+    Lightbox.success(VuFind.translate('sms_success'));
   });
   Lightbox.addFormCallback('tagRecord', function(html) {
     refreshTagList(true);
-    Lightbox.success(VUFIND.translate('add_tag_success'));
+    Lightbox.success(VuFind.translate('add_tag_success'));
   });
 
   // Form handlers
   Lightbox.addFormHandler('exportForm', function(evt) {
     $.ajax({
-      url: VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
+      url: VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
       dataType:'json',
       data:Lightbox.getFormData($(evt.target)),

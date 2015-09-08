@@ -16,7 +16,7 @@ function checkSaveStatuses() {
     }
     $.ajax({
       dataType: 'json',
-      url: VUFIND.getPath() + '/AJAX/JSON?method=getSaveStatuses',
+      url: VuFind.getPath() + '/AJAX/JSON?method=getSaveStatuses',
       data: {id:ids, 'source':srcs},
       success: function(response) {
         if(response.status == 'OK') {
@@ -31,7 +31,7 @@ function checkSaveStatuses() {
               $container.append('<ul></ul>');
               $ul = $container.children('ul:first');
             }
-            var html = '<li><a href="' + VUFIND.getPath() + '/MyResearch/MyList/' + result.list_id + '">'
+            var html = '<li><a href="' + VuFind.getPath() + '/MyResearch/MyList/' + result.list_id + '">'
                      + result.list_title + '</a></li>';
             $ul.append(html);
             $container.removeClass('hidden');

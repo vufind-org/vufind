@@ -1,4 +1,4 @@
-/*global keepAliveInterval, VUFIND */
+/*global keepAliveInterval */
 
 $(document).ready(function() {
   window.setInterval(function() {

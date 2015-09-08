@@ -11,7 +11,7 @@ function checkItemStatuses() {
   $(".ajax-availability").removeClass('hidden');
   $.ajax({
     dataType: 'json',
-    url: VUFIND.getPath() + '/AJAX/JSON?method=getItemStatuses',
+    url: VuFind.getPath() + '/AJAX/JSON?method=getItemStatuses',
     data: {id:id},
     success: function(response) {
       if(response.status == 'OK') {

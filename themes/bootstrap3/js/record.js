@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, syn_get_widget, userIsLoggedIn, VUFIND */
+/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, syn_get_widget, userIsLoggedIn, VuFind */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -8,7 +8,7 @@ function checkRequestIsValid(element, requestType, blockedClass) {
   var vars = deparam(element.href);
   vars['id'] = recordId;
 
-  var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
+  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
   $.ajax({
     dataType: 'json',
     cache: false,
@@ -42,7 +42,7 @@ function setUpCheckRequest() {
 }
 
 function deleteRecordComment(element, recordId, recordSource, commentId) {
-  var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
+  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
   $.ajax({
     dataType: 'json',
     url: url,
@@ -55,7 +55,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
 }
 
 function refreshCommentList(recordId, recordSource, parent) {
-  var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
+  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
   $.ajax({
     dataType: 'json',
     url: url,
@@ -84,7 +84,7 @@ function registerAjaxCommentRecord() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
-    var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+    var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'commentRecord'});
     var data = {
       comment:form.comment.value,
       id:id,
@@ -178,7 +178,7 @@ function ajaxLoadTab(tabid) {
     return true;
   }
   $.ajax({
-    url: VUFIND.getPath() + urlroot + '/AjaxTab',
+    url: VuFind.getPath() + urlroot + '/AjaxTab',
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
@@ -201,7 +201,7 @@ function refreshTagList(loggedin) {
   var tagList = $('#tagList');
   if (tagList.length > 0) {
     tagList.empty();
-    var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
     $.ajax({
       dataType: 'json',
       url: url,
@@ -226,15 +226,15 @@ function ajaxTagUpdate(tag, remove) {
   var recordId = $('#record_id').val();
   var recordSource = $('.hiddenSource').val();
   $.ajax({
-    url:VUFIND.getPath+'/AJAX/JSON?method=tagRecord',
-    method:'POST',
-    data:{
+    url: VuFind.getPath+'/AJAX/JSON?method=tagRecord',
+    method: 'POST',
+    data: {
       tag:'"'+tag.replace(/\+/g, ' ')+'"',
       id:recordId,
       source:recordSource,
       remove:remove
     },
-    complete:refreshTagList
+    complete: refreshTagList
   });
 }
 
@@ -254,7 +254,7 @@ function recordDocReady() {
       $('#'+tabid).tab('show');
       return false;
     } else {
-      $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+VUFIND.translate('loading')+'...</div>');
+      $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+VuFind.translate('loading')+'...</div>');
       $('#record-tabs .tab-pane.active').removeClass('active');
       $('#'+tabid+'-tab').addClass('active');
       return ajaxLoadTab(tabid);
