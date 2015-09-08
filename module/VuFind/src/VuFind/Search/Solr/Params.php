@@ -619,6 +619,14 @@ class Params extends \VuFind\Search\Base\Params
             $filter['displayText'] = $facetHelper->formatDisplayText(
                 $filter['displayText'], true, $separator
             );
+            if ($translate) {
+                $domain = $this->getOptions()->getTextDomainForTranslatedFacet(
+                    $field
+                );
+                $filter['displayText'] = $this->translate(
+                    [$domain, $filter['displayText']]
+                );
+            }
         }
 
         return $filter;
