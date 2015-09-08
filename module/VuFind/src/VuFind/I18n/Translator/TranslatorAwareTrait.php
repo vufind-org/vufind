@@ -89,44 +89,49 @@ trait TranslatorAwareTrait
     /**
      * Translate a string (or string-castable object)
      *
-     * @param string|object $str     String to translate
-     * @param array         $tokens  Tokens to inject into the translated string
-     * @param string        $default Default value to use if no translation is found
-     * (null for no default).
+     * @param string|object|array $str     String to translate or an array of text
+     * domain and string to translate
+     * @param array               $tokens  Tokens to inject into the translated
+     * string
+     * @param string              $default Default value to use if no translation is
+     * found (null for no default).
      *
      * @return string
      */
     public function translate($str, $tokens = [], $default = null)
     {
+        // Figure out the text domain for the string:
+        list($domain, $str) = $this->extractTextDomain($str);
+
         // Special case: deal with objects with a designated display value:
         if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
-            $translated = $this->translateString((string)$str, $tokens, $default);
+            $translated = $this->translateString(
+                $domain, (string)$str, $tokens, $default
+            );
             if ($translated !== (string)$str) {
                 return $translated;
             }
-            return $this->translateString(
-                $str->getDisplayString(), $tokens, $default
-            );
+            list($domain, $str) = $this->extractTextDomain($str->getDisplayString());
+            return $this->translateString($domain, $str, $tokens, $default);
         }
 
         // Default case: deal with ordinary strings (or string-castable objects):
-        return $this->translateString((string)$str, $tokens, $default);
+        return $this->translateString($domain, (string)$str, $tokens, $default);
     }
 
     /**
      * Get translation for a string
      *
+     * @param string $domain  Text domain
      * @param string $str     String to translate
      * @param array  $tokens  Tokens to inject into the translated string
-     * @param string $default Default value to use if no translation is found (null
-     * for no default).
+     * @param string $default Default value to use if no translation is found
+     * (null for no default).
      *
      * @return string
      */
-    protected function translateString($str, $tokens = [], $default = null)
+    protected function translateString($domain, $str, $tokens = [], $default = null)
     {
-        // Figure out the text domain for the string:
-        list($domain, $str) = $this->extractTextDomain($str);
 
         $msg = (null === $this->translator)
             ? $str : $this->translator->translate($str, $domain);
@@ -153,12 +158,19 @@ trait TranslatorAwareTrait
      * Given a translation string with or without a text domain, return an
      * array with the raw string and the text domain separated.
      *
-     * @param string $str String to parse
+     * @param string|array $str String to parse or an array of text domain and string
+     * to translate
      *
      * @return array
      */
     protected function extractTextDomain($str)
     {
+        if (is_array($str)) {
+            if (empty($str[0])) {
+                return ['default', $str[1]];
+            }
+            return [$str[0], $str[1]];
+        }
         $parts = explode('::', $str);
         if (count($parts) == 2) {
             return $parts;
