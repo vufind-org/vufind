@@ -161,11 +161,11 @@ $this->markTestSkipped();
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->logicalOr(
-                $this->equalTo('primo.MEMBER'), 
+                $this->equalTo('primo.MEMBER'),
                 $this->equalTo('primo.defaultRule')
             ))
-            ->will($this->returnCallback(array($this,
-                'handlerAuthNotSuccessfullCallback')));
+            ->will($this->returnCallback([$this,
+                'handlerAuthNotSuccessfullCallback']));
         $handler->setAuthorizationService($mockAuth);
 
         $this->assertEquals(false, $handler->hasPermission());
@@ -238,11 +238,11 @@ $this->markTestSkipped();
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->logicalOr(
-                $this->equalTo('primo.MEMBER'), 
+                $this->equalTo('primo.MEMBER'),
                 $this->equalTo('primo.defaultRule')
             ))
-            ->will($this->returnCallback(array($this,
-                'handlerDefaultAuthSuccessfullCallback')));
+            ->will($this->returnCallback([$this,
+                'handlerDefaultAuthSuccessfullCallback']));
         $handler->setAuthorizationService($mockAuth);
 
         $this->assertEquals(true, $handler->hasPermission());
@@ -275,11 +275,11 @@ $this->markTestSkipped();
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->logicalOr(
-                $this->equalTo('primo.MEMBER'), 
+                $this->equalTo('primo.MEMBER'),
                 $this->equalTo('primo.defaultRule')
             ))
-            ->will($this->returnCallback(array($this, 
-                'handlerDefaultAuthNotSuccessfullCallback')));
+            ->will($this->returnCallback([$this,
+                'handlerDefaultAuthNotSuccessfullCallback']));
         $handler->setAuthorizationService($mockAuth);
 
         $this->assertEquals(false, $handler->hasPermission());
@@ -359,11 +359,11 @@ $this->markTestSkipped();
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->logicalOr(
-                $this->equalTo('primo.MEMBER'), 
+                $this->equalTo('primo.MEMBER'),
                 $this->equalTo('primo.defaultRule')
             ))
-            ->will($this->returnCallback(array($this,
-                'handlerAuthNotSuccessfullCallback')));
+            ->will($this->returnCallback([$this,
+                'handlerAuthNotSuccessfullCallback']));
         $handler->setAuthorizationService($mockAuth);
 
         $this->assertEquals(false, $handler->hasPermission());
@@ -423,11 +423,11 @@ $this->markTestSkipped();
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->logicalOr(
-                $this->equalTo('primo.MEMBER'), 
+                $this->equalTo('primo.MEMBER'),
                 $this->equalTo('primo.defaultRule')
             ))
-            ->will($this->returnCallback(array($this,
-                'handlerDefaultAuthSuccessfullCallback')));
+            ->will($this->returnCallback([$this,
+                'handlerDefaultAuthSuccessfullCallback']));
         $handler->setAuthorizationService($mockAuth);
 
         $this->assertEquals(false, $handler->hasPermission());
@@ -447,11 +447,11 @@ $this->markTestSkipped();
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->logicalOr(
-                $this->equalTo('primo.MEMBER'), 
+                $this->equalTo('primo.MEMBER'),
                 $this->equalTo('primo.defaultRule')
             ))
-            ->will($this->returnCallback(array($this, 
-                'handlerDefaultAuthNotSuccessfullCallback')));
+            ->will($this->returnCallback([$this,
+                'handlerDefaultAuthNotSuccessfullCallback']));
         $handler->setAuthorizationService($mockAuth);
 
         $this->assertEquals(false, $handler->hasPermission());
@@ -473,11 +473,11 @@ $this->markTestSkipped();
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->logicalOr(
-                $this->equalTo('primo.MEMBER'), 
+                $this->equalTo('primo.MEMBER'),
                 $this->equalTo('primo.defaultRule')
             ))
-            ->will($this->returnCallback(array($this,
-                'handlerAuthNotSuccessfullCallback')));
+            ->will($this->returnCallback([$this,
+                'handlerAuthNotSuccessfullCallback']));
         $handler->setAuthorizationService($mockAuth);
 
         $this->assertEquals(false, $handler->hasPermission());
@@ -518,11 +518,11 @@ $this->markTestSkipped();
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->logicalOr(
-                $this->equalTo('primo.MEMBER'), 
+                $this->equalTo('primo.MEMBER'),
                 $this->equalTo('primo.defaultRule')
             ))
-            ->will($this->returnCallback(array($this,
-                'handlerDefaultAuthSuccessfullCallback')));
+            ->will($this->returnCallback([$this,
+                'handlerDefaultAuthSuccessfullCallback']));
         $handler->setAuthorizationService($mockAuth);
 
         $this->assertEquals(true, $handler->hasPermission());
@@ -542,11 +542,11 @@ $this->markTestSkipped();
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->logicalOr(
-                $this->equalTo('primo.MEMBER'), 
+                $this->equalTo('primo.MEMBER'),
                 $this->equalTo('primo.defaultRule')
             ))
-            ->will($this->returnCallback(array($this, 
-                'handlerDefaultAuthNotSuccessfullCallback')));
+            ->will($this->returnCallback([$this,
+                'handlerDefaultAuthNotSuccessfullCallback']));
         $handler->setAuthorizationService($mockAuth);
 
         $this->assertEquals(false, $handler->hasPermission());
