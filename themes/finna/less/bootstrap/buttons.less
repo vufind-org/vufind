@@ -56,7 +56,7 @@
 .navbar-form .btn[type="submit"] {
     color: @btn-primary-bg;
     padding: 6px 0px;
-    border-radius: 15px;
+    border-radius: 13px;
     margin-left: -1px;
     margin-top: 2px;
     height: 35px;
@@ -64,7 +64,8 @@
     transition: background .1s ease-in-out;
     width: 10%;
     float: right;
-    margin-right: 2px;
+    margin-right: 3px;
+    border: none;
 
     &:hover {
         background: darken(@btn-primary-bg, 5%);   
@@ -243,6 +244,8 @@
 
 // Default styling of Finna Jump menus
 .jumpMenuForm {
+    height: 33px;
+    margin-bottom: 10px;
     & label {
          font-weight: normal;
          margin-left: 10px;
@@ -330,31 +333,6 @@
         color: @body-bg;
         line-height: 34px;
     }
-    &.prefilter-select {
-        color: @gray;
-        display: inline-block;
-        padding-right: 17px;
-        position: relative;
-        background: transparent;
-        height: 39px;
-        width: 21%;
-        @media (max-width: @screen-xs-max) {
-            width: 25%;  
-        }
-        height: auto;
-        padding-top: 0px;
-        padding-bottom: 0px;
-        & select {
-          color: @gray;
-          height: 39px;
-          font-weight: 500;
-        }
-    }   
-    &.prefilter-select:before {
-        right: 12px;
-        background: @body-bg;
-        line-height: 39px;
-    }
     &.disabled {
         .opacity(0.65);   
     }
@@ -378,62 +356,125 @@ button.multiselect {
     height: 30px;
 }
 
-// List & grid view
-.view-buttons {
-    color: @body-bg;
-    display: inline-block;
-    font-weight: normal;
-    & .dropdown {
-        border-radius: 10px;
-        
+// All search control buttons
+.search-controls {
+    .button-label {
+        margin-left: 10px;
     }
-    & .dropdown > a {
-        background: @link-color;
+    & .view-button, & .sort-button, & .results-per-page-button {
         color: @body-bg;
-        border-radius: @finna-button-radius;
-        padding: 7px 10px;
-        display: block;
-        & span {
-            padding-right: 20px;   
+        display: inline-block;
+        font-weight: normal;
+        & .dropdown {
+            border-radius: 10px;
+            
         }
-        &:hover, &:focus {
+        & .dropdown > a {
+            background: @link-color;
+            color: @body-bg;
+            border-radius: @finna-button-radius;
+            padding: 7px 10px;
+            display: block;
+            & span {
+                padding-right: 20px;   
+            }
+            &:hover, &:focus {
+                text-decoration: none;
+                background: darken(@link-color, 10%);
+                transition: background 0.2s linear;
+            }
+        }
+        & i {
+            font-size: 18px;
+            vertical-align: middle;
+            color: #fff;
+            margin-top: -3px;
+            margin-right: 3px;
+            border-radius: @finna-button-radius;
+        }
+        & i.fa-arrow-down {
+            font-size: 1em;
+            margin-left: -18px;
+            -webkit-margin-end: -2px;  // fix for unknown border radius bug
+        }
+        & .dropdown-menu > li > a {
+            text-align: left;
+            color: @gray;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            & i {
+                color: @gray;   
+            }
+            & i.fa-available {
+                font-size: 1em;
+                float: right;
+            }
+        }
+        @media(max-width:@screen-xs-max) {
+            margin-right: 5px;
+            margin-bottom: 10px;
+        }
+        & .dropdown-menu {
+            @media(max-width:@screen-sm-max) {
+                font-size: 1.1em;
+                right: 0;
+                left: auto;
+            }
+        }
+    }
+}
+.dropdown.form-control.type-dropdown {
+    border: none;
+    display: inline-block;
+    padding-right: 17px;
+    position: relative;
+    background: transparent;
+    height: 39px;
+    width: 21%;
+    box-shadow: none;
+    color: @gray;
+    @media (max-width: @screen-xs-max) {
+        width: 25%;  
+    }
+    & a {
+        color: @gray;
+        width: 100%;
+        display: inline-block;
+        line-height: 37px;
+        height: 37px;
+        overflow: hidden;
+        &:hover, &:active, &:focus {
             text-decoration: none;
-            background: darken(@link-color, 10%);
-            transition: background 0.2s linear;
         }
     }
     & i {
-        font-size: 18px;
-        vertical-align: middle;
-        color: #fff;
-        margin-top: -3px;
-        margin-right: 3px;
-        border-radius: @finna-button-radius;
+        position: absolute;
+        right: 4px;
+        line-height: 35px;
+        top: 3px;
+        background-color: @body-bg;
+        box-shadow: -4px 0px 6px white;
+        &:before {
+            background: @gray-mid-light;
+            color: @body-bg;
+            padding: 5px;
+            border-radius: 50%;
+       }
     }
-    & i.fa-arrow-down {
-        font-size: 1em;
-        margin-left: -18px;
-        -webkit-margin-end: -2px;  // fix for unknown border radius bug
-    }
-    & .dropdown-menu > li > a {
+    & li {
         text-align: left;
         color: @gray;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        & i {
-            color: @gray;   
+        padding: 10px;
+        min-width: 110px;
+        transition: background .2s linear;
+
+        &:hover {
+            cursor: pointer;
+            background: rgba(1,1,1,0.1);
         }
-        & i.fa-available {
-            font-size: 1em;
-            float: right;
-        }
-    }
-    @media(max-width:@screen-xs-max) {
-        float: left;
-        margin-right: 5px;
-        margin-bottom: 10px;
     }
 }
+
 .swipe-arrow-navigation {
     position: fixed;
     width: 50px;

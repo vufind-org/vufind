@@ -46,14 +46,30 @@
     <label for="searchForm_lookfor" class="sr-only" hidden><?=$this->transEsc("Find")?></label><input class="form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" placeholder="<?=$this->transEsc("Find")?>..." id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
     <span class="clear-button hidden"></span>
     <? if ($handlerCount > 1): ?>
-    <span class="jump-menu-style prefilter-select fa-arrow-down">
-      <label for="searchForm_type" hidden class="sr-only"><?=$this->transEsc("Narrow Search")?></label>
-      <select class="form-control" id="searchForm_type" name="type" data-native-menu="false">
+    <span class="hidden sr-only"><?=$this->transEsc("Narrow Search")?></span>
+    <div class="dropdown form-control type-dropdown">
+      <? 
+        $label = $handlers[0]['label']; 
+        $value = $handlers[0]['value']; 
+        foreach ($handlers as $handler) {
+          if ($handler['selected']) {
+            $label = $handler['label'];
+            $value = $handler['value'];
+            break;
+          }
+        }
+      ?>
+      <input name="type" hidden value="<?=$this->escapeHtmlAttr($value)?>"></input>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span><?=$this->transEsc($label)?></span> <i class="fa fa-arrow-down"></i></a>
+      <ul class="dropdown-menu" id="searchForm_type" name="type" data-native-menu="false">
         <? foreach ($handlers as $handler): ?>
-          <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
+          <li class="select-type">
+            <input hidden value="<?=$this->escapeHtmlAttr($handler['value'])?>" />
+            <span><?=$this->transEsc($handler['label'])?></span>
+          </li>
         <? endforeach; ?>
-      </select>
-    </span>
+      </ul>
+    </div>
     <? elseif ($handlerCount == 1): ?>
       <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>" />
     <? endif; ?>

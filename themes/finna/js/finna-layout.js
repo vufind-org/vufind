@@ -360,6 +360,12 @@ finna.layout = (function() {
       $('.autocomplete').on('typeahead:selected', function () {
         $('.navbar-form').submit();
       });
+      
+      $('.select-type').click(function() {
+        $('input[name=type]:hidden').val($(this).children().val());
+        $('.type-dropdown .dropdown-toggle span').text($(this).text());
+      });
+      
     };
 
     var initToolTips = function () {
