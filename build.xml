@@ -167,7 +167,7 @@
 
     <!-- start Solr (use restart in case of old PID files) -->
     <exec command="touch ${srcdir}/local/vufindtest.pid" />
-    <exec command="${srcdir}/solr/bin/solr restart -p 8080" outputProperty="LASTOUTPUT" />
+    <exec command="${srcdir}/solr.sh restart" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
     <!-- wait for Solr to finish spinning up -->
@@ -210,7 +210,7 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="${srcdir}/solr/bin/solr stop -p 8080" outputProperty="LASTOUTPUT" />
+    <exec command="${srcdir}/solr.sh stop" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
     <!-- run extra cleanup action, if any -->
