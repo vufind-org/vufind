@@ -95,14 +95,9 @@ var Lightbox = {
   changeContent: function(html) {
     var header = $('#modal .modal-header');
     if(!Lightbox.titleSet) {
-      var h2 = html.match(/<h2>([^<]*)<\/h2>/);
+      var h2 = html.match(/<h2[^>]*>([^<]*)<\/h2>/);
       if(h2) {
         header.find('.modal-title').html(h2[1]);
-      } else {
-        var pLead = html.match(/<p class="lead[^>]*>([^<]*)<\/p>/);
-        if(pLead) {
-          header.find('.modal-title').html(pLead[1]);
-        }
       }
       Lightbox.titleSet = false;
     }

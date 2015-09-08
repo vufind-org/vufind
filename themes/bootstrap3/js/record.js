@@ -117,27 +117,27 @@ function registerRecordEvents(parent, id) {
     id = $(this).closest('.record').find('.hiddenId').val();
   }
   // Cite lightbox
-  $(parent).find('.cite-record').unbind('click').click(function() {
+  $(parent).find('.cite-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Cite', {id: id});
   });
   // Mail lightbox
-  $(parent).find('.mail-record').unbind('click').click(function() {
+  $(parent).find('.mail-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Email', {id: id});
   });
   // Save lightbox
-  $(parent).find('.save-record').unbind('click').click(function() {
+  $(parent).find('.save-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Save', {id: id});
   });
   // SMS lightbox
-  $(parent).find('.sms-record').unbind('click').click(function() {
+  $(parent).find('.sms-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'SMS', {id: id});
   });
   // Tag lightbox
-  $(parent).find('.tagRecord').unbind('click').click(function() {
+  $(parent).find('.tagRecord').click(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3], 'AddTag', {id: id});
   });
