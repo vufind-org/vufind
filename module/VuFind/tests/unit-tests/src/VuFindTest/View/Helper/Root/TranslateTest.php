@@ -55,6 +55,48 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test invalid translation array
+     *
+     * @return void
+     *
+     * @expectedException        Exception
+     * @expectedExceptionMessage Unexpected value sent to translator!
+     */
+    public function testTranslateWithEmptyArray()
+    {
+        $translate = new Translate();
+        $translate->__invoke([]);
+    }
+
+    /**
+     * Test invalid translation array
+     *
+     * @return void
+     *
+     * @expectedException        Exception
+     * @expectedExceptionMessage Unexpected value sent to translator!
+     */
+    public function testTranslateWithOverfilledArray()
+    {
+        $translate = new Translate();
+        $translate->__invoke([1, 2, 3]);
+    }
+
+    /**
+     * Test invalid translation string
+     *
+     * @return void
+     *
+     * @expectedException        Exception
+     * @expectedExceptionMessage Unexpected value sent to translator!
+     */
+    public function testTranslateWithDoubleTextDomainArray()
+    {
+        $translate = new Translate();
+        $translate->__invoke('a::b::c');
+    }
+
+    /**
      * Test translation with a loaded translator
      *
      * @return void
@@ -69,6 +111,20 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
         // Simple case that tests default values and tokens in a single pass:
         $this->assertEquals('baz', $translate->__invoke(
             'foo', ['%%token%%' => 'baz'], 'failure')
+        );
+        // Test namespace syntax:
+        $this->assertEquals('baz', $translate->__invoke(
+            'default::foo', ['%%token%%' => 'baz'], 'failure')
+        );
+        // Test array syntax:
+        $this->assertEquals('baz', $translate->__invoke(
+            ['foo'], ['%%token%%' => 'baz'], 'failure')
+        );
+        $this->assertEquals('baz', $translate->__invoke(
+            [null, 'foo'], ['%%token%%' => 'baz'], 'failure')
+        );
+        $this->assertEquals('baz', $translate->__invoke(
+            ['default', 'foo'], ['%%token%%' => 'baz'], 'failure')
         );
     }
 
