@@ -33,7 +33,12 @@ var finna = (function() {
 
 $(document).ready(function() {
     finna.init();
-
+    
+    // init custom.js for custom theme
+    if (typeof finnaCustomInit !== 'undefined') {
+                    finnaCustomInit();
+    }
+    
     // Override global checkSaveStatuses
     checkSaveStatuses = finna.layout.checkSaveStatuses;
 
