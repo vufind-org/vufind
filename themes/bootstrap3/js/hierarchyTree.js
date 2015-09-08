@@ -34,9 +34,9 @@ function getRecord(recordID)
     success: function(response) {
       if (response) {
         $('#hierarchyRecord').html(html_entity_decode(response));
-        // Remove the old VUFIND.getPath() highlighting
+        // Remove the old path highlighting
         $('#hierarchyTree a').removeClass("jstree-highlight");
-        // Add Current VUFIND.getPath() highlighting
+        // Add Current path highlighting
         var jsTreeNode = $(":input[value='"+recordID+"']").parent();
         jsTreeNode.children("a").addClass("jstree-highlight");
         jsTreeNode.parents("li").children("a").addClass("jstree-highlight");
