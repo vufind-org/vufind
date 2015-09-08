@@ -33,6 +33,20 @@ html{direction:rtl}body{direction:rtl}.list-unstyled{padding-right:0;padding-lef
   padding-right: 0;
 }
 
+/* Customization for icons */
+body.rtl i.fa.fa-cogs,
+body.rtl i.fa.fa-gears {
+  /* .fa-flip-horizontal */
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+  -webkit-transform: scale(-1, 1);
+  -ms-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+body.rtl i.fa.fa-long-arrow-left {content: "\f178";}
+body.rtl i.fa.fa-long-arrow-right {content: "\f177";}
+body.rtl i.fa.fa-chevron-left {content: "\f054";}
+body.rtl i.fa.fa-chevron-right {content: "\f053";}
+
 /* Customization for offcanvas */
 @media screen and (max-width: 767px) {
   body.offcanvas.flip .offcanvas-toggle .fa.fa-chevron-left:before {content: "\f054";}
