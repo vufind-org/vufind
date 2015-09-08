@@ -353,6 +353,9 @@ class Factory
             if (isset($config->Proxy->port)) {
                 $options['proxy_port'] = $config->Proxy->port;
             }
+            if (isset($config->Proxy->type)) {
+                $options['proxy_type'] = $config->Proxy->type;
+            }
         }
         $defaults = isset($config->Http)
             ? $config->Http->toArray() : [];
@@ -459,6 +462,25 @@ class Factory
         $logger->setServiceLocator($sm);
         $logger->setConfig($sm->get('VuFind\Config')->get('config'));
         return $logger;
+    }
+
+    /**
+     * Construct the ProxyManager configuration.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \ProxyManager\Configuration
+     */
+    public static function getProxyConfig(ServiceManager $sm)
+    {
+        $config = new \ProxyManager\Configuration();
+        $cacheManager = $sm->get('VuFind\CacheManager');
+        $dir = $cacheManager->getCacheDir() . 'objects';
+        $config->setProxiesTargetDir($dir);
+        if (APPLICATION_ENV != 'development') {
+            spl_autoload_register($config->getProxyAutoloader());
+        }
+        return $config;
     }
 
     /**

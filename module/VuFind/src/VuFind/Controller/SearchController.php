@@ -413,17 +413,17 @@ class SearchController extends AbstractSearch
      */
     public function reservessearchAction()
     {
-        $results = $this->getResultsManager()->get('SolrReserves');
-        $params = $results->getParams();
-        $params->initFromRequest(
-            new \Zend\Stdlib\Parameters(
-                $this->getRequest()->getQuery()->toArray()
-                + $this->getRequest()->getPost()->toArray()
-            )
+        $request = new \Zend\Stdlib\Parameters(
+            $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray()
         );
-        return $this->createViewModel(
-            ['params' => $params, 'results' => $results]
+        $view = $this->createViewModel();
+        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+        $view->results = $runner->run(
+            $request, 'SolrReserves', $this->getSearchSetupCallback()
         );
+        $view->params = $view->results->getParams();
+        return $view;
     }
 
     /**
