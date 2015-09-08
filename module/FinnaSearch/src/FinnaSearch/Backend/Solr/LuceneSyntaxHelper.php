@@ -49,9 +49,9 @@ class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
     /**
      * Constructor.
      *
-     * @param bool|string $csBools  Case sensitive Booleans setting
-     * @param bool        $csRanges Case sensitive ranges setting
-     * @param string
+     * @param bool|string $csBools                  Case sensitive Booleans setting
+     * @param bool        $csRanges                 Case sensitive ranges setting
+     * @param string      $unicodeNormalizationForm UNICODE normalization form
      */
     public function __construct(
         $csBools = true, $csRanges = true, $unicodeNormalizationForm = 'NFKC'
