@@ -99,16 +99,12 @@ class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
         switch ($this->unicodeNormalizationForm) {
         case 'NFC':
             return \Normalizer::normalize($searchString, \Normalizer::FORM_C);
-            break;
         case 'NFD':
             return \Normalizer::normalize($searchString, \Normalizer::FORM_D);
-            break;
         case 'NFKC':
             return \Normalizer::normalize($searchString, \Normalizer::FORM_KC);
-            break;
         case 'NFKD':
             return \Normalizer::normalize($searchString, \Normalizer::FORM_KD);
-            break;
         }
 
         return $searchString;
