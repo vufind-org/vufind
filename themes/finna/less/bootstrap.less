@@ -963,9 +963,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   padding-top:600px;
 }
 /* --- Gallery (GRID) view --- */
-.grid {
+.result-view-grid .grid {
     padding: 0px 10px 20px;
     min-height: 130px;
+    margin-bottom: 10px;
     &:focus {
         outline: none;   
     }
@@ -973,10 +974,11 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         position: absolute;
         padding: 10px 0px;
         width: 93%;
-        top: 70%;
+        top: 100%;
+        top: calc(100% - 62px);
         overflow: hidden;
         opacity: 0;
-        max-height: 40px;
+        max-height: 43px;
         filter: alpha(opacity=0);
         background: rgba(255,255,255,0.8);
         transition: all .2s ease-in-out;
@@ -986,6 +988,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         background: rgba(255, 255, 255, 0.9);
         transition: max-height .2s linear;
         transition: opacity .2s linear;
+    }
+    &:hover .grid-title {
+        max-height: 200px;
+        .opacity(1);
     }
     & a.title {
         font-size: 1.15em;
@@ -1009,10 +1015,23 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         }
     }
 }
-.grid:hover .grid-title {
-    max-height: 300px;
-    .opacity(1);
-    transition: max-height .1s linear;
+.result-view-grid.touch-device {
+    & .grid {
+        margin-bottom: 25px;
+        & .grid-title {
+            .opacity(.9);
+            transition: max-height .2s ease-in, box-shadow .2s ease-in;
+            max-height: 37px;
+            top: 100%;
+            box-shadow: none;
+            padding: 10px;
+            top: calc(100% - 21px);
+        }
+        &:hover .grid-title {
+            max-height: 200px;
+            box-shadow: 0px 20px 20px -16px #000;
+        }
+    }
 }
 
 /* --- Hierarchical facets --- */

@@ -506,6 +506,12 @@ finna.layout = (function() {
             }
         });
     }
+    
+    var initTouchDeviceGallery = function () {
+      if ($('.result-view-grid')[0] != null && isTouchDevice()) {
+        $('.result-view-grid').addClass('touch-device');
+      }
+    }
 
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
@@ -538,6 +544,7 @@ finna.layout = (function() {
             initCondensedList();
             checkSaveStatuses();
             initAuthorizationNotification();
+            initTouchDeviceGallery();
         }
     };
 
