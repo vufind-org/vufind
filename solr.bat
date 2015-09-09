@@ -74,8 +74,6 @@ goto end
 
 :usage
 echo Usage: solr {start/stop/restart/status}
-echo.
-echo Note: To stop VuFind, open the window where it is running and hit Ctrl-C.
 goto end
 
 :end
