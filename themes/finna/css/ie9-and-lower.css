@@ -24,6 +24,10 @@ th, td, .truncate-field {
 	height: 100%;
 	box-sizing: content-box;	
 }
+i.jstree-icon:hover {
+	cursor: pointer;
+}
+
 @media (max-width: 991px) {
 	.finna-main-tabs .nav-tabs li a {
 		height: 50px;	

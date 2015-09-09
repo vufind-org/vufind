@@ -67,6 +67,10 @@ class ImageSrc extends \Zend\View\Helper\AbstractHelper
         if ($url = $this->imageFromCurrentTheme($source . '.png')) {
             return $url;
         }
+        if ($url = $this->imageFromCurrentTheme($source)) {
+            return $url;
+        }
+        
 
         return '';
 
