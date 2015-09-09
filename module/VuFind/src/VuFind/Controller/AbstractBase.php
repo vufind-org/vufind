@@ -390,7 +390,7 @@ class AbstractBase extends AbstractActionController
             $this->followup()->store($extras, $url);
         }
         if (!empty($msg)) {
-            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            $this->flashMessenger()->addMessage($msg, 'error');
         }
 
         // Set a flag indicating that we are forcing login:
@@ -431,8 +431,7 @@ class AbstractBase extends AbstractActionController
 
             // If login failed, store a warning message:
             if (!$patron) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('Invalid Patron Login');
+                $this->flashMessenger()->addMessage('Invalid Patron Login', 'error');
             }
         } else {
             // If no credentials were provided, try the stored values:

@@ -914,11 +914,11 @@ class Params implements ServiceLocatorAwareInterface
             ? $this->getCheckboxFacetValues() : [];
 
         $list = [];
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
             list($operator, $field) = $this->parseOperatorAndFieldName($field);
-            $translate
-                = in_array($field, $this->getOptions()->getTranslatedFacets());
+            $translate = in_array($field, $translatedFacets);
             // and each value currently used for that field
             foreach ($values as $value) {
                 // Add to the list unless it's in the list of fields to skip:
@@ -947,12 +947,13 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
-        return [
-            'value'       => $value,
-            'displayText' => $translate ? $this->translate($value) : $value,
-            'field'       => $field,
-            'operator'    => $operator,
-        ];
+        if ($translate) {
+            $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
+            $displayText = $this->translate("$domain::$value");
+        } else {
+            $displayText = $value;
+        }
+        return compact('value', 'displayText', 'field', 'operator');
     }
 
     /**
