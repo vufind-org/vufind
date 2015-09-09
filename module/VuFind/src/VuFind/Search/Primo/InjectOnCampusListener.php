@@ -48,11 +48,11 @@ class InjectOnCampusListener
     use AuthorizationServiceAwareTrait;
 
     /**
-     * Primo Permission Controller.
+     * Primo Permission Handler.
      *
-     * @var PrimoPermissionController
+     * @var PrimoPermissionHandler
      */
-    protected $permissionController;
+    protected $permissionHandler;
 
     /**
      * Is user on campus or not?
@@ -70,20 +70,20 @@ class InjectOnCampusListener
      */
     public function __construct($pph = null)
     {
-        $this->permissionController = $pph;
-        $this->isOnCampus = false;
+        $this->permissionHandler = $pph;
+        $this->isOnCampus = null;
     }
 
     /**
      * Constructor.
      *
-     * @param PrimoPermissionController $ppc Primo Permission Controller
+     * @param PrimoPermissionHandler $pph Primo Permission Handler
      *
      * @return void
      */
-    public function setPermissionController($ppc)
+    public function setPermissionHandler($pph)
     {
-        $this->permissionController = $ppc;
+        $this->permissionHandler = $pph;
     }
 
     /**
@@ -103,12 +103,15 @@ class InjectOnCampusListener
      *
      * @return void
      */
-    protected function getOnCampus()
+    protected function checkOnCampus()
     {
-        if ($this->permissionController) {
-            // The user is getting authenticated as default user
-            if ($this->permissionController->hasPermission()) {
-                $this->isOnCampus = true;
+        if (null === $this->isOnCampus) {
+            $this->isOnCampus = false;
+            if ($this->permissionHandler) {
+                // The user is getting authenticated as default user
+                if ($this->permissionHandler->hasPermission()) {
+                    $this->isOnCampus = true;
+                }
             }
         }
     }
@@ -122,7 +125,7 @@ class InjectOnCampusListener
      */
     public function onSearchPre(EventInterface $event)
     {
-        $this->getOnCampus();
+        $this->checkOnCampus();
         $params = $event->getParam('params');
         $params->set('onCampus', $this->isOnCampus);
 
