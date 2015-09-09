@@ -367,7 +367,7 @@ $(document).ready(function() {
               q:query,
               method:'getACSuggestions',
               searcher:searcher['searcher'],
-              type:searcher['type'] ? searcher['type'] : $('#searchForm_type').val()
+              type:searcher['type'] ? searcher['type'] : $(element).closest('.searchForm').find('.searchForm_type').val()
             },
             dataType:'json',
             success: function(json) {
@@ -386,9 +386,10 @@ $(document).ready(function() {
       }
     );
   });
-  $('#searchForm_type').change(function() {
-    var query = $('#searchForm_lookfor').val();
-    $('#searchForm_lookfor').focus().typeahead('val', '').typeahead('val', query);
+  $('.searchForm_type').change(function() {
+    var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
+    var query = $lookfor.val();
+    $lookfor.focus().typeahead('val', '').typeahead('val', query);
   });
 
   // Checkbox select all
