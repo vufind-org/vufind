@@ -101,9 +101,9 @@ class InjectOnCampusListener
     /**
      * Determines, which value is needed for the onCampus parameter
      *
-     * @return void
+     * @return boolean
      */
-    protected function checkOnCampus()
+    protected function getOnCampus()
     {
         if (null === $this->isOnCampus) {
             $this->isOnCampus = false;
@@ -114,6 +114,7 @@ class InjectOnCampusListener
                 }
             }
         }
+        return $this->isOnCampus;
     }
 
     /**
@@ -125,9 +126,8 @@ class InjectOnCampusListener
      */
     public function onSearchPre(EventInterface $event)
     {
-        $this->checkOnCampus();
         $params = $event->getParam('params');
-        $params->set('onCampus', $this->isOnCampus);
+        $params->set('onCampus', $this->getOnCampus());
 
         return $event;
     }

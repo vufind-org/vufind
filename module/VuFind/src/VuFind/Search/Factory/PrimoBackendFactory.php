@@ -176,6 +176,11 @@ class PrimoBackendFactory implements FactoryInterface
      */
     protected function getInstCode()
     {
+        error_log('Deprecated: You are using the [Institutions] section in '
+            . 'your Primo.ini. Please consider moving to [InstitutionPermission] '
+            . '(see config/vufind/Primo.ini for details).'
+        );
+
         $codes = isset($this->primoConfig->Institutions->code)
             ? $this->primoConfig->Institutions->code : [];
         $regex = isset($this->primoConfig->Institutions->regex)
