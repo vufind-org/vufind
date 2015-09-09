@@ -35,7 +35,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
   -->
-  <luceneMatchVersion>5.2.1</luceneMatchVersion>
+  <luceneMatchVersion>5.3.0</luceneMatchVersion>
 
   <!-- <lib/> directives can be used to instruct Solr to load any Jars
        identified and use them to resolve any "plugins" specified in
@@ -167,12 +167,6 @@
     <!-- Maximum time to wait for a write lock (ms) for an IndexWriter. Default: 1000 -->
     <!-- <writeLockTimeout>1000</writeLockTimeout>  -->
 
-    <!-- The maximum number of simultaneous threads that may be
-         indexing documents at once in IndexWriter; if more than this
-         many threads arrive they will wait for others to finish.
-         Default in Solr/Lucene is 8. -->
-    <!-- <maxIndexingThreads>8</maxIndexingThreads>  -->
-
     <!-- Expert: Enabling compound file will use less files for the index, 
          using fewer file descriptors on the expense of performance decrease. 
          Default in Lucene is "true". Default in Solr is "false" (since 3.6) -->
@@ -245,19 +239,6 @@
          http://wiki.apache.org/lucene-java/AvailableLockFactories
     -->
     <lockType>${solr.lock.type:native}</lockType>
-
-    <!-- Unlock On Startup
-
-         If true, unlock any held write or commit locks on startup.
-         This defeats the locking mechanism that allows multiple
-         processes to safely access a lucene index, and should be used
-         with care. Default is "false".
-
-         This is not needed if lock type is 'single'
-     -->
-    <!--
-    <unlockOnStartup>false</unlockOnStartup>
-      -->
 
     <!-- Commit Deletion Policy
          Custom deletion policies can be specified here. The class must
@@ -1032,26 +1013,6 @@
   </requestHandler>
 
 
-  <!-- Update Request Handler.
-
-       http://wiki.apache.org/solr/UpdateXmlMessages
-
-       The canonical Request Handler for Modifying the Index through
-       commands specified using XML, JSON, CSV, or JAVABIN
-
-       Note: Since solr1.1 requestHandlers requires a valid content
-       type header if posted in the body. For example, curl now
-       requires: -H 'Content-type:text/xml; charset=utf-8'
-
-       To override the request content type and force a specific
-       Content-type, use the request parameter:
-         ?update.contentType=text/csv
-
-       This handler will pick a response format to match the input
-       if the 'wt' parameter is not explicit
-    -->
-  <!--<requestHandler name="/update" class="solr.UpdateRequestHandler">
-  </requestHandler>-->
   <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell,/browse">
     <lst name="defaults">
       <str name="df">text</str>
@@ -1159,44 +1120,6 @@
   <requestHandler name="/analysis/document" 
                   class="solr.DocumentAnalysisRequestHandler" 
                   startup="lazy" />
-
-  <!-- This single handler is equivalent to the following... -->
-  <!--
-     <requestHandler name="/admin/luke"       class="solr.admin.LukeRequestHandler" />
-     <requestHandler name="/admin/system"     class="solr.admin.SystemInfoHandler" />
-     <requestHandler name="/admin/plugins"    class="solr.admin.PluginInfoHandler" />
-     <requestHandler name="/admin/threads"    class="solr.admin.ThreadDumpHandler" />
-     <requestHandler name="/admin/properties" class="solr.admin.PropertiesRequestHandler" />
-     <requestHandler name="/admin/file"       class="solr.admin.ShowFileRequestHandler" >
-    -->
-  <!-- If you wish to hide files under ${solr.home}/conf, explicitly
-       register the ShowFileRequestHandler using the definition below. 
-       NOTE: The glob pattern ('*') is the only pattern supported at present, *.xml will
-             not exclude all files ending in '.xml'. Use it to exclude _all_ updates
-    -->
-  <!--
-     <requestHandler name="/admin/file" 
-                     class="solr.admin.ShowFileRequestHandler" >
-       <lst name="invariants">
-         <str name="hidden">synonyms.txt</str> 
-         <str name="hidden">anotherfile.txt</str> 
-         <str name="hidden">*</str> 
-       </lst>
-     </requestHandler>
-    -->
-  <!--
-    Enabling this request handler (which is NOT a default part of the admin handler) will allow the Solr UI to edit
-    all the config files. This is intended for secure/development use ONLY! Leaving available and publically
-    accessible is a security vulnerability and should be done with extreme caution!
-  -->
-  <!--
-  <requestHandler name="/admin/fileedit" class="solr.admin.EditFileRequestHandler" >
-    <lst name="invariants">
-         <str name="hidden">synonyms.txt</str>
-         <str name="hidden">anotherfile.txt</str>
-    </lst>
-  </requestHandler>
-  -->
 
   <!-- Echo the request contents back to the client -->
   <requestHandler name="/debug/dump" class="solr.DumpRequestHandler" >

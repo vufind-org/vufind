@@ -82,6 +82,7 @@
   <lib dir="${solr.install.dir:../../../..}/dist/" regex="solr-langid-\d.*\.jar" />
 
   <lib dir="${solr.install.dir:../../../..}/contrib/velocity/lib" regex=".*\.jar" />
+  <!-- browse-resources must come before solr-velocity JAR in order to override localized resources -->
   <lib path="${solr.install.dir:../../../..}/example/files/browse-resources"/>
   <lib dir="${solr.install.dir:../../../..}/dist/" regex="solr-velocity-\d.*\.jar" />
   <!-- an exact 'path' can be used instead of a 'dir' to specify a 
@@ -167,12 +168,6 @@
     <!-- Maximum time to wait for a write lock (ms) for an IndexWriter. Default: 1000 -->
     <!-- <writeLockTimeout>1000</writeLockTimeout>  -->
 
-    <!-- The maximum number of simultaneous threads that may be
-         indexing documents at once in IndexWriter; if more than this
-         many threads arrive they will wait for others to finish.
-         Default in Solr/Lucene is 8. -->
-    <!-- <maxIndexingThreads>8</maxIndexingThreads>  -->
-
     <!-- Expert: Enabling compound file will use less files for the index, 
          using fewer file descriptors on the expense of performance decrease. 
          Default in Lucene is "true". Default in Solr is "false" (since 3.6) -->
@@ -243,19 +238,6 @@
          http://wiki.apache.org/lucene-java/AvailableLockFactories
     -->
     <lockType>${solr.lock.type:native}</lockType>
-
-    <!-- Unlock On Startup
-
-         If true, unlock any held write or commit locks on startup.
-         This defeats the locking mechanism that allows multiple
-         processes to safely access a lucene index, and should be used
-         with care. Default is "false".
-
-         This is not needed if lock type is 'single'
-     -->
-    <!--
-    <unlockOnStartup>false</unlockOnStartup>
-      -->
 
     <!-- Commit Deletion Policy
          Custom deletion policies can be specified here. The class must
@@ -860,6 +842,10 @@
     <lst name="defaults">
       <str name="echoParams">explicit</str>
     </lst>
+
+    <lst name="appends">
+      <str name="fq">{!switch v=$type tag=type case='*:*' case.all='*:*' case.unknown='-doc_type:[* TO *]' default=$type_fq}</str>
+    </lst>
   </requestHandler>
 
 
@@ -1406,6 +1392,14 @@
       <lst name="typeMapping">
         <str name="valueClass">java.lang.Number</str>
         <str name="fieldType">tdoubles</str>
+      </lst>
+    </processor>
+
+
+    <processor class="org.apache.solr.update.processor.LangDetectLanguageIdentifierUpdateProcessorFactory">
+      <lst name="defaults">
+        <str name="langid.fl">content</str>
+        <str name="langid.langField">language</str>
       </lst>
     </processor>
 

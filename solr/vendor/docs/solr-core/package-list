@@ -54,6 +54,7 @@ org.apache.solr.store.hdfs
 org.apache.solr.update
 org.apache.solr.update.processor
 org.apache.solr.util
+org.apache.solr.util.hll
 org.apache.solr.util.plugin
 org.apache.solr.util.stats
 org.apache.solr.util.xslt
