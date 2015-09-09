@@ -41,7 +41,7 @@
 
   <lib dir="../../vendor/contrib/analysis-extras/lib" regex=".*\.jar" />
   <lib dir="../../vendor/contrib/analysis-extras/lucene-libs" regex=".*\.jar" />
-  <lib dir="../lib" regex=".*\.jar" />
+  <lib dir="../jars" regex=".*\.jar" />
 
   <indexConfig>
 
