@@ -63,6 +63,28 @@ class ExportTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test active formats.
+     *
+     * @return void
+     */
+    public function testGetActiveFormats()
+    {
+        $config = [
+            'Export' => [
+                'foo' => 'record,bulk',
+                'bar' => 'record,bulk',
+                'baz' => 0,
+                'xyzzy' => 1,
+            ],
+        ];
+        $export = $this->getExport($config);
+        $this->assertEquals(['foo', 'bar'], $export->getActiveFormats('bulk'));
+        $this->assertEquals(
+            ['foo', 'bar', 'xyzzy'], $export->getActiveFormats('record')
+        );
+    }
+
+    /**
      * Test "needs redirect"
      *
      * @return void
