@@ -1,0 +1,20 @@
+.autocomplete-results {
+  background-color: #fff;
+  border: 1px solid #aaa;
+  margin-top: 2px;
+}
+.autocomplete-results .item {
+  display: block;
+  padding-top: .75rem;
+  padding-right: 1rem;
+  padding-bottom: .75rem;
+  padding-left: 1.25rem;
+  border-bottom: 1px solid #aaa;
+  cursor: pointer;
+}
+.autocomplete-results .item:last-child {border: 0;}
+.autocomplete-results .item:hover,
+.autocomplete-results .item.selected {
+  background-color: #000;
+  color: #fff;
+}
