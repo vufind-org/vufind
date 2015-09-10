@@ -1359,6 +1359,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         bottom: 0;
         z-index: 2;
         width: 100%;
+        background: @sidebar-background;
         & img.qrcode {
             max-width: initial;
             margin-left: -36px;
@@ -1379,7 +1380,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
                     height: 44px;
                     margin-top: 0px;
                     border-radius: 0px !important;
-                    color: @body-bg;
+                    color: @sidebar-header-text-color;
                 }
             }
             & li.whatsapp {
@@ -1406,7 +1407,8 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
             padding: 6px 10px !important;   
         }
         & .dropdown-toggle {
-            color: @body-bg;
+            color: @btn-primary-color;
+            background: @btn-primary-bg;
             border-radius: 0;
             & .fa {
                 font-size: 20px;   
@@ -1421,7 +1423,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
               margin: 0;
               list-style: none;
               font-size: 13px;
-              background-color: @brand-primary;
+              background-color: @sidebar-background;
               border: none;
               border-radius: 0 !important;
               bottom: 44px;
@@ -1435,7 +1437,8 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
                 }
             }
             & .export-list>a {
-                padding: 5px 10px;   
+                padding: 5px 10px;
+                color: @sidebar-header-text-color;
             }
         }
         & .nav-pills.library-link {
@@ -1497,7 +1500,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         }
         li.sidebar-navigation {
             padding: 11px;
-            color: @body-bg;
+            color: @sidebar-header-text-color;
             font-size: 1.1em;
             &:hover {
                 cursor: pointer;   

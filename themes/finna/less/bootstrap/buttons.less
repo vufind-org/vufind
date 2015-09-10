@@ -54,7 +54,7 @@
 // Alternate buttons
 // --------------------------------------------------
 .navbar-form .btn[type="submit"] {
-    color: @btn-primary-bg;
+    color: @btn-primary-color;
     padding: 6px 0px;
     border-radius: 13px;
     margin-left: -1px;
@@ -66,13 +66,14 @@
     float: right;
     margin-right: 3px;
     border: none;
+    background: @btn-primary-bg;
 
     &:hover {
         background: darken(@btn-primary-bg, 5%);   
     }
     & i {
         font-size: @font-size-icon-large;
-        color: @btn-default-bg;
+        color: @btn-primary-color;
         vertical-align: inherit;
         font-weight: 500;
     }
@@ -453,7 +454,7 @@ button.multiselect {
         line-height: 35px;
         top: 3px;
         background-color: @body-bg;
-        box-shadow: -4px 0px 6px white;
+        box-shadow: -4px 0px 2px white;
         &:before {
             background: @gray-mid-light;
             color: @body-bg;
