@@ -201,10 +201,14 @@ footer {
     background: @footer-background; 
     margin-bottom: -10px;
     padding: 15px 0px;
+    & a {
+        line-height: 2em;   
+    }
     & hr {
         border-top: none;
     }
     @media (max-width: @screen-xs-max) {
+        padding-bottom: 50px;
         & hr {
             display: block;
             border-top: 1px solid @gray-light;
