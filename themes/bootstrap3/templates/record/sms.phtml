@@ -8,10 +8,9 @@
     . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
 ?>
-<?=$this->flashmessages()?>
 <h2><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
-<form method="post" action="" name="smsRecord" class="form-horizontal">
 <form method="post" name="smsRecord" class="form-horizontal">
+  <?=$this->flashmessages()?>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
   <div class="form-group">

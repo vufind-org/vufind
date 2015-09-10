@@ -18,6 +18,7 @@ $(document).ready(function() {
     lightboxShown = false;
   }
   constrainForms('form[data-lightbox]');
+  // $('#modal .modal-body').on('click', 'a', constrainLink);
   $('#modal').on('hidden.bs.modal', function() {
     if (lightboxRefreshOnClose) {
       window.location.reload();
@@ -28,19 +29,24 @@ $(document).ready(function() {
   });
 });
 
-function updateLightbox(html, link) {
+function updateLightbox(html, link, checkForAlert) {
   //console.log('updateLightbox');
+  var doConstrainLinks = !!link && !$(link).hasClass('help-link');
   if(html.match('<!DOCTYPE html>')) {
     html = $('<div>'+html+'</div>').find('.main > .container').html();
   }
+  if(true === checkForAlert) {
+    var alerts = $('<div>'+html+'</div>').find('.alert').not('form .alert');
+    if (alerts.length > 0) {
+      html = alerts[0].outerHTML;
+      console.log('reduced to alert');
+      doConstrainLinks = false;
+    }
+  }
   $('#modal .modal-body').html(html);
-  if(lightboxShown) {
-    $('#modal').modal('handleUpdate');
-  }
-  if(!$(link).hasClass('help-link')) {
-    $('#modal .modal-body').on('click', 'a', constrainLink);
-  }
-  if("undefined" !== typeof link
+  if(lightboxShown) { $('#modal').modal('handleUpdate'); }
+  if(doConstrainLinks) { $('#modal .modal-body a').click(constrainLink); }
+  if("undefined" !== typeof link && null !== link
   && "undefined" !== typeof link.dataset
   && "undefined" !== typeof link.dataset.lightboxClose) {
     var forms = $('#modal .modal-body form');
@@ -202,13 +208,12 @@ function lightboxAJAX(event, data) {
           window[event.target.dataset.lightboxClose](html, status);
         }
       } else {
-        updateLightbox(html);
+        updateLightbox(html, null, true);
       }
     },
     error: function(e) {
       $('body').removeClass('modal-open').html('<div>'+e.responseText+'</div>');
       $('#modal').addClass('hidden');
-      //$('a[data-lightbox]').on('click', constrainLink);
     }
   });
 }
