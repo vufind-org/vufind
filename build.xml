@@ -170,10 +170,6 @@
     <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
-    <!-- wait for Solr to finish spinning up -->
-    <echo message="Waiting for Solr to start up..." />
-    <exec command="sleep 30" />
-
     <!-- import marc test records into vufind index (note: the marc test records have prefix "testsample#") -->
     <exec escape="false" command="find ${srcdir}/tests/data -name '*.mrc' -printf '%p,'" outputProperty="buglist" />
     <foreach list="${buglist}" param="filename" delimiter="," target="importrec" />
