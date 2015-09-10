@@ -254,7 +254,7 @@ finna.layout = (function() {
             if ($(e.target).attr('class') != 'fa fa-info-big') {
               $('.sidebar').toggleClass('open');
             }
-            $('.mobile-navigation .sidebar-navigation i').toggleClass('fa-arrow-up');
+            $('.mobile-navigation .sidebar-navigation i').toggleClass('fa-arrow-down');
             $('body').toggleClass('prevent-scroll');
         });
         $('.mobile-navigation .sidebar-navigation .active-filters').click(function() {
