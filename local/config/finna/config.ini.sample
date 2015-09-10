@@ -860,25 +860,28 @@ alphabet_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ"
 ; <result_limit> most popular entries -- it only affects display order.
 ;alphabetical_order = true
 
-; This section controls which record export methods are displayed on the Record
-; view screen.  Note that some options may be disabled for records that do not
-; support them, regardless of the setting chosen here.  You can edit the separate
-; export.ini file to add new export formats and change the behavior of existing ones.
+; This section controls the availability of export methods. 
+;
+; Each entry may be a comma-separated list of contexts in which the export
+; option will be presented. Valid options:
+;
+; bulk - Included in batch export contexts
+; record - Included in single-record export contexts
+;
+; If you simply set a field to true, only "record" mode will be enabled.
+; If you set a field to false, all export contexts will be disabled.
+;
+; Note that some options may be disabled for records that do not support them,
+; regardless of the setting chosen here.  You can edit the separate export.ini
+; file to add new export formats and change the behavior of existing ones.
 [Export]
-RefWorks = true
-EndNote = true
-EndNoteWeb = true
+RefWorks = "record,bulk"
+EndNote = "record,bulk"
+EndNoteWeb = "record,bulk"
 MARC = true
 MARCXML = true
 RDF = false
 BibTeX = false
-
-; This section controls whether or not display the bulk export options and which
-; options to display.  Valid methods are EndNote and MARC - The method must also
-; be enabled in Export (above) or it will not be displayed.
-[BulkExport]
-enabled = true
-options = MARC:MARCXML:EndNote:EndNoteWeb:RefWorks
 
 ;AddThis is optional. It uses the Add This tool available from www.addthis.com
 ; and requires the username generated when an analytics account is registered.
