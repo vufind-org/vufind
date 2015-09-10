@@ -96,7 +96,7 @@
      <? if (!$browse && (!empty($filterDetails) || !empty($this->savedSearches))): ?>
           <div class="checkbox<?=$defaultFilterState?' checked' : ''?>">
         <label>
-          <input onChange="$('.applied-filter').click();$('.navbar-form .checkbox').toggleClass('checked');" type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
+          <input onChange="$('.applied-filter').click();$('.navbar-form .checkbox').toggleClass('checked'); var sort = $(this).closest('form').find('input[name=sort]'); sort.val($('.navbar-form .checkbox').hasClass('checked') ? sort.data('value') : '');" type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
           <?=$this->transEsc("basic_search_keep_filters")?>
         </label>
       </div>
@@ -126,7 +126,7 @@
         echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
       }
       if (!empty($lastSort)) {
-        echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '" />';
+        echo '<input type="hidden" name="sort" value="' . ($defaultFilterState ? $this->escapeHtmlAttr($lastSort) : '') . '" data-value="' . $this->escapeHtmlAttr($lastSort) . '" />';
       }
       if ($daterange && isset($daterange['field']) && isset($daterange['type'])) {
         echo '<input class="hidden applied-filter" type="checkbox"' . $defaultFilterState . ' name="' . $daterange['field'] . '_type" value="' . $this->escapeHtmlAttr($daterange['type']) . '" />';
