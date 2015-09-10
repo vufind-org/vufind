@@ -512,17 +512,22 @@ class AjaxController extends AbstractBase
     /**
      * Send output data and exit.
      *
-     * @param mixed  $data   The response data
-     * @param string $status Status of the request
+     * @param mixed  $data     The response data
+     * @param string $status   Status of the request
+     * @param int    $httpCode A custom HTTP Status Code
      *
      * @return \Zend\Http\Response
+     * @throws \Exception
      */
-    protected function output($data, $status)
+    protected function output($data, $status, $httpCode = null)
     {
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
         $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
+        if ($httpCode !== null) {
+            $response->setStatusCode($httpCode);
+        }
         if ($this->outputMode == 'json') {
             $headers->addHeaderLine('Content-type', 'application/javascript');
             $output = ['data' => $data, 'status' => $status];
@@ -1306,7 +1311,9 @@ class AjaxController extends AbstractBase
         if (!empty($config->System->healthCheckFile)
             && file_exists($config->System->healthCheckFile)
         ) {
-            return $this->output('Health check file exists', self::STATUS_ERROR);
+            return $this->output(
+                'Health check file exists', self::STATUS_ERROR, 503
+            );
         }
 
         // Test search index
@@ -1317,7 +1324,7 @@ class AjaxController extends AbstractBase
             $results->performAndProcessSearch();
         } catch (\Exception $e) {
             return $this->output(
-                'Search index error: ' . $e->getMessage(), self::STATUS_ERROR
+                'Search index error: ' . $e->getMessage(), self::STATUS_ERROR, 500
             );
         }
 
@@ -1327,7 +1334,7 @@ class AjaxController extends AbstractBase
             $sessionTable->getBySessionId('healthcheck', false);
         } catch (\Exception $e) {
             return $this->output(
-                'Database error: ' . $e->getMessage(), self::STATUS_ERROR
+                'Database error: ' . $e->getMessage(), self::STATUS_ERROR, 500
             );
         }
 
