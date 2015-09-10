@@ -30,8 +30,6 @@
  */
 namespace FinnaSearch\Backend\Solr\Response\Json;
 
-use VuFindSearch\Response\AbstractRecordCollection;
-
 /**
  * Simple JSON-based record collection.
  *
