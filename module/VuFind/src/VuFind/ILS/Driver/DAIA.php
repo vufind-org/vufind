@@ -995,8 +995,9 @@ class DAIA extends AbstractBase implements
         // presentation, but unavailable for loan and for openaccess).
         if ((in_array('presentation', $this->getAvailableServices($item)) === true)
             && (in_array('loan', $this->getUnavailableServices($item)) === true)
-            && (in_array(
-                'openaccess', $this->getUnavailableServices($item)) === true)
+            && (
+                in_array('openaccess', $this->getUnavailableServices($item)) === true
+            )
         ) {
             return true;
         }
