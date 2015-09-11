@@ -41,7 +41,7 @@ set JAVA="%JAVA_HOME%\bin\java"
 :javaset
 
 cd %VUFIND_HOME%\import
-SET CLASSPATH="browse-indexing.jar;..\solr\vufind\jars\*;..\solr\vendor\contrib\analysis-extras\lib\*"
+SET CLASSPATH="browse-indexing.jar;..\solr\vufind\jars\*;..\solr\vendor\contrib\analysis-extras\lib\*;..\solr\vendor\server\solr-webapp\webapp\WEB-INF\lib"
 
 SET bib_index=..\solr\vufind\biblio\index
 SET auth_index=..\solr\vufind\authority\index
