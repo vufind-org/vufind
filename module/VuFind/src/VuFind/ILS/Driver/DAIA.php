@@ -965,7 +965,7 @@ class DAIA extends AbstractBase implements
                     && $available['service'] == $service
                 ) {
                     $limitation
-                    = $this->getItemLimitation($available['limitation']);
+                        = $this->getItemLimitation($available['limitation']);
                 }
             }
         }
@@ -975,7 +975,7 @@ class DAIA extends AbstractBase implements
                     && $unavailable['service'] == $service
                 ) {
                     $limitation
-                    = $this->getItemLimitation($unavailable['limitation']);
+                        = $this->getItemLimitation($unavailable['limitation']);
                 }
             }
         }
@@ -995,7 +995,8 @@ class DAIA extends AbstractBase implements
         // presentation, but unavailable for loan and for openaccess).
         if ((in_array('presentation', $this->getAvailableServices($item)) === true)
             && (in_array('loan', $this->getUnavailableServices($item)) === true)
-            && (in_array('openaccess', $this->getUnavailableServices($item)) === true)
+            && (in_array(
+                'openaccess', $this->getUnavailableServices($item)) === true)
         ) {
             return true;
         }
