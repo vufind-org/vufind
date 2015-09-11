@@ -95,9 +95,9 @@ class PrimoBackendFactory implements FactoryInterface
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }
 
-        if (isset($this->primoConfig->InstitutionPermission)) {
+        if (isset($this->primoConfig->InstitutionOnCampus)) {
             $permHandler = new PrimoPermissionHandler(
-                $this->primoConfig->InstitutionPermission
+                $this->primoConfig->InstitutionOnCampus
             );
             $permHandler->setAuthorizationService(
                 $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')

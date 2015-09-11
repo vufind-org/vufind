@@ -70,7 +70,7 @@ class PrimoPermissionHandler
      * Constructor.
      *
      * @param Zend\Config\Config|array $primoPermConfig Primo-Config for
-     * InstitutionPermissions
+     * InstitutionOnCampus
      *
      * @return void
      */
@@ -83,7 +83,7 @@ class PrimoPermissionHandler
         if (null === $primoPermConfig) {
             throw new \Exception(
                 'The Primo Permission System has not been configured. Please '
-                . 'configure section [InstitutionPermission] in Primo.ini.'
+                . 'configure section [InstitutionOnCampus] in Primo.ini.'
             );
         }
         if (is_array($primoPermConfig)) {
@@ -102,11 +102,11 @@ class PrimoPermissionHandler
     {
         $this->defaultPermissionLevel = false;
 
-        $permRules = isset($this->primoConfig['permissionRule'])
-            ? $this->primoConfig['permissionRule'] : [];
+        $permRules = isset($this->primoConfig['onCampusRule'])
+            ? $this->primoConfig['onCampusRule'] : [];
         if (empty($permRules) && !(isset($this->primoConfig['defaultCode']))) {
             throw new \Exception(
-                '[InstitutionPermission] section in Primo.ini is not '
+                '[InstitutionOnCampus] section in Primo.ini is not '
                 . 'configured properly. Please check the section.'
             );
         }
@@ -219,18 +219,18 @@ class PrimoPermissionHandler
     }
 
     /**
-     * Determine the default Permission Rule
+     * Determine the default onCampus Rule
      *
      * @return string
      */
-    protected function getDefaultPermissionRule()
+    protected function getDefaultOnCampusRule()
     {
-        $defaultPermissionRule
-            = isset($this->primoConfig['defaultPermissionRule'])
-            ? $this->primoConfig['defaultPermissionRule'] : false;
+        $defaultOnCampusRule
+            = isset($this->primoConfig['defaultOnCampusRule'])
+            ? $this->primoConfig['defaultOnCampusRule'] : false;
 
-        if (false !== $defaultPermissionRule) {
-            return $defaultPermissionRule;
+        if (false !== $defaultOnCampusRule) {
+            return $defaultOnCampusRule;
         }
 
         // If primoConfig->defaultPermissionRule is not set
@@ -246,7 +246,7 @@ class PrimoPermissionHandler
      */
     protected function checkDefaultPermission()
     {
-        $defRule = $this->getDefaultPermissionRule();
+        $defRule = $this->getDefaultOnCampusRule();
 
         // if no default rule is configured, return false.
         if (null === $defRule) {
