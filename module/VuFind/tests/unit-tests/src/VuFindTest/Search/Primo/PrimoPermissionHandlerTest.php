@@ -58,11 +58,11 @@ class PrimoPermissionHandlerTest extends TestCase
      * @var array
      */
     protected $primoConfig = [
-        'permissionRule' => [
+        'onCampusRule' => [
             'MEMBER' => 'primo.MEMBER'
         ],
         'defaultCode' => 'DEFAULT',
-        'defaultPermissionRule' => 'primo.defaultRule'
+        'defaultOnCampusRule' => 'primo.defaultRule'
     ];
 
     /**
@@ -71,7 +71,7 @@ class PrimoPermissionHandlerTest extends TestCase
      * @var array
      */
     protected $primoConfigWithoutDefault = [
-        'permissionRule' => [
+        'onCampusRule' => [
             'MEMBER' => 'primo.MEMBER'
         ]
     ];
@@ -83,7 +83,7 @@ class PrimoPermissionHandlerTest extends TestCase
      */
     protected $primoConfigDefaultOnly = [
         'defaultCode' => 'DEFAULT',
-        'defaultPermissionRule' => 'primo.defaultRule'
+        'defaultOnCampusRule' => 'primo.defaultRule'
     ];
 
     /**

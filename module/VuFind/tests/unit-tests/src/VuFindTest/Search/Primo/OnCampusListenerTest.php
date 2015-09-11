@@ -89,7 +89,7 @@ class OnCampusListenerTest extends TestCase
      */
     public function testAttachWithParameter()
     {
-        $mockPermController = $this->getMockBuilder('PrimoPermissionController')
+        $mockPermController = $this->getMockBuilder('PrimoPermissionHandler')
             ->disableOriginalConstructor()
             ->getMock();
         $listener = new InjectOnCampusListener($mockPermController);
