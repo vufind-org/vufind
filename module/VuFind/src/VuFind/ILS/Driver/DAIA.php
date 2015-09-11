@@ -959,20 +959,22 @@ class DAIA extends AbstractBase implements
     protected function getItemServiceLimitation($item, $service)
     {
         $limitation = null;
-        if (array_key_exists('available', $item)) {
+        if (isset($item['available'])) {
             foreach ($item['available'] as $available) {
                 if (isset($available['service'])
                     && $available['service'] == $service
+                    && isset($available['limitation'])
                 ) {
                     $limitation
                         = $this->getItemLimitation($available['limitation']);
                 }
             }
         }
-        if (array_key_exists('unavailable', $item) && $limitation === null) {
+        if (isset($item['unavailable']) && $limitation === null) {
             foreach ($item['unavailable'] as $unavailable) {
                 if (isset($unavailable['service'])
                     && $unavailable['service'] == $service
+                    && isset($unavailable['limitation'])
                 ) {
                     $limitation
                         = $this->getItemLimitation($unavailable['limitation']);
@@ -995,8 +997,7 @@ class DAIA extends AbstractBase implements
         // presentation, but unavailable for loan and for openaccess).
         if ((in_array('presentation', $this->getAvailableServices($item)) === true)
             && (in_array('loan', $this->getUnavailableServices($item)) === true)
-            && (
-                in_array('openaccess', $this->getUnavailableServices($item)) === true
+            && (in_array('openaccess', $this->getUnavailableServices($item)) === true
             )
         ) {
             return true;
