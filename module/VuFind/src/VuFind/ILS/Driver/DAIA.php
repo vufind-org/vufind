@@ -673,6 +673,8 @@ class DAIA extends AbstractBase implements
                 $result_item['location'] = $this->getItemLocation($item);
                 // get location link
                 $result_item['locationhref'] = $this->getItemLocationLink($item);
+                // get item note(s)
+                $result_item['itemnotes'] = $this->getItemNotes($item);
                 // status and availability will be calculated in own function
                 $result_item = $this->getItemStatus($item) + $result_item;
                 // add result_item to the result array
@@ -800,6 +802,50 @@ class DAIA extends AbstractBase implements
     }
 
     /**
+     * Helper function to return all available services as an array
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return array
+     */
+    protected function getAvailableServices($item)
+    {
+        $services = [];
+        if (array_key_exists('available', $item)) {
+            // check if item is loanable or presentation
+            foreach ($item['available'] as $available) {
+                // attribute service can be set once or not
+                if (isset($available['service'])) {
+                    $services[] = $available['service'];
+                }
+            }
+        }
+        return $services;
+    }
+
+    /**
+     * Helper function to return all unavailable services as an array
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return array
+     */
+    protected function getUnavailableServices($item)
+    {
+        $services = [];
+        if (array_key_exists('unavailable', $item)) {
+            // check if item is loanable or presentation
+            foreach ($item['unavailable'] as $unavailable) {
+                // attribute service can be set once or not
+                if (isset($unavailable['service'])) {
+                    $services[] = $unavailable['service'];
+                }
+            }
+        }
+        return $services;
+    }
+
+    /**
      * Returns the value for "number" in VuFind getStatus/getHolding array
      *
      * @param array $item    Array with DAIA item data
@@ -900,7 +946,90 @@ class DAIA extends AbstractBase implements
             }
         }
         return '';
+    }
 
+    /**
+     * Returns the limitation of a service for an item
+     *
+     * @param array  $item    Array with DAIA limitation data
+     * @param string $service The service, of that the limitation is wanted
+     *
+     * @return string
+     */
+    protected function getItemServiceLimitation($item, $service)
+    {
+        $limitation = null;
+        if (array_key_exists('available', $item)) {
+            foreach ($item['available'] as $available) {
+                if (isset($available['service'])
+                    && $available['service'] == $service
+                ) {
+                    $limitation
+                    = $this->getItemLimitation($available['limitation']);
+                }
+            }
+        }
+        if (array_key_exists('unavailable', $item) && $limitation === null) {
+            foreach ($item['unavailable'] as $unavailable) {
+                if (isset($unavailable['service'])
+                    && $unavailable['service'] == $service
+                ) {
+                    $limitation
+                    = $this->getItemLimitation($unavailable['limitation']);
+                }
+            }
+        }
+        return $limitation;
+    }
+
+    /**
+     * Determines if a item is for presence use only
+     *
+     * @param array $item Array with DAIA item
+     *
+     * @return boolean
+     */
+    protected function isPresenceUseOnly($item)
+    {
+        // Check if item is for presence use only (i.e. its available for
+        // presentation, but unavailable for loan and for openaccess).
+        if ((in_array('presentation', $this->getAvailableServices($item)) === true)
+            && (in_array('loan', $this->getUnavailableServices($item)) === true)
+            && (in_array('openaccess', $this->getUnavailableServices($item)) === true)
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns notes for the item
+     *
+     * @param array $item Array with DAIA item
+     *
+     * @return array
+     */
+    protected function getItemNotes($item)
+    {
+        $return = [];
+
+        if ($this->isPresenceUseOnly($item)) {
+            $return[] = 'presence_use_only';
+        }
+
+        // Check item for limitations on loan or presentation
+        $presLimit = $this->getItemServiceLimitation($item, 'presentation');
+        if (isset($presLimit)) {
+            $return[] = $presLimit;
+        } else {
+            $loanLimit = $this->getItemServiceLimitation($item, 'loan');
+            if (isset($loanLimit)) {
+                $return[] = $loanLimit;
+            }
+        }
+
+        return $return;
     }
 
     /**
