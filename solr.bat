@@ -57,7 +57,7 @@ set SOLR_HOME=%VUFIND_HOME%\solr\vufind
 rem Set SOLR_LOGS_DIR
 if not "!%SOLR_LOGS_DIR%!"=="!!" goto solrlogsdirset
 set SOLR_LOGS_DIR=%SOLR_HOME%\logs
-:solorlogsdirset
+:solrlogsdirset
 
 rem Set SOLR_BIN
 if not "!%SOLR_BIN%!"=="!!" goto solrbinset
