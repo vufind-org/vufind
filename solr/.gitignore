@@ -1,1 +1,7 @@
-vendor/server/logs
+vendor/bin/*.pid
+vufind/alphabetical_browse
+vufind/logs
+vufind/*/index
+vufind/*/spellchecker
+vufind/*/spellShingle
+vufind/*/tlog

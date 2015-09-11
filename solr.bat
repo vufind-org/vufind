@@ -54,6 +54,11 @@ if not "!%SOLR_HOME%!"=="!!" goto solrhomeset
 set SOLR_HOME=%VUFIND_HOME%\solr\vufind
 :solrhomeset
 
+rem Set SOLR_LOGS_DIR
+if not "!%SOLR_LOGS_DIR%!"=="!!" goto solrlogsdirset
+set SOLR_LOGS_DIR=%SOLR_HOME%\logs
+:solorlogsdirset
+
 rem Set SOLR_BIN
 if not "!%SOLR_BIN%!"=="!!" goto solrbinset
 set SOLR_BIN=%VUFIND_HOME%\solr\vendor\bin
@@ -69,7 +74,7 @@ if not "!%SOLR_PORT%!"=="!!" goto solrportset
 set SOLR_PORT=8080
 :solrportset
 
-call %SOLR_BIN%/solr.cmd %1 -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP%
+call %SOLR_BIN%\solr.cmd %1 -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP% -a "-Dsolr.log=%SOLR_LOGS_DIR%"
 goto end
 
 :usage

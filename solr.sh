@@ -44,6 +44,11 @@ then
   SOLR_HOME="$VUFIND_HOME/solr/vufind"
 fi
 
+if [ -z "$SOLR_LOGS_DIR" ]
+then
+  SOLR_LOGS_DIR="$SOLR_HOME/logs"
+fi
+
 if [ -z "$SOLR_BIN" ]
 then
   SOLR_BIN="$VUFIND_HOME/solr/vendor/bin"
@@ -59,4 +64,5 @@ then
   SOLR_PORT="8080"
 fi
 
-$SOLR_BIN/solr $1 -p $SOLR_PORT -s $SOLR_HOME -m $SOLR_HEAP
+export SOLR_LOGS_DIR=$SOLR_LOGS_DIR
+$SOLR_BIN/solr $1 -p $SOLR_PORT -s $SOLR_HOME -m $SOLR_HEAP -a "-Dsolr.log=$SOLR_LOGS_DIR"
