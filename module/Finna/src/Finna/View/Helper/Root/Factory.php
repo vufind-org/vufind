@@ -294,10 +294,12 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getSearchBox(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config');
-        return new SearchBox(
+        $searchbox = new SearchBox(
             $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
             $config->get('searchbox')->toArray()
         );
+        $searchbox->setTabConfig($config->get('config'));
+        return $searchbox;
     }
 
     /**

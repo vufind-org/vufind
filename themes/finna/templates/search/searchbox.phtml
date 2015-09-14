@@ -12,12 +12,7 @@
         isset($this->searchIndex) ? $this->searchIndex : null
     );
     $handlerCount = count($handlers);
-    $basicSearch = null;
-    if ($browse) {
-      $basicSearch = "browse-{$browse}";
-    } else {
-      $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
-    }
+    $basicSearch = $browse ? "browse-{$browse}" : $options->getSearchAction();
     $searchHome = $options->getSearchHomeAction();
     $advSearch = $options->getAdvancedSearchAction();
     $lastSort = $browse ? null : $options->getLastSort();
@@ -117,10 +112,6 @@
       </div>
     <? endif; ?>
     <?
-      /* Show hidden field for active search class when in combined handler mode. */
-      if ($this->searchbox()->combinedHandlersActive()) {
-        echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtmlAttr($this->searchClassId) . '" />';
-      }
       /* Load hidden limit preference from Session */
       if (!empty($lastLimit)) {
         echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
