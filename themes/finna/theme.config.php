@@ -40,6 +40,7 @@ return array(
         'dataTables.bootstrap.custom.css',
         'vendor/slick.css',
         'vendor/bootstrap-multiselect.css',
+        'vendor/bootstrap-datepicker3.min.css',
         'finna.css'
     ),
     'js' => array(
