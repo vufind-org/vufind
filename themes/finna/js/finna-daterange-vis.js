@@ -116,7 +116,7 @@ finna.dateRangeVis = (function() {
 
         // Widen selected date range by configured amount of years
         var regex = new RegExp('filter\\[\\]=' + facetField + '.*\\[(\\d+|\\*)\\+TO\\+(\\d+|\\*)\\]"');
-        url = unescape(url).replace(regex,
+        url = decodeURIComponent(url).replace(regex,
             function(match, $1, $2, offset, original) {
                 var from = $1;
                 if (from != '*') {
@@ -128,7 +128,7 @@ finna.dateRangeVis = (function() {
                 }
 
                 var val = facetField + ':"[' + from + "+TO+" + to + ']"';
-                return escape('filter\[\]') + '=' + escape(val);
+                return 'filter\[\]' + '=' + val;
             }
         );
 
