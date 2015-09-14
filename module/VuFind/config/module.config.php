@@ -188,7 +188,7 @@ $config = [
         ],
         'invokables' => [
             'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper',
-            'VuFind\IpAddressUtils' => 'VuFind\IpAddress\IpAddressUtils',
+            'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
             'VuFind\Search'         => 'VuFindSearch\Service',
             'VuFind\Search\Memory'  => 'VuFind\Search\Memory',
         ],

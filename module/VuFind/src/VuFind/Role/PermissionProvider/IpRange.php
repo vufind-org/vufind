@@ -30,7 +30,7 @@
  */
 namespace VuFind\Role\PermissionProvider;
 use Zend\Http\PhpEnvironment\Request;
-use VuFind\IpAddress\IpAddressUtils;
+use VuFind\Net\IpAddressUtils;
 
 /**
  * IpRange permission provider for VuFind.

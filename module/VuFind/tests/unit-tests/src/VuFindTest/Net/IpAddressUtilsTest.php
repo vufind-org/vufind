@@ -25,8 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFindTest\IpAddress;
-use VuFind\IpAddress\IpAddressUtils;
+namespace VuFindTest\Net;
+use VuFind\Net\IpAddressUtils;
 
 /**
  * IpAddressUtils Test Class

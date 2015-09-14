@@ -52,7 +52,7 @@ class Factory
     {
         return new IpRange(
             $sm->getServiceLocator()->get('Request'),
-            $sm->getServiceLocator()->get('VuFind\IpAddress\IpAddressUtils')
+            $sm->getServiceLocator()->get('VuFind\IpAddressUtils')
         );
     }
 
