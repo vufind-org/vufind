@@ -42,7 +42,7 @@
     }
 ?>
 <? if ($this->searchType != 'advanced'): ?>
-  <form role="search" class="searchForm navbar-form navbar-left col-xs-12 col-sm-10 col-md-8 col-lg-7" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
+  <form role="search" class="searchForm navbar-form navbar-left col-xs-12 col-sm-10 col-md-8 col-lg-7  <?=$handlerCount < 2 ? 'input-field-only' :''; ?>" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <label for="searchForm_lookfor" class="sr-only" hidden><?=$this->transEsc("Find")?></label><input class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" placeholder="<?=$this->transEsc("Find")?>..." id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
     <span class="clear-button<?=$this->lookfor ? '' : ' hidden'?>"></span>
     <? if ($handlerCount > 1): ?>
