@@ -24,6 +24,7 @@
  * @category VuFind2
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -31,6 +32,9 @@ namespace Finna\Search\Factory;
 
 use Finna\Search\Solr\DeduplicationListener;
 use Finna\Search\Solr\SolrExtensionsListener;
+
+use FinnaSearch\Backend\Solr\LuceneSyntaxHelper;
+use FinnaSearch\Backend\Solr\QueryBuilder;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Backend;
@@ -89,6 +93,38 @@ class SolrDefaultBackendFactory
             $this->searchConfig
         );
         $solrExtensions->attach($events);
+    }
+
+    /**
+     * Create the query builder.
+     *
+     * @return QueryBuilder
+     */
+    protected function createQueryBuilder()
+    {
+        $specs   = $this->loadSpecs();
+        $config = $this->config->get('config');
+        $defaultDismax = isset($config->Index->default_dismax_handler)
+            ? $config->Index->default_dismax_handler : 'dismax';
+        $builder = new QueryBuilder($specs, $defaultDismax);
+
+        // Configure builder:
+        $search = $this->config->get($this->searchConfig);
+        $caseSensitiveBooleans
+            = isset($search->General->case_sensitive_bools)
+            ? $search->General->case_sensitive_bools : true;
+        $caseSensitiveRanges
+            = isset($search->General->case_sensitive_ranges)
+            ? $search->General->case_sensitive_ranges : true;
+        $unicodeNormalizationForm
+            = isset($search->General->unicode_normalization_form)
+            ? $search->General->unicode_normalization_form : 'NFKC';
+        $helper = new LuceneSyntaxHelper(
+            $caseSensitiveBooleans, $caseSensitiveRanges, $unicodeNormalizationForm
+        );
+        $builder->setLuceneHelper($helper);
+
+        return $builder;
     }
 
     /**
