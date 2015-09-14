@@ -63,19 +63,21 @@
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <?=$this->record($this->driver)->getFormatList()?><br>
       <? endif; ?>
-      <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
+      <? $results = $this->driver->getNonPresenterAuthors(); $journalTitle = $this->driver->getContainerTitle(); ?>
+      <? if ($results || $journalTitle): ?>
         <div class="truncate-field">
-          <span class="recordAuthors">
-          <? foreach($results as $index => $author): ?>
-            <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
-          <? endforeach; ?>
-          </span>
-          <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
-          <? $containerID = $this->driver->getContainerRecordID(); ?>
+          <? if ($results): ?>
+            <span class="recordAuthors">
+            <? foreach($results as $index => $author): ?>
+              <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
+            <? endforeach; ?>
+            </span>
+          <? endif; ?>
+          <? if ($journalTitle): ?>
+            <? $containerID = $this->driver->getContainerRecordID(); ?>
             <?=$this->transEsc('Published in')?> <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
             <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
           <? endif; ?>
-          <? $summDate = $this->driver->getPublicationDates(); ?>
         </div>
       <? endif; ?>
       <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>

@@ -38,6 +38,8 @@ use FinnaSearch\Backend\Solr\QueryBuilder;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 
 /**
  * Abstract factory for SOLR backends.
@@ -52,6 +54,25 @@ use VuFindSearch\Backend\Solr\Backend;
 class SolrDefaultBackendFactory
     extends \VuFind\Search\Factory\SolrDefaultBackendFactory
 {
+    /**
+     * Create the SOLR backend.
+     *
+     * @param Connector $connector Connector
+     *
+     * @return Backend
+     */
+    protected function createBackend(Connector $connector)
+    {
+        $backend = parent::createBackend($connector);
+        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $factory = new RecordCollectionFactory(
+            [$manager, 'getSolrRecord'],
+            'FinnaSearch\Backend\Solr\Response\Json\RecordCollection'
+        );
+        $backend->setRecordCollectionFactory($factory);
+        return $backend;
+    }
+
     /**
      * Create listeners.
      *

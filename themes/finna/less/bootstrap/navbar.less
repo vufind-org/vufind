@@ -259,6 +259,10 @@
       }
       > li {
         border-bottom: none;   
+        &:first-child, &:last-child, &:first-child > a, &:last-child > a {
+            .border-top-radius(none);
+            .border-bottom-radius(none);
+        }
       }
       > li > a {
         line-height: @line-height-computed;

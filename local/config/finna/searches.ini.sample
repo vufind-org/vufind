@@ -45,7 +45,6 @@ case_sensitive_ranges = true
 ; See the comments above those sections for details on legal settings.  You may
 ; repeat these lines to load multiple recommendations.
 default_top_recommend[] = TopFacets:ResultsTop
-default_top_recommend[] = SpellingSuggestions
 default_side_recommend[] = SideFacets:Results:CheckboxFacets
 default_noresults_recommend[] = SwitchType
 default_noresults_recommend[] = SwitchQuery
@@ -325,7 +324,6 @@ author = sort_author
 
 [TopRecommendations]
 ;Author[]            = AuthorFacets
-Author[]            = SpellingSuggestions
 ;Author[]           = WorldCatIdentities
 ;Subject[]          = WorldCatTerms
 ;Author[]            = WikipediaDeferred:Author
@@ -423,7 +421,7 @@ sort = "last_indexed desc"
 enabled = true
 ; This handler will be used for all search types not covered by [Autocomplete_Types]
 ;default_handler = Solr
-default_handler = "FinnaSolrAutocomplete::title,author,author2"
+default_handler = "Solr::title,author,author2"
 
 ; In this section, set the key equal to a search handler from searchspecs.yaml and
 ; the value equal to an autocomplete handler in order to customize autocompletion
@@ -436,8 +434,8 @@ Subject = "Solr:Subject:topic,genre,geographic,era"
 CallNumber = "SolrCN"
 ISN = "Solr:ISN:isbn,issn"
 ;tag = "Tag"
-Browse_Database = "SolrAutocomplete:Title:title:title:format:0/Database/"
-Browse_Journal = "SolrAutocomplete:Title:title:title:format:1/Journal/eSerial/"
+Browse_Database = "Solr:Title:title:title:format:0/Database/"
+Browse_Journal = "Solr:Title:title:title:format:1/Journal/eSerial/"
 
 ; When snippets are enabled, this section can be used to display captions based on
 ; the Solr fields from which the snippets were obtained.  Keys are the names of Solr

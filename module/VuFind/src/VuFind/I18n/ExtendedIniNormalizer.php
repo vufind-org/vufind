@@ -130,7 +130,7 @@ class ExtendedIniNormalizer
         foreach ($input as $key => $value) {
             $output .= "$key = \"$value\"\n";
         }
-        return trim($output);
+        return trim($output) . "\n";
     }
 
     /**
