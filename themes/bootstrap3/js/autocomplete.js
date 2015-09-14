@@ -216,6 +216,7 @@
   };
 
   $.fn.autocomplete.options = {
+    ajaxDelay: 200,
     hidingClass: 'hidden',
     highlight: true,
     loadingString: 'Loading...',
@@ -225,9 +226,14 @@
   };
 
   var xhr = false;
+  var timer = false;
   $.fn.autocomplete.ajax = function(ops) {
+    if (timer) clearTimeout(timer);
     if (xhr) xhr.abort();
-    xhr = $.ajax(ops);
+    timer = setTimeout(
+      function() { xhr = $.ajax(ops); },
+      $.fn.autocomplete.options.ajaxDelay
+    );
   }
 
 }( jQuery ));
