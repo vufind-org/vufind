@@ -44,7 +44,7 @@ class RecordController extends \VuFind\Controller\RecordController
     /**
      * Create record feedback form and send feedback to correct recipient.
      *
-     * @return mixed
+     * @return \Zend\View\Model\ViewModel
      * @throws \Exception
      */
     public function feedbackAction()
@@ -129,4 +129,93 @@ class RecordController extends \VuFind\Controller\RecordController
         return $view;
     }
 
+    /**
+     * Load a normalized record from RecordManager for preview
+     *
+     * @param string $data   Record Metadata
+     * @param string $format Metadata format
+     * @param string $source Data source
+     *
+     * @return AbstractRecordDriver
+     * @throw  \Exception
+     */
+    protected function loadPreviewRecord($data, $format, $source)
+    {
+        $config = $this->getConfig();
+        if (empty($config->NormalizationPreview->url)) {
+            throw new \Exception('Normalization preview URL not configured');
+        }
+
+        $httpService = $this->serviceLocator->get('\VuFind\Http');
+        $client = $httpService->createClient(
+            $config->NormalizationPreview->url,
+            \Zend\Http\Request::METHOD_POST
+        );
+        $client->setParameterPost(
+            ['data' => $data, 'format' => $format, 'source' => $source]
+        );
+        $response = $client->send();
+        if (!$response->isSuccess()) {
+            throw new \Exception(
+                'Failed to load preview: ' . $response->getStatusCode() . ' '
+                . $response->getReasonPhrase()
+            );
+        }
+        $metadata = json_decode($response->getContent(), true);
+        $recordFactory = $this->serviceLocator
+            ->get('VuFind\RecordDriverPluginManager');
+        $this->driver = $recordFactory->getSolrRecord($metadata);
+        return $this->driver;
+    }
+
+    /**
+     * Load the record requested by the user; note that this is not done in the
+     * init() method since we don't want to perform an expensive search twice
+     * when homeAction() forwards to another method.
+     *
+     * @return AbstractRecordDriver
+     */
+    protected function loadRecord()
+    {
+        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+        // 0 = preview record
+        if ($id != '0') {
+            return parent::loadRecord();
+        }
+        $data = $this->params()->fromPost(
+            'data', $this->params()->fromQuery('data', '')
+        );
+        $format = $this->params()->fromPost(
+            'format', $this->params()->fromQuery('format', '')
+        );
+        $source = $this->params()->fromPost(
+            'source', $this->params()->fromQuery('source', '')
+        );
+        if (!$data) {
+            // Support marc parameter for Voyager compatibility
+            $format = 'marc';
+            if (!$source) {
+                $source = '_marc_preview';
+            }
+            $data = $this->params()->fromPost(
+                'marc', $this->params()->fromQuery('marc')
+            );
+            // For some strange reason recent Voyager versions double-encode the data
+            // with encodeURIComponent
+            if (substr($data, -3) == '%1D') {
+                $data = urldecode($data);
+            }
+            // Voyager doesn't tell the proper encoding, so it's up to the browser to
+            // decide. Try to handle both UTF-8 and ISO-8859-1.
+            $len = substr($data, 0, 5);
+            if (strlen($data) != $len) {
+                $data = utf8_decode($data);
+            }
+        }
+        if (!$data || !$format || !$source) {
+            throw new \Exception('Missing parameters');
+        }
+
+        return $this->loadPreviewRecord($data, $format, $source);
+    }
 }

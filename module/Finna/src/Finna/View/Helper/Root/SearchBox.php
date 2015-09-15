@@ -39,6 +39,47 @@ namespace Finna\View\Helper\Root;
 class SearchBox extends \VuFind\View\Helper\Root\SearchBox
 {
     /**
+     * Configuration for search tabs
+     *
+     * @var array
+     */
+    protected $tabConfig;
+
+    /**
+     * Set configuration for search tabs
+     *
+     * @param array $config Configuration
+     *
+     * @return void
+     */
+    public function setTabConfig($config)
+    {
+        if (isset($config['SearchTabs'])) {
+            $this->tabConfig = $config['SearchTabs'];
+        }
+    }
+
+    /**
+     * Are combined handlers enabled?
+     *
+     * @return bool
+     */
+    public function combinedHandlersActive()
+    {
+        if (!empty($this->tabConfig)) {
+            if (!isset($this->config['General']['combinedHandlers'])
+                || !$this->config['General']['combinedHandlers']
+            ) {
+                throw new \Exception(
+                    'Combined handlers must be enabled when search tabs are used'
+                );
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Support method for getHandlers() -- load combined settings.
      *
      * @param string $activeSearchClass Active search class ID
@@ -49,11 +90,10 @@ class SearchBox extends \VuFind\View\Helper\Root\SearchBox
     protected function getCombinedHandlers($activeSearchClass, $activeHandler)
     {
         if (isset($this->config['CombinedHandlers'])) {
-            $backend = "VuFind:$activeSearchClass";
             $handlers = [];
             foreach ($this->config['CombinedHandlers'] as $type => $label) {
                 $handlers[] = [
-                   'value' => "$backend|$type",
+                   'value' => $type,
                    'label' => $label,
                    'indent' => false,
                    'selected' => ($activeHandler == $type)
