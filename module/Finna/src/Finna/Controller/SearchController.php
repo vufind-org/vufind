@@ -27,6 +27,8 @@
  */
 namespace Finna\Controller;
 
+use VuFindCode\ISBN;
+
 /**
  * Redirects the user to the appropriate default VuFind action.
  *
@@ -39,24 +41,6 @@ namespace Finna\Controller;
 class SearchController extends \VuFind\Controller\SearchController
 {
     use SearchControllerTrait;
-
-    /**
-     * Results action.
-     *
-     * @return mixed
-     */
-    public function resultsAction()
-    {
-        if ($this->getRequest()->getQuery()->get('combined')) {
-            $this->saveToHistory = false;
-        }
-
-        $this->initCombinedViewFilters();
-        $view = parent::resultsAction();
-        $view->browse = false;
-        $this->initSavedTabs();
-        return $view;
-    }
 
     /**
      * Handle an advanced search
@@ -88,31 +72,13 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
-     * Either assign the requested search object to the view or display a flash
-     * message indicating why the operation failed.
+     * Browse databases.
      *
-     * @param string $searchId ID value of a saved advanced search.
-     *
-     * @return bool|object     Restored search object if found, false otherwise.
+     * @return mixed
      */
-    protected function restoreAdvancedSearch($searchId)
+    public function databaseAction()
     {
-        $savedSearch = parent::restoreAdvancedSearch($searchId);
-        if ($savedSearch) {
-            if ($filter = $savedSearch->getParams()->getSpatialDateRangeFilter(true)
-            ) {
-                $req = new \Zend\Stdlib\Parameters();
-                $req->set(
-                    'filter',
-                    [$filter['field'] . ':"' . $filter['value'] . '"']
-                );
-                if (isset($filter['type'])) {
-                    $req->set('search_sdaterange_mvtype', $filter['type']);
-                }
-                $savedSearch->getParams()->initSpatialDateRangeFilter($req);
-            }
-        }
-        return $savedSearch;
+        return $this->browse('Database');
     }
 
     /**
@@ -149,16 +115,6 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
-     * Browse databases.
-     *
-     * @return mixed
-     */
-    public function databaseAction()
-    {
-        return $this->browse('Database');
-    }
-
-    /**
      * Browse journals.
      *
      * @return mixed
@@ -166,6 +122,102 @@ class SearchController extends \VuFind\Controller\SearchController
     public function journalAction()
     {
         return $this->browse('Journal');
+    }
+
+    /**
+     * Resolve an OpenURL.
+     *
+     * @return mixed
+     */
+    public function openUrlAction()
+    {
+        $params = $this->parseOpenURL();
+        $results = $this->processOpenURL($params);
+
+        // If we were asked to return just information whether something was found,
+        // do it here
+        if ($this->params()->fromQuery('vufind_response_type') == 'resultcount') {
+            $response = $this->getResponse();
+            $response->setContent($results->getResultTotal());
+            return $response;
+        }
+
+        // Otherwise just display results
+        $view = $this->createViewModel();
+        $view->results = $results;
+        $view->params = $results->getParams();
+
+        // TODO: the following is copied from AbstractSearch, refactor?
+
+        // If we received an EmptySet back, that indicates that the real search
+        // failed due to some kind of syntax error, and we should display a
+        // warning to the user; otherwise, we should proceed with normal post-search
+        // processing.
+        if ($results instanceof \VuFind\Search\EmptySet\Results) {
+            $view->parseError = true;
+        } else {
+            // Remember the current URL as the last search.
+            $this->rememberSearch($results);
+
+            // Add to search history:
+            if ($this->saveToHistory) {
+                $user = $this->getUser();
+                $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')
+                    ->getId();
+                $history = $this->getTable('Search');
+                $history->saveSearch(
+                    $this->getResultsManager(), $results, $sessId,
+                    $history->getSearches(
+                        $sessId, isset($user->id) ? $user->id : null
+                    )
+                );
+            }
+
+            // Set up results scroller:
+            if ($this->resultScrollerActive()) {
+                $this->resultScroller()->init($results);
+            }
+        }
+
+        // Save statistics:
+        if ($this->logStatistics) {
+            $this->getServiceLocator()->get('VuFind\SearchStats')
+                ->log($results, $this->getRequest());
+        }
+
+        // Special case: If we're in RSS view, we need to render differently:
+        if (isset($view->params) && $view->params->getView() == 'rss') {
+            $response = $this->getResponse();
+            $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
+            $feed = $this->getViewRenderer()->plugin('resultfeed');
+            $response->setContent($feed($view->results)->export('rss'));
+            return $response;
+        }
+
+        // Search toolbar
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $view->showBulkOptions = isset($config->Site->showBulkOptions)
+          && $config->Site->showBulkOptions;
+
+        return $view;
+    }
+
+    /**
+     * Results action.
+     *
+     * @return mixed
+     */
+    public function resultsAction()
+    {
+        if ($this->getRequest()->getQuery()->get('combined')) {
+            $this->saveToHistory = false;
+        }
+
+        $this->initCombinedViewFilters();
+        $view = parent::resultsAction();
+        $view->browse = false;
+        $this->initSavedTabs();
+        return $view;
     }
 
     /**
@@ -222,5 +274,273 @@ class SearchController extends \VuFind\Controller\SearchController
 
         $view->results->getParams()->getQuery()->setHandler($queryType);
         return $view;
+    }
+
+    /**
+     * Parse OpenURL and return a keyed array
+     *
+     * @return array
+     */
+    protected function parseOpenURL()
+    {
+        $title = '';
+        $atitle = '';
+        $author = '';
+        $isbn = '';
+        $issn = '';
+        $eissn = '';
+        $date = '';
+        $volume = '';
+        $issue = '';
+        $spage = '';
+        $journal = false;
+
+        $request = $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray();
+
+        if (isset($request['url_ver']) && $request['url_ver'] == 'Z39.88-2004') {
+            // Parse OpenURL 1.0
+            if (isset($request['rft_val_fmt'])
+                && $request['rft_val_fmt'] == 'info:ofi/fmt:kev:mtx:book'
+            ) {
+                // Book format
+                $isbn = isset($request['rft_isbn']) ? $request['rft_isbn'] : '';
+                if (isset($request['rft_btitle'])) {
+                    $title = $request['rft_btitle'];
+                } else if (isset($request['rft_title'])) {
+                    $title = $request['rft_title'];
+                }
+            } else {
+                // Journal / Article / something
+                $journal = true;
+                $eissn = isset($request['rft_eissn']) ? $request['rft_eissn'] : '';
+                $atitle = isset($request['rft_atitle'])
+                    ? $request['rft_atitle'] : '';
+                if (isset($request['rft_jtitle'])) {
+                    $title = $request['rft_jtitle'];
+                } else if (isset($request['rft_title'])) {
+                    $title = $request['rft_title'];
+                }
+            }
+            if (isset($request['rft_aulast'])) {
+                $author = $request['rft_aulast'];
+            }
+            if (isset($request['rft_aufirst'])) {
+                $author .= ' ' . $request['rft_aufirst'];
+            } else if (isset($request['rft_auinit'])) {
+                $author .= ' ' . $request['rft_auinit'];
+            }
+            $issn = isset($request['rft_issn']) ? $request['rft_issn'] : '';
+            $date = isset($request['rft_date']) ? $request['rft_date'] : '';
+            $volume = isset($request['rft_volume']) ? $request['rft_volume'] : '';
+            $issue = isset($request['rft_issue']) ? $request['rft_issue'] : '';
+            $spage = isset($request['rft_spage']) ? $request['rft_spage'] : '';
+        } else {
+            // OpenURL 0.1
+            $issn = isset($request['issn']) ? $request['issn'] : '';
+            $date = isset($request['date']) ? $request['date'] : '';
+            $volume = isset($request['volume']) ? $request['volume'] : '';
+            $issue = isset($request['issue']) ? $request['issue'] : '';
+            $spage = isset($request['spage']) ? $request['spage'] : '';
+            $isbn = isset($request['isbn']) ? $request['isbn'] : '';
+            $atitle = isset($request['atitle']) ? $request['atitle'] : '';
+            if (isset($request['jtitle'])) {
+                $title = $request['jtitle'];
+            } else if (isset($request['btitle'])) {
+                $title = $request['btitle'];
+            } else if (isset($request['title'])) {
+                $title = $request['title'];
+            }
+            if (isset($request['aulast'])) {
+                $author = $request['aulast'];
+            }
+            if (isset($request['aufirst'])) {
+                $author .= ' ' . $request['aufirst'];
+            } else if (isset($request['auinit'])) {
+                $author .= ' ' . $request['auinit'];
+            }
+        }
+
+        if (ISBN::isValidISBN10($isbn)
+            || ISBN::isValidISBN13($isbn)
+        ) {
+            $isbnObj = new ISBN($isbn);
+            $isbn = $isbnObj->get13();
+        }
+
+        return compact(
+            'journal', 'atitle', 'title', 'author', 'isbn', 'issn', 'eissn', 'date',
+            'volume', 'issue', 'spage'
+        );
+    }
+
+    /**
+     * Process the OpenURL params and try to find record(s) with them
+     *
+     * @param array $params Referent params
+     *
+     * @return object Search object
+     */
+    protected function processOpenURL($params)
+    {
+        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+
+        // Journal first..
+        if (!$params['eissn']
+            || !($results = $this->trySearch(
+                $runner, ['issn' => $params['eissn']]
+            ))
+        ) {
+            if ($params['issn']) {
+                $results = $this->trySearch(
+                    $runner, ['issn' => $params['issn']]
+                );
+            }
+        }
+        if ($results) {
+            if ($params['date'] || $params['volume'] || $params['issue']
+                || $params['spage'] || $params['atitle']
+            ) {
+                // Ok, we found a journal. See if we can find an article too.
+                $query = [];
+
+                $ids = [];
+                foreach ($results->getResults() as $record) {
+                    $doc = $record->getRawData();
+                    if (isset($doc['local_ids_str_mv'])) {
+                        $ids = array_merge($ids, $doc['local_ids_str_mv']);
+                    }
+                    $ids[] = $doc['id'];
+                    // Take only first 20 IDs or so
+                    if (count($ids) >= 20) {
+                        break;
+                    }
+                }
+                $query['hierarchy_parent_id'] = $ids;
+
+                if ($params['date']) {
+                    $query['publishDate'] = $params['date'];
+                }
+                if ($params['volume']) {
+                    $query['container_volume'] = $params['volume'];
+                }
+                if ($params['issue']) {
+                    $query['container_issue'] = $params['issue'];
+                }
+                if ($params['spage']) {
+                    $query['container_start_page'] = $params['spage'];
+                }
+                if ($params['atitle']) {
+                    $query['title'] = $params['atitle'];
+                }
+                if ($articles = $this->trySearch($runner, $query)) {
+                    return $articles;
+                }
+
+                // Broaden the search until we find something or run out of
+                // options
+                foreach (
+                    ['container_start_page', 'issue', 'volume'] as $param
+                ) {
+                    if (isset($query[$param])) {
+                        unset($query[$param]);
+                        if ($articles = $this->trySearch($runner, $query)) {
+                            return $articles;
+                        }
+                    }
+                }
+            }
+            // No article, return the journal results
+            return $results;
+        }
+
+        // Try to find a book or something
+        if (!$params['isbn']
+            || !($results = $this->trySearch(
+                $runner, ['isbn' => $params['isbn']]
+            ))
+        ) {
+            $query = [];
+            if ($params['title']) {
+                $query['title'] = $params['title'];
+            }
+            if ($params['author']) {
+                $query['author'] = $params['author'];
+            }
+            if ($query) {
+                $results = $this->trySearch($runner, $query);
+            } else {
+                $results = $this->trySearch($runner, ['id' => 'null']);
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Either assign the requested search object to the view or display a flash
+     * message indicating why the operation failed.
+     *
+     * @param string $searchId ID value of a saved advanced search.
+     *
+     * @return bool|object     Restored search object if found, false otherwise.
+     */
+    protected function restoreAdvancedSearch($searchId)
+    {
+        $savedSearch = parent::restoreAdvancedSearch($searchId);
+        if ($savedSearch) {
+            if ($filter = $savedSearch->getParams()->getSpatialDateRangeFilter(true)
+            ) {
+                $req = new \Zend\Stdlib\Parameters();
+                $req->set(
+                    'filter',
+                    [$filter['field'] . ':"' . $filter['value'] . '"']
+                );
+                if (isset($filter['type'])) {
+                    $req->set('search_sdaterange_mvtype', $filter['type']);
+                }
+                $savedSearch->getParams()->initSpatialDateRangeFilter($req);
+            }
+        }
+        return $savedSearch;
+    }
+
+    /**
+     * Try a search and return results if found
+     *
+     * @param \VuFind\Search\SearchRunner $runner Search runner
+     * @param array                       $params Search params
+     *
+     * @return bool|array Results object if records found, otherwise false
+     */
+    protected function trySearch(\VuFind\Search\SearchRunner $runner, $params)
+    {
+        $mapFunc = function ($val) {
+            return addcslashes($val, '"');
+        };
+
+        $query = '';
+        foreach ($params as $key => $param) {
+            if ($query) {
+                $query .= ' AND ';
+            }
+            if (is_array($param)) {
+                $imploded = implode('" OR "', array_map($mapFunc, $param));
+                $query .= "$key:(\"$imploded\")";
+            } else {
+                if (strstr($param, ' ')) {
+                    $param = "($param)";
+                }
+                $query .= "$key:" . addcslashes($param, '"');
+            }
+        }
+
+        $results = $runner->run(
+            ['lookfor0' => [$query], 'join' => 'AND', 'bool0' => ['AND']]
+        );
+        if ($results->getResultTotal() > 0) {
+            return $results;
+        }
+        return false;
     }
 }
