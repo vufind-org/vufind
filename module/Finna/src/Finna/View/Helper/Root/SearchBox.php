@@ -55,7 +55,7 @@ class SearchBox extends \VuFind\View\Helper\Root\SearchBox
     public function setTabConfig($config)
     {
         if (isset($config['SearchTabs'])) {
-            $this->tabConfig = $config['SearchTabs'];
+            $this->tabConfig = $config['SearchTabs']->toArray();
         }
     }
 
