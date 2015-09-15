@@ -5,4 +5,7 @@ return array(
         'custom.css',
         'settings.css'
     ),
+    'js' => array(
+        'custom.js'
+    )
 );
