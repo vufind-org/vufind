@@ -515,7 +515,7 @@ class SearchController extends \VuFind\Controller\SearchController
      */
     protected function trySearch(\VuFind\Search\SearchRunner $runner, $params)
     {
-        $mapFunc = function($val) {
+        $mapFunc = function ($val) {
             return addcslashes($val, '"');
         };
 
