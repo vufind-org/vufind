@@ -74,13 +74,6 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $upgrader->run();
         $results = $upgrader->getNewConfigs();
 
-        // We should always update BulkExport options to latest full set when
-        // upgrading a default configuration:
-        $this->assertEquals(
-            'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX:RIS',
-            $results['config.ini']['BulkExport']['options']
-        );
-
         // Prior to 1.4, Advanced should always == HomePage after upgrade:
         if ((float)$version < 1.4) {
             $this->assertEquals(
