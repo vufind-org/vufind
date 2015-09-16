@@ -1,6 +1,6 @@
 /*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, refreshCommentList, refreshTagList, unescape, VuFind */
 
-function VF_NAMESPACE(p, s) {
+function VuFindNamespace(p, s) {
   var path = p;
   var strings = s;
 
