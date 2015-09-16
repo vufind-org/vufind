@@ -352,36 +352,35 @@ $(document).ready(function() {
     });
 
   // Search autocomplete
-  $('.autocomplete').autocomplete({
-    maxResults: 10,
-    loadingString: vufindString['loading']+'...',
-    handler: function(query, cb) {
-      var searcher = extractClassParams(this);
-      $.fn.autocomplete.ajax({
-        url: path + '/AJAX/JSON',
-        data: {
-          q:query,
-          method:'getACSuggestions',
-          searcher:searcher['searcher'],
-          type:searcher['type'] ? searcher['type'] : $(this).closest('.searchForm').find('.searchForm_type').val()
-        },
-        dataType:'json',
-        success: function(json) {
-          if (json.status == 'OK' && json.data.length > 0) {
-            var datums = [];
-            for (var i=0;i<json.data.length;i++) {
-              datums.push({
-                val:json.data[i],
-                //href:'http://google.com/?q='+encodeURI(json.data[i]),
-              });
+  $('.autocomplete').each(function(i, op) {
+    $(op).autocomplete({
+      maxResults: 10,
+      loadingString: vufindString['loading']+'...',
+      handler: function(query, cb) {
+        var searcher = extractClassParams(op);
+        $.fn.autocomplete.ajax({
+          url: path + '/AJAX/JSON',
+          data: {
+            q:query,
+            method:'getACSuggestions',
+            searcher:searcher['searcher'],
+            type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val()
+          },
+          dataType:'json',
+          success: function(json) {
+            if (json.status == 'OK' && json.data.length > 0) {
+              var datums = [];
+              for (var i=0;i<json.data.length;i++) {
+                datums.push(json.data[i]);
+              }
+              cb(datums);
+            } else {
+              cb([]);
             }
-            cb(datums);
-          } else {
-            cb([]);
           }
-        }
-      });
-    }
+        });
+      }
+    });
   });
   $('.searchForm_type').change(function() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
