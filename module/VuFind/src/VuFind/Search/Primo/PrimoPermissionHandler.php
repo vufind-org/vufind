@@ -70,28 +70,13 @@ class PrimoPermissionHandler
         // Initialize instCode
         $this->instCode = null;
 
-        // Check parameter, if its null, tell the user that something is wrong
-        if (null === $primoPermConfig) {
-            throw new \Exception(
-                'The Primo Permission System has not been configured. Please '
-                . 'configure section [InstitutionOnCampus] in Primo.ini.'
-            );
-        }
-
         if (is_array($primoPermConfig)) {
             $this->primoConfig = $primoPermConfig;
         } else {
             $this->primoConfig = $primoPermConfig->toArray();
         }
 
-        $permRules = isset($this->primoConfig['onCampusRule'])
-            ? $this->primoConfig['onCampusRule'] : [];
-        if (empty($permRules) && !(isset($this->primoConfig['defaultCode']))) {
-            throw new \Exception(
-                '[InstitutionOnCampus] section in Primo.ini is not '
-                . 'configured properly. Please check the section.'
-            );
-        }
+        $this->checkConfig();
     }
 
     /**
@@ -103,7 +88,29 @@ class PrimoPermissionHandler
      */
     public function setInstCode($code)
     {
-        $this->instCode = $code;
+        // When we try setting the institution code, set it to false
+        // to indicate that it is not null any more
+        $this->instCode = false;
+
+        // and then check if this code is valid in the configuration
+        if ($this->instCodeExists($code) === true) {
+            $this->instCode = $code;
+        }
+    }
+
+    /**
+     * Determine if a institution code is set in config file
+     *
+     * @param string $code Code to approve against config file
+     *
+     * @return boolean
+     */
+    public function instCodeExists($code)
+    {
+        if (in_array($code, $this->getInstCodes()) === true) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -140,6 +147,71 @@ class PrimoPermissionHandler
     }
 
     /**
+     * Checks the config file section for validity
+     *
+     * @return void
+     */
+    protected function checkConfig()
+    {
+        if (isset($this->primoConfig['institutionCode'])) {
+            return;
+        }
+
+        if (isset($this->primoConfig['onCampusRule'])) {
+            return;
+        }
+
+        // if no rule has matched until here, assume the user gets the default code
+        if ($this->getDefaultCode() !== false) {
+            return;
+        }
+
+        // If we reach this point, no institution code is set in config.
+        // Primo will not work without an institution code!
+        throw new \Exception(
+            'No institutionCode found. Please be sure, that at least a '
+            . 'defaultCode is configured in section [InstitutionOnCampus] '
+            . 'in Primo.ini.'
+        );
+    }
+
+    /**
+     * gets all possible institution codes from config file
+     *
+     * @return array Array with valid Primo institution codes
+     */
+    protected function getInstCodes()
+    {
+        $codes = [ ];
+
+        if ($this->getDefaultCode() !== false) {
+            $codes[] = $this->getDefaultCode();
+        }
+
+        if (isset($this->primoConfig['institutionCode'])
+            && is_array($this->primoConfig['institutionCode']) === true
+        ) {
+            foreach ($this->primoConfig['institutionCode'] as $code => $permRule) {
+                if (in_array($code, $codes) === false) {
+                    $codes[] = $code;
+                }
+            }
+        }
+
+        if (isset($this->primoConfig['onCampusRule'])
+            && is_array($this->primoConfig['onCampusRule']) === true
+        ) {
+            foreach ($this->primoConfig['onCampusRule'] as $code => $permRule) {
+                if (in_array($code, $codes) === false) {
+                    $codes[] = $code;
+                }
+            }
+        }
+
+        return $codes;
+    }
+
+    /**
      * Autodetects the permissions by configuration file
      *
      * @return void
@@ -154,15 +226,32 @@ class PrimoPermissionHandler
             return;
         }
 
-        // walk through the permissionRules and check, if one of them is granted
-        foreach ($this->primoConfig['onCampusRule'] as $code => $permRule) {
-            if ($authService->isGranted($permRule)) {
-                $this->instCode = $code;
-                return;
+        // walk through the institutionCodes and check, if one of them is granted
+        if (isset($this->primoConfig['institutionCode'])
+            && is_array($this->primoConfig['institutionCode']) === true
+        ) {
+            foreach ($this->primoConfig['institutionCode'] as $code => $permRule) {
+                if ($authService->isGranted($permRule)) {
+                    $this->instCode = $code;
+                    return;
+                }
             }
         }
 
-        // if no rule has matched, assume the user gets the default code
+        // if none of the institutionCodes matched, walk through the permissionRules
+        // and check, if one of them is granted
+        if (isset($this->primoConfig['onCampusRule'])
+            && is_array($this->primoConfig['onCampusRule']) === true
+        ) {
+            foreach ($this->primoConfig['onCampusRule'] as $code => $permRule) {
+                if ($authService->isGranted($permRule)) {
+                    $this->instCode = $code;
+                    return;
+                }
+            }
+        }
+
+        // if no rule has matched until here, assume the user gets the default code
         if ($this->getDefaultCode() !== false) {
             $this->instCode = $this->getDefaultCode();
             return;
