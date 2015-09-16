@@ -512,24 +512,22 @@ finna.layout = (function() {
     }
     
     var initTouchDeviceGallery = function () {
-      if ($('.result-view-grid')[0] != null && isTouchDevice()) {
-        $('.result-view-grid').addClass('touch-device');
-      }
+        if ($('.result-view-grid')[0] != null && isTouchDevice()) {
+            $('.result-view-grid').addClass('touch-device');
+        }
     }
     var initImageCheck = function() {
-      var nWidth;
-      var nHeight;
-      $(".image-popup-trigger img").each(function() {
-        $(this).one("load",function() {
-          nWidth = this.naturalWidth;
-          nHeight = this.naturalHeight;
-          if (nHeight == 10 && nWidth == 10) {
-            $(this).parent().addClass('no-image');
-          }
-        }).each(function() {
-          if(this.complete) $(this).load();
+        $(".image-popup-trigger img").each(function() {
+            $(this).one("load",function() {
+                if (this.naturalWidth && this.naturalWidth == 10 && this.naturalHeight == 10) {
+                    $(this).parent().addClass('no-image');
+                }
+            }).each(function() {
+                if (this.complete) {
+                    $(this).load();
+                }
+            });
         });
-      });
     };
 
     var my = {
