@@ -176,7 +176,7 @@ class PrimoPermissionHandler
     }
 
     /**
-     * gets all possible institution codes from config file
+     * Gets all possible institution codes from config file
      *
      * @return array Array with valid Primo institution codes
      */
