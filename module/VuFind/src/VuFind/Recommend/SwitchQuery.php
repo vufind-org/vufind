@@ -209,6 +209,27 @@ class SwitchQuery implements RecommendInterface
     }
 
     /**
+     * Will a fuzzy search help?
+     *
+     * @param string $query Query to check
+     *
+     * @return string|bool
+     */
+    protected function transformFuzzy($query)
+    {
+        // Don't stack tildes:
+        if (strpos($query, '~') !== false) {
+            return false;
+        }
+        $query = trim($query, ' ?*');
+        // Fuzzy search only works for single keywords, not phrases:
+        if (substr($query, -1) == '"') {
+            return false;
+        }
+        return (substr($query, -1) != '~') ? $query . '~' : false;
+    }
+
+    /**
      * Does the query contain lowercase boolean operators that should be uppercased?
      *
      * @param string $query Query to check
@@ -271,11 +292,11 @@ class SwitchQuery implements RecommendInterface
      */
     protected function checkWildcard($query)
     {
+        $query = trim($query, ' ?~');
         // Don't pile wildcards on phrases:
         if (substr($query, -1) == '"') {
             return false;
         }
-        $query = trim($query, ' ?');
         return (substr($query, -1) != '*') ? $query . '*' : false;
     }
 
