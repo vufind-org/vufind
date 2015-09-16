@@ -103,9 +103,6 @@ class IpAddressUtils
         $ip = $this->normalizeIp($ip);
         foreach ($ranges as $range) {
             $ips = explode('-', $range, 2);
-            if (!isset($ips[0])) {
-                continue;
-            }
             if (!isset($ips[1])) {
                 $ips[1] = $ips[0];
             }

@@ -74,6 +74,7 @@ class IpAddressUtilsTest extends \VuFindTest\Unit\TestCase
         $this->assertTrue($utils->isInRange('127.0.0.1', ['127.0.0.1']));
         $this->assertTrue($utils->isInRange('127.0.0.1', ['127.0.0']));
         $this->assertFalse($utils->isInRange('127.0.0.1', []));
+        $this->assertFalse($utils->isInRange('127.0.0.1', ['']));
         $this->assertTrue($utils->isInRange('127.0.0.1', ['127.0.0.0-127.0.0.2']));
         $this->assertTrue(
             $utils->isInRange(

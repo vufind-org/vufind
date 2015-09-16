@@ -65,7 +65,7 @@ class IpRange implements PermissionProviderInterface
      * @param Request        $request Request object
      * @param IpAddressUtils $ipUtils IpAddressUtils object
      */
-    public function __construct(Request $request, $ipUtils)
+    public function __construct(Request $request, IpAddressUtils $ipUtils)
     {
         $this->request = $request;
         $this->ipAddressUtils = $ipUtils;
@@ -83,7 +83,7 @@ class IpRange implements PermissionProviderInterface
     {
         // Check if any regex matches....
         $ip = $this->request->getServer()->get('REMOTE_ADDR');
-        if ($this->ipAddressUtils->isInRange($ip, $options)) {
+        if ($this->ipAddressUtils->isInRange($ip, (array)$options)) {
             // Match? Grant to all users (guest or logged in).
             return ['guest', 'loggedin'];
         }
