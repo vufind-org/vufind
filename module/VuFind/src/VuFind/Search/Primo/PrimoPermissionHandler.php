@@ -51,15 +51,6 @@ class PrimoPermissionHandler
     protected $primoConfig;
 
     /**
-     * Is the user on default permission level?
-     * (Note: this does not mean, that the user is permitted to get access,
-     * it only means, that no campus rule applied)
-     *
-     * @var boolean
-     */
-    protected $defaultPermissionLevel;
-
-    /**
      * Institution code applicable for the user
      *
      * @var string
@@ -86,21 +77,12 @@ class PrimoPermissionHandler
                 . 'configure section [InstitutionOnCampus] in Primo.ini.'
             );
         }
+
         if (is_array($primoPermConfig)) {
             $this->primoConfig = $primoPermConfig;
         } else {
             $this->primoConfig = $primoPermConfig->toArray();
         }
-    }
-
-    /**
-     * Determines the permissions of the user
-     *
-     * @return void
-     */
-    protected function detectPermissions()
-    {
-        $this->defaultPermissionLevel = false;
 
         $permRules = isset($this->primoConfig['onCampusRule'])
             ? $this->primoConfig['onCampusRule'] : [];
@@ -110,36 +92,17 @@ class PrimoPermissionHandler
                 . 'configured properly. Please check the section.'
             );
         }
+    }
 
-        $authService = $this->getAuthorizationService();
-
-        // if no authorization service is available, don't do anything
-        if (!$authService) {
-            $this->instCode = false;
-            return;
-        }
-
-        // walk through the permissionRules and check, if one of them is granted
-        foreach ($permRules as $code => $permRule) {
-            if ($authService->isGranted($permRule)) {
-                $this->instCode = $code;
-                return;
-            }
-        }
-
-        // if no rule has matched, assume the user gets the default code
-        if (isset($this->primoConfig['defaultCode'])) {
-            $this->defaultPermissionLevel = true;
-            $this->instCode = $this->primoConfig['defaultCode'];
-            return;
-        }
-
-        // if no institution code has been found for this config, set it to false
-        // Primo will not work without an institution code!
-        if ($this->instCode === null) {
-            $this->instCode = false;
-        }
-
+    /**
+     * Set the institution code (no autodetection)
+     *
+     * @param  string $code Institutioncode
+     * @return void
+     */
+    public function setInstCode($code)
+    {
+        $this->instCode = $code;
     }
 
     /**
@@ -151,71 +114,78 @@ class PrimoPermissionHandler
     public function getInstCode()
     {
         if ($this->instCode === null) {
-            $this->detectPermissions();
+            $this->autodetectCode();
         }
         return $this->instCode;
     }
 
     /**
-     * Get the users authentication status
-     *
-     * @return boolean
-     */
-    public function isAuthenticated()
-    {
-        if ($this->instCode === null) {
-            $this->detectPermissions();
-        }
-        // if the instCode is set now, return true
-        if (false !== $this->instCode
-            && !$this->defaultPermissionLevel
-        ) {
-            return true;
-        }
-        // if its not set, the user cannot be authenticated
-        return false;
-    }
-
-    /**
-     * Check if the user has default permission (is inside default permission range)
-     *
-     * @return boolean
-     */
-    public function hasDefaultPermission()
-    {
-        if ($this->instCode === null) {
-            $this->detectPermissions();
-        }
-        // if the instCode is set now, return true
-        if ($this->defaultPermissionLevel
-            && $this->checkDefaultPermission()
-        ) {
-            return true;
-        }
-        // if its not set, the user cannot be authenticated
-        return false;
-    }
-
-    /**
-     * Check if the user has permission (no matter what kind of permission)
+     * Check if the user has permission
      *
      * @return boolean
      */
     public function hasPermission()
     {
         if ($this->instCode === null) {
-            $this->detectPermissions();
+            $this->autodetectCode();
         }
-        // if the instCode is set now, return true
-        if (($this->defaultPermissionLevel
-            && $this->checkDefaultPermission())
-            || (false !== $this->instCode
-            && !$this->defaultPermissionLevel)
+        if (false !== $this->instCode
+            && $this->checkPermission($this->instCode) === true
         ) {
             return true;
         }
         // if its not set, the user has no permission
         return false;
+    }
+
+    /**
+     * Autodetects the permissions by configuration file
+     *
+     * @return void
+     */
+    protected function autodetectCode()
+    {
+        $authService = $this->getAuthorizationService();
+
+        // if no authorization service is available, don't do anything
+        if (!$authService) {
+            $this->instCode = false;
+            return;
+        }
+
+        // walk through the permissionRules and check, if one of them is granted
+        foreach ($this->primoConfig['onCampusRule'] as $code => $permRule) {
+            if ($authService->isGranted($permRule)) {
+                $this->instCode = $code;
+                return;
+            }
+        }
+
+        // if no rule has matched, assume the user gets the default code
+        if ($this->getDefaultCode() !== false) {
+            $this->instCode = $this->getDefaultCode();
+            return;
+        }
+
+
+        // Autodetection failed, set instCode to false
+        // Primo will not work without an institution code!
+        if ($this->instCode === null) {
+            $this->instCode = false;
+        }
+
+    }
+
+    /**
+     * Determine the default institution code
+     * Returns false, if no default code has been set
+     *
+     * @return string|boolean
+     */
+    protected function getDefaultCode()
+    {
+        return (isset($this->primoConfig['defaultCode']))
+            ? $this->primoConfig['defaultCode'] : false;
     }
 
     /**
@@ -225,34 +195,49 @@ class PrimoPermissionHandler
      */
     protected function getDefaultOnCampusRule()
     {
-        $defaultOnCampusRule
-            = isset($this->primoConfig['defaultOnCampusRule'])
-            ? $this->primoConfig['defaultOnCampusRule'] : false;
-
-        if (false !== $defaultOnCampusRule) {
-            return $defaultOnCampusRule;
+        $defaultCode = $this->getDefaultCode();
+        if ($defaultCode === false) {
+            return null;
         }
 
-        // If primoConfig->defaultPermissionRule is not set
+        return $this->getOnCampusRule($defaultCode);
+    }
+
+    /**
+     * Determine a onCampus Rule for a certain code
+     *
+     * @param  string $code Code to determine the rule name for
+     * @return string
+     */
+    protected function getOnCampusRule($code)
+    {
+        if ($code === null) {
+            return null;
+        }
+
+        $onCampusRule
+            = isset($this->primoConfig['onCampusRule'][$code])
+            ? $this->primoConfig['onCampusRule'][$code] : false;
+
+        if (false !== $onCampusRule) {
+            return $onCampusRule;
+        }
+
+        // If primoConfig->onCampusRule[] is not set
         // no rule can get applied.
         // So return null to indicate that nothing can get matched.
         return null;
     }
 
     /**
-     * Checks, if the default rule is granted
+     * Checks, if a rule is granted
      *
+     * @param  string $code Code to check the rule name for
      * @return bool
      */
-    protected function checkDefaultPermission()
+    protected function checkPermission($code)
     {
-        $defRule = $this->getDefaultOnCampusRule();
-
-        // if no default rule is configured, return false.
-        if (null === $defRule) {
-            return false;
-        }
-
+        $onCampusRule = $this->getOnCampusRule($code);
         $authService = $this->getAuthorizationService();
 
         // if no authorization service is available, don't do anything
@@ -260,7 +245,7 @@ class PrimoPermissionHandler
             return false;
         }
 
-        if ($authService->isGranted($defRule)) {
+        if ($authService->isGranted($onCampusRule)) {
             return true;
         }
 
