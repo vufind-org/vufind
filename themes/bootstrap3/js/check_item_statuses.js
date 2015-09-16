@@ -1,4 +1,4 @@
-/*global VUFIND */
+/*global VuFind */
 
 function checkItemStatuses() {
   var id = $.map($('.ajaxItem'), function(i) {

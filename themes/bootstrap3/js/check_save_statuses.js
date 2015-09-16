@@ -1,4 +1,4 @@
-/*global VUFIND */
+/*global VuFind */
 
 function checkSaveStatuses() {
   var data = $.map($('.result,.record'), function(i) {
