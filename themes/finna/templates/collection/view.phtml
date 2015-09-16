@@ -75,7 +75,10 @@
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
-      <?=$this->record($this->driver)->getCollectionMetadata()?>
+      <h2 class="collection-title"><?=$this->driver->getTitle();?></h2>
+      <div class="truncate-field wide">
+        <?=implode('<br><br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+      </div>
     </div>
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>

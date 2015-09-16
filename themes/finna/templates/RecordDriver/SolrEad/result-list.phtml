@@ -23,7 +23,9 @@
       <div class="dateyeartype">
         <div class="resultItemFormat"><?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?></div>
         <? if($this->driver->isCollection()): ?>
-          <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+          <div class="truncate-field">
+            <?=implode('<br><br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+          </div>
         <? else: ?>
           <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
           <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
