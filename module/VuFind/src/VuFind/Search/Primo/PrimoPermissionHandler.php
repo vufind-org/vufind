@@ -97,7 +97,8 @@ class PrimoPermissionHandler
     /**
      * Set the institution code (no autodetection)
      *
-     * @param  string $code Institutioncode
+     * @param string $code Institutioncode
+     *
      * @return void
      */
     public function setInstCode($code)
@@ -205,7 +206,8 @@ class PrimoPermissionHandler
     /**
      * Determine a onCampus Rule for a certain code
      *
-     * @param  string $code Code to determine the rule name for
+     * @param string $code Code to determine the rule name for
+     *
      * @return string
      */
     protected function getOnCampusRule($code)
@@ -231,7 +233,8 @@ class PrimoPermissionHandler
     /**
      * Checks, if a rule is granted
      *
-     * @param  string $code Code to check the rule name for
+     * @param string $code Code to check the rule name for
+     *
      * @return bool
      */
     protected function checkPermission($code)
