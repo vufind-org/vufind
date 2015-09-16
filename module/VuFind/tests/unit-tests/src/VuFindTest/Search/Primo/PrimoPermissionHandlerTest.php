@@ -176,6 +176,18 @@ class PrimoPermissionHandlerTest extends TestCase
     }
 
     /**
+     * Test the institution code setter
+     *
+     * @return void
+     */
+    public function testSetInstCode()
+    {
+        $handler = new PrimoPermissionHandler($this->primoConfig);
+        $handler->setInstCode('MEMBER');
+        $this->assertEquals('MEMBER', $handler->getInstCode());
+    }
+
+    /**
      * Test the handler if permission via member code matches
      *
      * @return void
@@ -277,6 +289,7 @@ class PrimoPermissionHandlerTest extends TestCase
     public function testAuthNotExisting()
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
+        $handler->setInstCode('NOTEXISTING');
         $mockAuth = $this->getMockBuilder('ZfcRbac\Service\AuthorizationService')
             ->disableOriginalConstructor()
             ->getMock();
@@ -284,7 +297,7 @@ class PrimoPermissionHandlerTest extends TestCase
             ->will($this->returnValue(false));
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertEquals('DEFAULT', $handler->getInstCode());
+        $this->assertEquals('NOTEXISTING', $handler->getInstCode());
         $this->assertEquals(false, $handler->hasPermission());
     }
 
