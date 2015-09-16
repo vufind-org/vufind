@@ -1,7 +1,11 @@
 <?
     // Set up page title:
     $this->headTitle($this->translate('My Profile'));
+
+    // Set up additional JS:
     $this->headScript()->appendFile("finna-user-profile.js");
+    $this->headScript()->appendFile("finna-library-cards.js");
+
     // Set up myresearch menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile']);
     // Set up breadcrumbs:
@@ -16,6 +20,9 @@
     $updateAddress = ($config = $this->ils()->checkFunction('UpdateAddress')) && $config['method'] == 'email';
     $updatePhone = ($config = $this->ils()->checkFunction('UpdatePhone')) && $config['method'] == 'driver';
     $updateEmail = ($config = $this->ils()->checkFunction('UpdateEmail')) && $config['method'] == 'driver';
+
+    // Additional translations
+    $this->jsTranslations()->addStrings(['new_password_success' => 'new_password_success']);
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9">
@@ -50,9 +57,29 @@
         <?= $this->partial('myresearch/profile-messaging.phtml', ['profile' => $profile]); ?>
       <? endif; ?>
 
+      <?
+        $selectedCard = null;
+        foreach ($cards as $card) {
+            if ($card['cat_username'] == $user->cat_username) {
+                $selectedCard = $card;
+                break;
+            }
+        }
+      ?>
+      <? if ($selectedCard !== null): ?>
+        <div class="col-xs-12">
+          <span class="myresearch-profile-middle-header"><?=$this->transEsc('change_password_heading') ?></span>
+        </div>
+        <div class="col-xs-12">
+          <span class="change-password-link">
+            <a class="modal-link" href="<?=$this->url('newLibraryCardPassword') ?>?id=<?=$this->escapeHtmlAttr($selectedCard['id']) ?>" title="<?=$this->transEsc('Change Password')?>"><?=$this->transEsc('change_password_link') ?></a>
+          </span>
+        </div>
+      <? endif; ?>
+
       <form id="profile_library_form" class="inline" method="post">
         <div class="col-xs-12">
-          <span class="myresearch-profile-middle-header"><?= $this->transEsc('Personal details maintained by the library') ?></span>
+          <span class="myresearch-profile-middle-header"><?=$this->transEsc('Personal details maintained by the library') ?></span>
         </div>
         <? if (isset($this->profile['firstname'])): ?>
           <div class="col-xs-4 col-sm-4 profile-title"><?=$this->transEsc('First Name') ?>:</div>
