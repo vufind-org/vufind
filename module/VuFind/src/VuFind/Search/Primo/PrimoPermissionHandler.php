@@ -167,7 +167,6 @@ class PrimoPermissionHandler
             return;
         }
 
-
         // Autodetection failed, set instCode to false
         // Primo will not work without an institution code!
         if ($this->instCode === null) {
@@ -251,5 +250,4 @@ class PrimoPermissionHandler
 
         return false;
     }
-
 }

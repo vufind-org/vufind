@@ -256,7 +256,6 @@ class PrimoPermissionHandlerTest extends TestCase
         $this->assertEquals(true, $handler->hasPermission());
     }
 
-
     /**
      * Test the handler if permission does not match
      *
@@ -279,7 +278,6 @@ class PrimoPermissionHandlerTest extends TestCase
 
         $this->assertEquals(false, $handler->hasPermission());
     }
-
 
     /**
      * Test the handler if permission does not exist
