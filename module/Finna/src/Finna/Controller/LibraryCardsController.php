@@ -109,7 +109,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         $password = $this->params()->fromPost('password', '');
         $password2 = $this->params()->fromPost('password2', '');
 
-        if (!$oldPassword || !$password || !$password2) {
+        if ($oldPassword === '' || $password === '' || $password2 === '') {
             $this->flashMessenger()
                 ->addMessage('authentication_error_blank', 'error');
             return false;
@@ -152,7 +152,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         $user->saveLibraryCard(
             $card->id, $card->card_name, $card->cat_username, $password
         );
-        if ($user->cat_username == $card->cat_username) {
+        if ($user->cat_username === $card->cat_username) {
             $user->saveCredentials($card->cat_username, $password);
         }
         $user->updateHash();

@@ -11,7 +11,9 @@ finna.libraryCards = (function() {
                 $('.fa.fa-spinner', evt.target).remove();
                 return false;
             }
+            $(evt.target).find(':submit').attr('disabled', true);
             Lightbox.submit($(evt.target), function(html) {
+                $(evt.target).find(':submit').removeAttr('disabled');
                 var type = "danger";
                 var divPattern = '<div class="alert alert-'+type+'">';
                 var fi = html.indexOf(divPattern);
