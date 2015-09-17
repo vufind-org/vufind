@@ -70,7 +70,7 @@ defaultAccountPage = Favorites
 ; Allow access to the Admin module? (See [AdminAuth] below for more granular ways
 ; to restrict Admin access).
 admin_enabled = false
-; Show sidebar on the left side instead of right
+; Show sidebar on the left side instead of right. This only affects on facet sidebar in search result view
 sidebarOnLeft = false
 ; Show (true) / Hide (false) Book Bag - Default is Hide.  The Book Bag is currently
 ; only supported by the blueprint theme; other themes will ignore this setting.

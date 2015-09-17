@@ -1,7 +1,11 @@
 <? $this->headTitle('Ohje'); $this->content()->setHeading('Ohje'); ?>
 
 <div class="row">
-  <div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="col-sm-3 sidebar">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="col-sm-9">
     <? if ($this->resolver('Content/Additions/helpBegin.phtml')): ?>
       <?=$this->render('Content/Additions/helpBegin.phtml')?>
     <? endif; ?>
@@ -169,9 +173,5 @@
     <? if ($this->resolver('Content/Additions/helpEnd.phtml')): ?>
       <?=$this->render('Content/Additions/helpEnd.phtml')?>
     <? endif; ?>
-  </div>
-  <div class="<?=$this->layoutClass('sidebar')?>">
-    <div class="content-navigation-menu">
-    </div>
   </div>
 </div>
