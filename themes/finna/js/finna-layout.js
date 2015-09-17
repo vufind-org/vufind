@@ -512,10 +512,23 @@ finna.layout = (function() {
     }
     
     var initTouchDeviceGallery = function () {
-      if ($('.result-view-grid')[0] != null && isTouchDevice()) {
-        $('.result-view-grid').addClass('touch-device');
-      }
+        if ($('.result-view-grid')[0] != null && isTouchDevice()) {
+            $('.result-view-grid').addClass('touch-device');
+        }
     }
+    var initImageCheck = function() {
+        $(".image-popup-trigger img").each(function() {
+            $(this).one("load",function() {
+                if (this.naturalWidth && this.naturalWidth == 10 && this.naturalHeight == 10) {
+                    $(this).parent().addClass('no-image');
+                }
+            }).each(function() {
+                if (this.complete) {
+                    $(this).load();
+                }
+            });
+        });
+    };
 
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
@@ -549,6 +562,7 @@ finna.layout = (function() {
             checkSaveStatuses();
             initAuthorizationNotification();
             initTouchDeviceGallery();
+            initImageCheck();
         }
     };
 

@@ -2,11 +2,17 @@
     // Set up page title:
     $this->headTitle($this->translate('Library Cards'));
 
+    // Set up additional JS:
+    $this->headScript()->appendFile("finna-library-cards.js");
+
     // Set up menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'librarycards'));
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Library Cards') . '</li>';
+
+    // Additional translations
+    $this->jsTranslations()->addStrings(['new_password_success' => 'new_password_success']);
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9">
@@ -15,7 +21,7 @@
     <? if ($this->libraryCards->count() == 0): ?>
       <h4><?=$this->transEsc('You do not have any library cards')?></h4>
     <? else: ?>
-      <table class="table table-striped useraccount-table">
+      <table class="table table-striped useraccount-table library-cards">
       <tr class="headers">
         <th><?=$this->transEsc('Library Card Name')?></th>
         <? if ($this->multipleTargets): ?>
@@ -49,6 +55,9 @@
                 <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
                 <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
               </ul>
+              <span class="change-password-link">
+                <a class="btn btn-link modal-link" href="<?=$this->url('newLibraryCardPassword') ?>?id=<?=$this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEsc('Change Password')?>"><i class="fa fa-lock bigger gray"></i> <?=$this->transEsc('Change Password')?></a>
+              </span>
             </div>
           </td>
         </tr>

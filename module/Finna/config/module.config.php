@@ -94,6 +94,7 @@ $config = [
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
             'feedback' => 'Finna\Controller\FeedbackController',
+            'librarycards' => 'Finna\Controller\LibraryCardsController',
             'my-research' => 'Finna\Controller\MyResearchController',
             'pci' => 'Finna\Controller\PCIController',
             'primo' => 'Finna\Controller\PrimoController',
@@ -247,7 +248,7 @@ $config = [
             ],
         ],
     ],
-    
+
     // Authorization configuration:
     'zfc_rbac' => [
         'vufind_permission_provider_manager' => [
@@ -259,12 +260,18 @@ $config = [
 
 ];
 
+// Define dynamic routes -- controller => [route name => action]
+$dynamicRoutes = [
+    'LibraryCards' => ['newLibraryCardPassword' => 'newPassword/[:id]'],
+];
+
 $staticRoutes = [
    'Browse/Database', 'Browse/Journal',
    'PCI/Home', 'PCI/Search', 'PCI/Record'
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
 
 return $config;

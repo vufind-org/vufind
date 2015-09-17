@@ -73,6 +73,7 @@ table .iconlabel {
         & .iconlabel {
             width: 100%;
             color: @body-bg;
+            display: none;
 
             &:before {
                 padding-right: 3px;
@@ -119,6 +120,25 @@ table .iconlabel {
             left: 40%;
         }
     }
+}
+.image-popup-trigger.no-image {
+    @media (max-width:@screen-xs-max) {
+        display: none;   
+    }
+    & .fa-magnify {
+        display: none;   
+    }
+    & .iconlabel {
+        display: block;   
+    }
+}
+.grid-image .image-popup-trigger.no-image {
+    @media (max-width:@screen-xs-max) {
+        display: block;   
+    }
+    & .fa-magnify {
+        display: none;   
+    }  
 }
 .fa-spinner {
   margin-left: 5px;
