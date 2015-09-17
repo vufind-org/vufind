@@ -67,7 +67,7 @@ class Connection extends \VuFind\ILS\Connection
         $session = new \Zend\Session\Container('Finna\ILS\Connection\PatronCache');
         $hash = md5(
             $details['patron']['cat_username'] . "\t"
-            . $details['patron']['oldPassword']
+            . $details['oldPassword']
         );
         if (isset($session->$hash)) {
             unset($session->$hash);
