@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use Zend\View\Helper\AbstractHelper, Zend\Mvc\Controller\Plugin\FlashMessenger;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Recaptcha view helper
@@ -87,49 +87,7 @@ class Recaptcha extends AbstractHelper
         if (!isset($useRecaptcha) || !$useRecaptcha) {
             return false;
         }
-
-        if ($this->recaptcha->getPublicKey() === null) {
-            throw new Exception('Missing public key');
-        }
-
-        $host = \ZendService\Recaptcha\Recaptcha::API_SERVER;
-
-        $params = $this->recaptcha->getParams();
-        if ((bool) $params['ssl'] === true) {
-            $host = \ZendService\Recaptcha\Recaptcha::API_SECURE_SERVER;
-        }
-
-        $errorPart = '';
-        if (!empty($params['error'])) {
-            $errorPart = '&error=' . urlencode($params['error']);
-        }
-
-        $options = $this->recaptcha->getOptions();
-        if (!empty($options)) {
-            $encoded = \Zend\Json\Json::encode($options);
-        } else {
-            $encoded = "{}";
-        }
-        $challengeField = 'recaptcha_challenge_field';
-        $responseField  = 'recaptcha_response_field';
-        if (!empty($name)) {
-            $challengeField = $name . '[' . $challengeField . ']';
-            $responseField  = $name . '[' . $responseField . ']';
-        }
-
-        return $this->view->render(
-            'Service/recaptcha.phtml',
-            [
-                'challengeField'   => $challengeField,
-                'errorPart'        => $errorPart,
-                'host'             => $host,
-                'options'          => $encoded,
-                'publicKey'        => $this->recaptcha->getPublicKey(),
-                'responseField'    => $responseField,
-                'theme'            => $options['theme'],
-                'useRecaptcha'     => $useRecaptcha,
-            ]
-        );
+        return $this->recaptcha->getHtml();
     }
 
     /**

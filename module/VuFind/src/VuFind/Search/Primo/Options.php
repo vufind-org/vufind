@@ -39,13 +39,6 @@ namespace VuFind\Search\Primo;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Maximum number of results
-     *
-     * @var int
-     */
-    protected $resultLimit = 3980;
-
-    /**
      * Advanced search operators
      *
      * @var array
@@ -66,10 +59,9 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($facetSettings->Advanced_Facet_Settings->translated_facets)
             && count($facetSettings->Advanced_Facet_Settings->translated_facets) > 0
         ) {
-            $list = $facetSettings->Advanced_Facet_Settings->translated_facets;
-            foreach ($list as $c) {
-                $this->translatedFacets[] = $c;
-            }
+            $this->setTranslatedFacets(
+                $facetSettings->Advanced_Facet_Settings->translated_facets->toArray()
+            );
         }
         if (isset($facetSettings->Advanced_Facet_Settings->special_facets)) {
             $this->specialAdvancedFacets
@@ -101,6 +93,8 @@ class Options extends \VuFind\Search\Base\Options
         // Result limit:
         if (isset($searchSettings->General->result_limit)) {
             $this->resultLimit = $searchSettings->General->result_limit;
+        } else {
+            $this->resultLimit = 3980;  // default
         }
 
         // Search handler setup:
@@ -138,18 +132,6 @@ class Options extends \VuFind\Search\Base\Options
                 $this->defaultSortByHandler[$key] = $val;
             }
         }
-    }
-
-    /**
-     * If there is a limit to how many search results a user can access, this
-     * method will return that limit.  If there is no limit, this will return
-     * -1.
-     *
-     * @return int
-     */
-    public function getVisibleSearchResultLimit()
-    {
-        return intval($this->resultLimit);
     }
 
     /**

@@ -147,6 +147,7 @@ $config = [
             'VuFind\DbTablePluginManager' => 'VuFind\Service\Factory::getDbTablePluginManager',
             'VuFind\Export' => 'VuFind\Service\Factory::getExport',
             'VuFind\HierarchyDriverPluginManager' => 'VuFind\Service\Factory::getHierarchyDriverPluginManager',
+            'VuFind\HierarchyTreeDataFormatterPluginManager' => 'VuFind\Service\Factory::getHierarchyTreeDataFormatterPluginManager',
             'VuFind\HierarchyTreeDataSourcePluginManager' => 'VuFind\Service\Factory::getHierarchyTreeDataSourcePluginManager',
             'VuFind\HierarchyTreeRendererPluginManager' => 'VuFind\Service\Factory::getHierarchyTreeRendererPluginManager',
             'VuFind\Http' => 'VuFind\Service\Factory::getHttp',
@@ -159,6 +160,7 @@ $config = [
             'VuFind\ILSTitleHoldLogic' => 'VuFind\Service\Factory::getILSTitleHoldLogic',
             'VuFind\Logger' => 'VuFind\Service\Factory::getLogger',
             'VuFind\Mailer' => 'VuFind\Mailer\Factory',
+            'VuFind\ProxyConfig' => 'VuFind\Service\Factory::getProxyConfig',
             'VuFind\Recaptcha' => 'VuFind\Service\Factory::getRecaptcha',
             'VuFind\RecommendPluginManager' => 'VuFind\Service\Factory::getRecommendPluginManager',
             'VuFind\RecordDriverPluginManager' => 'VuFind\Service\Factory::getRecordDriverPluginManager',
@@ -172,6 +174,7 @@ $config = [
             'VuFind\SearchOptionsPluginManager' => 'VuFind\Service\Factory::getSearchOptionsPluginManager',
             'VuFind\SearchParamsPluginManager' => 'VuFind\Service\Factory::getSearchParamsPluginManager',
             'VuFind\SearchResultsPluginManager' => 'VuFind\Service\Factory::getSearchResultsPluginManager',
+            'VuFind\SearchRunner' => 'VuFind\Service\Factory::getSearchRunner',
             'VuFind\SearchSpecsReader' => 'VuFind\Service\Factory::getSearchSpecsReader',
             'VuFind\SearchStats' => 'VuFind\Service\Factory::getSearchStats',
             'VuFind\SessionManager' => 'VuFind\Service\Factory::getSessionManager',
@@ -184,9 +187,10 @@ $config = [
             'VuFind\WorldCatUtils' => 'VuFind\Service\Factory::getWorldCatUtils',
         ],
         'invokables' => [
+            'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper',
+            'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
             'VuFind\Search'         => 'VuFindSearch\Service',
             'VuFind\Search\Memory'  => 'VuFind\Search\Memory',
-            'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper'
         ],
         'initializers' => [
             'VuFind\ServiceManager\Initializer::initInstance',
@@ -349,6 +353,12 @@ $config = [
                     'flat' => 'VuFind\Hierarchy\Driver\Factory::getHierarchyFlat',
                 ],
             ],
+            'hierarchy_treedataformatter' => [
+                'invokables' => [
+                    'json' => 'VuFind\Hierarchy\TreeDataFormatter\Json',
+                    'xml' => 'VuFind\Hierarchy\TreeDataFormatter\Xml',
+                ],
+            ],
             'hierarchy_treedatasource' => [
                 'factories' => [
                     'solr' => 'VuFind\Hierarchy\TreeDataSource\Factory::getSolr',
@@ -366,6 +376,7 @@ $config = [
                 'abstract_factories' => ['VuFind\ILS\Driver\PluginFactory'],
                 'factories' => [
                     'aleph' => 'VuFind\ILS\Driver\Factory::getAleph',
+                    'daia' => 'VuFind\ILS\Driver\Factory::getDAIA',
                     'demo' => 'VuFind\ILS\Driver\Factory::getDemo',
                     'horizon' => 'VuFind\ILS\Driver\Factory::getHorizon',
                     'horizonxmlapi' => 'VuFind\ILS\Driver\Factory::getHorizonXMLAPI',
@@ -378,13 +389,11 @@ $config = [
                 'invokables' => [
                     'amicus' => 'VuFind\ILS\Driver\Amicus',
                     'claviussql' => 'VuFind\ILS\Driver\ClaviusSQL',
-                    'daia' => 'VuFind\ILS\Driver\DAIA',
                     'evergreen' => 'VuFind\ILS\Driver\Evergreen',
                     'innovative' => 'VuFind\ILS\Driver\Innovative',
                     'koha' => 'VuFind\ILS\Driver\Koha',
                     'lbs4' => 'VuFind\ILS\Driver\LBS4',
                     'newgenlib' => 'VuFind\ILS\Driver\NewGenLib',
-                    'pica' => 'VuFind\ILS\Driver\PICA',
                     'polaris' => 'VuFind\ILS\Driver\Polaris',
                     'sample' => 'VuFind\ILS\Driver\Sample',
                     'sierra' => 'VuFind\ILS\Driver\Sierra',
@@ -444,6 +453,7 @@ $config = [
                     'solrauth' => 'VuFind\RecordDriver\Factory::getSolrAuth',
                     'solrdefault' => 'VuFind\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'VuFind\RecordDriver\Factory::getSolrMarc',
+                    'solrmarcremote' => 'VuFind\RecordDriver\Factory::getSolrMarcRemote',
                     'solrreserves' => 'VuFind\RecordDriver\Factory::getSolrReserves',
                     'solrweb' => 'VuFind\RecordDriver\Factory::getSolrWeb',
                     'summon' => 'VuFind\RecordDriver\Factory::getSummon',
@@ -493,6 +503,7 @@ $config = [
                     '360link' => 'VuFind\Resolver\Driver\Factory::getThreesixtylink',
                     'ezb' => 'VuFind\Resolver\Driver\Factory::getEzb',
                     'sfx' => 'VuFind\Resolver\Driver\Factory::getSfx',
+                    'redi' => 'VuFind\Resolver\Driver\Factory::getRedi',
                 ],
                 'aliases' => [
                     'threesixtylink' => '360link',
@@ -535,6 +546,7 @@ $config = [
             'search_results' => [
                 'abstract_factories' => ['VuFind\Search\Results\PluginFactory'],
                 'factories' => [
+                    'favorites' => 'VuFind\Search\Results\Factory::getFavorites',
                     'solr' => 'VuFind\Search\Results\Factory::getSolr',
                 ],
             ],

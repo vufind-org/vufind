@@ -54,11 +54,12 @@ class Export
     protected $exportConfig;
 
     /**
-     * Bulk options (initialized to boolean false, populated later)
+     * Property to cache active formats
+     * (initialized to empty array , populated later)
      *
-     * @var array|bool
+     * @var array
      */
-    protected $bulkOptions = false;
+    protected $activeFormats = [];
 
     /**
      * Constructor
@@ -75,28 +76,13 @@ class Export
     /**
      * Get bulk export options.
      *
+     * @deprecated use getActiveFormats($context) instead
+     *
      * @return array
      */
     public function getBulkOptions()
     {
-        if ($this->bulkOptions === false) {
-            $this->bulkOptions = [];
-            if (isset($this->mainConfig->BulkExport->enabled)
-                && isset($this->mainConfig->BulkExport->options)
-                && $this->mainConfig->BulkExport->enabled
-            ) {
-                $config = explode(':', $this->mainConfig->BulkExport->options);
-                foreach ($config as $option) {
-                    if (isset($this->mainConfig->Export->$option)
-                        && $this->mainConfig->Export->$option == true
-                    ) {
-                        $this->bulkOptions[] = $option;
-                    }
-                }
-            }
-        }
-
-        return $this->bulkOptions;
+        return $this->getActiveFormats('bulk');
     }
 
     /**
@@ -271,14 +257,12 @@ class Export
     {
         // Get an array of enabled export formats (from config, or use defaults
         // if nothing in config array).
-        $active = isset($this->mainConfig->Export)
-            ? $this->mainConfig->Export->toArray()
-            : ['RefWorks' => true, 'EndNote' => true];
+        $active = $this->getActiveFormats('record');
 
         // Loop through all possible formats:
         $formats = [];
         foreach (array_keys($this->exportConfig->toArray()) as $format) {
-            if (isset($active[$format]) && $active[$format]
+            if (in_array($format, $active)
                 && $this->recordSupportsFormat($driver, $format)
             ) {
                 $formats[] = $format;
@@ -299,7 +283,7 @@ class Export
      */
     public function getFormatsForRecords($drivers)
     {
-        $formats = $this->getBulkOptions();
+        $formats = $this->getActiveFormats('bulk');
         foreach ($drivers as $driver) {
             // Filter out unsupported export formats:
             $newFormats = [];
@@ -337,5 +321,67 @@ class Export
     {
         return isset($this->exportConfig->$format->label)
             ? $this->exportConfig->$format->label : $format;
+    }
+
+    /**
+     * Get the bulk export type for the specified export format.
+     *
+     * @param string $format Format identifier
+     *
+     * @return string
+     */
+    public function getBulkExportType($format)
+    {
+        // if exportType is set on per-format basis in export.ini then use it
+        if (isset($this->exportConfig->$format->bulkExportType)) {
+            return $this->exportConfig->$format->bulkExportType;
+        }
+
+        // else check if export type is set in config.ini
+        return isset($this->mainConfig->BulkExport->defaultType)
+            ? $this->mainConfig->BulkExport->defaultType : 'link';
+    }
+
+    /**
+     * Get active export formats for the given context.
+     *
+     * @param string $context Export context (i.e. record, bulk)
+     *
+     * @return array
+     */
+    public function getActiveFormats($context = 'record')
+    {
+        if (!isset($this->activeFormats[$context])) {
+            $formatSettings = isset($this->mainConfig->Export)
+                ? $this->mainConfig->Export->toArray()
+                : ['RefWorks' => 'record,bulk', 'EndNote' => 'record,bulk'];
+
+            $active = [];
+            foreach ($formatSettings as $format => $allowedContexts) {
+                if (strpos($allowedContexts, $context) !== false
+                    || ($context == 'record' && $allowedContexts == 1)
+                ) {
+                    $active[] = $format;
+                }
+            }
+
+            // for legacy settings [BulkExport]
+            if ($context == 'bulk'
+                && isset($this->mainConfig->BulkExport->enabled)
+                && $this->mainConfig->BulkExport->enabled
+                && isset($this->mainConfig->BulkExport->options)
+            ) {
+                $config = explode(':', $this->mainConfig->BulkExport->options);
+                foreach ($config as $option) {
+                    if (isset($this->mainConfig->Export->$option)
+                        && $this->mainConfig->Export->$option == true
+                    ) {
+                        $active[] = $option;
+                    }
+                }
+            }
+            $this->activeFormats[$context] = array_unique($active);
+        }
+        return $this->activeFormats[$context];
     }
 }

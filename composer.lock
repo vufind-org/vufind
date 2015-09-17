@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ad7918adabede04ad206b2d095d581db",
+    "hash": "1723bad3925fc92b726a16829ea9e8ac",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -120,6 +120,66 @@
             }
         },
         {
+            "name": "los/losrecaptcha",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Lansoweb/LosReCaptcha.git",
+                "reference": "2e18af8d57286c28c1951c7305f8379e7304b203"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Lansoweb/LosReCaptcha/zipball/2e18af8d57286c28c1951c7305f8379e7304b203",
+                "reference": "2e18af8d57286c28c1951c7305f8379e7304b203",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "zendframework/zendframework": ">=2.3.2,<3.0.0"
+            },
+            "require-dev": {
+                "satooshi/php-coveralls": "dev-master"
+            },
+            "suggest": {
+                "los/losbase": "los/losbase for some abstract classes to speed development ",
+                "los/loslog": "los/loslog for logging",
+                "los/losui": "los/losui for twitter bootstrap 3 styling, jquery, chosen and other libraries"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "LosReCaptcha\\": "src/"
+                },
+                "psr-0": {
+                    "LosReCaptcha\\": "src/"
+                },
+                "classmap": [
+                    "./"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Leandro Silva",
+                    "email": "leandro@leandrosilva.info",
+                    "homepage": "http://leandrosilva.info"
+                }
+            ],
+            "description": "ZF2 module for integration with new ReCaptcha service form Google",
+            "homepage": "http://github.com/Lansoweb/LosReCaptcha",
+            "keywords": [
+                "captcha",
+                "los",
+                "module",
+                "recaptcha",
+                "zf2"
+            ],
+            "time": "2015-04-28 15:40:23"
+        },
+        {
             "name": "mobileesp/mdetect",
             "version": "dev-master",
             "dist": {
@@ -137,16 +197,16 @@
         },
         {
             "name": "ocramius/proxy-manager",
-            "version": "1.0.0",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ocramius/ProxyManager.git",
-                "reference": "a80a39fac4fbd771aea7d3871929933a3a1bbf3e"
+                "reference": "57e9272ec0e8deccf09421596e0e2252df440e11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/a80a39fac4fbd771aea7d3871929933a3a1bbf3e",
-                "reference": "a80a39fac4fbd771aea7d3871929933a3a1bbf3e",
+                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/57e9272ec0e8deccf09421596e0e2252df440e11",
+                "reference": "57e9272ec0e8deccf09421596e0e2252df440e11",
                 "shasum": ""
             },
             "require": {
@@ -196,24 +256,24 @@
                 "proxy pattern",
                 "service proxies"
             ],
-            "time": "2014-12-12 10:59:05"
+            "time": "2015-08-09 04:28:19"
         },
         {
             "name": "oyejorge/less.php",
-            "version": "v1.7.0.3",
+            "version": "v1.7.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/oyejorge/less.php.git",
-                "reference": "6e08ecb07e6f6d9170c23e8744c58fdd822ad0de"
+                "reference": "4385036b1dbfaf37f5380bd26a1e6006fc43149f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/oyejorge/less.php/zipball/6e08ecb07e6f6d9170c23e8744c58fdd822ad0de",
-                "reference": "6e08ecb07e6f6d9170c23e8744c58fdd822ad0de",
+                "url": "https://api.github.com/repos/oyejorge/less.php/zipball/4385036b1dbfaf37f5380bd26a1e6006fc43149f",
+                "reference": "4385036b1dbfaf37f5380bd26a1e6006fc43149f",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.2"
+                "php": ">=5.3"
             },
             "bin": [
                 "bin/lessc"
@@ -255,22 +315,22 @@
                 "php",
                 "stylesheet"
             ],
-            "time": "2015-03-10 18:12:59"
+            "time": "2015-07-13 20:34:18"
         },
         {
             "name": "pear-pear.php.net/Archive_Tar",
-            "version": "1.3.15",
+            "version": "1.4.0",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/Archive_Tar-1.3.15.tgz",
+                "url": "http://pear.php.net/get/Archive_Tar-1.4.0.tgz",
                 "reference": null,
                 "shasum": null
             },
             "require": {
-                "php": ">=4.3.0.0"
+                "php": ">=5.2.0.0"
             },
             "replace": {
-                "pear-pear/archive_tar": "== 1.3.15.0"
+                "pear-pear/archive_tar": "== 1.4.0.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -282,16 +342,16 @@
                 "/"
             ],
             "license": [
-                "New BSD\n License"
+                "New BSD License"
             ],
             "description": "This class provides handling of tar files in PHP.\nIt supports creating, listing, extracting and adding to tar files.\nGzip support is available if PHP has the zlib extension built-in or\nloaded. Bz2 compression is also supported with the bz2 extension loaded."
         },
         {
             "name": "pear-pear.php.net/Console_Getopt",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/Console_Getopt-1.4.0.tgz",
+                "url": "http://pear.php.net/get/Console_Getopt-1.4.1.tgz",
                 "reference": null,
                 "shasum": null
             },
@@ -299,7 +359,7 @@
                 "php": ">=5.4.0.0"
             },
             "replace": {
-                "pear-pear/console_getopt": "== 1.4.0.0"
+                "pear-pear/console_getopt": "== 1.4.1.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -311,9 +371,9 @@
                 "/"
             ],
             "license": [
-                "PHP License"
+                "BSD-2-Clause"
             ],
-            "description": "This is a PHP implementation of &quot;getopt&quot; supporting both\nshort and long options."
+            "description": "This is a PHP implementation of \"getopt\" supporting both\nshort and long options."
         },
         {
             "name": "pear-pear.php.net/File_MARC",
@@ -338,6 +398,9 @@
             },
             "include-path": [
                 "/"
+            ],
+            "license": [
+                "GNU Lesser General Public License"
             ],
             "description": "The standard for machine-readable cataloging (MARC) records is documented at http://loc.gov/marc/. This package enables you to read existing MARC records from a file, string, or (using the YAZ extension), from a Z39.50 source. You can also use this package to create new MARC records.\n\nThis package is based on the PHP MARC package, originally called \"php-marc\", that is part of the Emilda Project (http://www.emilda.org).  Christoffer Landtman generously agreed to make the \"php-marc\" code available under the GNU LGPL so it could be used as the basis of this PEAR package."
         },
@@ -375,14 +438,17 @@
             "include-path": [
                 "/"
             ],
+            "license": [
+                "New BSD License"
+            ],
             "description": "The PEAR package contains:\n * the PEAR installer, for creating, distributing\n   and installing packages\n * the PEAR_Exception PHP5 error handling mechanism\n * the PEAR_ErrorStack advanced error handling mechanism\n * the PEAR_Error error handling mechanism\n * the OS_Guess class for retrieving info about the OS\n   where PHP is running on\n * the System class for quick handling of common operations\n   with files and directories\n * the PEAR base class\n  Features in a nutshell:\n  * full support for channels\n  * pre-download dependency validation\n  * new package.xml 2.0 format allows tremendous flexibility while maintaining BC\n  * support for optional dependency groups and limited support for sub-packaging\n  * robust dependency support\n  * full dependency validation on uninstall\n  * remote install for hosts with only ftp access - no more problems with\n    restricted host installation\n  * full support for mirroring\n  * support for bundling several packages into a single tarball\n  * support for static dependencies on a url-based package\n  * support for custom file roles and installation tasks"
         },
         {
             "name": "pear-pear.php.net/Structures_Graph",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/Structures_Graph-1.1.0.tgz",
+                "url": "http://pear.php.net/get/Structures_Graph-1.1.1.tgz",
                 "reference": null,
                 "shasum": null
             },
@@ -390,7 +456,7 @@
                 "php": ">=5.3.0.0"
             },
             "replace": {
-                "pear-pear/structures_graph": "== 1.1.0.0"
+                "pear-pear/structures_graph": "== 1.1.1.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -402,7 +468,7 @@
                 "/"
             ],
             "license": [
-                "LGPL License"
+                "LGPL-3.0+"
             ],
             "description": "Structures_Graph is a package for creating and manipulating graph datastructures. It allows building of directed\nand undirected graphs, with data and metadata stored in nodes. The library provides functions for graph traversing\nas well as for characteristic extraction from the graph topology."
         },
@@ -430,6 +496,9 @@
             "include-path": [
                 "/"
             ],
+            "license": [
+                "New BSD"
+            ],
             "description": "Package to validate various datas. It includes :\n    - numbers (min/max, decimal or not)\n    - email (syntax, domain check, rfc822)\n    - string (predifined type alpha upper and/or lowercase, numeric,...)\n    - date (min, max, rfc822 compliant)\n    - uri (RFC2396)\n    - possibility valid multiple data with a single method call (::multiple)"
         },
         {
@@ -456,6 +525,9 @@
             },
             "include-path": [
                 "/"
+            ],
+            "license": [
+                "New BSD"
             ],
             "description": "Package containes ISPN (International Standard Product Numbers) validations such as:\n * ISSN\n * ISBN\n * ISMN\n * ISRC (International Standard Recording Code)\n * EAN8\n * EAN13\n * EAN14\n * UCC12\n * SSCC"
         },
@@ -524,30 +596,32 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.6.4",
-            "target-dir": "Symfony/Component/Yaml",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "60ed7751671113cf1ee7d7778e691642c2e9acd8"
+                "reference": "71340e996171474a53f3d29111d046be4ad8a0ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/60ed7751671113cf1ee7d7778e691642c2e9acd8",
-                "reference": "60ed7751671113cf1ee7d7778e691642c2e9acd8",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/71340e996171474a53f3d29111d046be4ad8a0ff",
+                "reference": "71340e996171474a53f3d29111d046be4ad8a0ff",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.7-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
+                "psr-4": {
                     "Symfony\\Component\\Yaml\\": ""
                 }
             },
@@ -557,17 +631,17 @@
             ],
             "authors": [
                 {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
-                },
-                {
                     "name": "Fabien Potencier",
                     "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
                 }
             ],
             "description": "Symfony Yaml Component",
-            "homepage": "http://symfony.com",
-            "time": "2015-01-25 04:39:26"
+            "homepage": "https://symfony.com",
+            "time": "2015-07-28 14:07:07"
         },
         {
             "name": "vufind-org/vufindcode",
@@ -607,16 +681,16 @@
         },
         {
             "name": "vufind-org/vufindhttp",
-            "version": "v1.0.4",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindhttp.git",
-                "reference": "1b03d31c914faa6e50b6fe811fe609328d1d287b"
+                "reference": "781a14b4daccbf699eefaa22311de0b6307c20bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/1b03d31c914faa6e50b6fe811fe609328d1d287b",
-                "reference": "1b03d31c914faa6e50b6fe811fe609328d1d287b",
+                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/781a14b4daccbf699eefaa22311de0b6307c20bd",
+                "reference": "781a14b4daccbf699eefaa22311de0b6307c20bd",
                 "shasum": ""
             },
             "require": {
@@ -649,25 +723,25 @@
             ],
             "description": "VuFind 2.x HTTP service library",
             "homepage": "http://vufind.org/",
-            "time": "2015-03-10 16:22:47"
+            "time": "2015-08-28 14:44:20"
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.3.7",
+            "version": "2.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "a1aae5fdd27a422beb32c56ddf5a197654a0f94a"
+                "reference": "828119961c68fa50bf42baa60d63c3c06a0b58e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-a1aae5fdd27a422beb32c56ddf5a197654a0f94a-zip-06d4c7.zip",
-                "reference": "2.3.7",
-                "shasum": "7033dd58d94b0c75fae8a00001f8a7275c218209"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-2.4.6-61d420.zip",
+                "reference": "828119961c68fa50bf42baa60d63c3c06a0b58e7",
+                "shasum": "0585b917cb419511e073f9b0771a7e6dd08c315b"
             },
             "require": {
                 "php": ">=5.3.23",
-                "zendframework/zendxml": "~1.0-dev"
+                "zendframework/zendxml": "^1.0.1"
             },
             "replace": {
                 "zendframework/zend-authentication": "self.version",
@@ -723,14 +797,13 @@
                 "zendframework/zend-xmlrpc": "self.version"
             },
             "require-dev": {
-                "doctrine/annotations": ">=1.0",
-                "fabpot/php-cs-fixer": "1.*",
-                "ircmaxell/random-lib": "dev-master",
-                "ircmaxell/security-lib": "dev-master",
-                "mikey179/vfsstream": "1.2.*",
-                "phpunit/phpunit": "3.7.*",
-                "satooshi/php-coveralls": "dev-master",
-                "sebastianbergmann/phpcov": "1.1.0"
+                "doctrine/annotations": "~1.0",
+                "fabpot/php-cs-fixer": "~1.0",
+                "ircmaxell/random-lib": "~1.1",
+                "mikey179/vfsstream": "~1.2",
+                "phpunit/phpcov": "~2.0",
+                "phpunit/phpunit": "~4.6",
+                "satooshi/php-coveralls": "dev-master"
             },
             "suggest": {
                 "doctrine/annotations": "Doctrine Annotations >=1.0 for annotation features",
@@ -748,13 +821,18 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev",
-                    "dev-develop": "2.4-dev"
+                    "dev-master": "2.4-dev",
+                    "dev-develop": "2.5-dev"
                 }
             },
             "autoload": {
+                "psr-4": {
+                    "Zend\\": "library/Zend/"
+                }
+            },
+            "autoload-dev": {
                 "psr-0": {
-                    "Zend\\": "library/"
+                    "ZendTest\\": "tests/"
                 }
             },
             "license": [
@@ -766,11 +844,7 @@
                 "framework",
                 "zf2"
             ],
-            "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.3.7",
-                "issues": "https://github.com/zendframework/zf2/issues"
-            },
-            "time": "2015-03-12 16:55:53"
+            "time": "2015-08-03 15:03:22"
         },
         {
             "name": "zendframework/zendrest",
@@ -783,7 +857,7 @@
             "dist": {
                 "type": "zip",
                 "url": "https://packages.zendframework.com/composer/zendframework-zendrest-7427d242b4546e5aef1206d2c97e402109d8843e-zip-da96cc.zip",
-                "reference": "2.0.2",
+                "reference": "7427d242b4546e5aef1206d2c97e402109d8843e",
                 "shasum": "cd304d9e2fccccbd98348bfbead7d42b102e565a"
             },
             "require": {
@@ -815,17 +889,17 @@
         },
         {
             "name": "zendframework/zendservice-amazon",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendService_Amazon.git",
-                "reference": "f3d44e3488908323c34bf040c045ee71e1196796"
+                "reference": "a44eec522c622970a6c6666dc308ec6daad08ed4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendservice-amazon-f3d44e3488908323c34bf040c045ee71e1196796-zip-31bbc0.zip",
-                "reference": "2.0.3",
-                "shasum": "b7f77cced220f6738248fc827952ab2c6604a08f"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendservice-amazon-2.0.4-db4e7c.zip",
+                "reference": "a44eec522c622970a6c6666dc308ec6daad08ed4",
+                "shasum": "6725f42e30e9fa4fa2f8476d650fc07118900569"
             },
             "require": {
                 "php": ">=5.3.3",
@@ -836,6 +910,8 @@
                 "zendframework/zendxml": "~1.0-dev"
             },
             "require-dev": {
+                "fabpot/php-cs-fixer": "~1.7.0",
+                "phpunit/phpunit": "~4.0",
                 "zendframework/zend-i18n": "~2.0"
             },
             "suggest": {
@@ -852,6 +928,11 @@
                     "ZendService\\Amazon\\": "library/"
                 }
             },
+            "autoload-dev": {
+                "psr-0": {
+                    "ZendServiceTest\\Amazon\\": "tests/ZendServiceTest/Amazon/"
+                }
+            },
             "license": [
                 "BSD-3-Clause"
             ],
@@ -865,78 +946,28 @@
                 "sqs",
                 "zf2"
             ],
-            "support": {
-                "source": "https://github.com/zendframework/ZendService_Amazon/tree/master",
-                "issues": "https://github.com/zendframework/ZendService_Amazon/issues"
-            },
-            "time": "2014-03-05 22:37:42"
-        },
-        {
-            "name": "zendframework/zendservice-recaptcha",
-            "version": "2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/zendframework/ZendService_ReCaptcha.git",
-                "reference": "4324cca8502d9f47b3b43a18acdd3fdbeb965536"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendservice-recaptcha-4324cca8502d9f47b3b43a18acdd3fdbeb965536-zip-8c45bf.zip",
-                "reference": "2.0.1",
-                "shasum": "fab92465cda889ff975c1ec79bb378d7e3f39081"
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "zendframework/zend-http": ">=2.0.0",
-                "zendframework/zend-uri": ">=2.0.0",
-                "zendframework/zend-version": ">=2.0.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "ZendService": "library/"
-                }
-            },
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "OOP wrapper for the ReCaptcha web service",
-            "homepage": "http://packages.zendframework.com/",
-            "keywords": [
-                "recaptcha",
-                "zf2"
-            ],
-            "support": {
-                "source": "https://github.com/zendframework/ZendService_ReCaptcha/tree/release-2.0.1",
-                "issues": "https://github.com/zendframework/ZendService_ReCaptcha/issues"
-            },
-            "time": "2012-09-24 15:18:29"
+            "time": "2015-06-04 19:47:46"
         },
         {
             "name": "zendframework/zendxml",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendXml.git",
-                "reference": "559b34f426d33a11c3db118e00ce14bb8dc64e5f"
+                "reference": "d8b34286c7c0f3a19fbad05ceec82ceb9dcb8257"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendxml-559b34f426d33a11c3db118e00ce14bb8dc64e5f-zip-6cf7a2.zip",
-                "reference": "1.0.0",
-                "shasum": "39abc614b5c26bcbf8102e203c52dee73c4460a8"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendxml-1.0.1-88b0f5.zip",
+                "reference": "d8b34286c7c0f3a19fbad05ceec82ceb9dcb8257",
+                "shasum": "f532a500c86c8d811f1a2e0ee43022685367e15a"
             },
             "require": {
                 "php": ">=5.3.3"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "*@dev",
-                "phpunit/phpunit": "~3.7"
+                "phpunit/phpunit": "~3.7",
+                "squizlabs/php_codesniffer": "~1.5"
             },
             "type": "library",
             "extra": {
@@ -946,7 +977,12 @@
             },
             "autoload": {
                 "psr-0": {
-                    "ZendXml": "library/"
+                    "ZendXml\\": "library/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "ZendTest\\Xml\\": "tests/ZendXmlTest/"
                 }
             },
             "license": [
@@ -959,24 +995,20 @@
                 "xml",
                 "zf2"
             ],
-            "support": {
-                "source": "https://github.com/zendframework/ZendXml/tree/master",
-                "issues": "https://github.com/zendframework/ZendXml/issues"
-            },
-            "time": "2014-03-05 22:25:44"
+            "time": "2015-08-03 14:50:10"
         },
         {
             "name": "zf-commons/zfc-rbac",
-            "version": "2.4.2",
+            "version": "v2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/zfc-rbac.git",
-                "reference": "42f466656ad9730025a6bbbfd4144ac2f3abb64c"
+                "reference": "8046ed9683739ac227ca4f8da7318c2ea330589f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/42f466656ad9730025a6bbbfd4144ac2f3abb64c",
-                "reference": "42f466656ad9730025a6bbbfd4144ac2f3abb64c",
+                "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/8046ed9683739ac227ca4f8da7318c2ea330589f",
+                "reference": "8046ed9683739ac227ca4f8da7318c2ea330589f",
                 "shasum": ""
             },
             "require": {
@@ -1039,7 +1071,7 @@
                 "rbac",
                 "zf2"
             ],
-            "time": "2015-01-26 11:29:23"
+            "time": "2015-05-29 10:13:14"
         },
         {
             "name": "zfr/rbac",
@@ -1153,12 +1185,12 @@
             "version": "v1.2.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Behat/MinkZombieDriver.git",
+                "url": "https://github.com/minkphp/MinkZombieDriver.git",
                 "reference": "cf15a3a0cc4865bb55253cd033a03a20cee6d2d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/MinkZombieDriver/zipball/cf15a3a0cc4865bb55253cd033a03a20cee6d2d1",
+                "url": "https://api.github.com/repos/minkphp/MinkZombieDriver/zipball/cf15a3a0cc4865bb55253cd033a03a20cee6d2d1",
                 "reference": "cf15a3a0cc4865bb55253cd033a03a20cee6d2d1",
                 "shasum": ""
             },
@@ -1208,30 +1240,32 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v2.6.4",
-            "target-dir": "Symfony/Component/CssSelector",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/CssSelector.git",
-                "reference": "3f80ecc614fec68d5b4a84a0703db3fdf5ce8584"
+                "reference": "0b5c07b516226b7dd32afbbc82fe547a469c5092"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/CssSelector/zipball/3f80ecc614fec68d5b4a84a0703db3fdf5ce8584",
-                "reference": "3f80ecc614fec68d5b4a84a0703db3fdf5ce8584",
+                "url": "https://api.github.com/repos/symfony/CssSelector/zipball/0b5c07b516226b7dd32afbbc82fe547a469c5092",
+                "reference": "0b5c07b516226b7dd32afbbc82fe547a469c5092",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.7-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
+                "psr-4": {
                     "Symfony\\Component\\CssSelector\\": ""
                 }
             },
@@ -1241,48 +1275,50 @@
             ],
             "authors": [
                 {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
-                },
-                {
                     "name": "Jean-François Simon",
                     "email": "jeanfrancois.simon@sensiolabs.com"
                 },
                 {
                     "name": "Fabien Potencier",
                     "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
                 }
             ],
             "description": "Symfony CssSelector Component",
-            "homepage": "http://symfony.com",
-            "time": "2015-01-03 08:01:59"
+            "homepage": "https://symfony.com",
+            "time": "2015-05-15 13:33:16"
         },
         {
             "name": "symfony/process",
-            "version": "v2.6.4",
-            "target-dir": "Symfony/Component/Process",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process.git",
-                "reference": "ecfc23e89d9967999fa5f60a1e9af7384396e9ae"
+                "reference": "48aeb0e48600321c272955132d7606ab0a49adb3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/ecfc23e89d9967999fa5f60a1e9af7384396e9ae",
-                "reference": "ecfc23e89d9967999fa5f60a1e9af7384396e9ae",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/48aeb0e48600321c272955132d7606ab0a49adb3",
+                "reference": "48aeb0e48600321c272955132d7606ab0a49adb3",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.7-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
+                "psr-4": {
                     "Symfony\\Component\\Process\\": ""
                 }
             },
@@ -1292,17 +1328,17 @@
             ],
             "authors": [
                 {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
-                },
-                {
                     "name": "Fabien Potencier",
                     "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
                 }
             ],
             "description": "Symfony Process Component",
-            "homepage": "http://symfony.com",
-            "time": "2015-01-25 04:39:26"
+            "homepage": "https://symfony.com",
+            "time": "2015-07-01 11:25:50"
         }
     ],
     "aliases": [],

@@ -148,7 +148,7 @@ class Demo extends AbstractBase
     protected function getFakeLoc($returnText = true)
     {
         $locations = $this->getPickUpLocations();
-        $loc = rand()%count($locations);
+        $loc = rand() % count($locations);
         return $returnText
             ? $locations[$loc]['locationDisplay']
             : $locations[$loc]['locationID'];
@@ -161,7 +161,7 @@ class Demo extends AbstractBase
      */
     protected function getFakeStatus()
     {
-        $loc = rand()%10;
+        $loc = rand() % 10;
         switch ($loc) {
         case 10:
             return "Missing";
@@ -182,9 +182,9 @@ class Demo extends AbstractBase
     protected function getFakeCallNum()
     {
         $codes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        $a = $codes[rand()%strlen($codes)];
-        $b = rand()%899 + 100;
-        $c = rand()%9999;
+        $a = $codes[rand() % strlen($codes)];
+        $b = rand() % 899 + 100;
+        $c = rand() % 9999;
         return $a . $b . "." . $c;
     }
 
@@ -228,28 +228,31 @@ class Demo extends AbstractBase
     protected function getRandomHolding($id, $number, array $patron = null)
     {
         $status = $this->getFakeStatus();
+        $location = $this->getFakeLoc();
+        $locationhref = ($location === 'Campus A') ? 'http://campus-a' : false;
         return [
             'id'           => $id,
             'source'       => $this->getRecordSource(),
             'item_id'      => $number,
             'number'       => $number,
-            'barcode'      => sprintf("%08d", rand()%50000),
+            'barcode'      => sprintf("%08d", rand() % 50000),
             'availability' => $status == 'Available',
             'status'       => $status,
-            'location'     => $this->getFakeLoc(),
-            'reserve'      => (rand()%100 > 49) ? 'Y' : 'N',
+            'location'     => $location,
+            'locationhref' => $locationhref,
+            'reserve'      => (rand() % 100 > 49) ? 'Y' : 'N',
             'callnumber'   => $this->getFakeCallNum(),
             'duedate'      => '',
             'is_holdable'  => true,
-            'addLink'      => $patron ? rand()%10 == 0 ? 'block' : true : false,
+            'addLink'      => $patron ? rand() % 10 == 0 ? 'block' : true : false,
             'level'        => 'copy',
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => $patron
-                ? rand()%10 == 0 ? 'block' : 'check'
+                ? rand() % 10 == 0 ? 'block' : 'check'
                 : false,
             'ILLRequest'   => 'auto',
             'addILLRequestLink' => $patron
-                ? rand()%10 == 0 ? 'block' : 'check'
+                ? rand() % 10 == 0 ? 'block' : 'check'
                 : false
         ];
     }
@@ -285,7 +288,7 @@ class Demo extends AbstractBase
     {
         // How many items are there?  %10 - 1 = 10% chance of none,
         // 90% of 1-9 (give or take some odd maths)
-        $items = rand()%10 - 1;
+        $items = rand() % 10 - 1;
 
         $requestGroups = $this->getRequestGroups(null, null);
 
@@ -303,7 +306,7 @@ class Demo extends AbstractBase
             ];
             // Inject a random identifier of some sort:
             $currentItem += $this->getRandomItemIdentifier();
-            if ($i == 2 || rand()%5 == 1) {
+            if ($i == 2 || rand() % 5 == 1) {
                 // Mimic an ILL request
                 $currentItem["id"] = "ill_request_$i";
                 $currentItem["title"] = "ILL Hold Title $i";
@@ -320,7 +323,7 @@ class Demo extends AbstractBase
             }
 
             if ($requestType == 'Holds') {
-                $pos = rand()%5;
+                $pos = rand() % 5;
                 if ($pos > 1) {
                     $currentItem['position'] = $pos;
                 } else {
@@ -329,14 +332,14 @@ class Demo extends AbstractBase
                 $pos = rand(0, count($requestGroups) - 1);
                 $currentItem['requestGroup'] = $requestGroups[$pos]['name'];
             } else {
-                $status = rand()%5;
+                $status = rand() % 5;
                 $currentItem['available'] = $status == 1;
                 $currentItem['canceled'] = $status == 2;
                 $currentItem['processed'] = ($status == 1 || rand(1, 3) == 3)
                     ? date("j-M-y")
                     : '';
                 if ($requestType == 'ILLRequests') {
-                    $transit = rand()%2;
+                    $transit = rand() % 2;
                     if (!$currentItem['available']
                         && !$currentItem['canceled']
                         && $transit == 1
@@ -385,7 +388,7 @@ class Demo extends AbstractBase
     {
         $id = $id . ""; // make it a string for consistency
         // How many items are there?
-        $records = rand()%15;
+        $records = rand() % 15;
         $holding = [];
 
         // NOTE: Ran into an interesting bug when using:
@@ -405,7 +408,7 @@ class Demo extends AbstractBase
 
         // Create a fake entry for each one
         for ($i = 0; $i < $records; $i++) {
-            $holding[] = $this->getRandomHolding($id, $i+1, $patron);
+            $holding[] = $this->getRandomHolding($id, $i + 1, $patron);
         }
         return $holding;
     }
@@ -424,7 +427,7 @@ class Demo extends AbstractBase
     public function setStatus($id, $holding = [], $append = true)
     {
         $id = (string)$id;
-        $i = ($this->session->statuses) ? count($this->session->statuses)+1 : 1;
+        $i = ($this->session->statuses) ? count($this->session->statuses) + 1 : 1;
         $holding = array_merge($this->getRandomHolding($id, $i), $holding);
 
         // if statuses is already stored
@@ -635,14 +638,14 @@ class Demo extends AbstractBase
         if (!isset($this->session->fines)) {
             // How many items are there? %20 - 2 = 10% chance of none,
             // 90% of 1-18 (give or take some odd maths)
-            $fines = rand()%20 - 2;
+            $fines = rand() % 20 - 2;
 
             $fineList = [];
             for ($i = 0; $i < $fines; $i++) {
                 // How many days overdue is the item?
-                $day_overdue = rand()%30 + 5;
+                $day_overdue = rand() % 30 + 5;
                 // Calculate checkout date:
-                $checkout = strtotime("now - " . ($day_overdue+14) . " days");
+                $checkout = strtotime("now - " . ($day_overdue + 14) . " days");
                 // 50c a day fine?
                 $fine = $day_overdue * 0.50;
 
@@ -652,7 +655,7 @@ class Demo extends AbstractBase
                     // After 20 days it becomes 'Long Overdue'
                     "fine"     => $day_overdue > 20 ? "Long Overdue" : "Overdue",
                     // 50% chance they've paid half of it
-                    "balance"  => (rand()%100 > 49 ? $fine/2 : $fine) * 100,
+                    "balance"  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
                     "duedate"  =>
                         date("j-M-y", strtotime("now - $day_overdue days"))
                 ];
@@ -747,12 +750,12 @@ class Demo extends AbstractBase
         if (!isset($this->session->transactions)) {
             // How many items are there?  %10 - 1 = 10% chance of none,
             // 90% of 1-9 (give or take some odd maths)
-            $trans = rand()%10 - 1;
+            $trans = rand() % 10 - 1;
 
             $transList = [];
             for ($i = 0; $i < $trans; $i++) {
                 // When is it due? +/- up to 15 days
-                $due_relative = rand()%30 - 15;
+                $due_relative = rand() % 30 - 15;
                 // Due date
                 $dueStatus = false;
                 if ($due_relative >= 0) {
@@ -766,26 +769,26 @@ class Demo extends AbstractBase
                 }
 
                 // Times renewed    : 0,0,0,0,0,1,2,3,4,5
-                $renew = rand()%10 - 5;
+                $renew = rand() % 10 - 5;
                 if ($renew < 0) {
                     $renew = 0;
                 }
 
                 // Renewal limit
-                $renewLimit = $renew + rand()%3;
+                $renewLimit = $renew + rand() % 3;
 
                 // Pending requests : 0,0,0,0,0,1,2,3,4,5
-                $req = rand()%10 - 5;
+                $req = rand() % 10 - 5;
                 if ($req < 0) {
                     $req = 0;
                 }
 
-                if ($i == 2 || rand()%5 == 1) {
+                if ($i == 2 || rand() % 5 == 1) {
                     // Mimic an ILL loan
                     $transList[] = $this->getRandomItemIdentifier() + [
                         'duedate' => $due_date,
                         'dueStatus' => $dueStatus,
-                        'barcode' => sprintf("%08d", rand()%50000),
+                        'barcode' => sprintf("%08d", rand() % 50000),
                         'renew'   => $renew,
                         'renewLimit' => $renewLimit,
                         'request' => $req,
@@ -802,7 +805,7 @@ class Demo extends AbstractBase
                     $transList[] = $this->getRandomItemIdentifier() + [
                         'duedate' => $due_date,
                         'dueStatus' => $dueStatus,
-                        'barcode' => sprintf("%08d", rand()%50000),
+                        'barcode' => sprintf("%08d", rand() % 50000),
                         'renew'   => $renew,
                         'renewLimit' => $renewLimit,
                         'request' => $req,
@@ -875,7 +878,7 @@ class Demo extends AbstractBase
     {
         // 5 years in the future (but similate intermittent failure):
         return rand(0, 1) == 1
-            ? mktime(0, 0, 0, date('m'), date('d'), date('Y')+5) : null;
+            ? mktime(0, 0, 0, date('m'), date('d'), date('Y') + 5) : null;
     }
 
     /**
@@ -1216,7 +1219,8 @@ class Demo extends AbstractBase
             return [
                 'blocks' => [
                     'Simulated account block; try again and it will work eventually.'
-                ]
+                ],
+                'details' => []
             ];
         }
 
@@ -1471,7 +1475,7 @@ class Demo extends AbstractBase
                 'location' => $details['pickUpLocation'],
                 'expire'   => date('j-M-y', $expire),
                 'create'  => date('j-M-y'),
-                'processed' => rand()%3 == 0 ? date('j-M-y', $expire) : '',
+                'processed' => rand() % 3 == 0 ? date('j-M-y', $expire) : '',
                 'reqnum'   => sprintf('%06d', $nextId),
                 'item_id'  => $nextId
             ]
@@ -1590,7 +1594,7 @@ class Demo extends AbstractBase
                 'location' => $pickupLocation,
                 'expire'   => date('j-M-y', $expire),
                 'create'  => date('j-M-y'),
-                'processed' => rand()%3 == 0 ? date('j-M-y', $expire) : '',
+                'processed' => rand() % 3 == 0 ? date('j-M-y', $expire) : '',
                 'reqnum'   => sprintf('%06d', $nextId),
                 'item_id'  => $nextId
             ]

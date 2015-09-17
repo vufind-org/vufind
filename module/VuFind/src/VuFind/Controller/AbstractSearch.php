@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Solr\Utils as SolrUtils;
+use VuFind\Search\RecommendListener, VuFind\Solr\Utils as SolrUtils;
 use Zend\Stdlib\Parameters;
 
 /**
@@ -201,7 +201,7 @@ class AbstractSearch extends AbstractBase
     protected function getActiveRecommendationSettings()
     {
         // Enable recommendations unless explicitly told to disable them:
-        $all = ['top', 'side', 'noresults'];
+        $all = ['top', 'side', 'noresults', 'bottom'];
         $noRecommend = $this->params()->fromQuery('noRecommend', false);
         if ($noRecommend === 1 || $noRecommend === '1'
             || $noRecommend === 'true' || $noRecommend === true
@@ -215,6 +215,47 @@ class AbstractSearch extends AbstractBase
         return array_diff(
             $all, array_map('trim', explode(',', strtolower($noRecommend)))
         );
+    }
+
+    /**
+     * Get a callback for setting up a search (or null if callback is unnecessary).
+     *
+     * @return mixed
+     */
+    protected function getSearchSetupCallback()
+    {
+        // Setup callback to attach listener if appropriate:
+        $activeRecs = $this->getActiveRecommendationSettings();
+        if (empty($activeRecs)) {
+            return null;
+        }
+
+        $rManager = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
+
+        // Special case: override recommend settings through parameter (used by
+        // combined search)
+        if ($override = $this->params()->fromQuery('recommendOverride')) {
+            return function ($runner, $p, $searchId) use ($rManager, $override) {
+                $listener = new RecommendListener($rManager, $searchId);
+                $listener->setConfig($override);
+                $listener->attach($runner->getEventManager()->getSharedManager());
+            };
+        }
+
+        // Standard case: retrieve recommend settings from params object:
+        return function ($runner, $params, $searchId) use ($rManager, $activeRecs) {
+            $listener = new RecommendListener($rManager, $searchId);
+            $config = [];
+            $rawConfig = $params->getOptions()
+                ->getRecommendationSettings($params->getSearchHandler());
+            foreach ($rawConfig as $key => $value) {
+                if (in_array($key, $activeRecs)) {
+                    $config[$key] = $value;
+                }
+            }
+            $listener->setConfig($config);
+            $listener->attach($runner->getEventManager()->getSharedManager());
+        };
     }
 
     /**
@@ -232,36 +273,30 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $results = $this->getResultsManager()->get($this->searchClassId);
-        $params = $results->getParams();
-        $params->recommendationsEnabled($this->getActiveRecommendationSettings());
+        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
 
         // Send both GET and POST variables to search class:
-        $params->initFromRequest(
-            new Parameters(
-                $this->getRequest()->getQuery()->toArray()
-                + $this->getRequest()->getPost()->toArray()
-            )
+        $request = $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray();
+
+        $view->results = $results = $runner->run(
+            $request, $this->searchClassId, $this->getSearchSetupCallback()
         );
+        $view->params = $results->getParams();
 
-        // Make parameters available to the view:
-        $view->params = $params;
-
-        // Attempt to perform the search; if there is a problem, inspect any Solr
-        // exceptions to see if we should communicate to the user about them.
-        try {
-            // Explicitly execute search within controller -- this allows us to
-            // catch exceptions more reliably:
-            $results->performAndProcessSearch();
-
+        // If we received an EmptySet back, that indicates that the real search
+        // failed due to some kind of syntax error, and we should display a
+        // warning to the user; otherwise, we should proceed with normal post-search
+        // processing.
+        if ($results instanceof \VuFind\Search\EmptySet\Results) {
+            $view->parseError = true;
+        } else {
             // If a "jumpto" parameter is set, deal with that now:
             if ($jump = $this->processJumpTo($results)) {
                 return $jump;
             }
 
-            // Send results to the view and remember the current URL as the last
-            // search.
-            $view->results = $results;
+            // Remember the current URL as the last search.
             $this->rememberSearch($results);
 
             // Add to search history:
@@ -282,22 +317,8 @@ class AbstractSearch extends AbstractBase
             if ($this->resultScrollerActive()) {
                 $this->resultScroller()->init($results);
             }
-        } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
-            if ($e->hasTag('VuFind\Search\ParserError')) {
-                // If it's a parse error or the user specified an invalid field, we
-                // should display an appropriate message:
-                $view->parseError = true;
-
-                // We need to create and process an "empty results" object to
-                // ensure that recommendation modules and templates behave
-                // properly when displaying the error message.
-                $view->results = $this->getResultsManager()->get('EmptySet');
-                $view->results->setParams($params);
-                $view->results->performAndProcessSearch();
-            } else {
-                throw $e;
-            }
         }
+
         // Save statistics:
         if ($this->logStatistics) {
             $this->getServiceLocator()->get('VuFind\SearchStats')
@@ -305,9 +326,7 @@ class AbstractSearch extends AbstractBase
         }
 
         // Special case: If we're in RSS view, we need to render differently:
-        if (isset($view->results)
-            && $view->results->getParams()->getView() == 'rss'
-        ) {
+        if (isset($view->params) && $view->params->getView() == 'rss') {
             $response = $this->getResponse();
             $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
             $feed = $this->getViewRenderer()->plugin('resultfeed');
@@ -366,8 +385,7 @@ class AbstractSearch extends AbstractBase
         $searchTable = $this->getTable('Search');
         $search = $searchTable->select(['id' => $searchId])->current();
         if (empty($search)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('advSearchError_notFound');
+            $this->flashMessenger()->addMessage('advSearchError_notFound', 'error');
             return false;
         }
 
@@ -375,8 +393,7 @@ class AbstractSearch extends AbstractBase
         $user = $this->getUser();
         $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
         if ($search->session_id != $sessId && $search->user_id != $user->id) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('advSearchError_noRights');
+            $this->flashMessenger()->addMessage('advSearchError_noRights', 'error');
             return false;
         }
 
@@ -386,9 +403,13 @@ class AbstractSearch extends AbstractBase
 
         // Fail if this is not the right type of search:
         if ($savedSearch->getParams()->getSearchType() != 'advanced') {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('advSearchError_notAdvanced');
-            return false;
+            try {
+                $savedSearch->getParams()->convertToAdvancedSearch();
+            } catch (\Exception $ex) {
+                $this->flashMessenger()
+                    ->addMessage('advSearchError_notAdvanced', 'error');
+                return false;
+            }
         }
 
         // Activate facets so we get appropriate descriptions in the filter list:

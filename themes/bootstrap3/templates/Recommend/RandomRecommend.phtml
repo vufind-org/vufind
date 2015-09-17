@@ -9,37 +9,14 @@
         <?if($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"):?>
 
           <? /* Display thumbnail if appropriate: */ ?>
-          <? $smallThumb = $this->record($driver)->getThumbnail('small');
-             $mediumThumb = $this->record($driver)->getThumbnail('medium'); ?>
-          <? if ($smallThumb): ?>
-            <a href="<?=$this->recordLink()->getUrl($driver)?>">
-             <img alt="<?=$this->transEsc('Cover Image')?>" src="<?=$this->escapeHtmlAttr($smallThumb);?>"/><br />
-            </a>
-          <?elseif($mediumThumb):?>
-            <a href="<?=$this->recordLink()->getUrl($driver)?>">
-              <img alt="<?=$this->transEsc('Cover Image')?>" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/><br />
-            </a>
-          <? else: ?>
-            <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/><br />
-          <? endif; ?>
-
+          <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLink()->getUrl($driver)); ?>
         <?endif;?>
 
         <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>
         <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
-          <?
-            $summHighlightedTitle = $driver->getHighlightedTitle();
-            $summTitle = $driver->getTitle();
-            if (!empty($summHighlightedTitle)) {
-                echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-            } else if (!empty($summTitle)) {
-                echo $this->escapeHtml($this->truncate($summTitle, 180));
-            } else {
-                echo $this->transEsc('Title not available');
-            }
-          ?>
+          <?=$this->record($driver)->getTitleHtml()?>
           <? $summAuthor = $driver->getPrimaryAuthor(); ?>
-          <span class="small<? if (!empty($summAuthor)): ?> pull-right<? endif; ?>">
+          <span class="small<? if (!empty($summAuthor)): ?> pull-right flip<? endif; ?>">
             <? $summDate = $driver->getPublicationDates(); ?>
             <? if (!empty($summDate)): ?>
               <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
@@ -49,14 +26,11 @@
         <? if (!empty($summAuthor)): ?>
           <a class="small text-right" href="<?=$this->record($driver)->getLink('author', $summAuthor)?>">
             <span><?=$this->transEsc('By')?></span>
-            <?
-            $summHighlightedAuthor = $driver->getHighlightedAuthor();
-            echo !empty($summHighlightedAuthor)
-                ? $this->highlight($summHighlightedAuthor)
-                : $this->escapeHtml($summAuthor);
-          ?></a>
+            <?=$this->escapeHtml($summAuthor)?>
+          </a>
         <? endif; ?>
       </li>
     <? endforeach; ?>
+    </div>
   </ul>
 <?endif;?>

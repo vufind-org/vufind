@@ -11,7 +11,6 @@
 namespace ZendServiceTest\Amazon\Ec2;
 
 use ZendService\Amazon\Ec2;
-use ZendService\Amazon\Ec2\Exception;
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\Test as HttpClientTestAdapter;
 

@@ -56,9 +56,7 @@ class DisplayLanguageOption extends \Zend\View\Helper\AbstractHelper
         $this->translator = $translator;
         try {
             $this->translator->addTranslationFile(
-                'ExtendedIni',
-                APPLICATION_PATH  . '/languages/native.ini',
-                'default', 'native'
+                'ExtendedIni', null, 'default', 'native'
             );
             $this->translator->setLocale('native');
         } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {

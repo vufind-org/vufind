@@ -28,7 +28,6 @@
  */
 namespace VuFindTest\Backend;
 
-use VuFindSearch\Backend\AbstractHandlerMap;
 use VuFindSearch\ParamBag;
 
 use PHPUnit_Framework_TestCase as TestCase;

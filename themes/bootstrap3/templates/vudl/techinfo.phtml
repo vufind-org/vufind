@@ -26,9 +26,9 @@
               'type'=>strtoupper($key)
             )
           )?>?download=true">
-            <span class="pull-left"><?=strToUpper($this->transEsc($key)) ?></span>
+            <span class="pull-left flip"><?=strToUpper($this->transEsc($key)) ?></span>
             <? if (isset($this->record['mimetypes'])): ?>
-              <span class="pull-right small"><?=$this->record['mimetypes'][$mtKey] ?></span>
+              <span class="pull-right flip small"><?=$this->record['mimetypes'][$mtKey] ?></span>
             <? endif; ?>
           </a>
         <? endforeach; ?>

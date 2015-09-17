@@ -150,6 +150,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $translatedFacets = [];
 
     /**
+     * Text domains for translated facets
+     *
+     * @var array
+     */
+    protected $translatedFacetsTextDomains = [];
+
+    /**
      * Spelling setting
      *
      * @var bool
@@ -206,15 +213,40 @@ abstract class Options implements TranslatorAwareInterface
     protected $facetsIni = 'facets';
 
     /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
+     * Maximum number of results (no limit by default)
+     *
+     * @var int
+     */
+    protected $resultLimit = -1;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         $this->limitOptions = [$this->defaultLimit];
+        $this->setConfigLoader($configLoader);
+    }
+
+    /**
+     * Set the config loader
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     *
+     * @return void
+     */
+    public function setConfigLoader(\VuFind\Config\PluginManager $configLoader)
+    {
+        $this->configLoader = $configLoader;
     }
 
     /**
@@ -439,6 +471,43 @@ abstract class Options implements TranslatorAwareInterface
     public function getTranslatedFacets()
     {
         return $this->translatedFacets;
+    }
+
+    /**
+     * Configure facet translation using an array of field names with optional
+     * colon-separated text domains.
+     *
+     * @param array $facets Incoming configuration.
+     *
+     * @return void
+     */
+    public function setTranslatedFacets($facets)
+    {
+        // Reset properties:
+        $this->translatedFacets = $this->translatedFacetsTextDomains = [];
+
+        // Fill in new data:
+        foreach ($facets as $current) {
+            $parts = explode(':', $current);
+            $this->translatedFacets[] = $parts[0];
+            if (isset($parts[1])) {
+                $this->translatedFacetsTextDomains[$parts[0]] = $parts[1];
+            }
+        }
+    }
+
+    /**
+     * Look up the text domain for use when translating a particular facet
+     * field.
+     *
+     * @param string $field Field name being translated
+     *
+     * @return string
+     */
+    public function getTextDomainForTranslatedFacet($field)
+    {
+        return isset($this->translatedFacetsTextDomains[$field])
+            ? $this->translatedFacetsTextDomains[$field] : 'default';
     }
 
     /**
@@ -706,8 +775,65 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getVisibleSearchResultLimit()
     {
-        // No limit by default:
-        return -1;
+        return intval($this->resultLimit);
+    }
+
+    /**
+     * Load all recommendation settings from the relevant ini file.  Returns an
+     * associative array where the key is the location of the recommendations (top
+     * or side) and the value is the settings found in the file (which may be either
+     * a single string or an array of strings).
+     *
+     * @param string $handler Name of handler for which to load specific settings.
+     *
+     * @return array associative: location (top/side/etc.) => search settings
+     */
+    public function getRecommendationSettings($handler = null)
+    {
+        // Load the necessary settings to determine the appropriate recommendations
+        // module:
+        $searchSettings = $this->configLoader->get($this->getSearchIni());
+
+        // Load a type-specific recommendations setting if possible, or the default
+        // otherwise:
+        $recommend = [];
+
+        if (null !== $handler
+            && isset($searchSettings->TopRecommendations->$handler)
+        ) {
+            $recommend['top'] = $searchSettings->TopRecommendations
+                ->$handler->toArray();
+        } else {
+            $recommend['top']
+                = isset($searchSettings->General->default_top_recommend)
+                ? $searchSettings->General->default_top_recommend->toArray()
+                : false;
+        }
+        if (null !== $handler
+            && isset($searchSettings->SideRecommendations->$handler)
+        ) {
+            $recommend['side'] = $searchSettings->SideRecommendations
+                ->$handler->toArray();
+        } else {
+            $recommend['side']
+                = isset($searchSettings->General->default_side_recommend)
+                ? $searchSettings->General->default_side_recommend->toArray()
+                : false;
+        }
+        if (null !== $handler
+            && isset($searchSettings->NoResultsRecommendations->$handler)
+        ) {
+            $recommend['noresults'] = $searchSettings->NoResultsRecommendations
+                ->$handler->toArray();
+        } else {
+            $recommend['noresults']
+                = isset($searchSettings->General->default_noresults_recommend)
+                ? $searchSettings->General->default_noresults_recommend
+                    ->toArray()
+                : false;
+        }
+
+        return $recommend;
     }
 
     /**
@@ -720,6 +846,7 @@ abstract class Options implements TranslatorAwareInterface
     public function __sleep()
     {
         $vars = get_object_vars($this);
+        unset($vars['configLoader']);
         unset($vars['translator']);
         $vars = array_keys($vars);
         return $vars;

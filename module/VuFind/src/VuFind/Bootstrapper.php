@@ -290,6 +290,30 @@ class Bootstrapper
     }
 
     /**
+     * Support method for initLanguage() -- look up all text domains.
+     *
+     * @return array
+     */
+    protected function getTextDomains()
+    {
+        $base = APPLICATION_PATH;
+        $local = LOCAL_OVERRIDE_DIR;
+        $languagePathParts = ["$base/languages"];
+        if (!empty($local)) {
+            $languagePathParts[] = "$local/languages";
+        }
+        $languagePathParts[] = "$base/themes/*/languages";
+
+        $domains = [];
+        foreach ($languagePathParts as $current) {
+            $places = glob($current . '/*', GLOB_ONLYDIR | GLOB_NOSORT);
+            $domains = array_merge($domains, array_map('basename', $places));
+        }
+
+        return array_unique($domains);
+    }
+
+    /**
      * Set up language handling.
      *
      * @return void
@@ -325,11 +349,18 @@ class Bootstrapper
             if (!in_array($language, array_keys($config->Languages->toArray()))) {
                 $language = $config->Site->language;
             }
-
             try {
-                $sm->get('VuFind\Translator')
-                    ->addTranslationFile('ExtendedIni', null, 'default', $language)
-                    ->setLocale($language);
+                $translator = $sm->get('VuFind\Translator');
+                $translator->setLocale($language)
+                    ->addTranslationFile('ExtendedIni', null, 'default', $language);
+                foreach ($this->getTextDomains() as $domain) {
+                    // Set up text domains using the domain name as the filename;
+                    // this will help the ExtendedIni loader dynamically locate
+                    // the appropriate files.
+                    $translator->addTranslationFile(
+                        'ExtendedIni', $domain, $domain, $language
+                    );
+                }
             } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
                 if (!extension_loaded('intl')) {
                     throw new \Exception(
@@ -342,9 +373,14 @@ class Bootstrapper
             $viewModel = $sm->get('viewmanager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
+            $rtlLangs = isset($config->LanguageSettings->rtl_langs)
+                ? array_map(
+                    'trim', explode(',', $config->LanguageSettings->rtl_langs)
+                ) : [];
+            $viewModel->setVariable('rtl', in_array($language, $rtlLangs));
         };
-        $this->events->attach('dispatch.error', $callback, 9000);
-        $this->events->attach('dispatch', $callback, 9000);
+        $this->events->attach('dispatch.error', $callback, 10000);
+        $this->events->attach('dispatch', $callback, 10000);
     }
 
     /**
@@ -371,8 +407,8 @@ class Bootstrapper
             $theme = new \VuFindTheme\Initializer($config, $event);
             $theme->init();
         };
-        $this->events->attach('dispatch.error', $callback, 10000);
-        $this->events->attach('dispatch', $callback, 10000);
+        $this->events->attach('dispatch.error', $callback, 9000);
+        $this->events->attach('dispatch', $callback, 9000);
     }
 
     /**

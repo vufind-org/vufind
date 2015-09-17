@@ -103,7 +103,7 @@ class ServerParam implements PermissionProviderInterface,
             }
             $this->debug("getPermissions: result = true");
         }
-        return ['loggedin'];
+        return ['guest', 'loggedin'];
     }
 
     /**
@@ -144,7 +144,7 @@ class ServerParam implements PermissionProviderInterface,
 
         // server param values to check
         $serverParamString = $this->request->getServer()->get($serverParamName);
-        if ($serverParamString === false) {
+        if ($serverParamString === null) {
             // check fails if server param is missing
             return false;
         }

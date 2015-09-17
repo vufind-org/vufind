@@ -148,7 +148,6 @@ class Solr implements AutocompleteInterface
         // Build a new search object:
         $this->searchObject = $this->resultsManager->get($this->searchClassId);
         $this->searchObject->getOptions()->spellcheckEnabled(false);
-        $this->searchObject->getParams()->recommendationsEnabled(false);
     }
 
     /**
@@ -207,7 +206,7 @@ class Solr implements AutocompleteInterface
         } catch (\Exception $e) {
             // Ignore errors -- just return empty results if we must.
         }
-        return array_unique($results);
+        return isset($results) ? array_unique($results) : [];
     }
 
     /**

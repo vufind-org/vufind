@@ -44,7 +44,7 @@
           }
         ?>
         <a class="list-group-item active" href="<?=$removeLink?>">
-          <span class="pull-right"><i class="fa fa-times"></i></span>
+          <span class="pull-right flip"><i class="fa fa-times"></i></span>
           <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?>
         </a>
       <? endforeach; ?>
@@ -63,7 +63,7 @@
       <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<? if(!in_array($title, $collapsedFacets)): ?> in<? endif ?>">
         <? if (isset($rangeFacets[$title])): ?>
           <div class="list-group-item">
-            <form action="" name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter">
+            <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter">
               <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
               <input type="hidden" name="<?=$this->escapeHtmlAttr($rangeFacets[$title]['type'])?>range[]" value="<?=$this->escapeHtmlAttr($title)?>"/>
               <div class="row">
@@ -95,6 +95,7 @@
               $max = !empty($rangeFacets[$title]['values'][1]) ? max($future, $rangeFacets[$title]['values'][1]) : $future;
               $low  = !empty($rangeFacets[$title]['values'][0]) ? $rangeFacets[$title]['values'][0] : $min;
               $high = !empty($rangeFacets[$title]['values'][1]) ? $rangeFacets[$title]['values'][1] : $max;
+              $reversed = $this->layout()->rtl ? 'true' : 'false';
               $script = <<<JS
 $(document).ready(function() {
   var fillTexts = function() {
@@ -104,11 +105,12 @@ $(document).ready(function() {
   };
   var {$this->escapeHtmlAttr($title)}dateSlider = $('#{$this->escapeHtmlAttr($title)}dateSlider')
   .slider({
-     'min':{$min},
-     'max':{$max},
-     'handle':"square",
-     'tooltip':"hide",
-     'value':[{$low},{$high}]
+    'min':{$min},
+    'max':{$max},
+    'handle':"square",
+    'tooltip':"hide",
+    'value':[{$low},{$high}],
+    'reversed': {$reversed}
   })
   .on('slide', fillTexts)
   .data('slider');
@@ -166,7 +168,7 @@ JS;
                 <? if ($thisFacet['operator'] == 'OR'): ?>
                   <i class="fa fa-check-square-o"></i>
                 <? else: ?>
-                  <span class="pull-right"><i class="fa fa-check"></i></span>
+                  <span class="pull-right flip"><i class="fa fa-check"></i></span>
                 <? endif; ?>
                 <?=$this->escapeHtml($thisFacet['displayText'])?>
               </a>

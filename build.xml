@@ -20,10 +20,10 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
-  <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax" />
+  <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use" />
 
 
-  <property name="version" value="2.4" />
+  <property name="version" value="2.5" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -90,10 +90,10 @@
 
   <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
   <target name="php-cs-fixer">
-    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers}" escape="false" />
+    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --verbose" passthru="true" escape="false" />
   </target>
   <target name="php-cs-fixer-dryrun">
-    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run" escape="false" checkreturn="true" />
+    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run --verbose --diff" passthru="true" escape="false" checkreturn="true" />
   </target>
 
   <!-- PHP API Documentation -->
@@ -169,14 +169,14 @@
     <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid JETTY_CONSOLE=/dev/null ${srcdir}/vufind.sh restart" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
-    <!-- wait for Solor to finish spinning up -->
+    <!-- wait for Solr to finish spinning up -->
     <echo message="Waiting for Solr to start up..." />
     <exec command="sleep 30" />
 
     <!-- import marc test records into vufind index (note: the marc test records have prefix "testsample#") -->
-    <exec command="find ${srcdir}/tests/data -name *.mrc -printf %p," outputProperty="buglist" />
+    <exec escape="false" command="find ${srcdir}/tests/data -name '*.mrc' -printf '%p,'" outputProperty="buglist" />
     <foreach list="${buglist}" param="filename" delimiter="," target="importrec" />
-    <exec command="find ${srcdir}/tests/data/authority -name *.mrc -printf %p," outputProperty="authlist" />
+    <exec escape="false" command="find ${srcdir}/tests/data/authority -name '*.mrc' -printf '%p,'" outputProperty="authlist" />
     <foreach list="${authlist}" param="filename" delimiter="," target="importauthrec" />
 
     <!-- build alphabrowse index -->
@@ -221,10 +221,13 @@
     </if>
 
     <!-- delete the configuration, sample index, logs and cache data -->
+    <delete dir="${srcdir}/solr/logs" includeemptydirs="true" failonerror="false" />
     <delete dir="${srcdir}/solr/alphabetical_browse" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/authority/conf" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/authority/index" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/authority/tlog" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/biblio/conf" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/tlog" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/spellchecker" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />

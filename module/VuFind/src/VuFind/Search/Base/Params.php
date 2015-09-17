@@ -28,7 +28,8 @@
 namespace VuFind\Search\Base;
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
-use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query,
+    VuFindSearch\Query\QueryGroup;
 use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
 
 /**
@@ -110,20 +111,6 @@ class Params implements ServiceLocatorAwareInterface
      * @var Options
      */
     protected $options;
-
-    /**
-     * Recommendation settings
-     *
-     * @var array
-     */
-    protected $recommend = [];
-
-    /**
-     * Are recommendations turned on?
-     *
-     * @var bool
-     */
-    protected $recommendationEnabled = [];
 
     /**
      * Main facet configuration
@@ -251,10 +238,6 @@ class Params implements ServiceLocatorAwareInterface
         $this->initSearch($request);
         $this->initSort($request);
         $this->initFilters($request);
-
-        // Always initialize recommendations last (since they rely on knowing
-        // other search settings that were set above).
-        $this->initRecommendations($request);
 
         // Remember the user's settings for future reference (we only want to do
         // this in initFromRequest, since other code may call the set methods from
@@ -419,6 +402,26 @@ class Params implements ServiceLocatorAwareInterface
         }
 
         $this->query = new Query($lookfor, $handler);
+    }
+
+    /**
+     * Convert a basic query into an advanced query:
+     *
+     * @return void
+     */
+    public function convertToAdvancedSearch()
+    {
+        if ($this->searchType === 'basic') {
+            $this->query = new QueryGroup(
+                'AND', [new QueryGroup('AND', [$this->query])]
+            );
+            $this->searchType = 'advanced';
+        }
+        if ($this->searchType !== 'advanced') {
+            throw new \Exception(
+                'Unsupported search type: ' . $this->searchType
+            );
+        }
     }
 
     /**
@@ -655,184 +658,6 @@ class Params implements ServiceLocatorAwareInterface
 
         // Build display query:
         return QueryAdapter::display($this->getQuery(), $translate, $showField);
-    }
-
-    /**
-     * Get an array of recommendation objects for augmenting the results display.
-     *
-     * @param string $location Name of location to use as a filter (null to get
-     * associative array of all locations); legal non-null values: 'top', 'side'
-     *
-     * @return array
-     */
-    public function getRecommendations($location = 'top')
-    {
-        $enabled = $this->recommendationsEnabled();
-        if (null === $location) {
-            $active = [];
-            foreach ($enabled as $current) {
-                if (isset($this->recommend[$current])) {
-                    $active[$current] = $this->recommend[$current];
-                }
-            }
-            return $active;
-        }
-        return in_array($location, $enabled) && isset($this->recommend[$location])
-            ? $this->recommend[$location] : [];
-    }
-
-    /**
-     * Set the enabled status of recommendation modules -- it is often useful to turn
-     * off recommendations when retrieving results in a context other than standard
-     * display of results.
-     *
-     * @param bool|array $new New setting (true to enable all, false to disable all,
-     * array to set which areas are active, null to leave unchanged)
-     *
-     * @return array          Current active recommendation areas
-     */
-    public function recommendationsEnabled($new = null)
-    {
-        if (true === $new) {
-            $this->recommendationEnabled = ['top', 'side', 'noresults'];
-        } else if (false === $new) {
-            $this->recommendationEnabled = [];
-        } else if (null !== $new) {
-            $this->recommendationEnabled = $new;
-        }
-        return $this->recommendationEnabled;
-    }
-
-    /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
-     * associative array where the key is the location of the recommendations (top
-     * or side) and the value is the settings found in the file (which may be either
-     * a single string or an array of strings).
-     *
-     * @return array associative: location (top/side) => search settings
-     */
-    protected function getRecommendationSettings()
-    {
-        // Bypass settings if recommendations are disabled.
-        $enabled = $this->recommendationsEnabled();
-        if (empty($enabled)) {
-            return [];
-        }
-
-        // Load the necessary settings to determine the appropriate recommendations
-        // module:
-        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
-            ->get($this->getOptions()->getSearchIni());
-
-        // If we have a search type set, save it so we can try to load a
-        // type-specific recommendations module:
-        $handler = $this->getSearchHandler();
-
-        // Load a type-specific recommendations setting if possible, or the default
-        // otherwise:
-        $recommend = [];
-
-        if (in_array('top', $enabled)) {
-            if (null !== $handler
-                && isset($searchSettings->TopRecommendations->$handler)
-            ) {
-                $recommend['top'] = $searchSettings->TopRecommendations
-                    ->$handler->toArray();
-            } else {
-                $recommend['top']
-                    = isset($searchSettings->General->default_top_recommend)
-                    ? $searchSettings->General->default_top_recommend->toArray()
-                    : false;
-            }
-        }
-        if (in_array('side', $enabled)) {
-            if (null !== $handler
-                && isset($searchSettings->SideRecommendations->$handler)
-            ) {
-                $recommend['side'] = $searchSettings->SideRecommendations
-                    ->$handler->toArray();
-            } else {
-                $recommend['side']
-                    = isset($searchSettings->General->default_side_recommend)
-                    ? $searchSettings->General->default_side_recommend->toArray()
-                    : false;
-            }
-        }
-        if (in_array('noresults', $enabled)) {
-            if (null !== $handler
-                && isset($searchSettings->NoResultsRecommendations->$handler)
-            ) {
-                $recommend['noresults'] = $searchSettings->NoResultsRecommendations
-                    ->$handler->toArray();
-            } else {
-                $recommend['noresults']
-                    = isset($searchSettings->General->default_noresults_recommend)
-                    ? $searchSettings->General->default_noresults_recommend
-                        ->toArray()
-                    : false;
-            }
-        }
-
-        return $recommend;
-    }
-
-    /**
-     * Initialize the recommendations modules.
-     *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
-     * request.
-     *
-     * @return void
-     */
-    protected function initRecommendations($request)
-    {
-        // If no settings were found, quit now:
-        $settings = $this->getRecommendationSettings();
-        if (empty($settings)) {
-            return;
-        }
-
-        // Get the plugin manager (skip recommendations if it is unavailable):
-        $sm = $this->getServiceLocator();
-        if (!is_object($sm) || !$sm->has('VuFind\RecommendPluginManager')) {
-            return;
-        }
-        $manager = $sm->get('VuFind\RecommendPluginManager');
-
-        // Process recommendations for each location:
-        $this->recommend = [
-            'top' => [], 'side' => [], 'noresults' => [],
-            'bottom' => [],
-        ];
-        foreach ($settings as $location => $currentSet) {
-            // If the current location is disabled, skip processing!
-            if (empty($currentSet)) {
-                continue;
-            }
-            // Make sure the current location's set of recommendations is an array;
-            // if it's a single string, this normalization will simplify processing.
-            if (!is_array($currentSet)) {
-                $currentSet = [$currentSet];
-            }
-            // Now loop through all recommendation settings for the location.
-            foreach ($currentSet as $current) {
-                // Break apart the setting into module name and extra parameters:
-                $current = explode(':', $current);
-                $module = array_shift($current);
-                $params = implode(':', $current);
-                if (!$manager->has($module)) {
-                    throw new \Exception(
-                        'Could not load recommendation module: ' . $module
-                    );
-                }
-
-                // Build a recommendation module with the provided settings.
-                $obj = $manager->get($module);
-                $obj->setConfig($params);
-                $obj->init($this, $request);
-                $this->recommend[$location][] = $obj;
-            }
-        }
     }
 
     /**
@@ -1089,11 +914,11 @@ class Params implements ServiceLocatorAwareInterface
             ? $this->getCheckboxFacetValues() : [];
 
         $list = [];
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
             list($operator, $field) = $this->parseOperatorAndFieldName($field);
-            $translate
-                = in_array($field, $this->getOptions()->getTranslatedFacets());
+            $translate = in_array($field, $translatedFacets);
             // and each value currently used for that field
             foreach ($values as $value) {
                 // Add to the list unless it's in the list of fields to skip:
@@ -1122,12 +947,13 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
-        return [
-            'value'       => $value,
-            'displayText' => $translate ? $this->translate($value) : $value,
-            'field'       => $field,
-            'operator'    => $operator,
-        ];
+        if ($translate) {
+            $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
+            $displayText = $this->translate("$domain::$value");
+        } else {
+            $displayText = $value;
+        }
+        return compact('value', 'displayText', 'field', 'operator');
     }
 
     /**
