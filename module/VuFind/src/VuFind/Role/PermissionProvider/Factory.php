@@ -50,7 +50,10 @@ class Factory
      */
     public static function getIpRange(ServiceManager $sm)
     {
-        return new IpRange($sm->getServiceLocator()->get('Request'));
+        return new IpRange(
+            $sm->getServiceLocator()->get('Request'),
+            $sm->getServiceLocator()->get('VuFind\IpAddressUtils')
+        );
     }
 
     /**
