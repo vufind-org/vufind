@@ -359,6 +359,7 @@
               $result = '';
               $i = 0;
               foreach ($classifications as $class => $field) {
+                $field = array_unique($field);
                 foreach ($field as $j => $subfield) {
                   $result = $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
                   ?>
