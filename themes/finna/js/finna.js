@@ -13,6 +13,7 @@ var finna = (function() {
                 'imagePopup',
                 'itemStatus',
                 'layout',
+                'libraryCards',
                 'myList',
                 'openUrl',
                 'persona',

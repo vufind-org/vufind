@@ -23,6 +23,7 @@ return array(
             'searchbox' => 'Finna\View\Helper\Root\Factory::getSearchBox',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
             'searchTabsRecommendations' => 'Finna\View\Helper\Root\Factory::getSearchTabsRecommendations',
+            'proxyurl' => 'Finna\View\Helper\Root\Factory::getProxyUrl',
         ),
         'invokables' => array(
             'checkboxFacetCounts' =>

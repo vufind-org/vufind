@@ -200,6 +200,23 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the ProxyUrl helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ProxyUrl
+     */
+    public static function getProxyUrl(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config');
+        return new ProxyUrl(
+            $sm->getServiceLocator()->get('VuFind\IpAddressUtils'),
+            $config->get('permissions'),
+            $config->get('config')
+        );
+    }
+
+    /**
      * Construct the Total indexed count view helper.
      *
      * @param ServiceManager $sm Service manager.
