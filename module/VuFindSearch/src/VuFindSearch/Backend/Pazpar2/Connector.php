@@ -151,8 +151,10 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @return string Response body
      *
-     * @throws RemoteErrorException  SOLR signaled a server error (HTTP 5xx)
-     * @throws RequestErrorException SOLR signaled a client error (HTTP 4xx)
+     * @throws \VuFindSearch\Backend\Exception\RemoteErrorException  Server
+     * signaled a server error (HTTP 5xx)
+     * @throws \VuFindSearch\Backend\Exception\RequestErrorException Server
+     * signaled a client error (HTTP 4xx)
      */
     protected function send(\Zend\Http\Client $client)
     {
