@@ -6,7 +6,7 @@
     </div> 
     <form name="my_profile_form" class="inline" method="post">
       <div class="col-xs-4 col-sm-4 "> 
-        <?=$this->transEsc("Email") ?>:
+        <label for="email"><?=$this->transEsc("Email") ?>:</label>
       </div>
       <div class="col-xs-8 col-sm-4"> 
         <input id="email" type="email" class="form-control" name="email" value="<?=$user->email?>"/>
@@ -18,7 +18,7 @@
       <div class="clearfix visible-xs"><br/></div>
       <? if (!empty($user->cat_username)): ?>
       <div class="col-xs-4 col-sm-4"> 
-         <?=$this->transEsc("due_date_reminder") ?>:
+         <label for="due_date_reminder"><?=$this->transEsc("due_date_reminder") ?>:</label>
       </div>
       <div class="col-xs-8 col-sm-4">
           <select id="due-date-reminder" name="due_date_reminder" class="form-control">
