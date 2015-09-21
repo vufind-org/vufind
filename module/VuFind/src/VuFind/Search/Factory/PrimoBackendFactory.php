@@ -95,20 +95,12 @@ class PrimoBackendFactory implements FactoryInterface
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }
 
-        if (isset($this->primoConfig->InstitutionOnCampus)) {
-            $permHandler = new PrimoPermissionHandler(
-                $this->primoConfig->InstitutionOnCampus
-            );
-            $permHandler->setAuthorizationService(
-                $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
-            );
-            $this->primoPermissionHandler = $permHandler;
-        }
-
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
 
+        $this->getPermissionHandler();
         $this->createListeners($backend);
+
         return $backend;
     }
 
@@ -241,5 +233,23 @@ class PrimoBackendFactory implements FactoryInterface
     {
         $listener = new InjectOnCampusListener($this->primoPermissionHandler);
         return $listener;
+    }
+
+    /**
+     * Get a PrimoPermissionHandler
+     *
+     * @return InjectOnCampusListener
+     */
+    protected function getPermissionHandler()
+    {
+        if (isset($this->primoConfig->InstitutionOnCampus)) {
+            $permHandler = new PrimoPermissionHandler(
+                $this->primoConfig->InstitutionOnCampus
+            );
+            $permHandler->setAuthorizationService(
+                $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+            );
+            $this->primoPermissionHandler = $permHandler;
+        }
     }
 }

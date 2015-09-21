@@ -1,6 +1,6 @@
 <?php
 /**
- * Primo Permission Controller..
+ * Primo Permission Handler.
  *
  * PHP version 5
  *
@@ -31,7 +31,7 @@ use ZfcRbac\Service\AuthorizationServiceAwareInterface,
     ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
- * Primo Permission Controller.
+ * Primo Permission Handler.
  *
  * @category VuFind2
  * @package  Search
@@ -238,7 +238,7 @@ class PrimoPermissionHandler
             }
         }
 
-        // if none of the institutionCodes matched, walk through the permissionRules
+        // if none of the institutionCodes matched, walk through the onCampusRules
         // and check, if one of them is granted
         if (isset($this->primoConfig['onCampusRule'])
             && is_array($this->primoConfig['onCampusRule']) === true
@@ -331,7 +331,7 @@ class PrimoPermissionHandler
         $onCampusRule = $this->getOnCampusRule($code);
         $authService = $this->getAuthorizationService();
 
-        // if no authorization service is available, don't do anything
+        // if no authorization service is available, the user can't get permission
         if (!$authService) {
             return false;
         }
