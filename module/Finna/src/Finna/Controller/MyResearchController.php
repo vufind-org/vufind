@@ -55,7 +55,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if ($view === false) {
             $view = parent::checkedoutAction();
             $view->profile = $this->getCatalogProfile();
-
+            $transactions = count($view->transactions);
             $renewResult = $view->renewResult;
             if (isset($renewResult) && is_array($renewResult)) {
                 $renewedCount = 0;
@@ -70,8 +70,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $flashMsg = $this->flashMessenger();
                 if ($renewedCount > 0) {
                     $msg = $this->translate(
-                        'renew_ok', ['%%count%%' => $renewedCount]
+                        'renew_ok', ['%%count%%' => $renewedCount, '%%transactionscount%%' => $transactions]
                     );
+                    if ($renewedCount != $transactions) {
+                        $msg .= ' ' . $this->translate('renew_notification');
+                    }
                     $flashMsg->setNamespace('info')->addMessage($msg);
                 }
                 if ($renewErrorCount > 0) {
