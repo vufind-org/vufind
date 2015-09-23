@@ -62,7 +62,7 @@
 </div>
 <div class="container">
 <div class="row record-row">
-  <div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="col-sm-9">
     <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
@@ -110,7 +110,7 @@
     <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenURL()).'"></span>':''?>
   </div>
 
-  <div class="<?=$this->layoutClass('sidebar')?>">
+  <div class="col-sm-3 sidebar">
     <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind'): ?>
       <?=$this->render('record/record-organisation-menu.phtml') ?>
     <? endif; ?>

@@ -31,6 +31,7 @@
             background: @brand-primary;
             color: @body-bg;
             padding: 4px 8px;
+            vertical-align: middle;
         & th {
             background: none;
             border: none;
@@ -39,6 +40,14 @@
                 border-right: none;   
             }
         }
+    }
+    & .dedup-information {
+        @media (max-width: @screen-xs-max) {
+            max-width: 200px;  
+        }
+    }
+    & .dedup-select {
+        max-width: 100%;
     }
     & .btn-primary {
         padding: 2px 4px;

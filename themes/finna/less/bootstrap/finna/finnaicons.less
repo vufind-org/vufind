@@ -142,7 +142,6 @@ table .iconlabel {
 }
 .fa-spinner {
   margin-left: 5px;
-  vertical-align: middle;
 }
 .fa-spinner:before {
   font-family:'Fontawesome';
@@ -218,11 +217,18 @@ table .iconlabel {
 	content: "\e61b";
 }
 .fa-external-link:before, .openUrlEmbed:before {
-    font-size: 1.3em;
-    vertical-align: middle;
+    font-size: 1.12em;
 }
 .fa-www-link:before, .iconlabel.format-electronic:before, .fa-external-link:before, .openUrlEmbed:before {
     content: "\e615";
+}
+.fa-link:before {
+    font-family: 'FontAwesome';
+    content: "\f0c1";
+}
+.fa-unlink:before {
+    font-family: 'FontAwesome';
+    content: "\F127";
 }
 .fa-handle-left:before, .slick-prev:before {
     content: "\e60a";
@@ -327,10 +333,13 @@ table .iconlabel {
 .fa-uniE03B:before {
     content: "\e03b";
 }
-.fa-expand:before {
+.fa-expand:before, .fa-magnify:before {
     content: "\e03a";
 }
-.fa-search-adv:before, .fa-magnify:before {
+.fa-condense:before {
+    content: "\e61d";  
+}
+.fa-search-adv:before {
     content: "\e600";
 }
 .fa-pinterest:before {
@@ -507,7 +516,7 @@ table .iconlabel {
 .iconlabel.format-0database:before {
     content: "\e004";
 }
-.iconlabel.esine:before, .iconlabel.format-1physicalobjectother:before, .iconlabel.format-1physicalobjectculturehistoricalobject:before {
+.iconlabel.esine:before, .iconlabel.format-1physicalobjectother:before, .iconlabel.format-1physicalobjectculturehistoricalobject:before, .iconlabel.format-0physicalobject:before {
     content: "\e003";
 }
 .iconlabel.format-1mapmap:before, .iconlabel.format-1mapatlas:before, .iconlabel.karttapallo:before {
@@ -590,25 +599,33 @@ table .iconlabel {
 /* Image gallery popup icons */
 .fa-magnify {
     position: absolute;
-    font-size: 1em;
+    font-size: .9em;
     opacity: 0;
     transition: opacity 0.2s linear;
     color: @body-bg;
     right: 20px;
-    top: 6px;
+    top: 8px;
     z-index: 2;
     &:before {
-        padding: 1px 3px 3px;
+        padding: 3px 3px;
         background: rgba(1,1,1, 0.1);
-        font-size: 1.5em;
+        font-size: 1.4em;
     }
     @media (max-width: @screen-sm-max) {
         .opacity(0.3);
     }
 }
+.template-dir-record .recordcover-holder {
+    @media (max-width: @screen-xs-max) {
+        & .fa-magnify {
+            right: auto;
+            margin-left: -26px;
+        }
+    }
+}
 .grid .fa-magnify {
     right: 14px;
-    top: 5px;
+    top: 7px;
 }
 .recordcover-holder:hover .fa-magnify {
     opacity: 1;

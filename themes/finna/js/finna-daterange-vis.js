@@ -297,6 +297,7 @@ finna.dateRangeVis = (function() {
             "click",
             function(e) {
                 $(this).closest('.list-group-item.daterange').toggleClass('expand');
+                $('i', this).toggleClass('fa-condense');
                 plotData();
             }
         );
@@ -308,6 +309,7 @@ finna.dateRangeVis = (function() {
         var title = facet.find(".title");
         title.on("click", function(e) {
             facet.find('.list-group-item.daterange').removeClass('expand');
+            facet.find('.expand-modal i').removeClass('fa-condense');
             plotData(200);
         });
 

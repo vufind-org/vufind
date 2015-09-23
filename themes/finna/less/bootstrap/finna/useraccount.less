@@ -16,6 +16,16 @@
     }
     & .myresearch-profile-list {
         padding: 0px 6px 20px;
+        & label, & .profile-title {
+            padding-top: 6px;  
+        }
+        .clearfix {
+            padding: 3px 0px;   
+        }
+        & #email, & #due-date-reminder {
+            width: 100%;
+            margin-bottom: 5px;
+        }
     }
     & .myresearch-profile-header {
         font-size: @font-size-h3;
@@ -121,7 +131,11 @@
             width: 15%;   
         }
         & .actions {
-            width: 15%;   
+            width: 15%;
+        }
+        & .library-card-actions a {
+            display: block;
+            margin: 4px 0px;
         }
         & td.history-search-index, td.history-schedule .disable {
             color: @gray-light;
@@ -484,6 +498,7 @@
 .template-dir-librarycards .dropdown-menu.useraccount-cancel {
        left: auto;
        right: 0;
+       top: auto;
 }
 .template-dir-myresearch .toolbar > .btn-group:last-of-type .dropdown-menu.useraccount-cancel {
     @media (max-width: @screen-xs-max) {
