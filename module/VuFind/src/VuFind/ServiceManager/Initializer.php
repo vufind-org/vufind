@@ -61,6 +61,9 @@ class Initializer
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get('VuFind\Http'));
         }
+        if ($instance instanceof \VuFind\Record\Cache\RecordCacheAwareInterface) {
+            $instance->setRecordCache($sm->get('VuFind\RecordCache'));
+        }
         return $instance;
     }
 

@@ -28,6 +28,7 @@
 namespace VuFind\Search\Favorites;
 use VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Search\Base\Results as BaseResults,
+    VuFind\Record\Cache,
     ZfcRbac\Service\AuthorizationServiceAwareInterface,
     ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
@@ -169,11 +170,14 @@ class Results extends BaseResults
                 'id' => $row->record_id, 'source' => $row->source,
                 'extra_fields' => [
                     'title' => $row->title
-                ]
+                ],
+                'userId' => $userId,
             ];
         }
-        $this->results = $this->getServiceLocator()->get('VuFind\RecordLoader')
-            ->loadBatch($recordsToRequest);
+
+        $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $recordLoader->setCachePolicy(Cache::POLICY_FAVORITE);
+        $this->results = $recordLoader->loadBatch($recordsToRequest);
     }
 
     /**

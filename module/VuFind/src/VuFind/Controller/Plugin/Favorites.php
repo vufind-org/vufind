@@ -27,7 +27,8 @@
  */
 namespace VuFind\Controller\Plugin;
 use VuFind\Exception\LoginRequired as LoginRequiredException,
-    Zend\Mvc\Controller\Plugin\AbstractPlugin;
+    Zend\Mvc\Controller\Plugin\AbstractPlugin,
+    VuFind\Record\Cache;
 
 /**
  * Zend action helper to perform favorites-related actions
@@ -86,7 +87,19 @@ class Favorites extends AbstractPlugin
             $tags = isset($params['mytags'])
                 ? $tagParser->parse($params['mytags']) : [];
             $user->saveResource($resource, $list, $tags, '', false);
+
+            // Get and configure the record cache for the use case: Favorite 
+            $recordCache = $this->getController()->getServiceLocator()->get('VuFind\RecordCache');
+			$recordCache->setPolicy(Cache::POLICY_FAVORITE);
+                  
+			// Load and persist record only if the source is cachable
+            if ($recordCache->isCacheable($resource->source)) {
+	            $recordLoader = $this->getController()->getServiceLocator()->get('VuFind\RecordLoader');
+            	$record = $recordLoader->load($resource->record_id, $resource->source);
+            	$recordCache->createOrUpdate($resource->record_id, $user->id, $resource->source, $record->getRawData(), null, $resource->id);
+            }
         }
+    
     }
 
     /**
