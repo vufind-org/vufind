@@ -160,15 +160,18 @@
   }
 }
 @media (max-width:@screen-xs-max) {
+.recordTabs > li > a {
+    text-transform: uppercase;   
+}
 .nav-tabs {
     text-align: center;
-    border-bottom: 3px solid @gray-light; 
+    border-bottom: 5px solid @gray-lighter; 
     & #details {
        display: none;  
     }
     & > li {
-        
-        word-wrap: break-word;   
+        margin-bottom: -5px;
+        word-wrap: break-word;
     }
     & > li > a {
         padding: 0px 10px 10px;
