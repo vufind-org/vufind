@@ -276,6 +276,18 @@ JS;
             <?
             $script = <<<JS
 $(document).ready(function() {
+  $('#facet_{$this->escapeHtml($title)}').bind('loaded.jstree', function() { 
+    var tree = $(this);
+    var facet_id = '#'+tree.attr('id');
+        // if hierarchical facet contains 2 or less main level items, it is opened by default
+        if ($(facet_id+' > ul > li').length <= 2) {
+          $(facet_id+' > ul > li.jstree-node.jstree-closed > i.jstree-ocl').click();
+        }
+        // open facet if it has children and it is selected
+        $( facet_id+' .jstree-node.active.jstree-closed' ).each(function() {
+          $(' > i.jstree-ocl', this).click();
+        });
+  });
   initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
