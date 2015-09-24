@@ -90,7 +90,7 @@ class Favorites extends AbstractPlugin
 
             // Get and configure the record cache for the use case: Favorite
             $recordCache = $this->getController()->getServiceLocator()->get('VuFind\RecordCache');
-            $recordCache->setPolicy(Cache::POLICY_FAVORITE);
+            $recordCache->setContext(Cache::CONTEXT_FAVORITE);
 
             // Load and persist record only if the source is cachable
             if ($recordCache->isCachable($resource->source)) {
