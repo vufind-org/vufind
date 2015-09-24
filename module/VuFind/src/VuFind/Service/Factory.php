@@ -556,7 +556,7 @@ class Factory
             $sm->get('VuFind\Record\Cache')
         );
     }
-    
+
     /**
      * Construct the record cache.
      *
@@ -569,10 +569,11 @@ class Factory
         return new \VuFind\Record\Cache(
             $sm->get('VuFind\RecordDriverPluginManager'),
             $sm->get('VuFind\Config')->get('RecordCache'),
-            $sm->get('VuFind\DbTablePluginManager')
+            $sm->get('VuFind\DbTablePluginManager'),
+            $sm->get('VuFind\AuthManager')
         );
     }
-    
+
     /**
      * Construct the record router.
      *

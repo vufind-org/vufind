@@ -50,11 +50,11 @@ trait RecordCacheAwareTrait
      *
      * @param \VuFind\Record\Cache $recordCache record cache
      *
-     * @return null
+     * @return void
      */
     public function setRecordCache(\VuFind\Record\Cache $recordCache)
     {
-       $this->recordCache = $recordCache;
+        $this->recordCache = $recordCache;
     }
 
     /**

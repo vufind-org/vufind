@@ -543,9 +543,9 @@ class AbstractRecord extends AbstractBase
         // legacy routes).
         if (!is_object($this->driver)) {
             $recordLoader = $this->getRecordLoader();
-            $cachePolicy = $this->getRequest()->getQuery()->get('cachePolicy');
-            if (isset($cachePolicy)) {
-                $recordLoader->setCachePolicy($cachePolicy);
+            $cacheContext = $this->getRequest()->getQuery()->get('cacheContext');
+            if (isset($cacheContext)) {
+                $recordLoader->setCacheContext($cacheContext);
             }
             $this->driver = $recordLoader->load(
                 $this->params()->fromRoute('id', $this->params()->fromQuery('id')),

@@ -519,7 +519,6 @@ $config = [
                     'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
                     'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
                     'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
-                    'RecordCache' => 'VuFind\Search\Factory\RecordCacheBackendFactory',
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
                     'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
