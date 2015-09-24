@@ -88,8 +88,9 @@ class Favorites extends AbstractPlugin
                 ? $tagParser->parse($params['mytags']) : [];
             $user->saveResource($resource, $list, $tags, '', false);
 
-            // Get and configure the record cache for the use case: Favorite
-            $recordCache = $this->getController()->getServiceLocator()->get('VuFind\RecordCache');
+            // Get and configure the record cache for the Favorite context
+            $recordCache = $this->getController()->getServiceLocator()
+                ->get('VuFind\RecordCache');
             $recordCache->setContext(Cache::CONTEXT_FAVORITE);
 
             // Load and persist record only if the source is cachable
