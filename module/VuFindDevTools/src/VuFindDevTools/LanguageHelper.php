@@ -137,7 +137,7 @@ class LanguageHelper
      *
      * @return array
      */
-    protected function compareLanguages($lang1, $lang2)
+    public function compareLanguages($lang1, $lang2)
     {
         return [
             'notInL1' => $this->findMissingLanguageStrings($lang2, $lang1),
@@ -154,7 +154,7 @@ class LanguageHelper
      *
      * @return string
      */
-    protected function getLangName($lang)
+    public function getLangName($lang)
     {
         if (isset($this->config->Languages->$lang)) {
             return $this->config->Languages->$lang;
