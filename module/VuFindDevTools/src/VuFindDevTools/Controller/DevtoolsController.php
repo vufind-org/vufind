@@ -51,7 +51,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     {
         $min = trim($this->params()->fromPost('min'));
         $view = $this->createViewModel();
-        if (empty(!$min)) {
+        if (!empty($min)) {
             $view->min = unserialize($min);
         }
         if (isset($view->min) && $view->min) {
@@ -63,7 +63,8 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
             $params = $view->results->getParams();
             $view->query = $params->getQuery();
             if (is_callable([$params, 'getBackendParameters'])) {
-                $view->backendParams = $params->getBackendParameters()->getArrayCopy();
+                $view->backendParams = $params->getBackendParameters()
+                    ->getArrayCopy();
             }
             try {
                 $backend = $this->getServiceLocator()
