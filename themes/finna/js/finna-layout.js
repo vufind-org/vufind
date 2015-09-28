@@ -535,7 +535,9 @@ finna.layout = (function() {
             var tree = $(this);
             // if hierarchical facet contains 2 or less top level items, it is opened by default
             if (tree.find('ul > li').length <= 2) {
-                tree.jstree('open_all', null, false);
+                tree.find('ul > li.jstree-node.jstree-closed > i.jstree-ocl').each(function() {
+                    tree.jstree('open_node', this, null, false);
+                });
             }
             // open facet if it has children and it is selected
             $(tree.find('.jstree-node.active.jstree-closed')).each(function() {
