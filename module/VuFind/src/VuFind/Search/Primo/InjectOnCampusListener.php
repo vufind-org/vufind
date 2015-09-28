@@ -59,7 +59,7 @@ class InjectOnCampusListener
      *
      * @var boolean
      */
-    protected $isOnCampus;
+    protected $isOnCampus = null;
 
     /**
      * Constructor.
@@ -71,7 +71,6 @@ class InjectOnCampusListener
     public function __construct($pph = null)
     {
         $this->permissionHandler = $pph;
-        $this->isOnCampus = null;
     }
 
     /**
