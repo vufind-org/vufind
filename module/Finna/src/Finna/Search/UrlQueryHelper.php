@@ -129,8 +129,7 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
     {
         $params = parent::getParamArray();
         $filter = $this->params->getSpatialDateRangeFilter();
-        if ($filter && isset($filter['type']) && isset($filter['query'])
-        ) {
+        if ($filter && isset($filter['type']) && isset($filter['query'])) {
             $field = $this->params->getSpatialDateRangeField() . '_type';
             $params[$field] = $filter['type'];
         }
