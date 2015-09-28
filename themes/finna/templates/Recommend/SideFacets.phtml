@@ -29,7 +29,7 @@
     $availableRecords = $availCount < 0 ? '' : $this->localizedNumber($availCount);
     $html .= '<div class="checkbox';
     if ($current['selected']) {
-      $html .= ' checked">'; 
+      $html .= ' checked">';
     }
     else {
       $html .= '">';
@@ -147,7 +147,7 @@
                 $type =$spatialFilter['type'];
               }
               if ($params->getSearchType() != 'advanced') {
-                $lookfor = $params->getQuery()->getString();  
+                $lookfor = $params->getQuery()->getString();
                 if ($lookfor == '' && $fromVal === null && $toVal === null) {
                   $plotFrom = 0;
                 }
@@ -214,7 +214,7 @@ EOT
               'type' => $type,
               'backend' => $module == 'search' ? 'solr' : $module,
               'daterangeFacet' => $daterangeFacetField,
-              'plotFrom' => $plotFrom              
+              'plotFrom' => $plotFrom
               ]);
               ?>
             </div>
@@ -276,6 +276,17 @@ JS;
             <?
             $script = <<<JS
 $(document).ready(function() {
+  $('#facet_{$this->escapeHtml($title)}').bind('ready.jstree', function() {
+    var tree = $(this);
+    // if hierarchical facet contains 2 or less top level items, it is opened by default
+    if (tree.find('ul > li').length <= 2) {
+      tree.jstree('open_all', null, false);
+    }
+    // open facet if it has children and it is selected
+    $(tree.find('.jstree-node.active.jstree-closed')).each(function() {
+      tree.jstree('open_node', this, null, false);
+    });
+  });
   initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
