@@ -276,18 +276,7 @@ JS;
             <?
             $script = <<<JS
 $(document).ready(function() {
-  $('#facet_{$this->escapeHtml($title)}').bind('ready.jstree', function() {
-    var tree = $(this);
-    // if hierarchical facet contains 2 or less top level items, it is opened by default
-    if (tree.find('ul > li').length <= 2) {
-      tree.jstree('open_all', null, false);
-    }
-    // open facet if it has children and it is selected
-    $(tree.find('.jstree-node.active.jstree-closed')).each(function() {
-      tree.jstree('open_node', this, null, false);
-    });
-  });
-  initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
+  finna.layout.initHierarchicalFacet($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
             ?>
@@ -296,7 +285,7 @@ JS;
             <?
             $script = <<<JS
 $('#side-collapse-{$this->escapeHtmlAttr($title)}').on('show.bs.collapse', function() {
-  initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
+  finna.layout.initHierarchicalFacet($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
             ?>
