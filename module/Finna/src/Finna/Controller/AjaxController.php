@@ -460,7 +460,11 @@ class AjaxController extends \VuFind\Controller\AjaxController
             ->get('VuFind\SearchResultsPluginManager');
         $savedSearch = $minSO->deminify($results);
         $params = $savedSearch->getParams();
-        $lookfor = $params->getQuery()->getString();
+        $query = $params->getQuery();
+        if (!($query instanceof \VuFindSearch\Query\Query)) {
+            return $this->output('', self::STATUS_OK);
+        }
+        $lookfor = $query->getString();
         if (!$lookfor) {
             return $this->output('', self::STATUS_OK);
         }

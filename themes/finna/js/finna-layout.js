@@ -530,6 +530,23 @@ finna.layout = (function() {
         });
     };
 
+    var initHierarchicalFacet = function(treeNode, inSidebar) {
+        treeNode.bind('ready.jstree', function() {
+            var tree = $(this);
+            // if hierarchical facet contains 2 or less top level items, it is opened by default
+            if (tree.find('ul > li').length <= 2) {
+                tree.find('ul > li.jstree-node.jstree-closed > i.jstree-ocl').each(function() {
+                    tree.jstree('open_node', this, null, false);
+                });
+            }
+            // open facet if it has children and it is selected
+            $(tree.find('.jstree-node.active.jstree-closed')).each(function() {
+                tree.jstree('open_node', this, null, false);
+            });
+        });
+        initFacetTree(treeNode, inSidebar);
+    };
+    
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -540,6 +557,7 @@ finna.layout = (function() {
         initSaveRecordLinks: initSaveRecordLinks,
         initLightbox: initLightbox,
         updateLoginName: updateLoginName,
+        initHierarchicalFacet: initHierarchicalFacet,
         init: function() {
             $('select.jumpMenu').unbind('change').change(function() { $(this).closest('form').submit(); });
             $('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });

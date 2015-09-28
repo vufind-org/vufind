@@ -85,27 +85,30 @@
 
 <table class="table record-holdings-table">
   <tr>
-    <th <? if (!empty($holdings)): ?>colspan="3" <? endif; ?>class="headers">
+    <th <? if (!empty($holdings)): ?> colspan="3" <? endif; ?> class="headers">
       <? $currentSource = $this->driver->tryMethod('getDataSource'); ?>
       <? $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
-      <? if ($mergedData && count($mergedData['records']) > 1): ?>
-        <div class="dedup-information">
+      <div class="dedup-information">
+        <span class="holdings-title"><?=$this->transEsc("source_$currentSource", null, $currentSource) ?></span>
+        <? if ($mergedData && count($mergedData['records']) > 1): ?>
           <select class="dedup-select form-control jumpMenuUrl" role="listbox" aria-haspopup="true">
-          <? foreach ($mergedData['records'] as $current): ?>
-            <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
-            <option value="<?=$this->escapeHtmlAttr($this->url('record') . urlencode($current['id'])) ?>" role="option"<?=$currentSource == $current['source'] ? ' selected="selected"' : '' ?>><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
-          <? endforeach; ?>
+            <option value="#" role="option" selected="selected"><?=$this->transEsc('Other Libraries'); ?></option>
+            <? foreach ($mergedData['records'] as $current): ?>
+              <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
+              <? if ($currentSource != $current['source']): ?>
+                <option value="<?=$this->escapeHtmlAttr($this->url('record') . urlencode($current['id'])) ?>" role="option"><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
+              <? endif; ?>
+            <? endforeach; ?>
           </select>
+        <? endif; ?>
         </div>
-      <? else: ?>
-        <div class="dedup-information">
-          <strong><?=$this->transEsc("source_$currentSource", null, $currentSource) ?></strong>
-        </div>
-      <? endif; ?>
-    </th>
+      </th>
     <? if (!empty($holdings)): ?>
       <? // N.B. The division to 3 + 2 cols is required for the table to be valid HTML ?>
-      <th colspan="2" class="headers">
+      <th class="headers">
+      </th>
+      <th class="headers">
+        <?=$this->transEsc("shelf_location"); ?>
       </th>
     <? endif; ?>
   </tr>
@@ -271,7 +274,7 @@
 <? if (is_array($history) && !empty($history)): ?>
 <table class="table record-holdings-table">
   <tr>
-    <th class="headers"><h4><?=$this->transEsc("Most Recent Received Issues")?></4></th>
+    <th class="headers"><span class="holdings-title"><?=$this->transEsc("Most Recent Received Issues")?></span></th>
   </tr>
   <? foreach ($history as $row): ?>
     <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>

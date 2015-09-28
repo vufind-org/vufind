@@ -29,7 +29,7 @@
     $availableRecords = $availCount < 0 ? '' : $this->localizedNumber($availCount);
     $html .= '<div class="checkbox';
     if ($current['selected']) {
-      $html .= ' checked">'; 
+      $html .= ' checked">';
     }
     else {
       $html .= '">';
@@ -147,7 +147,7 @@
                 $type =$spatialFilter['type'];
               }
               if ($params->getSearchType() != 'advanced') {
-                $lookfor = $params->getQuery()->getString();  
+                $lookfor = $params->getQuery()->getString();
                 if ($lookfor == '' && $fromVal === null && $toVal === null) {
                   $plotFrom = 0;
                 }
@@ -214,7 +214,7 @@ EOT
               'type' => $type,
               'backend' => $module == 'search' ? 'solr' : $module,
               'daterangeFacet' => $daterangeFacetField,
-              'plotFrom' => $plotFrom              
+              'plotFrom' => $plotFrom
               ]);
               ?>
             </div>
@@ -276,7 +276,7 @@ JS;
             <?
             $script = <<<JS
 $(document).ready(function() {
-  initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
+  finna.layout.initHierarchicalFacet($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
             ?>
@@ -285,7 +285,7 @@ JS;
             <?
             $script = <<<JS
 $('#side-collapse-{$this->escapeHtmlAttr($title)}').on('show.bs.collapse', function() {
-  initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
+  finna.layout.initHierarchicalFacet($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
             ?>
