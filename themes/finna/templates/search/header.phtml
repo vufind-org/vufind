@@ -25,7 +25,7 @@
     <? elseif ($this->params->getsearchType() == 'basic'): ?>
       <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong>
     <? elseif ($this->params->getsearchType() == 'advanced'): ?>
-      <span class="adv_search_terms"><?=$this->transEsc("Your search terms")?> : <strong><?=$this->escapeHtml($this->lookfor)?></strong></span>
+      <span class="adv_search_terms"><?=$this->transEsc("Your search terms")?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong></span>
     <? endif; ?>
     <? else: ?>
       <?=$this->transEsc('nohit_heading')?>
