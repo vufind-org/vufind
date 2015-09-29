@@ -21,14 +21,14 @@
             margin: 0 4px 0 0;
 
             > a {
-                background-color: @link-color;
+                background-color: @main-tabs-background-color;
                 padding: 10px 15px 10px 15px;
                 margin-bottom: 0;
                 border: 0;
                 border-radius: 0;
                 font-size: 1em;
                 font-weight: bold;
-                color: #fff;
+                color: @main-tabs-link-color;
                 transition: none;
                 @media(max-width: @screen-xs-max) {
                     max-width: 100px;
@@ -49,7 +49,7 @@
             &:not(.active) > a {
                 transition: background-color 0.1s linear;
                 &:hover, &:active, &:focus {
-                    background: darken(@link-color,4%);
+                    background: darken(@main-tabs-background-color,4%);
                 }
             }
         }
