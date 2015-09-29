@@ -184,6 +184,13 @@
           <strong><?=$this->transEsc("Saved in")?>:</strong>
         </div>
     <? endif; ?>
+    <? if ($this->layout()->templateDir === 'list'): ?>
+    <div class="row">
+      <div class="col-xs-12">
+        <?=$this->render('list/list-notes.phtml')?>
+      </div>
+    </div>
+    <? endif; ?>
     </div>
     <div class="clearfix visible-xs"></div>
     <div class="col-xs-12 <?= $combinedView ? '' : 'visible-xs' ?>">
@@ -192,6 +199,5 @@
         <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record <?= $combinedView ? 'pull-left combined-save-record' : '' ?>  modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span><?=$this->transEsc('Add to favorites')?></span></a>
     <? endif; ?>
     </div>
-
 </div>
 <!-- end of result-list.phtml -->
