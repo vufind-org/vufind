@@ -374,6 +374,7 @@ AllFields:
     - isbn
     - issn
     - ismn_isn_mv
+    - collection_txt_mv
   QueryFields:
     0:
       0:
@@ -437,6 +438,8 @@ AllFields:
       - [onephrase, ~]
     ismn_isn_mv:
       - [onephrase, ~]
+    collection_txt_mv:
+      - [and, ~]
   ExactSettings:
     DismaxFields:
       - title_txtP^8600
@@ -447,6 +450,7 @@ AllFields:
       - isbn
       - issn
       - ismn_isn_mv
+      - collection_txt_mv
     QueryFields:
       title_txtP:
         - [onephrase, 8600]
@@ -467,6 +471,8 @@ AllFields:
         - [onephrase, ~]
       ismn_isn_mv:
         - [onephrase, ~]
+      collection_txt_mv:
+        - [and, ~]
 
 # These are advanced searches that never use Dismax:
 id:
