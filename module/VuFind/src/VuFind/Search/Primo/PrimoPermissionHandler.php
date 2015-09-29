@@ -132,7 +132,7 @@ class PrimoPermissionHandler
     {
         if (isset($this->primoConfig['institutionCode'])
             || isset($this->primoConfig['onCampusRule'])
-            || ($this->getDefaultCode() !== false
+            || ($this->getDefaultCode() !== false)
         ) {
             return;
         }
