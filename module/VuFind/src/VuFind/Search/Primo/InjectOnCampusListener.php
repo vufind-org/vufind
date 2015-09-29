@@ -106,13 +106,8 @@ class InjectOnCampusListener
     protected function getOnCampus()
     {
         if (null === $this->isOnCampus) {
-            $this->isOnCampus = false;
-            if ($this->permissionHandler) {
-                // The user is getting authenticated as default user
-                if ($this->permissionHandler->hasPermission()) {
-                    $this->isOnCampus = true;
-                }
-            }
+            $this->isOnCampus = $this->permissionHandler
+                ? $this->permissionHandler->hasPermission() : false;
         }
         return $this->isOnCampus;
     }
