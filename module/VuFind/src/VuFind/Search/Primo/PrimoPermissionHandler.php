@@ -153,26 +153,19 @@ class PrimoPermissionHandler
      */
     protected function getInstCodes()
     {
-        $codes = [];
+        // Start with default code (if any):
+        $defaultCode = $this->getDefaultCode();
+        $codes = ($defaultCode !== false) ? [$defaultCode] : [];
 
-        if ($this->getDefaultCode() !== false) {
-            $codes[] = $this->getDefaultCode();
-        }
-
-        if (isset($this->primoConfig['institutionCode'])
-            && is_array($this->primoConfig['institutionCode']) === true
-        ) {
-            $codes = array_merge(
-                $codes, array_keys($this->primoConfig['institutionCode'])
-            );
-        }
-
-        if (isset($this->primoConfig['onCampusRule'])
-            && is_array($this->primoConfig['onCampusRule']) === true
-        ) {
-            $codes = array_merge(
-                $codes, array_keys($this->primoConfig['onCampusRule'])
-            );
+        // Add additional keys from relevant config sections:
+        foreach (['institutionCode', 'onCampusRule'] as $section) {
+            if (isset($this->primoConfig[$section])
+                && is_array($this->primoConfig[$section])
+            ) {
+                $codes = array_merge(
+                    $codes, array_keys($this->primoConfig[$section])
+                );
+            }
         }
 
         return $codes;
@@ -193,27 +186,16 @@ class PrimoPermissionHandler
             return;
         }
 
-        // walk through the institutionCodes and check, if one of them is granted
-        if (isset($this->primoConfig['institutionCode'])
-            && is_array($this->primoConfig['institutionCode']) === true
-        ) {
-            foreach ($this->primoConfig['institutionCode'] as $code => $permRule) {
-                if ($authService->isGranted($permRule)) {
-                    $this->instCode = $code;
-                    return;
-                }
-            }
-        }
-
-        // if none of the institutionCodes matched, walk through the onCampusRules
-        // and check, if one of them is granted
-        if (isset($this->primoConfig['onCampusRule'])
-            && is_array($this->primoConfig['onCampusRule']) === true
-        ) {
-            foreach ($this->primoConfig['onCampusRule'] as $code => $permRule) {
-                if ($authService->isGranted($permRule)) {
-                    $this->instCode = $code;
-                    return;
+        // walk through the relevant config sections and check if one of them is granted
+        foreach (['institutionCode', 'onCampusRule'] as $section) {
+            if (isset($this->primoConfig[$section])
+                && is_array($this->primoConfig[$section])
+            ) {
+                foreach ($this->primoConfig[$section] as $code => $permRule) {
+                    if ($authService->isGranted($permRule)) {
+                        $this->instCode = $code;
+                        return;
+                    }
                 }
             }
         }
