@@ -61,7 +61,7 @@ class PrimoPermissionHandler
      * Constructor.
      *
      * @param Zend\Config\Config|array $primoPermConfig Primo-Config for
-     * InstitutionOnCampus
+     * InstitutionPermissions
      *
      * @return void
      */
@@ -170,7 +170,7 @@ class PrimoPermissionHandler
         // Primo will not work without an institution code!
         throw new \Exception(
             'No institutionCode found. Please be sure, that at least a '
-            . 'defaultCode is configured in section [InstitutionOnCampus] '
+            . 'defaultCode is configured in section [InstitutionPermissions] '
             . 'in Primo.ini.'
         );
     }

@@ -73,13 +73,6 @@ class PrimoBackendFactory implements FactoryInterface
     protected $primoConfig;
 
     /**
-     * Primo Permission Handler
-     *
-     * @var PrimoPermissionHandler
-     */
-    protected $primoPermissionHandler = null;
-
-    /**
      * Create the backend.
      *
      * @param ServiceLocatorInterface $serviceLocator Superior service manager
@@ -98,7 +91,6 @@ class PrimoBackendFactory implements FactoryInterface
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
 
-        $this->getPermissionHandler();
         $this->createListeners($backend);
 
         return $backend;
@@ -140,13 +132,16 @@ class PrimoBackendFactory implements FactoryInterface
      */
     protected function createConnector()
     {
+        // Get the PermissionHandler
+        $permHandler = $this->getPermissionHandler();
+
         // Load credentials and port number:
         $id = isset($this->primoConfig->General->apiId)
             ? $this->primoConfig->General->apiId : null;
         $port = isset($this->primoConfig->General->port)
             ? $this->primoConfig->General->port : 1701;
-        $instCode = isset($this->primoPermissionHandler)
-            ? $this->primoPermissionHandler->getInstCode()
+        $instCode = isset($permHandler)
+            ? $permHandler->getInstCode()
             : $this->getInstCode();
 
         // Build HTTP client:
@@ -231,25 +226,28 @@ class PrimoBackendFactory implements FactoryInterface
      */
     protected function getInjectOnCampusListener()
     {
-        $listener = new InjectOnCampusListener($this->primoPermissionHandler);
+        $listener = new InjectOnCampusListener($this->getPermissionHandler());
         return $listener;
     }
 
     /**
      * Get a PrimoPermissionHandler
      *
-     * @return InjectOnCampusListener
+     * @return PrimoPermissionHandler
      */
     protected function getPermissionHandler()
     {
-        if (isset($this->primoConfig->InstitutionOnCampus)) {
+        if (isset($this->primoConfig->InstitutionPermissions)) {
             $permHandler = new PrimoPermissionHandler(
-                $this->primoConfig->InstitutionOnCampus
+                $this->primoConfig->InstitutionPermissions
             );
             $permHandler->setAuthorizationService(
                 $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
             );
-            $this->primoPermissionHandler = $permHandler;
+            return $permHandler;
         }
+
+        // If no PermissionHandler can be set, return null
+        return null;
     }
 }
