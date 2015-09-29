@@ -59,7 +59,7 @@ class InjectOnCampusListener
      *
      * @var boolean
      */
-    protected $isOnCampus = null;
+    protected $isOnCampus;
 
     /**
      * Constructor.
@@ -70,7 +70,7 @@ class InjectOnCampusListener
      */
     public function __construct($pph = null)
     {
-        $this->permissionHandler = $pph;
+        $this->setPermissionHandler($pph);
     }
 
     /**
@@ -83,6 +83,7 @@ class InjectOnCampusListener
     public function setPermissionHandler($pph)
     {
         $this->permissionHandler = $pph;
+        $this->isOnCampus = null; // clear cache
     }
 
     /**
