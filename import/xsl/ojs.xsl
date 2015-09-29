@@ -53,7 +53,7 @@
                 </xsl:if>
 
                 <!-- FORMAT -->
-                <field name="format">Online</field>
+                <field name="format">article</field>
 
                 <!-- AUTHOR -->
                 <xsl:if test="//dc:creator">
