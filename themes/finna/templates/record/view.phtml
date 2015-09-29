@@ -69,7 +69,6 @@
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getToolbar()?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
-
     </div>
 
     <? if (count($this->tabs) > 0): ?>
@@ -119,6 +118,13 @@
     <? endforeach; ?>
     <? if ($this->driver->getResourceSource() == 'Primo'): ?>
       <div id="bx-recommendations-holder">
+      </div>
+    <? endif; ?>
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/record-post-recommendations")): ?>
+      <div class="row">
+        <div class="col-xs-12">
+          <?=$this->render($template)?>
+        </div>
       </div>
     <? endif; ?>
   </div>
