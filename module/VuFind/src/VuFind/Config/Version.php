@@ -52,23 +52,22 @@ class Version
      */
     public static function getBuildVersion($dir = '')
     {
-        static $cachedVersion = null;
+        static $cachedVersions = [];
 
         if ($dir === '') {
-            if ($cachedVersion !== null) {
-                return $cachedVersion;
-            }
             $dir = realpath(APPLICATION_PATH);
         }
-        $xml = simplexml_load_file($dir . '/build.xml');
-        if (!$xml) {
-            throw new \Exception('Cannot load ' . $dir . '/build.xml.');
+
+        if (!isset($cachedVersions[$dir])) {
+            $file = $dir . '/build.xml';
+            $xml = file_exists($file) ? simplexml_load_file($file) : false;
+            if (!$xml) {
+                throw new \Exception('Cannot load ' . $file . '.');
+            }
+            $parts = $xml->xpath('/project/property[@name="version"]/@value');
+            $cachedVersions[$dir] = (string)$parts[0];
         }
-        $parts = $xml->xpath('/project/property[@name="version"]/@value');
-        $version = (string)$parts[0];
-        if ($dir === realpath(APPLICATION_PATH)) {
-            $cachedVersion = $version;
-        }
-        return $version;
+
+        return $cachedVersions[$dir];
     }
 }
