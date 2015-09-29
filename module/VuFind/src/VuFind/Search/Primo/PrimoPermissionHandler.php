@@ -55,7 +55,7 @@ class PrimoPermissionHandler
      *
      * @var string
      */
-    protected $instCode;
+    protected $instCode = null;
 
     /**
      * Constructor.
@@ -67,15 +67,8 @@ class PrimoPermissionHandler
      */
     public function __construct($primoPermConfig)
     {
-        // Initialize instCode
-        $this->instCode = null;
-
-        if (is_array($primoPermConfig)) {
-            $this->primoConfig = $primoPermConfig;
-        } else {
-            $this->primoConfig = $primoPermConfig->toArray();
-        }
-
+        $this->primoConfig = is_array($primoPermConfig)
+            ? $primoPermConfig : $primoPermConfig->toArray();
         $this->checkConfig();
     }
 
@@ -107,10 +100,7 @@ class PrimoPermissionHandler
      */
     public function instCodeExists($code)
     {
-        if (in_array($code, $this->getInstCodes()) === true) {
-            return true;
-        }
-        return false;
+        return (in_array($code, $this->getInstCodes()) === true);
     }
 
     /**
@@ -182,7 +172,7 @@ class PrimoPermissionHandler
      */
     protected function getInstCodes()
     {
-        $codes = [ ];
+        $codes = [];
 
         if ($this->getDefaultCode() !== false) {
             $codes[] = $this->getDefaultCode();
@@ -285,11 +275,8 @@ class PrimoPermissionHandler
     protected function getDefaultOnCampusRule()
     {
         $defaultCode = $this->getDefaultCode();
-        if ($defaultCode === false) {
-            return null;
-        }
-
-        return $this->getOnCampusRule($defaultCode);
+        return ($defaultCode !== false)
+            ? $this->getOnCampusRule($defaultCode) : null;
     }
 
     /**
@@ -332,14 +319,6 @@ class PrimoPermissionHandler
         $authService = $this->getAuthorizationService();
 
         // if no authorization service is available, the user can't get permission
-        if (!$authService) {
-            return false;
-        }
-
-        if ($authService->isGranted($onCampusRule)) {
-            return true;
-        }
-
-        return false;
+        return ($authService && $authService->isGranted($onCampusRule));
     }
 }
