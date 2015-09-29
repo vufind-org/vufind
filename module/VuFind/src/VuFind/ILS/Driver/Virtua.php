@@ -1690,7 +1690,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "elementcount" => "1",
             "function" => "PATRONATTEMPT",
             "host" => $this->config['Catalog']['host_string'],
-            "lng" => "en",
+            "lng" => $this->config['Catalog']['language'],
             "login" => "1",
             "pos" => "1",
             "rootsearch" => "KEYWORD",
@@ -1768,7 +1768,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $post_data .= "&search="       . "PATRON";
         $post_data .= "&sessionid="    . "$session_id";
         $post_data .= "&skin="         . "homepage";
-        $post_data .= "&lng="          . "en";
+        $post_data .= "&lng="          .  $this->config['Catalog']['language'];
         $post_data .= "&inst="         . "consortium";
         $post_data .= "&conf="         . urlencode(".&#047;chameleon.conf");
         $post_data .= "&u1="           . "12";
