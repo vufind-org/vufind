@@ -1541,6 +1541,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Get the iPortal server
         $web_server = $this->config['Catalog']['webhost'];
+        $cgi_token = $this->config['Catalog']['cgi_token'];
 
         // Validate input
         //  * Request level
@@ -1568,7 +1569,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         // Still here? Guess the request is valid, lets send it to virtua
-        $virtua_url = "http://$web_server/cgi-bin/chameleon?" .
+        $virtua_url = "http://$web_server" . "$cgi_token" . "chameleon?" .
             // Standard stuff
             "search=NOSRCH&function=REQUESTS&reqreqtype=0&reqtype=0" .
             "&reqscr=2&reqreqlevel=2&reqidtype=127&reqmincircperiod=" .
@@ -1651,8 +1652,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         // Get the iPortal server
         $web_server = $this->config['Catalog']['webhost'];
-
-        $virtua_url = "http://$web_server/cgi-bin/chameleon?" .
+        $cgi_token = $this->config['Catalog']['cgi_token'];
+        
+        $virtua_url = "http://$web_server" . "$cgi_token" ."chameleon?" .
             // Standard stuff
             "search=NOSRCH&function=REQUESTS&reqreqtype=1&reqtype=0" .
             "&reqscr=4&reqreqlevel=2&reqidtype=127" .
@@ -1691,8 +1693,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         // Get the iPortal server
         $web_server = $this->config['Catalog']['webhost'];
-
-        $virtua_url = "http://$web_server/cgi-bin/chameleon";
+        $cgi_token = $this->config['Catalog']['cgi_token'];
+        
+        $virtua_url = "http://$web_server" . "$cgi_token" . "chameleon";
         $postParams = [
             "SourceScreen" => "INITREQ",
             "conf" => ".&#047;chameleon.conf",
@@ -1768,11 +1771,12 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Get the iPortal server
         $web_server = $this->config['Catalog']['webhost'];
+        $cgi_token = $this->config['Catalog']['cgi_token'];
 
         // Fake a login to get an authenticated session
         $session_id = $this->fakeLogin($patron);
 
-        $virtua_url = "http://$web_server/cgi-bin/chameleon";
+        $virtua_url = "http://$web_server" . "$cgi_token" . "chameleon";
 
         // Have to use raw post data because of the way
         //   virtua expects the barcodes to come across.
