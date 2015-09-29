@@ -132,7 +132,7 @@ class PrimoPermissionHandler
         ) {
             return true;
         }
-        // if its not set, the user has no permission
+        // if it's not set, the user has no permission
         return false;
     }
 
@@ -143,23 +143,17 @@ class PrimoPermissionHandler
      */
     protected function checkConfig()
     {
-        if (isset($this->primoConfig['institutionCode'])) {
-            return;
-        }
-
-        if (isset($this->primoConfig['onCampusRule'])) {
-            return;
-        }
-
-        // if no rule has matched until here, assume the user gets the default code
-        if ($this->getDefaultCode() !== false) {
+        if (isset($this->primoConfig['institutionCode'])
+            || isset($this->primoConfig['onCampusRule'])
+            || ($this->getDefaultCode() !== false
+        ) {
             return;
         }
 
         // If we reach this point, no institution code is set in config.
         // Primo will not work without an institution code!
         throw new \Exception(
-            'No institutionCode found. Please be sure, that at least a '
+            'No institutionCode found. Please be sure that at least a '
             . 'defaultCode is configured in section [InstitutionPermissions] '
             . 'in Primo.ini.'
         );
@@ -181,21 +175,17 @@ class PrimoPermissionHandler
         if (isset($this->primoConfig['institutionCode'])
             && is_array($this->primoConfig['institutionCode']) === true
         ) {
-            foreach ($this->primoConfig['institutionCode'] as $code => $permRule) {
-                if (in_array($code, $codes) === false) {
-                    $codes[] = $code;
-                }
-            }
+            $codes = array_merge(
+                $codes, array_keys($this->primoConfig['institutionCode'])
+            );
         }
 
         if (isset($this->primoConfig['onCampusRule'])
             && is_array($this->primoConfig['onCampusRule']) === true
         ) {
-            foreach ($this->primoConfig['onCampusRule'] as $code => $permRule) {
-                if (in_array($code, $codes) === false) {
-                    $codes[] = $code;
-                }
-            }
+            $codes = array_merge(
+                $codes, array_keys($this->primoConfig['onCampusRule'])
+            );
         }
 
         return $codes;
