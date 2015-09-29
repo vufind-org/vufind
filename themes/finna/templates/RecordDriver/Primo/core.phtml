@@ -460,5 +460,12 @@
       </div>
     <? endif; ?>
     <?/* End Main Details */?>
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/record-post-metadata")): ?>
+    <div class="row">
+      <div class="col-xs-12">
+        <?=$this->render($template)?>
+      </div>
+    </div>
+    <? endif; ?>
   </div>
 </div>

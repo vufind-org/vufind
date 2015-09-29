@@ -11,7 +11,11 @@
         <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
       <? endif; ?>
     </div>
-
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/record-post-toolbar")): ?>
+    <div class="record-post-toolbar">
+      <?=$this->render($template)?>
+    </div>
+    <? endif; ?>
     <? // if you have a preview tab but want to move or remove the preview link
        // from this area of the record view, this can be split into
        // getPreviewData() (should stay here) and
@@ -613,5 +617,12 @@
     <button class="btn show-details-button hidden"><?=$this->transesc('show_more_details');?> <i class="fa fa-arrow-down"></i></button>
     <button class="btn hide-details-button hidden"><?=$this->transesc('show_less_details');?> <i class="fa fa-arrow-up"></i></button>
     <?/* End Main Details */?>
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/record-post-metadata")): ?>
+    <div class="row">
+      <div class="col-xs-12">
+        <?=$this->render($template)?>
+      </div>
+    </div>
+    <? endif; ?>
   </div>
 </div>
