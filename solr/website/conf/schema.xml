@@ -117,6 +117,7 @@
    <field name="linktype" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <field name="subject" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <!-- Dynamic fields for customization without schema modification -->
+   <dynamicField name="*_sint" type="sint" indexed="true" stored="true"/>
    <dynamicField name="*_date" type="date" indexed="true" stored="true"/>
    <dynamicField name="*_date_mv" type="date" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_isn" type="isn" indexed="true" stored="true"/>
