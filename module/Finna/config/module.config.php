@@ -139,6 +139,8 @@ $config = [
             ],
             'ils_driver' => [
                 'factories' => [
+                    'multibackend' => 'Finna\ILS\Driver\Factory::getMultiBackend',
+                    'voyager' => 'Finna\ILS\Driver\Factory::getVoyager',
                     'voyagerrestful' => 'Finna\ILS\Driver\Factory::getVoyagerRestful',
                 ],
             ],

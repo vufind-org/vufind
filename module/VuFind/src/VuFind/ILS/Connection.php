@@ -543,6 +543,31 @@ class Connection implements TranslatorAwareInterface
     }
 
     /**
+     * Check for Authorization Status
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports getting
+     * authorization status.
+     *
+     * @param array $functionConfig The configuration values
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values for getting authorization status; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodgetPatronAuthorizationStatus(
+        $functionConfig, $params
+    ) {
+        if ($this->checkCapability('getPatronAuthorizationStatus', [$params ?: []])
+        ) {
+            return ['function' => 'getPatronAuthorizationStatus'];
+        }
+        return false;
+    }
+
+    /**
      * Get proper help text from the function config
      *
      * @param string|array $helpText Help text(s)

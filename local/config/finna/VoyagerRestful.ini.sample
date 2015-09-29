@@ -268,3 +268,10 @@ display_borrowing_location = true
 ; PIN change parameters. The default limits are taken from the interface documentation.
 minLength = 5
 maxLength = 12
+
+; These settings control authorization.
+[Authorization]
+; Whether authorization based on login is enabled. Default is false.
+;enabled = true
+; An optional colon-separated list of patron stat codes that are authorized.
+;stat_codes = 'S:EA'

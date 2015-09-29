@@ -38,6 +38,8 @@ namespace Finna\ILS\Driver;
  */
 class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
 {
+    use VoyagerFinna;
+
     /**
      * Configuration Reader
      *
