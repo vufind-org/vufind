@@ -81,14 +81,9 @@ class PrimoPermissionHandler
      */
     public function setInstCode($code)
     {
-        // When we try setting the institution code, set it to false
-        // to indicate that it is not null any more
-        $this->instCode = false;
-
-        // and then check if this code is valid in the configuration
-        if ($this->instCodeExists($code) === true) {
-            $this->instCode = $code;
-        }
+        // If the code is valid, we'll set it; otherwise, we'll use "false" to
+        // clear instCode's null status and indicate that the setter has been used.
+        $this->instCode = ($this->instCodeExists($code) === true) ? $code : false;
     }
 
     /**
@@ -124,16 +119,8 @@ class PrimoPermissionHandler
      */
     public function hasPermission()
     {
-        if ($this->instCode === null) {
-            $this->autodetectCode();
-        }
-        if (false !== $this->instCode
-            && $this->checkPermission($this->instCode) === true
-        ) {
-            return true;
-        }
-        // if it's not set, the user has no permission
-        return false;
+        $code = $this->getInstCode();
+        return (false !== $code && $this->checkPermission($code) === true);
     }
 
     /**
