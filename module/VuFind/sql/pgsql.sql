@@ -252,10 +252,10 @@ DROP TABLE IF EXISTS "record";
 
 CREATE TABLE `record` (
   id serial NOT NULL,
-  cache_id varchar(100),
+  cache_id varchar(100) NOT NULL,
   record_id varchar(120),
   user_id integer,
-  source varchar,
+  source varchar(50),
   version varchar(20) NOT NULL,
   data text,
   resource_id integer,
