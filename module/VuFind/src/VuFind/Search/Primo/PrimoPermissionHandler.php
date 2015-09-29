@@ -186,7 +186,7 @@ class PrimoPermissionHandler
             return;
         }
 
-        // walk through the relevant config sections and check if one of them is granted
+        // walk through the relevant config sections and check if one is granted
         foreach (['institutionCode', 'onCampusRule'] as $section) {
             if (isset($this->primoConfig[$section])
                 && is_array($this->primoConfig[$section])
