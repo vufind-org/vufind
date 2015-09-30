@@ -78,8 +78,10 @@ class NewItems extends AbstractPlugin
 
         // Build a list of unique IDs
         $bibIDs = [];
-        for ($i = 0; $i < count($newItems['results']); $i++) {
-            $bibIDs[] = $newItems['results'][$i]['id'];
+        if (isset($newItems['results'])) {
+            for ($i = 0; $i < count($newItems['results']); $i++) {
+                $bibIDs[] = $newItems['results'][$i]['id'];
+            }
         }
 
         // Truncate the list if it is too long:
