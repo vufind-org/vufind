@@ -167,7 +167,7 @@ class PrimoPermissionHandler
         $regex = isset($this->primoConfig['regex'])
             ? $this->primoConfig['regex'] : [];
         if (!empty($codes) && !empty($regex)) {
-        $this->primoConfig['onCampusRule'] = [];
+            $this->primoConfig['onCampusRule'] = [];
             error_log(
                 'Deprecated: You are using legacy settings in the [Institutions] '
                 . 'section in your Primo.ini. Please consider upgrading them '
@@ -177,17 +177,25 @@ class PrimoPermissionHandler
             for ($i = 0; $i < count($codes); $i++) {
                 if ($regex[$i] == '/.*/') {
                     $this->primoConfig['defaultCode'] = $codes[$i];
-                    error_log('Please add defaultCode = ' . $codes[$i]
-                        . ' to your Primo.ini');
-                    error_log('Please add primoPermission.' . $codes[$i] . ' to'
-                        . ' your permissions.ini (see that file for more information)');
+                    error_log(
+                        'Please add defaultCode = ' . $codes[$i]
+                        . ' to your Primo.ini'
+                    );
+                    error_log(
+                        'Please add primoPermission.' . $codes[$i] . ' to your '
+                        . 'permissions.ini (see that file for more information)'
+                    );
                 } else {
                     $this->primoConfig['onCampusRule'][$codes[$i]]
                         = 'primoPermission.' . $codes[$i];
-                    error_log('Please add onCampusRule[\'' . $codes[$i] . '\'] = '
-                        . 'primoPermission.' . $codes[$i] . ' to your Primo.ini');
-                    error_log('Please add primoPermission.' . $codes[$i] . ' to'
-                        . ' your permissions.ini (see that file for more information');
+                    error_log(
+                        'Please add onCampusRule[\'' . $codes[$i] . '\'] = '
+                        . 'primoPermission.' . $codes[$i] . ' to your Primo.ini'
+                    );
+                    error_log(
+                        'Please add primoPermission.' . $codes[$i] . ' to your '
+                        . 'permissions.ini (see that file for more information)'
+                    );
                 }
             }
         }
