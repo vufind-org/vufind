@@ -70,12 +70,13 @@ class CombinedController extends AbstractSearch
         $this->getSearchMemory()->disable();
 
         // Validate configuration:
-        $searchClassId = $this->params()->fromQuery('id');
+        $sectionId = $this->params()->fromQuery('id');
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
             ->toArray();
-        if (!isset($config[$searchClassId])) {
+        if (!isset($config[$sectionId])) {
             throw new \Exception('Illegal ID');
         }
+        list($searchClassId) = explode(':', $sectionId);
 
         // Retrieve results:
         $options = $this->getServiceLocator()
@@ -83,7 +84,7 @@ class CombinedController extends AbstractSearch
         $currentOptions = $options->get($searchClassId);
         list($controller, $action)
             = explode('-', $currentOptions->getSearchAction());
-        $settings = $config[$searchClassId];
+        $settings = $config[$sectionId];
 
         $this->adjustQueryForSettings($settings);
         $settings['view'] = $this->forwardTo($controller, $action);
@@ -154,8 +155,9 @@ class CombinedController extends AbstractSearch
             if ($current == 'Layout' || $current == 'RecommendationModules') {
                 continue;
             }
+            list($searchClassId) = explode(':', $current);
             $this->adjustQueryForSettings($settings);
-            $currentOptions = $options->get($current);
+            $currentOptions = $options->get($searchClassId);
             $supportsCartOptions[] = $currentOptions->supportsCart();
             if ($currentOptions->supportsCart()) {
                 $supportsCart = true;
@@ -163,13 +165,19 @@ class CombinedController extends AbstractSearch
             list($controller, $action)
                 = explode('-', $currentOptions->getSearchAction());
             $combinedResults[$current] = $settings;
+
+            // Calculate a unique DOM id for this section of the search results;
+            // $searchClassId may contain colons, which must be converted.
+            $combinedResults[$current]['domId']
+                = 'combined_' . str_replace(':', '____', $searchClassId);
+
             $combinedResults[$current]['view']
                 = (!isset($settings['ajax']) || !$settings['ajax'])
                 ? $this->forwardTo($controller, $action)
                 : $this->createViewModel(['results' => $results]);
 
             // Special case: include appropriate "powered by" message:
-            if (strtolower($current) == 'summon') {
+            if (strtolower($searchClassId) == 'summon') {
                 $this->layout()->poweredBy = 'Powered by Summon™ from Serials '
                     . 'Solutions, a division of ProQuest.';
             }
@@ -255,6 +263,13 @@ class CombinedController extends AbstractSearch
         // Apply limit setting, if any:
         $query = $this->getRequest()->getQuery();
         $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
+
+        // Apply filters, if any:
+        if (isset($settings['filter'])) {
+            $query->filter = (array)$settings['filter'];
+        } else {
+            $query->filter = null;
+        }
 
         // Reset override to avoid bleed-over from one section to the next!
         $query->recommendOverride = false;
