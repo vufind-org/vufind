@@ -148,13 +148,27 @@ h3 {
 
 /* --- Autocomplete --- */
 .autocomplete-results {
+  margin-top: 2px;
   border: 1px solid @list-group-border;
+  background-color: #fff;
   border-radius: 4px;
+  overflow: hidden;
 
-  .item {border-bottom-color: @list-group-border;}
-  .item:last-child {border: 0;}
-  .item:hover,
-  .item.selected {background: @brand-primary !important;}
+  .item {
+    display: block;
+    padding-top: .75rem;
+    padding-right: 1rem;
+    padding-bottom: .75rem;
+    padding-left: 1.25rem;
+    border-bottom: 1px solid @list-group-border;
+    cursor: pointer;
+
+    &:last-child {border: 0;}
+    &:hover, &.selected {
+      background-color: @brand-primary;
+      color: #fff;
+    }
+  }
 }
 
 
