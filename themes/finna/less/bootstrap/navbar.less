@@ -241,8 +241,18 @@
     font-size: @navbar-font-size;
     font-weight: @navbar-font-weight;
   }
-
+  &.language:before {
+    color: @navbar-default-link-color;
+    content:'';
+    border-left: solid 1px @navbar-default-link-color;
+    height: ((@navbar-height) - 24);
+    margin-top: ((@navbar-height - (@navbar-height - 24)) / 2);
+    float: left;
+  }
   @media (max-width: @grid-float-breakpoint-max) {
+    &.language:before {
+      border-left: none;
+    }
     // Dropdowns get custom display when collapsed
     .open:not(.logoutOptions) .dropdown-menu {
       position: static;

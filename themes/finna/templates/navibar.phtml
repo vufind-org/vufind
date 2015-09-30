@@ -33,9 +33,6 @@
       <li><a href="<?= $this->navibar()->getMenuItemUrl($val) ?>"><i class="fa fa-nav-<?= $val['label'] ?>"></i><?= $this->transEsc($val['label']) ?></a></li>
       <? endif; ?>
       <? endforeach; ?>
-      <li class="custom">
-        <?=$this->render('layout/Additions/header-navibar.phtml')?>
-      </li>
     </ul>
     <ul role="menubar" class="nav navbar-nav">
       <? $cart = $this->cart(); if ($cart->isActive()): ?>
@@ -49,7 +46,7 @@
         <a id="feedbackLink" class="modal-link" href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope"></i> <?=$this->transEsc("Feedback")?></a>
       </li>
       <? endif; ?>
-
+      
       <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
       <li role="presentation" class="dropdown">
           <form method="post" name="themeForm" id="themeForm">
@@ -63,17 +60,24 @@
           </ul>
         </li>
       <? endif; ?>
-
-      <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-        <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
-        <? if ($this->layout()->userLang != $langCode): ?>
+    </ul>
+    <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+      <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+      <? if ($this->layout()->userLang != $langCode): ?>
+      <ul role="menubar" class="nav navbar-nav language">
         <li role="menuitem">
           <a class="preserve-anchor" href="<?=$this->escapeHtmlAttr($this->navibar()->getLanguageUrl($langCode))?>"><?=$this->displayLanguageOption($langName)?></a>
         </li>
-        <? endif ?>
-        <? endforeach; ?>
-      <? endif; ?>
+      </ul>
+      <? endif ?>
+      <? endforeach; ?>
+    <? endif; ?>
+      
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/header-navibar")): ?>
+    <ul role="menubar" class="nav navbar-nav">
+      <?=$this->render($template)?>
     </ul>
+    <? endif; ?>
   </div>
 
   <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
