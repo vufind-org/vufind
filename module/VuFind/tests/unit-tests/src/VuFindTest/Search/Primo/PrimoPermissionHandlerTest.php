@@ -151,7 +151,7 @@ class PrimoPermissionHandlerTest extends TestCase
         } catch(Exception $e){
             $this->assertEquals(
                 "The Primo Permission System has not been configured.
-                Please configure section [InstitutionPermission] in Primo.ini.",
+                Please configure section [Institutions] in Primo.ini.",
                 $e->getMessage()
             );
         }

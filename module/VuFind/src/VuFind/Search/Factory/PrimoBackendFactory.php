@@ -142,7 +142,7 @@ class PrimoBackendFactory implements FactoryInterface
             ? $this->primoConfig->General->port : 1701;
         $instCode = isset($permHandler)
             ? $permHandler->getInstCode()
-            : $this->getInstCode();
+            : null;
 
         // Build HTTP client:
         $client = $this->serviceLocator->get('VuFind\Http')->createClient();
@@ -153,43 +153,6 @@ class PrimoBackendFactory implements FactoryInterface
         $connector = new Connector($id, $instCode, $client, $port);
         $connector->setLogger($this->logger);
         return $connector;
-    }
-
-    /**
-     * Determine the institution code
-     *
-     * @return     string
-     * @deprecated Use PrimoPermissionHandler instead!
-     */
-    protected function getInstCode()
-    {
-        error_log(
-            'Deprecated: You are using the [Institutions] section in your '
-            . 'Primo.ini. Please consider moving to [InstitutionPermission] '
-            . '(see config/vufind/Primo.ini for details).'
-        );
-
-        $codes = isset($this->primoConfig->Institutions->code)
-            ? $this->primoConfig->Institutions->code : [];
-        $regex = isset($this->primoConfig->Institutions->regex)
-            ? $this->primoConfig->Institutions->regex : [];
-        if (empty($codes) || empty($regex) || count($codes) != count($regex)) {
-            throw new \Exception('Check [Institutions] settings in Primo.ini');
-        }
-
-        $request = $this->serviceLocator->get('Request');
-        $ip = $request->getServer('REMOTE_ADDR');
-
-        for ($i = 0; $i < count($codes); $i++) {
-            if (preg_match($regex[$i], $ip)) {
-                return $codes[$i];
-            }
-        }
-
-        throw new \Exception(
-            'Could not determine institution code. [Institutions] settings '
-            . 'should include a catch-all rule at the end.'
-        );
     }
 
     /**
@@ -237,9 +200,9 @@ class PrimoBackendFactory implements FactoryInterface
      */
     protected function getPermissionHandler()
     {
-        if (isset($this->primoConfig->InstitutionPermissions)) {
+        if (isset($this->primoConfig->Institutions)) {
             $permHandler = new PrimoPermissionHandler(
-                $this->primoConfig->InstitutionPermissions
+                $this->primoConfig->Institutions
             );
             $permHandler->setAuthorizationService(
                 $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')

@@ -44,7 +44,7 @@ class PrimoPermissionHandler
     use AuthorizationServiceAwareTrait;
 
     /**
-     * Primo-Config for InstitutionPermissions.
+     * Primo-Config for Institutions.
      *
      * @var array
      */
@@ -61,7 +61,7 @@ class PrimoPermissionHandler
      * Constructor.
      *
      * @param Zend\Config\Config|array $primoPermConfig Primo-Config for
-     * InstitutionPermissions
+     * Institutions
      *
      * @return void
      */
@@ -69,6 +69,7 @@ class PrimoPermissionHandler
     {
         $this->primoConfig = is_array($primoPermConfig)
             ? $primoPermConfig : $primoPermConfig->toArray();
+        $this->checkLegacySettings();
         $this->checkConfig();
     }
 
@@ -141,9 +142,55 @@ class PrimoPermissionHandler
         // Primo will not work without an institution code!
         throw new \Exception(
             'No institutionCode found. Please be sure that at least a '
-            . 'defaultCode is configured in section [InstitutionPermissions] '
+            . 'defaultCode is configured in section [Institutions] '
             . 'in Primo.ini.'
         );
+    }
+
+    /**
+     * Legacy settings support
+     *
+     * @return void
+     */
+    protected function checkLegacySettings()
+    {
+        // if we already have settings, ignore the legacy ones
+        if (isset($this->primoConfig['defaultCode'])
+            || isset($this->primoConfig['onCampusRule'])
+        ) {
+            return;
+        }
+
+        // Handle legacy options
+        $codes = isset($this->primoConfig['code'])
+            ? $this->primoConfig['code'] : [];
+        $regex = isset($this->primoConfig['regex'])
+            ? $this->primoConfig['regex'] : [];
+        if (!empty($codes) && !empty($regex)) {
+        $this->primoConfig['onCampusRule'] = [];
+            error_log(
+                'Deprecated: You are using legacy settings in the [Institutions] '
+                . 'section in your Primo.ini. Please consider upgrading them '
+                . '(see config/vufind/Primo.ini for details).'
+            );
+
+            for ($i = 0; $i < count($codes); $i++) {
+                if ($regex[$i] == '/.*/') {
+                    $this->primoConfig['defaultCode'] = $codes[$i];
+                    error_log('Please add defaultCode = ' . $codes[$i]
+                        . ' to your Primo.ini');
+                    error_log('Please add primoPermission.' . $codes[$i] . ' to'
+                        . ' your permissions.ini (see that file for more information)');
+                } else {
+                    $this->primoConfig['onCampusRule'][$codes[$i]]
+                        = 'primoPermission.' . $codes[$i];
+                    error_log('Please add onCampusRule[\'' . $codes[$i] . '\'] = '
+                        . 'primoPermission.' . $codes[$i] . ' to your Primo.ini');
+                    error_log('Please add primoPermission.' . $codes[$i] . ' to'
+                        . ' your permissions.ini (see that file for more information');
+                }
+            }
+        }
     }
 
     /**
