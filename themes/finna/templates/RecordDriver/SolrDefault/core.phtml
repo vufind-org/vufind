@@ -53,7 +53,8 @@
             <? endforeach; ?>
           <? elseif (!empty($urls)): ?>
             <? foreach ($urls as $url): ?>
-              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('link_' . $url['desc'], null, $url['desc']) ?></a></div>
+              <? $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
+              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('link_' . $desc, null, $desc) ?></a></div>
             <? endforeach; ?>
           <? endif; ?>
         </div>
