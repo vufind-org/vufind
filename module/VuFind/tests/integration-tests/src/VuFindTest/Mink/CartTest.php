@@ -58,17 +58,28 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
 
-        // Click "add" without selecting anything:
+        // Click "add" without selecting anything. This test is a bit timing-
+        // sensitive, so introduce a retry loop before completely failing.
         $updateCart = $page->find('css', '#updateCart');
         $this->assertTrue(is_object($updateCart));
-        $updateCart->click();
-        $content = $page->find('css', '.popover-content');
-        $this->assertTrue(is_object($content));
-        $this->assertEquals(
-            'No items were selected. '
-            . 'Please click on a checkbox next to an item and try again.',
-            $content->getText()
-        );
+        $clickRetry = 0;
+        while (true) {
+            $updateCart->click();
+            $content = $page->find('css', '.popover-content');
+            if (is_object($content)) {
+                $this->assertEquals(
+                    'No items were selected. '
+                    . 'Please click on a checkbox next to an item and try again.',
+                    $content->getText()
+                );
+                break;
+            } else {
+                $clickRetry++;
+                if ($clickRetry > 4) {
+                    $this->fail('Too many retries on check for error message.');
+                }
+            }
+        }
 
         // Now actually select something:
         $selectAll = $page->find('css', '#addFormCheckboxSelectAll');

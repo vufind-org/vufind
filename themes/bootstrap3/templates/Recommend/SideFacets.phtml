@@ -95,6 +95,7 @@
               $max = !empty($rangeFacets[$title]['values'][1]) ? max($future, $rangeFacets[$title]['values'][1]) : $future;
               $low  = !empty($rangeFacets[$title]['values'][0]) ? $rangeFacets[$title]['values'][0] : $min;
               $high = !empty($rangeFacets[$title]['values'][1]) ? $rangeFacets[$title]['values'][1] : $max;
+              $reversed = $this->layout()->rtl ? 'true' : 'false';
               $script = <<<JS
 $(document).ready(function() {
   var fillTexts = function() {
@@ -104,11 +105,12 @@ $(document).ready(function() {
   };
   var {$this->escapeHtmlAttr($title)}dateSlider = $('#{$this->escapeHtmlAttr($title)}dateSlider')
   .slider({
-     'min':{$min},
-     'max':{$max},
-     'handle':"square",
-     'tooltip':"hide",
-     'value':[{$low},{$high}]
+    'min':{$min},
+    'max':{$max},
+    'handle':"square",
+    'tooltip':"hide",
+    'value':[{$low},{$high}],
+    'reversed': {$reversed}
   })
   .on('slide', fillTexts)
   .data('slider');

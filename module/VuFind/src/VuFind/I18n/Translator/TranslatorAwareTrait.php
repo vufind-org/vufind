@@ -89,28 +89,35 @@ trait TranslatorAwareTrait
     /**
      * Translate a string (or string-castable object)
      *
-     * @param string|object $str     String to translate
-     * @param array         $tokens  Tokens to inject into the translated string
-     * @param string        $default Default value to use if no translation is found
-     * (null for no default).
+     * @param string|object|array $target  String to translate or an array of text
+     * domain and string to translate
+     * @param array               $tokens  Tokens to inject into the translated
+     * string
+     * @param string              $default Default value to use if no translation is
+     * found (null for no default).
      *
      * @return string
      */
-    public function translate($str, $tokens = [], $default = null)
+    public function translate($target, $tokens = [], $default = null)
     {
+        // Figure out the text domain for the string:
+        list($domain, $str) = $this->extractTextDomain($target);
+
         // Special case: deal with objects with a designated display value:
         if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
-            $translated = $this->translateString((string)$str, $tokens, $default);
+            // On this pass, don't use the $default, since we want to fail over
+            // to getDisplayString before giving up:
+            $translated = $this
+                ->translateString((string)$str, $tokens, null, $domain);
             if ($translated !== (string)$str) {
                 return $translated;
             }
-            return $this->translateString(
-                $str->getDisplayString(), $tokens, $default
-            );
+            // Override $domain/$str using getDisplayString() before proceeding:
+            list($domain, $str) = $this->extractTextDomain($str->getDisplayString());
         }
 
         // Default case: deal with ordinary strings (or string-castable objects):
-        return $this->translateString((string)$str, $tokens, $default);
+        return $this->translateString((string)$str, $tokens, $default, $domain);
     }
 
     /**
@@ -118,15 +125,15 @@ trait TranslatorAwareTrait
      *
      * @param string $str     String to translate
      * @param array  $tokens  Tokens to inject into the translated string
-     * @param string $default Default value to use if no translation is found (null
-     * for no default).
+     * @param string $default Default value to use if no translation is found
+     * (null for no default).
+     * @param string $domain  Text domain (omit for default)
      *
      * @return string
      */
-    protected function translateString($str, $tokens = [], $default = null)
-    {
-        // Figure out the text domain for the string:
-        list($domain, $str) = $this->extractTextDomain($str);
+    protected function translateString($str, $tokens = [], $default = null,
+        $domain = 'default'
+    ) {
 
         $msg = (null === $this->translator)
             ? $str : $this->translator->translate($str, $domain);
@@ -153,16 +160,27 @@ trait TranslatorAwareTrait
      * Given a translation string with or without a text domain, return an
      * array with the raw string and the text domain separated.
      *
-     * @param string $str String to parse
+     * @param string|object|array $target String to translate or an array of text
+     * domain and string to translate
      *
      * @return array
      */
-    protected function extractTextDomain($str)
+    protected function extractTextDomain($target)
     {
-        $parts = explode('::', $str);
+        $parts = is_array($target) ? $target : explode('::', $target);
+        if (count($parts) < 1 || count($parts) > 2) {
+            throw new \Exception('Unexpected value sent to translator!');
+        }
         if (count($parts) == 2) {
+            if (empty($parts[0])) {
+                $parts[0] = 'default';
+            }
+            if ($target instanceof \VuFind\I18n\TranslatableStringInterface) {
+                $class = get_class($target);
+                $parts[1] = new $class($parts[1], $target->getDisplayString());
+            }
             return $parts;
         }
-        return ['default', $str];
+        return ['default', is_array($target) ? $parts[0] : $target];
     }
 }

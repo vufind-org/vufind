@@ -1,9 +1,10 @@
 <?php
 /**
- * Class for translatable string with a special default translation.
+ * Version check utility
  *
  * PHP version 5
  *
+ * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,68 +21,53 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Translator
+ * @package  Controller
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind\I18n;
+namespace VuFind\Config;
 
 /**
- * Class for translatable string with a special default translation.
+ * Version check utility
  *
  * @category VuFind2
- * @package  Translator
+ * @package  Controller
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class TranslatableString implements TranslatableStringInterface
+class Version
 {
     /**
-     * Original string
+     * Extract version number from the build.xml file of the running instance or
+     * another instance pointed to by $dir
      *
-     * @var string
-     */
-    protected $string;
-
-    /**
-     * Default display string
+     * @param string $dir Optional directory containing build.xml
      *
-     * @var string
-     */
-    protected $displayString;
-
-    /**
-     * Constructor
-     *
-     * @param string $string        Original string
-     * @param string $displayString Translatable display string
-     */
-    public function __construct($string, $displayString)
-    {
-        $this->string = (string)$string;
-        $this->displayString = $displayString;
-    }
-
-    /**
-     * Return the original string by default
-     *
+     * @throws \Exception
      * @return string
      */
-    public function __toString()
+    public static function getBuildVersion($dir = '')
     {
-        return $this->string;
-    }
+        static $cachedVersions = [];
 
-    /**
-     * Return string for display if raw value has no translation available (can be
-     * further translated)
-     *
-     * @return string
-     */
-    public function getDisplayString()
-    {
-        return $this->displayString;
+        if ($dir === '') {
+            $dir = realpath(APPLICATION_PATH);
+        }
+
+        if (!isset($cachedVersions[$dir])) {
+            $file = $dir . '/build.xml';
+            $xml = file_exists($file) ? simplexml_load_file($file) : false;
+            if (!$xml) {
+                throw new \Exception('Cannot load ' . $file . '.');
+            }
+            $parts = $xml->xpath('/project/property[@name="version"]/@value');
+            $cachedVersions[$dir] = (string)$parts[0];
+        }
+
+        return $cachedVersions[$dir];
     }
 }

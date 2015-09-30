@@ -525,11 +525,19 @@ class Upgrade
         // Set up reference for convenience (and shorter lines):
         $newConfig = & $this->newConfigs['config.ini'];
 
-        // If the [BulkExport] options setting is an old default, update it to
-        // reflect the fact that we now support more options.
-        if ($this->isDefaultBulkExportOptions($newConfig['BulkExport']['options'])) {
-            $newConfig['BulkExport']['options']
-                = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX:RIS';
+        // If the [BulkExport] options setting is present and non-default, warn
+        // the user about its deprecation.
+        if (isset($newConfig['BulkExport']['options'])) {
+            $default = $this->isDefaultBulkExportOptions(
+                $newConfig['BulkExport']['options']
+            );
+            if (!$default) {
+                $this->addWarning(
+                    'The [BulkExport] options setting is deprecated; please '
+                    . 'customize the [Export] section instead.'
+                );
+            }
+            unset($newConfig['BulkExport']['options']);
         }
 
         // Warn the user about Amazon configuration issues:
