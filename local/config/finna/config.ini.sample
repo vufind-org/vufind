@@ -1163,3 +1163,38 @@ authentication_methods[] = Shibboleth
 [NormalizationPreview]
 ; Backend URL
 url = http://finna-be-1.csc.fi/preview
+
+; Links to copyright information used for image rights.
+[ImageRights]
+fi['CC0'] = "http://creativecommons.org/about/cc0"
+sv['CC0'] = "http://creativecommons.org/about/cc0"
+en-gb['CC0'] = "http://creativecommons.org/about/cc0"
+
+fi['CC BY 4.0'] = "http://creativecommons.org/licenses/by/4.0/deed.fi"
+sv['CC BY 4.0'] = "http://creativecommons.org/licenses/by/4.0/deed.sv"
+en-gb['CC BY 4.0'] = "http://creativecommons.org/licenses/by/4.0/deed.en"
+
+fi['CC BY-SA 4.0'] = "http://creativecommons.org/licenses/by-sa/4.0/deed.fi"
+sv['CC BY-SA 4.0'] = "http://creativecommons.org/licenses/by-sa/4.0/deed.sv"
+en-gb['CC BY-SA 4.0'] = "http://creativecommons.org/licenses/by-sa/4.0/deed.en"
+
+fi['CC BY-ND 4.0'] = "http://creativecommons.org/licenses/by-nd/4.0/deed.fi"
+sv['CC BY-ND 4.0'] = "http://creativecommons.org/licenses/by-nd/4.0/deed.sv"
+en-gb['CC BY-ND 4.0'] = "http://creativecommons.org/licenses/by-nd/4.0/deed.en"
+
+fi['CC BY-NC 4.0'] = "http://creativecommons.org/licenses/by-nc/4.0/deed.fi"
+sv['CC BY-NC 4.0'] = "http://creativecommons.org/licenses/by-nc/4.0/deed.sv"
+en-gb['CC BY-NC 4.0'] = "http://creativecommons.org/licenses/by-nc/4.0/deed.en"
+
+fi['CC BY-NC-SA 4.0'] = "http://creativecommons.org/licenses/by-nc-sa/4.0/deed.fi"
+sv['CC BY-NC-SA 4.0'] = "http://creativecommons.org/licenses/by-nc-sa/4.0/deed.sv"
+en-gb['CC BY-NC-SA 4.0'] = "http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
+
+fi['CC BY-NC-ND 4.0'] = "http://creativecommons.org/licenses/by-nc-nd/4.0/deed.fi"
+sv['CC BY-NC_ND 4.0'] = "http://creativecommons.org/licenses/by-nc-nd/4.0/deed.sv"
+en-gb['CC BY-NC-ND 4.0'] = "http://creativecommons.org/licenses/by-nc-nd/4.0/deed.en"
+
+fi['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.html"
+sv['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.html"
+en-gb['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.html"
+
