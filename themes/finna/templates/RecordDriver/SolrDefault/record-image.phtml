@@ -18,7 +18,7 @@ $imageData = array('images' => $images, 'type' => $type);
   <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
 <? endif; ?>
 <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumImage);?>"/>
-<i class="fa fa-magnify"></i>
+<i class="fa fa-magnify hidden-print"></i>
 </a>
 <? else: ?>
   <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>

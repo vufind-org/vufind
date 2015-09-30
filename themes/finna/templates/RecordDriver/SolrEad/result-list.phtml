@@ -126,7 +126,7 @@
       <? /* Hierarchy tree link */ ?>
       <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
         <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
-          <div class="hierarchyTreeLink">
+          <div class="hierarchyTreeLink hidden-print">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
             <a class="hierarchyTreeLinkText modal-link" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
               <i class="fa fa-sitemap"></i>
