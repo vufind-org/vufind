@@ -29,10 +29,9 @@
  */
 namespace VuFind\Record;
 use VuFind\Auth\Manager as AuthManager,
-    VuFind\Db\Table\PluginManager as DbTableManager,
+    VuFind\Db\Table\Record as Record,
     VuFind\RecordDriver\PluginManager as RecordFactory,
     Zend\Config\Config as Config;
-use VuFind\Db\Row\Record;
 
 /**
  * Record Cache
@@ -89,19 +88,19 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param RecordFactory  $recordFactoryManager Record loader
-     * @param Config         $config               VuFind main config
-     * @param DbTableManager $dbTableManager       Database Table Manager
-     * @param AuthManager    $authManager          Authentication Manager
+     * @param RecordFactory $recordFactoryManager Record loader
+     * @param Config        $config               VuFind main config
+     * @param Record        $recordTable          Record Table
+     * @param AuthManager   $authManager          Authentication Manager
      */
     public function __construct(
         RecordFactory $recordFactoryManager,
         Config $config,
-        DbTableManager $dbTableManager,
+        Record $recordTable,
         AuthManager $authManager
     ) {
         $this->cacheConfig = $config;
-        $this->recordTable = $dbTableManager->get('record');
+        $this->recordTable = $recordTable;
         $this->recordFactoryManager = $recordFactoryManager;
         $this->authManager = $authManager;
 

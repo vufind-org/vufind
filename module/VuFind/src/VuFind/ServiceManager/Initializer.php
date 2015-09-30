@@ -62,7 +62,19 @@ class Initializer
             $instance->setHttpService($sm->get('VuFind\Http'));
         }
         if ($instance instanceof \VuFind\Record\Cache\RecordCacheAwareInterface) {
-            $instance->setRecordCache($sm->get('VuFind\RecordCache'));
+            // Initialize Record Cache only if it's enabled for any data source
+            $cacheConfig = $sm->get('VuFind\Config')->get('RecordCache');
+            foreach ($cacheConfig as $section) {
+                foreach ($section as $setting) {
+                    if (isset($setting['operatingMode'])
+                        && $setting['operatingMode'] !== 'disabled'
+                    ) {
+                        $instance->setRecordCache($sm->get('VuFind\RecordCache'));
+                        break;
+                    }
+                }
+            }
+
         }
         return $instance;
     }
