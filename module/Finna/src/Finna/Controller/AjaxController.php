@@ -42,306 +42,18 @@ use Zend\Cache\StorageFactory,
 class AjaxController extends \VuFind\Controller\AjaxController
 {
     /**
-     * Check Requests are Valid
+     * Add resources to a list.
      *
      * @return \Zend\Http\Response
      */
-    protected function checkRequestsAreValidAjax()
-    {
-        $this->writeSession();  // avoid session write timing bug
-        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
-        $data = $this->params()->fromPost(
-            'data', $this->params()->fromQuery('data')
-        );
-        $requestType = $this->params()->fromPost(
-            'requestType', $this->params()->fromQuery('requestType')
-        );
-        if (!empty($id) && !empty($data)) {
-            // check if user is logged in
-            $user = $this->getUser();
-            if (!$user) {
-                return $this->output(
-                    [
-                        'status' => false,
-                        'msg' => $this->translate('You must be logged in first')
-                    ],
-                    self::STATUS_NEED_AUTH
-                );
-            }
-
-            try {
-                $catalog = $this->getILS();
-                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
-                if ($patron) {
-                    $results = [];
-                    foreach ($data as $item) {
-                        switch ($requestType) {
-                        case 'ILLRequest':
-                            $result = $catalog->checkILLRequestIsValid(
-                                $id, $item, $patron
-                            );
-
-                            $msg = $result
-                                ? $this->translate('ill_request_place_text')
-                                : $this->translate('ill_request_error_blocked');
-                            break;
-                        case 'StorageRetrievalRequest':
-                            $result = $catalog->checkStorageRetrievalRequestIsValid(
-                                $id, $item, $patron
-                            );
-
-                            $msg = $result
-                                ? $this->translate(
-                                    'storage_retrieval_request_place_text'
-                                )
-                                : $this->translate(
-                                    'storage_retrieval_request_error_blocked'
-                                );
-                            break;
-                        default:
-                            $result = $catalog->checkRequestIsValid(
-                                $id, $item, $patron
-                            );
-
-                            $msg = $result
-                                ? $this->translate('request_place_text')
-                                : $this->translate('hold_error_blocked');
-                            break;
-                        }
-                        $results[] = [
-                            'status' => $result,
-                            'msg' => $msg
-                        ];
-                    }
-                    return $this->output($results, self::STATUS_OK);
-                }
-            } catch (\Exception $e) {
-                // Do nothing -- just fail through to the error message below.
-            }
-        }
-
-        return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR
-        );
-    }
-
-    /**
-     * Retrieve bX recommendations
-     *
-     * @return \Zend\Http\Response
-     */
-    public function getBxRecommendationsAjax()
-    {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-        if (!isset($config->bX['token'])) {
-            return $this->output('bX support not enabled', self::STATUS_ERROR);
-        }
-
-        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
-        $parts = explode('|', $id, 2);
-        if (count($parts) < 2) {
-            $source = 'VuFind';
-            $id = $parts[0];
-        } else {
-            $source = $parts[0];
-            $id = $parts[1];
-        }
-
-        $driver = $this->getServiceLocator()->get('VuFind\RecordLoader')
-            ->load($id, $source);
-        $openUrl = $driver->tryMethod('getOpenUrl', [true]);
-        if (empty($openUrl)) {
-            return $this->output([], self::STATUS_OK);
-        }
-
-        $params = http_build_query(
-            [
-                'token' => $config->bX['token'],
-                'format' => 'xml',
-                'source' => isset($config->bX['source']) ? $config->bX['source']
-                    : 'global',
-                'maxRecords' => isset($config->bX['maxRecords'])
-                    ? $config->bX['maxRecords'] : '5',
-                'threshold' => isset($config->bX['threshold'])
-                    ? $config->bX['threshold'] : '50'
-            ]
-        );
-        $openUrl .= '&res_dat=' . urlencode($params);
-
-        $baseUrl = isset($config->bX['baseUrl'])
-            ? $config->bX['baseUrl']
-            : 'http://recommender.service.exlibrisgroup.com/service/recommender/'
-            . 'openurl';
-
-        // Create Proxy Request
-        $httpService = $this->getServiceLocator()->get('\VuFind\Http');
-        $client = $httpService->createClient("$baseUrl?$openUrl");
-        $result = $client->setMethod('GET')->send();
-
-        if ($result->isSuccess()) {
-            // Even if we get a response, make sure it's a 'good' one.
-            if ($result->getStatusCode() != 200) {
-                return $this->output(
-                    'bX request failed, response code ' . $result->getStatusCode(),
-                    self::STATUS_ERROR
-                );
-            }
-        } else {
-            return $this->output(
-                'bX request failed: ' . $result->getStatusCode()
-                . ': ' . $result->getReasonPhrase(),
-                self::STATUS_ERROR
-            );
-        }
-        $xml = simplexml_load_string($result->getBody());
-        $recommendations = [];
-        $jnl = 'info:ofi/fmt:xml:xsd:journal';
-        $xml->registerXPathNamespace('jnl', $jnl);
-        foreach ($xml->xpath('//jnl:journal') as $journal) {
-            $item = $this->convertToArray($journal, $jnl);
-            unset($item['authors']['author']);
-            $item['openurl'] = $this->createBxOpenUrl($item);
-            $recommendations[] = $item;
-        }
-        $html = $this->getViewRenderer()->partial(
-            'Recommend/bx.phtml',
-            ['recommendations' => $recommendations]
-        );
-        return $this->output($html, self::STATUS_OK);
-    }
-
-    /**
-     * Return rendered HTML for record image popup.
-     *
-     * @return mixed
-     */
-    public function getImagePopupAjax()
-    {
-        $response = $this->getResponse();
-        $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'text/html');
-
-        $id = $this->params()->fromQuery('id');
-        $index = $this->params()->fromQuery('index');
-        $publicList = $this->params()->fromQuery('publicList') == '1';
-        $listId = $this->params()->fromQuery('listId');
-
-        list($source, $recId) = explode('.', $id, 2);
-        if ($source == 'pci') {
-            $source = 'Primo';
-        } else {
-            $source = 'Solr';
-        }
-        $driver = $this->getRecordLoader()->load($id, $source);
-
-        $view = $this->createViewModel();
-        $view->setTemplate('RecordDriver/SolrDefault/record-image-popup.phtml');
-        $view->setTerminal(true);
-        $view->driver = $driver;
-        $view->index = $index;
-
-        $user = null;
-        if ($publicList) {
-            // Public list view: fetch list owner
-            $listTable = $this->getTable('UserList');
-            $list = $listTable->select(['id' => $listId])->current();
-            if ($list && $list->isPublic()) {
-                $userTable = $this->getTable('User');
-                $user = $userTable->getById($list->user_id);
-            }
-        } else {
-            // otherwise, use logged-in user if available
-            $user = $this->getUser();
-        }
-
-        if ($user && $data = $user->getSavedData($id, $listId)) {
-            $notes = [];
-            foreach ($data as $list) {
-                if (!empty($list->notes)) {
-                    $notes[] = $list->notes;
-                }
-            }
-            $view->listNotes = $notes;
-            if ($publicList) {
-                $view->listUser = $user;
-            }
-        }
-
-        return $view;
-    }
-
-    /**
-     * Return record description in JSON format.
-     *
-     * @return \Zend\Http\Response
-     */
-    public function getDescriptionAjax()
-    {
-        if (!$id = $this->params()->fromQuery('id')) {
-            return $this->output('', self::STATUS_ERROR);
-        }
-
-        $cacheDir = $this->getServiceLocator()->get('VuFind\CacheManager')
-            ->getCache('description')->getOptions()->getCacheDir();
-
-        $localFile = "$cacheDir/" . urlencode($id) . '.txt';
-
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-        $maxAge = isset($config->Content->summarycachetime)
-            ? $config->Content->summarycachetime : 1440;
-
-        if (is_readable($localFile)
-            && time() - filemtime($localFile) < $maxAge * 60
-        ) {
-            // Load local cache if available
-            if (($content = file_get_contents($localFile)) !== false) {
-                return $this->output($content, self::STATUS_OK);
-            } else {
-                return $this->output('', self::STATUS_ERROR);
-            }
-        } else {
-            // Get URL
-            $driver = $this->getRecordLoader()->load($id, 'Solr');
-            $url = $driver->getDescriptionURL();
-            // Get, manipulate, save and display content if available
-            if ($url) {
-                if ($content = @file_get_contents($url)) {
-                    $content = preg_replace('/.*<.B>(.*)/', '\1', $content);
-
-                    $content = strip_tags($content);
-
-                    // Replace line breaks with <br>
-                    $content = preg_replace(
-                        '/(\r\n|\n|\r){3,}/', '<br><br>', $content
-                    );
-
-                    $content = utf8_encode($content);
-                    file_put_contents($localFile, $content);
-
-                    return $this->output($content, self::STATUS_OK);
-                }
-            }
-            if ($summary = $driver->getSummary()) {
-                return $this->output(
-                    implode('<br><br>', $summary), self::STATUS_OK
-                );
-            }
-        }
-        return $this->output('', self::STATUS_ERROR);
-    }
-
-    /**
-     * Return rendered HTML for my lists navigation.
-     *
-     * @return \Zend\Http\Response
-     */
-    public function getMyListsAjax()
+    public function addToListAjax()
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
             return $this->output('Lists disabled', self::STATUS_ERROR);
         }
 
+        // User must be logged in to edit list:
         $user = $this->getUser();
         if (!$user) {
             return $this->output(
@@ -350,211 +62,43 @@ class AjaxController extends \VuFind\Controller\AjaxController
             );
         }
 
-        $activeId = (int)$this->getRequest()->getPost('active', null);
-        $lists = $user->getLists();
-        $html = $this->getViewRenderer()->partial(
-            'myresearch/mylist-navi.phtml',
-            ['user' => $user, 'activeId' => $activeId, 'lists' => $lists]
-        );
-        return $this->output($html, self::STATUS_OK);
-    }
+        $params = $this->getRequest()->getPost('params', null);
+        $required = ['listId', 'ids'];
+        foreach ($required as $param) {
+            if (!isset($params[$param])) {
+                return $this->output(
+                    "Missing parameter '$param'", self::STATUS_ERROR
+                );
+            }
+        }
 
-    /**
-     * Fetch Links from resolver given an OpenURL and format as HTML
-     * and output the HTML content in JSON object.
-     *
-     * @return \Zend\Http\Response
-     * @author Graham Seaman <Graham.Seaman@rhul.ac.uk>
-     */
-    protected function getResolverLinksAjax()
-    {
-        $this->writeSession();  // avoid session write timing bug
-        $openUrl = $this->params()->fromQuery('openurl', '');
+        $listId = $params['listId'];
+        $ids = $params['ids'];
 
-        $config = $this->getConfig();
-        $resolverType = isset($config->OpenURL->resolver)
-            ? $config->OpenURL->resolver : 'other';
-        $pluginManager = $this->getServiceLocator()
-            ->get('VuFind\ResolverDriverPluginManager');
-        if (!$pluginManager->has($resolverType)) {
+        $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+            ->get('UserList');
+        $list = $table->getExisting($listId);
+        if ($list->user_id !== $user->id) {
             return $this->output(
-                $this->translate("Could not load driver for $resolverType"),
-                self::STATUS_ERROR
+                "Invalid list id", self::STATUS_ERROR
             );
         }
-        $resolver = new \VuFind\Resolver\Connection(
-            $pluginManager->get($resolverType)
-        );
-        if (isset($config->OpenURL->resolver_cache)) {
-            $resolver->enableCache($config->OpenURL->resolver_cache);
-        }
-        $result = $resolver->fetchLinks($openUrl);
 
-        // Sort the returned links into categories based on service type:
-        $electronic = $print = $services = [];
-        foreach ($result as $link) {
-            switch (isset($link['service_type']) ? $link['service_type'] : '') {
-            case 'getHolding':
-                $print[] = $link;
-                break;
-            case 'getWebService':
-                $services[] = $link;
-                break;
-            case 'getDOI':
-                // Special case -- modify DOI text for special display:
-                $link['title'] = $this->translate('Get full text');
-                $link['coverage'] = '';
-            case 'getFullTxt':
-            default:
-                $electronic[] = $link;
-                break;
+        foreach ($ids as $id) {
+            $source = $id[0];
+            $recId = $id[1];
+            try {
+                $driver = $this->getRecordLoader()->load($recId, $source);
+                $driver->saveToFavorites(['list' => $listId], $user);
+            } catch (\Exception $e) {
+                return $this->output(
+                    $this->translate('Failed'),
+                    self::STATUS_ERROR
+                );
             }
         }
 
-        // Get the OpenURL base:
-        if (isset($config->OpenURL) && isset($config->OpenURL->url)) {
-            // Trim off any parameters (for legacy compatibility -- default config
-            // used to include extraneous parameters):
-            list($base) = explode('?', $config->OpenURL->url);
-        } else {
-            $base = false;
-        }
-
-        // Render the links using the view:
-        $view = [
-            'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
-            'electronic' => $electronic, 'services' => $services,
-            'searchClassId' => $this->params()->fromQuery('searchClassId', '')
-        ];
-        $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
-
-        // output HTML encoded in JSON object
-        return $this->output($html, self::STATUS_OK);
-    }
-
-    /**
-     * Retrieve recommendations for results in other tabs
-     *
-     * @return \Zend\Http\Response
-     */
-    public function getSearchTabsRecommendationsAjax()
-    {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-        if (empty($config->SearchTabsRecommendations->recommendations)) {
-            return $this->output('', self::STATUS_OK);
-        }
-
-        $id = $this->params()->fromPost(
-            'searchHash', $this->params()->fromQuery('searchHash')
-        );
-
-        $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager');
-        $search = $table->get('Search')->select(['finna_search_id' => $id])
-            ->current();
-        if (empty($search)) {
-            return $this->output('Search not found', self::STATUS_ERROR);
-        }
-
-        $minSO = $search->getSearchObject();
-        $results = $this->getServiceLocator()
-            ->get('VuFind\SearchResultsPluginManager');
-        $savedSearch = $minSO->deminify($results);
-        $params = $savedSearch->getParams();
-        $query = $params->getQuery();
-        if (!($query instanceof \VuFindSearch\Query\Query)) {
-            return $this->output('', self::STATUS_OK);
-        }
-        $lookfor = $query->getString();
-        if (!$lookfor) {
-            return $this->output('', self::STATUS_OK);
-        }
-        $searchClass = $params->getSearchClassId();
-        // Don't return recommendations if not configured or for combined view
-        // or for search types other than basic search.
-        if (empty($config->SearchTabsRecommendations->recommendations[$searchClass])
-            || $searchClass == 'Combined' || $params->getSearchType() != 'basic'
-        ) {
-            return $this->output('', self::STATUS_OK);
-        }
-
-        $view = $this->getViewRenderer();
-        $view->results = $savedSearch;
-        $searchTabsHelper = $this->getViewRenderer()->plugin('searchtabs');
-        $searchTabsHelper->setView($view);
-        $tabs = $searchTabsHelper(
-            $searchClass,
-            $lookfor,
-            $params->getQuery()->getHandler()
-        );
-
-        $html = '';
-        $recommendations = array_map(
-            'trim',
-            explode(
-                ',',
-                $config->SearchTabsRecommendations->recommendations[$searchClass]
-            )
-        );
-        foreach ($recommendations as $recommendation) {
-            if ($searchClass == $recommendation) {
-                // Who would want this?
-                continue;
-            }
-            foreach ($tabs as $tab) {
-                if ($tab['class'] == $recommendation) {
-                    $uri = new \Zend\Uri\Uri($tab['url']);
-                    $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
-                    $otherResults = $runner->run(
-                        $uri->getQueryAsArray(),
-                        $tab['class'],
-                        function ($runner, $params, $searchId) use ($config) {
-                            $params->setLimit(
-                                isset(
-                                    $config->SearchTabsRecommendations->count
-                                ) ? $config->SearchTabsRecommendations->count : 2
-                            );
-                            $params->setPage(1);
-                            $params->resetFacetConfig();
-                            $options = $params->getOptions();
-                            $options->disableHighlighting();
-                        }
-                    );
-                    if ($otherResults instanceof \VuFind\Search\EmptySet\Results) {
-                        continue;
-                    }
-
-                    $html .= $this->getViewRenderer()->partial(
-                        'Recommend/SearchTabs.phtml',
-                        [
-                            'tab' => $tab,
-                            'lookfor' => $lookfor,
-                            'handler' => $params->getQuery()->getHandler(),
-                            'results' => $otherResults
-                        ]
-                    );
-                }
-            }
-        }
-
-         return $this->output($html, self::STATUS_OK);
-    }
-
-    /**
-     * Get logged-in user's display name
-     *
-     * @return \Zend\Http\Response
-     * @throws \Exception
-     */
-    public function getUserDisplayNameAjax()
-    {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
-            );
-        }
-        return $this->output($user->getDisplayName(), self::STATUS_OK);
+        return $this->output('', self::STATUS_OK);
     }
 
     /**
@@ -661,96 +205,281 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
-     * Add resources to a list.
+     * Check Requests are Valid
      *
      * @return \Zend\Http\Response
      */
-    public function addToListAjax()
+    public function checkRequestsAreValidAjax()
     {
-        // Fail if lists are disabled:
-        if (!$this->listsEnabled()) {
-            return $this->output('Lists disabled', self::STATUS_ERROR);
-        }
-
-        // User must be logged in to edit list:
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
-            );
-        }
-
-        $params = $this->getRequest()->getPost('params', null);
-        $required = ['listId', 'ids'];
-        foreach ($required as $param) {
-            if (!isset($params[$param])) {
+        $this->writeSession();  // avoid session write timing bug
+        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
+        $data = $this->params()->fromPost(
+            'data', $this->params()->fromQuery('data')
+        );
+        $requestType = $this->params()->fromPost(
+            'requestType', $this->params()->fromQuery('requestType')
+        );
+        if (!empty($id) && !empty($data)) {
+            // check if user is logged in
+            $user = $this->getUser();
+            if (!$user) {
                 return $this->output(
-                    "Missing parameter '$param'", self::STATUS_ERROR
+                    [
+                        'status' => false,
+                        'msg' => $this->translate('You must be logged in first')
+                    ],
+                    self::STATUS_NEED_AUTH
                 );
+            }
+
+            try {
+                $catalog = $this->getILS();
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+                if ($patron) {
+                    $results = [];
+                    foreach ($data as $item) {
+                        switch ($requestType) {
+                        case 'ILLRequest':
+                            $result = $catalog->checkILLRequestIsValid(
+                                $id, $item, $patron
+                            );
+
+                            $msg = $result
+                                ? $this->translate('ill_request_place_text')
+                                : $this->translate('ill_request_error_blocked');
+                            break;
+                        case 'StorageRetrievalRequest':
+                            $result = $catalog->checkStorageRetrievalRequestIsValid(
+                                $id, $item, $patron
+                            );
+
+                            $msg = $result
+                                ? $this->translate(
+                                    'storage_retrieval_request_place_text'
+                                )
+                                : $this->translate(
+                                    'storage_retrieval_request_error_blocked'
+                                );
+                            break;
+                        default:
+                            $result = $catalog->checkRequestIsValid(
+                                $id, $item, $patron
+                            );
+
+                            $msg = $result
+                                ? $this->translate('request_place_text')
+                                : $this->translate('hold_error_blocked');
+                            break;
+                        }
+                        $results[] = [
+                            'status' => $result,
+                            'msg' => $msg
+                        ];
+                    }
+                    return $this->output($results, self::STATUS_OK);
+                }
+            } catch (\Exception $e) {
+                // Do nothing -- just fail through to the error message below.
             }
         }
 
-        $listId = $params['listId'];
-        $ids = $params['ids'];
+        return $this->output(
+            $this->translate('An error has occurred'), self::STATUS_ERROR
+        );
+    }
 
-        $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
-            ->get('UserList');
-        $list = $table->getExisting($listId);
-        if ($list->user_id !== $user->id) {
-            return $this->output(
-                "Invalid list id", self::STATUS_ERROR
-            );
+    /**
+     * Return data for data range visualization module in JSON format.
+     *
+     * @return mixed
+     */
+    public function dateRangeVisualAjax()
+    {
+        $backend = $this->params()->fromQuery('backend');
+        if (!$backend) {
+            $backend = 'solr';
+        }
+        $isSolr = $backend == 'solr';
+
+        $configFile = $isSolr ? 'facets' : 'Primo';
+        $config
+            = $this->getServiceLocator()->get('VuFind\Config')->get($configFile);
+        if (!isset($config->SpecialFacets->dateRangeVis)) {
+            return $this->output([], self::STATUS_ERROR);
         }
 
-        foreach ($ids as $id) {
-            $source = $id[0];
-            $recId = $id[1];
-            try {
-                $driver = $this->getRecordLoader()->load($recId, $source);
-                $driver->saveToFavorites(['list' => $listId], $user);
-            } catch (\Exception $e) {
+        list($filterField, $facet)
+            = explode(':', $config->SpecialFacets->dateRangeVis);
+
+        $this->writeSession();  // avoid session write timing bug
+        $facetList = $this->getFacetList($isSolr, $filterField, $facet);
+
+        if (empty($facetList)) {
+            return $this->output([], self::STATUS_OK);
+        }
+
+        $res = [];
+        $min = PHP_INT_MAX;
+        $max = -$min;
+
+        foreach ($facetList as $f) {
+            $count = $f['count'];
+            $val = $f['displayText'];
+            // Only retain numeric values
+            if (!preg_match("/^-?[0-9]+$/", $val)) {
+                continue;
+            }
+            $min = min($min, (int)$val);
+            $max = max($max, (int)$val);
+            $res[] = [$val, $count];
+        }
+        $res = [$facet => ['data' => $res, 'min' => $min, 'max' => $max]];
+        return $this->output($res, self::STATUS_OK);
+    }
+
+    /**
+     * Retrieve bX recommendations
+     *
+     * @return \Zend\Http\Response
+     */
+    public function getBxRecommendationsAjax()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (!isset($config->bX['token'])) {
+            return $this->output('bX support not enabled', self::STATUS_ERROR);
+        }
+
+        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
+        $parts = explode('|', $id, 2);
+        if (count($parts) < 2) {
+            $source = 'VuFind';
+            $id = $parts[0];
+        } else {
+            $source = $parts[0];
+            $id = $parts[1];
+        }
+
+        $driver = $this->getServiceLocator()->get('VuFind\RecordLoader')
+            ->load($id, $source);
+        $openUrl = $driver->tryMethod('getOpenUrl', [true]);
+        if (empty($openUrl)) {
+            return $this->output([], self::STATUS_OK);
+        }
+
+        $params = http_build_query(
+            [
+                'token' => $config->bX['token'],
+                'format' => 'xml',
+                'source' => isset($config->bX['source']) ? $config->bX['source']
+                    : 'global',
+                'maxRecords' => isset($config->bX['maxRecords'])
+                    ? $config->bX['maxRecords'] : '5',
+                'threshold' => isset($config->bX['threshold'])
+                    ? $config->bX['threshold'] : '50'
+            ]
+        );
+        $openUrl .= '&res_dat=' . urlencode($params);
+
+        $baseUrl = isset($config->bX['baseUrl'])
+            ? $config->bX['baseUrl']
+            : 'http://recommender.service.exlibrisgroup.com/service/recommender/'
+            . 'openurl';
+
+        // Create Proxy Request
+        $httpService = $this->getServiceLocator()->get('\VuFind\Http');
+        $client = $httpService->createClient("$baseUrl?$openUrl");
+        $result = $client->setMethod('GET')->send();
+
+        if ($result->isSuccess()) {
+            // Even if we get a response, make sure it's a 'good' one.
+            if ($result->getStatusCode() != 200) {
                 return $this->output(
-                    $this->translate('Failed'),
+                    'bX request failed, response code ' . $result->getStatusCode(),
                     self::STATUS_ERROR
                 );
             }
+        } else {
+            return $this->output(
+                'bX request failed: ' . $result->getStatusCode()
+                . ': ' . $result->getReasonPhrase(),
+                self::STATUS_ERROR
+            );
         }
-
-        return $this->output('', self::STATUS_OK);
+        $xml = simplexml_load_string($result->getBody());
+        $recommendations = [];
+        $jnl = 'info:ofi/fmt:xml:xsd:journal';
+        $xml->registerXPathNamespace('jnl', $jnl);
+        foreach ($xml->xpath('//jnl:journal') as $journal) {
+            $item = $this->convertToArray($journal, $jnl);
+            unset($item['authors']['author']);
+            $item['openurl'] = $this->createBxOpenUrl($item);
+            $recommendations[] = $item;
+        }
+        $html = $this->getViewRenderer()->partial(
+            'Recommend/bx.phtml',
+            ['recommendations' => $recommendations]
+        );
+        return $this->output($html, self::STATUS_OK);
     }
 
     /**
-     * Mozilla Persona login
+     * Return record description in JSON format.
      *
-     * @return mixed
+     * @return \Zend\Http\Response
      */
-    public function personaLoginAjax()
+    public function getDescriptionAjax()
     {
-        try {
-            $request = $this->getRequest();
-            $auth = $this->getServiceLocator()->get('VuFind\AuthManager');
-            // Add auth method to POST
-            $request->getPost()->set('auth_method', 'MozillaPersona');
-            $user = $auth->login($request);
-        } catch (Exception $e) {
-            return $this->output(false, self::STATUS_ERROR);
+        if (!$id = $this->params()->fromQuery('id')) {
+            return $this->output('', self::STATUS_ERROR);
         }
 
-        return $this->output(true, self::STATUS_OK);
-    }
+        $cacheDir = $this->getServiceLocator()->get('VuFind\CacheManager')
+            ->getCache('description')->getOptions()->getCacheDir();
 
-    /**
-     * Mozilla Persona logout
-     *
-     * @return mixed
-     */
-    public function personaLogoutAjax()
-    {
-        $auth = $this->getServiceLocator()->get('VuFind\AuthManager');
-        // Logout routing is done in finna-persona.js file.
-        $auth->logout($this->getServerUrl('home'));
-        return $this->output(true, self::STATUS_OK);
+        $localFile = "$cacheDir/" . urlencode($id) . '.txt';
+
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $maxAge = isset($config->Content->summarycachetime)
+            ? $config->Content->summarycachetime : 1440;
+
+        if (is_readable($localFile)
+            && time() - filemtime($localFile) < $maxAge * 60
+        ) {
+            // Load local cache if available
+            if (($content = file_get_contents($localFile)) !== false) {
+                return $this->output($content, self::STATUS_OK);
+            } else {
+                return $this->output('', self::STATUS_ERROR);
+            }
+        } else {
+            // Get URL
+            $driver = $this->getRecordLoader()->load($id, 'Solr');
+            $url = $driver->getDescriptionURL();
+            // Get, manipulate, save and display content if available
+            if ($url) {
+                if ($content = @file_get_contents($url)) {
+                    $content = preg_replace('/.*<.B>(.*)/', '\1', $content);
+
+                    $content = strip_tags($content);
+
+                    // Replace line breaks with <br>
+                    $content = preg_replace(
+                        '/(\r\n|\n|\r){3,}/', '<br><br>', $content
+                    );
+
+                    $content = utf8_encode($content);
+                    file_put_contents($localFile, $content);
+
+                    return $this->output($content, self::STATUS_OK);
+                }
+            }
+            if ($summary = $driver->getSummary()) {
+                return $this->output(
+                    implode('<br><br>', $summary), self::STATUS_OK
+                );
+            }
+        }
+        return $this->output('', self::STATUS_ERROR);
     }
 
     /**
@@ -989,6 +718,326 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Return rendered HTML for record image popup.
+     *
+     * @return mixed
+     */
+    public function getImagePopupAjax()
+    {
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Content-type', 'text/html');
+
+        $id = $this->params()->fromQuery('id');
+        $index = $this->params()->fromQuery('index');
+        $publicList = $this->params()->fromQuery('publicList') == '1';
+        $listId = $this->params()->fromQuery('listId');
+
+        list($source, $recId) = explode('.', $id, 2);
+        if ($source == 'pci') {
+            $source = 'Primo';
+        } else {
+            $source = 'Solr';
+        }
+        $driver = $this->getRecordLoader()->load($id, $source);
+
+        $view = $this->createViewModel();
+        $view->setTemplate('RecordDriver/SolrDefault/record-image-popup.phtml');
+        $view->setTerminal(true);
+        $view->driver = $driver;
+        $view->index = $index;
+
+        $user = null;
+        if ($publicList) {
+            // Public list view: fetch list owner
+            $listTable = $this->getTable('UserList');
+            $list = $listTable->select(['id' => $listId])->current();
+            if ($list && $list->isPublic()) {
+                $userTable = $this->getTable('User');
+                $user = $userTable->getById($list->user_id);
+            }
+        } else {
+            // otherwise, use logged-in user if available
+            $user = $this->getUser();
+        }
+
+        if ($user && $data = $user->getSavedData($id, $listId)) {
+            $notes = [];
+            foreach ($data as $list) {
+                if (!empty($list->notes)) {
+                    $notes[] = $list->notes;
+                }
+            }
+            $view->listNotes = $notes;
+            if ($publicList) {
+                $view->listUser = $user;
+            }
+        }
+
+        return $view;
+    }
+
+    /**
+     * Return rendered HTML for my lists navigation.
+     *
+     * @return \Zend\Http\Response
+     */
+    public function getMyListsAjax()
+    {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            return $this->output('Lists disabled', self::STATUS_ERROR);
+        }
+
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH
+            );
+        }
+
+        $activeId = (int)$this->getRequest()->getPost('active', null);
+        $lists = $user->getLists();
+        $html = $this->getViewRenderer()->partial(
+            'myresearch/mylist-navi.phtml',
+            ['user' => $user, 'activeId' => $activeId, 'lists' => $lists]
+        );
+        return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
+     * Fetch Links from resolver given an OpenURL and format as HTML
+     * and output the HTML content in JSON object.
+     *
+     * @return \Zend\Http\Response
+     * @author Graham Seaman <Graham.Seaman@rhul.ac.uk>
+     */
+    public function getResolverLinksAjax()
+    {
+        $this->writeSession();  // avoid session write timing bug
+        $openUrl = $this->params()->fromQuery('openurl', '');
+
+        $config = $this->getConfig();
+        $resolverType = isset($config->OpenURL->resolver)
+            ? $config->OpenURL->resolver : 'other';
+        $pluginManager = $this->getServiceLocator()
+            ->get('VuFind\ResolverDriverPluginManager');
+        if (!$pluginManager->has($resolverType)) {
+            return $this->output(
+                $this->translate("Could not load driver for $resolverType"),
+                self::STATUS_ERROR
+            );
+        }
+        $resolver = new \VuFind\Resolver\Connection(
+            $pluginManager->get($resolverType)
+        );
+        if (isset($config->OpenURL->resolver_cache)) {
+            $resolver->enableCache($config->OpenURL->resolver_cache);
+        }
+        $result = $resolver->fetchLinks($openUrl);
+
+        // Sort the returned links into categories based on service type:
+        $electronic = $print = $services = [];
+        foreach ($result as $link) {
+            switch (isset($link['service_type']) ? $link['service_type'] : '') {
+            case 'getHolding':
+                $print[] = $link;
+                break;
+            case 'getWebService':
+                $services[] = $link;
+                break;
+            case 'getDOI':
+                // Special case -- modify DOI text for special display:
+                $link['title'] = $this->translate('Get full text');
+                $link['coverage'] = '';
+            case 'getFullTxt':
+            default:
+                $electronic[] = $link;
+                break;
+            }
+        }
+
+        // Get the OpenURL base:
+        if (isset($config->OpenURL) && isset($config->OpenURL->url)) {
+            // Trim off any parameters (for legacy compatibility -- default config
+            // used to include extraneous parameters):
+            list($base) = explode('?', $config->OpenURL->url);
+        } else {
+            $base = false;
+        }
+
+        // Render the links using the view:
+        $view = [
+            'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
+            'electronic' => $electronic, 'services' => $services,
+            'searchClassId' => $this->params()->fromQuery('searchClassId', '')
+        ];
+        $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
+
+        // output HTML encoded in JSON object
+        return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
+     * Retrieve recommendations for results in other tabs
+     *
+     * @return \Zend\Http\Response
+     */
+    public function getSearchTabsRecommendationsAjax()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (empty($config->SearchTabsRecommendations->recommendations)) {
+            return $this->output('', self::STATUS_OK);
+        }
+
+        $id = $this->params()->fromPost(
+            'searchHash', $this->params()->fromQuery('searchHash')
+        );
+
+        $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager');
+        $search = $table->get('Search')->select(['finna_search_id' => $id])
+            ->current();
+        if (empty($search)) {
+            return $this->output('Search not found', self::STATUS_ERROR);
+        }
+
+        $minSO = $search->getSearchObject();
+        $results = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager');
+        $savedSearch = $minSO->deminify($results);
+        $params = $savedSearch->getParams();
+        $query = $params->getQuery();
+        if (!($query instanceof \VuFindSearch\Query\Query)) {
+            return $this->output('', self::STATUS_OK);
+        }
+        $lookfor = $query->getString();
+        if (!$lookfor) {
+            return $this->output('', self::STATUS_OK);
+        }
+        $searchClass = $params->getSearchClassId();
+        // Don't return recommendations if not configured or for combined view
+        // or for search types other than basic search.
+        if (empty($config->SearchTabsRecommendations->recommendations[$searchClass])
+            || $searchClass == 'Combined' || $params->getSearchType() != 'basic'
+        ) {
+            return $this->output('', self::STATUS_OK);
+        }
+
+        $view = $this->getViewRenderer();
+        $view->results = $savedSearch;
+        $searchTabsHelper = $this->getViewRenderer()->plugin('searchtabs');
+        $searchTabsHelper->setView($view);
+        $tabs = $searchTabsHelper(
+            $searchClass,
+            $lookfor,
+            $params->getQuery()->getHandler()
+        );
+
+        $html = '';
+        $recommendations = array_map(
+            'trim',
+            explode(
+                ',',
+                $config->SearchTabsRecommendations->recommendations[$searchClass]
+            )
+        );
+        foreach ($recommendations as $recommendation) {
+            if ($searchClass == $recommendation) {
+                // Who would want this?
+                continue;
+            }
+            foreach ($tabs as $tab) {
+                if ($tab['class'] == $recommendation) {
+                    $uri = new \Zend\Uri\Uri($tab['url']);
+                    $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+                    $otherResults = $runner->run(
+                        $uri->getQueryAsArray(),
+                        $tab['class'],
+                        function ($runner, $params, $searchId) use ($config) {
+                            $params->setLimit(
+                                isset(
+                                    $config->SearchTabsRecommendations->count
+                                ) ? $config->SearchTabsRecommendations->count : 2
+                            );
+                            $params->setPage(1);
+                            $params->resetFacetConfig();
+                            $options = $params->getOptions();
+                            $options->disableHighlighting();
+                        }
+                    );
+                    if ($otherResults instanceof \VuFind\Search\EmptySet\Results) {
+                        continue;
+                    }
+
+                    $html .= $this->getViewRenderer()->partial(
+                        'Recommend/SearchTabs.phtml',
+                        [
+                            'tab' => $tab,
+                            'lookfor' => $lookfor,
+                            'handler' => $params->getQuery()->getHandler(),
+                            'results' => $otherResults
+                        ]
+                    );
+                }
+            }
+        }
+
+         return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
+     * Get logged-in user's display name
+     *
+     * @return \Zend\Http\Response
+     * @throws \Exception
+     */
+    public function getUserDisplayNameAjax()
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH
+            );
+        }
+        return $this->output($user->getDisplayName(), self::STATUS_OK);
+    }
+
+    /**
+     * Mozilla Persona login
+     *
+     * @return mixed
+     */
+    public function personaLoginAjax()
+    {
+        try {
+            $request = $this->getRequest();
+            $auth = $this->getServiceLocator()->get('VuFind\AuthManager');
+            // Add auth method to POST
+            $request->getPost()->set('auth_method', 'MozillaPersona');
+            $user = $auth->login($request);
+        } catch (Exception $e) {
+            return $this->output(false, self::STATUS_ERROR);
+        }
+
+        return $this->output(true, self::STATUS_OK);
+    }
+
+    /**
+     * Mozilla Persona logout
+     *
+     * @return mixed
+     */
+    public function personaLogoutAjax()
+    {
+        $auth = $this->getServiceLocator()->get('VuFind\AuthManager');
+        // Logout routing is done in finna-persona.js file.
+        $auth->logout($this->getServerUrl('home'));
+        return $this->output(true, self::STATUS_OK);
+    }
+
+    /**
      * Get Autocomplete suggestions.
      *
      * @return \Zend\Http\Response
@@ -1175,55 +1224,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
             }
         }
         return $img ? $img->getAttribute('src') : null;
-    }
-
-    /**
-     * Return data for data range visualization module in JSON format.
-     *
-     * @return mixed
-     */
-    public function dateRangeVisualAjax()
-    {
-        $backend = $this->params()->fromQuery('backend');
-        if (!$backend) {
-            $backend = 'solr';
-        }
-        $isSolr = $backend == 'solr';
-
-        $configFile = $isSolr ? 'facets' : 'Primo';
-        $config
-            = $this->getServiceLocator()->get('VuFind\Config')->get($configFile);
-        if (!isset($config->SpecialFacets->dateRangeVis)) {
-            return $this->output([], self::STATUS_ERROR);
-        }
-
-        list($filterField, $facet)
-            = explode(':', $config->SpecialFacets->dateRangeVis);
-
-        $this->writeSession();  // avoid session write timing bug
-        $facetList = $this->getFacetList($isSolr, $filterField, $facet);
-
-        if (empty($facetList)) {
-            return $this->output([], self::STATUS_OK);
-        }
-
-        $res = [];
-        $min = PHP_INT_MAX;
-        $max = -$min;
-
-        foreach ($facetList as $f) {
-            $count = $f['count'];
-            $val = $f['displayText'];
-            // Only retain numeric values
-            if (!preg_match("/^-?[0-9]+$/", $val)) {
-                continue;
-            }
-            $min = min($min, (int)$val);
-            $max = max($max, (int)$val);
-            $res[] = [$val, $count];
-        }
-        $res = [$facet => ['data' => $res, 'min' => $min, 'max' => $max]];
-        return $this->output($res, self::STATUS_OK);
     }
 
     /**
