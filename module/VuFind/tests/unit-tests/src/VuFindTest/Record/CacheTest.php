@@ -286,12 +286,11 @@ class CacheTest extends TestCase
     }
 
     /**
-     * Create DbTableManager
+     * Create Record Table
      *
-     * @return multitype:multitype:string number
-     *         |multitype:|PHPUnit_Framework_MockObject_MockObject
+     * @return PHPUnit_Framework_MockObject_MockObject
      */
-    protected function getDbTableManager()
+    protected function getRecordTable()
     {
         $callback = function ($id) {
             foreach ($this->recordTable as $row) {
@@ -324,11 +323,7 @@ class CacheTest extends TestCase
         $recordTable->method('cleanup')
             ->will($this->returnCallback($cleanupCallback));
 
-        $mb = $this->getMockBuilder('VuFind\Db\Table\PluginManager');
-        $dbTableManager = $mb->getMock();
-        $dbTableManager->method('get')->will($this->returnValue($recordTable));
-
-        return $dbTableManager;
+        return $recordTable;
     }
 
     /**
@@ -389,10 +384,6 @@ class CacheTest extends TestCase
      */
     protected function getRecordCache()
     {
-        $recordFactoryManager = $this->getRecordFactoryManager();
-        $config = $this->getConfig();
-        $dbTableManager = $this->getDbTableManager();
-
         $mb = $this->getMockBuilder('VuFind\Auth\Manager')
             ->disableOriginalConstructor();
         $authManager = $mb->getMock();
@@ -400,7 +391,10 @@ class CacheTest extends TestCase
             ->will($this->returnCallback([$this, 'getCurrentUser']));
 
         $recordCache = new Cache(
-            $recordFactoryManager, $config, $dbTableManager, $authManager
+            $this->getRecordFactoryManager(),
+            $this->getConfig(),
+            $this->getRecordTable(),
+            $authManager
         );
 
         return $recordCache;
