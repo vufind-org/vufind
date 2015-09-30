@@ -8,7 +8,7 @@ $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
     'lookfor' => $list->title,
     )
 );
-$this->headScript()->appendFile("check_item_statuses.js");
+$this->headScript()->appendFile("finna-item-status.js");
 $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1");
 ?>
 <?= $this->flashmessages() ?>
@@ -21,7 +21,7 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
           </div>
           <div class="public-list-info col-xs-5 col-sm-4">
             <div>
-              <?= $this->transEsc("collection_author"); ?>: 
+              <?= $this->transEsc("collection_author"); ?>:
               <span class="public-list-username"><?=$this->escapeHtml(trim($this->userPublicName($this->list_username)))?></span>
             </div>
             <div><?= $this->transEsc("modified"); ?>: <?= $this->DateTime()->convertToDisplayDate('Y-m-d H:i:s', $list->created); ?></div>
