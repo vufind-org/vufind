@@ -199,6 +199,11 @@ $config = [
                     'componentparts' => 'Finna\RecordTab\ComponentParts',
                 ],
             ],
+            'related' => [
+                'factories' => [
+                    'similardeferred' => 'Finna\Related\Factory::getSimilarDeferred',
+                ],
+            ],
         ],
         'recorddriver_tabs' => [
             'Finna\RecordDriver\SolrMarc' => [

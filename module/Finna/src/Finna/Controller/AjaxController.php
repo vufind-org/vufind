@@ -344,6 +344,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function getBxRecommendationsAjax()
     {
+        $this->writeSession();  // avoid session write timing bug
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         if (!isset($config->bX['token'])) {
             return $this->output('bX support not enabled', self::STATUS_ERROR);
@@ -1035,6 +1036,41 @@ class AjaxController extends \VuFind\Controller\AjaxController
         // Logout routing is done in finna-persona.js file.
         $auth->logout($this->getServerUrl('home'));
         return $this->output(true, self::STATUS_OK);
+    }
+
+    /**
+     * Retrieve similar records
+     *
+     * @return \Zend\Http\Response
+     */
+    public function similarRecordsAction()
+    {
+        $this->writeSession();  // avoid session write timing bug
+
+        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
+
+        $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $similar = $this->getServiceLocator()->get('VuFind\RelatedPluginManager')
+            ->get('Similar');
+
+        $driver = $recordLoader->load($id);
+
+        $similar->init('', $driver);
+
+        $html = $this->getViewRenderer()->partial(
+            'Related/Similar.phtml',
+            ['related' => $similar]
+        );
+
+        // Set headers:
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Content-type', 'text/html');
+
+        // Render results:
+        $response->setContent($html);
+
+        return $response;
     }
 
     /**
