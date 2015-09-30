@@ -183,7 +183,7 @@ class PrimoPermissionHandler
                     );
                     error_log(
                         'Please add primoPermission.' . $codes[$i] . ' to your '
-                        . 'permissions.ini (see that file for more information)'
+                        . 'permissions.ini (see that file for more information).'
                     );
                 } else {
                     $this->primoConfig['onCampusRule'][$codes[$i]]
@@ -194,7 +194,10 @@ class PrimoPermissionHandler
                     );
                     error_log(
                         'Please add primoPermission.' . $codes[$i] . ' to your '
-                        . 'permissions.ini (see that file for more information)'
+                        . 'permissions.ini (see that file for more information). '
+                        . 'The permission rule should look like this: '
+                        . '[primo.' . $codes[$i] . '] ipRegEx = ' . $regex[$i]
+                        . 'permission = primoPermission.' . $codes[$i]
                     );
                 }
             }
