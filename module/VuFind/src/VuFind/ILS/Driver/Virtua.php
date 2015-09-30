@@ -1690,7 +1690,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "elementcount" => "1",
             "function" => "PATRONATTEMPT",
             "host" => $this->config['Catalog']['host_string'],
-            "lng" => "en",
+            "lng" => $this->getConfiguredLanguage(),
             "login" => "1",
             "pos" => "1",
             "rootsearch" => "KEYWORD",
@@ -1768,7 +1768,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $post_data .= "&search="       . "PATRON";
         $post_data .= "&sessionid="    . "$session_id";
         $post_data .= "&skin="         . "homepage";
-        $post_data .= "&lng="          . "en";
+        $post_data .= "&lng="          . $this->getConfiguredLanguage();
         $post_data .= "&inst="         . "consortium";
         $post_data .= "&conf="         . urlencode(".&#047;chameleon.conf");
         $post_data .= "&u1="           . "12";
@@ -1850,6 +1850,17 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             ? trim($this->config['Catalog']['cgi_token'], '/')
             : 'cgi-bin';
         return "http://{$host}/{$path}/chameleon";
+    }
+
+    /**
+     * Support method -- determine the language from the configuration.
+     *
+     * @return string
+     */
+    protected function getConfiguredLanguage()
+    {
+        return isset($this->config['Catalog']['language'])
+            ? $this->config['Catalog']['language'] : 'en';
     }
 
     /**
