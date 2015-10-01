@@ -8,7 +8,10 @@
 
     var options = $.extend( {}, $.fn.autocomplete.options, settings );
     function show(element) { element.removeClass(options.hidingClass); }
-    function hide(element) { element.addClass(options.hidingClass); }
+    function hide(element) {
+      element.addClass(options.hidingClass);
+      cache = [];
+    }
 
     function populate(value, input, element) {
       input.val(value);
@@ -52,11 +55,11 @@
 
     var cache = [];
     function search(input, element) {
+      if (xhr) xhr.abort();
       if (input.val().length >= options.minLength) {
         element.html('<i class="item loading">'+options.loadingString+'</i>');
         var term = input.val();
         if (options.cache && typeof cache[term] !== "undefined") {
-          if (xhr) xhr.abort();
           createList(cache[term], input, element);
         } else if (typeof options.handler !== "undefined") {
           options.handler(input.val(), function(data) {
@@ -68,7 +71,6 @@
         show(element);
       } else {
         hide(element);
-        cache = [];
       }
     }
 
