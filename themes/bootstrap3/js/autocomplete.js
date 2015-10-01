@@ -50,11 +50,17 @@
       }
     }
 
+    var cache = [];
     function search(input, element) {
       if (input.val().length >= options.minLength) {
         element.html('<i class="item loading">'+options.loadingString+'</i>');
-        if (typeof options.handler !== "undefined") {
+        var term = input.val();
+        if (options.cache && typeof cache[term] !== "undefined") {
+          if (xhr) xhr.abort();
+          createList(cache[term], input, element);
+        } else if (typeof options.handler !== "undefined") {
           options.handler(input.val(), function(data) {
+            cache[term] = data;
             createList(data, input, element);
           });
         }
@@ -62,6 +68,7 @@
         show(element);
       } else {
         hide(element);
+        cache = [];
       }
     }
 
@@ -217,6 +224,7 @@
 
   $.fn.autocomplete.options = {
     ajaxDelay: 200,
+    cache: true,
     hidingClass: 'hidden',
     highlight: true,
     loadingString: 'Loading...',
