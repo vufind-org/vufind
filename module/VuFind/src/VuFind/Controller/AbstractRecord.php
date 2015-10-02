@@ -113,6 +113,12 @@ class AbstractRecord extends AbstractBase
             );
         }
 
+        $captcha = $this->recaptcha()->active('UserComments');
+        if (!$this->formWasSubmitted('comment', $captcha)) {
+            $this->flashMessenger()->addMessage('recaptcha_not_passed', 'error');
+            return $this->redirectToRecord('', 'UserComments');
+        }
+
         // Obtain the current record object:
         $driver = $this->loadRecord();
 

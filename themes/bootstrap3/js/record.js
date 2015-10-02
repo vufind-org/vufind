@@ -248,6 +248,7 @@ function recordDocReady() {
       return true;
     }
     var tabid = $(this).attr('id').toLowerCase();
+    window.location.hash = tabid;
     if($('#'+tabid+'-tab').length > 0) {
       $('#record-tabs .tab-pane.active').removeClass('active');
       $('#'+tabid+'-tab').addClass('active');
@@ -260,4 +261,8 @@ function recordDocReady() {
       return ajaxLoadTab(tabid);
     }
   });
+  // Open tag in url hash
+  if ($(window.location.hash.toLowerCase()).length > 0) {
+    $(window.location.hash.toLowerCase()).click();
+  }
 }

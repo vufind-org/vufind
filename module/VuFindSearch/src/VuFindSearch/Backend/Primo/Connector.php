@@ -604,7 +604,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         // Query String Parameters
         if (isset($recordId)) {
             $qs   = [];
-            $qs[] = "query=any,contains,\"$recordId\"";
+            $qs[] = "query=rid,exact,\"$recordId\"";
             $qs[] = "institution=$inst_code";
             $qs[] = "onCampus=true";
             $qs[] = "indx=1";
