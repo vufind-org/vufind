@@ -124,6 +124,17 @@ trait SolrFinna
     }
 
     /**
+     * Return geographic locations (coordinates)
+     *
+     * @return array
+     */
+    public function getGeoLocations()
+    {
+        return isset($this->fields['location_geo'])
+            ? $this->fields['location_geo'] : [];
+    }
+
+    /**
      * Get the hierarchy_parent_id(s) associated with this item (empty if none).
      *
      * @return array
