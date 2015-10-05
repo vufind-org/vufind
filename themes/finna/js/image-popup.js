@@ -142,6 +142,7 @@ finna.imagePopup = (function(finna) {
                             if(this.complete) {
                                 $(this).load();
                             }
+                            initDimensions();
                         });
                         
                         // Prevent navigation button CSS-transitions on touch-devices
@@ -216,7 +217,20 @@ finna.imagePopup = (function(finna) {
             });
         });
     };
-
+    var initDimensions = function() {
+      if ($('.open-link a').attr('href') != 'undefined') {
+          var img = document.createElement('img')
+          img.src = $('.open-link a').attr('href');
+          img.onload = function() {
+            if (this.width == 10 && this.height == 10) { 
+              $('.open-link').hide();
+            }
+            else {
+              $('.open-link .image-dimensions').text( '('+ this.width + ' X ' + this.height + ')')
+            }
+          }
+      }
+    }
     var my = {
         init: function() {
             initThumbnailNavi();
