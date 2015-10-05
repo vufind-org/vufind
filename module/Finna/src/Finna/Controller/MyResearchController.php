@@ -320,11 +320,15 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             );
         }
         // Append logout parameter to indicate user-initiated logout
-        if ($p = strpos($logoutTarget, '?')) {
-            $logoutTarget = substr($logoutTarget, 0, $p + 1) . 'logout=1&'
-                . substr($logoutTarget, $p + 1);
-        } else {
+        $logoutTarget = preg_replace(
+            '/([?&])logout=[^&]*&?/', '$1', $logoutTarget
+        );
+        if (substr($logoutTarget, -1) == '?') {
+            $logoutTarget .= 'logout=1';
+        } elseif (strstr($logoutTarget, '?') === false) {
             $logoutTarget .= '?logout=1';
+        } else {
+            $logoutTarget .= '&logout=1';
         }
 
         return $this->redirect()

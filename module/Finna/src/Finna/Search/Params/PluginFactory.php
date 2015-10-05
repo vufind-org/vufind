@@ -72,6 +72,12 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
                 clone($options),
                 $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );
+        } else if ($name === 'mixedlist') {
+            // Clone the options instance in case caller modifies it:
+            return new \Finna\Search\MixedList\Params(
+                clone($options),
+                $serviceLocator->getServiceLocator()->get('VuFind\Config')
+            );
         }
 
         return parent::createServiceWithName(
