@@ -20,8 +20,9 @@
     '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
 
   $this->layout()->title = $this->driver->getShortTitle();
+
+  $this->headMeta()->appendName('format-detection', 'telephone=no');
 ?>
-<meta name="format-detection" content="telephone=no">
 </div>
 <div class="container-fluid record-view-header">
  <div class="container">
