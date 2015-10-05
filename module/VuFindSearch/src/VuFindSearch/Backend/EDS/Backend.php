@@ -517,36 +517,35 @@ class Backend extends AbstractBackend
      *
      * @return bool
      */
-    protected function validAuthIP($listIPs) 
+    protected function validAuthIP($listIPs)
     {
-        try
-        {
-            if ($listIPs == "") {
+        try {
+            if ($listIPs == '') {
                 return false;
             }
-            
-            $m = explode(",", $listIPs);
+
+            $m = explode(',', $listIPs);
             if (count($m) == 0) {
                 return false;
             }
-            
+
             // get the ip address of the request
             $remote = new \Zend\Http\PhpEnvironment\RemoteAddress;
             $ip_address = $remote->getIpAddress();
-            foreach($m as $ip) {
-                $ip = trim($ip);         
-                if(strpos($ip, '/') !== false) {
+            foreach ($m as $ip) {
+                $ip = trim($ip);
+                if (strpos($ip, '/') !== false) {
                     list($network, $cidr) = explode('/', $ip);
-                    if ((ip2long($ip_address) & ~((1 << (32 - $cidr)) - 1) ) == ip2long($network)) {
+                    $actual = ip2long($ip_address) & ~((1 << (32 - $cidr)) - 1);
+                    $longNet = ip2long($network);
+                    if ($actual == $longNet) {
                         return true;
-                    }                
-                }
-                elseif($ip_address == $ip) {
+                    }
+                } elseif ($ip_address == $ip) {
                     return true;
                 }
             }
-        }
-        catch(Exception $e) {
+        } catch (Exception $e) {
             $this->debugPrint("validAuthIP ex: " . $e);
         }
         return false;
