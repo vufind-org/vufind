@@ -11,8 +11,8 @@
   <? foreach ($results->getRecommendations('top') as $current): ?>
     <?=$this->recommend($current)?>
   <? endforeach; ?>
-  <div class="hidden-print search-controls row">
-    <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right">
+  <div class="search-controls row">
+    <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right hidden-print">
       <?=$this->render('search/controls/view.phtml', $searchDetails)?>
       <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
     </div>

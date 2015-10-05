@@ -62,13 +62,13 @@
   <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
 <? endif; ?>
 <? if ($holdsAllowed): ?>
-  <div class="place-hold-wrapper text-right">
+  <div class="place-hold-wrapper text-right hidden-print">
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn(), 'label' => 'Library Card')); ?>
   <? if ($illRequestLink): ?>
     <a class="expandedCheckILLRequest modal-link placeILLRequest btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>"  title="<?=$this->transEsc("ill_request_check_text")?>"><?=$this->transEsc("ill_request_check_text")?></a>
   <? endif; ?>
   <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
-    <a class="placehold modal-link btn btn-primary" title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
+    <a class="placehold modal-link btn btn-primary hidden-print" title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
   <? elseif ($user): ?>
     <? $patron = $this->ils()->patronLogin($user->cat_username, $user->getCatPassword()); if ($patron): ?>
       <? if ($profile = $this->ils()->getMyProfile($patron)): ?>
@@ -91,7 +91,7 @@
       <div class="dedup-information">
         <span class="holdings-title"><?=$this->transEsc("source_$currentSource", null, $currentSource) ?></span>
         <? if ($mergedData && count($mergedData['records']) > 1): ?>
-          <select class="dedup-select form-control jumpMenuUrl" role="listbox" aria-haspopup="true">
+          <select class="dedup-select form-control jumpMenuUrl hidden-print" role="listbox" aria-haspopup="true">
             <option value="#" role="option" selected="selected"><?=$this->transEsc('Other Libraries'); ?></option>
             <? foreach ($mergedData['records'] as $current): ?>
               <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
@@ -207,13 +207,13 @@
               <span class="text-success"><i class="fa fa-ok"></i> <?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
               <div class="pull-right">
               <? if (isset($row['link']) && $row['link'] && $holdsAllowed): ?>
-                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock modal-link placehold btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" title="<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?>"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock modal-link placehold btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" title="<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?>"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
               <? endif; ?>
               <? if (isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
-                <a class="<?=$checkStorageRetrievalRequest ? "{$holdingsDetails}CheckStorageRetrievalRequest " : ''?>inlineblock modal-link placeStorageRetrievalRequest btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>" title="<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?>"><?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
+                <a class="<?=$checkStorageRetrievalRequest ? "{$holdingsDetails}CheckStorageRetrievalRequest " : ''?>inlineblock modal-link placeStorageRetrievalRequest btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>" title="<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?>"><?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
               <? endif; ?>
               <? if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']): ?>
-                <a class="<?=$checkILLRequest ? "{$holdingsDetails}CheckILLRequest " : ''?>inlineblock modal-link placeILLRequest btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"  title="<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?>"><?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
+                <a class="<?=$checkILLRequest ? "{$holdingsDetails}CheckILLRequest " : ''?>inlineblock modal-link placeILLRequest btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"  title="<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?>"><?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
               <? endif; ?>
               </div>
             <? else: ?>
@@ -228,7 +228,7 @@
               <? endif; ?>
               <? if (isset($row['link']) && $row['link'] && $holdsAllowed): ?>
               <div class="pull-right">
-                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock modal-link placehold btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock modal-link placehold btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
               </div>
               <? endif; ?>
             <? endif; ?>

@@ -35,7 +35,7 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
         <div class="pull-left">
             <?= $this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results)) ?>
         </div>
-        <div class="pull-right">
+        <div class="pull-right hidden-print">
           <?=$this->render('search/controls/view.phtml')?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/limit.phtml')?>

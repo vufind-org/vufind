@@ -32,14 +32,14 @@
   <? endif; ?>
   </h1>
   <? if ($this->recordsFound): ?>
-    <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
+    <?=$this->search()->renderSpellingSuggestions('<span class="hidden-print"><strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this) . '</span>'; ?>
   <? endif; ?>
 </div>
 <div class="col-sm-3"></div>
 
 <? if ($this->params->getsearchType() == 'advanced'): ?>
 <div class="col-xs-12">
-  <div id="searchForm">
+  <div id="searchForm hidden-print">
       <div class="adv_search_links">
         <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->results->getSearchId())?>"><i class="fa fa-pen"></i> <?=$this->transEsc("Edit this Advanced Search")?></a>
         <a href="<?=$this->url($advSearch)?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Start a new Advanced Search")?></a>

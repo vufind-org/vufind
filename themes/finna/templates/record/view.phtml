@@ -77,7 +77,7 @@
       <? if (count($this->tabs) > 3): ?>
       <div class="tabs-responsive">
       <? endif; ?>
-      <ul class="recordTabs nav nav-tabs hidden-print">
+      <ul class="recordTabs nav nav-tabs">
         <? foreach ($this->tabs as $tab => $obj): ?>
         <? // add current tab to breadcrumbs if applicable:
           $desc = $obj->getDescription();
