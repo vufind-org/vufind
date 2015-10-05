@@ -94,10 +94,10 @@
           <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<?= count($comments) ?>)<? endif; ?></a>
         </li>
         <? endforeach; ?>
-        <? if (count($this->tabs) > 3): ?>
-        </div>
-        <? endif; ?>
       </ul>
+      <? if (count($this->tabs) > 3): ?>
+      </div>
+      <? endif; ?>
     <? endif; ?>
 
     <div class="tab-content" id="record-tabs">
