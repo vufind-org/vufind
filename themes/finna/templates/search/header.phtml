@@ -32,7 +32,9 @@
   <? endif; ?>
   </h1>
   <? if ($this->recordsFound): ?>
-    <?=$this->search()->renderSpellingSuggestions('<span class="hidden-print"><strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this) . '</span>'; ?>
+    <span class="hidden-print">
+    <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this) ; ?>
+    </span>
   <? endif; ?>
 </div>
 <div class="col-sm-3"></div>
