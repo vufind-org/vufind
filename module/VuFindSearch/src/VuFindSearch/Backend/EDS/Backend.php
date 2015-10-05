@@ -530,22 +530,25 @@ class Backend extends AbstractBackend
             }
 
             // get the ip address of the request
-            $ip_address = $_SERVER['REMOTE_ADDR'];
+            $remote = new \Zend\Http\PhpEnvironment\RemoteAddress;
+            $ip_address = $remote->getIpAddress();
             foreach ($m as $ip) {
-                $v = trim($ip);
-                if (!empty($v)
-                    && strcmp(substr($ip_address, 0, strlen($v)), $v) == 0
-                ) {
-                    // inside of ip address range of customer
+                $ip = trim($ip);
+                if (strpos($ip, '/') !== false) {
+                    list($network, $cidr) = explode('/', $ip);
+                    $actual = ip2long($ip_address) & ~((1 << (32 - $cidr)) - 1);
+                    $longNet = ip2long($network);
+                    if ($actual == $longNet) {
+                        return true;
+                    }
+                } elseif ($ip_address == $ip) {
                     return true;
                 }
             }
-            // if not found, return false, not authenticated by IP address
-            return false;
         } catch (Exception $e) {
             $this->debugPrint("validAuthIP ex: " . $e);
-            return false;
         }
+        return false;
     }
 
     /**
