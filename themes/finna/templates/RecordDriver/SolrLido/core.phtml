@@ -6,7 +6,7 @@
       <? $img = $this->recordImage($this->record($this->driver))?>
       <?= $img->render('record', array('small' => array('w' => 50, 'h' => 50), 'medium' => array('w' => 1200, 'h' => 1200))) ?>
       <? /* Display qrcode if appropriate: */ ?>
-      <? $rights = $this->driver->getImageRights($this->layout()->userLang); if (!empty($rights)): ?>
+      <? $rights = $this->driver->getImageRights($this->layout()->userLang); ?>
       <div class="access-rights">
         <div class="image-rights">
           <? $hasLink = isset($rights['link']); ?>
@@ -24,7 +24,6 @@
           <? endif; ?>
         </div>
       </div>
-      <? endif; ?>
       <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
       <? if($QRCode): ?>
         <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
