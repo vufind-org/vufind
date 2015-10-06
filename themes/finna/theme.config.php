@@ -68,4 +68,5 @@ return array(
     'less' => array(
         'active' => false
     ),
+    'favicon' => 'favicon.ico',
 );
