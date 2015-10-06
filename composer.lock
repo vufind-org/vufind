@@ -260,16 +260,16 @@
         },
         {
             "name": "oyejorge/less.php",
-            "version": "v1.7.0.5",
+            "version": "v1.7.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/oyejorge/less.php.git",
-                "reference": "4385036b1dbfaf37f5380bd26a1e6006fc43149f"
+                "reference": "fb64e2f6ef647a229c50e9fa0f2076240a3484c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/oyejorge/less.php/zipball/4385036b1dbfaf37f5380bd26a1e6006fc43149f",
-                "reference": "4385036b1dbfaf37f5380bd26a1e6006fc43149f",
+                "url": "https://api.github.com/repos/oyejorge/less.php/zipball/fb64e2f6ef647a229c50e9fa0f2076240a3484c6",
+                "reference": "fb64e2f6ef647a229c50e9fa0f2076240a3484c6",
                 "shasum": ""
             },
             "require": {
@@ -315,7 +315,7 @@
                 "php",
                 "stylesheet"
             ],
-            "time": "2015-07-13 20:34:18"
+            "time": "2015-09-28 01:11:47"
         },
         {
             "name": "pear-pear.php.net/Archive_Tar",
@@ -377,10 +377,10 @@
         },
         {
             "name": "pear-pear.php.net/File_MARC",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/File_MARC-1.1.1.tgz",
+                "url": "http://pear.php.net/get/File_MARC-1.1.2.tgz",
                 "reference": null,
                 "shasum": null
             },
@@ -388,7 +388,7 @@
                 "php": ">=5.3.0.0"
             },
             "replace": {
-                "pear-pear/file_marc": "== 1.1.1.0"
+                "pear-pear/file_marc": "== 1.1.2.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -596,16 +596,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.7.3",
+            "version": "v2.7.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/Yaml.git",
-                "reference": "71340e996171474a53f3d29111d046be4ad8a0ff"
+                "url": "https://github.com/symfony/yaml.git",
+                "reference": "31cb2ad0155c95b88ee55fe12bc7ff92232c1770"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/71340e996171474a53f3d29111d046be4ad8a0ff",
-                "reference": "71340e996171474a53f3d29111d046be4ad8a0ff",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/31cb2ad0155c95b88ee55fe12bc7ff92232c1770",
+                "reference": "31cb2ad0155c95b88ee55fe12bc7ff92232c1770",
                 "shasum": ""
             },
             "require": {
@@ -641,7 +641,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2015-07-28 14:07:07"
+            "time": "2015-09-14 14:14:09"
         },
         {
             "name": "vufind-org/vufindcode",
@@ -1240,16 +1240,16 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v2.7.3",
+            "version": "v2.7.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/CssSelector.git",
-                "reference": "0b5c07b516226b7dd32afbbc82fe547a469c5092"
+                "url": "https://github.com/symfony/css-selector.git",
+                "reference": "abe19cc0429a06be0c133056d1f9859854860970"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/CssSelector/zipball/0b5c07b516226b7dd32afbbc82fe547a469c5092",
-                "reference": "0b5c07b516226b7dd32afbbc82fe547a469c5092",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/abe19cc0429a06be0c133056d1f9859854860970",
+                "reference": "abe19cc0429a06be0c133056d1f9859854860970",
                 "shasum": ""
             },
             "require": {
@@ -1289,20 +1289,20 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "https://symfony.com",
-            "time": "2015-05-15 13:33:16"
+            "time": "2015-09-22 13:49:29"
         },
         {
             "name": "symfony/process",
-            "version": "v2.7.3",
+            "version": "v2.7.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/Process.git",
-                "reference": "48aeb0e48600321c272955132d7606ab0a49adb3"
+                "url": "https://github.com/symfony/process.git",
+                "reference": "b27c8e317922cd3cdd3600850273cf6b82b2e8e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/48aeb0e48600321c272955132d7606ab0a49adb3",
-                "reference": "48aeb0e48600321c272955132d7606ab0a49adb3",
+                "url": "https://api.github.com/repos/symfony/process/zipball/b27c8e317922cd3cdd3600850273cf6b82b2e8e9",
+                "reference": "b27c8e317922cd3cdd3600850273cf6b82b2e8e9",
                 "shasum": ""
             },
             "require": {
@@ -1338,7 +1338,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2015-07-01 11:25:50"
+            "time": "2015-09-19 19:59:23"
         }
     ],
     "aliases": [],
