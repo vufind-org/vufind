@@ -178,9 +178,27 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $session->stop();
     }
 
-    public funciton cleanup()
+    /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public static function tearDownAfterClass()
     {
+        // If CI is not running, all tests were skipped, so no work is necessary:
+        $test = new FavoritesTest();
+        if (!$test->continuousIntegrationRunning()) {
+            return;
+        }
 
+        // Delete test user
+        $test = new FavoritesTest();
+        $userTable = $test->getTable('User');
+        $user = $userTable->getByUsername(self::$hash, false);
+        if (empty($user)) {
+            throw new \Exception('Problem deleting expected user.');
+        }
+        $user->delete();
     }
 
     /*
