@@ -969,13 +969,6 @@ class AjaxController extends AbstractBase
 
         $id = $this->params()->fromPost('id');
         $comment = $this->params()->fromPost('comment');
-
-        $captcha = $this->recaptcha()->active('UserComments');
-        if (!$this->formWasSubmitted('comment', $captcha)) {
-            return $this->output(
-                $this->translate('recaptcha_not_passed'), self::STATUS_ERROR
-            );
-        }
         if (empty($id) || empty($comment)) {
             return $this->output(
                 $this->translate('An error has occurred'), self::STATUS_ERROR
