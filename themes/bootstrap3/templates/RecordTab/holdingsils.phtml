@@ -3,11 +3,11 @@
     $account = $this->auth()->getManager();
     $user = $account->isLoggedIn();
     $holdings = $this->driver->getRealTimeHoldings();
-    $openUrl = $this->driver->openURLActive('holdings') ? $this->driver->getOpenURL() : false;
-    $offlineMode = $this->ils()->getOfflineMode();
+    $openUrl = $this->openUrl($this->driver, 'holdings');
+    $openUrlActive = $openUrl->isActive();
     // Account for replace_other_urls setting
-    $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
-
+    $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+    $offlineMode = $this->ils()->getOfflineMode();
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>
@@ -39,17 +39,24 @@
 <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
     <a class="placehold modal-link" title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"><i class="fa fa-flag"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
-<? if (!empty($urls) || $openUrl): ?>
+<? if (!empty($urls) || $openUrlActive): ?>
   <h3><?=$this->transEsc("Internet")?></h3>
   <? if (!empty($urls)): ?>
     <? foreach ($urls as $current): ?>
       <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
     <? endforeach; ?>
   <? endif; ?>
-  <? if ($openUrl): ?><?=$this->openUrl($openUrl);?><? endif; ?>
+  <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
 <? endif; ?>
 <? foreach ($holdings as $holding): ?>
-<h3><?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?></h3>
+<h3>
+  <? $locationText = $this->transEsc('location_' . $holding['location'], array(), $holding['location']); ?>
+  <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
+    <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
+  <? else: ?>
+    <?=$locationText?>
+  <? endif; ?>
+</h3>
 <table class="table table-striped" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>

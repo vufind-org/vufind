@@ -176,7 +176,7 @@ class JSTree extends AbstractBase
                 'recordid' => $node->id
             ],
             'a_attr' => [
-                'href' => $this->getContextualUrl($node, $context, $hierarchyID),
+                'href' => $this->getContextualUrl($node, $context),
                 'title' => $node->title
             ],
             'type' => $node->type
@@ -194,19 +194,17 @@ class JSTree extends AbstractBase
     /**
      * Use the router to build the appropriate URL based on context
      *
-     * @param object $node         JSON object of a node/top node
-     * @param string $context      Record or Collection
-     * @param string $collectionID Collection ID
+     * @param object $node    JSON object of a node/top node
+     * @param string $context Record or Collection
      *
      * @return string
      */
-    protected function getContextualUrl($node, $context, $collectionID)
+    protected function getContextualUrl($node, $context)
     {
         if ($context == 'Collection') {
             return $this->getUrlFromRouteCache('collection', $node->id)
                 . '#tabnav';
         } else {
-            $options['query']['hierarchy'] = $collectionID;
             $url = $this->getUrlFromRouteCache($node->type, $node->id);
             return $node->type == 'collection'
                 ? $url . '#tabnav'
@@ -258,7 +256,7 @@ class JSTree extends AbstractBase
         $name = strlen($node->title) > 100
             ? substr($node->title, 0, 100) . '...'
             : $node->title;
-        $href = $this->getContextualUrl($node, $context, $hierarchyID);
+        $href = $this->getContextualUrl($node, $context);
         $icon = $node->type == 'record' ? 'file-o' : 'folder-open';
 
         $html = '<li';

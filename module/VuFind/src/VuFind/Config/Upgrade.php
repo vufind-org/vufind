@@ -407,12 +407,14 @@ class Upgrade
 
         // Compare the source file against the raw file; if they happen to be the
         // same, we don't need to copy anything!
-        if (md5(file_get_contents($src)) == md5(file_get_contents($raw))) {
+        if (file_exists($src) && file_exists($raw)
+            && md5(file_get_contents($src)) == md5(file_get_contents($raw))
+        ) {
             return;
         }
 
         // If we got this far, we need to copy the user's file into place:
-        if (!copy($src, $dest)) {
+        if (file_exists($src) && !copy($src, $dest)) {
             throw new FileAccessException(
                 "Error: Could not copy {$src} to {$dest}."
             );
@@ -525,11 +527,19 @@ class Upgrade
         // Set up reference for convenience (and shorter lines):
         $newConfig = & $this->newConfigs['config.ini'];
 
-        // If the [BulkExport] options setting is an old default, update it to
-        // reflect the fact that we now support more options.
-        if ($this->isDefaultBulkExportOptions($newConfig['BulkExport']['options'])) {
-            $newConfig['BulkExport']['options']
-                = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX:RIS';
+        // If the [BulkExport] options setting is present and non-default, warn
+        // the user about its deprecation.
+        if (isset($newConfig['BulkExport']['options'])) {
+            $default = $this->isDefaultBulkExportOptions(
+                $newConfig['BulkExport']['options']
+            );
+            if (!$default) {
+                $this->addWarning(
+                    'The [BulkExport] options setting is deprecated; please '
+                    . 'customize the [Export] section instead.'
+                );
+            }
+            unset($newConfig['BulkExport']['options']);
         }
 
         // Warn the user about Amazon configuration issues:
@@ -959,7 +969,7 @@ class Upgrade
                 unset($permissions['access.SummonExtendedResults']);
             }
 
-            // Remove any old settings remaining in config.ini:
+            // Remove any old settings remaining in Summon.ini:
             unset($config['Auth']);
         }
     }

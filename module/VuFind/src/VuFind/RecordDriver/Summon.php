@@ -113,7 +113,6 @@ class Summon extends SolrDefault
     {
         return (isset($this->fields['DOI'][0]) && !empty($this->fields['DOI'][0]))
             ? $this->fields['DOI'][0] : false;
-
     }
 
     /**
@@ -244,12 +243,32 @@ class Summon extends SolrDefault
      * Get the OpenURL parameters to represent this record (useful for the
      * title attribute of a COinS span tag).
      *
+     * @param bool $overrideSupportsOpenUrl Flag to override checking
+     * supportsOpenUrl() (default is false)
+     *
      * @return string OpenURL parameters.
      */
-    public function getOpenURL()
+    public function getOpenUrl($overrideSupportsOpenUrl = false)
     {
+        // stop here if this record does not support OpenURLs
+        if (!$overrideSupportsOpenUrl && !$this->supportsOpenUrl()) {
+            return false;
+        }
+
         return isset($this->fields['openUrl'])
-            ? $this->fields['openUrl'] : parent::getOpenURL();
+            ? $this->fields['openUrl']
+            : parent::getOpenUrl($overrideSupportsOpenUrl);
+    }
+
+    /**
+     * Checks the current record if it's supported for generating OpenURLs.
+     *
+     * @return bool
+     */
+    public function supportsOpenUrl()
+    {
+        // Summon never uses OpenURLs for anything other than COinS:
+        return false;
     }
 
     /**
@@ -614,19 +633,5 @@ class Summon extends SolrDefault
             }
         }
         return $str;
-    }
-
-    /**
-     * Does the OpenURL configuration indicate that we should display OpenURLs in
-     * the specified context?
-     *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
-     * @return bool
-     */
-    public function openURLActive($area)
-    {
-        // Summon never uses OpenURLs for anything other than COinS:
-        return false;
     }
 }

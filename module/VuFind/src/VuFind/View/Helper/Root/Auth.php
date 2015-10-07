@@ -66,14 +66,16 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      */
     protected function renderTemplate($name, $context = [])
     {
+        // Get the current auth module's class name
+        $className = $this->getManager()->getAuthClassForTemplateRendering();
+
         // Set up the needed context in the view:
         $contextHelper = $this->getView()->plugin('context');
+        $context['topClass'] = $this->getBriefClass($className);
         $oldContext = $contextHelper($this->getView())->apply($context);
 
-        // Get the current auth module's class name, then start a loop
-        // in case we need to use a parent class' name to find the appropriate
-        // template.
-        $className = $this->getManager()->getAuthClassForTemplateRendering();
+        // Start a loop in case we need to use a parent class' name to find the
+        // appropriate template.
         $topClassName = $className; // for error message
         $resolver = $this->getView()->resolver();
         while (true) {

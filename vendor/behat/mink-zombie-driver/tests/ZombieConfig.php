@@ -17,7 +17,8 @@ class ZombieConfig extends AbstractConfig
      */
     public function createDriver()
     {
-        $server = new ZombieServer('127.0.0.1', 8124, 'node');
+        $nodeBinary = isset($_SERVER['NODE_BIN']) ? $_SERVER['NODE_BIN'] : 'node';
+        $server = new ZombieServer('127.0.0.1', 8124, $nodeBinary);
 
         if (isset($_SERVER['NODE_MODULES_PATH'])) {
             $server->setNodeModulesPath($_SERVER['NODE_MODULES_PATH']);

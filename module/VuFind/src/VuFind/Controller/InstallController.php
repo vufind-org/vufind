@@ -258,7 +258,7 @@ class InstallController extends AbstractBase
         if (!$this->phpVersionIsNewEnough()) {
             $msg = "VuFind requires PHP version 5.3.3 or newer; you are running "
                 . phpversion() . ".  Please upgrade.";
-            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
 
@@ -270,7 +270,7 @@ class InstallController extends AbstractBase
                 . " this. For details on how to do this, see "
                 . "http://vufind.org/wiki/vufind2:installation_notes "
                 . "and look at the PHP installation instructions for your platform.";
-            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
 
@@ -282,7 +282,7 @@ class InstallController extends AbstractBase
                 . " For details on how to do this, see "
                 . "http://vufind.org/wiki/vufind2:installation_notes "
                 . "and look at the PHP installation instructions for your platform.";
-            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
 
@@ -294,7 +294,7 @@ class InstallController extends AbstractBase
                 . " this. For details on how to do this, see "
                 . "http://vufind.org/wiki/vufind2:installation_notes "
                 . "and look at the PHP installation instructions for your platform.";
-            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
 
@@ -305,7 +305,7 @@ class InstallController extends AbstractBase
                 . " For details on how to do this, see "
                 . "http://vufind.org/wiki/vufind2:installation_notes "
                 . "and look at the PHP installation instructions for your platform.";
-            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
 
@@ -330,20 +330,20 @@ class InstallController extends AbstractBase
         $skip = $this->params()->fromPost('printsql', 'nope') == 'Skip';
 
         if (!preg_match('/^\w*$/', $view->dbname)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Database name must be alphanumeric.');
+            $this->flashMessenger()
+                ->addMessage('Database name must be alphanumeric.', 'error');
         } else if (!preg_match('/^\w*$/', $view->dbuser)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Database user must be alphanumeric.');
+            $this->flashMessenger()
+                ->addMessage('Database user must be alphanumeric.', 'error');
         } else if ($skip || $this->formWasSubmitted('submit')) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if ((empty($newpass) || empty($newpassConf))) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('Password fields must not be blank.');
+                $this->flashMessenger()
+                    ->addMessage('Password fields must not be blank.', 'error');
             } else if ($newpass != $newpassConf) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('Password fields must match.');
+                $this->flashMessenger()
+                    ->addMessage('Password fields must match.', 'error');
             } else {
                 // Connect to database:
                 $connection = $view->driver . '://' . $view->dbrootuser . ':'
@@ -355,11 +355,11 @@ class InstallController extends AbstractBase
                     $db = $this->getServiceLocator()->get('VuFind\DbAdapterFactory')
                         ->getAdapterFromConnectionString("{$connection}/{$dbName}");
                 } catch (\Exception $e) {
-                    $this->flashMessenger()->setNamespace('error')
+                    $this->flashMessenger()
                         ->addMessage(
                             'Problem initializing database adapter; '
                             . 'check for missing ' . $view->driver
-                            . ' library .  Details: ' . $e->getMessage()
+                            . ' library .  Details: ' . $e->getMessage(), 'error'
                         );
                     return $view;
                 }
@@ -419,8 +419,7 @@ class InstallController extends AbstractBase
                     }
                     return $this->redirect()->toRoute('install-home');
                 } catch (\Exception $e) {
-                    $this->flashMessenger()->setNamespace('error')
-                        ->addMessage($e->getMessage());
+                    $this->flashMessenger()->addMessage($e->getMessage(), 'error');
                 }
             }
         }
@@ -729,7 +728,7 @@ class InstallController extends AbstractBase
         $userConfirmation = $this->params()->fromPost('fix-user-table', 'Unset');
         if ($userConfirmation == 'No') {
             $msg = 'Security upgrade aborted.';
-            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            $this->flashMessenger()->addMessage($msg, 'error');
             return $this->redirect()->toRoute('install-home');
         }
 
@@ -788,7 +787,7 @@ class InstallController extends AbstractBase
                 }
             }
             $msg = count($rows) . ' user row(s) encrypted.';
-            $this->flashMessenger()->setNamespace('info')->addMessage($msg);
+            $this->flashMessenger()->addMessage($msg, 'info');
         }
         return $this->redirect()->toRoute('install-home');
     }
