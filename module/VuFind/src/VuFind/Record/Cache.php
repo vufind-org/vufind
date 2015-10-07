@@ -28,8 +28,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Record;
-use VuFind\Auth\Manager as AuthManager,
-    VuFind\Db\Table\Record as Record,
+use VuFind\Db\Table\Record as Record,
     VuFind\RecordDriver\PluginManager as RecordFactory,
     Zend\Config\Config as Config;
 
@@ -43,10 +42,8 @@ use VuFind\Auth\Manager as AuthManager,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Cache implements \Zend\Log\LoggerAwareInterface
+class Cache
 {
-    use \VuFind\Log\LoggerAwareTrait;
-
     const CONTEXT_DEFAULT = 'Default';
     const CONTEXT_FAVORITE = 'Favorite';
 
@@ -72,13 +69,6 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     protected $recordFactoryManager;
 
     /**
-     * Authentication Manager
-     *
-     * @var AuthManager
-     */
-    protected $authManager;
-
-    /**
      * Record sources which may be cached.
      *
      * @var array
@@ -91,18 +81,15 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      * @param RecordFactory $recordFactoryManager Record loader
      * @param Config        $config               VuFind main config
      * @param Record        $recordTable          Record Table
-     * @param AuthManager   $authManager          Authentication Manager
      */
     public function __construct(
         RecordFactory $recordFactoryManager,
         Config $config,
-        Record $recordTable,
-        AuthManager $authManager
+        Record $recordTable
     ) {
         $this->cacheConfig = $config;
         $this->recordTable = $recordTable;
         $this->recordFactoryManager = $recordFactoryManager;
-        $this->authManager = $authManager;
 
         $this->setContext(Cache::CONTEXT_DEFAULT);
     }
@@ -110,40 +97,35 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     /**
      * Create a new or update an existing cache entry
      *
-     * @param string $recordId   Record id
-     * @param int    $userId     User id
-     * @param string $source     Source name
-     * @param string $rawData    Raw data from data source
-     * @param int    $resourceId Resource id from resource table
+     * @param string $recordId Record id
+     * @param string $source   Source name
+     * @param string $rawData  Raw data from data source
      *
      * @return void
      */
-    public function createOrUpdate($recordId, $userId, $source, $rawData, $resourceId
-    ) {
+    public function createOrUpdate($recordId, $source, $rawData)
+    {
         if (isset($this->cachableSources[$source])) {
-            $cacheId = $this->getCacheId($recordId, $source, $userId);
-            $this->debug(
-                'createOrUpdate cache for record: ' . $recordId .
-                ', userId: ' . $userId .
-                ', source: ' . $source .
-                ', cacheId: ' . $cacheId
-            );
-            $this->recordTable->updateRecord(
-                $cacheId, $source, $rawData, $recordId, $userId, $resourceId
-            );
+            $this->recordTable->updateRecord($recordId, $source, $rawData);
         }
     }
 
     /**
      * Clean up orphaned cache entries for the given UserId
      *
-     * @param int $userId User id
+     * @param array  $ids    Array of associative arrays with id/source keys or
+     * strings in source|id format
+     * @param string $source Source if $ids is an array of strings without source
      *
      * @return void
      */
-    public function cleanup($userId)
+    public function cleanup($ids, $source = null)
     {
-        $this->recordTable->cleanup($userId);
+        $ids = $this->normalizeIds($ids, $source);
+        if (empty($ids)) {
+            return;
+        }
+        $this->recordTable->cleanup($ids);
     }
 
     /**
@@ -158,45 +140,13 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     public function lookup($ids, $source = null)
     {
-        if (isset($source)) {
-            foreach ($ids as &$id) {
-                $id = [
-                    'source' => $source,
-                    'id' => $id
-                ];
-            }
+        $ids = $this->normalizeIds($ids, $source);
+        if (empty($ids)) {
+            return [];
         }
-
-        $user = $this->authManager->isLoggedIn();
-        $userId = $user === false ? null : $user->id;
-
-        $cacheIds = [];
-        foreach ($ids as $details) {
-            if (!is_array($details)) {
-                $parts = explode('|', $details, 2);
-                $details = ['source' => $parts[0], 'id' => $parts[1]];
-            }
-
-            if (isset($this->cachableSources[$details['source']])) {
-                $cacheId = $this->getCacheId(
-                    $details['id'], $details['source'], $userId
-                );
-                $cacheIds[] = $cacheId;
-
-                $this->debug(
-                    'Lookup cache for id: ' . $details['id'] .
-                    ', source: ' .  $details['source'] .
-                    ', user: ' . $userId .
-                    ', calculated cacheId: ' . $cacheId
-                );
-            }
-        }
-
-        $cachedRecords = $this->recordTable->findRecords($cacheIds);
-
-        $this->debug(count($cachedRecords) . ' cached records found');
 
         $vufindRecords = [];
+        $cachedRecords = $this->recordTable->findRecords($ids);
         foreach ($cachedRecords as $cachedRecord) {
             $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
         }
@@ -222,15 +172,6 @@ class Cache implements \Zend\Log\LoggerAwareInterface
         foreach ($this->cachableSources as &$cachableSource) {
             if (!isset($cachableSource['operatingMode'])) {
                 $cachableSource['operatingMode'] = 'disabled';
-            }
-
-            if (isset($cachableSource['cacheIdComponents'])) {
-                $cachableSource['cacheIdComponents']
-                    = array_flip(
-                        preg_split('/[\s,]+/', $cachableSource['cacheIdComponents'])
-                    );
-            } else {
-                $cachableSource['cacheIdComponents'] = [];
             }
         }
 
@@ -284,28 +225,6 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * Helper method to calculate and ensure consistent cacheIds
-     *
-     * @param string $recordId Record id
-     * @param string $source   Source name
-     * @param string $userId   User id
-     *
-     * @return string
-     */
-    protected function getCacheId($recordId, $source, $userId)
-    {
-        $source = $source == 'VuFind' ? 'Solr' : $source;
-
-        $key = "$source|$recordId";
-
-        if (isset($this->cachableSources[$source]['cacheIdComponents']['userId'])) {
-            $key .= '|' . $userId;
-        }
-
-        return md5($key);
-    }
-
-    /**
      * Helper function to get records from cached source-specific record data
      *
      * @param Record $cachedRecord Record data
@@ -328,5 +247,38 @@ class Cache implements \Zend\Log\LoggerAwareInterface
         $driver->setSourceIdentifier($source);
 
         return $driver;
+    }
+
+    /**
+     * Normalize record ID array to ['source' => 'xyz', 'id' => '123']
+     *
+     * @param array  $ids    Array of associative arrays with id/source keys or
+     * strings in source|id format
+     * @param string $source Source if $ids is an array of strings without source
+     *
+     * @return array
+     */
+    protected function normalizeIds($ids, $source)
+    {
+        $ids = array_map(
+            function($id) use ($source) {
+                if (null !== $source) {
+                    return ['source' => $source, 'id' => $id];
+                }
+                if (is_array($id)) {
+                    return $id;
+                }
+                $parts = explode('|', $id, 2);
+                return ['source' => $parts[0], 'id' => $parts[1]];
+            },
+            $ids
+        );
+
+        return array_filter(
+            $ids,
+            function($id) {
+                return $this->isCachable($id['source']);
+            }
+        );
     }
 }

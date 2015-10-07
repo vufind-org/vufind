@@ -101,8 +101,8 @@ class Favorites extends AbstractPlugin
                     $resource->record_id, $resource->source
                 );
                 $recordCache->createOrUpdate(
-                    $resource->record_id, $user->id, $resource->source,
-                    $record->getRawData(), $resource->id
+                    $resource->record_id, $resource->source,
+                    $record->getRawData()
                 );
             }
         }

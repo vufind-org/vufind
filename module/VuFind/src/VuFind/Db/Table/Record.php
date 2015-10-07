@@ -30,7 +30,9 @@
  */
 namespace VuFind\Db\Table;
 
+use Zend\Db\Sql\Predicate\Expression;
 use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Where;
 
 /**
  * Table Definition for record
@@ -55,20 +57,24 @@ class Record extends Gateway
     /**
      * Find records by ids
      *
-     * @param array $ids An array of record ids
+     * @param array $ids An array of record IDs
      *
      * @throws \Exception
-     * @return array of record table rows
+     * @return null|array of record row objects
      */
     public function findRecords($ids)
     {
         if (empty($ids)) {
-            return [];
+            return null;
         }
 
-        $where = [
-            'cache_id' => $ids
-        ];
+        $where = new Where();
+        foreach ($ids as $id) {
+            $nested = $where->or->nest();
+            $nested->addPredicates(
+                ['record_id' => $id['id'], 'source' => $id['source']]
+            );
+        }
 
         return $this->select($where)->toArray();
     }
@@ -76,33 +82,26 @@ class Record extends Gateway
     /**
      * Update an existing entry in the record table or create a new one
      *
-     * @param int    $id         Cache entry id
-     * @param string $source     Data source
-     * @param string $rawData    Raw data from source
-     * @param string $recordId   Record id
-     * @param int    $userId     User id
-     * @param int    $resourceId Resource id
+     * @param string $recordId Record ID
+     * @param string $source   Data source
+     * @param string $rawData  Raw data from source
      *
      * @return Updated or newly added record
      */
-    public function updateRecord(
-        $id, $source, $rawData, $recordId, $userId, $resourceId
-    ) {
-        $records = $this->findRecords([$id]);
-        if (empty($records)) {
+    public function updateRecord($recordId, $source, $rawData)
+    {
+        $records = $this->select(['record_id' => $recordId, 'source' => $source]);
+        if ($records->count() == 0) {
             $record = $this->createRow();
         } else {
-            $record = $records[0];
+            $record = $records->current();
         }
 
-        $record->cache_id = $id;
         $record->record_id = $recordId;
-        $record->data = serialize($rawData);
         $record->source = $source;
+        $record->data = serialize($rawData);
         $record->version = \VuFind\Config\Version::getBuildVersion();
-        $record->user_id = $userId;
         $record->updated = date('Y-m-d H:i:s');
-        $record->resource_id = $resourceId;
 
         // Create or update record.
         $record->save();
@@ -113,44 +112,43 @@ class Record extends Gateway
     /**
      * Clean up orphaned entries
      *
-     * @param int $userId User id
+     * @param array $ids An array of record IDs to check
      *
      * @return void
      */
-    public function cleanup($userId)
+    public function cleanup($ids)
     {
         $sql = new Sql($this->getAdapter());
-        $select = $sql->select();
-        $select->from('record');
+        $select = $sql->select()->from('record');
+        $select->columns(['id']);
         $select->join(
+            'resource',
+            new Expression(
+                'record.record_id = resource.record_id'
+                . ' AND record.source = resource.source'
+            ),
+            []
+        )->join(
             'user_resource',
-            'record.resource_id = user_resource.resource_id',
-            [], $select::JOIN_LEFT
+            'resource.id = user_resource.resource_id',
+            [],
+            $select::JOIN_LEFT
         );
-        $select->where->equalTo('record.user_id', $userId);
-        $select->where->isNull('user_resource.id');
+
+        $where = new Where();
+        foreach ($ids as $id) {
+            $nested = $where->or->nest();
+            $nested->addPredicates(
+                ['record.record_id' => $id['id'], 'record.source' => $id['source']]
+            );
+        }
+        $where->isNull('user_resource.id');
+        $select->where($where);
 
         $statement = $sql->prepareStatementForSqlObject($select);
         $results = $statement->execute();
-
         foreach ($results as $result) {
-            $this->delete($result['cache_id']);
+            $this->delete(['id' => $result['id']]);
         }
     }
-
-    /**
-     * Delete entry by cache id
-     *
-     * @param int $id Cache entry id
-     *
-     * @return void
-     */
-    public function delete($id)
-    {
-        $records = $this->findRecords([$id]);
-        if (!empty($records)) {
-            $records[0]->delete();
-        }
-    }
-
 }

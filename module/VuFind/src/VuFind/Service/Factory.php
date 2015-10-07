@@ -541,8 +541,7 @@ class Factory
         return new \VuFind\Record\Cache(
             $sm->get('VuFind\RecordDriverPluginManager'),
             $sm->get('VuFind\Config')->get('RecordCache'),
-            $sm->get('VuFind\DbTablePluginManager')->get('Record'),
-            $sm->get('VuFind\AuthManager')
+            $sm->get('VuFind\DbTablePluginManager')->get('Record')
         );
     }
 

@@ -46,8 +46,6 @@ class CacheTest extends TestCase
 {
     protected $recordTable = [];
 
-    protected $currentUser = false;
-
     /**
      * Set up everything for testing
      *
@@ -58,22 +56,22 @@ class CacheTest extends TestCase
         $cache = $this->getRecordCache();
         $this->recordTable = [
             [
-                'cacheId' => md5('Solr|020645147|2'),
+                'record_id' => '020645147',
                 'source' => 'Solr',
                 'version' => '2.5',
                 'data' => 's:17:"dummy_solr_record";'
             ],
             [
-                'cacheId' => md5('WorldCat|70764764|2'),
+                'record_id' => '70764764',
                 'source' => 'WorldCat',
                 'version' => '2.5',
                 'data' => 's:21:"dummy_worldcat_record";'
             ],
             [
-                'cacheId' => md5('Solr|00033321'),
+                'record_id' => '00033321',
                 'source' => 'Solr',
                 'version' => '2.5',
-                'data' => 's:30:"dummy_solr_record_without_user";'
+                'data' => 's:19:"dummy_solr_record_2";'
             ],
         ];
     }
@@ -86,7 +84,6 @@ class CacheTest extends TestCase
     public function testLookupSuccess()
     {
         $recordCache = $this->getRecordCache();
-        $this->setCurrentUser(2);
 
         $record = $recordCache->lookup(['020645147'], 'Solr');
         $this->assertNotEmpty($record);
@@ -108,16 +105,12 @@ class CacheTest extends TestCase
             ['Solr|020645147']
         );
 
-        $this->setCurrentUser(2);
-
         $record = $recordCache->lookup(
             ['Solr|1234']
         );
 
-        $this->setCurrentUser(3);
-
         $record = $recordCache->lookup(
-            ['Solr|020645147']
+            ['Solr|0206451']
         );
 
         $this->assertEmpty($record);
@@ -176,30 +169,26 @@ class CacheTest extends TestCase
     {
         $recordCache = $this->getRecordCache();
 
-        $recordCache->setContext('TestCase1');
+        $recordCache->setContext('Disabled');
         $this->assertFalse($recordCache->isPrimary('Solr'));
         $this->assertFalse($recordCache->isFallback('Solr'));
 
-        $recordCache->setContext('TestCase2');
+        $record = $recordCache->lookup(['00033321'], 'Solr');
+        $this->assertEmpty($record);
+
+        $recordCache->setContext('Fallback');
+        $this->assertFalse($recordCache->isPrimary('Solr'));
+        $this->assertTrue($recordCache->isFallback('Solr'));
+
+        $record = $recordCache->lookup(['00033321'], 'Solr');
+        $this->assertNotEmpty($record);
+
+        $recordCache->setContext('Default');
         $this->assertTrue($recordCache->isPrimary('Solr'));
         $this->assertFalse($recordCache->isFallback('Solr'));
 
-        $this->setCurrentUser(false);
         $record = $recordCache->lookup(['00033321'], 'Solr');
-        $this->assertEmpty($record);
-        $record = $recordCache->lookup(['020645147'], 'Solr');
-        $this->assertEmpty($record);
-
-        $this->setCurrentUser(2);
-        $record = $recordCache->lookup(['00033321'], 'Solr');
-        $this->assertEmpty($record);
-        $record = $recordCache->lookup(['020645147'], 'Solr');
         $this->assertNotEmpty($record);
-
-        $recordCache->setContext('TestCase3');
-        $this->assertTrue($recordCache->isPrimary('Solr'));
-        $record = $recordCache->lookup(['020645147'], 'Solr');
-        $this->assertEmpty($record);
     }
 
     /**
@@ -211,36 +200,15 @@ class CacheTest extends TestCase
     {
         $recordCache = $this->getRecordCache();
 
-        $recordCache->createOrUpdate(
-            '112233', 2, 'Solr', serialize('dummy_data'), null
-        );
-
-        $this->setCurrentUser(2);
+        $recordCache->createOrUpdate('112233', 'Solr', serialize('dummy_data'));
 
         $record = $recordCache->lookup(['112233'], 'Solr');
         $this->assertNotEmpty($record);
 
-        $this->setCurrentUser(3);
+        $recordCache->cleanup(['112233'], 'Solr');
 
         $record = $recordCache->lookup(['112233'], 'Solr');
         $this->assertEmpty($record);
-
-        $recordCache->cleanup(2);
-        $this->setCurrentUser(2);
-
-        $record = $recordCache->lookup(['112233'], 'Solr');
-        $this->assertEmpty($record);
-    }
-
-    /**
-     * Get current user
-     *
-     * @return Object|false
-     */
-    public function getCurrentUser()
-    {
-        return $this->currentUser === false
-            ? false : $this->getUser($this->currentUser);
     }
 
     /**
@@ -252,32 +220,15 @@ class CacheTest extends TestCase
     {
         $configArr = [
             'Default' => [
-                'Solr' => [
-                    'operatingMode' => 'primary',
-                    'cacheIdComponents' => 'userId'
-                ],
-                'WorldCat' => [
-                    'operatingMode' => 'fallback',
-                    'cacheIdComponents' => 'userId'
-                ],
+                'Solr' => ['operatingMode' => 'primary'],
+                'WorldCat' => ['operatingMode' => 'fallback'],
             ],
-            'TestCase1' => [
-                'Solr' => [
-                    'cacheIdComponents' => 'userId'
-                ]
+            'Disabled' => [
+                'Solr' => []
             ],
-            'TestCase2' => [
-                'Solr' => [
-                    'operatingMode' => 'primary',
-                    'cacheIdComponents' => 'userId'
-                ]
+            'Fallback' => [
+                'Solr' => ['operatingMode' => 'fallback']
             ],
-            'TestCase3' => [
-                'Solr' => [
-                    'operatingMode' => 'primary',
-                    'cacheIdComponents' => ''
-                ]
-            ]
         ];
 
         $config = new \Zend\Config\Config($configArr);
@@ -294,7 +245,9 @@ class CacheTest extends TestCase
     {
         $callback = function ($id) {
             foreach ($this->recordTable as $row) {
-                if ($row['cacheId'] == $id[0]) {
+                if ($row['record_id'] == $id[0]['id']
+                    && $row['source'] == $id[0]['source']
+                ) {
                     return [$row];
                 }
             }
@@ -305,10 +258,10 @@ class CacheTest extends TestCase
         $recordTable->method('findRecords')->will($this->returnCallback($callback));
 
         $updateRecordCallback = function(
-            $cacheId, $source, $rawData, $recordId, $userId, $resourceId
+            $recordId, $source, $rawData
         ) {
             $this->recordTable[] = [
-                'cacheId' => $cacheId,
+                'record_id' => $recordId,
                 'source' => $source,
                 'version' => '2.5',
                 'data' => serialize($rawData)
@@ -324,36 +277,6 @@ class CacheTest extends TestCase
             ->will($this->returnCallback($cleanupCallback));
 
         return $recordTable;
-    }
-
-    /**
-     * Create a user
-     *
-     * @param unknown $userId userId
-     *
-     * @return PHPUnit_Framework_MockObject_MockObject
-     */
-    protected function getUser($userId)
-    {
-        $mb = $this->getMockBuilder('VuFind\Db\Table\User')
-            ->disableOriginalConstructor();
-        $user = $mb->getMock();
-        $user->method('__get')
-            ->will($this->returnValue($userId));
-
-        return $user;
-    }
-
-    /**
-     * Activate a user
-     *
-     * @param int|false $id User id
-     *
-     * @return void
-     */
-    protected function setCurrentUser($id)
-    {
-        $this->currentUser = $id;
     }
 
     /**
@@ -384,17 +307,10 @@ class CacheTest extends TestCase
      */
     protected function getRecordCache()
     {
-        $mb = $this->getMockBuilder('VuFind\Auth\Manager')
-            ->disableOriginalConstructor();
-        $authManager = $mb->getMock();
-        $authManager->method('isLoggedIn')
-            ->will($this->returnCallback([$this, 'getCurrentUser']));
-
         $recordCache = new Cache(
             $this->getRecordFactoryManager(),
             $this->getConfig(),
-            $this->getRecordTable(),
-            $authManager
+            $this->getRecordTable()
         );
 
         return $recordCache;
