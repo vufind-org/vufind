@@ -44,7 +44,7 @@ class HeadTitle extends \Zend\View\Helper\HeadTitle
     /**
      * Constructor
      *
-     * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
+     * @param array $config
      */
     public function __construct($config)
     {
