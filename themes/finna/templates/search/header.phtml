@@ -23,7 +23,11 @@
     <? if (isset($this->overrideSearchHeading)): ?>
       <?=$this->overrideSearchHeading?>
     <? elseif ($this->params->getsearchType() == 'basic'): ?>
-      <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong>
+      <? if (empty($lookfor)): ?>
+        <?=$this->transEsc('history_empty_search');?>
+      <? else: ?>
+        <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($lookfor); ?></strong>
+      <? endif; ?>
     <? elseif ($this->params->getsearchType() == 'advanced'): ?>
       <span class="adv_search_terms"><?=$this->transEsc("Your search terms")?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong></span>
     <? endif; ?>

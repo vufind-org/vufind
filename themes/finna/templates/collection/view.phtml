@@ -21,6 +21,11 @@
   $tree = (strtolower($this->activeTab) == 'hierarchytree');
 
 
+  // Set page title.
+  $dataSource = $this->driver->tryMethod('getDataSource');
+  $headText = $this->driver->getBreadcrumb() . ' | ' . $this->translate('Collection') . (isset($dataSource) ? ' | ' . $this->transEsc('source_'. $dataSource) : '');
+  $this->headTitle($headText);
+
   if (!empty($lastSearch)) {
     $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
   }

@@ -1,7 +1,4 @@
 <?
-    // Set page title.
-    $this->headTitle($this->translate('Contents/Parts') . ': ' . $this->driver->getBreadcrumb());
-
     $componentParts = $this->driver->tryMethod('getEmbeddedComponentParts');
 
     $havePresenters = false;
