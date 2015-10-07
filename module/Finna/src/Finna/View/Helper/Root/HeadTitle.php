@@ -63,9 +63,9 @@ class HeadTitle extends \Zend\View\Helper\HeadTitle
             $title = $this->config['Site']['title'];
             if ($this->autoEscape) {
                 $title = $this->escape($title);
-            }          
+            }
             $output .= " | $title";
         }
-        return $output;       
+        return $output;
     }
 }
