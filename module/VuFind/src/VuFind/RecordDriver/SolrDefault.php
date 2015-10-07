@@ -296,6 +296,19 @@ class SolrDefault extends AbstractBase
         return isset($this->fields['callnumber-raw'])
             ? $this->fields['callnumber-raw'] : [];
     }
+
+    /**
+     * Return the first valid DOI found in the record (false if none).
+     *
+     * @return mixed
+     */
+    public function getCleanDOI()
+    {
+        $field = 'doi_str_mv';
+        return (isset($this->fields[$field][0]) && !empty($this->fields[$field][0]))
+            ? $this->fields[$field][0] : false;
+    }
+
     /**
      * Return the first valid ISBN found in the record (favoring ISBN-10 over
      * ISBN-13 when possible).

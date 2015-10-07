@@ -240,8 +240,17 @@ footer {
 }
 
 /* --- Offcanvas --- */
-.offcanvas.active .sidebar {color: #FFF;}
-.offcanvas .sidebar .list-group {color: #000;}
+body.offcanvas .sidebar .list-group {color: #000;}
+body.offcanvas .sidebar .list-group {color: #000;}
+body.offcanvas .offcanvas-toggle {
+  padding-bottom: 18px;
+  font-size: 16px;
+  background: #fff;
+  box-shadow: 0 0 2px #000;
+  color: @brand-primary;
+}
+body.offcanvas.active .sidebar {color: #FFF;}
+body.offcanvas.active .offcanvas-toggle {box-shadow: none;}
 
 /* --- PubDateVis --- */
 #dateVisColorSettings {

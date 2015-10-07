@@ -18,5 +18,4 @@ return array(
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
     'LosReCaptcha\\' => array($vendorDir . '/los/losrecaptcha/src'),
     'Less' => array($vendorDir . '/oyejorge/less.php/lib'),
-    'Behat\\Mink\\Driver' => array($vendorDir . '/behat/mink-zombie-driver/src'),
 );
