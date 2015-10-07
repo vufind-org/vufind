@@ -39,12 +39,17 @@ namespace Finna\View\Helper\Root;
  */
 class HeadTitle extends \Zend\View\Helper\HeadTitle
 {
+    /**
+     * Main configuration
+     *
+     * @var array
+     */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param array $config
+     * @param array $config Main configuration
      */
     public function __construct($config)
     {
