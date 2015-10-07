@@ -113,7 +113,6 @@ class Summon extends SolrDefault
     {
         return (isset($this->fields['DOI'][0]) && !empty($this->fields['DOI'][0]))
             ? $this->fields['DOI'][0] : false;
-
     }
 
     /**

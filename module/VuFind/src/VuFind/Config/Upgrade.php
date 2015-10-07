@@ -407,12 +407,14 @@ class Upgrade
 
         // Compare the source file against the raw file; if they happen to be the
         // same, we don't need to copy anything!
-        if (md5(file_get_contents($src)) == md5(file_get_contents($raw))) {
+        if (file_exists($src) && file_exists($raw)
+            && md5(file_get_contents($src)) == md5(file_get_contents($raw))
+        ) {
             return;
         }
 
         // If we got this far, we need to copy the user's file into place:
-        if (!copy($src, $dest)) {
+        if (file_exists($src) && !copy($src, $dest)) {
             throw new FileAccessException(
                 "Error: Could not copy {$src} to {$dest}."
             );
@@ -967,7 +969,7 @@ class Upgrade
                 unset($permissions['access.SummonExtendedResults']);
             }
 
-            // Remove any old settings remaining in config.ini:
+            // Remove any old settings remaining in Summon.ini:
             unset($config['Auth']);
         }
     }
