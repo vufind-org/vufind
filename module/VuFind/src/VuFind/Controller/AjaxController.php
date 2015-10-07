@@ -519,19 +519,12 @@ class AjaxController extends AbstractBase
      * @return \Zend\Http\Response
      * @throws \Exception
      */
-    protected function output($data, $status, $httpCode = null, $cacheLife = null)
+    protected function output($data, $status, $httpCode = null)
     {
         $response = $this->getResponse();
         $headers = $response->getHeaders();
-        if (null === $cacheLife) {
-            $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
-            $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
-        } else {
-            $headers->addHeaderLine('Cache-Control', 'max-age=' . $cacheLife);
-            $headers->addHeaderLine(
-                'Expires', gmdate('D, d M Y H:i:s', time() + $cacheLife)
-            );
-        }
+        $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
+        $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
         if ($httpCode !== null) {
             $response->setStatusCode($httpCode);
         }
@@ -876,8 +869,7 @@ class AjaxController extends AbstractBase
         $autocompleteManager = $this->getServiceLocator()
             ->get('VuFind\AutocompletePluginManager');
         return $this->output(
-            $autocompleteManager->getSuggestions($query), self::STATUS_OK,
-            null, 30
+            $autocompleteManager->getSuggestions($query), self::STATUS_OK
         );
     }
 
