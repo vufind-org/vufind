@@ -4,7 +4,7 @@
   if (isset($this->overrideTitle)) {
     $this->headTitle($this->overrideTitle);
   } else {
-      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? ": {$this->transEsc('history_empty_search')}" : " : {$lookfor}"));
+      $this->headTitle((empty($lookfor) ? "{$this->transEsc('history_empty_search')}" : "{$lookfor}") . ' | ' . $this->translate('Search Results'));
   }
 
   // Set up search box:
