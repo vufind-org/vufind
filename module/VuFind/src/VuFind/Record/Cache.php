@@ -261,7 +261,7 @@ class Cache
     protected function normalizeIds($ids, $source)
     {
         $ids = array_map(
-            function($id) use ($source) {
+            function ($id) use ($source) {
                 if (null !== $source) {
                     return ['source' => $source, 'id' => $id];
                 }
@@ -276,7 +276,7 @@ class Cache
 
         return array_filter(
             $ids,
-            function($id) {
+            function ($id) {
                 return $this->isCachable($id['source']);
             }
         );
