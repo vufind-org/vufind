@@ -204,11 +204,6 @@ class CacheTest extends TestCase
 
         $record = $recordCache->lookup(['112233'], 'Solr');
         $this->assertNotEmpty($record);
-
-        $recordCache->cleanup(['112233'], 'Solr');
-
-        $record = $recordCache->lookup(['112233'], 'Solr');
-        $this->assertEmpty($record);
     }
 
     /**
@@ -269,12 +264,6 @@ class CacheTest extends TestCase
         };
         $recordTable->method('updateRecord')
             ->will($this->returnCallback($updateRecordCallback));
-
-        $cleanupCallback = function ($userId) {
-            $this->recordTable = [];
-        };
-        $recordTable->method('cleanup')
-            ->will($this->returnCallback($cleanupCallback));
 
         return $recordTable;
     }

@@ -98,6 +98,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'util optimize' => 'Solr optimize tool',
             'util sitemap' => 'XML sitemap generator',
             'util suppressed' => 'Remove ILS-suppressed records from Solr',
+            'util cleanup_record_cache' => 'Remove unused records from the cache',
         ];
     }
 }

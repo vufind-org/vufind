@@ -110,13 +110,11 @@ class Record extends Gateway
     }
 
     /**
-     * Clean up orphaned entries
+     * Clean up orphaned entries (i.e. entries that are not in favorites anymore)
      *
-     * @param array $ids An array of record IDs to check
-     *
-     * @return void
+     * @return int Number of records deleted
      */
-    public function cleanup($ids)
+    public function cleanup()
     {
         $sql = new Sql($this->getAdapter());
         $select = $sql->select()->from('record');
@@ -134,21 +132,16 @@ class Record extends Gateway
             [],
             $select::JOIN_LEFT
         );
+        $select->where->isNull('user_resource.id');
 
-        $where = new Where();
-        foreach ($ids as $id) {
-            $nested = $where->or->nest();
-            $nested->addPredicates(
-                ['record.record_id' => $id['id'], 'record.source' => $id['source']]
-            );
-        }
-        $where->isNull('user_resource.id');
-        $select->where($where);
-
+        $count = 0;
         $statement = $sql->prepareStatementForSqlObject($select);
         $results = $statement->execute();
         foreach ($results as $result) {
+            ++$count;
             $this->delete(['id' => $result['id']]);
         }
+
+        return $count;
     }
 }

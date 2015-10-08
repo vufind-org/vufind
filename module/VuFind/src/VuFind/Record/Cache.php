@@ -111,24 +111,6 @@ class Cache
     }
 
     /**
-     * Clean up orphaned cache entries for the given UserId
-     *
-     * @param array  $ids    Array of associative arrays with id/source keys or
-     * strings in source|id format
-     * @param string $source Source if $ids is an array of strings without source
-     *
-     * @return void
-     */
-    public function cleanup($ids, $source = null)
-    {
-        $ids = $this->normalizeIds($ids, $source);
-        if (empty($ids)) {
-            return;
-        }
-        $this->recordTable->cleanup($ids);
-    }
-
-    /**
      * Fetch records using an array of associative arrays with id and source keys
      * (or pipe-separated source|id strings)
      *
