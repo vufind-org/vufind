@@ -303,7 +303,7 @@ CREATE TABLE `record` (
   `record_id` varchar(120) DEFAULT NULL,
   `source` varchar(50) DEFAULT NULL,
   `version` varchar(20) NOT NULL,
-  `data` text DEFAULT NULL,
+  `data` longtext DEFAULT NULL,
   `updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
   UNIQUE KEY `record_id_source` (`record_id`, `source`)
