@@ -955,7 +955,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     & .grid-title {
         position: absolute;
         padding: 10px 0px;
-        width: 93%;
+        width: 92%;
         top: 100%;
         top: ~"calc(100% - 62px)";
         overflow: hidden;
@@ -971,12 +971,32 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         transition: max-height .2s linear;
         transition: opacity .2s linear;
     }
+    & .grid-image {
+        overflow: hidden;   
+    }
     &:hover .grid-title {
         max-height: 200px;
         .opacity(1);
     }
     & a.title {
         font-size: 1.15em;
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        width: 99%;
+    }
+    & a.fulltext {
+        width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+        overflow: hidden;
+    }
+    & .save-record-container {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
     }
     & .result .status {
         position: absolute;
@@ -999,15 +1019,21 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 .result-view-grid.touch-device {
     & .grid {
-        margin-bottom: 25px;
+        margin-bottom: 50px;
         & .grid-title {
             .opacity(.9);
             transition: max-height .2s ease-in, box-shadow .2s ease-in;
-            max-height: 37px;
+            max-height: 50px;
             top: 100%;
             box-shadow: none;
             padding: 10px;
             top: ~"calc(100% - 21px)";
+        }
+        & .dateyeartype, & .fulltext-links {
+            display: none;   
+        }
+        & .save-record-container {
+            margin-top: -2px;
         }
         &:hover .grid-title {
             max-height: 200px;
