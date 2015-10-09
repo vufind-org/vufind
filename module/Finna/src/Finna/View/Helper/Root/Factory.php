@@ -159,7 +159,18 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $sm->get('url')
         );
     }
-
+    /**
+     * Construct Headtitle helper
+     *
+     * @param ServiceManager $sm Service manager.
+     * 
+     * @return HeadTitle
+     */
+    public static function getHeadTitle(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        return new HeadTitle($config);
+    }
     /**
      * Construct the SearchTabs helper.
      *

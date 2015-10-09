@@ -7,7 +7,7 @@
   if (isset($this->overrideTitle)) {
       $this->headTitle($this->overrideTitle);
   } else {
-      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+      $this->headTitle((empty($lookfor) ? "{$this->transEsc('history_empty_search')}" : "{$lookfor}") . ' | ' . $this->translate('Search Results'));
   }
 
   // Set up search box:
@@ -71,8 +71,8 @@
       <? endforeach; ?>
     <? endif; ?>
     <?=$this->flashmessages()?>
+    <? if ($recordTotal > 0): ?>
     <div class="search-controls row">
-      <? if ($recordTotal > 0): ?>
         <? if (!$browse): ?>
         <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right hidden-print">
           <?=$this->render('search/controls/view.phtml')?>
@@ -83,24 +83,26 @@
         <div<?= !$browse ? ' class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8"' : '' ?>>
             <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results, 'label' => $browse ? "browse_extended_" . ucfirst($browse) : 'Showing'))?>
         </div>
-      <? endif; ?>
     </div>
-<div class="row results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
-  <div class="<?=$this->layoutClass('mainbody')?>">
-
-    <? /* End Listing Options */ ?>
-
-    <? if ($recordTotal < 1): ?>
-        <? if (isset($this->overrideEmptyMessage)): ?>
-          <p><?=$this->overrideEmptyMessage?></p>
-        <? elseif ($lookfor == '' && $this->params->getsearchClassId() == 'Primo'): ?>
-          <h4 class="alert alert-info"><?=$this->transEsc('primo_no_searchword')?></h4>
-        <? else: ?>
-          <p class="alert alert-info"><?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?></p>
-        <? endif; ?>
-      <? if (isset($this->parseError)): ?>
-        <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
       <? endif; ?>
+<div class="row results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
+  <? if ($recordTotal < 1): ?>
+  <div class="col-sm-9">
+    <? if (isset($this->overrideEmptyMessage)): ?>
+    <p><?=$this->overrideEmptyMessage?></p>
+    <? elseif ($lookfor == '' && $this->params->getsearchClassId() == 'Primo'): ?>
+      <h4 class="no-results"><?=$this->transEsc('primo_no_searchword')?></h4>
+    <? else: ?>
+      <h4 class="no-results"><?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?></h4>
+    <? endif; ?>
+    <? if (isset($this->parseError)): ?>
+      <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
+    <? endif; ?>
+  </div>
+  <? endif; ?>
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <? /* End Listing Options */ ?>
+    <? if ($recordTotal < 1): ?>
       <? foreach (($top = $this->results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
       <? endforeach; ?>
