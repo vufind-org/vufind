@@ -323,7 +323,7 @@ mark, .highlight {
     }
 }
 .add-to-favorite-col {
-    @media(max-width: @screen-xs-max) {
+    @media(max-width: @screen-sm-max) {
         margin-top: 10px;   
     }
 }
@@ -957,6 +957,8 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         padding: 10px 0px;
         width: 92%;
         top: 100%;
+        top: ~"-webkit-calc(100% - 62px)";
+        top: ~"-moz-calc(100% - 62px)";
         top: ~"calc(100% - 62px)";
         overflow: hidden;
         opacity: 0;
@@ -1027,6 +1029,8 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
             top: 100%;
             box-shadow: none;
             padding: 10px;
+            top: ~"-webkit-calc(100% - 21px)";
+            top: ~"-moz-calc(100% - 21px)";
             top: ~"calc(100% - 21px)";
         }
         & .dateyeartype, & .fulltext-links {
