@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Get the svg and png images source address.
+ * Return path to JavaScript file in current theme.
  *
  * PHP version 5
  *
@@ -22,46 +22,35 @@
  *
  * @category VuFind2
  * @package  View_Helpers
- * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\View\Helper\Root;
 
 /**
- * Get the svg and png images source address.
+ * Return path to JavaScript file in current theme.
  *
  * @category VuFind2
  * @package  View_Helpers
- * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class ImageSrc extends ThemeSrc
+class ScriptSrc extends ThemeSrc
 {
     /**
-     * Return image source address. First check if svg image is found and
-     * if not, then check png image.
+     * Return path to JavaScript file in current theme.
      *
-     * @param string $source image filename without extension
+     * @param string $source filename
      *
      * @return string
      */
     public function __invoke($source)
     {
-        if ($url = $this->fileFromCurrentTheme('images/' . $source . '.svg')) {
+        if ($url = $this->fileFromCurrentTheme("js/$source")) {
             return $url;
         }
-        if ($url = $this->fileFromCurrentTheme('images/' . $source . '.png')) {
-            return $url;
-        }
-        if ($url = $this->fileFromCurrentTheme('images/' . $source)) {
-            return $url;
-        }
-        
-
         return '';
-
     }
-
 }

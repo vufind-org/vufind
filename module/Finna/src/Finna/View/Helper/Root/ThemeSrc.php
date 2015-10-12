@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Get the svg and png images source address.
+ * Resolve path to theme resource.
  *
  * PHP version 5
  *
@@ -23,45 +23,53 @@
  * @category VuFind2
  * @package  View_Helpers
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\View\Helper\Root;
 
 /**
- * Get the svg and png images source address.
+ * Resolve path to theme resource.
  *
  * @category VuFind2
  * @package  View_Helpers
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class ImageSrc extends ThemeSrc
+class ThemeSrc extends \Zend\View\Helper\AbstractHelper
 {
+    protected $themeInfo;
+
     /**
-     * Return image source address. First check if svg image is found and
-     * if not, then check png image.
+     * Constructor
      *
-     * @param string $source image filename without extension
-     *
-     * @return string
+     * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
      */
-    public function __invoke($source)
+    public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
     {
-        if ($url = $this->fileFromCurrentTheme('images/' . $source . '.svg')) {
-            return $url;
-        }
-        if ($url = $this->fileFromCurrentTheme('images/' . $source . '.png')) {
-            return $url;
-        }
-        if ($url = $this->fileFromCurrentTheme('images/' . $source)) {
-            return $url;
-        }
-        
-
-        return '';
-
+        $this->themeInfo = $themeInfo;
     }
 
+    /**
+     * Check if file is found in the current theme.
+     *
+     * @param string $relPath File relative path
+     *
+     * @return mixed
+     */
+    protected function fileFromCurrentTheme($relPath)
+    {
+        $currentTheme = $this->themeInfo->getTheme();
+        $basePath = $this->themeInfo->getBaseDir();
+
+        $file = $basePath . '/' . $currentTheme . '/' . $relPath;
+        if (file_exists($file)) {
+            $urlHelper = $this->getView()->plugin('url');
+            return $urlHelper('home') . 'themes/' . $currentTheme . '/' . $relPath;
+        }
+        return null;
+    }
 }
