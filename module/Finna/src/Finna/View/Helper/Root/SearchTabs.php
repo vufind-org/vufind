@@ -120,10 +120,10 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                     parse_str($parts['query'], $params);
                 }
 
-                // Remove daterange type from URL
-                // (to be added later from a saved search)
+                // Remove search index specific URL parameters
                 $dropParams = [
                    SolrParams::SPATIAL_DATERANGE_FIELD . '_type',
+                   'sort'
                 ];
                 $params = array_diff_key($params, array_flip($dropParams));
 
