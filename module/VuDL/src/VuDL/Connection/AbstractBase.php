@@ -121,7 +121,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         foreach ($detailsList as $key => $title) {
             $keys = explode(',', $key);
             $field = false;
-            for ($i = 0;$i<count($keys);$i++) {
+            for ($i = 0;$i < count($keys);$i++) {
                 if (isset($record[$keys[$i]])) {
                     $field = $keys[$i];
                     break;

@@ -56,9 +56,11 @@
 <div class="span-4 last">
   <? if ($thumb): ?>
     <img src="<?=$this->escapeHtmlAttr($thumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+  <? else: ?>
+    <span class="summcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
   <? endif; ?>
   <? if ($pubType): ?>
-    <p><?=$this->escapeHtml($pubType)?></p>
+    <p class="clearer"><?=$this->transEsc($pubType)?></p>
   <? endif; ?>
 
   <div class="external-links">

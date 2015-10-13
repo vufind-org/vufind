@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use Zend\Stdlib\Parameters;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -131,14 +130,10 @@ class CombinedController extends AbstractSearch
     public function resultsAction()
     {
         // Set up current request context:
-        $results = $this->getResultsManager()->get('Combined');
-        $params = $results->getParams();
-        $params->recommendationsEnabled(true);
-        $params->initFromRequest(
-            new Parameters(
-                $this->getRequest()->getQuery()->toArray()
-                + $this->getRequest()->getPost()->toArray()
-            )
+        $request = $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray();
+        $results = $this->getServiceLocator()->get('VuFind\SearchRunner')->run(
+            $request, 'Combined', $this->getSearchSetupCallback()
         );
 
         // Remember the current URL, then disable memory so multi-search results
@@ -203,7 +198,7 @@ class CombinedController extends AbstractSearch
                 'columns' => $columns,
                 'combinedResults' => $combinedResults,
                 'config' => $config,
-                'params' => $params,
+                'params' => $results->getParams(),
                 'placement' => $placement,
                 'results' => $results,
                 'supportsCart' => $supportsCart,
@@ -261,8 +256,22 @@ class CombinedController extends AbstractSearch
         $query = $this->getRequest()->getQuery();
         $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
 
-        // Disable top/side recommendations but leave noresults active:
-        $query->noRecommend = 'top,side';
+        // Reset override to avoid bleed-over from one section to the next!
+        $query->recommendOverride = false;
+
+        // Always leave noresults active (useful for 0-hit searches) and
+        // side inactive (no room to display) but display or hide top based
+        // on include_recommendations setting.
+        if (isset($settings['include_recommendations'])
+            && $settings['include_recommendations']
+        ) {
+            $query->noRecommend = 'side';
+            if (is_array($settings['include_recommendations'])) {
+                $query->recommendOverride
+                    = ['top' => $settings['include_recommendations']];
+            }
+        } else {
+            $query->noRecommend = 'top,side';
+        }
     }
 }
-

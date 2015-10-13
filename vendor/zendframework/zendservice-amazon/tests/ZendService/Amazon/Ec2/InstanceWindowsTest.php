@@ -99,8 +99,7 @@ class InstanceWindowsTest extends \PHPUnit_Framework_TestCase
                 "updateTime" => "2008-10-07T11:51:50.000Z",
                 "progress" => "20%",
                 "storage" => array(
-                        "s3" => array
-                            (
+                        "s3" => array(
                                 "bucket" => "my-bucket",
                                 "prefix" => "my-new-image"
                             )
@@ -108,7 +107,6 @@ class InstanceWindowsTest extends \PHPUnit_Framework_TestCase
                 );
 
         $this->assertSame($arrReturn, $return);
-
     }
 
     /**
@@ -152,8 +150,7 @@ class InstanceWindowsTest extends \PHPUnit_Framework_TestCase
                 "updateTime" => "2008-10-07T11:51:50.000Z",
                 "progress" => "20%",
                 "storage" => array(
-                        "s3" => array
-                            (
+                        "s3" => array(
                                 "bucket" => "my-bucket",
                                 "prefix" => "my-new-image"
                             )
@@ -161,9 +158,6 @@ class InstanceWindowsTest extends \PHPUnit_Framework_TestCase
                 );
 
         $this->assertSame($arrReturn, $return);
-
-
-
     }
 
     /**
@@ -211,8 +205,7 @@ class InstanceWindowsTest extends \PHPUnit_Framework_TestCase
                 "updateTime" => "2008-10-07T11:51:50.000Z",
                 "progress" => "20%",
                 "storage" => array(
-                        "s3" => array
-                            (
+                        "s3" => array(
                                 "bucket" => "my-bucket",
                                 "prefix" => "my-new-image"
                             )
@@ -221,7 +214,5 @@ class InstanceWindowsTest extends \PHPUnit_Framework_TestCase
             );
 
         $this->assertSame($arrReturn, $return);
-
     }
-
 }

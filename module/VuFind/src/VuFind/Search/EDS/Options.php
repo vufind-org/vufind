@@ -27,8 +27,6 @@
  */
 namespace VuFind\Search\EDS;
 
-use VuFindSearch\ParamBag;
-
 /**
  * EDS API Options
  *
@@ -41,21 +39,11 @@ use VuFindSearch\ParamBag;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Maximum number of results
-     *
-     * @var int
-     */
-    
-    // protected $resultLimit = 100;
-    // 2015-06-30 RF - Changed to unlimited
-    protected $resultLimit = -1;
-
-    /**
      * Available search mode options
      *
      * @var array
      */
-    protected $modeOptions = array();
+    protected $modeOptions = [];
 
     /**
      * Default search mode options
@@ -67,25 +55,25 @@ class Options extends \VuFind\Search\Base\Options
      * The set search mode
      * @var string
      */
-    protected $searchMode ;
+    protected $searchMode;
 
     /**
      * Default expanders to apply
      * @var array
      */
-    protected $defaultExpanders = array();
+    protected $defaultExpanders = [];
 
     /**
      * Available expander options
      * @var unknown
      */
-    protected $expanderOptions = array();
+    protected $expanderOptions = [];
 
     /**
      * Available limiter options
      * @var unknown
     */
-    protected $limiterOptions = array();
+    protected $limiterOptions = [];
 
     /**
      * Wheither or not to return available facets with the search response
@@ -104,21 +92,21 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @var array
      */
-    protected $commonLimiters = array();
+    protected $commonLimiters = [];
 
     /**
      * Expanders to display on the basic search screen
      *
      * @var array
      */
-    protected $commonExpanders = array();
+    protected $commonExpanders = [];
 
     /**
      * Pre-assigned filters
      *
      * @var array
      */
-    protected $hiddenFilters = array();
+    protected $hiddenFilters = [];
 
     /**
      * Constructor
@@ -129,16 +117,26 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader,
         $apiInfo = null
     ) {
-        $this->searchIni = 'EDS';
+        $this->searchIni = $this->facetsIni = 'EDS';
         $searchSettings = $configLoader->get($this->searchIni);
         parent::__construct($configLoader);
-        $this->viewOptions = array(
+        // 2015-06-30 RF - Changed to unlimited
+        //$this->resultLimit = 100;
+        $this->viewOptions = [
             'list|title' => 'Title View', 'list|brief' => 'Brief View',
-            'list|detailed'=>'Detailed View'
-        );
+            'list|detailed' => 'Detailed View'
+        ];
         $this->apiInfo = $apiInfo;
         $this->setOptionsFromApi($searchSettings);
         $this->setOptionsFromConfig($searchSettings);
+        $facetConf = $configLoader->get($this->facetsIni);
+        if (isset($facetConf->Advanced_Facet_Settings->translated_facets)
+            && count($facetConf->Advanced_Facet_Settings->translated_facets) > 0
+        ) {
+            foreach ($facetConf->Advanced_Facet_Settings->translated_facets as $c) {
+                $this->translatedFacets[] = $c;
+            }
+        }
     }
 
     /**
@@ -235,18 +233,6 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * If there is a limit to how many search results a user can access, this
-     * method will return that limit.  If there is no limit, this will return
-     * -1.
-     *
-     * @return int
-     */
-    public function getVisibleSearchResultLimit()
-    {
-        return $this->resultLimit;
-    }
-
-    /**
      * Set the search options from the Eds API Info methods results
      *
      * @return void
@@ -282,7 +268,7 @@ class Options extends \VuFind\Search\Base\Options
         // expression $this->$property[$key] below.
         $propertyRef = & $this->$property;
 
-        $newPropertyValues = array();
+        $newPropertyValues = [];
         foreach ($searchSettings->$section as $key => $value) {
             if (isset($propertyRef[$key])) {
                 $newPropertyValues[$key] = $value;
@@ -376,7 +362,6 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultSort = $searchSettings->General->default_sort;
         }
 
-
         if (isset($searchSettings->General->default_amount)
             && isset($this->amountOptions[$searchSettings->General->default_amount])
         ) {
@@ -391,9 +376,8 @@ class Options extends \VuFind\Search\Base\Options
 
         //View preferences
         if (isset($searchSettings->General->default_view)) {
-            $this->defaultView = 'list|'.$searchSettings->General->default_view;
+            $this->defaultView = 'list|' . $searchSettings->General->default_view;
         }
-
 
         if (isset($searchSettings->Advanced_Facet_Settings->special_facets)) {
             $this->specialAdvancedFacets
@@ -443,7 +427,7 @@ class Options extends \VuFind\Search\Base\Options
             $availCriteria = & $this->apiInfo['AvailableSearchCriteria'];
 
             //Sort preferences
-            $this->sortOptions = array();
+            $this->sortOptions = [];
             if (isset($availCriteria['AvailableSorts'])) {
                 foreach ($availCriteria['AvailableSorts'] as $sort) {
                     $this->sortOptions[$sort['Id']]
@@ -453,7 +437,7 @@ class Options extends \VuFind\Search\Base\Options
 
             // By default, use all of the available search fields for both
             // advanced and basic. Use the values in the config files to filter.
-            $this->basicHandlers = array('AllFields' => 'All Fields');
+            $this->basicHandlers = ['AllFields' => 'All Fields'];
             if (isset($availCriteria['AvailableSearchFields'])) {
                 foreach ($availCriteria['AvailableSearchFields'] as $searchField) {
                     $this->basicHandlers[$searchField['FieldCode']]
@@ -463,12 +447,12 @@ class Options extends \VuFind\Search\Base\Options
             $this->advancedHandlers = $this->basicHandlers;
 
             // Search Mode preferences
-            $this->modeOptions = array();
+            $this->modeOptions = [];
             if (isset($availCriteria['AvailableSearchModes'])) {
                 foreach ($availCriteria['AvailableSearchModes'] as $mode) {
-                    $this->modeOptions[$mode['Mode']] = array(
-                        'Label'=>$mode['Label'], 'Value' => $mode['Mode']
-                    );
+                    $this->modeOptions[$mode['Mode']] = [
+                        'Label' => $mode['Label'], 'Value' => $mode['Mode']
+                    ];
                     if (isset($mode['DefaultOn'])
                         &&  'y' == $mode['DefaultOn']
                     ) {
@@ -478,13 +462,13 @@ class Options extends \VuFind\Search\Base\Options
             }
 
             //expanders
-            $this->expanderOptions = array();
-            $this->defaultExpanders = array();
+            $this->expanderOptions = [];
+            $this->defaultExpanders = [];
             if (isset($availCriteria['AvailableExpanders'])) {
                 foreach ($availCriteria['AvailableExpanders'] as $expander) {
-                    $this->expanderOptions[$expander['Id']] = array(
+                    $this->expanderOptions[$expander['Id']] = [
                         'Label' => $expander['Label'], 'Value' => $expander['Id']
-                    );
+                    ];
                     if (isset($expander['DefaultOn'])
                         && 'y' == $expander['DefaultOn']
                     ) {
@@ -494,14 +478,14 @@ class Options extends \VuFind\Search\Base\Options
             }
 
             //Limiters
-            $this->limiterOptions= array();
+            $this->limiterOptions = [];
             if (isset($availCriteria['AvailableLimiters'])) {
                 foreach ($availCriteria['AvailableLimiters'] as $limiter) {
                     $val = '';
                     if ('select' == $limiter['Type']) {
                         $val = 'y';
                     }
-                    $this->limiterOptions[$limiter['Id']] = array(
+                    $this->limiterOptions[$limiter['Id']] = [
                         'Id' => $limiter['Id'],
                         'Label' => $limiter['Label'],
                         'Type' => $limiter['Type'],
@@ -509,10 +493,10 @@ class Options extends \VuFind\Search\Base\Options
                             ? $this->populateLimiterValues(
                                 $limiter['LimiterValues']
                             )
-                            : array(array('Value' => $val)),
+                            : [['Value' => $val]],
                         'DefaultOn' => isset($limiter['DefaultOn'])
                             ? $limiter['DefaultOn'] : 'n',
-                    );
+                    ];
 
                 }
 
@@ -529,16 +513,16 @@ class Options extends \VuFind\Search\Base\Options
      */
     protected function populateLimiterValues($limiterValues)
     {
-        $availableLimiterValues = array();
+        $availableLimiterValues = [];
         if (isset($limiterValues)) {
             foreach ($limiterValues as $limiterValue) {
-                $availableLimiterValues[] = array(
+                $availableLimiterValues[] = [
                     'Value' => $limiterValue['Value'],
                     'LimiterValues' => isset($limiterValue['LimiterValues'])
                         ? $this
                             ->populateLimiterValues($limiterValue['LimiterValues'])
                         : null
-                );
+                ];
             }
         }
         return empty($availableLimiterValues) ? null : $availableLimiterValues;
@@ -616,17 +600,17 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getSearchScreenLimiters()
     {
-        $ssLimiterOptions = array();
+        $ssLimiterOptions = [];
         if (isset($this->commonLimiters)) {
             foreach ($this->commonLimiters as $key) {
-                $limiter = $this->limiterOptions[$key] ;
-                $ssLimiterOptions[$key] = array(
-                    'selectedvalue' => 'LIMIT|'.$key.':y',
+                $limiter = $this->limiterOptions[$key];
+                $ssLimiterOptions[$key] = [
+                    'selectedvalue' => 'LIMIT|' . $key . ':y',
                     'description' => $this->getLabelForCheckboxFilter(
                         'eds_limiter_' . $key, $limiter['Label']
                     ),
-                    'selected' => ('y' == $limiter['DefaultOn'])? true : false
-                );
+                    'selected' => ('y' == $limiter['DefaultOn']) ? true : false
+                ];
             }
         }
         return $ssLimiterOptions;
@@ -639,16 +623,16 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getSearchScreenExpanders()
     {
-        $ssExpanderOptions = array();
+        $ssExpanderOptions = [];
         if (isset($this->commonExpanders)) {
             foreach ($this->commonExpanders as $key) {
                 $expander = $this->expanderOptions[$key];
-                $ssExpanderOptions[$key] = array(
-                    'selectedvalue' => 'EXPAND:'.$key,
+                $ssExpanderOptions[$key] = [
+                    'selectedvalue' => 'EXPAND:' . $key,
                     'description' => $this->getLabelForCheckboxFilter(
                         'eds_expander_' . $key, $expander['Label']
                     ),
-                );
+                ];
             }
         }
         return $ssExpanderOptions;
@@ -699,7 +683,7 @@ class Options extends \VuFind\Search\Base\Options
             //expanders
             $expanders = $this->getDefaultExpanders();
             foreach ($expanders as $expander) {
-                $this->defaultFilters[] = 'EXPAND:'.$expander;
+                $this->defaultFilters[] = 'EXPAND:' . $expander;
             }
 
             //limiters
@@ -709,7 +693,7 @@ class Options extends \VuFind\Search\Base\Options
                     // only select limiters can be defaulted on limiters can be
                     // defaulted
                     $val = $value['LimiterValues'][0]['Value'];
-                    $this->defaultFilters[] = 'LIMIT|'.$key.':'.$val;
+                    $this->defaultFilters[] = 'LIMIT|' . $key . ':' . $val;
                 }
             }
         }

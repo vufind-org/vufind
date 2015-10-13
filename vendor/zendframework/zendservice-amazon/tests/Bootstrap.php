@@ -11,7 +11,7 @@
 /*
  * Set error reporting to the level to which Zend Framework code must comply.
  */
-error_reporting( E_ALL | E_STRICT );
+error_reporting(E_ALL | E_STRICT);
 
 $phpUnitVersion = PHPUnit_Runner_Version::id();
 if ('@package_version@' !== $phpUnitVersion && version_compare($phpUnitVersion, '3.5.0', '<')) {

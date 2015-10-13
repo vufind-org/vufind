@@ -154,4 +154,13 @@ class ResultSet implements \SeekableIterator
     {
         return null !== $this->_results && $this->_currentIndex < $this->_results->length;
     }
+
+    /**
+     * Returns whether the Amazon API returned an error.
+     * @return bool whether an error occurred
+     */
+    public function hasError()
+    {
+        return ($this->_xpath->evaluate('name(/*)') == 'ItemSearchErrorResponse');
+    }
 }

@@ -11,7 +11,6 @@
 namespace ZendServiceTest\Amazon\Ec2;
 
 use ZendService\Amazon\Ec2\ReservedInstance;
-
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\Test as HttpClientTestAdapter;
 
@@ -103,7 +102,6 @@ class InstanceReservedTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertSame($arrReturn, $return);
-
     }
 
     /**
@@ -150,7 +148,6 @@ class InstanceReservedTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertSame($arrReturn, $return);
-
     }
 
     /**
@@ -175,7 +172,5 @@ class InstanceReservedTest extends \PHPUnit_Framework_TestCase
         $return = $this->instance->purchaseOffering('4b2293b4-5813-4cc8-9ce3-1957fc1dcfc8');
 
         $this->assertSame('4b2293b4-5813-4cc8-9ce3-1957fc1dcfc8', $return);
-
     }
-
 }
