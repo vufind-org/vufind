@@ -167,9 +167,11 @@ class PrimoPermissionHandler
         $regex = isset($this->primoConfig['regex'])
             ? $this->primoConfig['regex'] : [];
         if (!empty($codes) && !empty($regex)) {
-            throw new \Exception('Legacy [Institutions] settings detected.'
+            throw new \Exception(
+                'Legacy [Institutions] settings detected.'
                 . ' Please run upgrade process or correct settings manually'
-                . ' in Primo.ini and permissions.ini.');
+                . ' in Primo.ini and permissions.ini.'
+            );
         }
     }
 
