@@ -170,12 +170,23 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
         $translator = $this->getView()->plugin('translate');
 
         $parseUrl = function ($url) {
-            if (preg_match('/^(http|https):\/\//', $url)) {
-                // external url
-                return ['url' => $url, 'route' => false];
+            $url = trim($url);
+
+            $data = [];
+            if (strpos($url, ',') !== false) {
+                list($url, $target) = explode(',', $url, 2);
+                $url = trim($url);
+                $data['target'] = trim($target);
             }
 
-            $data = ['route' => true];
+            if (preg_match('/^(http|https):\/\//', $url)) {
+                // external url
+                $data['url'] = $url;
+                $data['route'] = false;
+                return $data;
+            }
+
+            $data['route'] = true;
 
             $needle = 'content-';
             if (($pos = strpos($url, $needle)) === 0) {
