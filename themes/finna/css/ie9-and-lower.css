@@ -4,10 +4,11 @@
 	background: none;
 }
 /* fallback for non spinning icon */
-.fa-spinner {
+.fa-spinner, .imagepopup-container .image:not(.loaded):before {
 	background: url('../../../themes/finna/images/throbber.gif') no-repeat;
 	width: 20px;
-	height: 20px;	
+	height: 20px;
+	content:'';
 }
 .fa-spinner:before {
 	content:'';
@@ -27,7 +28,6 @@ th, td, .truncate-field {
 i.jstree-icon:hover {
 	cursor: pointer;
 }
-
 @media (max-width: 991px) {
 	.finna-main-tabs .nav-tabs li a {
 		height: 50px;	
