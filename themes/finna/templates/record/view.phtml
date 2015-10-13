@@ -22,11 +22,19 @@
   $this->layout()->title = $this->driver->getShortTitle();
 
   $this->headMeta()->appendName('format-detection', 'telephone=no');
-  
-   // Set page title.
-   $dataSource = $this->driver->tryMethod('getDataSource');
-   $headText = $this->driver->getBreadcrumb() . (isset($dataSource) ? ' | ' . $this->transEsc('source_'. $dataSource) : '');
-   $this->headTitle($headText);
+
+  // Set page title.
+  $dataSource = $this->driver->tryMethod('getDataSource');
+  $headText = $this->driver->getBreadcrumb() . (isset($dataSource) ? ' | ' . $this->transEsc('source_'. $dataSource) : '');
+  $this->headTitle($headText);
+
+  // Load default tab
+  $script = <<<EOT
+$(document).ready(function() {
+  ajaxLoadTab('{$this->activeTab}');
+});
+EOT;
+  $this->headScript()->appendScript($script);
 ?>
 </div>
 <div class="container-fluid record-view-header">
@@ -108,7 +116,7 @@
 
     <div class="tab-content" id="record-tabs">
       <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
-        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+        <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading') ?>...
       </div>
     </div>
 
