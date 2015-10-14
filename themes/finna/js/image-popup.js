@@ -137,12 +137,12 @@ finna.imagePopup = (function(finna) {
                         var recordIndex = $.magnificPopup.instance.currItem.data.recordInd;
 
                         $(".imagepopup-holder .image img").one("load", function() {
-				            $(".imagepopup-holder .image").addClass('loaded');
+                            $(".imagepopup-holder .image").addClass('loaded');
+                            initDimensions();
                         }).each(function() {
                             if(this.complete) {
                                 $(this).load();
                             }
-                            initDimensions();
                         });
                         
                         // Prevent navigation button CSS-transitions on touch-devices

@@ -39,6 +39,9 @@
 	background: #fff;
 	max-width: 99%;
 	box-shadow: 0px 10px 40px rgba(1,1,1,0.8);
+	@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+        min-width: 85%;
+	}
 }
 .mfp-close-btn-in .mfp-close {
 	background: #fff;	
@@ -71,8 +74,7 @@
     width: 132px;
 }
 .imagepopup-container {
-	display: inline-block;
-	display: inline-flex;
+	display: block;
 	width: auto;
 	background: white;
 	padding-bottom: 5px;
@@ -130,7 +132,7 @@
             }
     }
     & .content {
-	    padding: 10px 50px 0 15px;
+	    padding: 10px 50px 0 25px;
         text-align: left;
         background-color: @body-bg;
         clear: right;
@@ -158,14 +160,15 @@
                 max-width: 60%;
         }
         @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-                max-width: 54%;
+                max-width: 50%;
+                min-width: 200px;
         }
 	    z-index: 99999999;
 	    min-width: 130px;
 	    min-height: 130px;
 	    margin-bottom: -5px;
 	    padding: 0px;
-	    margin-right: 20px;
+	    margin-right: 0px;
 	    text-align: left;
 	    background-position: 75px 60px;
         
@@ -207,7 +210,6 @@
 	        z-index: 10;
             max-width: 100%;
             width: auto;
-            
         }
     }
 

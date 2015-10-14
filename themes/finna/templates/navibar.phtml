@@ -17,7 +17,7 @@
           <? foreach ($val['items'] as $itemKey => $itemVal): ?>
           <? if (!(0 === strpos($itemVal['url'], 'primo')) || ($this->primo()->isAvailable())) : ?>
           <li role="menuitem">
-            <a href="<?= $this->navibar()->getMenuItemUrl($itemVal) ?>">
+            <a<?= isset($itemVal['target']) ? ' target="' . $this->escapeHtmlAttr($itemVal['target']) . '"' : ''?> href="<?= $this->navibar()->getMenuItemUrl($itemVal) ?>">
               <div><?= $this->transEsc($itemVal['label']) ?></div>
               <? if(isset($itemVal['desc'])): ?>
               <div class="description" role="note"><?= $this->transEsc($itemVal['desc']) ?></div>

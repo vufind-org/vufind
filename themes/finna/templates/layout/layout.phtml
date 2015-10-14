@@ -88,6 +88,11 @@
           $this->headScript()->appendFile("keep_alive.js");
       }
     ?>
+    <?
+    if ($this->scriptSrc('custom.js')) {
+       $this->headScript()->appendFile('custom.js');
+    }
+    ?>
     <?=$this->headScript()?>
     <? if ($template = $this->content()->findTemplateForLng("layout/Additions/general-post-head")): ?>
       <?=$this->render($template)?>
