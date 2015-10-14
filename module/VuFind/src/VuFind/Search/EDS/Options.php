@@ -133,9 +133,9 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($facetConf->Advanced_Facet_Settings->translated_facets)
             && count($facetConf->Advanced_Facet_Settings->translated_facets) > 0
         ) {
-            foreach ($facetConf->Advanced_Facet_Settings->translated_facets as $c) {
-                $this->translatedFacets[] = $c;
-            }
+            $this->setTranslatedFacets(
+                $facetConf->Advanced_Facet_Settings->translated_facets->toArray()
+            );
         }
     }
 

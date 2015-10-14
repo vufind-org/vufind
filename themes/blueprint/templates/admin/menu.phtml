@@ -1,8 +1,0 @@
-<ul id="list1">
-  <li<?=strtolower($this->layout()->templateName) == "home" ? ' class="active"' : ''?>><a href="<?=$this->url('admin')?>"><?=$this->transEsc('Home')?></a></li>
-  <li<?=strtolower($this->layout()->templateName) == "socialstats" ? ' class="active"' : ''?>><a href="<?=$this->url('admin/social')?>"><?=$this->transEsc('Social Statistics')?></a></li>
-  <li<?=strtolower($this->layout()->templateName) == "statistics" ? ' class="active"' : ''?>><a href="<?=$this->url('admin/statistics')?>"><?=$this->transEsc('Statistics')?></a></li>
-  <li<?=strtolower($this->layout()->templateName) == "config" ? ' class="active"' : ''?>><a href="<?=$this->url('admin/config')?>"><?=$this->transEsc('Configuration')?></a>
-  <li<?=strtolower($this->layout()->templateName) == "maintenance" ? ' class="active"' : ''?>><a href="<?=$this->url('admin/maintenance')?>"><?=$this->transEsc('System Maintenance')?></a></li>
-  <li<?=strtolower($this->layout()->templateName) == "tags" ? ' class="active"' : ''?>><a href="<?=$this->url('admin/tags')?>"><?=$this->transEsc('Tag Maintenance')?></a></li>
-</ul>

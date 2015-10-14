@@ -45,8 +45,7 @@ trait HoldsTrait
      */
     public function blockedholdAction()
     {
-        $this->flashMessenger()->setNamespace('error')
-            ->addMessage('hold_error_blocked');
+        $this->flashMessenger()->addMessage('hold_error_blocked', 'error');
         return $this->redirectToRecord('#top');
     }
 
@@ -107,13 +106,12 @@ trait HoldsTrait
                 $gatheredDetails, $extraHoldFields, $requestGroups
             );
             if (!$valid) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('hold_invalid_request_group');
+                $this->flashMessenger()
+                    ->addMessage('hold_invalid_request_group', 'error');
             } elseif (!$this->holds()->validatePickUpInput(
                 $gatheredDetails['pickUpLocation'], $extraHoldFields, $pickup
             )) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('hold_invalid_pickup');
+                $this->flashMessenger()->addMessage('hold_invalid_pickup', 'error');
             } else {
                 // If we made it this far, we're ready to place the hold;
                 // if successful, we will redirect and can stop here.
@@ -134,19 +132,18 @@ trait HoldsTrait
                             '%%url%%' => $this->url()->fromRoute('myresearch-holds')
                         ],
                     ];
-                    $this->flashMessenger()->setNamespace('success')
-                        ->addMessage($msg);
+                    $this->flashMessenger()->addMessage($msg, 'success');
                     return $this->redirectToRecord('#top');
                 } else {
                     // Failure: use flash messenger to display messages, stay on
                     // the current form.
                     if (isset($results['status'])) {
-                        $this->flashMessenger()->setNamespace('error')
-                            ->addMessage($results['status']);
+                        $this->flashMessenger()
+                            ->addMessage($results['status'], 'error');
                     }
                     if (isset($results['sysMessage'])) {
-                        $this->flashMessenger()->setNamespace('error')
-                            ->addMessage($results['sysMessage']);
+                        $this->flashMessenger()
+                            ->addMessage($results['sysMessage'], 'error');
                     }
                 }
             }

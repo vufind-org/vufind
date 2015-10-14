@@ -17,7 +17,7 @@
   <? else: ?>
   <div class="col-xs-1 left">
   <? endif ?>
-    <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
+    <label class="pull-left flip"><?=$this->record($this->driver)->getCheckbox() ?></label>
     <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
   <? if ($cover): ?>
     <?=$cover ?>
@@ -130,7 +130,7 @@
         $openUrl = $this->openUrl($this->driver, 'results');
         $openUrlActive = $openUrl->isActive();
         // Account for replace_other_urls setting
-        $urls = $openUrlActive ? $this->record($this->driver)->getLinkDetailsForOpenUrl() : $this->record($this->driver)->getLinkDetails() ;
+        $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 
         if ($openUrlActive || !empty($urls)):
       ?>
@@ -172,7 +172,7 @@
         <?=$this->transEsc('Delete') ?>
       </a>
       <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
-        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeHtmlAttr($id) ?>','source':'<?=$this->escapeHtmlAttr($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeJs($id) ?>','source':'<?=$this->escapeJs($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
         <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>
     </div>
