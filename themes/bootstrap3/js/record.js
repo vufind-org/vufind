@@ -94,7 +94,7 @@ function refreshCommentList(recordId, recordSource) {
 
 function registerAjaxCommentRecord() {
   // Form submission
-  $('form[name="commentRecord"]').unbind('submit').submit(function(){
+  $('form.comment').unbind('submit').submit(function(){
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
@@ -110,7 +110,6 @@ function registerAjaxCommentRecord() {
       data: data,
       dataType: 'json',
       success: function(response) {
-        var form = 'form[name="commentRecord"]';
         if (response.status == 'OK') {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');
@@ -226,6 +225,7 @@ $(document).ready(function(){
       return true;
     }
     var tabid = $(this).attr('id').toLowerCase();
+    window.location.hash = tabid;
     if($('#'+tabid+'-tab').length > 0) {
       $('#record-tabs .tab-pane.active').removeClass('active');
       $('#'+tabid+'-tab').addClass('active');
@@ -238,6 +238,10 @@ $(document).ready(function(){
       return ajaxLoadTab(tabid);
     }
   });
+  // Open tag in url hash
+  if ($(window.location.hash.toLowerCase()).length > 0) {
+    $(window.location.hash.toLowerCase()).click();
+  }
 
   /* --- LIGHTBOX --- */
   // Cite lightbox

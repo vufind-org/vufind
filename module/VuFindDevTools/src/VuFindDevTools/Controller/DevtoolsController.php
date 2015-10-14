@@ -27,7 +27,8 @@
  * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
  */
 namespace VuFindDevTools\Controller;
-use Zend\I18n\Translator\TextDomain;
+use VuFind\I18n\Translator\Loader\ExtendedIni;
+use VuFindDevTools\LanguageHelper;
 
 /**
  * Development Tools Controller
@@ -42,106 +43,42 @@ use Zend\I18n\Translator\TextDomain;
 class DevtoolsController extends \VuFind\Controller\AbstractBase
 {
     /**
-     * Get a list of help files in the specified language.
+     * Deminify action
      *
-     * @param string $language Language to check.
-     *
-     * @return array
+     * @return \Zend\View\Model\ViewModel
      */
-    protected function getHelpFiles($language)
+    public function deminifyAction()
     {
-        $dir = APPLICATION_PATH
-            . '/themes/root/templates/HelpTranslations/' . $language;
-        if (!file_exists($dir) || !is_dir($dir)) {
-            return [];
+        $min = trim($this->params()->fromPost('min'));
+        $view = $this->createViewModel();
+        if (!empty($min)) {
+            $view->min = unserialize($min);
         }
-        $handle = opendir($dir);
-        $files = [];
-        while ($file = readdir($handle)) {
-            if (substr($file, -6) == '.phtml') {
-                $files[] = $file;
+        if (isset($view->min) && $view->min) {
+            $view->results = $view->min->deminify(
+                $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            );
+        }
+        if (isset($view->results) && $view->results) {
+            $params = $view->results->getParams();
+            $view->query = $params->getQuery();
+            if (is_callable([$params, 'getBackendParameters'])) {
+                $view->backendParams = $params->getBackendParameters()
+                    ->getArrayCopy();
+            }
+            try {
+                $backend = $this->getServiceLocator()
+                    ->get('VuFind\Search\BackendManager')
+                    ->get($params->getSearchClassId());
+            } catch (\Exception $e) {
+                $backend = false;
+            }
+            if ($backend && is_callable([$backend, 'getQueryBuilder'])) {
+                $builder = $backend->getQueryBuilder();
+                $view->queryParams = $builder->build($view->query)->getArrayCopy();
             }
         }
-        closedir($handle);
-        return $files;
-    }
-
-    /**
-     * Get a list of languages supported by VuFind:
-     *
-     * @return array
-     */
-    protected function getLanguages()
-    {
-        $langs = [];
-        $dir = opendir(APPLICATION_PATH . '/languages');
-        while ($file = readdir($dir)) {
-            if (substr($file, -4) == '.ini') {
-                $lang = current(explode('.', $file));
-                if ('native' != $lang) {
-                    $langs[] = $lang;
-                }
-            }
-        }
-        closedir($dir);
-        return $langs;
-    }
-
-    /**
-     * Find strings that are absent from a language file.
-     *
-     * @param TextDomain $lang1 Left side of comparison
-     * @param TextDomain $lang2 Right side of comparison
-     *
-     * @return array
-     */
-    protected function findMissingLanguageStrings($lang1, $lang2)
-    {
-        // Find strings missing from language 2:
-        return array_values(
-            array_diff(array_keys((array)$lang1), array_keys((array)$lang2))
-        );
-    }
-
-    /**
-     * Compare two languages and return an array of details about how they differ.
-     *
-     * @param TextDomain $lang1 Left side of comparison
-     * @param TextDomain $lang2 Right side of comparison
-     *
-     * @return array
-     */
-    protected function compareLanguages($lang1, $lang2)
-    {
-        return [
-            'notInL1' => $this->findMissingLanguageStrings($lang2, $lang1),
-            'notInL2' => $this->findMissingLanguageStrings($lang1, $lang2),
-            'l1Percent' => number_format(count($lang1) / count($lang2) * 100, 2),
-            'l2Percent' => number_format(count($lang2) / count($lang1) * 100, 2),
-        ];
-    }
-
-    /**
-     * Get English name of language
-     *
-     * @param string $lang Language code
-     *
-     * @return string
-     */
-    public function getLangName($lang)
-    {
-        $config = $this->getConfig();
-        if (isset($config->Languages->$lang)) {
-            return $config->Languages->$lang;
-        }
-        switch($lang) {
-        case 'en-gb':
-            return 'British English';
-        case 'pt-br':
-            return 'Brazilian Portuguese';
-        default:
-            return $lang;
-        }
+        return $view;
     }
 
     /**
@@ -152,32 +89,8 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     public function languageAction()
     {
         // Test languages with no local overrides and no fallback:
-        $loader = new \VuFind\I18n\Translator\Loader\ExtendedIni(
-            [APPLICATION_PATH  . '/languages']
-        );
-        $mainLanguage = $this->params()->fromQuery('main', 'en');
-        $main = $loader->load($mainLanguage, null);
-
-        $details = [];
-        $allLangs = $this->getLanguages();
-        sort($allLangs);
-        foreach ($allLangs as $langCode) {
-            $lang = $loader->load($langCode, null);
-            if (isset($lang['@parent_ini'])) {
-                // don't count macros in comparison:
-                unset($lang['@parent_ini']);
-            }
-            $details[$langCode] = $this->compareLanguages($main, $lang);
-            $details[$langCode]['object'] = $lang;
-            $details[$langCode]['name'] = $this->getLangName($langCode);
-            $details[$langCode]['helpFiles'] = $this->getHelpFiles($langCode);
-        }
-
-        return [
-            'details' => $details,
-            'mainCode' => $mainLanguage,
-            'mainName' => $this->getLangName($mainLanguage),
-            'main' => $main,
-        ];
+        $loader = new ExtendedIni([APPLICATION_PATH  . '/languages']);
+        $helper = new LanguageHelper($loader, $this->getConfig());
+        return $helper->getAllDetails($this->params()->fromQuery('main', 'en'));
     }
 }

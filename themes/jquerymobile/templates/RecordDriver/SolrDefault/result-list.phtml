@@ -26,9 +26,7 @@
     <?
        $openUrl = $this->openUrl($this->driver, 'results');
        $openUrlActive = $openUrl->isActive();
-       $urls = $openUrlActive
-            ? $this->record($this->driver)->getLinkDetailsForOpenUrl()
-            : $this->record($this->driver)->getLinkDetails();
+       $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     ?>
     <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
       <p><span class="ajax_availability hide status"><?=$this->transEsc('Loading')?>...</span></p>

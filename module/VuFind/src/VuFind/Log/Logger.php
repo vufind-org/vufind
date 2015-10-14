@@ -128,9 +128,9 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             $this->addWriters($writer, $filters);
         }
 
-        // Null writer to avoid errors
+        // Null (no-op) writer to avoid errors
         if (count($this->writers) == 0) {
-            $nullWriter = 'Zend\Log\Writer\Null';
+            $nullWriter = 'Zend\Log\Writer\Noop';
             $this->addWriter(new $nullWriter());
         }
     }

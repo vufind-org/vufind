@@ -212,4 +212,16 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $ini = parse_ini_string($test->getContent(), true);
         $this->assertEquals('', $ini['a']['two']);
     }
+
+    /**
+     * Test alignment of values.
+     *
+     * @return void
+     */
+    public function testTabAlignment()
+    {
+        $test = new Writer('fake.ini', ['general' => ['foo' => 'bar', 'foofoofoofoofoofo' => 'baz']]);
+        $expected = "[general]\nfoo              = \"bar\"\nfoofoofoofoofoofo = \"baz\"\n";
+        $this->assertEquals($expected, $test->getContent());
+    }
 }
