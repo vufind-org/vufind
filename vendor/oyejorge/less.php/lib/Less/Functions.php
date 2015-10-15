@@ -20,7 +20,7 @@ class Less_Functions{
 	/**
 	 * @param string $op
 	 */
-    public static function operate( $op, $a, $b ){
+	public static function operate( $op, $a, $b ){
 		switch ($op) {
 			case '+': return $a + $b;
 			case '-': return $a - $b;
@@ -46,7 +46,7 @@ class Less_Functions{
 		return $value;
 	}
 
-    public static function number($n){
+	public static function number($n){
 
 		if ($n instanceof Less_Tree_Dimension) {
 			return floatval( $n->unit->is('%') ? $n->value / 100 : $n->value);
@@ -57,7 +57,7 @@ class Less_Functions{
 		}
 	}
 
-    public static function scaled($n, $size = 255 ){
+	public static function scaled($n, $size = 255 ){
 		if( $n instanceof Less_Tree_Dimension && $n->unit->is('%') ){
 			return (float)$n->value * $size / 100;
 		} else {
@@ -549,7 +549,7 @@ class Less_Functions{
 		return new Less_Tree_Quoted( $string->quote , $result, $string->escaped);
 	}
 
-    public function unit( $val, $unit = null) {
+	public function unit( $val, $unit = null) {
 		if( !($val instanceof Less_Tree_Dimension) ){
 			throw new Less_Exception_Compiler('The first argument to unit must be a number' . ($val instanceof Less_Tree_Operation ? '. Have you forgotten parenthesis?' : '.') );
 		}
@@ -564,7 +564,7 @@ class Less_Functions{
 			$unit = "";
 		}
 		return new Less_Tree_Dimension($val->value, $unit );
-    }
+	}
 
 	public function convert($val, $unit){
 		return $val->convertTo($unit->value);
