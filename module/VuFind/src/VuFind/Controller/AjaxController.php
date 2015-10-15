@@ -711,25 +711,23 @@ class AjaxController extends AbstractBase
         );
         $request = $this->getRequest();
         $cfg = $this->getServiceLocator()->get('Config');
+
         $recordTabPlugin = $this->getServiceLocator()
             ->get('VuFind\RecordTabPluginManager');
-        $allTabs = $recordTabPlugin
-            ->getTabsForRecord(
+        $details = $recordTabPlugin
+            ->getTabDetailsForRecord(
                 $driver,
                 $cfg['vufind']['recorddriver_tabs'],
-                $request
+                $request,
+                'Information'
             );
-        $defaultTab = $recordTabPlugin->getDefaultTabForRecord(
-            $driver,
-            $cfg['vufind']['recorddriver_tabs']
-        );
         $html = $this->getViewRenderer()
             ->render(
                 "record/ajaxview-" . $viewtype . ".phtml",
                 [
-                    'defaultTab' => $defaultTab,
+                    'defaultTab' => $details['default'],
                     'driver' => $driver,
-                    'tabs' => $allTabs
+                    'tabs' => $details['tabs']
                 ]
             );
         return $this->output($html, self::STATUS_OK);

@@ -8,6 +8,8 @@
     $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
   }
 
+  $this->defaultTab = strtolower($this->defaultTab);
+
   function escapeJSAttr($op) {
     return preg_replace("/\W/", "_", $op);
   }
