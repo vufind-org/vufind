@@ -161,9 +161,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // - empty
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->find('css', $username));
-        // - TODO wrong
-        // - for real
+        // - wrong
         $page->find('css', $username)->setValue(self::$hash);
+        $page->find('css', $password)->setValue('superwrong');
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->assertNotNull($page->find('css', $username));
+        // - for real
         $page->find('css', $password)->setValue('test');
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         // Make sure we don't have Favorites because we have another populated list
