@@ -588,35 +588,6 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Get a default tab by looking up the provided record driver in the tab
-     * configuration array.
-     *
-     * @param AbstractRecordDriver $driver Record driver
-     *
-     * @return string
-     */
-    protected function getDefaultTabForRecord(AbstractRecordDriver $driver)
-    {
-        // Load configuration:
-        $config = $this->getTabConfiguration();
-
-        // Get the current record driver's class name, then start a loop
-        // in case we need to use a parent class' name to find the appropriate
-        // setting.
-        $className = get_class($driver);
-        while (true) {
-            if (isset($config[$className]['defaultTab'])) {
-                return $config[$className]['defaultTab'];
-            }
-            $className = get_parent_class($className);
-            if (empty($className)) {
-                // No setting found...
-                return null;
-            }
-        }
-    }
-
-    /**
      * Get default tab for a given driver
      *
      * @return string
@@ -627,7 +598,9 @@ class AbstractRecord extends AbstractBase
         if (null === $this->defaultTab) {
             // Load record driver tab configuration:
             $driver = $this->loadRecord();
-            $this->defaultTab = $this->getDefaultTabForRecord($driver);
+            $this->defaultTab = $this->getServiceLocator()
+                ->get('VuFind\RecordTabPluginManager')
+                ->getDefaultTabForRecord($driver, $this->getTabConfiguration());
 
             // Missing/invalid record driver configuration? Fall back to configured
             // default:
