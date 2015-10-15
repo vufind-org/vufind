@@ -233,21 +233,25 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         );
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->findById('account_firstname'));
-        // Invalid email
         $page->findById('account_firstname')->setValue('Tester');
         $page->findById('account_lastname')->setValue('McTestenson');
-        $page->findById('account_email')->setValue('blargasaurus');
-        // TODO test taken
-        $page->findById('account_username')->setValue(self::$hash2);
         $page->findById('account_password')->setValue('test');
         $page->findById('account_password2')->setValue('test');
+        $page->findById('account_username')->setValue(self::$hash2);
+        // Invalid email
+        $page->findById('account_email')->setValue('blargasaurus');
         $this->assertNull(
             $page->find('css', '.modal-body .btn.btn-primary.disabled')
         );
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->findById('account_firstname'));
-        // Correct
         $page->findById('account_email')->setValue(self::$hash2 . '@ignore.com');
+        // Test taken
+        $page->findById('account_username')->setValue(self::$hash);
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->assertNotNull($page->findById('account_firstname'));
+        $page->findById('account_username')->setValue(self::$hash2);
+        // Correct
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->findById('save_list'));
         // Make list
@@ -296,7 +300,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // - empty
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->find('css', $username));
-        // - TODO wrong
         // - for real
         $page->find('css', $username)->setValue(self::$hash2);
         $page->find('css', $password)->setValue('test');
