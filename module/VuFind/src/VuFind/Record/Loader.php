@@ -31,7 +31,7 @@ namespace VuFind\Record;
 use VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\RecordDriver\PluginManager as RecordFactory,
     VuFindSearch\Service as SearchService,
-    VuFind\Record\Cache as Cache;
+    VuFind\Record\Cache;
 
 /**
  * Record loader
