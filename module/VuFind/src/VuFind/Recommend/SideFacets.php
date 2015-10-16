@@ -192,6 +192,12 @@ class SideFacets extends AbstractFacets
                 = $config->SpecialFacets->hierarchical->toArray();
         }
 
+        // Ahow more in frontend:
+        if (isset($config->Results_Settings->showMore)) {
+            $this->showMoreSettings
+                = $config->Results_Settings->showMore->toArray();
+        }
+
         // Hierarchical facet sort options:
         if (isset($config->SpecialFacets->hierarchicalFacetSortOptions)) {
             $this->hierarchicalFacetSortOptions
@@ -393,6 +399,16 @@ class SideFacets extends AbstractFacets
             }
         }
         return $result;
+    }
+
+    /**
+     * Return the list of facets configured to be hierarchical
+     *
+     * @return array
+     */
+    public function getShowMoreSettings()
+    {
+        return $this->showMoreSettings;
     }
 
     /**
