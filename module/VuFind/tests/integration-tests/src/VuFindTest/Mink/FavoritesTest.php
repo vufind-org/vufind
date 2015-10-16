@@ -26,7 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindTest\Mink;
-use VuFindTest\Auth\DatabaseTest;
 
 /**
  * Mink cart test class.
@@ -49,7 +48,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public static function setUpBeforeClass()
     {
-        self::$hash = substr(md5(time()*2), 0, 16);
+        self::$hash = substr(md5(time() * 2), 0, 16);
         self::$hash2 = substr(md5(time()), 0, 16);
     }
 
@@ -65,8 +64,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             return $this->markTestSkipped('Continuous integration not running.');
         }
     }
-
-
 
     protected function gotoSearch($session)
     {
