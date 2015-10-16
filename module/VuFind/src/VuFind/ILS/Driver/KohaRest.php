@@ -81,7 +81,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @var string
      */
-    protected $default_location;
+    protected $defaultLocation;
 
     /**
      * Database connection
@@ -177,7 +177,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ? $this->config['Catalog']['url'] : "";
 
         // Default location defined in 'KohaRest.ini'
-        $this->default_location
+        $this->defaultLocation
             = isset($this->config['Holds']['defaultPickUpLocation'])
             ? $this->config['Holds']['defaultPickUpLocation'] : null;
 
@@ -194,7 +194,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $this->debug("DB Host: " . $this->host);
             $this->debug("ILS URL: " . $this->ilsBaseUrl);
             $this->debug("Locations: " . $this->locations);
-            $this->debug("Default Location: " . $this->default_location);
+            $this->debug("Default Location: " . $this->defaultLocation);
         }
     }
 
@@ -207,7 +207,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws ILSException
      * @return void
      */
-    public function initDB()
+    protected function initDb()
     {
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
@@ -458,7 +458,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         if (!$this->locations) {
             if (!$this->db) {
-                $this->initDB();
+                $this->initDb();
             }
             $branchcodes = "'" . implode(
                 "','", $this->pickupEnableBranchcodes
@@ -509,7 +509,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
-        return $this->default_location;
+        return $this->defaultLocation;
     }
 
     /**
@@ -534,7 +534,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $bib_id             = $holdDetails['id'];
         $item_id            = $holdDetails['item_id'];
         $pickup_location    = !empty($holdDetails['pickUpLocation'])
-            ? $holdDetails['pickUpLocation'] : $this->default_location;
+            ? $holdDetails['pickUpLocation'] : $this->defaultLocation;
         $level              = isset($holdDetails['level'])
             && !empty($holdDetails['level']) ? $holdDetails['level'] : "item";
 
@@ -638,7 +638,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     public function getHolding($id, array $patron = null)
     {
 
-        $this->debug("Function getHolding($id, $patron) called");
+        $this->debug("Function getHolding($id, " . implode(",",$patron) . ") called");
 
         $started = microtime(true);
 
@@ -671,7 +671,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             . "'//datafield[@tag=\"866\"]/subfield[@code=\"a\"]') AS MFHD;";
 
         if (!$this->db) {
-            $this->initDB();
+            $this->initDb();
         }
         try {
             $itemSqlStmt = $this->db->prepare($sql);
@@ -830,82 +830,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get Holding Old
-     *
-     * This is responsible for retrieving the holding information of a certain
-     * record.
-     *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
-     *
-     * @throws \VuFind\Exception\Date
-     * @throws ILSException
-     * @return array         On success, an associative array with the following
-     * keys: id, availability (boolean), status, location, reserve, callnumber,
-     * duedate, number, barcode.
-     */
-    public function getHoldingOld($id, $patron = false)
-    {
-
-        $holding = [];
-        $available = true;
-        $duedate = $status = '';
-        $loc = $shelf = '';
-        $reserves = "N";
-
-        $rsp = $this->makeRequest("GetRecords&id=$id");
-
-        if ($this->debug_enabled) {
-            $this->debug("ISBN: " . $rsp->{'record'}->{'isbn'});
-        }
-
-        foreach ($rsp->{'record'}->{'items'}->{'item'} as $item) {
-            if ($this->debug_enabled) {
-                $this->debug("Biblio: " . $item->{'biblioitemnumber'});
-                $this->debug("ItemNo: " . $item->{'itemnumber'});
-            }
-            switch ($item->{'notforloan'}) {
-            case 0:
-                if ($item->{'date_due'} != "") {
-                    $available = false;
-                    $status    = 'Checked out';
-                    $duedate   = $this->getField($item->{'date_due'});
-                } else {
-                    $available = true;
-                    $status    = 'Available';
-                    $duedate   = '';
-                }
-                break;
-            case 1: // The item is not available for loan
-            default: $available = false;
-                $status = 'Not for loan';
-                $duedate = '';
-                break;
-            }
-
-            foreach ($rsp->{'record'}->{'reserves'}->{'reserve'} as $reserve) {
-                if ($reserve->{'suspend'} == '0') {
-                    $reserves = "Y";
-                    break;
-                }
-            }
-            $holding[] = [
-                'id'           => (string) $id,
-                'availability' => (string) $available,
-                'item_id'      => $this->getField($item->{'itemnumber'}),
-                'status'       => (string) $status,
-                'location'     => $this->getField($item->{'location'}),
-                'reserve'      => (string) $reserves,
-                'callnumber'   => $this->getField($item->{'itemcallnumber'}),
-                'duedate'      => (string) $duedate,
-                'barcode'      => $this->getField($item->{'barcode'}),
-                'number'       => $this->getField($item->{'copynumber'}),
-            ];
-        }
-        return $holding;
-    }
-
-    /**
      * This method queries the ILS for new items
      *
      * Comment for $fundID: (use a value returned by getFunds, or exclude for no
@@ -937,7 +861,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ORDER BY dateaccessioned DESC";
 
         if (!$this->db) {
-            $this->initDB();
+            $this->initDb();
         }
 
         $this->debug($sql);
@@ -1003,7 +927,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 "from old_issues join items USING (itemnumber) " .
                 "where old_issues.borrowernumber = :id ORDER BY DUEDATE DESC ";
             if (!$this->db) {
-                  $this->initDB();
+                  $this->initDb();
             }
 
             $sqlStmt = $this->db->prepare($sql);
@@ -1397,7 +1321,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         try {
             if (!$this->db) {
-                $this->initDB();
+                $this->initDb();
             }
             $sql = "SELECT biblio.biblionumber AS biblionumber
                       FROM biblioitems
@@ -1433,7 +1357,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     ON courses.department = `authorised_values`.`authorised_value`";
         try {
             if (!$this->db) {
-                $this->initDB();
+                $this->initDb();
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
@@ -1464,7 +1388,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         try {
             if (!$this->db) {
-                $this->initDB();
+                $this->initDb();
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
@@ -1494,7 +1418,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                  WHERE enabled = 1";
         try {
             if (!$this->db) {
-                $this->initDB();
+                $this->initDb();
             }
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
