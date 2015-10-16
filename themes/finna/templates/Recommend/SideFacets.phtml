@@ -177,7 +177,7 @@
                 <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter" class="form-inline">
                   <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
                   <label for="<?=$this->escapeHtmlAttr($title)?>from"><?=$this->transEsc('new_items_from')?></label>
-                  <input type="text" class="form-control form-inline date-picker-field" autocomplete="off" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" maxlength="10" size="10" value="<?=!empty($filterList[$title][0]) && is_numeric($filterList[$title][0][0]) ? $this->escapeHtmlAttr($filterList[$title][0]) : ''?>">
+                  <input type="text" class="form-control form-inline date-picker-field" readonly="readonly" autocomplete="off" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" maxlength="10" size="10" value="<?=!empty($filterList[$title][0]) && is_numeric($filterList[$title][0][0]) ? $this->escapeHtmlAttr($filterList[$title][0]) : ''?> ">
                   <button class="btn btn-primary btn-default date-picker-button" type="submit" value=""><i class="fa fa-search"></i></button>
                 </form>
 <?

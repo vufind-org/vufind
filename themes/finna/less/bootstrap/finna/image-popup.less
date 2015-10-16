@@ -39,6 +39,10 @@
 	background: #fff;
 	max-width: 99%;
 	box-shadow: 0px 10px 40px rgba(1,1,1,0.8);
+	@media (min-width: @screen-sm-min) {
+	    max-height: 100%;
+	    overflow: hidden;
+	}
 }
 .mfp-close-btn-in .mfp-close {
 	background: #fff;	
@@ -160,7 +164,10 @@
                 max-width: 50%;
                 min-width: 200px;
         }
-	    z-index: 99999999;
+        @media (min-width: @screen-sm-min) {
+        	   max-height: 100%;
+        }
+	    z-index: 3000;
 	    min-width: 130px;
 	    min-height: 130px;
 	    margin-bottom: -5px;
@@ -208,6 +215,9 @@
             max-width: 100%;
             width: auto;
             vertical-align: initial;
+            @media (min-width: @screen-sm-min) {
+        	    max-height: 99vh;
+        	}
         }
     }
 
