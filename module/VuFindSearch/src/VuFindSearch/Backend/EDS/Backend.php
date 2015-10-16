@@ -520,45 +520,6 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Determines whether or not the current user session is identifed as a guest
-     * session
-     *
-     * @param string $listIPs Comma-separated list of IP patterns to match
-     *
-     * @return bool
-     */
-    protected function validAuthIP($listIPs)
-    {
-        try {
-            if ($listIPs == '') {
-                return false;
-            }
-
-            $m = explode(',', $listIPs);
-            if (count($m) == 0) {
-                return false;
-            }
-
-            // get the ip address of the request
-            $ip_address = $_SERVER['REMOTE_ADDR'];
-            foreach ($m as $ip) {
-                $v = trim($ip);
-                if (!empty($v)
-                    && strcmp(substr($ip_address, 0, strlen($v)), $v) == 0
-                ) {
-                    // inside of ip address range of customer
-                    return true;
-                }
-            }
-            // if not found, return false, not authenticated by IP address
-            return false;
-        } catch (Exception $e) {
-            $this->debugPrint("validAuthIP ex: " . $e);
-            return false;
-        }
-    }
-
-    /**
      * Is the current user a guest? If so, return 'y' else 'n'.
      *
      * @return string
