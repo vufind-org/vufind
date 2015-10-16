@@ -103,7 +103,7 @@
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
         <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
-        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results, 'options' => isset($this->paginationOptions) ? $this->paginationOptions : []))?>
       </form>
 
       <div class="searchtools hidden-print">
