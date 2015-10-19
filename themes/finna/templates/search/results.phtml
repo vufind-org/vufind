@@ -64,6 +64,8 @@
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("finna-search-tabs-recommendations.js");
   $this->headScript()->appendFile("finna-item-status.js");
+
+  $topRecommendations = $this->results->getRecommendations('top');
 ?>
     <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
       <? foreach ($this->results->getRecommendations('top') as $current): ?>
@@ -99,7 +101,7 @@
       <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
     <? endif; ?>
     <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
-      <? if (!in_array($current, $top)): ?>
+      <? if (!in_array($current, $topRecommendations)): ?>
         <?=$this->recommend($current)?>
       <? endif; ?>
     <? endforeach; ?>
@@ -108,7 +110,7 @@
   <div class="<?=$this->layoutClass('mainbody')?>">
     <? /* End Listing Options */ ?>
     <? if ($recordTotal < 1): ?>
-      <? foreach (($top = $this->results->getRecommendations('top')) as $current): ?>
+      <? foreach ($topRecommendations as $current): ?>
         <?=$this->recommend($current)?>
       <? endforeach; ?>
       <? if (!$browse && $this->searchTabsRecommendations()->getConfig($this->params->getSearchClassId())): ?>
