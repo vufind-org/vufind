@@ -181,6 +181,12 @@ class SideFacets extends AbstractFacets
             $this->checkboxFacets = array_flip($this->checkboxFacets);
         }
 
+        // Show more settings:
+        if (isset($config->Results_Settings->showMore)) {
+            $this->showMoreSettings
+                = $config->Results_Settings->showMore->toArray();
+        }
+
         // Collapsed facets:
         if (isset($config->Results_Settings->collapsedFacets)) {
             $this->collapsedFacets = $config->Results_Settings->collapsedFacets;
@@ -190,12 +196,6 @@ class SideFacets extends AbstractFacets
         if (isset($config->SpecialFacets->hierarchical)) {
             $this->hierarchicalFacets
                 = $config->SpecialFacets->hierarchical->toArray();
-        }
-
-        // Ahow more in frontend:
-        if (isset($config->Results_Settings->showMore)) {
-            $this->showMoreSettings
-                = $config->Results_Settings->showMore->toArray();
         }
 
         // Hierarchical facet sort options:
@@ -340,6 +340,33 @@ class SideFacets extends AbstractFacets
     }
 
     /**
+     * Return the list of facets configured to be collapsed
+     *
+     * @param string $facetName Name of the facet to get
+     *
+     * @return int
+     */
+    public function getShowMoreSetting($facetName = '*')
+    {
+        // If we do not have any showMore settings, return 6 as default value
+        if (empty($this->showMoreSettings)) {
+            return 6;
+        }
+
+        if ($this->showMoreSettings[$facetName]) {
+            return $this->showMoreSettings[$facetName];
+        }
+        // If the facet name is not configured, try to get the default value
+        elseif ($facetName != '*' && $this->showMoreSettings['*']) {
+            return $this->showMoreSettings['*'];
+        }
+
+        // If the facet name is not configured and also no default value
+        // has been set, return 6 as default value
+        return 6;
+    }
+
+    /**
      * Get the list of filters to display
      *
      * @param array $extraFilters Extra filters to add to the list.
@@ -399,16 +426,6 @@ class SideFacets extends AbstractFacets
             }
         }
         return $result;
-    }
-
-    /**
-     * Return the list of facets configured to be hierarchical
-     *
-     * @return array
-     */
-    public function getShowMoreSettings()
-    {
-        return $this->showMoreSettings;
     }
 
     /**

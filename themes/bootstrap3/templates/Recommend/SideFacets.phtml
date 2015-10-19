@@ -1,5 +1,4 @@
 <? $results = $this->recommend->getResults(); ?>
-<? $showMoreSettings = $this->recommend->getShowMoreSettings(); ?>
 <? if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
 <? endif; ?>
@@ -57,7 +56,7 @@
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
-    <? isset($showMoreSettings[$title]) ? $facets_before_more = $showMoreSettings[$title] : $facets_before_more = 6; ?>
+    <? $facets_before_more = $this->recommend->getShowMoreSetting($title); ?>
     <div class="list-group facet" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
       <div class="list-group-item title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
         <?=$this->transEsc($cluster['label'])?>
