@@ -292,7 +292,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->selectAllItemsInCart($page);
         $button->click();
         $title = $page->find('css', '#modalTitle');
-        $this->assertEquals($title->getText(), 'Email Selected Book Bag Items');
+        $this->assertEquals('Email Selected Book Bag Items', $title->getText());
         $this->checkForLoginMessage($page);
 
         // TODO: test actually logging in, etc.
@@ -320,10 +320,48 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->selectAllItemsInCart($page);
         $button->click();
         $title = $page->find('css', '#modalTitle');
-        $this->assertEquals($title->getText(), 'Save Selected Book Bag Items');
+        $this->assertEquals('Save Selected Book Bag Items', $title->getText());
         $this->checkForLoginMessage($page);
 
         // TODO: test actually logging in, etc.
+
+        $session->stop();
+    }
+
+    /**
+     * Test that the export control works.
+     *
+     * @return void
+     */
+    public function testCartExport()
+    {
+        $session = $this->getMinkSession();
+        $session->start();
+        $page = $this->setUpGenericCartTest($session);
+        $button = $page->find('css', '.cart-controls button[name=export]');
+
+        // First try clicking without selecting anything:
+        $button->click();
+        $this->checkForNonSelectedMessage($page);
+
+        // Now do it for real -- we should get an export option list:
+        $this->selectAllItemsInCart($page);
+        $button->click();
+        $title = $page->find('css', '#modalTitle');
+        $this->assertEquals('Export Selected Book Bag Items', $title->getText());
+
+        // Select EndNote option
+        $select = $page->find('css', '#format');
+        $this->assertTrue(is_object($select));
+        $select->selectOption('EndNote');
+
+        // Do the export:
+        $submit = $page->find('css', '.modal-body input[name=submit]');
+        $this->assertTrue(is_object($submit));
+        $submit->click();
+        $result = $page->find('css', '.modal-body .alert .text-center .btn');
+        $this->assertTrue(is_object($result));
+        $this->assertEquals('Download File', $result->getText());
 
         $session->stop();
     }
