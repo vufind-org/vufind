@@ -181,6 +181,12 @@ class SideFacets extends AbstractFacets
             $this->checkboxFacets = array_flip($this->checkboxFacets);
         }
 
+        // Show more settings:
+        if (isset($config->Results_Settings->showMore)) {
+            $this->showMoreSettings
+                = $config->Results_Settings->showMore->toArray();
+        }
+
         // Collapsed facets:
         if (isset($config->Results_Settings->collapsedFacets)) {
             $this->collapsedFacets = $config->Results_Settings->collapsedFacets;
@@ -331,6 +337,32 @@ class SideFacets extends AbstractFacets
             return array_keys($this->getFacetSet());
         }
         return array_map('trim', explode(',', $this->collapsedFacets));
+    }
+
+    /**
+     * Return the list of facets configured to be collapsed
+     *
+     * @param string $facetName Name of the facet to get
+     *
+     * @return int
+     */
+    public function getShowMoreSetting($facetName = '*')
+    {
+        // If we do not have any showMore settings, return 6 as default value
+        if (empty($this->showMoreSettings)) {
+            return 6;
+        }
+
+        if ($this->showMoreSettings[$facetName]) {
+            return $this->showMoreSettings[$facetName];
+        } elseif ($facetName != '*' && $this->showMoreSettings['*']) {
+            // If the facet name is not configured, try to get the default value
+            return $this->showMoreSettings['*'];
+        }
+
+        // If the facet name is not configured and also no default value
+        // has been set, return 6 as default value
+        return 6;
     }
 
     /**
