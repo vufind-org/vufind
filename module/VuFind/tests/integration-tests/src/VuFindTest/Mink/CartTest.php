@@ -26,6 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindTest\Mink;
+use Behat\Mink\Element\Element;
+use Behat\Mink\Session;
 
 /**
  * Mink cart test class.
@@ -39,31 +41,33 @@ namespace VuFindTest\Mink;
 class CartTest extends \VuFindTest\Unit\MinkTestCase
 {
     /**
-     * Test that the home page is available.
+     * Get a reference to a standard search results page.
+     *
+     * @param Session $session Mink session
+     *
+     * @return Element
+     */
+    protected function getSearchResultsPage(Session $session)
+    {
+        $path = '/Search/Results?lookfor=id%3A(testsample1+OR+testsample2)';
+        $session->visit($this->getVuFindUrl() . $path);
+        return $session->getPage();
+    }
+
+    /**
+     * Click the "add to cart" button with nothing selected; fail if this does
+     * not display an appropriate message.
+     *
+     * @param Element $page       Page element
+     * @param Element $updateCart Add to cart button
      *
      * @return void
      */
-    public function testAddToCart()
+    protected function tryAddingNothingToCart(Element $page, Element $updateCart)
     {
-        // Activate the cart:
-        $this->changeConfigs(
-            ['config' =>
-                ['Site' => ['showBookBag' => true, 'theme' => 'bootprint3']]
-            ]
-        );
-
-        $session = $this->getMinkSession();
-        $session->start();
-        $path = '/Search/Results?lookfor=id%3A(testsample1+OR+testsample2)';
-        $session->visit($this->getVuFindUrl() . $path);
-        $page = $session->getPage();
-
-        // Click "add" without selecting anything. This test is a bit timing-
-        // sensitive, so introduce a retry loop before completely failing.
-        $updateCart = $page->find('css', '#updateCart');
-        $this->assertTrue(is_object($updateCart));
-        $clickRetry = 0;
-        while (true) {
+        // This test is a bit timing-sensitive, so introduce a retry loop before
+        // completely failing.
+        for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $updateCart->click();
             $content = $page->find('css', '.popover-content');
             if (is_object($content)) {
@@ -72,34 +76,159 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
                     . 'Please click on a checkbox next to an item and try again.',
                     $content->getText()
                 );
-                break;
-            } else {
-                $clickRetry++;
-                if ($clickRetry > 4) {
-                    $this->fail('Too many retries on check for error message.');
-                }
+                return;
             }
         }
+        $this->fail('Too many retries on check for error message.');
+    }
 
-        // Now actually select something:
+    /**
+     * Add the current page of results to the cart.
+     *
+     * @param Element $page       Page element
+     * @param Element $updateCart Add to cart button
+     *
+     * @return void
+     */
+    protected function addCurrentPageToCart(Element $page, Element $updateCart)
+    {
         $selectAll = $page->find('css', '#addFormCheckboxSelectAll');
         $selectAll->check();
         $updateCart->click();
-        $this->assertEquals('2', $page->find('css', '#cartItems strong')->getText());
+    }
 
-        // Open the cart and empty it:
+    /**
+     * Open the cart lightbox.
+     *
+     * @param Element $page Page element
+     *
+     * @return void
+     */
+    protected function openCartLightbox(Element $page)
+    {
         $viewCart = $page->find('css', '#cartItems');
         $this->assertTrue(is_object($viewCart));
         $viewCart->click();
+    }
+
+    /**
+     * Set up a generic cart test by running a search and putting its results
+     * into the cart, then opening the lightbox so that additional actions may
+     * be attempted.
+     *
+     * @param Session $session Mink session
+     *
+     * @return Element
+     */
+    protected function setUpGenericCartTest(Session $session)
+    {
+        // Activate the cart:
+        $this->changeConfigs(
+            ['config' =>
+                ['Site' => ['showBookBag' => true, 'theme' => 'bootprint3']]
+            ]
+        );
+
+        $page = $this->getSearchResultsPage($session);
+
+        // Click "add" without selecting anything.
+        $updateCart = $page->find('css', '#updateCart');
+        $this->assertTrue(is_object($updateCart));
+        $this->tryAddingNothingToCart($page, $updateCart);
+
+        // Now actually select something:
+        $this->addCurrentPageToCart($page, $updateCart);
+        $this->assertEquals('2', $page->find('css', '#cartItems strong')->getText());
+
+        // Open the cart and empty it:
+        $this->openCartLightbox($page);
+
+        return $page;
+    }
+
+    /**
+     * Assert that the open cart lightbox is empty.
+     *
+     * @param Element $page Page element
+     *
+     * @return void
+     */
+    protected function checkEmptyCart(Element $page)
+    {
+        $info = $page->find('css', '.modal-body .form-inline .alert-info');
+        $this->assertTrue(is_object($info));
+        $this->assertEquals('Your Book Bag is empty.', $info->getText());
+    }
+
+    /**
+     * Test that we can put items in the cart and then remove them with the
+     * delete control.
+     *
+     * @return void
+     */
+    public function testFillAndDeleteFromCart()
+    {
+        $session = $this->getMinkSession();
+        $session->start();
+        $page = $this->setUpGenericCartTest($session);
+        $delete = $page->find('css', '#cart-delete-label');
+
+        // First try deleting without selecting anything:
+        $delete->click();
+        $warning = $page->find('css', '.modal-body .alert .message');
+        $this->assertTrue(is_object($warning));
+        $this->assertEquals(
+            'No items were selected. '
+            . 'Please click on a checkbox next to an item and try again.',
+            $warning->getText()
+        );
+
+        // Now actually select the records to delete:
         $cartSelectAll = $page->find('css', '.modal-dialog .checkbox-select-all');
         $cartSelectAll->check();
-        $delete = $page->find('css', '#cart-delete-label');
         $delete->click();
         $deleteConfirm = $page->find('css', '#cart-confirm-delete');
         $this->assertTrue(is_object($deleteConfirm));
         $deleteConfirm->click();
+        $this->checkEmptyCart($page);
+
+        // Close the lightbox:
         $close = $page->find('css', 'button.close');
         $close->click();
+
+        // Confirm that the cart has truly been emptied:
         $this->assertEquals('0', $page->find('css', '#cartItems strong')->getText());
+
+        $session->stop();
+    }
+
+    /**
+     * Test that we can put items in the cart and then remove them with the
+     * empty button.
+     *
+     * @return void
+     */
+    public function testFillAndEmptyCart()
+    {
+        $session = $this->getMinkSession();
+        $session->start();
+        $page = $this->setUpGenericCartTest($session);
+
+        // Activate the "empty" control:
+        $empty = $page->find('css', '#cart-empty-label');
+        $empty->click();
+        $emptyConfirm = $page->find('css', '#cart-confirm-empty');
+        $this->assertTrue(is_object($emptyConfirm));
+        $emptyConfirm->click();
+        $this->checkEmptyCart($page);
+
+        // Close the lightbox:
+        $close = $page->find('css', 'button.close');
+        $close->click();
+
+        // Confirm that the cart has truly been emptied:
+        $this->assertEquals('0', $page->find('css', '#cartItems strong')->getText());
+
+        $session->stop();
     }
 }
