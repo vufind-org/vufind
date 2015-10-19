@@ -161,6 +161,53 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Assert that the "no items were selected" message is visible in the cart
+     * lightbox.
+     *
+     * @param Element $page 
+     *
+     * @return void
+     */
+    protected function checkForNonSelectedMessage(Element $page)
+    {
+        $warning = $page->find('css', '.modal-body .alert .message');
+        $this->assertTrue(is_object($warning));
+        $this->assertEquals(
+            'No items were selected. '
+            . 'Please click on a checkbox next to an item and try again.',
+            $warning->getText()
+        );
+    }
+
+    /**
+     * Assert that the "login required" message is visible in the cart lightbox.
+     *
+     * @param Element $page 
+     *
+     * @return void
+     */
+    protected function checkForLoginMessage(Element $page)
+    {
+        $warning = $page->find('css', '.modal-body .alert-danger');
+        $this->assertTrue(is_object($warning));
+        $this->assertEquals(
+            'You must be logged in first',
+            $warning->getText()
+        );
+    }
+
+    /**
+     * Select all of the items currently in the cart lightbox.
+     *
+     * @param Element $page Page element
+     */
+    protected function selectAllItemsInCart(Element $page)
+    {
+        $cartSelectAll = $page->find('css', '.modal-dialog .checkbox-select-all');
+        $cartSelectAll->check();
+    }
+
+    /**
      * Test that we can put items in the cart and then remove them with the
      * delete control.
      *
@@ -175,17 +222,10 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try deleting without selecting anything:
         $delete->click();
-        $warning = $page->find('css', '.modal-body .alert .message');
-        $this->assertTrue(is_object($warning));
-        $this->assertEquals(
-            'No items were selected. '
-            . 'Please click on a checkbox next to an item and try again.',
-            $warning->getText()
-        );
+        $this->checkForNonSelectedMessage($page);
 
         // Now actually select the records to delete:
-        $cartSelectAll = $page->find('css', '.modal-dialog .checkbox-select-all');
-        $cartSelectAll->check();
+        $this->selectAllItemsInCart($page);
         $delete->click();
         $deleteConfirm = $page->find('css', '#cart-confirm-delete');
         $this->assertTrue(is_object($deleteConfirm));
@@ -228,6 +268,62 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // Confirm that the cart has truly been emptied:
         $this->assertEquals('0', $page->find('css', '#cartItems strong')->getText());
+
+        $session->stop();
+    }
+
+    /**
+     * Test that the email control works.
+     *
+     * @return void
+     */
+    public function testCartEmail()
+    {
+        $session = $this->getMinkSession();
+        $session->start();
+        $page = $this->setUpGenericCartTest($session);
+        $button = $page->find('css', '.cart-controls button[name=email]');
+
+        // First try clicking without selecting anything:
+        $button->click();
+        $this->checkForNonSelectedMessage($page);
+
+        // Now do it for real -- we should get a login prompt.
+        $this->selectAllItemsInCart($page);
+        $button->click();
+        $title = $page->find('css', '#modalTitle');
+        $this->assertEquals($title->getText(), 'Email Selected Book Bag Items');
+        $this->checkForLoginMessage($page);
+
+        // TODO: test actually logging in, etc.
+
+        $session->stop();
+    }
+
+    /**
+     * Test that the save control works.
+     *
+     * @return void
+     */
+    public function testCartSave()
+    {
+        $session = $this->getMinkSession();
+        $session->start();
+        $page = $this->setUpGenericCartTest($session);
+        $button = $page->find('css', '.cart-controls button[name=saveCart]');
+
+        // First try clicking without selecting anything:
+        $button->click();
+        $this->checkForNonSelectedMessage($page);
+
+        // Now do it for real -- we should get a login prompt.
+        $this->selectAllItemsInCart($page);
+        $button->click();
+        $title = $page->find('css', '#modalTitle');
+        $this->assertEquals($title->getText(), 'Save Selected Book Bag Items');
+        $this->checkForLoginMessage($page);
+
+        // TODO: test actually logging in, etc.
 
         $session->stop();
     }
