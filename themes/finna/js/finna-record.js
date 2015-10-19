@@ -127,11 +127,14 @@ finna.record = (function() {
         checkRequestsAreValid: checkRequestsAreValid,
         init: function() {
             initDescription();
-            initHoldingsControls();
             initRecordFeedbackForm();
-            setUpCheckRequest();
             initMobileModals();
         },
+        setupHoldingsTab: function() {
+            initHoldingsControls();
+            setUpCheckRequest();
+            finna.layout.initJumpMenus($('#holdings-tab'));
+        }
     };
 
     return my;
