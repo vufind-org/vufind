@@ -356,8 +356,8 @@ class SideFacets extends AbstractFacets
         if ($this->showMoreSettings[$facetName]) {
             return $this->showMoreSettings[$facetName];
         }
-        // If the facet name is not configured, try to get the default value
         elseif ($facetName != '*' && $this->showMoreSettings['*']) {
+            // If the facet name is not configured, try to get the default value
             return $this->showMoreSettings['*'];
         }
 
