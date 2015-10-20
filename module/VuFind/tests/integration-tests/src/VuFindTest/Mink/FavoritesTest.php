@@ -142,22 +142,17 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord($session);
 
         $page->findById('save-record')->click();
-        $username = '.modal-body [name="username"]';
-        $password = '.modal-body [name="password"]';
-        $this->assertNotNull($page->find('css', $username));
-        $this->assertNotNull($page->find('css', $password));
         // Login
         // - empty
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->find('css', $username));
+        $this->submitLoginForm($page);
+        $this->assertLightboxWarning($page, 'Login information cannot be blank.');
         // - wrong
-        $page->find('css', $username)->setValue('username1');
-        $page->find('css', $password)->setValue('superwrong');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->find('css', $username));
+        $this->fillInLoginForm($page, 'username1', 'superwrong');
+        $this->submitLoginForm($page);
+        $this->assertLightboxWarning($page, 'Invalid login -- please try again.');
         // - for real
-        $page->find('css', $password)->setValue('test');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->fillInLoginForm($page, null, 'test');
+        $this->submitLoginForm($page);
         // Make sure we don't have Favorites because we have another populated list
         $this->assertNull($page->find('css', '.modal-body #save_list'));
         // Make Two Lists
@@ -194,9 +189,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord($session);
         // Login
         $page->find('css', '#loginOptions a')->click();
-        $page->find('css', '.modal-body [name="username"]')->setValue('username1');
-        $page->find('css', '.modal-body [name="password"]')->setValue('test');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
         $session->reload();
         // Save Record
         $page->findById('save-record')->click();
@@ -278,18 +272,13 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoSearch($session);
 
         $page->find('css', '.save-record')->click();
-        $username = '.modal-body [name="username"]';
-        $password = '.modal-body [name="password"]';
-        $this->assertNotNull($page->find('css', $username));
-        $this->assertNotNull($page->find('css', $password));
         // Login
         // - empty
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->find('css', $username));
+        $this->submitLoginForm($page);
+        $this->assertLightboxWarning($page, 'Login information cannot be blank.');
         // - for real
-        $page->find('css', $username)->setValue('username2');
-        $page->find('css', $password)->setValue('test');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->fillInLoginForm($page, 'username2', 'test');
+        $this->submitLoginForm($page);
         // Make sure we don't have Favorites because we have another populated list
         $this->assertNull($page->find('css', '.modal-body #save_list'));
         // Make Two Lists
@@ -326,9 +315,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoSearch($session);
         // Login
         $page->find('css', '#loginOptions a')->click();
-        $page->find('css', '.modal-body [name="username"]')->setValue('username2');
-        $page->find('css', '.modal-body [name="password"]')->setValue('test');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->fillInLoginForm($page, 'username2', 'test');
+        $this->submitLoginForm($page);
         $session->reload();
         // Save Record
         $page->find('css', '.save-record')->click();
