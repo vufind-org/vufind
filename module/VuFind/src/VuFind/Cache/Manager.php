@@ -148,11 +148,16 @@ class Manager
     public function getCacheDir($allowCliOverride = true)
     {
         if ($this->defaults && isset($this->defaults['cache_dir'])) {
-            $dir = $this->defaults['cache_dir'];
-            // ensure trailing slash:
-            if (substr($dir, -1) != '/') {
-                $dir .= '/';
-            }
+            // cache_dir setting in config.ini is deprecated
+            throw new \Exception(
+                'cache_dir setting found in config.ini - as of VuFind 2.6 folder ' .
+                'for caching must be defined in environment variable ' .
+                'VUFIND_CACHE_DIR'
+            );
+        }
+
+        if (strlen(LOCAL_CACHE_DIR) > 0) {
+            $dir = LOCAL_CACHE_DIR . '/';
         } else if (strlen(LOCAL_OVERRIDE_DIR) > 0) {
             $dir = LOCAL_OVERRIDE_DIR . '/cache/';
         } else {
