@@ -35,7 +35,11 @@ defined('LOCAL_OVERRIDE_DIR')
 
 // Define path to cache directory
 defined('LOCAL_CACHE_DIR')
-|| define('LOCAL_CACHE_DIR', (getenv('VUFIND_CACHE_DIR') ? getenv('VUFIND_CACHE_DIR') : LOCAL_OVERRIDE_DIR . '/cache'));
+    || define(
+        'LOCAL_CACHE_DIR',
+        (getenv('VUFIND_CACHE_DIR')
+            ? getenv('VUFIND_CACHE_DIR') : LOCAL_OVERRIDE_DIR . '/cache')
+    );
 
 // Save original working directory in case we need to remember our context, then
 // switch to the application directory for convenience:
