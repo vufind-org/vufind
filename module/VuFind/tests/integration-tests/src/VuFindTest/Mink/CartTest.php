@@ -40,6 +40,18 @@ use Behat\Mink\Session;
  */
 class CartTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\UserCreationTrait;
+
+    /**
+     * Standard setup method.
+     *
+     * @return mixed
+     */
+    public static function setUpBeforeClass()
+    {
+        return static::failIfUsersExist();
+    }
+
     /**
      * Get a reference to a standard search results page.
      *
@@ -297,7 +309,14 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals('Email Selected Book Bag Items', $title->getText());
         $this->checkForLoginMessage($page);
 
-        // TODO: test actually logging in, etc.
+        // Create an account.
+        $page->find('css', '.modal-body .createAccountLink')->click();
+        $this->fillInAccountForm($page);
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+
+        // Test that we now have an email form.
+        $toField = $page->findById('email_to');
+        $this->assertNotNull($toField);
 
         $session->stop();
     }
@@ -325,7 +344,25 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals('Save Selected Book Bag Items', $title->getText());
         $this->checkForLoginMessage($page);
 
-        // TODO: test actually logging in, etc.
+        // Log in to account created in previous test.
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
+
+        // Save the favorites.
+        $submit = $page->find('css', '.modal-body input[name=submit]');
+        $this->assertTrue(is_object($submit));
+        $submit->click();
+        $result = $page->find('css', '.modal-body .alert-info');
+        $this->assertTrue(is_object($result));
+        $this->assertEquals(
+            'Your item(s) were saved successfully', $result->getText()
+        );
+
+        // Click the close button.
+        $submit = $page->find('css', '.modal-body .btn');
+        $this->assertTrue(is_object($submit));
+        $this->assertEquals('close', $submit->getText());
+        $submit->click();
 
         $session->stop();
     }
@@ -393,5 +430,15 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         );
 
         $session->stop();
+    }
+
+    /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public static function tearDownAfterClass()
+    {
+        static::removeUsers('username1');
     }
 }
