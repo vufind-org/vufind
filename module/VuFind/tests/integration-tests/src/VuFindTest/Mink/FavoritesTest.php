@@ -372,20 +372,19 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     public static function tearDownAfterClass()
     {
         // If CI is not running, all tests were skipped, so no work is necessary:
-        $test = new FavoritesTest();
+        $test = new static();   // create instance of current class
         if (!$test->continuousIntegrationRunning()) {
             return;
         }
 
         // Delete test user
-        $test = new FavoritesTest();
         $userTable = $test->getTable('User');
-        $user = $userTable->getByUsername(self::$hash, false);
-        $user2 = $userTable->getByUsername(self::$hash2, false);
-        if (empty($user) || empty($user2)) {
-            throw new \Exception('Problem deleting expected user.');
+        foreach ([self::$hash, self::$hash2] as $username) {
+            $user = $userTable->getByUsername($username, false);
+            if (empty($user)) {
+                throw new \Exception('Problem deleting expected user.');
+            }
+            $user->delete();
         }
-        $user->delete();
-        $user2->delete();
     }
 }
