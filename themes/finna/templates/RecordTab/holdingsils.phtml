@@ -173,8 +173,8 @@
     <? if (!empty($holding[$textField])): ?>
       <tr class="copy-details <?=$holdingsDetails?>">
         <? // Translation for summary is a special case for backwards-compatibility ?>
-        <td class="copy-title"><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>:</td>
-        <td colspan="4">
+        <td class="copy-title" colspan="2"><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>:</td>
+        <td colspan="3">
           <? foreach ($holding[$textField] as $current): ?>
             <?=$this->escapeHtml($current)?><br/>
           <? endforeach; ?>
