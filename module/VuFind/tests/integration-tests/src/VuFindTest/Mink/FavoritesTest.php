@@ -38,18 +38,16 @@ namespace VuFindTest\Mink;
  */
 class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 {
-    protected static $hash;
-    protected static $hash2;
+    use \VuFindTest\Unit\UserCreationTrait;
 
     /**
      * Standard setup method.
      *
-     * @return void
+     * @return mixed
      */
     public static function setUpBeforeClass()
     {
-        self::$hash = substr(md5(time() * 2), 0, 16);
-        self::$hash2 = substr(md5(time()), 0, 16);
+        return static::failIfUsersExist();
     }
 
     /**
@@ -104,7 +102,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page->findById('account_firstname')->setValue('Tester');
         $page->findById('account_lastname')->setValue('McTestenson');
         $page->findById('account_email')->setValue('blargasaurus');
-        $page->findById('account_username')->setValue(self::$hash);
+        $page->findById('account_username')->setValue('username1');
         $page->findById('account_password')->setValue('test');
         $page->findById('account_password2')->setValue('test');
         $this->assertNull(
@@ -113,7 +111,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->findById('account_firstname'));
         // Correct
-        $page->findById('account_email')->setValue(self::$hash . '@ignore.com');
+        $page->findById('account_email')->setValue('username1@ignore.com');
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->findById('save_list'));
         // Make list
@@ -159,7 +157,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->find('css', $username));
         // - wrong
-        $page->find('css', $username)->setValue(self::$hash);
+        $page->find('css', $username)->setValue('username1');
         $page->find('css', $password)->setValue('superwrong');
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->find('css', $username));
@@ -202,7 +200,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord($session);
         // Login
         $page->find('css', '#loginOptions a')->click();
-        $page->find('css', '.modal-body [name="username"]')->setValue(self::$hash);
+        $page->find('css', '.modal-body [name="username"]')->setValue('username1');
         $page->find('css', '.modal-body [name="password"]')->setValue('test');
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $session->reload();
@@ -237,7 +235,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page->findById('account_lastname')->setValue('McTestenson');
         $page->findById('account_password')->setValue('test');
         $page->findById('account_password2')->setValue('test');
-        $page->findById('account_username')->setValue(self::$hash2);
+        $page->findById('account_username')->setValue('username2');
         // Invalid email
         $page->findById('account_email')->setValue('blargasaurus');
         $this->assertNull(
@@ -245,12 +243,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         );
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->findById('account_firstname'));
-        $page->findById('account_email')->setValue(self::$hash2 . '@ignore.com');
+        $page->findById('account_email')->setValue('username2@ignore.com');
         // Test taken
-        $page->findById('account_username')->setValue(self::$hash);
+        $page->findById('account_username')->setValue('username1');
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->findById('account_firstname'));
-        $page->findById('account_username')->setValue(self::$hash2);
+        $page->findById('account_username')->setValue('username2');
         // Correct
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->findById('save_list'));
@@ -301,7 +299,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->find('css', $username));
         // - for real
-        $page->find('css', $username)->setValue(self::$hash2);
+        $page->find('css', $username)->setValue('username2');
         $page->find('css', $password)->setValue('test');
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         // Make sure we don't have Favorites because we have another populated list
@@ -340,7 +338,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoSearch($session);
         // Login
         $page->find('css', '#loginOptions a')->click();
-        $page->find('css', '.modal-body [name="username"]')->setValue(self::$hash2);
+        $page->find('css', '.modal-body [name="username"]')->setValue('username2');
         $page->find('css', '.modal-body [name="password"]')->setValue('test');
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $session->reload();
@@ -371,20 +369,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public static function tearDownAfterClass()
     {
-        // If CI is not running, all tests were skipped, so no work is necessary:
-        $test = new static();   // create instance of current class
-        if (!$test->continuousIntegrationRunning()) {
-            return;
-        }
-
-        // Delete test user
-        $userTable = $test->getTable('User');
-        foreach ([self::$hash, self::$hash2] as $username) {
-            $user = $userTable->getByUsername($username, false);
-            if (empty($user)) {
-                throw new \Exception('Problem deleting expected user.');
-            }
-            $user->delete();
-        }
+        static::tearDownUsers(['username1', 'username2']);
     }
 }
