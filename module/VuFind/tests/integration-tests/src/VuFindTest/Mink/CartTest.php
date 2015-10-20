@@ -200,6 +200,8 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      * Select all of the items currently in the cart lightbox.
      *
      * @param Element $page Page element
+     *
+     * @return void
      */
     protected function selectAllItemsInCart(Element $page)
     {
@@ -362,6 +364,33 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $result = $page->find('css', '.modal-body .alert .text-center .btn');
         $this->assertTrue(is_object($result));
         $this->assertEquals('Download File', $result->getText());
+
+        $session->stop();
+    }
+
+    /**
+     * Test that the print control works.
+     *
+     * @return void
+     */
+    public function testCartPrint()
+    {
+        $session = $this->getMinkSession();
+        $session->start();
+        $page = $this->setUpGenericCartTest($session);
+        $button = $page->find('css', '.cart-controls button[name=print]');
+
+        // First try clicking without selecting anything:
+        $button->click();
+        $this->checkForNonSelectedMessage($page);
+
+        // Now do it for real -- we should get redirected.
+        $this->selectAllItemsInCart($page);
+        $button->click();
+        list(, $params) = explode('?', $session->getCurrentUrl());
+        $this->assertEquals(
+            'print=true&id[]=VuFind|testsample1&id[]=VuFind|testsample2', $params
+        );
 
         $session->stop();
     }
