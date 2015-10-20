@@ -97,19 +97,13 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             $page->find('css', '.modal-body .btn.btn-primary.disabled')
         );
         $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->findById('account_firstname'));
+
         // Invalid email
-        $page->findById('account_firstname')->setValue('Tester');
-        $page->findById('account_lastname')->setValue('McTestenson');
-        $page->findById('account_email')->setValue('blargasaurus');
-        $page->findById('account_username')->setValue('username1');
-        $page->findById('account_password')->setValue('test');
-        $page->findById('account_password2')->setValue('test');
+        $this->fillInAccountForm($page, ['email' => 'blargasaurus']);
         $this->assertNull(
             $page->find('css', '.modal-body .btn.btn-primary.disabled')
         );
         $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->findById('account_firstname'));
         // Correct
         $page->findById('account_email')->setValue('username1@ignore.com');
         $page->find('css', '.modal-body .btn.btn-primary')->click();
@@ -230,19 +224,13 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             $page->find('css', '.modal-body .btn.btn-primary.disabled')
         );
         $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->findById('account_firstname'));
-        $page->findById('account_firstname')->setValue('Tester');
-        $page->findById('account_lastname')->setValue('McTestenson');
-        $page->findById('account_password')->setValue('test');
-        $page->findById('account_password2')->setValue('test');
-        $page->findById('account_username')->setValue('username2');
-        // Invalid email
-        $page->findById('account_email')->setValue('blargasaurus');
+        $this->fillInAccountForm(
+            $page, ['username' => 'username2', 'email' => 'blargasaurus']
+        );
         $this->assertNull(
             $page->find('css', '.modal-body .btn.btn-primary.disabled')
         );
         $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->findById('account_firstname'));
         $page->findById('account_email')->setValue('username2@ignore.com');
         // Test taken
         $page->findById('account_username')->setValue('username1');

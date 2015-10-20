@@ -28,6 +28,7 @@
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
+use Behat\Mink\Element\Element;
 
 /**
  * Trait with utility methods for user creation/management. Assumes that it
@@ -65,6 +66,34 @@ trait UserCreationTrait
     }
 
     /**
+     * Mink support function: fill in the account creation form.
+     *
+     * @param Element $page      Page element.
+     * @param array   $overrides Optional overrides for form values.
+     *
+     * @return void
+     */
+    protected function fillInAccountForm(Element $page, $overrides = [])
+    {
+        $defaults = [
+            'firstname' => 'Tester',
+            'lastname' => 'McTestenson',
+            'email' => 'username1@ignore.com',
+            'username' => 'username1',
+            'password' => 'test',
+            'password2' => 'test'
+        ];
+
+        foreach ($defaults as $field => $default) {
+            $element = $page->findById('account_' . $field);
+            $this->assertNotNull($element);
+            $element->setValue(
+                isset($overrides[$field]) ? $overrides[$field] : $default
+            );
+        }
+    }
+
+    /**
      * Static teardown support function to destroy user accounts. Accounts are
      * expected to exist, and the method will fail if they are missing.
      *
@@ -87,7 +116,7 @@ trait UserCreationTrait
         foreach ((array)$users as $username) {
             $user = $userTable->getByUsername($username, false);
             if (empty($user)) {
-                throw new \Exception('Problem deleting expected user.');
+                throw new \Exception("Problem deleting expected user ($user).");
             }
             $user->delete();
         }
