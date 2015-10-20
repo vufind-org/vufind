@@ -164,7 +164,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      * Assert that the "no items were selected" message is visible in the cart
      * lightbox.
      *
-     * @param Element $page 
+     * @param Element $page Page element
      *
      * @return void
      */
@@ -182,7 +182,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Assert that the "login required" message is visible in the cart lightbox.
      *
-     * @param Element $page 
+     * @param Element $page Page element
      *
      * @return void
      */
