@@ -74,7 +74,7 @@ trait UserCreationTrait
      *
      * @throws \Exception
      */
-    protected static function tearDownUsers($users)
+    protected static function removeUsers($users)
     {
         // If CI is not running, all tests were skipped, so no work is necessary:
         $test = new static();   // create instance of current class

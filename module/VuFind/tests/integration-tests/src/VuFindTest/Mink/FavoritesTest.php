@@ -369,6 +369,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public static function tearDownAfterClass()
     {
-        static::tearDownUsers(['username1', 'username2']);
+        static::removeUsers(['username1', 'username2']);
     }
 }

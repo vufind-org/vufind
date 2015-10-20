@@ -190,7 +190,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public static function tearDownAfterClass()
     {
-        static::tearDownUsers('testuser');
+        static::removeUsers('testuser');
     }
 
     /**
