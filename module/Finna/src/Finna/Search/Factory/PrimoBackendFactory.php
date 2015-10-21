@@ -49,11 +49,17 @@ class PrimoBackendFactory
      */
     protected function createConnector()
     {
+        // Get the PermissionHandler
+        $permHandler = $this->getPermissionHandler();
+
         // Load credentials and port number:
         $id = isset($this->primoConfig->General->apiId)
             ? $this->primoConfig->General->apiId : null;
         $port = isset($this->primoConfig->General->port)
             ? $this->primoConfig->General->port : 1701;
+        $instCode = isset($permHandler)
+            ? $permHandler->getInstCode()
+            : null;
 
         // Build HTTP client:
         $client = $this->serviceLocator->get('VuFind\Http')->createClient();
@@ -61,7 +67,7 @@ class PrimoBackendFactory
             ? $this->primoConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);
 
-        $connector = new Connector($id, $this->getInstCode(), $client, $port);
+        $connector = new Connector($id, $instCode, $client, $port);
         $connector->setLogger($this->logger);
 
         if (isset($this->primoConfig->General->highlighting)
