@@ -247,24 +247,21 @@ function ajaxLogin(form) {
       if (response.status == 'OK') {
         var salt = response.data;
 
-        // get the user entered password
-        var password = form.password.value;
-
-        // base-64 encode the password (to allow support for Unicode)
-        // and then encrypt the password with the salt
-        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
-
-        // hex encode the encrypted password
-        password = hexEncode(password);
-
-        var params = {password:password};
-
-        // get any other form values
+        // extract form values
+        var params = {};
         for (var i = 0; i < form.length; i++) {
+          // special handling for password
           if (form.elements[i].name == 'password') {
-            continue;
+            // base-64 encode the password (to allow support for Unicode)
+            // and then encrypt the password with the salt
+            var password = rc4Encrypt(
+                salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
+            );
+            // hex encode the encrypted password
+            params[form.elements[i].name] = hexEncode(password);
+          } else {
+            params[form.elements[i].name] = form.elements[i].value;
           }
-          params[form.elements[i].name] = form.elements[i].value;
         }
 
         // login via ajax
