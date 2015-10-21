@@ -44,6 +44,39 @@ namespace Finna\View\Helper\Root;
 class Record extends \VuFind\View\Helper\Root\Record
 {
     /**
+     * Is commenting allowed.
+     *
+     * @param object $user Current user
+     *
+     * @return boolean
+     */
+    public function allowCommenting($user)
+    {
+        if (!$this->ratingAllowed()) {
+            return true;
+        }
+        $comments = $this->driver->getComments();
+        foreach ($comments as $comment) {
+            if ($comment->user_id === $user->id) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Is commenting enabled.
+     *
+     * @return boolean
+     */
+    public function commentingEnabled()
+    {
+        return !isset($this->config->Social->comments)
+            || ($this->config->Social->comments
+                && $this->config->Social->comments !== 'disabled');
+    }
+
+    /**
      * Render the link of the specified type.
      *
      * @param string $type    Link type
@@ -133,5 +166,34 @@ class Record extends \VuFind\View\Helper\Root\Record
                 'context' => $context
             ]
         );
+    }
+
+    /**
+     * Render average rating
+     *
+     * @return string
+     */
+    public function getRating()
+    {
+        if ($this->ratingAllowed()
+            && $average = $this->driver->trymethod('getAverageRating')
+        ) {
+            return $this->getView()->render(
+                'Helpers/record-rating.phtml',
+                ['average' => $average['average'], 'count' => $average['count']]
+            );
+        }
+        return false;
+    }
+
+    /**
+     * Is rating allowed.
+     *
+     * @return boolean
+     */
+    public function ratingAllowed()
+    {
+        return $this->commentingEnabled()
+            && $this->driver->tryMethod('ratingAllowed');
     }
 }

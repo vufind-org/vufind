@@ -2,6 +2,11 @@
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
   $this->headScript()->appendFile("check_save_statuses.js");
+  $this->headScript()->appendFile("finna-comments.js");
+  if ($this->record($this->driver)->ratingAllowed()) {
+     $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
+     $this->headLink()->appendStylesheet('vendor/bootstrap-rating.css');
+  }
   if ($this->driver->getResourceSource() == 'Primo') {
     $this->headScript()->appendFile("finna-bx.js");
   }
@@ -105,7 +110,7 @@ EOT;
           $comments = $this->driver->getComments();
         ?>
         <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<?= count($comments) ?>)<? endif; ?></a>
+          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($comments) ?></span>)<? endif; ?></a>
         </li>
         <? endforeach; ?>
       </ul>

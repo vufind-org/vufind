@@ -42,6 +42,8 @@ namespace Finna\RecordDriver;
  */
 trait SolrFinna
 {
+    use FinnaRecord;
+
     /**
      * Return an associative array of image URLs associated with this record
      * (key = URL, value = description), if available; false otherwise.
@@ -77,6 +79,19 @@ trait SolrFinna
     public function getAccessRestrictionsType()
     {
         return false;
+    }
+
+    /**
+     * Get record rating.
+     *
+     * @return null|float
+     */
+    public function getAverageRating()
+    {
+        $table = $this->getDbTable('Comments');
+        return $table->getAverageRatingForResource(
+            $this->getUniqueId(), $this->getResourceSource()
+        );
     }
 
     /**
@@ -384,6 +399,17 @@ trait SolrFinna
     {
         return isset($this->fields['first_indexed'])
             ? $this->fields['first_indexed'] : '';
+    }
+
+    /**
+     * Is rating allowed.
+     *
+     * @return boolean
+     */
+    public function ratingAllowed()
+    {
+        $sector = substr($this->fields['sector_str_mv'][0], 2, 3);
+        return $sector == 'lib';
     }
 
     /**
