@@ -1,7 +1,7 @@
 <?
   $browse = isset($browse) ? $browse : false;
   $this->layout()->browse = $browse;
-
+  $this->headMeta()->appendName('robots', 'noindex,follow');
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
   if (isset($this->overrideTitle)) {
