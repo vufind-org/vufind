@@ -151,7 +151,7 @@ function ajaxLoadTab(tabid) {
   // Try to parse out the controller portion of the URL. If this fails, or if
   // we're flagged to skip AJAX for this tab, just return true and let the
   // browser handle it.
-  var urlroot = document.URL.match(new RegExp('/[^/]+/'+id));
+  var urlroot = document.URL.match(new RegExp('/[^/]+/' + encodeURIComponent(id)));
   if(!urlroot || document.getElementById(tabid).parentNode.className.indexOf('noajax') > -1) {
     return true;
   }
