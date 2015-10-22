@@ -7,7 +7,7 @@
   }
   $ratings = $this->record($this->driver)->ratingAllowed();
   $comments = $this->driver->getComments();
-  $allowCommenting = $user && $this->record($this->driver)->allowCommenting($user);
+  $allowCommenting = $user && $this->record($this->driver)->commentingAllowed($user);
   $allowRating = $this->record($this->driver)->ratingAllowed();
 ?>
 <? if (count($comments) == 0): ?>
@@ -57,8 +57,8 @@
     \Zend\View\Helper\HeadScript::SCRIPT,
     '$(document).ready(function() {
         finna.comments.initCommentList('
-        . ($allowCommenting ? 1 : 0) . ','
-        . ($allowRating ? 1 : 0) . ','
+        . ($allowCommenting ? 'true' : 'false') . ','
+        . ($allowRating ? 'true' : 'false') . ','
         . count($comments)
         . ');
      });',

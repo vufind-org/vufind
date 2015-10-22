@@ -317,29 +317,39 @@ class AjaxController extends \VuFind\Controller\AjaxController
             return $this->output($commentId, self::STATUS_OK);
         }
 
+        $type = $this->getRequest()->getPost()->get('type');
+        $id = $this->params()->fromPost('id');
+        $table = $this->getTable('Comments');
+        if ($type === '1') {
+            // Allow only 1 rating/record for each user
+            $comments = $table->getForResourceByUser($id, $user->id);
+            if (count($comments)) {
+                return $this->output(
+                    $this->translate('An error has occurred'), self::STATUS_ERROR
+                );
+            }
+        }
+
         $output = parent::commentRecordAjax();
-        $data = get_object_vars(json_decode($output->getContent()));
+        $data = json_decode($output->getContent(), true);
 
         if ($data['status'] != 'OK' || !isset($data['data'])) {
             return $output;
         }
 
-        $comment = $data['data'];
+        $commentId = $data['data'];
 
         // Update type
-        $type = $this->getRequest()->getPost()->get('type');
-        $table = $this->getTable('Comments');
-        $table->setType($user->id, $comment, $type);
+        $table->setType($user->id, $commentId, $type);
 
         // Update rating
         $rating = $this->getRequest()->getPost()->get('rating');
         if ($rating !== null && $rating > 0 && $rating <= 5) {
             $table = $this->getTable('Comments');
-            $table->setRating($user->id, $comment, $rating);
+            $table->setRating($user->id, $commentId, $rating);
         }
 
         // Add comment to deduplicated records
-        $id = $this->params()->fromPost('id');
         $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
         $results = $runner->run(
             ['lookfor' => 'local_ids_str_mv:"' . addcslashes($id, '"') . '"'],
@@ -361,7 +371,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         $commentsRecord = $this->getTable('CommentsRecord');
-        $commentsRecord->addLinks($comment, $ids);
+        $commentsRecord->addLinks($commentId, $ids);
 
         return $output;
     }

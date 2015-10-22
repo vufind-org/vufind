@@ -50,7 +50,7 @@ class Record extends \VuFind\View\Helper\Root\Record
      *
      * @return boolean
      */
-    public function allowCommenting($user)
+    public function commentingAllowed($user)
     {
         if (!$this->ratingAllowed()) {
             return true;

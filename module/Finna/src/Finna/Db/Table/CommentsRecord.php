@@ -52,8 +52,8 @@ class CommentsRecord extends Gateway
     /**
      * Link comment with records.
      *
-     * @param string $comment Comment id
-     * @param array  $records Array of record IDs
+     * @param int   $comment Comment id
+     * @param array $records Array of record IDs
      *
      * @return void
      */

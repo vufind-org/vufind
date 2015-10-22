@@ -1,9 +1,6 @@
 finna.comments = (function() {
 
-    var initCommentList = function(allowCommenting, allowRating, commentCount)
-    {
-        allowCommenting = allowCommenting === 1;
-        allowRating = allowRating === 1;
+    var initCommentList = function(allowCommenting, allowRating, commentCount) {
         $(".recordTabs #usercomments .count").text(commentCount);
 
         var form = $('form.comment');
@@ -39,8 +36,7 @@ finna.comments = (function() {
         };
     };
 
-    var initCommentForm = function(parentMethod, allowRating)
-    {
+    var initCommentForm = function(parentMethod, allowRating) {
         parentMethod();
 
         $('form.comment').unbind('submit').submit(function(){
@@ -88,13 +84,11 @@ finna.comments = (function() {
         });
     };
 
-    var initRating = function()
-    {
+    var initRating = function() {
         $('#usercomments-tab .rating').rating();
     };
 
-    var initInappropriateComment = function()
-    {
+    var initInappropriateComment = function() {
         $('.comment-inappropriate a.modal-link').unbind('click').click(function() {
             var comment = $(this).closest('.comment').data('id');
             if (title = $(this).attr('title')) {
@@ -136,8 +130,7 @@ finna.comments = (function() {
         });
     };
 
-    var initEditComment = function(allowCommenting, allowRating)
-    {
+    var initEditComment = function(allowCommenting, allowRating) {
         $('#commentList .edit').unbind('click').click(function() {
             var comment = $(this).closest('.comment');
             var form = $('form.comment');
@@ -173,8 +166,7 @@ finna.comments = (function() {
         });
     };
 
-    var requestRefreshComments = function()
-    {
+    var requestRefreshComments = function() {
         var form = $('form.comment');
         var record = form.find('input[name=id]').val();
         var source = form.find('input[name=source]').val();
