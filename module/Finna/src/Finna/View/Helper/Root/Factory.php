@@ -161,8 +161,7 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getSearchTabs(ServiceManager $sm)
     {
         $locator = $sm->getServiceLocator();
-        $configLoader = $locator->get('VuFind\Config');
-        $config = $configLoader->get('config');
+        $config = $locator->get('VuFind\Config')->get('config');
         $config = isset($config->SearchTabs)
             ? $config->SearchTabs->toArray() : [];
         return new SearchTabs(
@@ -170,8 +169,7 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $locator->get('VuFind\DbTablePluginManager'),
             $locator->get('VuFind\SearchResultsPluginManager'),
             $config,
-            $sm->get('url'),
-            $configLoader
+            $sm->get('url')
         );
     }
     /**

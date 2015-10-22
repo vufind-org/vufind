@@ -27,8 +27,7 @@
  */
 namespace Finna\View\Helper\Root;
 use Finna\Search\Solr\Params as SolrParams,
-    Finna\Search\Primo\Params as PrimoParams,
-    VuFind\Config\PluginManager as ConfigManager;
+    Finna\Search\Primo\Params as PrimoParams;
 
 /**
  * "Search tabs" view helper
@@ -70,14 +69,12 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
      * @param PluginManager  $results      Search results plugin manager
      * @param array          $config       Tab configuration
      * @param Url            $url          URL helper
-     * @param ConfigManager  $configLoader Configuration loader
      */
     public function __construct(
         \Zend\Session\SessionManager $session,
         \VuFind\Db\Table\PluginManager $table,
         \VuFind\Search\Results\PluginManager $results,
-        array $config, \Zend\View\Helper\Url $url,
-        ConfigManager $configLoader
+        array $config, \Zend\View\Helper\Url $url
     ) {
         $this->session = $session;
         $this->table = $table;
