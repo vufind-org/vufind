@@ -1,6 +1,8 @@
+<!-- START of: finna - combined/results.phtml -->
 <?
   // Set up page title:
   $lookfor = $this->params->getDisplayQuery();
+  $this->headMeta()->appendName('robots', 'noindex,follow');
   if (isset($this->overrideTitle)) {
     $this->headTitle($this->overrideTitle);
   } else {
@@ -89,3 +91,4 @@
   );
 
 ?>
+<!-- END of: finna - combined/results.phtml -->

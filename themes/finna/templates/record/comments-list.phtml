@@ -1,3 +1,4 @@
+<!-- START of: finna - record/comments-list.phtml -->
 <?
   $comments = $this->driver->getComments();
   $inappropriateComments = [];
@@ -10,6 +11,7 @@
   $allowCommenting = $user && $this->record($this->driver)->commentingAllowed($user);
   $allowRating = $this->record($this->driver)->ratingAllowed();
 ?>
+<? $comments = $this->driver->getComments(); ?>
 <? if (count($comments) == 0): ?>
   <div class="alert alert-info"><?=$this->transEsc($allowRating ? 'Be the first to leave a rating' : 'Be the first to leave a comment')?></div>
 <? else: ?>
@@ -65,4 +67,5 @@
     'SET'
   );
 ?>
+<!-- END of: finna - record/comments-list.phtml -->
 
