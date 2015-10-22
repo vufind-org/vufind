@@ -49,7 +49,7 @@
 <div class="row">
   <div class="<?=$tree ? 'col-sm-12' : $this->layoutClass('mainbody') ?>">
     <div class="record">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id"  data-controller="<?=$this->escapeHtmlAttr($this->record($this->driver)->getController())?>"/>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getCollectionMetadata()?>
