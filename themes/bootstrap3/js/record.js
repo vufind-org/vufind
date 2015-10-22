@@ -147,16 +147,15 @@ function registerTabEvents() {
 }
 
 function ajaxLoadTab(tabid) {
-  var id = $('.hiddenId')[0].value;
-  // Try to parse out the controller portion of the URL. If this fails, or if
-  // we're flagged to skip AJAX for this tab, just return true and let the
-  // browser handle it.
-  var urlroot = document.URL.match(new RegExp('/[^/]+/' + encodeURIComponent(id)));
-  if(!urlroot || document.getElementById(tabid).parentNode.className.indexOf('noajax') > -1) {
+  var id = $('.hiddenId').val();
+  var controller = $('.hiddenId').data('controller');
+  // If we don't know the controller, or if we're flagged to skip AJAX for this tab, 
+  // just return true and let the browser handle it.
+  if(!controller || document.getElementById(tabid).parentNode.className.indexOf('noajax') > -1) {
     return true;
   }
   $.ajax({
-    url: path + urlroot + '/AjaxTab',
+    url: path + '/' + controller + '/' + encodeURIComponent(id) + '/AjaxTab',
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
