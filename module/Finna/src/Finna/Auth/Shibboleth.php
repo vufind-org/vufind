@@ -88,9 +88,10 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
                 $value = $request->getServer()->get($shib->$attribute);
                 if ($attribute != 'cat_password') {
                     // Special case: don't override existing email address:
-                    $email = trim($user->email);
-                    if ($attribute == 'email' && !empty($email)) {
-                        continue;
+                    if ($field == 'email') {
+                        if (isset($user->email) && trim($user->email) != '') {
+                            continue;
+                        }
                     }
                     $user->$attribute = $value;
                 } else {

@@ -482,18 +482,41 @@ input[type="checkbox"],
     right: (@grid-gutter-width / 2);
   }
 }
+#side-collapse-first_indexed {
+    & > a {
+        display: inline-block;
+        min-width: 51%;
+    }
+}
 .form-control.date-picker-field {
     border-bottom-right-radius: 0px;
     border-top-right-radius: 0px;
+    cursor: pointer;
 }
+
 #first_indexedFilter {
     margin-top: 10px;
     margin-bottom: 10px;
+    & label {
+        
+        @media (min-width:@screen-sm-min) and (max-width: @screen-sm-max) {
+            display: block; 
+        }
+    }
     & .date-picker-button {  
         margin-left: -12px;
         padding: 6px 10px;
         border-bottom-left-radius: 0px;
        border-top-left-radius: 0px;
+    }
+}
+.datepicker {
+    & .datepicker-switch {
+        color: @link-color;
+        font-size: 1.1em;
+    }
+    & .prev,& .next {
+        font-size: 1.1em;
     }
 }
 

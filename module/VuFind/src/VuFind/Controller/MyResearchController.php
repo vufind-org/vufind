@@ -262,6 +262,15 @@ class MyResearchController extends AbstractBase
                 '/([?&])auth_method=[^&]*&?/', '$1', $logoutTarget
             );
             $logoutTarget = rtrim($logoutTarget, '?');
+
+            // Another special case: if logging out will send the user back to
+            // the MyResearch home action, instead send them all the way to
+            // VuFind home. Otherwise, they might get logged back in again,
+            // which is confusing. Even in the best scenario, they'll just end
+            // up on a login screen, which is not helpful.
+            if ($logoutTarget == $this->getServerUrl('myresearch-home')) {
+                $logoutTarget = $this->getServerUrl('home');
+            }
         }
 
         return $this->redirect()

@@ -107,10 +107,11 @@
           <span class="pull-right"><i class="fa fa-times"></i></span>
           <? if (isset($filter['field']) && isset($newItemsFacets[$filter['field']])): ?>
             <?=$this->transEsc($field)?>:
-            <? if (!empty($newItemsFacets[$filter['field']]['translatable'])): ?>
-              <?=$this->transEsc($newItemsFacets[$filter['field']]['translatable']) ?>
+            <? $newItemsFacet = $newItemsFacets[$filter['field']]; ?>
+            <? if (!empty($newItemsFacet['translatable'])): ?>
+              <?=$this->transEsc($newItemsFacet['translatable']) ?>
             <? else: ?>
-              <?=$this->DateTime()->convertToDisplayDate('Y-m-d', substr($newItemsFacets[$filter['field']]['raw'], 0, 10)); ?>&ndash;
+              <?=$this->dateTime()->convertToDisplayDate('Y-m-d', $newItemsFacet['date']) ?>&ndash;
             <? endif; ?>
           <? else: ?>
             <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?>
@@ -178,12 +179,12 @@
                 <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter" class="form-inline">
                   <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
                   <label for="<?=$this->escapeHtmlAttr($title)?>from"><?=$this->transEsc('new_items_from')?></label>
-                  <input type="text" class="form-control form-inline date-picker-field" autocomplete="off" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" maxlength="10" size="10" value="<?=!empty($filterList[$title][0]) && is_numeric($filterList[$title][0][0]) ? $this->escapeHtmlAttr($filterList[$title][0]) : ''?>">
+                  <input type="text" class="form-control form-inline date-picker-field" autocomplete="off" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" maxlength="10" size="10" value="<?=$this->escapeHtmlAttr($this->dateTime()->convertToDisplayDate('Y-m-d', $newItemsFacets[$title]['date'])) ?>" placeholder="<?=$this->dateTime()->getDisplayDateFormat() ?>">
                   <button class="btn btn-primary btn-default date-picker-button" type="submit" value=""><i class="fa fa-search"></i></button>
                 </form>
 <?
   $component = $this->escapeHtmlAttr($title) . 'from';
-  $endDate = $this->DateTime()->convertToDisplayDate('U', time());
+  $endDate = $this->dateTime()->convertToDisplayDate('U', time());
   $this->headScript()->appendScript(<<<EOT
 $(document).ready(function() {
   $('#$component').datepicker({

@@ -39,7 +39,7 @@
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
       <div class="pull-right">
-        <a href="<?=$this->currentPath()?>?login=true&amp;catalogLogin=true" class="btn btn-primary"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
+        <a href="?login=true&amp;catalogLogin=true" class="btn btn-primary"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
       </div>
       <div class="clearfix"></div>
     <? elseif (!$user->cat_username): ?>
@@ -174,8 +174,8 @@
     <? if (!empty($holding[$textField])): ?>
       <tr class="copy-details <?=$holdingsDetails?>">
         <? // Translation for summary is a special case for backwards-compatibility ?>
-        <td class="copy-title"><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>:</td>
-        <td colspan="4">
+        <td class="copy-title" colspan="2"><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>:</td>
+        <td colspan="3">
           <? foreach ($holding[$textField] as $current): ?>
             <?=$this->escapeHtml($current)?><br/>
           <? endforeach; ?>
@@ -279,4 +279,13 @@
   <? endforeach; ?>
 </table>
 <? endif; ?>
+
+<?
+  $this->inlineScript(
+    \Zend\View\Helper\HeadScript::SCRIPT,
+    'finna.record.setupHoldingsTab();',
+    'SET'
+  );
+  echo $this->inlineScript();
+?>
 <!-- END of: finna - RecordTab/holdingsils.phtml -->

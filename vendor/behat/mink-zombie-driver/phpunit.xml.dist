@@ -13,11 +13,12 @@
 
         <!--server name="WEB_FIXTURES_HOST" value="http://test.mink.dev" /-->
         <!--server name="NODE_MODULES_PATH" value="path/to/ZombieDriver/node_modules/" /-->
+        <!--server name="NODE_BIN" value="node" /-->
     </php>
 
     <filter>
         <whitelist>
-            <directory>./src/Behat/Mink/Driver</directory>
+            <directory>./src</directory>
         </whitelist>
     </filter>
 </phpunit>

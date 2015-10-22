@@ -104,7 +104,6 @@ button.mfp-close, button.mfp-arrow {
   cursor: pointer;
   background: transparent;
   border: 0;
-  -webkit-appearance: none;
   display: block;
   outline: none;
   padding: 0;
@@ -117,23 +116,21 @@ button.mfp-close, button.mfp-arrow {
 	opacity:0;	
 }
 .mfp-container .mfp-arrow {
-	transition: all 0.3s ease-in-out; 
+	transition: all 0.4s ease-in-out;
 }
 .mfp-container .mfp-arrow-right {
-	right:-300px;
-	transition-delay:1s;	
+	right:0px;
+	transform: translate(100px,0);	
 }
-.mfp-container:hover .mfp-arrow-right {
-	right:0px;	
-	transition-delay:0s;
+.mfp-container:hover .mfp-arrow-right {	
+	transform: translate(0,0);
 }
 .mfp-container .mfp-arrow-left {
-	left:-300px;
-	transition-delay:1s;	
+	left:0px;
+	transform: translate(-100px,0);	
 }
 .mfp-container:hover .mfp-arrow-left {
-	left:0px;
-	transition-delay:0s;
+	transform: translate(0,0);	
 }
 .mfp-container:hover button.mfp-close {
 	opacity: 0.8;	
