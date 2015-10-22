@@ -1,4 +1,3 @@
-<!-- START of: finna - list/list.phtml -->
 <?
 $list = $this->results->getListObject();
 // Set up page title:
@@ -57,4 +56,3 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
       <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
     </div>
 </div>
-<!-- END of: finna - list/list.phtml -->

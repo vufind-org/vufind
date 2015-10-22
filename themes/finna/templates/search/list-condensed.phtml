@@ -1,4 +1,3 @@
-<!-- START of: finna - search/list-condensed.phtml -->
 <? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
 <? $showCheckboxes = !isset($this->hideCartControls) && $this->cart()->isActive() ?>
 <? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
@@ -15,4 +14,3 @@
     <?=$this->record($current)->getSearchResult('condensed')?>
   </div>
 <? endforeach; ?>
-<!-- END of: finna - search/list-condensed.phtml -->

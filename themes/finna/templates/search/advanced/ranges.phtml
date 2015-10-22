@@ -1,4 +1,3 @@
-<!-- START of: finna - search/advanced/ranges.phtml -->
 <? if (isset($this->ranges) && !empty($this->ranges)): ?>
   <? $params = $this->searchParams($this->searchClassId); $params->activateAllFacets(); ?>
   <? foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
@@ -59,4 +58,3 @@ JS;
     </fieldset>
   <? endforeach; ?>
 <? endif; ?>
-<!-- END of: finna - search/advanced/ranges.phtml -->
