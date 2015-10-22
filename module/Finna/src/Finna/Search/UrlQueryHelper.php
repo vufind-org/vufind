@@ -82,8 +82,10 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
      */
     public function replaceFacet($field, $value, $operator = 'AND')
     {
-        $this->params->removeAllFilters($field);
-        return $this->addFacet($field, $value, $operator);
+        $newParams = clone($this->params);
+        $newParams->removeAllFilters($field);
+        $helper = new static($newParams);
+        return $helper->addFacet($field, $value, $operator);
     }
 
     /**

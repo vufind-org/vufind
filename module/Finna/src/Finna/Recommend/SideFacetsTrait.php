@@ -70,7 +70,11 @@ trait SideFacetsTrait
             if (preg_match('/^NOW-(\w+)/', $from, $matches)) {
                 $translatable = 'new_items_' . strtolower($matches[1]);
             }
-            $result[$current] = ['raw' => $from, 'translatable' => $translatable];
+            $result[$current] = [
+                'raw' => $from,
+                'translatable' => $translatable,
+                'date' => substr($from, 0, 10)
+            ];
         }
         return $result;
     }
