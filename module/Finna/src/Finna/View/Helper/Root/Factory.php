@@ -102,6 +102,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct combined results view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Combined
+     */
+    public static function getCombined(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('Combined');
+        return new Combined($config);
+    }
+
+    /**
      * Construct content page view helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -148,7 +161,8 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getSearchTabs(ServiceManager $sm)
     {
         $locator = $sm->getServiceLocator();
-        $config = $locator->get('VuFind\Config')->get('config');
+        $configLoader = $locator->get('VuFind\Config');
+        $config = $configLoader->get('config');
         $config = isset($config->SearchTabs)
             ? $config->SearchTabs->toArray() : [];
         return new SearchTabs(
@@ -156,14 +170,15 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $locator->get('VuFind\DbTablePluginManager'),
             $locator->get('VuFind\SearchResultsPluginManager'),
             $config,
-            $sm->get('url')
+            $sm->get('url'),
+            $configLoader
         );
     }
     /**
      * Construct Headtitle helper
      *
      * @param ServiceManager $sm Service manager.
-     * 
+     *
      * @return HeadTitle
      */
     public static function getHeadTitle(ServiceManager $sm)
@@ -171,6 +186,20 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new HeadTitle($config);
     }
+
+    /**
+     * Construct MetaLib view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MetaLib
+     */
+    public static function getMetaLib(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('MetaLib');
+        return new MetaLib($config);
+    }
+
     /**
      * Construct the SearchTabs helper.
      *

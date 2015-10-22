@@ -41,6 +41,23 @@ class CombinedController extends \VuFind\Controller\CombinedController
     use SearchControllerTrait;
 
     /**
+     * Handle onDispatch event
+     *
+     * @param \Zend\Mvc\MvcEvent $e Event
+     *
+     * @return mixed
+     */
+    public function onDispatch(\Zend\Mvc\MvcEvent $e)
+    {
+        $combinedHelper = $this->getViewRenderer()->plugin('combined');
+        if (!$combinedHelper->isAvailable()) {
+            throw new \Exception('Combined view is disabled');
+        }
+
+        return parent::onDispatch($e);
+    }
+
+    /**
      * Results action
      *
      * @return mixed

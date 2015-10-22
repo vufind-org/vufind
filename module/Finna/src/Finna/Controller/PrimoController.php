@@ -59,6 +59,23 @@ class PrimoController extends \VuFind\Controller\PrimoController
     }
 
     /**
+     * Handle onDispatch event
+     *
+     * @param \Zend\Mvc\MvcEvent $e Event
+     *
+     * @return mixed
+     */
+    public function onDispatch(\Zend\Mvc\MvcEvent $e)
+    {
+        $primoHelper = $this->getViewRenderer()->plugin('primo');
+        if (!$primoHelper->isAvailable()) {
+            throw new \Exception('Primo is disabled');
+        }
+
+        return parent::onDispatch($e);
+    }
+
+    /**
      * Search action -- call standard results action
      *
      * @return mixed
