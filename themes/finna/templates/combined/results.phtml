@@ -2,6 +2,7 @@
 <?
   // Set up page title:
   $lookfor = $this->params->getDisplayQuery();
+  $this->headMeta()->appendName('robots', 'noindex,follow');
   if (isset($this->overrideTitle)) {
     $this->headTitle($this->overrideTitle);
   } else {
