@@ -192,7 +192,7 @@ function refreshTagList(loggedin) {
       url: url,
       complete: function(response) {
         if(response.status == 200) {
-          tagList.html(response.responseText);
+          tagList.replaceWith(response.responseText);
           if(loggedin) {
             $('#tagList').addClass('loggedin');
           } else {
