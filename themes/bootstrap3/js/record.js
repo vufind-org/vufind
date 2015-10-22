@@ -173,6 +173,7 @@ function ajaxLoadTab(tabid) {
       if(typeof syn_get_widget === "function") {
         syn_get_widget();
       }
+      window.location.hash = tabid;
     }
   });
   return false;
@@ -224,15 +225,17 @@ function ajaxTagUpdate(tag, remove) {
 
 function applyRecordTabHash()
 {
+  var activeTab = $('ul.recordTabs li.active a').attr('id');
+  var newTab = typeof window.location.hash !== 'undefined'
+    ? window.location.hash.toLowerCase() : '';
+
   // Open tag in url hash
-  if ($(window.location.hash.toLowerCase()).length > 0) {
+  if (newTab.length > 0 && '#' + activeTab != newTab) {
     $(window.location.hash.toLowerCase()).click();
   }
 }
 
-$(window).bind('hashchange', function(){
-  applyRecordTabHash();
-});
+$(window).on('hashchange', applyRecordTabHash);
 
 $(document).ready(function(){
   var id = $('.hiddenId')[0].value;
@@ -243,11 +246,11 @@ $(document).ready(function(){
       return true;
     }
     var tabid = $(this).attr('id').toLowerCase();
-    window.location.hash = tabid;
     if($('#'+tabid+'-tab').length > 0) {
       $('#record-tabs .tab-pane.active').removeClass('active');
       $('#'+tabid+'-tab').addClass('active');
       $('#'+tabid).tab('show');
+      window.location.hash = tabid;
       return false;
     } else {
       $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+vufindString['loading']+'...</div>');
