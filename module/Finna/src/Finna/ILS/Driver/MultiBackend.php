@@ -63,4 +63,31 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
         }
         throw new ILSException('No suitable backend driver found');
     }
+
+    /**
+     * Get configuration for the ILS driver.  We will load an .ini file named
+     * after the driver class and number if it exists;
+     * otherwise we will return an empty array.
+     *
+     * @param string $source The source id to use for determining the
+     * configuration file
+     *
+     * @return array   The configuration of the driver
+     */
+    protected function getDriverConfig($source)
+    {
+        // Determine config file name based on class name:
+        try {
+            $config = $this->configLoader->get(
+                $this->drivers[$source] . '_' . $source
+            )->toArray();
+            if (!empty($config)) {
+                return $config;
+            }
+        } catch (\Zend\Config\Exception\RuntimeException $e) {
+            // Fall through
+        }
+        return parent::getDriverConfig($source);
+    }
+
 }
