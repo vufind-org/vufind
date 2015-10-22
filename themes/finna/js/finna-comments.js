@@ -63,6 +63,7 @@ finna.comments = (function() {
             }
 
             $(this).find('input.cancel').toggleClass('hide', true);
+            $(this).find('input[type="submit"]').attr('disabled', true).button('loading');
 
             var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
             $.ajax({
@@ -74,7 +75,6 @@ finna.comments = (function() {
                     if (response.status == 'OK') {
                         refreshCommentList(id, recordSource);
                         $(form).find('textarea[name="comment"]').val('');
-                        $(form).find('input[type="submit"]').button('loading');
                     } else {
                         Lightbox.displayError(response.data);
                     }
