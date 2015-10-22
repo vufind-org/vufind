@@ -128,21 +128,28 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
         }
 
         $params = $this->record->getRecordImage('small');
-        unset($params['url']);
-        unset($params['size']);
-
-        $view->smallImage = $urlHelper('cover-show') . '?' .
-            http_build_query(array_merge($params, $this->params['small']));
+        if (is_array($params)) {
+            unset($params['url']);
+            unset($params['size']);
+            $view->smallImage = $urlHelper('cover-show') . '?' .
+                http_build_query(array_merge($params, $this->params['small']));
+        } else {
+            $view->smallImage = $params;
+        }
 
         $params = $this->record->getRecordImage('large');
-        unset($params['url']);
-        unset($params['size']);
+        if (is_array($params)) {
+            unset($params['url']);
+            unset($params['size']);
 
-        $view->mediumImage = $urlHelper('cover-show') . '?' .
-            http_build_query(array_merge($params, $this->params['medium']));
+            $view->mediumImage = $urlHelper('cover-show') . '?' .
+                http_build_query(array_merge($params, $this->params['medium']));
 
-        $view->largeImage = $urlHelper('cover-show') . '?' .
-            http_build_query(array_merge($params, $this->params['large']));
+            $view->largeImage = $urlHelper('cover-show') . '?' .
+                http_build_query(array_merge($params, $this->params['large']));
+        } else {
+            $view->mediumImage = $view->largeImage = $params;
+        }
 
         $images = [];
         if ($numOfImages > 1) {
