@@ -222,6 +222,18 @@ function ajaxTagUpdate(tag, remove) {
   });
 }
 
+function applyRecordTabHash()
+{
+  // Open tag in url hash
+  if ($(window.location.hash.toLowerCase()).length > 0) {
+    $(window.location.hash.toLowerCase()).click();
+  }
+}
+
+$(window).bind('hashchange', function(){
+  applyRecordTabHash();
+});
+
 $(document).ready(function(){
   var id = $('.hiddenId')[0].value;
   registerTabEvents();
@@ -244,10 +256,7 @@ $(document).ready(function(){
       return ajaxLoadTab(tabid);
     }
   });
-  // Open tag in url hash
-  if ($(window.location.hash.toLowerCase()).length > 0) {
-    $(window.location.hash.toLowerCase()).click();
-  }
+  applyRecordTabHash();
 
   /* --- LIGHTBOX --- */
   // Cite lightbox
