@@ -231,7 +231,7 @@ function applyRecordTabHash()
 
   // Open tag in url hash
   if (newTab.length > 0 && '#' + activeTab != newTab) {
-    $(window.location.hash.toLowerCase()).click();
+    $(newTab).click();
   }
 }
 
