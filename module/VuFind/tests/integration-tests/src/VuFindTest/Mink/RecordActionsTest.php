@@ -39,6 +39,8 @@ use VuFindTest\Auth\DatabaseTest;
  */
 class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\UserCreationTrait;
+
     protected static $hash;
     protected static $hash2;
 
@@ -49,7 +51,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public static function setUpBeforeClass()
     {
-        self::$hash = substr(md5(time()), 0, 16);
+        return static::failIfUsersExist();
     }
 
     /**
@@ -65,11 +67,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         }
     }
 
-    protected function gotoRecord($session, $searchTerm = '')
+    protected function gotoRecord($session)
     {
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
-        $page->find('css', '.searchForm [name="lookfor"]')->setValue($searchTerm);
+        $page->find('css', '.searchForm [name="lookfor"]')->setValue('Dewey');
         $page->find('css', '.btn.btn-primary')->click();
         $page->find('css', '.result a.title')->click();
         return $page;
@@ -100,12 +102,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertNotNull($page->find('css', '.modal [name="username"]'));
         // Create new account
         $page->find('css', '.modal-body .createAccountLink')->click();
-        $page->findById('account_firstname')->setValue('Record');
-        $page->findById('account_lastname')->setValue('McTestenson');
-        $page->findById('account_email')->setValue(self::$hash . '@ignore.com');
-        $page->findById('account_username')->setValue(self::$hash);
-        $page->findById('account_password')->setValue('test');
-        $page->findById('account_password2')->setValue('test');
+        $this->fillInAccountForm($page);
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         // Make sure page updated for login
         $this->assertNull($page->find('css', '#comment[disabled]')); // Can Comment?
@@ -130,7 +127,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function asdftestAddTag()
+    public function testAddTag()
     {
         // Change the theme:
         $this->changeConfigs(
@@ -139,18 +136,78 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 
         $session = $this->getMinkSession();
         $session->start();
-        $page = $this->gotoRecord($session);
-
         // Go to a record view
-        // Click add comment without logging in
-        // Login in Lightbox
-        // Make sure Lightbox redirects to comment view
-        // Close lightbox
-        // Make sure page updated for login
-        // Click add comment
-        // Add comment
-        // Make sure comment appeared
-        // Logout
+        $page = $this->gotoRecord($session);
+        // Click to add tag
+        $page->findByid('tagRecord')->click();
+        // Lightbox login open?
+        $this->assertNotNull($page->find('css', '.modal.in [name="username"]'));
+        // Make account
+        $page->find('css', '.modal-body .createAccountLink')->click();
+        $this->fillInAccountForm(
+            $page, ['username'=>'username2', 'email'=>'test2@com.com']
+        );
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->assertNotNull($page->find('css', '.modal #addtag_tag'));
+        $page->find('css', '.modal .close')->click();
+        $page->find('css', '.logoutOptions a[title="Log Out"]')->click();
+        // Login
+        $page = $this->gotoRecord($session); // redirects to search home???
+        $page->findByid('tagRecord')->click();
+        $this->fillInLoginForm($page, 'username2', 'test');
+        $this->submitLoginForm($page);
+        $this->assertNotNull($page->find('css', '.modal #addtag_tag'));
+        // Add tags
+        $page->find('css', '.modal #addtag_tag')->setValue('one 2 "three 4" five');
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $success = $page->find('css', '.modal-body .alert-info');
+        $this->assertTrue(is_object($success));
+        $this->assertEquals('Tags Saved', $success->getText());
+        $page->find('css', '.modal .close')->click();
+        // Count tags
+        $tags = $page->findAll('css', '#tagList .tag');
+        $this->assertEquals(4, count($tags));
+        $tvals = [];
+        foreach ($tags as $i=>$t) {
+            $link = $t->find('css', 'a');
+            $tvals[] = $link->getText();
+        }
+        sort($tvals);
+        $this->assertEquals($tvals, ['2', 'five', 'one', 'three 4']);
+        // Remove a tag
+        $tags[0]->find('css', 'button')->click();
+        // Count tags with missing
+        $sum = 0;
+        foreach ($tags as $t) {
+            $link = $t->find('css', 'button');
+            if ($link) {
+                $sum += intval($link->getText());
+            }
+        }
+        $this->assertEquals(3, $sum);
+        // Log out
+        $page->find('css', '.logoutOptions a[title="Log Out"]')->click();
+        // Flat tags
+        $this->assertNull($page->find('css', '#tagList .tag.selected'));
+        $this->assertNull($page->find('css', '#tagList .tag .fa'));
+        // Login with second account
+        $page->find('css', '#loginOptions a')->click();
+        $this->assertNotNull($page->find('css', '.modal.in [name="username"]'));
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $page = $this->gotoRecord($session);
+        // Check selected == 0
+        $this->assertNull($page->find('css', '#tagList .tag.selected'));
+        $this->assertNotNull($page->find('css', '#tagList .tag'));
+        $this->assertNotNull($page->find('css', '#tagList .tag .fa-plus'));
+        // Click one
+        $page->find('css', '#tagList .tag button')->click();
+        // Check selected == 1
+        $this->assertNotNull($page->find('css', '#tagList .tag.selected'));
+        // Click again
+        $page->find('css', '#tagList .tag button')->click();
+        // Check selected == 0
+        $this->assertNull($page->find('css', '#tagList .tag.selected'));
     }
 
     /**
@@ -213,20 +270,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public static function tearDownAfterClass()
     {
-        // If CI is not running, all tests were skipped, so no work is necessary:
-        $test = new FavoritesTest();
-        if (!$test->continuousIntegrationRunning()) {
-            return;
-        }
-
-        // Delete test user
-        $test = new FavoritesTest();
-        $userTable = $test->getTable('User');
-        $user = $userTable->getByUsername(self::$hash, false);
-        if (empty($user)) {
-            //throw new \Exception('Problem deleting expected user.');
-        } else {
-            $user->delete();
-        }
+        static::removeUsers(['username1', 'username2']);
     }
 }
