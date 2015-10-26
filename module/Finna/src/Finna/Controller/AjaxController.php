@@ -289,6 +289,94 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Comment on a record.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function commentRecordAjax()
+    {
+        $user = $this->getUser();
+        if ($user === false) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH
+            );
+        }
+
+        if ($commentId = $this->params()->fromPost('commentId')) {
+            // Edit existing comment
+            $comment = $this->params()->fromPost('comment');
+            if (empty($commentId) || empty($comment)) {
+                return $this->output(
+                    $this->translate('An error has occurred'), self::STATUS_ERROR
+                );
+            }
+            $rating = $this->params()->fromPost('rating');
+            $this->getTable('Comments')
+                ->edit($user->id, $commentId, $comment, $rating);
+            return $this->output($commentId, self::STATUS_OK);
+        }
+
+        $type = $this->getRequest()->getPost()->get('type');
+        $id = $this->params()->fromPost('id');
+        $table = $this->getTable('Comments');
+        if ($type === '1') {
+            // Allow only 1 rating/record for each user
+            $comments = $table->getForResourceByUser($id, $user->id);
+            if (count($comments)) {
+                return $this->output(
+                    $this->translate('An error has occurred'), self::STATUS_ERROR
+                );
+            }
+        }
+
+        $output = parent::commentRecordAjax();
+        $data = json_decode($output->getContent(), true);
+
+        if ($data['status'] != 'OK' || !isset($data['data'])) {
+            return $output;
+        }
+
+        $commentId = $data['data'];
+
+        // Update type
+        $table->setType($user->id, $commentId, $type);
+
+        // Update rating
+        $rating = $this->getRequest()->getPost()->get('rating');
+        if ($rating !== null && $rating > 0 && $rating <= 5) {
+            $table = $this->getTable('Comments');
+            $table->setRating($user->id, $commentId, $rating);
+        }
+
+        // Add comment to deduplicated records
+        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+        $results = $runner->run(
+            ['lookfor' => 'local_ids_str_mv:"' . addcslashes($id, '"') . '"'],
+            'Solr',
+            function ($runner, $params, $searchId) {
+                $params->setLimit(100);
+                $params->setPage(1);
+                $params->resetFacetConfig();
+                $options = $params->getOptions();
+                $options->disableHighlighting();
+            }
+        );
+        $ids = [$id];
+
+        if (!$results instanceof \VuFind\Search\EmptySet\Results
+            && count($results->getResults())
+        ) {
+            $ids = reset($results->getResults())->getLocalIds();
+        }
+
+        $commentsRecord = $this->getTable('CommentsRecord');
+        $commentsRecord->addLinks($commentId, $ids);
+
+        return $output;
+    }
+
+    /**
      * Return data for data range visualization module in JSON format.
      *
      * @return mixed
@@ -1003,6 +1091,40 @@ class AjaxController extends \VuFind\Controller\AjaxController
             );
         }
         return $this->output($user->getDisplayName(), self::STATUS_OK);
+    }
+
+    /**
+     * Report comment inappropriate.
+     *
+     * @return void
+     */
+    public function inappropriateCommentAjax()
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH
+            );
+        }
+
+        $query = $this->getRequest()->getPost();
+        if (!$comment = $query->get('comment')) {
+            return $this->output(
+                $this->translate('Missing comment id'),
+                self::STATUS_ERROR
+            );
+        }
+        if (!$reason = $query->get('reason')) {
+            return $this->output(
+                $this->translate('Missing reason'),
+                self::STATUS_ERROR
+            );
+        }
+        $table = $this->getTable('Comments');
+        $table->markInappropriate($user->id, $comment, $reason);
+
+        return $this->output('', self::STATUS_OK);
     }
 
     /**

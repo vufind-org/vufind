@@ -91,6 +91,7 @@ $config = [
         'invokables' => [
             'ajax' => 'Finna\Controller\AjaxController',
             'combined' => 'Finna\Controller\CombinedController',
+            'comments' => 'Finna\Controller\CommentsController',
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
             'feedback' => 'Finna\Controller\FeedbackController',
@@ -134,6 +135,8 @@ $config = [
                 ],
                 'invokables' => [
                     'comments' => 'Finna\Db\Table\Comments',
+                    'comments-inappropriate' => 'Finna\Db\Table\CommentsInappropriate',
+                    'comments-record' => 'Finna\Db\Table\CommentsRecord',
                     'search' => 'Finna\Db\Table\Search'
                 ],
             ],
@@ -197,6 +200,7 @@ $config = [
             'recordtab' => [
                 'factories' => [
                     'map' => 'Finna\RecordTab\Factory::getMap',
+                    'usercomments' => 'Finna\RecordTab\Factory::getUserComments',
                 ],
                 'invokables' => [
                     'componentparts' => 'Finna\RecordTab\ComponentParts',
@@ -272,6 +276,7 @@ $config = [
 
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
+    'Comments' => ['inappropriate' => 'inappropriate/[:id]'],
     'LibraryCards' => ['newLibraryCardPassword' => 'newPassword/[:id]'],
 ];
 

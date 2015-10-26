@@ -57,4 +57,19 @@ class Factory
         $enabled = isset($config->Content->recordMap);
         return new Map($enabled);
     }
+
+    /**
+     * Factory for UserComments tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return UserComments
+     */
+    public static function getUserComments(ServiceManager $sm)
+    {
+        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $enabled = !isset($cfg->Social->comments)
+            || ($cfg->Social->comments && $cfg->Social->comments !== 'disabled');
+        return new UserComments($enabled);
+    }
 }
