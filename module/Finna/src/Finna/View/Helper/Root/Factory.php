@@ -102,6 +102,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct combined results view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Combined
+     */
+    public static function getCombined(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('Combined');
+        return new Combined($config);
+    }
+
+    /**
      * Construct content page view helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -163,7 +176,7 @@ class Factory extends \VuFind\View\Helper\Root\Factory
      * Construct Headtitle helper
      *
      * @param ServiceManager $sm Service manager.
-     * 
+     *
      * @return HeadTitle
      */
     public static function getHeadTitle(ServiceManager $sm)
@@ -171,6 +184,20 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new HeadTitle($config);
     }
+
+    /**
+     * Construct MetaLib view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MetaLib
+     */
+    public static function getMetaLib(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('MetaLib');
+        return new MetaLib($config);
+    }
+
     /**
      * Construct the SearchTabs helper.
      *

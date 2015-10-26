@@ -1,6 +1,6 @@
 <?php
 /**
- * Primo Central Index view helper
+ * MetaLib view helper
  *
  * PHP version 5
  *
@@ -28,7 +28,7 @@
 namespace Finna\View\Helper\Root;
 
 /**
- * Primo Central Index view helper
+ * MetaLib view helper
  *
  * @category VuFind2
  * @package  View_Helpers
@@ -36,12 +36,12 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Primo extends \Zend\View\Helper\AbstractHelper
+class MetaLib extends \Zend\View\Helper\AbstractHelper
 {
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $config Primo configuration
+     * @param \VuFind\Config\PluginManager $config MetaLib configuration
      */
     public function __construct($config)
     {
@@ -49,14 +49,13 @@ class Primo extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if PCI is available
+     * Check if MetaLib is available
      *
      * @return bool
      */
     public function isAvailable()
     {
-        return !empty($this->config['Institutions']['onCampusRule'])
-            && (!isset($this->config['General']['enabled'])
-                || $this->config['General']['enabled']);
+        return !isset($this->config['General']['enabled'])
+            || $this->config['General']['enabled'];
     }
 }

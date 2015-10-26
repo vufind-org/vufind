@@ -27,7 +27,7 @@
  */
 namespace Finna\View\Helper\Root;
 use Finna\Search\Solr\Params as SolrParams,
-    \Finna\Search\Primo\Params as PrimoParams;
+    Finna\Search\Primo\Params as PrimoParams;
 
 /**
  * "Search tabs" view helper
@@ -78,10 +78,12 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     ) {
         $this->session = $session;
         $this->table = $table;
+
         if (isset($config['Combined'])) {
             // Make sure that combined view is the first tab
             $config = ['Combined' => $config['Combined']] + $config;
         }
+
         parent::__construct($results, $config, $url);
     }
 
@@ -112,7 +114,16 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         }
         $searchTable = $this->table->get('Search');
 
-        foreach ($tabs as &$tab) {
+        foreach ($tabs as $key => &$tab) {
+            // Remove any disabled functions
+            if (in_array($tab['class'], ['Combined', 'MetaLib', 'Primo'])) {
+                $helper = $this->getView()->plugin($tab['class']);
+                if (!$helper->isAvailable()) {
+                    unset($tabs[$key]);
+                    continue;
+                }
+            }
+
             if (isset($tab['url'])) {
                 $parts = parse_url($tab['url']);
                 $params = [];
@@ -129,6 +140,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
 
                 $filterQuery = false;
                 $searchClass = $tab['class'];
+
                 if (isset($savedSearches[$searchClass])) {
                     $helper = $this->getView()->results->getUrlQuery();
                     $searchId = $savedSearches[$tab['class']];

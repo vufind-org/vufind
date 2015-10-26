@@ -4,6 +4,10 @@ relative_path = ../finna/Primo.ini
 
 ; Add any overrides below
 
+[General]
+; Whether Primo is enabled. Default is true.
+enabled = 0
+
 [Institutions]
 onCampusRule['358FIN???'] = "finna.authorized"
 defaultCode = "358FIN???"

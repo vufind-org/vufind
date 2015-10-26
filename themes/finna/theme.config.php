@@ -4,6 +4,7 @@ return array(
     'helpers' => array(
         'factories' => array(
             'authorizationNote' => 'Finna\View\Helper\Root\Factory::getAuthorizationNote',
+            'combined' => 'Finna\View\Helper\Root\Factory::getCombined',
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
@@ -13,6 +14,7 @@ return array(
             'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
             'layoutclass' => 'Finna\View\Helper\Root\Factory::getLayoutClass',
             'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
+            'metalib' => 'Finna\View\Helper\Root\Factory::getMetaLib',
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
             'openUrl' => 'Finna\View\Helper\Root\Factory::getOpenUrl',
             'organisationsList'
