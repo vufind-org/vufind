@@ -178,7 +178,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                $callnumber = preg_replace('/\|(a|b)/', ' ', $callnumber);
 	       }
 	    else { 
-	    	 $callnumber = "No call number";
+	    	 $callnumber = "";
 		 }
         }
         return $callnumber;
