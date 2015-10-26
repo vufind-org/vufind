@@ -71,8 +71,7 @@ class CombinedController extends AbstractSearch
 
         // Validate configuration:
         $searchClassId = $this->params()->fromQuery('id');
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
-            ->toArray();
+        $config = $this->getTabConfig();
         if (!isset($config[$searchClassId])) {
             throw new \Exception('Illegal ID');
         }
@@ -145,15 +144,10 @@ class CombinedController extends AbstractSearch
         $combinedResults = [];
         $options = $this->getServiceLocator()
             ->get('VuFind\SearchOptionsPluginManager');
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
-            ->toArray();
+        $config = $this->getTabConfig();
         $supportsCart = false;
         $supportsCartOptions = [];
         foreach ($config as $current => $settings) {
-            // Special case -- ignore recommendation config:
-            if ($current == 'Layout' || $current == 'RecommendationModules') {
-                continue;
-            }
             $this->adjustQueryForSettings($settings);
             $currentOptions = $options->get($current);
             $supportsCartOptions[] = $currentOptions->supportsCart();
@@ -273,5 +267,20 @@ class CombinedController extends AbstractSearch
         } else {
             $query->noRecommend = 'top,side';
         }
+    }
+
+    /**
+     * Get tab configuration
+     *
+     * @return array
+     */
+    protected function getTabConfig()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
+            ->toArray();
+        unset($config['Layout']);
+        unset($config['RecommendationModules']);
+
+        return $config;
     }
 }
