@@ -185,7 +185,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                 $tab['url'] = $url;
             }
         }
-        return $tabs;
+        return count($tabs) > 1 ? $tabs : [];
     }
 
     /**
