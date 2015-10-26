@@ -1232,11 +1232,11 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 = $view->results->getUrlQuery()->isQuerySuppressed()
                 ? '' : $view->params->getDisplayQuery();
             $viewParams = [
-                           'results' => $view->results,
-                           'metalib' => true,
-                           'params' => $params,
-                           'lookfor' => $lookfor
-                           ];
+                'results' => $view->results,
+                'metalib' => true,
+                'params' => $params,
+                'lookfor' => $lookfor
+            ];
             $result['searchHash'] = $view->results->getSearchHash();
             $result['content'] = $this->getViewRenderer()->render(
                 $recordsFound ? 'search/list-list.phtml' : 'metalib/nohits.phtml',
@@ -1265,16 +1265,15 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
             $viewParams
                 = array_merge(
-                    $viewParams,
-                    [
-                     'lookfor' => $lookfor,
-                     'overrideSearchHeading' => null,
-                     'startRecord' => $view->results->getStartRecord(),
-                     'endRecord' => $view->results->getEndRecord(),
-                     'recordsFound' => $recordsFound,
-                     'searchType' => $view->params->getsearchType(),
-                     'searchClassId' => 'MetaLib'
-                     ]
+                    $viewParams, [
+                        'lookfor' => $lookfor,
+                        'overrideSearchHeading' => null,
+                        'startRecord' => $view->results->getStartRecord(),
+                        'endRecord' => $view->results->getEndRecord(),
+                        'recordsFound' => $recordsFound,
+                        'searchType' => $view->params->getsearchType(),
+                        'searchClassId' => 'MetaLib'
+                    ]
                 );
             $result['header'] = $this->getViewRenderer()->render(
                 'search/header.phtml', $viewParams
