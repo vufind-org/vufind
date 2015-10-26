@@ -134,7 +134,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                 // Remove search index specific URL parameters
                 $dropParams = [
                    SolrParams::SPATIAL_DATERANGE_FIELD . '_type',
-                   'sort'
+                   'set', 'sort'
                 ];
                 $params = array_diff_key($params, array_flip($dropParams));
 
@@ -219,7 +219,8 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
             $urlQuery->removeAllFilters();
         }
 
-        $filters = $this->getView()->results->getParams()->getFilters();
+        $params = $this->getView()->results->getParams();
+        $filters = $params->getFilters();
         if (!empty($filters)) {
             // Filters active, include current search id in the url
             $searchClass = $this->activeSearchClass;
@@ -279,6 +280,11 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                     }
                 }
             }
+            $params = $savedSearch->getParams();
+            if ($set = $params->getMetaLibSearchSet()) {
+                $settings['params'] = ['set' => $set];
+            }
+
             return $settings;
         }
         return false;

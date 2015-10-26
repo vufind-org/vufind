@@ -40,6 +40,15 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class PluginFactory extends \VuFind\Search\Params\PluginFactory
 {
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->defaultNamespace = 'Finna\Search';
+    }
+
+    /**
      * Create a service for the specified name.
      *
      * @param ServiceLocatorInterface $serviceLocator Service locator
@@ -63,6 +72,12 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
         } else if ($name === 'primo') {
             // Clone the options instance in case caller modifies it:
             return new \Finna\Search\Primo\Params(
+                clone($options),
+                $serviceLocator->getServiceLocator()->get('VuFind\Config')
+            );
+        } else if ($name === 'metalib') {
+            // Clone the options instance in case caller modifies it:
+            return new \Finna\Search\MetaLib\Params(
                 clone($options),
                 $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );

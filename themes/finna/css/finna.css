@@ -6454,6 +6454,9 @@ button.close {
 .tooltip-pci-advanced {
   display: inline;
 }
+.tooltip-metalib-advanced {
+  display: inline;
+}
 .tooltip-tabs_local,
 .tooltip-tabs_pci,
 .tooltip-facet,
@@ -6463,14 +6466,17 @@ button.close {
   color: #ffffff;
 }
 .tooltip-local-advanced,
-.tooltip-pci-advanced {
+.tooltip-pci-advanced,
+.tooltip-metalib-advanced {
   color: #00a3b5;
   font-size: .8em;
 }
 .finna-main-tabs ul.nav-tabs > li.active > a .tooltip-tabs_local,
-.finna-main-tabs ul.nav-tabs > li.active > a .tooltip-tabs_pci {
+.finna-main-tabs ul.nav-tabs > li.active > a .tooltip-tabs_pci,
+.finna-main-tabs ul.nav-tabs > li.active > a .tooltip-tabs-metalib {
   color: #464646;
 }
+.tooltip-search-metalib,
 .tooltip-search-pci,
 .tooltip-search-local {
   margin-top: 10px;
@@ -10008,6 +10014,75 @@ section.template-dir-browse #list4 a.list-group-item {
 .template-dir-content.template-name-content ul.about-login-targets li {
   list-style-type: inherit;
 }
+.metalib-link {
+  display: block;
+  margin-bottom: 10px;
+}
+.metalib-link .fa-spinner {
+  margin-left: 0;
+}
+.myresearch-row .holding-details {
+  display: none;
+}
+.main.template-dir-metalib.template-name-home .content {
+  margin-bottom: 20px;
+}
+.main.template-dir-metalib .mobile-navigation .active-filters {
+  display: none;
+}
+.main.template-dir-metalib .search-controls.search-advanced {
+  margin-top: 30px;
+}
+.main.template-dir-metalib .loading {
+  margin: 20px;
+  text-align: center;
+}
+.main.template-dir-metalib .loading .txt {
+  font-weight: bold;
+}
+.main.template-dir-metalib .loading .fa-spinner {
+  margin: 10px 0 10px 0;
+}
+.main.template-dir-metalib .search-controls {
+  margin-bottom: 0;
+}
+.main.template-dir-metalib.template-name-home .metalib-home {
+  padding-top: 30px;
+}
+.main.template-dir-metalib .paginationSimple {
+  font-size: inherit;
+  padding-left: 15px;
+}
+.main.template-dir-metalib .search-sets {
+  margin-left: 2px;
+  margin-top: 10px;
+}
+@media (max-width: 767px) {
+  .main.template-dir-metalib .search-sets {
+    margin: 10px;
+  }
+}
+.main.template-dir-metalib .search-sets label {
+  margin-left: 22px;
+}
+.main.template-dir-metalib .search-sets label input {
+  margin-left: -24px;
+}
+.main.template-dir-metalib .search-sets.recent {
+  padding-top: 10px;
+  border-top: 1px #747474 solid;
+}
+.main.template-dir-metalib .search-sets.recent > p {
+  font-weight: bold;
+}
+@media (max-width: 767px) {
+  .main.template-dir-metalib .metalib-available-online {
+    margin-bottom: 10px;
+  }
+}
+.main.template-dir-record .metalib-available-online-record .fulltextField a {
+  word-wrap: break-word;
+}
 .row.result.condensed-list-view {
   padding-top: 6px;
   padding-bottom: 6px;
@@ -11664,9 +11739,11 @@ ul.jstree-container-ul > li.jstree-node .jstree-children li,
   line-height: 1.35em;
   margin-bottom: 10px;
 }
+.metalib-available-online p,
 .primo-available-online p {
   margin: 0px;
 }
+.metalib-available-online a,
 .primo-available-online a {
   display: inline-block;
 }
@@ -11677,22 +11754,32 @@ ul.jstree-container-ul > li.jstree-node .jstree-children li,
 .primo-available-online .fulltext-available .more-options {
   display: none;
 }
+.metalib-available-online {
+  overflow: hidden;
+}
+.metalib-available-online .more-options {
+  display: none;
+}
+.metalib-available-online-record,
 .primo-available-online-record,
 .local-available-online-record {
   margin: 0px 0px 10px;
   font-size: 1.1em;
   padding-bottom: 10px;
 }
+.metalib-available-online-record .online-source,
 .primo-available-online-record .online-source,
 .local-available-online-record .online-source {
   font-size: 0.9em;
   color: #747474;
 }
+.metalib-available-online-record .more-options,
 .primo-available-online-record .more-options {
   display: none;
   margin: 5px 0px;
   font-size: 1.08em;
 }
+.metalib-available-online-record .online-source,
 .primo-available-online-record .online-source {
   color: #747474;
   font-size: .9em;

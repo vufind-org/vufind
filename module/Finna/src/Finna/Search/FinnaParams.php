@@ -47,6 +47,13 @@ trait FinnaParams
     protected $spatialDateRangeFilter = null;
 
     /**
+     * MetaLib search set
+     *
+     * @var string
+     */
+    protected $metalibSearchSet = null;
+
+    /**
      * Add filters to the object based on values found in the request object.
      *
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
@@ -136,6 +143,16 @@ trait FinnaParams
     public function getSpatialDateRangeField()
     {
         return self::SPATIAL_DATERANGE_FIELD;
+    }
+
+    /**
+     * Return current MetaLib search set
+     *
+     * @return string
+     */
+    public function getMetaLibSearchSet()
+    {
+        return $this->metalibSearchSet;
     }
 
     /**

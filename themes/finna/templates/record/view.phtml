@@ -8,7 +8,7 @@
      $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
      $this->headLink()->appendStylesheet('vendor/bootstrap-rating.css');
   }
-  if ($this->driver->getResourceSource() == 'Primo') {
+  if (in_array($this->driver->getResourceSource(), ['MetaLib', 'Primo'])) {
     $this->headScript()->appendFile("finna-bx.js");
   }
   // Activate Syndetics Plus if necessary:
@@ -136,7 +136,7 @@ EOT;
     <? foreach ($this->related()->getList($this->driver) as $current): ?>
       <?=$this->related()->render($current)?>
     <? endforeach; ?>
-    <? if ($this->driver->getResourceSource() == 'Primo'): ?>
+    <? if (in_array($this->driver->getResourceSource(), ['MetaLib', 'Primo'])): ?>
       <div id="bx-recommendations-holder">
       </div>
     <? endif; ?>

@@ -135,6 +135,9 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
             $field = $this->params->getSpatialDateRangeField() . '_type';
             $params[$field] = $filter['type'];
         }
+        if ($set = $this->params->getMetaLibSearchSet()) {
+            $params['set'] = $set;
+        }
         return $params;
     }
 }

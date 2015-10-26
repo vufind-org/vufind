@@ -1228,6 +1228,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     line-height: 1.35em;
     margin-bottom: 10px;
 }
+.metalib-available-online,
 .primo-available-online {
     & p {
         margin: 0px;   
@@ -1235,6 +1236,8 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     & a {
         display: inline-block;
     }
+}
+.primo-available-online {
     & .host {
         font-size: 0.9em;
         color: @gray-light;
@@ -1243,7 +1246,16 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         display: none;
     }
 }
-.primo-available-online-record, .local-available-online-record {
+.metalib-available-online {
+    overflow: hidden;
+    & .more-options {
+        display: none;
+    }
+}
+
+.metalib-available-online-record,
+.primo-available-online-record, 
+.local-available-online-record {
     margin: 0px 0px 10px;
     font-size: 1.1em;
     padding-bottom: 10px;
@@ -1252,6 +1264,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         color: @gray-light;
     }
 }
+.metalib-available-online-record,
 .primo-available-online-record {
     & .more-options {
         display: none;

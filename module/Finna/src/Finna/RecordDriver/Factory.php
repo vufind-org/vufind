@@ -153,4 +153,21 @@ class Factory
         );
         return $driver;
     }
+
+    /**
+     * Factory for MetaLib record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MetaLib
+     */
+    public static function getMetaLib(ServiceManager $sm)
+    {
+        $conf = $sm->getServiceLocator()->get('VuFind\Config')->get('MetaLib');
+        $driver = new MetaLib(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $conf, $conf
+        );
+        return $driver;
+    }
 }
