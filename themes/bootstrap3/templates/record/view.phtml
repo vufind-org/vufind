@@ -58,6 +58,7 @@
           $tab_classes = array();
           if (0 === strcasecmp($this->activeTab, $tab)) {
             $tab_classes[] = 'active';
+            $tab_classes[] = 'initiallyActive';
             $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
             $activeTabObj = $obj;
           }
