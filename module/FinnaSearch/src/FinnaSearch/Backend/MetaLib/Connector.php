@@ -129,10 +129,10 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      * @param string               $user         MetaLib API user
      * @param string               $pass         MetaLib API password
      * @param HttpClient           $client       HTTP client
-     * @param LuceneSyntaxHelper   $luceneHelper Lucene syntax helper
      * @param MetaLibSearch        $table        Table for cached search results
      * @param AuthorizationService $auth         Authorization service
      * @param array                $sets         MetaLib search sets
+     * @param LuceneSyntaxHelper   $luceneHelper Lucene syntax helper
      */
     public function __construct(
         $institution, $url, $user, $pass,
@@ -993,7 +993,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             try {
                 $result = $this->call('login_request', $params);
                 if ($result->login_response->auth != 'Y') {
-                    $this->debug('X-Server login failed: ' . var_export($params, true));
+                    $this->debug(
+                        'X-Server login failed: ' . var_export($params, true)
+                    );
                     throw new \Exception('X-Server login failed');
                 }
             } catch (\Exception $e) {
