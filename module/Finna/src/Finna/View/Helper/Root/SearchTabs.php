@@ -134,7 +134,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                 // Remove search index specific URL parameters
                 $dropParams = [
                    SolrParams::SPATIAL_DATERANGE_FIELD . '_type',
-                   'set', 'sort'
+                   'page', 'set', 'sort'
                 ];
                 $params = array_diff_key($params, array_flip($dropParams));
 
