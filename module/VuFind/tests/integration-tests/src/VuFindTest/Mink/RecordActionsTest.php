@@ -208,6 +208,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page->find('css', '#tagList .tag button')->click();
         // Check selected == 0
         $this->assertNull($page->find('css', '#tagList .tag.selected'));
+        $page->find('css', '.logoutOptions a[title="Log Out"]')->click();
+        $session->stop();
     }
 
     /**
@@ -215,7 +217,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function asdftestEmail()
+    public function testEmail()
     {
         // Change the theme:
         $this->changeConfigs(
@@ -227,16 +229,42 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $session->start();
 
         // Go to a record view
+        $page = $this->gotoRecord($session);
         // Click email record without logging in
+        $page->findByid('mail-record')->click();
+        $this->assertNotNull($page->find('css', '.modal.in [name="username"]'));
         // Login in Lightbox
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
         // Make sure Lightbox redirects to email view
+        $this->assertNotNull($page->find('css', '.modal #email_to'));
         // Close lightbox
+        $page->find('css', '.modal .close')->click();
         // Click email
+        $page = $this->gotoRecord($session);
+        $page->findByid('mail-record')->click();
+        $this->assertNotNull($page->find('css', '.modal #email_to'));
         // Type invalid email
+        $page->find('css', '.modal #email_to')->setValue('blargarsaurus');
+        $page->find('css', '.modal #email_from')->setValue('asdf@asdf.com');
+        $page->find('css', '.modal #email_message')->setValue('message');
         // Make sure form cannot submit
+        /* TODO: Not working with validator
+        $session->executeScript('$(".modal form").validator();');
+        $forms = $page->findAll('css', '.modal-body .form-group');
+        foreach ($forms as $f) {
+            var_dump($f->getHtml());
+        }
+        $this->assertNotNull($page->find('css', '.modal .disabled'));
+        */
         // Send text to false email
+        $page->find('css', '.modal #email_to')->setValue('asdf@vufind.org');
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
         // Check for confirmation message
+        $this->assertNotNull($page->find('css', '.modal .alert-info'));
         // Logout
+        $page->find('css', '.logoutOptions a[title="Log Out"]')->click();
+        $session->stop();
     }
 
     /**
@@ -244,7 +272,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function asdftestSMS()
+    public function testSMS()
     {
         // Change the theme:
         $this->changeConfigs(
@@ -256,11 +284,45 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $session->start();
 
         // Go to a record view
+        $page = $this->gotoRecord($session);
         // Click SMS
-        // Make sure Lightbox redirects to SMS view
-        // TODO: Validator
+        $page->findByid('sms-record')->click();
+        $this->assertNotNull($page->find('css', '.modal #sms_to'));
+        // Type invalid phone numbers
+        // - too empty
+        $page->find('css', '.modal #sms_to')->setValue('');
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->assertNotNull($page->find('css', '.modal .sms-error'));
+        // - too short
+        $page->find('css', '.modal #sms_to')->setValue('123');
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->assertNotNull($page->find('css', '.modal .sms-error'));
+        // - too long
+        $page->find('css', '.modal #sms_to')->setValue('12345678912345678912345679');
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->assertNotNull($page->find('css', '.modal .sms-error'));
+        // - too lettery
+        $page->find('css', '.modal #sms_to')->setValue('123abc');
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->assertNotNull($page->find('css', '.modal .sms-error'));
+        // - just right
+        $page->find('css', '.modal #sms_to')->setValue('8005555555');
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->assertNull($page->find('css', '.modal .sms-error'));
+        // - pretty just right
+        $page->find('css', '.modal #sms_to')->setValue('(800) 555-5555');
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->assertNull($page->find('css', '.modal .sms-error'));
         // Send text to false number
+        $optionElement = $page->find('css', '.modal #sms_provider option');
+        $page->selectFieldOption('sms_provider', 'verizon');
+        $page->find('css', '.modal-body .btn.btn-primary')->click();
         // Check for confirmation message
+        var_dump($page->find('css', '.modal-body')->getHtml());
+        $this->assertNotNull($page->find('css', '.modal .alert-info'));
+        // Logout
+        $page->find('css', '.logoutOptions a[title="Log Out"]')->click();
+        $session->stop();
     }
 
     /**
