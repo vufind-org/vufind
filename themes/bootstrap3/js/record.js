@@ -173,6 +173,7 @@ function ajaxLoadTab(tabid) {
       if(typeof syn_get_widget === "function") {
         syn_get_widget();
       }
+      window.location.hash = tabid;
     }
   });
   return false;
@@ -191,7 +192,7 @@ function refreshTagList(loggedin) {
       url: url,
       complete: function(response) {
         if(response.status == 200) {
-          tagList.html(response.responseText);
+          tagList.replaceWith(response.responseText);
           if(loggedin) {
             $('#tagList').addClass('loggedin');
           } else {
@@ -222,6 +223,20 @@ function ajaxTagUpdate(tag, remove) {
   });
 }
 
+function applyRecordTabHash()
+{
+  var activeTab = $('ul.recordTabs li.active a').attr('id');
+  var newTab = typeof window.location.hash !== 'undefined'
+    ? window.location.hash.toLowerCase() : '';
+
+  // Open tag in url hash
+  if (newTab.length > 0 && '#' + activeTab != newTab) {
+    $(newTab).click();
+  }
+}
+
+$(window).on('hashchange', applyRecordTabHash);
+
 $(document).ready(function(){
   var id = $('.hiddenId')[0].value;
   registerTabEvents();
@@ -231,11 +246,11 @@ $(document).ready(function(){
       return true;
     }
     var tabid = $(this).attr('id').toLowerCase();
-    window.location.hash = tabid;
     if($('#'+tabid+'-tab').length > 0) {
       $('#record-tabs .tab-pane.active').removeClass('active');
       $('#'+tabid+'-tab').addClass('active');
       $('#'+tabid).tab('show');
+      window.location.hash = tabid;
       return false;
     } else {
       $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+vufindString['loading']+'...</div>');
@@ -244,10 +259,7 @@ $(document).ready(function(){
       return ajaxLoadTab(tabid);
     }
   });
-  // Open tag in url hash
-  if ($(window.location.hash.toLowerCase()).length > 0) {
-    $(window.location.hash.toLowerCase()).click();
-  }
+  applyRecordTabHash();
 
   /* --- LIGHTBOX --- */
   // Cite lightbox
