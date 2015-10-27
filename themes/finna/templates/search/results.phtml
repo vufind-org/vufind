@@ -65,10 +65,11 @@
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("finna-search-tabs-recommendations.js");
   $this->headScript()->appendFile("finna-item-status.js");
+  $this->headScript()->appendFile("finna-metalib-links.js");
 
   $topRecommendations = $this->results->getRecommendations('top');
 ?>
-    <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+<? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
       <? foreach ($this->results->getRecommendations('top') as $current): ?>
         <?=$this->recommend($current)?>
       <? endforeach; ?>

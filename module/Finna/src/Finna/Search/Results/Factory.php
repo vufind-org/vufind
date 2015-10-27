@@ -62,7 +62,7 @@ class Factory extends \VuFind\Search\Results\Factory
             new \VuFind\Search\Solr\SpellingProcessor($spellConfig)
         );
 
-        return Factory::initUrlQueryHelper($solr, $sm);
+        return Factory::initUrlQueryHelper($solr, $sm->getServiceLocator());
     }
 
     /**
@@ -76,7 +76,21 @@ class Factory extends \VuFind\Search\Results\Factory
     {
         $factory = new PluginFactory();
         $primo = $factory->createServiceWithName($sm, 'primo', 'Primo');
-        return Factory::initUrlQueryHelper($primo, $sm);
+        return Factory::initUrlQueryHelper($primo, $sm->getServiceLocator());
+    }
+
+    /**
+     * Factory for MetaLib results object.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MetaLib
+     */
+    public static function getMetaLib(ServiceManager $sm)
+    {
+        $factory = new PluginFactory();
+        $metalib = $factory->createServiceWithName($sm, 'metalib', 'MetaLib');
+        return Factory::initUrlQueryHelper($metalib, $sm->getServiceLocator());
     }
 
     /**
@@ -90,7 +104,7 @@ class Factory extends \VuFind\Search\Results\Factory
     {
         $factory = new PluginFactory();
         $combined = $factory->createServiceWithName($sm, 'combined', 'Combined');
-        return Factory::initUrlQueryHelper($combined, $sm);
+        return Factory::initUrlQueryHelper($combined, $sm->getServiceLocator());
     }
 
     /**
@@ -98,16 +112,16 @@ class Factory extends \VuFind\Search\Results\Factory
      * UrlQueryHelper for a Results-object with search ids for all tabs.
      *
      * @param ResultsManager $results Search results.
-     * @param ServiceManager $sm      Service manager.
+     * @param ServiceManager $locator Service locator.
      *
      * @return Results Search results with initialized UrlQueryHelper
      */
     public static function initUrlQueryHelper(
-        \VuFind\Search\Base\Results $results, $sm
+        \VuFind\Search\Base\Results $results, $locator
     ) {
         $helper = new UrlQueryHelper($results->getParams());
         $savedSearches
-            = $sm->getServiceLocator()->get('Request')->getQuery('search');
+            = $locator->get('Request')->getQuery('search');
         if ($savedSearches) {
             $helper->setDefaultParameter('search', $savedSearches);
         }

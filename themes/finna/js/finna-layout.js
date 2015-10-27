@@ -567,6 +567,7 @@ finna.layout = (function() {
         updateLoginName: updateLoginName,
         initHierarchicalFacet: initHierarchicalFacet,
         initJumpMenus: initJumpMenus,
+        initMobileNarrowSearch:initMobileNarrowSearch,
         init: function() {
             initJumpMenus();
             initAnchorNavigationLinks();

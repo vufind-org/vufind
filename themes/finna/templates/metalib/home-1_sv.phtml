@@ -1,0 +1,26 @@
+<?
+    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">Nelli-metasökning</h1></div>';
+?>
+<div class="row">
+  <div class="col-sm-9">
+    <div class="content">
+      <p>Nelli är en metasökmaskin för databaser i bibliotekens bruk.</p>
+      <p>Med Nelli-sökning kommer man åt sådana artiklar, e-böcker och andra referenser som inte finns i Primo Central Index.</p>
+      <p>Sökning i vissa databaser kan förutsätta inloggning med högskolans användarnamn.</p>
+      <p>Servicen fungerar med programmet MetaLib av ExLibris.</p>
+      <p>&nbsp;</p>
+      <img src="<?=$this->imageLink('nelli-logo.png')?>" alt="Nelli logo" />
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="sidebar hidden-print>">
+      <?= $this->context($this)->renderInContext(
+      'metalib/sidebar.phtml', []
+    );
+      ?>
+      <? if ($template = $this->content()->findTemplateForLng("layout/Additions/search-post-facets")): ?>
+          <?=$this->render($template)?>
+      <? endif; ?>
+    </div>
+  </div>
+</div>

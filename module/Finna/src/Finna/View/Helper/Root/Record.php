@@ -81,18 +81,24 @@ class Record extends \VuFind\View\Helper\Root\Record
      *
      * @param string $type    Link type
      * @param string $lookfor String to search for at link
+     * @param array  $params  Optional array of parameters for the link template
      *
      * @return string
      */
-    public function getLink($type, $lookfor)
+    public function getLink($type, $lookfor, $params = [])
     {
         $searchAction = isset($this->getView()->browse) && $this->getView()->browse
             ? 'browse-' . $this->getView()->browse
             : 'search-results'
         ;
+        $params = isset($params) ? $params : [];
+        $params = array_merge(
+            $params,
+            ['lookfor' => $lookfor,
+             'searchAction' => $searchAction]
+        );
         return $this->renderTemplate(
-            'link-' . $type . '.phtml',
-            ['lookfor' => $lookfor, 'searchAction' => $searchAction]
+            'link-' . $type . '.phtml', $params
         );
     }
 

@@ -26,7 +26,10 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace Finna\Controller;
-use Zend\Cache\StorageFactory,
+use VuFindSearch\ParamBag as ParamBag,
+    VuFindSearch\Query\Query as Query,
+    Finna\MetaLib\MetaLibIrdTrait,
+    Zend\Cache\StorageFactory,
     Zend\Feed\Reader\Reader,
     Zend\Http\Request as HttpRequest;
 
@@ -41,6 +44,9 @@ use Zend\Cache\StorageFactory,
  */
 class AjaxController extends \VuFind\Controller\AjaxController
 {
+    use MetaLibIrdTrait,
+        SearchControllerTrait;
+
     /**
      * Add resources to a list.
      *
@@ -182,7 +188,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         list($source, $id) = explode('.', $params['id'], 2);
-        $source = $source === 'pci' ? 'Primo' : 'VuFind';
+        $map = ['metalib' => 'MetaLib', 'pci' => 'Primo'];
+        $source = isset($map[$source]) ? $map[$source] : 'VuFind';
 
         $listId = $params['listId'];
         $notes = $params['notes'];
@@ -1193,6 +1200,128 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $response->setContent($html);
 
         return $response;
+    }
+
+    /**
+     * Perform a MetaLib search.
+     *
+     * @return \Zend\Http\Response
+     */
+    public function metaLibAjax()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('MetaLib');
+        if (!isset($config->General->enabled) || !$config->General->enabled) {
+            throw new \Exception('MetaLib is not enabled');
+        }
+
+        $this->getRequest()->getQuery()->set('ajax', 1);
+
+        $configLoader = $this->getServiceLocator()->get('VuFind\Config');
+        $options = new \Finna\Search\MetaLib\Options($configLoader);
+        $params = new \Finna\Search\MetaLib\Params($options, $configLoader);
+        $params->initFromRequest($this->getRequest()->getQuery());
+
+        $result = [];
+        list($isIRD, $set)
+            = $this->getMetaLibSet($this->getRequest()->getQuery()->get('set'));
+        if ($irds = $this->getMetaLibIrds($set)) {
+            $params->setIrds($irds);
+            $view = $this->forwardTo('MetaLib', 'Search');
+            $recordsFound = $view->results->getResultTotal() > 0;
+            $lookfor
+                = $view->results->getUrlQuery()->isQuerySuppressed()
+                ? '' : $view->params->getDisplayQuery();
+            $viewParams = [
+                'results' => $view->results,
+                'metalib' => true,
+                'params' => $params,
+                'lookfor' => $lookfor
+            ];
+            $result['searchHash'] = $view->results->getSearchHash();
+            $result['content'] = $this->getViewRenderer()->render(
+                $recordsFound ? 'search/list-list.phtml' : 'metalib/nohits.phtml',
+                $viewParams
+            );
+            $result['paginationBottom'] = $this->getViewRenderer()->render(
+                'metalib/pagination-bottom.phtml', $viewParams
+            );
+            $result['paginationTop'] = $this->getViewRenderer()->render(
+                'metalib/pagination-top.phtml', $viewParams
+            );
+            $result['searchTools'] = $this->getViewRenderer()->render(
+                'metalib/search-tools.phtml', $viewParams
+            );
+
+            $errors = $view->results->getFailedDatabases();
+            $failed = isset($errors['failed']) ? $errors['failed'] : [];
+            $disallowed = isset($errors['disallowed']) ? $errors['disallowed'] : [];
+
+            if ($failed || $disallowed) {
+                $result['failed'] = $this->getViewRenderer()->render(
+                    'metalib/statuses.phtml',
+                    ['failed' => $failed, 'disallowed' => $disallowed]
+                );
+            }
+
+            $viewParams
+                = array_merge(
+                    $viewParams, [
+                        'lookfor' => $lookfor,
+                        'overrideSearchHeading' => null,
+                        'startRecord' => $view->results->getStartRecord(),
+                        'endRecord' => $view->results->getEndRecord(),
+                        'recordsFound' => $recordsFound,
+                        'searchType' => $view->params->getsearchType(),
+                        'searchClassId' => 'MetaLib'
+                    ]
+                );
+            $result['header'] = $this->getViewRenderer()->render(
+                'search/header.phtml', $viewParams
+            );
+        } else {
+            $result['content'] = $result['paginationBottom'] = '';
+        }
+        return $this->output($result, self::STATUS_OK);
+    }
+
+    /**
+     * Check if MetaLib databases are searchable.
+     *
+     * @return \Zend\Http\Response
+     */
+    public function metalibLinksAjax()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('MetaLib');
+        if (!isset($config->General->enabled) || !$config->General->enabled) {
+            throw new \Exception('MetaLib is not enabled');
+        }
+
+        $auth = $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService');
+        $authorized = $auth->isGranted('finna.authorized');
+        $query = new Query();
+        $metalib = $this->getServiceLocator()->get('VuFind\Search');
+
+        $results = [];
+        $ids = $this->getRequest()->getQuery()->get('id');
+        foreach ($ids as $id) {
+            $backendParams = new ParamBag();
+            $backendParams->add('irdInfo', [$id]);
+            $result
+                = $metalib->search('MetaLib', $query, false, false, $backendParams);
+            $info = $result->getIRDInfo();
+
+            $status = null;
+            if ($info
+                && ($authorized || strcasecmp($info['access'], 'guest') == 0)
+            ) {
+                $status = $info['searchable'] ? 'allowed' : 'nonsearchable';
+            } else {
+                $status = 'denied';
+            }
+            $results = ['id' => $id, 'status' => $status];
+        }
+
+        return $this->output($results, self::STATUS_OK);
     }
 
     /**
