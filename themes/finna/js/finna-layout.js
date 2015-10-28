@@ -555,6 +555,21 @@ finna.layout = (function() {
         holder.find('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });
     }
     
+    var initSecondaryLoginField = function(labels, topClass) {
+        $('#login_target').change(function() {
+            var target = $('#login_target').val();
+            var field = $('#login_' + (topClass ? topClass + '_' : '') + 'secondary_username');
+            if (labels[target] === '') {
+                field.val('');
+                field.closest('.form-group').hide();
+            } else {
+                var group = field.closest('.form-group');
+                group.find('label').text(labels[target] + ':');
+                group.show();
+            }
+        }).change();
+    }
+    
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -567,7 +582,8 @@ finna.layout = (function() {
         updateLoginName: updateLoginName,
         initHierarchicalFacet: initHierarchicalFacet,
         initJumpMenus: initJumpMenus,
-        initMobileNarrowSearch:initMobileNarrowSearch,
+        initMobileNarrowSearch: initMobileNarrowSearch,
+        initSecondaryLoginField: initSecondaryLoginField, 
         init: function() {
             initJumpMenus();
             initAnchorNavigationLinks();

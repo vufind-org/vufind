@@ -30,6 +30,8 @@
  */
 namespace Finna\Auth;
 
+use VuFind\Exception\Auth as AuthException;
+
 /**
  * ILS authentication module.
  *
@@ -44,4 +46,42 @@ namespace Finna\Auth;
 class ILS extends \VuFind\Auth\ILS
 {
     use ILSFinna;
+
+    /**
+     * Attempt to authenticate the current user.  Throws exception if login fails.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * account credentials.
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     */
+    public function authenticate($request)
+    {
+        $username = trim($request->getPost()->get('username'));
+        $password = trim($request->getPost()->get('password'));
+        if ($username == '' || $password == '') {
+            throw new AuthException('authentication_error_blank');
+        }
+
+        // Check for a secondary username
+        $secondaryUsername = trim($request->getPost()->get('secondary_username'));
+
+        // Connect to catalog:
+        try {
+            $patron = $this->getCatalog()->patronLogin(
+                $username, $password, $secondaryUsername
+            );
+        } catch (\Exception $e) {
+            throw new AuthException('authentication_error_technical');
+        }
+
+        // Did the patron successfully log in?
+        if ($patron) {
+            return $this->processILSUser($patron);
+        }
+
+        // If we got this far, we have a problem:
+        throw new AuthException('authentication_error_invalid');
+    }
 }
