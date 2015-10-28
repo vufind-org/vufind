@@ -65,6 +65,35 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
+     * Patron Login
+     *
+     * This is responsible for authenticating a patron against the catalog.
+     *
+     * @param string $username  The patron user id or barcode
+     * @param string $password  The patron password
+     * @param string $secondary Optional secondary login field
+     *
+     * @return mixed           Associative array of patron info on successful login,
+     * null on unsuccessful login.
+     */
+    public function patronLogin($username, $password, $secondary = '')
+    {
+        $source = $this->getSource($username);
+        if (!$source) {
+            $source = $this->getDefaultLoginDriver();
+        }
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $patron = $driver->patronLogin(
+                $this->getLocalId($username), $password, $secondary
+            );
+            $patron = $this->addIdPrefixes($patron, $source);
+            return $patron;
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Get configuration for the ILS driver.  We will load an .ini file named
      * after the driver class and number if it exists;
      * otherwise we will return an empty array.

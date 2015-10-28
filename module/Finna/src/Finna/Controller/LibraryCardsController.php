@@ -42,6 +42,46 @@ namespace Finna\Controller;
 class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 {
     /**
+     * Send user's library card to the edit view
+     *
+     * @return mixed
+     */
+    public function editCardAction()
+    {
+        $view = parent::editCardAction();
+
+        if (!($view instanceof \Zend\View\Model\ViewModel)) {
+            return $view;
+        }
+
+        $manager = $this->getAuthManager();
+        $options = $manager->getSelectableAuthOptions();
+        if (in_array('MultiILS', $options)) {
+            $manager->setAuthMethod('MultiILS');
+        } else {
+            $manager->setAuthMethod('ILS');
+        }
+        if (!empty($view->targets)) {
+            $labels = [];
+
+            foreach ($view->targets as $target) {
+                $labels[$target]
+                    = $manager->getSecondaryLoginFieldLabel($target);
+            }
+            $view->secondaryLoginFieldLabels = $labels;
+        } else {
+            $view->secondaryLoginFieldLabel
+                = $manager->getSecondaryLoginFieldLabel();
+        }
+
+        $view->secondaryUsername = $this->params()->fromPost(
+            'secondary_username', ''
+        );
+
+        return $view;
+    }
+
+    /**
      * Change library card password
      *
      * @return mixed
@@ -87,6 +127,56 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
                 'verifyold' => true
             ]
         );
+    }
+
+    /**
+     * Process the "edit library card" submission.
+     *
+     * @param \VuFind\Db\Row\User $user Logged in user
+     *
+     * @return object|bool        Response object if redirect is
+     * needed, false if form needs to be redisplayed.
+     */
+    protected function processEditLibraryCard($user)
+    {
+        $cardName = $this->params()->fromPost('card_name', '');
+        $target = $this->params()->fromPost('target', '');
+        $username = $this->params()->fromPost('username', '');
+        $password = $this->params()->fromPost('password', '');
+
+        if (!$username || !$password) {
+            $this->flashMessenger()
+                ->addMessage('authentication_error_blank', 'error');
+            return false;
+        }
+
+        if ($target) {
+            $username = "$target.$username";
+        }
+
+        // Check for a secondary username
+        $secondaryUsername = trim($this->params()->fromPost('secondary_username'));
+
+        // Connect to the ILS and check that the credentials are correct:
+        $catalog = $this->getILS();
+        $patron = $catalog->patronLogin($username, $password, $secondaryUsername);
+        if (!$patron) {
+            $this->flashMessenger()
+                ->addMessage('authentication_error_invalid', 'error');
+            return false;
+        }
+
+        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+        try {
+            $user->saveLibraryCard(
+                $id == 'NEW' ? null : $id, $cardName, $username, $password
+            );
+        } catch(\VuFind\Exception\LibraryCard $e) {
+            $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+            return false;
+        }
+
+        return $this->redirect()->toRoute('librarycards-home');
     }
 
     /**
