@@ -112,7 +112,7 @@ trait VoyagerFinna
     {
         if ($function == 'patronLogin') {
             if (!empty($this->config['Catalog']['secondary_login_field'])) {
-                list (, $label) = explode(
+                list(, $label) = explode(
                     ':', $this->config['Catalog']['secondary_login_field'], 2
                 );
                 return [
@@ -156,7 +156,7 @@ trait VoyagerFinna
         if (!empty($this->config['Catalog']['secondary_login_field'])
             && $secondary !== null
         ) {
-            list ($secondaryLoginField) = explode(
+            list($secondaryLoginField) = explode(
                 ':', $this->config['Catalog']['secondary_login_field'], 2
             );
             $secondaryLoginField = preg_replace('/[^\w]/', '', $secondaryLoginField);
