@@ -26,7 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindTest\Mink;
-use VuFindTest\Auth\DatabaseTest;
 
 /**
  * Mink record actions test class.
@@ -154,7 +153,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Make account
         $page->find('css', '.modal-body .createAccountLink')->click();
         $this->fillInAccountForm(
-            $page, ['username'=>'username2', 'email'=>'test2@com.com']
+            $page, ['username' => 'username2', 'email' => 'test2@com.com']
         );
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->find('css', '.modal #addtag_tag'));
@@ -177,7 +176,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $tags = $page->findAll('css', '#tagList .tag');
         $this->assertEquals(4, count($tags));
         $tvals = [];
-        foreach ($tags as $i=>$t) {
+        foreach ($tags as $i => $t) {
             $link = $t->find('css', 'a');
             $tvals[] = $link->getText();
         }
@@ -230,7 +229,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Change the theme:
         $this->changeConfigs(
-            array('config' => array('Site' => array('theme' => 'bootstrap3')))
+            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
         );
 
         // Go to the advanced search page
@@ -285,7 +284,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Change the theme:
         $this->changeConfigs(
-            array('config' => array('Site' => array('theme' => 'bootstrap3')))
+            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
         );
 
         // Go to the advanced search page
