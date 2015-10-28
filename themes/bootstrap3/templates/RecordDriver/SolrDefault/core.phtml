@@ -118,6 +118,34 @@
       </tr>
       <? endif; ?>
 
+      <? $authors2 = $this->driver->getDeduplicatedAuthorsRoles(); ?>
+      <? if (isset($authors2['main']) && !empty($authors2['main'])): ?>
+        <tr>
+          <th><?=$this->transEsc(count($authors2['main']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
+          <td>
+            <? $i = 0; foreach ($authors2['main'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><? if (count($roles) > 0): ?> (<? foreach ($roles as $role): ?><?=$this->transEsc($role)?><? endforeach; ?>)<? endif; ?></span><? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
+      <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
+        <tr>
+          <th><?=$this->transEsc('Corporate Author')?>: </th>
+          <td>
+            <? $i = 0; foreach ($authors2['corporate'] as $corporate => $roles): ?><?=($i++ == 0)?'':', '?><span property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $corporate)?>"><?=$this->escapeHtml($corporate)?></a><? if (count($roles) > 0): ?> (<? foreach ($roles as $role): ?><?=$this->transEsc($role)?><? endforeach; ?>)<? endif; ?></span><? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
+      <? if (isset($authors2['secondary']) && !empty($authors2['secondary'])): ?>
+        <tr>
+          <th><?=$this->transEsc('Other Authors')?>: </th>
+          <td>
+            <? $i = 0; foreach ($authors2['secondary'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><? if (count($roles) > 0): ?> (<? foreach ($roles as $role): ?><?=$this->transEsc($role)?><? endforeach; ?>)<? endif; ?></span><? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <tr>
           <th><?=$this->transEsc('Format')?>: </th>

@@ -426,6 +426,126 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Deduplicate author information into associative array with main/corporate/
+     * secondary keys.
+     *
+     * @return array
+     */
+    public function getDeduplicatedAuthorsRoles()
+    {
+        $authors = [
+            'main' => $this->getPrimaryAuthors(),
+            'mainRoles' => $this->getPrimaryAuthorsRoles(),
+            'corporate' => [$this->getCorporateAuthor()],
+            'secondary' => $this->getSecondaryAuthors(),
+            'secondaryRoles' => $this->getSecondaryAuthorsRoles()
+        ];
+
+        // build new authors2-array
+        $authors2 = [];
+
+        // build primary author array with roles as subarray
+        if (!empty($authors['main'])) {
+            foreach ($authors['main'] as $index => $author) {
+                if (!isset($authors2['main'][$author])) {
+                    $authors2['main'][$author] = [];
+                }
+                if (isset($authors['mainRoles'][$index])) {
+                    $authors2['main'][$author][]
+                        = $authors['mainRoles'][$index];
+                }
+            }
+        }
+
+        // build secondary author array with roles as subarray
+        if (!empty($authors['secondary'])) {
+            foreach ($authors['secondary'] as $index => $author) {
+                if (!isset($authors2['secondary'][$author])) {
+                    $authors2['secondary'][$author] = [];
+                }
+                if (isset($authors['secondaryRoles'][$index])) {
+                    $authors2['secondary'][$author][]
+                        = $authors['secondaryRoles'][$index];
+                }
+            }
+        }
+
+        // build corporate array
+        if (!empty($authors['corporate'])) {
+            foreach ($authors['corporate'] as $index => $corporate) {
+                if (!isset($authors2['corporate'][$corporate])) {
+                    $authors2['corporate'][$corporate] = [];
+                }
+            }
+        }
+
+        // dedup
+
+        // dedup corporates from main: move any corporate in main author array to
+        // corporate array keeping the relators
+        if (!empty($authors2['main']) && !empty($authors2['corporate'])) {
+            foreach ($authors2['main'] as $author => $roles) {
+                if (isset($authors2['corporate'][$author])) {
+                    $authors2['corporate'][$author] = array_merge(
+                        $authors2['main'][$author],
+                        $authors2['corporate'][$author]
+                    );
+                    unset($authors2['main'][$author]);
+                }
+            }
+        }
+
+        // dedup corporates from secondary: move any corporate in secondary author
+        // array to corporate array keeping the relators
+        if (!empty($authors2['secondary']) && !empty($authors2['corporate'])) {
+            foreach ($authors2['secondary'] as $author => $roles) {
+                if (isset($authors2['corporate'][$author])) {
+                    $authors2['corporate'][$author] = array_merge(
+                        $authors2['secondary'][$author],
+                        $authors2['corporate'][$author]
+                    );
+                    unset($authors2['secondary'][$author]);
+                }
+            }
+        }
+
+        // dedup secondary authors from main: move any secondary authors also present
+        // in main authors array to main author array to keeping the relators
+        if (!empty($authors2['main'])) {
+            foreach ($authors2['main'] as $author => $roles) {
+                if (isset($authors2['secondary'][$author])) {
+                    $authors2['main'][$author] = array_merge(
+                        $authors2['main'][$author],
+                        $authors2['secondary'][$author]
+                    );
+                    unset($authors2['secondary'][$author]);
+                }
+            }
+        }
+
+        // remove default_relator
+        $filter = function ($array) use (&$filter) {
+            foreach ($array as $key => $value) {
+                if (count($value, COUNT_NORMAL) === count($value, COUNT_RECURSIVE)) {
+                    $value = array_filter(
+                        $value,
+                        function ($k) {
+                            return $k != "default_relator";
+                        }
+                    );
+                    $array[$key] = $value;
+                } else {
+                    $array[$key] = $filter($value);
+                }
+            }
+            return $array;
+        };
+
+        // return author array with roles without "default_relator" value
+        return $filter($authors2);
+    }
+
+    /**
      * Get the edition of the current record.
      *
      * @return string
@@ -986,6 +1106,18 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get an array of all main authors roles (complementing
+     * getSecondaryAuthorsRoles()).
+     *
+     * @return array
+     */
+    public function getPrimaryAuthorsRoles()
+    {
+        return isset($this->fields['author_role']) ?
+            $this->fields['author_role'] : [];
+    }
+
+    /**
      * Get credits of people involved in production of the item.
      *
      * @return array
@@ -1112,6 +1244,18 @@ class SolrDefault extends AbstractBase
     {
         return isset($this->fields['author2']) ?
             $this->fields['author2'] : [];
+    }
+
+    /**
+     * Get an array of all secondary authors roles (complementing
+     * getPrimaryAuthorsRoles()).
+     *
+     * @return array
+     */
+    public function getSecondaryAuthorsRoles()
+    {
+        return isset($this->fields['author2_role']) ?
+            $this->fields['author2_role'] : [];
     }
 
     /**
