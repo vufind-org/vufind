@@ -1,6 +1,6 @@
 <?php
 /**
- * Mink cart test class.
+ * Mink record actions test class.
  *
  * PHP version 5
  *
@@ -29,7 +29,7 @@ namespace VuFindTest\Mink;
 use VuFindTest\Auth\DatabaseTest;
 
 /**
- * Mink cart test class.
+ * Mink record actions test class.
  *
  * @category VuFind2
  * @package  Tests
@@ -37,7 +37,7 @@ use VuFindTest\Auth\DatabaseTest;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
+class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
     use \VuFindTest\Unit\UserCreationTrait;
 
@@ -96,7 +96,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Click add comment without logging in
         // TODO Rewrite for comment and login coming
         $page->findById('usercomments')->click();
-        $this->assertNotNull($page->find('css', '#comment[disabled]'));
+        $this->assertNotNull($page->find('css', '#comment'));
+        $this->assertEquals(
+            'You must be logged in first',
+            $page->find('css', 'form.comment .btn.btn-primary')->getValue()
+        ); // Can Comment?
         $page->find('css', 'form.comment .btn-primary')->click();
         $this->assertNotNull($page->find('css', '.modal.in')); // Lightbox open
         $this->assertNotNull($page->find('css', '.modal [name="username"]'));
@@ -105,7 +109,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInAccountForm($page);
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         // Make sure page updated for login
-        $this->assertNull($page->find('css', '#comment[disabled]')); // Can Comment?
+        $page = $this->gotoRecord($session);
+        $page->findById('usercomments')->click();
+        $this->assertEquals(
+            'Add your comment',
+            $page->find('css', 'form.comment .btn.btn-primary')->getValue()
+        ); // Can Comment?
         $this->assertNull($page->find('css', '.comment.row'));
         // Add comment
         $page->findById('comment')->setValue('one');
@@ -318,7 +327,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page->selectFieldOption('sms_provider', 'verizon');
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         // Check for confirmation message
-        var_dump($page->find('css', '.modal-body')->getHtml());
         $this->assertNotNull($page->find('css', '.modal .alert-info'));
         // Logout
         $page->find('css', '.logoutOptions a[title="Log Out"]')->click();
