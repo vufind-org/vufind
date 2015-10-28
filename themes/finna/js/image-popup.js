@@ -217,6 +217,21 @@ finna.imagePopup = (function(finna) {
             });
         });
     };
+
+    var resolveRecordImageSize = function() {
+        $(".image-popup-trigger img").one('load', function() {
+            if (this.naturalWidth > 10 && this.naturalHeight > 10) {
+                initThumbnailNavi();
+                initRecordImage();
+            } else {
+                $(this).closest('a.image-popup-trigger')
+                    .addClass('disable')
+                    .unbind('click').on('click', function() { return false; }
+                );
+            }
+        });
+    };
+
     var initDimensions = function() {
       if ($('.open-link a').attr('href') != 'undefined') {
           var img = document.createElement('img')
@@ -233,8 +248,12 @@ finna.imagePopup = (function(finna) {
     }
     var my = {
         init: function() {
-            initThumbnailNavi();
-            initRecordImage();
+            if (module != 'record') {
+                initThumbnailNavi();
+                initRecordImage();
+            } else {
+                resolveRecordImageSize();
+            }
 
             if (location.hash == '#image') {
                 openPopup($('.image-popup-trigger'));
