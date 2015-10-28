@@ -1,0 +1,113 @@
+<?
+  $this->layout()->browse = false;
+  $this->headMeta()->appendName('robots', 'noindex,follow');
+
+  // Set up page title:
+  $lookfor = $this->params->getDisplayQuery();
+  if (isset($this->overrideTitle)) {
+      $this->headTitle($this->overrideTitle);
+  } else {
+      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+  }
+
+  // Set up search box:
+  $this->layout()->searchbox = $this->context($this)->renderInContext(
+      'search/searchbox.phtml',
+      array(
+        'lookfor' => $lookfor,
+        'searchIndex' => $this->params->getSearchHandler(),
+        'searchType' => $this->params->getSearchType(),
+        'searchId' => false,
+        'searchClassId' => $this->params->getsearchClassId(),
+        'checkboxFilters' => $this->params->getCheckboxFacets(),
+        'filterList' => $this->params->getFilters(),
+        'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
+        'selectedShards' => $this->params->getSelectedShards(),
+        'savedSearches' => $this->layout()->savedTabs
+      )
+  );
+
+
+  // Set up breadcrumbs:
+  if (isset($this->overrideTitle)) {
+    $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($this->overrideTitle) . '</li>';
+  } else {
+    $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Search') . ': ' . $this->escapeHtml($lookfor) . '</li>';
+  }
+
+
+  // Set up Finna Main Header:
+
+  $this->layout()->finnaMainHeader = '&nbsp;';
+
+  // Enable cart if appropriate:
+  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive();
+  // Enable bulk options if appropriate:
+  $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
+
+  // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("finna-search-tabs-recommendations.js");
+  $this->headScript()->appendFile("finna-item-status.js");
+  $this->headScript()->appendFile("finna-metalib.js");
+
+?>
+<?=$this->flashmessages()?>
+
+<div class="hidden-print search-controls row search-<?= $this->escapeHtmlAttr($this->params->getSearchType())?>">
+  <div class="col-xs-12 pagination">
+    <div></div>
+  </div>
+</div>
+<div class="row results result-view-<?= $this->escapeHtmlAttr($this->params->getView())?>">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+
+    <? /* End Listing Options */ ?>
+    <div class="row">
+      <form class="form-inline col-xs-12" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
+        <?= $this->authorizationNote($searchClassId) ?>
+        <div class="ajax-results">
+          <div class="loading">
+            <div class="txt"><?=$this->transEsc('metalib_loading')?> <span class="page"></span></div>
+            <i class="fa fa-spin fa-spinner"></i>
+            <div><?=$this->transEsc('metalib_loading_set')?> <span class="set"></span></div>
+          </div>
+          <div class="holder"></div>
+        </div>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
+      </form>
+    </div>
+  </div>
+  <? /* End Main Listing */ ?>
+  
+  <? /* Narrow Search Options */ ?>
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?= $this->context($this)->renderInContext(
+    'metalib/sidebar.phtml', []
+  );
+    ?>
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/search-post-facets")): ?>
+    <div class="row">
+      <div class="col-xs-12">
+        <?=$this->render($template)?>
+      </div>
+    </div>
+    <? endif; ?>
+  </div>
+</div>
+</div>
+<div class="container-fluid searchtools-background">&nbsp;</div>
+<div class="mobile-navigation brand-primary visible-xs">
+  <ul>
+    <li class="sidebar-navigation"><i class="fa fa-arrow-up fa-arrow-down"></i> <?=$this->transEsc('Narrow Search')?> <span class="active-filters hidden"><?=$this->transEsc('Active filters')?>: </span></li>
+  </ul>
+</div>
+<?
+$script = '
+$(document).ready(function() {
+  finna.metalib.init("'
+. $this->escapeJs($currentSet) . '",'
+. "'" . $this->qs . "'"
+. ');});';
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

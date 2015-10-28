@@ -1,3 +1,4 @@
+<!-- START of: finna - RecordDriver/SolrDefault/toolbar.phtml -->
 <?
   $addThis = $this->addThis();
   if (!empty($addThis)) {
@@ -9,11 +10,7 @@
   $controllerClass = 'controller:' . $this->record($this->driver)->getController();
   $cart = $this->cart();
   $cartId = $this->driver->getResourceSource() . '|' . $id;
-  $mediumThumb = $this->record($this->driver)->getThumbnail('medium');
   $largeThumb = $this->record($this->driver)->getThumbnail('large');
-  $summary = $this->driver->getSummary();
-  $authors = $this->driver->getNonPresenterAuthors();
-  $publisher = $this->driver->getPublicationDetails();
 ?>
 <div class="row hidden-xs">
 <div class="col-xs-12">
@@ -54,52 +51,6 @@
         <a class="addthis_button_pinterest_share"><i class="fa fa-pinterest"></i></a>
         <!-- <a class="addthis_button_google_plusone_share"><i class="fa fa-google-plus"></i></a> -->
       </div>
-      <? // Fetch correct image link and metadata here for Facebook, Pinterest and Twitter ?>
-      <? $this->doctype(Zend\View\Helper\Doctype::XHTML1_RDFA); ?> <? // See: http://framework.zend.com/manual/current/en/modules/zend.view.helpers.head-meta.html ?>
-      <? $this->headMeta()->setProperty('og:title', $this->escapeHtml($this->driver->getShortTitle())); ?>
-      <? if ($summary): ?>
-        <? if (iconv_strlen($summary[0]) < 157): ?> <? // max 156 chr ?>
-          <? $ogDesc = $summary[0]; ?>
-        <? else: ?>
-          <? $ogDesc = ($this->truncate($summary[0], 153)); ?> <? // max 156 - '3 dots'(...) = 153 ?>
-        <? endif; ?>
-        <? $this->headMeta()->setProperty('og:description', $ogDesc); ?>
-      <? endif; ?>
-      <? if (($authors) && !($authNames = isset($_SESSION['authNames']))): ?>
-        <? foreach($authors as $index => $author): ?>
-          <? $authNames .= ($index > 0 ? '; ' : ''); ?>
-          <? $authNames .= ($this->escapeHtml($author['name'])); ?>
-          <? if (!empty($author['role'])): ?>
-            <? $authNames .= ", "; ?>
-            <? $authNames .= ($this->escapeHtml($author['role'])); ?>
-          <? endif; ?>
-        <? endforeach; ?>
-        <? $this->headMeta()->setProperty('article:author', $authNames); ?>
-      <? endif; ?>
-      <? if (($publisher) && !($publisherName = isset($_SESSION['publisherName']))): ?>
-        <? foreach ($publisher as $field): ?>
-          <? $pubName = $field->getName(); if (!empty($pubName)): ?>
-            <? $publisherName .= ($this->escapeHtml($pubName)); ?>
-          <? else: $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
-            <? $publisherName .= ($this->escapeHtml($pubPlace)); ?>
-            <? endif; ?>
-          <? endif; ?>
-        <? endforeach; ?>
-        <? $this->headMeta()->setProperty('article:publisher', $publisherName); ?>
-      <? endif; ?>
-      <? $this->headMeta()->setProperty('og:image', $this->escapeHtmlAttr($mediumThumb)); ?>
-      <? $this->headMeta()->appendName('twitter:card', 'summary'); ?>
-      <? $this->headMeta()->appendName('twitter:site', '@finnafi'); ?>
-      <? $this->headMeta()->appendName('twitter:title', ($this->escapeHtml($this->driver->getShortTitle()))); ?>
-      <? if ($summary): ?>
-        <? if (iconv_strlen($summary[0]) < 201): ?> <? // max 200 chr ?>
-          <? $twDesc = $summary[0]; ?>
-        <? else: ?>
-          <? $twDesc = truncate($summary[0], 197); ?> <? // max 200 - '3 dots'(...) = 197 ?>
-        <? endif; ?>
-        <? $this->headMeta()->appendName('twitter:description', $twDesc); ?>
-      <? endif; ?>
-      <? $this->headMeta()->appendName('twitter:image', ($this->escapeHtmlAttr($mediumThumb))); ?>
     </li>
   <? endif; ?>
   <? if ($cart->isActive()): ?>
@@ -122,4 +73,4 @@
   </ul>
 </div>
 </div>
-
+<!-- END of: finna - RecordDriver/SolrDefault/toolbar.phtml -->

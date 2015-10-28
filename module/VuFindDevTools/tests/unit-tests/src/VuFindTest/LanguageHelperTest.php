@@ -1,0 +1,97 @@
+<?php
+
+/**
+ * Unit tests for language helper.
+ *
+ * PHP version 5
+ *
+ * Copyright (C) Villanova University 2014.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  Search
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org
+ */
+namespace VuFindTest\Controller;
+
+use VuFindDevTools\LanguageHelper;
+use Zend\Config\Config;
+
+/**
+ * Unit tests for language helper.
+ *
+ * @category VuFind2
+ * @package  Search
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org
+ */
+class LanguageHelperTest extends \VuFindTest\Unit\TestCase
+{
+    /**
+     * Test language mappings.
+     *
+     * @return void
+     */
+    public function testGetLangName()
+    {
+        $h = $this->getMockHelper();
+
+        // config-driven case:
+        $this->assertEquals('English', $h->getLangName('en'));
+
+        // special cases:
+        $this->assertEquals('British English', $h->getLangName('en-gb'));
+        $this->assertEquals('Brazilian Portuguese', $h->getLangName('pt-br'));
+
+        // unknown case:
+        $this->assertEquals('??', $h->getLangName('??'));
+    }
+
+    /**
+     * Test language comparison.
+     *
+     * @return void
+     */
+    public function testComparison()
+    {
+        $l1 = ['1' => 'one', '2' => 'two', '3' => 'three'];
+        $l2 = ['2' => 'two', '4' => 'four'];
+        $h = $this->getMockHelper();
+        $expected = [
+            'notInL1' => [4],
+            'notInL2' => [1, 3],
+            'l1Percent' => '150.00',
+            'l2Percent' => '66.67'
+        ];
+        $this->assertEquals($expected, $h->compareLanguages($l1, $l2));
+    }
+
+    /**
+     * Get a mock controller.
+     *
+     * @return Controller
+     */
+    protected function getMockHelper()
+    {
+        $config = new Config(['Languages' => ['en' => 'English']]);
+        return new LanguageHelper(
+            $this->getMock('VuFind\I18n\Translator\Loader\ExtendedIni'),
+            $config
+        );
+    }
+}

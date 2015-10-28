@@ -4,6 +4,7 @@ return array(
     'helpers' => array(
         'factories' => array(
             'authorizationNote' => 'Finna\View\Helper\Root\Factory::getAuthorizationNote',
+            'combined' => 'Finna\View\Helper\Root\Factory::getCombined',
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
@@ -13,14 +14,17 @@ return array(
             'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
             'layoutclass' => 'Finna\View\Helper\Root\Factory::getLayoutClass',
             'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
+            'metalib' => 'Finna\View\Helper\Root\Factory::getMetaLib',
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
             'openUrl' => 'Finna\View\Helper\Root\Factory::getOpenUrl',
             'organisationsList'
                 => 'Finna\View\Helper\Root\Factory::getOrganisationsList',
             'personaAuth' => 'Finna\View\Helper\Root\Factory::getPersonaAuth',
+            'piwik' => 'Finna\View\Helper\Root\Factory::getPiwik',
             'primo' => 'Finna\View\Helper\Root\Factory::getPrimo',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
+            'recordLink' => 'Finna\View\Helper\Root\Factory::getRecordLink',
             'scriptSrc' => 'Finna\View\Helper\Root\Factory::getScriptSrc',
             'searchbox' => 'Finna\View\Helper\Root\Factory::getSearchBox',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',

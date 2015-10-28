@@ -40,6 +40,15 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class PluginFactory extends \VuFind\Search\Options\PluginFactory
 {
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->defaultNamespace = 'Finna\Search';
+    }
+
+    /**
      * Create a service for the specified name.
      *
      * @param ServiceLocatorInterface $serviceLocator Service locator
@@ -51,12 +60,11 @@ class PluginFactory extends \VuFind\Search\Options\PluginFactory
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
         $name, $requestedName
     ) {
-        
         if ($name === 'favorites') {
             return new \Finna\Search\Favorites\Options(
                 $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );
-        } else if ($name == 'solr' || $name == 'combined') {
+        } else if ($name == 'solr' || $name == 'metalib' || $name == 'combined') {
             $this->defaultNamespace = 'Finna\Search';
             $class = $this->getClassName($name, $requestedName);
             return new $class(

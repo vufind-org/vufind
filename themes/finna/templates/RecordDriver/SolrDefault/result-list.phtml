@@ -1,4 +1,4 @@
-<!-- start of Default result-list.phtml -->
+<!-- START of: finna - RecordDriver/SolrDefault/result-list.phtml -->
 <?
   $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
 ?>
@@ -131,6 +131,12 @@
 
     <?=$this->partial('RecordDriver/SolrDefault/holdings.phtml') ?>
     <?=$this->record($this->driver)->getOnlineUrls('results')?>
+    <?
+      $formats = $this->driver->tryMethod('getFormats');
+      if ($this->record($this->driver)->getFormatClass(end($formats)) === '0database'):
+    ?>
+       <?= $this->partial('RecordDriver/MetaLib/search-link.phtml', ['id' => $this->driver->getUniqueID()]); ?>
+    <? endif; ?>
     <?=$this->record($this->driver)->getPreviews()?>
 
   </div>
@@ -187,5 +193,4 @@
     <? endif; ?>
   </div>
 </div>
-<!-- End of Default result-list.phtml -->
-
+<!-- END of: finna - RecordDriver/SolrDefault/result-list.phtml -->

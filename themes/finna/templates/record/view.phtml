@@ -1,8 +1,14 @@
+<!-- START of: finna - record/view.phtml -->
 <?
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
   $this->headScript()->appendFile("check_save_statuses.js");
-  if ($this->driver->getResourceSource() == 'Primo') {
+  $this->headScript()->appendFile("finna-comments.js");
+  if ($this->record($this->driver)->ratingAllowed()) {
+     $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
+     $this->headLink()->appendStylesheet('vendor/bootstrap-rating.css');
+  }
+  if (in_array($this->driver->getResourceSource(), ['MetaLib', 'Primo'])) {
     $this->headScript()->appendFile("finna-bx.js");
   }
   // Activate Syndetics Plus if necessary:
@@ -82,6 +88,7 @@ EOT;
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getToolbar()?>
+      <?=$this->record($this->driver)->getMetaTags();?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
     </div>
 
@@ -105,7 +112,7 @@ EOT;
           $comments = $this->driver->getComments();
         ?>
         <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<?= count($comments) ?>)<? endif; ?></a>
+          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($comments) ?></span>)<? endif; ?></a>
         </li>
         <? endforeach; ?>
       </ul>
@@ -130,7 +137,7 @@ EOT;
     <? foreach ($this->related()->getList($this->driver) as $current): ?>
       <?=$this->related()->render($current)?>
     <? endforeach; ?>
-    <? if ($this->driver->getResourceSource() == 'Primo'): ?>
+    <? if (in_array($this->driver->getResourceSource(), ['MetaLib', 'Primo'])): ?>
       <div id="bx-recommendations-holder">
       </div>
     <? endif; ?>
@@ -146,3 +153,4 @@ EOT;
 </div>
 <?=$this->partial('RecordDriver/SolrDefault/toolbar_mobile.phtml') ?>
 <div>
+<!-- END of: finna - record/view.phtml -->

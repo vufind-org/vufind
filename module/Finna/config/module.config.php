@@ -91,10 +91,13 @@ $config = [
         'invokables' => [
             'ajax' => 'Finna\Controller\AjaxController',
             'combined' => 'Finna\Controller\CombinedController',
+            'comments' => 'Finna\Controller\CommentsController',
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
             'feedback' => 'Finna\Controller\FeedbackController',
             'librarycards' => 'Finna\Controller\LibraryCardsController',
+            'metalib' => 'Finna\Controller\MetaLibController',
+            'metalibrecord' => 'Finna\Controller\MetaLibrecordController',
             'my-research' => 'Finna\Controller\MyResearchController',
             'pci' => 'Finna\Controller\PCIController',
             'primo' => 'Finna\Controller\PrimoController',
@@ -134,6 +137,9 @@ $config = [
                 ],
                 'invokables' => [
                     'comments' => 'Finna\Db\Table\Comments',
+                    'comments-inappropriate' => 'Finna\Db\Table\CommentsInappropriate',
+                    'comments-record' => 'Finna\Db\Table\CommentsRecord',
+                    'metalibSearch' => 'Finna\Db\Table\MetaLibSearch',
                     'search' => 'Finna\Db\Table\Search'
                 ],
             ],
@@ -157,6 +163,7 @@ $config = [
             ],
             'search_backend' => [
                 'factories' => [
+                    'MetaLib' => 'Finna\Search\Factory\MetaLibBackendFactory',
                     'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'Finna\Search\Factory\SolrDefaultBackendFactory',
                 ],
@@ -175,6 +182,7 @@ $config = [
                 'abstract_factories' => ['Finna\Search\Results\PluginFactory'],
                 'factories' => [
                     'combined' => 'Finna\Search\Results\Factory::getCombined',
+                    'metalib' => 'Finna\Search\Results\Factory::getMetaLib',
                     'solr' => 'Finna\Search\Results\Factory::getSolr',
                     'primo' => 'Finna\Search\Results\Factory::getPrimo',
                 ]
@@ -186,6 +194,7 @@ $config = [
             ],
             'recorddriver' => [
                 'factories' => [
+                    'metalib' => 'Finna\RecordDriver\Factory::getMetaLib',
                     'solrdefault' => 'Finna\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'Finna\RecordDriver\Factory::getSolrMarc',
                     'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
@@ -197,6 +206,7 @@ $config = [
             'recordtab' => [
                 'factories' => [
                     'map' => 'Finna\RecordTab\Factory::getMap',
+                    'usercomments' => 'Finna\RecordTab\Factory::getUserComments',
                 ],
                 'invokables' => [
                     'componentparts' => 'Finna\RecordTab\ComponentParts',
@@ -209,6 +219,13 @@ $config = [
             ],
         ],
         'recorddriver_tabs' => [
+            'Finna\RecordDriver\MetaLib' => [
+                'tabs' => [
+                    'Details' => 'StaffViewArray'
+                ],
+                'defaultTab' => null,
+            ],
+
             'Finna\RecordDriver\SolrMarc' => [
                 'tabs' => [
                     'Holdings' => 'HoldingsILS',
@@ -270,17 +287,24 @@ $config = [
 
 ];
 
+$recordRoutes = [
+   'metalibrecord' => 'MetaLibRecord'
+];
+
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
+    'Comments' => ['inappropriate' => 'inappropriate/[:id]'],
     'LibraryCards' => ['newLibraryCardPassword' => 'newPassword/[:id]'],
 ];
 
 $staticRoutes = [
    'Browse/Database', 'Browse/Journal',
+   'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
    'PCI/Home', 'PCI/Search', 'PCI/Record'
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
 

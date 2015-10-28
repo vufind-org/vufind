@@ -494,6 +494,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             foreach ($itemIds as $item) {
                 $callnumber = null;
                 $results1 = pg_execute($this->db, "prep_query", [$item]);
+                $number = "";
                 while ($row1 = pg_fetch_row($results1)) {
                     if ($row1[4] == "b") {
                         $barcode = $row1[3];

@@ -82,8 +82,10 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
      */
     public function replaceFacet($field, $value, $operator = 'AND')
     {
-        $this->params->removeAllFilters($field);
-        return $this->addFacet($field, $value, $operator);
+        $newParams = clone($this->params);
+        $newParams->removeAllFilters($field);
+        $helper = new static($newParams);
+        return $helper->addFacet($field, $value, $operator);
     }
 
     /**
@@ -132,6 +134,9 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
         if ($filter && isset($filter['type']) && isset($filter['query'])) {
             $field = $this->params->getSpatialDateRangeField() . '_type';
             $params[$field] = $filter['type'];
+        }
+        if ($set = $this->params->getMetaLibSearchSet()) {
+            $params['set'] = $set;
         }
         return $params;
     }

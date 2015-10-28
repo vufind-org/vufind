@@ -1,11 +1,5 @@
 @import "bootstrap/bootstrap";
 
-/* -- Make IE10 mobile work responsively in Windows phone 8 (IE10 doesn't act responsively below 401px wide) --*/
-@media (max-width: 400px) {
-	@-ms-viewport {
-		width: 320px;
-	}
-}
 body {
     background: @background-image-url;
     background-attachment: @background-image-attachment;
@@ -26,6 +20,9 @@ body > .main {
     &.template-name-home {
         background: @home-content-background;   
     }
+}
+iframe {
+    border: none;   
 }
 header {
      @media(min-width:768px) {
@@ -219,13 +216,13 @@ footer {
         }
     }
     & a, p, h5 {
-        color: @body-bg;  
+        color: @footer-text-color;  
     }
     h5 {
         font-size: 1.2em;   
     }
     & a:hover {
-        color: @body-bg;
+        color: @footer-text-color;
         text-decoration: underline;
     }
     & li {
@@ -431,6 +428,13 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 .part-authors-padded {
 	  padding-left: 10px;
+}
+.record .rating-average {
+    margin-top: 10px;
+    & .stars {
+        float: left;
+        margin-right: 10px;
+    }
 }
 
 @media(max-width:@screen-xs-max) {
@@ -827,7 +831,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* --- Sidebar --- */
 .sidebar {
- 
     .list-group:not(.filters) .title {
         margin-bottom: 5px;
         cursor:pointer;
@@ -1216,9 +1219,9 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
   text-decoration: line-through;
 }
 //== PCI
-.template-dir-primo, .template-dir-combined, #search-tabs-recommendations-holder {
+.template-dir-primo.template-name-search, .template-dir-combined, #search-tabs-recommendations-holder {
     .openurls.more-options {
-        .visible-xs();   
+        .hidden();   
     }
 }
 .summary {
@@ -1227,6 +1230,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     line-height: 1.35em;
     margin-bottom: 10px;
 }
+.metalib-available-online,
 .primo-available-online {
     & p {
         margin: 0px;   
@@ -1234,6 +1238,8 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     & a {
         display: inline-block;
     }
+}
+.primo-available-online {
     & .host {
         font-size: 0.9em;
         color: @gray-light;
@@ -1242,7 +1248,16 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         display: none;
     }
 }
-.primo-available-online-record, .local-available-online-record {
+.metalib-available-online {
+    overflow: hidden;
+    & .more-options {
+        display: none;
+    }
+}
+
+.metalib-available-online-record,
+.primo-available-online-record, 
+.local-available-online-record {
     margin: 0px 0px 10px;
     font-size: 1.1em;
     padding-bottom: 10px;
@@ -1251,6 +1266,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         color: @gray-light;
     }
 }
+.metalib-available-online-record,
 .primo-available-online-record {
     & .more-options {
         display: none;
@@ -1485,6 +1501,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         overflow-y: scroll;
         padding-left: 0px;
         padding-right: 0px;
+        padding-bottom: 40px;
         &.open {
             top: 0%;
         }

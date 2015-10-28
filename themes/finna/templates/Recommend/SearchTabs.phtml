@@ -1,7 +1,8 @@
+<!-- START of: finna - Recommend/SearchTabs.phtml -->
 <? if ($this->results->getResultTotal() > 0): ?>
   <div class="search-tabs-recommendations">
     <div class="row">
-      <div class="col-xs-12">
+      <div class="col-sm-10 col-sm-push-2">
         <a class="title" href="<?=$this->escapeHtmlAttr($this->tab['url'])?>">
           <?=$this->translate('search_tabs_recommendation_title_html', ['%%lookfor%%' => $this->lookfor, '%%handler%%' => $this->handler, '%%tab%%' => $this->transEsc($this->tab['label']), '%%count%%' => $this->results->getResultTotal()]) ?>
         </a>
@@ -15,3 +16,4 @@
     </div>
   </div>
 <? endif; ?>
+<!-- END of: finna - Recommend/SearchTabs.phtml -->

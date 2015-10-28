@@ -547,6 +547,14 @@ finna.layout = (function() {
         initFacetTree(treeNode, inSidebar);
     };
     
+    var initJumpMenus = function(holder) {
+        if (typeof(holder) == "undefined") {
+            holder = $("body");
+        }
+        holder.find('select.jumpMenu').unbind('change').change(function() { $(this).closest('form').submit(); });
+        holder.find('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });
+    }
+    
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -558,10 +566,10 @@ finna.layout = (function() {
         initLightbox: initLightbox,
         updateLoginName: updateLoginName,
         initHierarchicalFacet: initHierarchicalFacet,
+        initJumpMenus: initJumpMenus,
+        initMobileNarrowSearch:initMobileNarrowSearch,
         init: function() {
-            $('select.jumpMenu').unbind('change').change(function() { $(this).closest('form').submit(); });
-            $('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });
-
+            initJumpMenus();
             initAnchorNavigationLinks();
             initFixFooter();
             initHideDetails();

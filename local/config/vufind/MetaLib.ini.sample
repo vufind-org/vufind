@@ -1,0 +1,9 @@
+; Inherit main configuration
+[Parent_Config]
+relative_path = ../finna/MetaLib.ini
+override_full_sections = "Basic_Searches,Advanced_Searches"
+
+; Add any overrides below
+[General]
+enabled = 0
+institution = INST

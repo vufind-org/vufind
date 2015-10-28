@@ -55,8 +55,8 @@ class Primo extends \Zend\View\Helper\AbstractHelper
      */
     public function isAvailable()
     {
-        return !empty($this->config['Institutions']['code'])
-            && $this->config['Institutions']['code']->toArray()
-            !== ['MYINSTITUTION'];
+        return !empty($this->config['Institutions']['onCampusRule'])
+            && (!isset($this->config['General']['enabled'])
+                || $this->config['General']['enabled']);
     }
 }

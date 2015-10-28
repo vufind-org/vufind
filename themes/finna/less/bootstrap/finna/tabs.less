@@ -79,6 +79,19 @@
         & .comment-text {
             padding-top: 5px;
         }
+        & .comment-rating {
+            display: inline-block;
+        }
+        & .comment-info {
+            display: inline;
+            margin-left: 10px;
+        }
+    }
+    & #usercomments-tab {
+        & form.comment .rating-holder .info {
+            float: left;
+            margin-right: 5px;
+        }
     }
     & #toc-tab, ul.toc {
         margin-left: 10px;
@@ -98,6 +111,9 @@
         margin-bottom: 5px;
         & .searchterms {
             font-weight: bold;   
+        }
+        @media (max-width: @screen-xs-max) {
+            display: block;   
         }
     }
 

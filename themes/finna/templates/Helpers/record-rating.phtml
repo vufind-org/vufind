@@ -1,0 +1,6 @@
+<div class="rating-average">
+  <div class="stars">
+    <?= $this->partial('Helpers/rating-stars.phtml', ['value' => $this->average, 'disabled' => true])?>
+  </div>
+  <div class="count">(<?=$this->count?>)</div>
+</div>
