@@ -81,13 +81,14 @@ class Connection extends \VuFind\ILS\Connection
      *
      * This is a wrapper to ILS drivers' patronLogin() with a session-based cache
      *
-     * @param string $username The patron user id or barcode
-     * @param string $password The patron password
+     * @param string $username  The patron user id or barcode
+     * @param string $password  The patron password
+     * @param string $secondary Optional secondary login field
      *
      * @return mixed           Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($username, $password)
+    public function patronLogin($username, $password, $secondary = null)
     {
         $session = new \Zend\Session\Container('Finna\ILS\Connection\PatronCache');
         $hash = md5("$username\t$password");
@@ -99,7 +100,9 @@ class Connection extends \VuFind\ILS\Connection
         }
 
         if ($this->checkCapability('patronLogin', compact('username', 'password'))) {
-            $result = $this->getDriver()->patronLogin($username, $password);
+            $result = $this->getDriver()->patronLogin(
+                $username, $password, $secondary
+            );
             if (is_array($result)) {
                 $session->$hash = [
                     'timestamp' => time(),

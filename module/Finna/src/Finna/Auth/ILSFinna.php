@@ -39,6 +39,22 @@ namespace Finna\Auth;
 trait ILSFinna
 {
     /**
+     * Get secondary login field label (if any)
+     *
+     * @param string $target Login target (MultiILS)
+     *
+     * @return string
+     */
+    public function getSecondaryLoginFieldLabel($target)
+    {
+        $config = $this->getCatalog()->getConfig('patronLogin', "$target.login");
+        if (!empty($config['secondary_login_field_label'])) {
+            return $config['secondary_login_field_label'];
+        }
+        return '';
+    }
+
+    /**
      * Update the database using details from the ILS, then return the User object.
      *
      * @param array $info User details returned by ILS driver.
@@ -89,4 +105,5 @@ trait ILSFinna
 
         return $user;
     }
+
 }
