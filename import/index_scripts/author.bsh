@@ -241,8 +241,8 @@ public List getRelatorsFilteredByRelator(Record record, String tagList,
 ) {
     // default firstOnly to false!
     return getRelatorsFilteredByRelator(
-        record, tagList, acceptWithoutRelator, relatorConfig, false, "default_relator"
-    );
+            record, tagList, acceptWithoutRelator, relatorConfig, false, ""
+        );
 }
 
 /**
