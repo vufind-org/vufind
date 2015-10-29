@@ -1,9 +1,10 @@
 <?php
 /**
- * Permission Provider Factory Class
+ * IpRange permission provider for VuFind.
  *
  * PHP version 5
  *
+ * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,50 +22,43 @@
  *
  * @category VuFind2
  * @package  Authorization
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     http://www.vufind.org  Main Page
  */
 namespace Finna\Role\PermissionProvider;
-use Zend\ServiceManager\ServiceManager;
 
 /**
- * Permission Provider Factory Class
+ * IpRange permission provider for VuFind.
  *
  * @category VuFind2
  * @package  Authorization
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
- *
- * @codeCoverageIgnore
+ * @link     http://www.vufind.org  Main Page
  */
-class Factory extends \VuFind\Role\PermissionProvider\Factory
+class IpRange extends \VuFind\Role\PermissionProvider\IpRange
 {
     /**
-     * Factory for authentication strategy
+     * Return an array of roles which may be granted the permission based on
+     * the options.
      *
-     * @param ServiceManager $sm Service manager.
+     * @param mixed $options Options provided from configuration.
      *
-     * @return AuthencationStrategy
+     * @return array
      */
-    public static function getAuthenticationStrategy(ServiceManager $sm)
+    public function getPermissions($options)
     {
-        return new AuthenticationStrategy($sm->getServiceLocator());
-    }
-
-    /**
-     * Factory for IpRange
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return IpRange
-     */
-    public static function getIpRange(ServiceManager $sm)
-    {
-        return new IpRange(
-            $sm->getServiceLocator()->get('Request'),
-            $sm->getServiceLocator()->get('VuFind\IpAddressUtils')
-        );
+        foreach ($options as &$range) {
+            // Remove IP-range name and description
+            list($range,) = explode('#', $range, 2);
+        }
+        return parent::getPermissions($options);
     }
 }
