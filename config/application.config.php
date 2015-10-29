@@ -22,7 +22,7 @@ if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
 // Set up cache directory (be sure to keep separate cache for CLI vs. web and
 // to account for potentially variant environment settings):
 $baseDir = ($local = getenv('VUFIND_LOCAL_DIR')) ? $local : 'data';
-$cacheDir = $baseDir . '/cache';
+$cacheDir = ($cache = getenv('VUFIND_CACHE_DIR')) ? $cache : $baseDir . '/cache';
 if (!is_dir($cacheDir)) {
     mkdir($cacheDir);
 }
