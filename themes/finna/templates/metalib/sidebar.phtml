@@ -42,4 +42,13 @@ $customQueryHandler = $queryHandler != 'AllFields';
     </div>
   </div>
   <? endif; ?>
+
+  <? if ($this->browseDatabase): ?>
+  <div class="browse">
+    <a href="<?=$this->url('browse-database')?>">
+      <i class="fa fa-browse-database"></i>
+      <?= $this->translate('browse_extended_Database')?>
+    </a>
+  </div>
+  <? endif; ?>
 </form>

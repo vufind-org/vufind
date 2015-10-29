@@ -1011,13 +1011,12 @@ HMACkey = mySuperSecretValue
 ;userWhitelist[] = username2
 
 ; This section sets global defaults for caches; file caching is used by default.
+; A custom directory for caching can be defined by the environment variable
+; VUFIND_CACHE_DIR (see httpd-vufind.conf). The default location is inside the
+; local settings directory.
 [Cache]
 ; Set time to live value for Zend caches (in seconds), 0 means maximum possible.
 ttl = 60
-; This setting can be used to force caching in a specific location other than the
-; default location inside the local settings directory. This directory must exist
-; and be writable by the web server.
-;cache_dir = "local/cache/"
 ; Override umask for cache directories and files.
 ;umask = 022
 ; Permissions for Zend-created cache directories and files, subject to umask

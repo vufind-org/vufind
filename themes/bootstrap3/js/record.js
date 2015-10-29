@@ -226,11 +226,14 @@ function ajaxTagUpdate(tag, remove) {
 function applyRecordTabHash()
 {
   var activeTab = $('ul.recordTabs li.active a').attr('id');
+  var initiallyActiveTab = $('ul.recordTabs li.initiallyActive a').attr('id');
   var newTab = typeof window.location.hash !== 'undefined'
     ? window.location.hash.toLowerCase() : '';
 
   // Open tag in url hash
-  if (newTab.length > 0 && '#' + activeTab != newTab) {
+  if (newTab.length == 0 || newTab == '#tabnav') {
+    $('#' + initiallyActiveTab).click();
+  } else if (newTab.length > 0 && '#' + activeTab != newTab) {
     $(newTab).click();
   }
 }

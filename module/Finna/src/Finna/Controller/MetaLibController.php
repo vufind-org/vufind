@@ -74,6 +74,7 @@ class MetaLibController extends \VuFind\Controller\AbstractSearch
         $query = new Query();
         $view = $this->initSets($view, $query);
         $this->layout()->metalibSet = $this->getRequest()->getQuery()->get('set');
+        $view->browseDatabase = $this->isBrowseDatabaseAvailable();
         return $view;
     }
 
@@ -112,6 +113,7 @@ class MetaLibController extends \VuFind\Controller\AbstractSearch
             $view->results = $results;
             $view->disablePiwik = true;
             $view = $this->initSets($view, $params->getQuery());
+            $view->browseDatabase = $this->isBrowseDatabaseAvailable();
         }
         $this->initSavedTabs();
         return $view;
@@ -187,7 +189,7 @@ class MetaLibController extends \VuFind\Controller\AbstractSearch
     }
 
     /**
-     * Check if MetaLib is available..
+     * Check if MetaLib is available.
      *
      * @return bool
      */
@@ -195,5 +197,17 @@ class MetaLibController extends \VuFind\Controller\AbstractSearch
     {
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('MetaLib');
         return isset($config->General->enabled) && $config->General->enabled;
+    }
+
+    /**
+     * Check if database browsing is available.
+     *
+     * @return bool
+     */
+    protected function isBrowseDatabaseAvailable()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('browse');
+        return isset($config['General']['Database'])
+            && $config['General']['Database'];
     }
 }
