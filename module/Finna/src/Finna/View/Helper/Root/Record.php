@@ -184,7 +184,6 @@ class Record extends \VuFind\View\Helper\Root\Record
         return $this->renderTemplate('meta-tags.phtml');
     }
 
-
     /**
      * Render average rating
      *
