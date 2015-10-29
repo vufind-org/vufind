@@ -1,48 +1,34 @@
 <?
   // Set up some variables for convenience:
-  $mediumThumb = $this->record($this->driver)->getThumbnail('medium');
   $summary = $this->driver->getSummary();
   $authors = $this->driver->getNonPresenterAuthors();
-  $publishers = $this->driver->getPublishers();
+  $publisher = $this->driver->getPublishers();
+  $imagePath = $this->recordImage($this->record($this->driver))->getLargeImage();
   $baseUrl = $this->serverURL();
-?>
-<? // Fetch correct image link and metadata here for Facebook, Pinterest and Twitter ?>
-<? $this->doctype(Zend\View\Helper\Doctype::XHTML1_RDFA); ?> <? // See: http://framework.zend.com/manual/current/en/modules/zend.view.helpers.head-meta.html ?>
-<? $this->headMeta()->setProperty('og:title', $this->driver->getShortTitle()); ?>
-<? if ($summary): ?>
-  <? $this->headMeta()->setProperty('og:description', mb_strimwidth($summary[0],0,156,'...','utf-8')); ?> <? // max 156 ?>
-<? endif; ?>
-<? if ($authors): $authNames = ''; ?>
-  <? foreach($authors as $index => $author): ?>
-    <? $authNames .= ($index > 0 ? '; ' : ''); ?>
-    <? $authNames .= $this->escapeHtml($author['name']); ?>
-    <? if (!empty($author['role'])): ?>
-      <? $authNames .= ', '; ?>
-      <? $authNames .= $this->escapeHtml($author['role']); ?>
-    <? endif; ?>
-  <? endforeach; ?>
-  <? $this->headMeta()->setProperty('article:author', $authNames); ?>
-<? endif; ?>
-<? if ($publishers): $publisherName = ''; ?>
-  <? foreach ($publishers as $pubName): ?>
-    <? if (empty($publisherName)): ?>
-      <? $publisherName = $pubName; ?>
-    <? endif; ?>
-  <? endforeach; ?>
-  <? $this->headMeta()->setProperty('article:publisher', $publisherName); ?>
-<? endif; ?>
-<? if (!empty($mediumThumb)): ?>
-  <? if (preg_match_all('/"$baseUrl"/', $mediumThumb)): ?>
-    <? $this->headMeta()->setProperty('og:image', $mediumThumb); ?>
-    <? $this->headMeta()->appendName('twitter:image', $mediumThumb); ?>
-  <? else: ?>
-    <? $this->headMeta()->setProperty('og:image', $baseUrl.$mediumThumb); ?>
-    <? $this->headMeta()->appendName('twitter:image', $baseUrl.$mediumThumb); ?>
-  <? endif; ?>
-<? endif; ?>
-<? $this->headMeta()->appendName('twitter:card', 'summary'); ?>
-<? $this->headMeta()->appendName('twitter:site', '@finnafi'); ?>
-<? $this->headMeta()->appendName('twitter:title', $this->driver->getShortTitle()); ?>
-<? if ($summary): ?>
-  <? $this->headMeta()->appendName('twitter:description', mb_strimwidth($summary[0],0,197,'...','utf-8')); ?> <? // max 200 ?>
-<? endif; ?>
+
+  // Fetch correct image link and metadata here for Facebook, Pinterest and Twitter
+  $this->doctype(Zend\View\Helper\Doctype::XHTML1_RDFA); // See: http://framework.zend.com/manual/current/en/modules/zend.view.helpers.head-meta.html
+  $this->headMeta()->setProperty('og:title', $this->driver->getShortTitle());
+  if ($summary) {
+    $this->headMeta()->setProperty('og:description', mb_strimwidth($summary[0],0,156,'...','utf-8')); // max 156
+  }
+  if ($authors) {
+    $authNames = array(); 
+    foreach ($authors as $author) {
+      $authNames[] = $this->escapeHtml($author['name']);
+    }
+    $this->headMeta()->setProperty('article:author', implode('; ', $authNames));
+  }
+  if ($publisher) {
+    $this->headMeta()->setProperty('article:publisher', $publisher[0]);
+  }
+  if (!empty($imagePath)) {
+    $this->headMeta()->setProperty('og:image', $baseUrl.$imagePath);
+    $this->headMeta()->appendName('twitter:image', $baseUrl.$imagePath);
+  }
+  $this->headMeta()->appendName('twitter:card', 'summary');
+  $this->headMeta()->appendName('twitter:site', '@finnafi');
+  $this->headMeta()->appendName('twitter:title', $this->driver->getShortTitle());
+  if ($summary) {
+    $this->headMeta()->appendName('twitter:description', mb_strimwidth($summary[0],0,200,'...','utf-8')); // max 200
+  }
