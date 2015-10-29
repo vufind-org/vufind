@@ -6,6 +6,9 @@
         $this->searchClassId = 'Solr';
     }
 
+    $module = $this->layout()->templateDir;
+    $action = $this->layout()->templateName;
+
     // Load search actions and settings (if any):
     $options = $this->searchOptions($this->searchClassId);
     $handlers = $this->searchbox()->getHandlers(
@@ -15,7 +18,7 @@
     $handlerCount = count($handlers);
     $basicSearch = $browse ? "browse-{$browse}" : $options->getSearchAction();
     $searchHome = $options->getSearchHomeAction();
-    $advSearch = $options->getAdvancedSearchAction();
+    $advSearch = $module != 'combined' ? $options->getAdvancedSearchAction() : 'search-advanced';
     $lastSort = $browse ? null : $options->getLastSort();
     $lastLimit = $browse ? null : $options->getLastLimit();
     $daterange
@@ -33,8 +36,6 @@
     }
 
     // Set up Finna Main Tabs:
-    $module = $this->layout()->templateDir;
-    $action = $this->layout()->templateName;
     if (!$browse) {
       if (($module === 'search' && $action === 'results' && $this->searchType != 'advanced')
          || ($module === 'metalib' && $action === 'search' && $this->searchType != 'advanced') 
@@ -149,18 +150,20 @@
   <? endif; ?>
   <div class="row">
     <div class="col-xs-12 col-sm-10 col-md-8 col-lg-7 text-right">
-      <? $mainPage = $action === 'home' && $this->searchClassId === 'Solr'; ?>
+      <? $mainPage = $action === 'home' && in_array($module, ['combined', 'metalib', 'primo', 'search']); ?>
 
-      <? if ($browse || !$mainPage): ?>
-      <a href="<?=$this->url('home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Basic Search")?></a>
-      <? endif; ?>
+      <? if ($browse || $mainPage): ?>
+        <? if ($browse || $this->searchClassId != 'Solr'): ?>
+        <a href="<?=$this->url('home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Basic Search")?></a>
+        <? endif; ?>
 
-      <? if ($this->primo()->isAvailable() && ($browse || $this->searchClassId !== 'Primo')) : ?>
-      <a href="<?=$this->url('primo-home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Primo Search")?></a>
-      <? endif; ?>
+        <? if ($this->primo()->isAvailable() && ($browse || $this->searchClassId !== 'Primo')) : ?>
+        <a href="<?=$this->url('primo-home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Primo Search")?></a>
+        <? endif; ?>
 
-      <? if ($this->metalib()->isAvailable() && ($browse || $this->searchClassId !== 'MetaLib')) : ?>
-      <a href="<?=$this->url('metalib-home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("MetaLib Search")?></a>
+        <? if ($this->metalib()->isAvailable() && ($browse || $this->searchClassId !== 'MetaLib')) : ?>
+        <a href="<?=$this->url('metalib-home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("MetaLib Search")?></a>
+        <? endif; ?>
       <? endif; ?>
 
       <? if ($advSearch): ?>
