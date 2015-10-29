@@ -11,9 +11,7 @@
 namespace Behat\Mink\Driver;
 
 use Behat\Mink\Driver\NodeJS\Server\ZombieServer;
-use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\DriverException;
-use Behat\Mink\Session;
 
 /**
  * Zombie (JS) driver.
@@ -22,10 +20,6 @@ use Behat\Mink\Session;
  */
 class ZombieDriver extends CoreDriver
 {
-    /**
-     * @var Session
-     */
-    private $session;
     private $started = false;
     private $nativeRefs = array();
     private $server = null;
@@ -59,14 +53,6 @@ class ZombieDriver extends CoreDriver
     public function getServer()
     {
         return $this->server;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSession(Session $session)
-    {
-        $this->session = $session;
     }
 
     /**
@@ -178,15 +164,33 @@ JS;
     public function setBasicAuth($user, $password)
     {
         if (false === $user) {
-            $this->server->evalJS("browser.authenticate().reset();stream.end();");
-
-            return;
+            $user = null;
+            $password = null;
         }
 
         $userEscaped = json_encode($user);
         $passwordEscaped = json_encode($password);
 
-        $this->server->evalJS("browser.authenticate().basic({$userEscaped}, {$passwordEscaped});stream.end();");
+        $js = <<<JS
+var username = $userEscaped;
+var password = $passwordEscaped;
+
+if (browser.authenticate) {
+    if (null === username) {
+        browser.authenticate().reset();
+    } else {
+        browser.authenticate().basic(username, password);
+    }
+} else {
+    browser.on('authenticate', function (authentication) {
+        authentication.username = username;
+        authentication.password = password;
+    });
+}
+stream.end();
+JS;
+
+        $this->server->evalJS($js);
     }
 
     /**
@@ -232,7 +236,14 @@ JS;
      */
     public function getResponseHeaders()
     {
-        return (array) $this->server->evalJS('browser.window._response.headers', 'json');
+        $js = <<<JS
+var response = browser.response || browser.window._response,
+    headers = response.headers.toObject ? response.headers.toObject() : response.headers;
+
+stream.end(JSON.stringify(headers));
+JS;
+
+        return json_decode($this->server->evalJS($js), true);
     }
 
     /**
@@ -317,7 +328,7 @@ JS;
     /**
      * {@inheritdoc}
      */
-    public function find($xpath)
+    public function findElementXpaths($xpath)
     {
         $xpathEncoded = json_encode($xpath);
         $js = <<<JS
@@ -344,7 +355,7 @@ JS;
         foreach ($refs as $i => $ref) {
             $subXpath = sprintf('(%s)[%d]', $xpath, $i + 1);
             $this->nativeRefs[md5($subXpath)] = $ref;
-            $elements[] = new NodeElement($subXpath, $this->session);
+            $elements[] = $subXpath;
 
             // first node ref also matches the original xpath
             if (0 === $i) {
@@ -858,7 +869,7 @@ browser.fire({$ref}, "{$event}", function (err) {
 JS;
         $out = $this->server->evalJS($js);
         if (!empty($out)) {
-            throw new DriverException(sprintf("Error while processing event '%s'", $event));
+            throw new DriverException(sprintf("Error while processing event '%s': %s", $event, $out));
         }
     }
 

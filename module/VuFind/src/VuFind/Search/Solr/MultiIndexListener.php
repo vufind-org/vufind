@@ -116,9 +116,10 @@ class MultiIndexListener
         $backend = $event->getTarget();
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
-            if ($event->getParam('context') == 'retrieve') {
-                // If we're retrieving a record, we should pull all shards to be
-                // sure we find it.
+            $allShardsContexts = ['retrieve', 'retrieveBatch'];
+            if (in_array($event->getParam('context'), $allShardsContexts)) {
+                // If we're retrieving by id(s), we should pull all shards to be
+                // sure we find the right record(s).
                 $params->set('shards', implode(',', $this->shards));
             } else {
                 // In any other context, we should make sure our field values are
