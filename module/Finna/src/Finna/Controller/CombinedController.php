@@ -86,4 +86,21 @@ class CombinedController extends \VuFind\Controller\CombinedController
         $this->getRequest()->getQuery()->set('combined', 1);
         return parent::forwardTo($controller, $action, $params);
     }
+
+    /**
+     * Get tab configuration based on the full combined results configuration.
+     *
+     * @param array $config Combined results configuration
+     *
+     * @return array
+     */
+    protected function getTabConfig($config)
+    {
+        $config = parent::getTabConfig($config);
+
+        // Strip out non-tab sections of the configuration:
+        unset($config['General']);
+
+        return $config;
+    }
 }
