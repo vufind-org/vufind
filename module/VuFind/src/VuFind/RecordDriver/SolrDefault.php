@@ -434,115 +434,75 @@ class SolrDefault extends AbstractBase
     public function getDeduplicatedAuthorsRoles()
     {
         $authors = [
-            'main' => $this->getPrimaryAuthors(),
-            'mainRoles' => $this->getPrimaryAuthorsRoles(),
+            'main' => $this->getAuthorRolesArray(
+                $this->getPrimaryAuthors(),
+                $this->getPrimaryAuthorsRoles()
+            ),
             'corporate' => [$this->getCorporateAuthor()],
-            'secondary' => $this->getSecondaryAuthors(),
-            'secondaryRoles' => $this->getSecondaryAuthorsRoles()
+            'secondary' => $this->getAuthorRolesArray(
+                $this->getSecondaryAuthors(),
+                $this->getSecondaryAuthorsRoles()
+            )
         ];
-
-        // build new authors2-array
-        $authors2 = [];
-
-        // build primary author array with roles as subarray
-        if (!empty($authors['main'])) {
-            foreach ($authors['main'] as $index => $author) {
-                if (!isset($authors2['main'][$author])) {
-                    $authors2['main'][$author] = [];
-                }
-                if (isset($authors['mainRoles'][$index])) {
-                    $authors2['main'][$author][]
-                        = $authors['mainRoles'][$index];
-                }
-            }
-        }
-
-        // build secondary author array with roles as subarray
-        if (!empty($authors['secondary'])) {
-            foreach ($authors['secondary'] as $index => $author) {
-                if (!isset($authors2['secondary'][$author])) {
-                    $authors2['secondary'][$author] = [];
-                }
-                if (isset($authors['secondaryRoles'][$index])) {
-                    $authors2['secondary'][$author][]
-                        = $authors['secondaryRoles'][$index];
-                }
-            }
-        }
 
         // build corporate array
         if (!empty($authors['corporate'])) {
-            foreach ($authors['corporate'] as $index => $corporate) {
-                if (!isset($authors2['corporate'][$corporate])) {
-                    $authors2['corporate'][$corporate] = [];
+            $corporate = [];
+            foreach ($authors['corporate'] as $index => $corp) {
+                if (!isset($corporate[$corp])) {
+                    $corporate[$corp] = [];
                 }
             }
+            $authors['corporate'] = $corporate;
         }
 
-        // dedup
-
-        // dedup corporates from main: move any corporate in main author array to
-        // corporate array keeping the relators
-        if (!empty($authors2['main']) && !empty($authors2['corporate'])) {
-            foreach ($authors2['main'] as $author => $roles) {
-                if (isset($authors2['corporate'][$author])) {
-                    $authors2['corporate'][$author] = array_merge(
-                        $authors2['main'][$author],
-                        $authors2['corporate'][$author]
-                    );
-                    unset($authors2['main'][$author]);
+        // deduplicate
+        $dedup = function (&$array1, &$array2) {
+            if (!empty($array1) && !empty($array2)) {
+                foreach ($array1 as $author => $roles) {
+                    if (isset($array2[$author])) {
+                        $array2[$author] = array_merge(
+                            $array1[$author],
+                            $array2[$author]
+                        );
+                        unset($array2[$author]);
+                    }
                 }
             }
-        }
-
-        // dedup corporates from secondary: move any corporate in secondary author
-        // array to corporate array keeping the relators
-        if (!empty($authors2['secondary']) && !empty($authors2['corporate'])) {
-            foreach ($authors2['secondary'] as $author => $roles) {
-                if (isset($authors2['corporate'][$author])) {
-                    $authors2['corporate'][$author] = array_merge(
-                        $authors2['secondary'][$author],
-                        $authors2['corporate'][$author]
-                    );
-                    unset($authors2['secondary'][$author]);
-                }
-            }
-        }
-
-        // dedup secondary authors from main: move any secondary authors also present
-        // in main authors array to main author array to keeping the relators
-        if (!empty($authors2['main'])) {
-            foreach ($authors2['main'] as $author => $roles) {
-                if (isset($authors2['secondary'][$author])) {
-                    $authors2['main'][$author] = array_merge(
-                        $authors2['main'][$author],
-                        $authors2['secondary'][$author]
-                    );
-                    unset($authors2['secondary'][$author]);
-                }
-            }
-        }
-
-        // remove default_relator
-        $filter = function ($array) use (&$filter) {
-            foreach ($array as $key => $value) {
-                if (count($value, COUNT_NORMAL) === count($value, COUNT_RECURSIVE)) {
-                    $value = array_filter(
-                        $value,
-                        function ($k) {
-                            return $k != "default_relator";
-                        }
-                    );
-                    $array[$key] = $value;
-                } else {
-                    $array[$key] = $filter($value);
-                }
-            }
-            return $array;
         };
 
-        // return author array with roles without "default_relator" value
-        return $filter($authors2);
+        $dedup($authors['main'], $authors['corporate']);
+        $dedup($authors['secondary'], $authors['corporate']);
+        $dedup($authors['main'], $authors['secondary']);
+
+        return $authors;
+    }
+
+    /**
+     * Helper function to restructure author arrays including relators
+     *
+     * @param array $authors Array of authors
+     * @param array $roles   Array with relators of authors
+     *
+     * @return array
+     */
+    protected function getAuthorRolesArray($authors = [], $roles = [])
+    {
+        $authorRolesArray = [];
+
+        if (!empty($authors)) {
+            foreach ($authors as $index => $author) {
+                if (!isset($authorRolesArray[$author])) {
+                    $authorRolesArray[$author] = [];
+                }
+                if (isset($roles[$index]) && !empty($roles[$index])
+                ) {
+                    $authorRolesArray[$author][] = $roles[$index];
+                }
+            }
+        }
+
+        return $authorRolesArray;
     }
 
     /**
