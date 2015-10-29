@@ -144,9 +144,10 @@ $(document).ready(function()
 
   $("#hierarchyTree")
     .bind("ready.jstree", function (event, data) {
-      $("#hierarchyLoading").addClass('hide');  
+      $("#hierarchyLoading").addClass('hide');
       var tree = $("#hierarchyTree").jstree(true);
       tree.select_node(htmlID);
+      tree.open_node(htmlID);
       tree._open_to(htmlID);
 
       if (hierarchyContext == "Collection") {
