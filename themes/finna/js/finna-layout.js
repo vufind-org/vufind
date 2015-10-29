@@ -242,6 +242,14 @@ finna.layout = (function() {
             nSelectedText: vufindString.selected,
             buttonClass: "form-control",
         });
+        $('.multiselect.dropdown-toggle').click(function(e) {
+            $(this).siblings('.multiselect-container').toggleClass('show');
+        });
+        $('html').on('click', function(e) {
+            if ($(e.target).parent().attr('class') != 'multiselect-selected-text' && !$(e.target).parent().hasClass('multiselect')) {
+                $('.multiselect-container.show').removeClass('show');
+            }
+        });
     };
 
     var initMobileNarrowSearch = function() {
