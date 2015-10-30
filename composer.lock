@@ -4,7 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9b1e17327dcdad44d8172432e9ba45f1",
+    "hash": "13addb1d00149675674e0eb872487257",
+    "content-hash": "c0684fc3892cc78260dabb20c7652811",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -184,7 +185,7 @@
             "version": "dev-master",
             "dist": {
                 "type": "file",
-                "url": "http://mobileesp.googlecode.com/svn/PHP/mdetect.php",
+                "url": "https://raw.githubusercontent.com/ahand/mobileesp/master/PHP/mdetect.php",
                 "reference": null,
                 "shasum": null
             },
@@ -849,13 +850,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendRest.git",
-                "reference": "7427d242b4546e5aef1206d2c97e402109d8843e"
+                "reference": "9d2d631af7b4b54bfa2a7f5ca5f455192e3e0916"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendrest-7427d242b4546e5aef1206d2c97e402109d8843e-zip-da96cc.zip",
-                "reference": "7427d242b4546e5aef1206d2c97e402109d8843e",
-                "shasum": "cd304d9e2fccccbd98348bfbead7d42b102e565a"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendrest-2.0.2-2f9805.zip",
+                "reference": "9d2d631af7b4b54bfa2a7f5ca5f455192e3e0916",
+                "shasum": "445d681551a5c9f2be25b241e615e754278d79ba"
             },
             "require": {
                 "php": ">=5.3.3",
@@ -878,10 +879,6 @@
                 "rest",
                 "zf2"
             ],
-            "support": {
-                "source": "https://github.com/zendframework/ZendRest/tree/release-2.0.2",
-                "issues": "https://github.com/zendframework/ZendRest/issues"
-            },
             "time": "2014-03-05 22:32:09"
         },
         {
