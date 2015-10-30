@@ -51,6 +51,48 @@ class Primo extends \VuFind\RecordDriver\Primo
     protected $simpleXML;
 
     /**
+     * Get an array of supported, user-activated citation formats.
+     *
+     * @return array Strings representing citation formats.
+     */
+    public function getCitationFormats()
+    {
+        // Default behavior: use all supported options.
+        if (!isset($this->mainConfig->Record->citation_formats)
+            || $this->mainConfig->Record->citation_formats === true
+            || $this->mainConfig->Record->citation_formats === 'true'
+        ) {
+            return $this->getSupportedCitationFormats();
+        }
+
+        // Citations disabled:
+        if ($this->mainConfig->Record->citation_formats === false
+            || $this->mainConfig->Record->citation_formats === 'false'
+        ) {
+            return [];
+        }
+
+        // Whitelist:
+        $whitelist = array_map(
+            'trim', explode(',', $this->mainConfig->Record->citation_formats)
+        );
+        return array_intersect($whitelist, $this->getSupportedCitationFormats());
+    }
+
+    /**
+     * Get an array of strings representing citation formats supported
+     * by this record's data (empty if none).  For possible legal values,
+     * see /application/themes/root/helpers/Citation.php, getCitation()
+     * method.
+     *
+     * @return array Strings representing citation formats.
+     */
+    protected function getSupportedCitationFormats()
+    {
+        return ['APA', 'Chicago', 'MLA'];
+    }
+
+    /**
      * Return an array of associative URL arrays with one or more of the following
      * keys:
      *
