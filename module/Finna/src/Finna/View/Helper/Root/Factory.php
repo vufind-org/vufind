@@ -42,6 +42,19 @@ use Zend\ServiceManager\ServiceManager;
 class Factory extends \VuFind\View\Helper\Root\Factory
 {
     /**
+     * Construct Browse view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MetaLib
+     */
+    public static function getBrowse(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('browse');
+        return new Browse($config);
+    }
+
+    /**
      * Construct the LayoutClass helper.
      *
      * @param ServiceManager $sm Service manager.

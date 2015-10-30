@@ -39,6 +39,27 @@ namespace Finna\View\Helper\Root;
 class Navibar extends \Zend\View\Helper\AbstractHelper
 {
     /**
+     * Browse view helper
+     *
+     * @var Zend\View\Helper\Url
+     */
+    protected $browseHelper;
+
+    /**
+     * MetaLib view helper
+     *
+     * @var Zend\View\Helper\Url
+     */
+    protected $metaLibHelper;
+
+    /**
+     * Primo view helper
+     *
+     * @var Zend\View\Helper\Url
+     */
+    protected $primoHelper;
+
+    /**
      * Url view helper
      *
      * @var Zend\View\Helper\Url
@@ -78,6 +99,9 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     public function __invoke()
     {
         if (!$this->menuItems) {
+            $this->browseHelper = $this->getView()->plugin('browse');
+            $this->metaLibHelper = $this->getView()->plugin('metalib');
+            $this->primoHelper = $this->getView()->plugin('primo');
             $this->urlHelper = $this->getView()->plugin('url');
             $this->parseMenuConfig();
         }
@@ -229,6 +253,29 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
                     ['label' => "menu_$itemKey"],
                     $parseUrl($action)
                 );
+
+                if ($option['route']) {
+                    if (strpos('metalib-', $option['url']) === 0) {
+                        if (!$this->metaLibHelper->isAvailable()) {
+                            continue;
+                        }
+                    }
+                    if (strpos('primo-', $option['url']) === 0) {
+                        if (!$this->primoHelper->isAvailable()) {
+                            continue;
+                        }
+                    }
+                    if ($option['url'] === 'browse-database'
+                        && !$this->browseHelper->isAvailable('Database')
+                    ) {
+                        continue;
+                    }
+                    if ($option['url'] === 'browse-journal'
+                        && !$this->browseHelper->isAvailable('Journal')
+                    ) {
+                        continue;
+                    }
+                }
 
                 $desc = 'menu_' . $itemKey . '_desc';
                 if ($translator->translate($desc, null, false) !== false) {
