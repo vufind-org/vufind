@@ -95,6 +95,16 @@ class Minified implements \Serializable
     }
 
     /**
+     * Get parent search object.
+     *
+     * @return \VuFind\Search\Minified
+     */
+    public function getParentSO()
+    {
+        return $this->parentSO;
+    }
+
+    /**
      * Serialize search object.
      *
      * @return string Serialized data
