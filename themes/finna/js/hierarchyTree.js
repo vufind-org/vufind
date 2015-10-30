@@ -140,7 +140,7 @@ $(document).ready(function()
   htmlID = htmlEncodeId(recordID);
   hierarchyContext = $("#hierarchyTree").find(".hiddenContext")[0].value;
 
-  $("#hierarchyLoading").removeClass('hide');  
+  $("#hierarchyLoading").removeClass('hide');
 
   $("#hierarchyTree")
     .bind("ready.jstree", function (event, data) {
@@ -153,7 +153,9 @@ $(document).ready(function()
       if (hierarchyContext == "Collection") {
         getRecord(recordID);
       }
-
+      $('.template-dir-record .back-to-up').click(function() {
+        $('html, body').animate({scrollTop: $('#hierarchyTreeHolder').offset().top-70}, 200);
+      });
       $("#hierarchyTree").bind('select_node.jstree', function(e, data) {
         if (hierarchyContext == "Record") {
           window.location.href = data.node.a_attr.href;
@@ -171,7 +173,7 @@ $(document).ready(function()
         hTree.animate({
           scrollTop: $('.jstree-clicked').offset().top - offsetTop + hTree.scrollTop() - 50
         }, 1500);
-      } 
+      }
     })
     .jstree({
       'plugins': ['search','types'],
