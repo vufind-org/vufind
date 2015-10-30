@@ -147,7 +147,7 @@
   <? /* End Narrow Search Options */ ?>
 </div>
 </div>
-<? $pagination = $this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results)); if (trim($pagination)): ?>
+<? $pagination = $this->paginationControl($this->results->getPaginator()->setPageRange(5), 'Sliding', 'search/pagination.phtml', array('results' => $this->results)); if (trim($pagination)): ?>
 <div class="container-fluid pagination-background">
   <div class="container">
     <div class="row">
