@@ -42,6 +42,8 @@ namespace Finna\RecordDriver;
  */
 trait SolrFinna
 {
+    use FinnaRecord;
+
     /**
      * Return an associative array of image URLs associated with this record
      * (key = URL, value = description), if available; false otherwise.
@@ -77,6 +79,19 @@ trait SolrFinna
     public function getAccessRestrictionsType()
     {
         return false;
+    }
+
+    /**
+     * Get record rating.
+     *
+     * @return null|float
+     */
+    public function getAverageRating()
+    {
+        $table = $this->getDbTable('Comments');
+        return $table->getAverageRatingForResource(
+            $this->getUniqueId(), $this->getResourceSource()
+        );
     }
 
     /**
@@ -121,6 +136,17 @@ trait SolrFinna
     {
         return isset($this->fields['genre'])
             ? $this->fields['genre'] : [];
+    }
+
+    /**
+     * Return geographic locations (coordinates)
+     *
+     * @return array
+     */
+    public function getGeoLocations()
+    {
+        return isset($this->fields['location_geo'])
+            ? $this->fields['location_geo'] : [];
     }
 
     /**
@@ -200,7 +226,9 @@ trait SolrFinna
         $query = new \VuFindSearch\Query\Query(
             'local_ids_str_mv:"' . $safeId . '"'
         );
-        $records = $this->searchService->search('Solr', $query, 0, 1)->getRecords();
+        $params = new \VuFindSearch\ParamBag(['hl' => 'false']);
+        $records = $this->searchService->search('Solr', $query, 0, 1, $params)
+            ->getRecords();
         if (!isset($records[0])) {
             return [];
         }
@@ -371,6 +399,17 @@ trait SolrFinna
     {
         return isset($this->fields['first_indexed'])
             ? $this->fields['first_indexed'] : '';
+    }
+
+    /**
+     * Is rating allowed.
+     *
+     * @return boolean
+     */
+    public function ratingAllowed()
+    {
+        $sector = substr($this->fields['sector_str_mv'][0], 2, 3);
+        return $sector == 'lib';
     }
 
     /**

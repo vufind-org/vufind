@@ -1,3 +1,4 @@
+<!-- START of: finna - RecordDriver/SolrDefault/record-image-navi.phtml -->
 <div class="<?= $type === 'record' ? 'truncate-field ' : ''?> recordcovers <?=$type ?><?=count($images) == 1 ? ' hidden' : ''?> <?=$type === 'list' ? ' hidden-xs hidden-sm' : ''?>"<?= $type === 'record' ? ' data-rows="2" data-row-height="35"' : ''?>>
 <? $ind = 0; ?>
 <? foreach ($images as $img): ?>
@@ -9,8 +10,9 @@
      $content = '<span data-src="' . $this->escapeHtmlAttr($img['small']) . '">IMG</span>';
   }
 ?>
-<a href="<?=str_replace('&', '&amp;', $img['medium']) ?>" class="image-popup image-popup-navi<?= (($type === 'list' || $type === 'list grid') && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?>"><?= $content ?></a>
+<a href="<?=str_replace('&', '&amp;', $img['medium']) ?>" class="image-popup image-popup-navi<?= (($type === 'list' || $type === 'list grid') && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?> hidden-print"><?= $content ?></a>
 <a href="<?=str_replace('&', '&amp;', $img['large']) ?>" class="hide"><?= $content ?></a>
 <? $ind++; ?>
 <? endforeach; ?>
 </div>
+<!-- END of: finna - RecordDriver/SolrDefault/record-image-navi.phtml -->

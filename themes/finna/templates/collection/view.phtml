@@ -1,3 +1,4 @@
+<!-- START of: finna - collection/view.phtml -->
 <?
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
@@ -20,6 +21,11 @@
   // Set flag for special cases relating to full-width hierarchy tree tab:
   $tree = (strtolower($this->activeTab) == 'hierarchytree');
 
+
+  // Set page title.
+  $dataSource = $this->driver->tryMethod('getDataSource');
+  $headText = $this->driver->getBreadcrumb() . ' | ' . $this->translate('Collection') . (isset($dataSource) ? ' | ' . $this->transEsc('source_'. $dataSource) : '');
+  $this->headTitle($headText);
 
   if (!empty($lastSearch)) {
     $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
@@ -69,13 +75,16 @@
 <div class="container">
 <? endif; ?>
 <div class="row record-row">
-  <div class="<?=$this->layoutClass('mainbody') ?>">
+  <div class="col-sm-9">
     <?=$this->record($this->driver)->getToolbar()?>
     <div class="record">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
-      <?=$this->record($this->driver)->getCollectionMetadata()?>
+      <h2 class="collection-title"><?=$this->driver->getTitle();?></h2>
+      <div class="truncate-field wide">
+        <?=implode('<br><br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+      </div>
     </div>
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
@@ -110,10 +119,11 @@
   </div>
 
   <? if (isset($activeTabObj) && is_callable(array($activeTabObj, 'getSideRecommendations'))): ?>
-    <div class="<?=$this->layoutClass('sidebar')?>">
+    <div class="col-sm-3 sidebar">
       <? foreach ($activeTabObj->getSideRecommendations() as $current): ?>
         <?=$this->recommend($current)?>
       <? endforeach; ?>
     </div>
   <? endif; ?>
 </div>
+<!-- END of: finna - collection/view.phtml -->

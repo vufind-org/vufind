@@ -23,6 +23,10 @@
 ; The order of sections in this file will control the display order of search
 ; results on screen.
 
+[General]
+; Whether combined results view is enabled. Default is true.
+enabled = 0
+
 ; This section controls how columns will be formatted in most themes (jquerymobile
 ; ignores these settings).
 [Layout]

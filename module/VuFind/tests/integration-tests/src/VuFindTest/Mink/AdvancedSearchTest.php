@@ -103,5 +103,7 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals('Title', $page->findById('search_type0_1')->getValue());
         $this->assertEquals('1883',  $page->findById('search_lookfor0_2')->getValue());
         $this->assertEquals('year',  $page->findById('search_type0_2')->getValue());
+
+        $session->stop();
     }
 }

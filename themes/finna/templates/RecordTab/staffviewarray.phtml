@@ -1,16 +1,23 @@
-<?
-    // Set page title.
-    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
-?>
+<!-- START of: finna - RecordTab/staffviewarray.phtml -->
 <? $rawFieldData = $this->driver->getRawData(); ?>
 <? if (!empty($rawFieldData['fullrecord']) && strncmp($rawFieldData['fullrecord'], '<', 1) == 0): ?>
-<pre>
+<pre id="record-data">
 <?
   $dom = new DOMDocument('1.0');
   $dom->preserveWhiteSpace = false;
   $dom->formatOutput = true;
   if ($dom->loadXML($rawFieldData['fullrecord'])) {
     echo $this->escapeHtml($dom->saveXML());
+    $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/highlight.pack.js');
+    echo $this->inlineScript();
+    $script = <<<JS
+$(document).ready(function() {
+  $('#record-data').each(function(i, block) {
+    hljs.highlightBlock(block);
+  });
+});
+JS;
+    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
   } else {
     echo $this->escapeHtml($rawFieldData['fullrecord']);
   }
@@ -31,3 +38,4 @@
     </tr>
   <? endforeach; ?>
 </table>
+<!-- END of: finna - RecordTab/staffviewarray.phtml -->

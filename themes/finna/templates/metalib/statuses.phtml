@@ -1,0 +1,20 @@
+<? if (!empty($this->failed)): ?>
+<div class="alert alert-danger">
+  <p><strong><?= $this->translate('MetaLib Search Failed')?></strong></p>
+  <ul>
+    <? foreach ($this->failed as $database): ?>
+    <li><?= $database ?></li>
+    <? endforeach; ?>
+  </ul>
+</div>
+<? endif; ?>
+<? if (!empty($this->disallowed)): ?>
+<div class="alert alert-danger">
+  <p><strong><?= $this->translate('metalib_not_authorized_results')?></strong></p>
+  <ul>
+    <? foreach ($this->disallowed as $database): ?>
+    <li><?= $database ?></li>
+    <? endforeach; ?>
+  </ul>
+</div>
+<? endif; ?>

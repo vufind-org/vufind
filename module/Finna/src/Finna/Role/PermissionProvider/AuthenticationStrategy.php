@@ -71,11 +71,12 @@ class AuthenticationStrategy implements PermissionProviderInterface
         $auth = $authManager->getActiveAuth();
 
         // Check if current authentication strategy is authorizable
+        $selected = $auth->getSelectedAuthOption();
         if (in_array($selected, $options)) {
             return ['loggedin'];
         }
 
-        if ($auth->getSelectedAuthOption() === 'ILS'
+        if (in_array($selected, ['ILS', 'MultiILS'])
             && in_array('ILS-statCode', $options)
         ) {
             // Check ILS stat group

@@ -1,0 +1,112 @@
+<!-- START of: finna - RecordTab/map.phtml -->
+<?
+    $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/jquery.geo.min.js');
+    $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/bootstrap-slider.js');
+    echo $this->inlineScript();
+?>
+
+<div id="wrap">
+  <div id="map-canvas">
+    <div class="zoom-slider">
+      <div class="fa fa-plus-small zoom-control-plus"></div>
+      <div class="zoom-range">
+        <div class="zoom-path"></div>
+      </div>
+      <div class="fa fa-minus zoom-control-minus"></div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    <? // Ok, this is ugly but somehow the container gets resized after the tab is loaded so give it time to finish ?>
+    setTimeout(initMap, 0);
+});
+
+function initMap()
+{
+  $(document).on('resize', function() { console.log("Resized"); });
+  var map = $('#map-canvas').geomap({
+    center: [27, 66],
+    scroll: 'off',
+    zoom: 4,
+    zoomMin: 1,
+    zoomMax: 17,
+    bboxchange: function() {
+      $('.zoom-path').slider('setValue', $(this).geomap('option', 'zoom'));
+    }
+  });
+
+  var slider = $('.zoom-path').slider({
+    orientation: 'vertical',
+    reversed: true,
+    min: parseInt(map.geomap('option', 'zoomMin')),
+    max: parseInt(map.geomap('option', 'zoomMax')),
+    value: map.geomap('option', 'zoom'),
+  }).on('slideStop', function(event) {
+    map.geomap('option', 'zoom', event.value);
+  });
+
+  $('.zoom-control-plus').click(function() {
+    $('#map-canvas').geomap('zoom', 1);
+    slider.slider('setValue', map.geomap('option', 'zoom'));
+  });
+  $('.zoom-control-minus').click(function() {
+    $('#map-canvas').geomap('zoom', -1);
+    slider.slider('setValue', map.geomap('option', 'zoom'));
+  });
+  $('.zoom-slider').bind('dblclick', function(e) {
+    e.preventDefault();
+  });
+
+  var markersData = <?=$this->tab->getMapMarkers() ?>;
+  for (var i = 0; i < markersData.length; i++) {
+    var disTitle = markersData[i].title;
+    var iconTitle = disTitle;
+    if (disTitle.length > 50) {
+      iconTitle = disTitle.substring(0, 47) + '...';
+    }
+    if (markersData[i].polygon) {
+      var polygon = markersData[i].polygon;
+      map.geomap('append', { type: 'Polygon', coordinates: polygon });
+      if (i == 0) {
+	      var lon = 0, lat = 0;
+	      for (var c = 0; c < polygon[0].length - 1; c++) {
+	        var coord = polygon[0][c];
+	        lon += coord[0];
+	        lat += coord[1];
+	      }
+	      lon /= (polygon[0].length - 1);
+	      lat /= (polygon[0].length - 1);
+	      map.geomap('option', 'center', [lon, lat]);
+      }
+    } else if (markersData[i].multipolygon) {
+      // Handle multipolygon as multiple separate polygons for now due to https://github.com/AppGeo/geo/issues/130
+      var multipolygon = markersData[i].multipolygon;
+      for (m = 0; m < multipolygon.length; m++) {
+        map.geomap('append', { type: 'Polygon', coordinates: multipolygon[m] });
+      }
+      if (i == 0) {
+        var lon = 0, lat = 0;
+        for (var m = 0; m < multipolygon[0].length; m++) {
+          for (var c = 0; c < multipolygon[m][0].length - 1; c++) {
+            var coord = multipolygon[m][0][c];
+            lon += coord[0];
+            lat += coord[1];
+          }
+          lon /= (multipolygon[m][0].length - 1);
+          lat /= (multipolygon[m][0].length - 1);
+        }
+        map.geomap('option', 'center', [lon, lat]);
+      }
+    } else {
+      map.geomap('append', { type: 'Point', coordinates: [markersData[i].lon, markersData[i].lat] }, '<span class="map-marker">' + iconTitle + '</span>');
+      if (i == 0) {
+        map.geomap('option', 'center', [markersData[i].lon, markersData[i].lat]);
+      }
+    }
+    map.geomap('refresh');
+  }
+}
+</script>
+<!-- END of: finna - RecordTab/map.phtml -->

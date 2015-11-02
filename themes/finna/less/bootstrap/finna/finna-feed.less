@@ -31,7 +31,7 @@
     & .carousel-header {
         background: @carousel-header-background;
         display: inline-block;
-        padding: 10px;
+        padding: @carousel-header-padding;
         color: @carousel-header-color;
     }
     & .carousel-slide-header p {
@@ -228,8 +228,11 @@
         font-weight: normal;
         letter-spacing: 0.3px;
     }
-    & .feet-header {
-        color: @list-feed-header-color;   
+    & .feed-header {
+        display: inline-block;
+        color: @list-feed-header-color;
+        padding: @list-feed-header-padding;
+        background: @list-feed-header-background;
     }
     & .more-link {
         margin-top: 15px;

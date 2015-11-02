@@ -1,3 +1,4 @@
+<!-- START of: finna - myresearch/mylist.phtml -->
 <?
   // Grab list object from search results (if applicable):
   $list = $this->results->getListObject();
@@ -21,6 +22,7 @@
   $this->headScript()->appendFile("check_item_statuses.js");
   $this->headScript()->appendFile("finna-mylist.js");
   $this->headScript()->appendFile("vendor/jquery.editable.js");
+  $this->headScript()->appendFile("finna-item-status.js");
 
   $this->jsTranslations()->addStrings(['add_note' => 'Add note', 'add_list_description' => 'Add list description', 'loading' => 'Loading']);
 
@@ -41,7 +43,7 @@
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>" />
   <? endif; ?>
-  <div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="col-sm-9 col-sm-push-3">
     <div class="clearfix hidden-print">
     <div class="row">
       <div class="col-xs-12">
@@ -84,7 +86,7 @@
     </div>
   </div>
   </div>
-  <div class="<?=$this->layoutClass('sidebar')?> mylist-bar">
+  <div class="col-sm-3 col-sm-pull-9 sidebar mylist-bar">
   <? if ($this->userlist()->getMode() !== 'disabled' && $user = $this->auth()->isLoggedIn()): ?>
   <?= $this->partial('myresearch/mylist-navi.phtml', array('user' => $user, 'isDefaultList' => $isDefaultList, 'activeId' => $activeId, 'activePublic' => $activePublic, 'lists' => $lists)); ?>
   <? endif ?>
@@ -100,3 +102,4 @@
     </ul>
   </form>
 <? endif; ?>
+<!-- END of: finna - myresearch/mylist.phtml -->

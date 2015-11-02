@@ -30,7 +30,15 @@
   a[href^="#"]:after {
     content: "";
   }
-
+  // Don't show certain links and buttons
+  a.title, .dateyeartype a,.image-popup-trigger, .image-popup-navi, .record-details a, .record-authors a, .recordTabs a, .paginationSimple a {
+    &[href]:after {
+      content: none !important;
+    }
+  }
+  button, a.btn {
+    display: none !important;
+  }
   pre,
   blockquote {
     border: 1px solid #999;

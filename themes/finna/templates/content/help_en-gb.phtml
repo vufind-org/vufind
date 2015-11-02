@@ -1,7 +1,12 @@
+<!-- START of: finna - content/help_en-gb.phtml -->
 <? $this->headTitle('Help'); $this->content()->setHeading('Help'); ?>
 
 <div class="row">
-  <div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="col-sm-3 sidebar">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="col-sm-9">
     <? if ($this->resolver('Content/Additions/helpBegin_en-gb.phtml')): ?>
     <?=$this->render('Content/Additions/helpBegin_en-gb.phtml')?>
     <? endif; ?>
@@ -167,8 +172,5 @@
       <?=$this->render('Content/Additions/helpEnd_en-gb.phtml')?>
     <? endif; ?>
   </div>
-  <div class="<?=$this->layoutClass('sidebar')?>">
-    <div class="content-navigation-menu">
-    </div>
-  </div>
 </div>
+<!-- END of: finna - content/help_en-gb.phtml -->

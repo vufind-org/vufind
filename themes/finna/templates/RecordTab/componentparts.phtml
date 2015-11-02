@@ -1,7 +1,5 @@
+<!-- START of: finna - RecordTab/componentparts.phtml -->
 <?
-    // Set page title.
-    $this->headTitle($this->translate('Contents/Parts') . ': ' . $this->driver->getBreadcrumb());
-
     $componentParts = $this->driver->tryMethod('getEmbeddedComponentParts');
 
     $havePresenters = false;
@@ -82,3 +80,4 @@ $(document).ready(function() {
 JS;
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<!-- END of: finna - RecordTab/componentparts.phtml -->

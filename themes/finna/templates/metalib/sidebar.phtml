@@ -1,0 +1,54 @@
+<?
+$queryHandler = 'AllFields';
+if (isset($results) && $results->getParams()->getSearchType() == 'basic') {
+  $queryHandler = $results->getParams()->getQuery()->getHandler();
+}
+$customQueryHandler = $queryHandler != 'AllFields';
+?>
+<? if ($customQueryHandler): ?>
+<h4><?=$this->transEsc('Narrow Search')?></h4>
+<div class="list-group filters">
+  <? $removeLink = $this->currentPath().$results->getUrlQuery()->setHandler('AllFields'); ?>
+  <a class="list-group-item active" href="<?=$removeLink?>">
+    <span class="pull-right"><i class="fa fa-times"></i></span>
+    <?=$this->transEsc('search_in_field'); ?>:
+    <?=$this->transEsc($queryHandler); ?>
+  </a>
+</div>
+<? endif; ?>
+
+<h4>
+  <i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc('metalib_searchsets')?>
+  <? if (!$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?>
+</h4>
+
+<form class="search-sets">
+  <div class="search-sets sets">
+    <? $cnt = 0; ?>
+    <? foreach ($this->sets as $set => $label): ?>
+    <label class="radiobutton" for="set_<?=$cnt?>">
+      <input id="set_<?=$cnt++?>" name="searchSet" type="radio" value="<?=$this->escapeHtmlAttr($set)?>"<?= $currentSet == $set ? ' checked="checked"': ''?> /><?= $this->transEsc($label)?></label><br>
+    <? endforeach ?>
+  </div>
+  
+  <? if ($this->recentSets): ?>
+  <div class="search-sets recent">
+    <p><?= $this->translate('Recently Used Databases')?></p>
+    <div>
+      <? foreach ($this->recentSets as $set => $label): ?>
+      <label class="radiobutton" for="set_<?=$cnt?>">
+        <input id="set_<?=$cnt++?>" name="searchSet" type="radio" value="<?=$this->escapeHtmlAttr($set)?>"<?= $currentSet == $set ? ' checked="checked"': ''?> /><?= $this->transEsc($label)?></label><br>
+      <? endforeach; ?>
+    </div>
+  </div>
+  <? endif; ?>
+
+  <? if ($this->browseDatabase): ?>
+  <div class="browse">
+    <a href="<?=$this->url('browse-database')?>">
+      <i class="fa fa-browse-database"></i>
+      <?= $this->translate('browse_extended_Database')?>
+    </a>
+  </div>
+  <? endif; ?>
+</form>

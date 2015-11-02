@@ -1,6 +1,7 @@
+<!-- START of: finna - librarycards/editcard.phtml -->
 <?
   // Set up page title:
-  $pageTitle = empty($this->card->id) ? 'Add a Library Card' : "Edit Library Card";
+  $pageTitle = empty($this->card->id) ? 'Connect Library Card' : "Update Card Details";
   $this->headTitle($this->translate($pageTitle));
 
   // Set up menu
@@ -42,6 +43,14 @@
       <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="form-control"/>
     </div>
   </div>
+  <? if ($this->secondaryLoginFieldLabel || $this->targets !== null): ?>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="login_secondary_username"><?=$this->transEsc($this->secondaryLoginFieldLabel) ?>:</label>
+    <div class="col-sm-9">
+      <input id="login_secondary_username" type="text" name="secondary_username" value="<?=$this->escapeHtmlAttr($this->secondaryUsername)?>" class="form-control"/>
+    </div>
+  </div>
+  <? endif; ?>
   <div class="form-group">
     <label class="col-sm-3 control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
     <div class="col-sm-9">
@@ -54,3 +63,22 @@
     </div>
   </div>
 </form>
+
+<?
+  if ($this->targets !== null) {
+      $labels = [];
+      foreach ($this->secondaryLoginFieldLabels as $target => $label) {
+        $labels[] = '"' . addslashes($target) . '": "' . ($label ? addslashes($this->translate($label)) : '') . '"';
+      }
+
+      $labels = implode(', ', $labels);
+      $script = <<<EOT
+  finna.layout.initSecondaryLoginField({{$labels}}, '');
+EOT;
+
+      // Inline the script for lightbox compatibility
+      echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+  }
+?>
+
+<!-- END of: finna - librarycards/editcard.phtml -->

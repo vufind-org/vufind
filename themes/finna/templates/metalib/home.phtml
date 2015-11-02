@@ -1,0 +1,58 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Search Home'));
+
+  // Disable top search box -- this page has a special layout.
+
+
+  $this->searchClassId = 'MetaLib';
+
+  // Load search actions and settings (if any):
+  $options = $this->searchOptions($this->searchClassId);
+  $basicSearch = $options->getSearchAction();
+  $advSearch = $options->getAdvancedSearchAction();
+
+  $this->layout()->breadcrumbs = false;
+  $this->layout()->logosection = true;
+
+  $this->headScript()->appendFile("finna-metalib.js");
+?>
+<!--  Begin home.phtml and close page container for extra styling  -->
+</div>
+<div class="container-fluid">
+  <div class="container">
+    <div class="row">
+      <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
+      <div class="alert alert-warning">
+        <h2><?=$this->transEsc('ils_offline_title')?></h2>
+        <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+        <p><?=$this->transEsc('ils_offline_home_message')?></p>
+        <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+        <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+      </div>
+      <? endif; ?>
+    </div>
+  </div>
+</div>
+<div class="container-fluid metalib-home">
+  <div class="container">
+    <div class="row">          
+       <div class="col-xs-12">
+          <? if ($template = $this->content()->findTemplateForLng('metalib/home-1')): ?>
+          <?=$this->render($template)?>
+          <? endif; ?>
+        </div>
+    </div>
+  </div>
+</div>   
+<!-- reopen container -->
+<div class="container">
+<?
+$script = '
+$(document).ready(function() {
+  finna.metalib.initHome();
+});';
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+
+<!-- End Home.phtml -->

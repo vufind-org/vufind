@@ -44,22 +44,61 @@ namespace Finna\View\Helper\Root;
 class Record extends \VuFind\View\Helper\Root\Record
 {
     /**
+     * Is commenting allowed.
+     *
+     * @param object $user Current user
+     *
+     * @return boolean
+     */
+    public function commentingAllowed($user)
+    {
+        if (!$this->ratingAllowed()) {
+            return true;
+        }
+        $comments = $this->driver->getComments();
+        foreach ($comments as $comment) {
+            if ($comment->user_id === $user->id) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Is commenting enabled.
+     *
+     * @return boolean
+     */
+    public function commentingEnabled()
+    {
+        return !isset($this->config->Social->comments)
+            || ($this->config->Social->comments
+                && $this->config->Social->comments !== 'disabled');
+    }
+
+    /**
      * Render the link of the specified type.
      *
      * @param string $type    Link type
      * @param string $lookfor String to search for at link
+     * @param array  $params  Optional array of parameters for the link template
      *
      * @return string
      */
-    public function getLink($type, $lookfor)
+    public function getLink($type, $lookfor, $params = [])
     {
         $searchAction = isset($this->getView()->browse) && $this->getView()->browse
             ? 'browse-' . $this->getView()->browse
             : 'search-results'
         ;
+        $params = isset($params) ? $params : [];
+        $params = array_merge(
+            $params,
+            ['lookfor' => $lookfor,
+             'searchAction' => $searchAction]
+        );
         return $this->renderTemplate(
-            'link-' . $type . '.phtml',
-            ['lookfor' => $lookfor, 'searchAction' => $searchAction]
+            'link-' . $type . '.phtml', $params
         );
     }
 
@@ -133,5 +172,34 @@ class Record extends \VuFind\View\Helper\Root\Record
                 'context' => $context
             ]
         );
+    }
+
+    /**
+     * Render average rating
+     *
+     * @return string
+     */
+    public function getRating()
+    {
+        if ($this->ratingAllowed()
+            && $average = $this->driver->trymethod('getAverageRating')
+        ) {
+            return $this->getView()->render(
+                'Helpers/record-rating.phtml',
+                ['average' => $average['average'], 'count' => $average['count']]
+            );
+        }
+        return false;
+    }
+
+    /**
+     * Is rating allowed.
+     *
+     * @return boolean
+     */
+    public function ratingAllowed()
+    {
+        return $this->commentingEnabled()
+            && $this->driver->tryMethod('ratingAllowed');
     }
 }

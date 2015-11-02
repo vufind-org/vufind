@@ -59,7 +59,7 @@ finna.itemStatus = (function() {
                 }
                 if (result.locationList[x].callnumbers) {
                   locationListHTML += '<span class="groupCallnumber">';
-                  locationListHTML += '(' + result.locationList[x].callnumbers + ')';
+                  locationListHTML += '('+vufindString.shelf_location+': '+ result.locationList[x].callnumbers + ')';
                   locationListHTML += '</span>';
                 }
                 locationListHTML += '</div>';

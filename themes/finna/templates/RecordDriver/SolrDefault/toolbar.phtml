@@ -1,3 +1,4 @@
+<!-- START of: finna - RecordDriver/SolrDefault/toolbar.phtml -->
 <?
   $addThis = $this->addThis();
   if (!empty($addThis)) {
@@ -36,7 +37,7 @@
   <? if (count($this->driver->getCitationFormats()) > 0): ?>
     <li><a id="cite-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="fa fa-asterisk"></i><span class="hidden-xs"> <?=$this->transEsc('Cite this')?></span></a></li>
   <? endif; ?>
-  <li><span class="hidden-xs hidden-sm"><a href="javascript:window.print()"><i class="fa fa-print"></i> <?=$this->transEsc('Print')?></a></span></li>
+  <li class="hidden-xs hidden-sm"><span><a href="javascript:window.print()"><i class="fa fa-print"></i> <?=$this->transEsc('Print')?></a></span></li>
   <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
   <? if($QRCode): ?>
   <li class="dropdown">
@@ -84,3 +85,4 @@
   </ul>
 </div>
 </div>
+<!-- END of: finna - RecordDriver/SolrDefault/toolbar.phtml -->

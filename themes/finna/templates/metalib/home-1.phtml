@@ -1,0 +1,26 @@
+<?
+    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">Nelli-monihaku</h1></div>';
+?>
+<div class="row">
+  <div class="col-sm-9">
+    <div class="content">
+      <p>Nelli on kirjastojen käytössä olevien tietokantojen monihakupalvelu.</p>
+      <p>Nelli-haku tarjoaa käyttöön sellaiset tieteelliset artikkelit, e-kirjat ja muut viitteet, joita ei ole saatavilla Primo Central -indeksin kautta.</p>
+      <p>Osa Nellin tietokannoista voi olla haettavissa vain korkeakoulun käyttäjätunnuksilla kirjautuneille käyttäjille.</p>
+      <p>Palvelu on toteutettu Ex Libriksen MetaLib-ohjelmistolla.</p>
+      <p>&nbsp;</p>
+      <img src="<?=$this->imageLink('nelli-logo.png')?>" alt="Nelli logo" />
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="sidebar hidden-print>">
+      <?= $this->context($this)->renderInContext(
+      'metalib/sidebar.phtml', []
+    );
+      ?>
+      <? if ($template = $this->content()->findTemplateForLng("layout/Additions/search-post-facets")): ?>
+          <?=$this->render($template)?>
+      <? endif; ?>
+    </div>
+  </div>
+</div>

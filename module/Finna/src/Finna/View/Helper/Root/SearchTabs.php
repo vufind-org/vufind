@@ -27,7 +27,7 @@
  */
 namespace Finna\View\Helper\Root;
 use Finna\Search\Solr\Params as SolrParams,
-    \Finna\Search\Primo\Params as PrimoParams;
+    Finna\Search\Primo\Params as PrimoParams;
 
 /**
  * "Search tabs" view helper
@@ -78,10 +78,12 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     ) {
         $this->session = $session;
         $this->table = $table;
+
         if (isset($config['Combined'])) {
             // Make sure that combined view is the first tab
             $config = ['Combined' => $config['Combined']] + $config;
         }
+
         parent::__construct($results, $config, $url);
     }
 
@@ -112,7 +114,16 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         }
         $searchTable = $this->table->get('Search');
 
-        foreach ($tabs as &$tab) {
+        foreach ($tabs as $key => &$tab) {
+            // Remove any disabled functions
+            if (in_array($tab['class'], ['Combined', 'MetaLib', 'Primo'])) {
+                $helper = $this->getView()->plugin($tab['class']);
+                if (!$helper->isAvailable()) {
+                    unset($tabs[$key]);
+                    continue;
+                }
+            }
+
             if (isset($tab['url'])) {
                 $parts = parse_url($tab['url']);
                 $params = [];
@@ -120,15 +131,16 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                     parse_str($parts['query'], $params);
                 }
 
-                // Remove daterange type from URL
-                // (to be added later from a saved search)
+                // Remove search index specific URL parameters
                 $dropParams = [
                    SolrParams::SPATIAL_DATERANGE_FIELD . '_type',
+                   'page', 'set', 'sort'
                 ];
                 $params = array_diff_key($params, array_flip($dropParams));
 
                 $filterQuery = false;
                 $searchClass = $tab['class'];
+
                 if (isset($savedSearches[$searchClass])) {
                     $helper = $this->getView()->results->getUrlQuery();
                     $searchId = $savedSearches[$tab['class']];
@@ -173,7 +185,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                 $tab['url'] = $url;
             }
         }
-        return $tabs;
+        return count($tabs) > 1 ? $tabs : [];
     }
 
     /**
@@ -207,7 +219,8 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
             $urlQuery->removeAllFilters();
         }
 
-        $filters = $this->getView()->results->getParams()->getFilters();
+        $params = $this->getView()->results->getParams();
+        $filters = $params->getFilters();
         if (!empty($filters)) {
             // Filters active, include current search id in the url
             $searchClass = $this->activeSearchClass;
@@ -267,6 +280,11 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                     }
                 }
             }
+            $params = $savedSearch->getParams();
+            if ($set = $params->getMetaLibSearchSet()) {
+                $settings['params'] = ['set' => $set];
+            }
+
             return $settings;
         }
         return false;

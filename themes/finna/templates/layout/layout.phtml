@@ -1,4 +1,6 @@
 <?=$this->doctype('HTML5')?>
+<!-- START of: finna - layout/layout.phtml -->
+<? // Do not use HTML comments before DOCTYPE to avoid quirks-mode in IE ?>
 <html lang="<?=$this->layout()->userLang?>">
   <head>
     <?$this->headThemeResources()?>
@@ -48,7 +50,8 @@
             'number_thousands_separator' => ['number_thousands_separator', null, ','],
             'feedback_success' => 'Thank you for your feedback',
             'none_selected' => 'none_selected',
-            'selected' => 'selected'
+            'selected' => 'selected',
+            'shelf_location' => 'shelf_location'
           )
         );
         if ($cart->isActive()) {
@@ -87,7 +90,15 @@
           $this->headScript()->appendFile("keep_alive.js");
       }
     ?>
+    <?
+    if ($this->scriptSrc('custom.js')) {
+       $this->headScript()->appendFile('custom.js');
+    }
+    ?>
     <?=$this->headScript()?>
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/general-post-head")): ?>
+      <?=$this->render($template)?>
+    <? endif; ?>
   </head>
   <body>
     <? // Set up the search box -- there are three possible cases:
@@ -210,5 +221,17 @@
     </div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/general-post-body")): ?>
+      <div class="container-fluid general-post-body">
+        <div class="container">
+          <div class="row">
+            <div class="col-xs-12">
+              <?=$this->render($template)?>
+            </div>
+          </div>
+        </div>
+      </div>
+    <? endif; ?>
   </body>
 </html>
+<!-- END of: finna - layout/layout.phtml -->

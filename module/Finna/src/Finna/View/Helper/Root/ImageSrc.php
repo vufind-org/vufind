@@ -37,20 +37,8 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class ImageSrc extends \Zend\View\Helper\AbstractHelper
+class ImageSrc extends ThemeSrc
 {
-    protected $themeInfo;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
-     */
-    public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
-    {
-        $this->themeInfo = $themeInfo;
-    }
-
     /**
      * Return image source address. First check if svg image is found and
      * if not, then check png image.
@@ -61,40 +49,19 @@ class ImageSrc extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($source)
     {
-        if ($url = $this->imageFromCurrentTheme($source . '.svg')) {
+        if ($url = $this->fileFromCurrentTheme('images/' . $source . '.svg')) {
             return $url;
         }
-        if ($url = $this->imageFromCurrentTheme($source . '.png')) {
+        if ($url = $this->fileFromCurrentTheme('images/' . $source . '.png')) {
             return $url;
         }
-        if ($url = $this->imageFromCurrentTheme($source)) {
+        if ($url = $this->fileFromCurrentTheme('images/' . $source)) {
             return $url;
         }
         
 
         return '';
 
-    }
-
-    /**
-     * Check if image is found in the current theme.
-     *
-     * @param type $image image fileanme to found
-     *
-     * @return mixed
-     */
-    protected function imageFromCurrentTheme($image)
-    {
-        $currentTheme = $this->themeInfo->getTheme();
-        $basePath = $this->themeInfo->getBaseDir();
-        $relPath = 'images/' . $image;
-
-        $file = $basePath . '/' . $currentTheme . '/' . $relPath;
-        if (file_exists($file)) {
-            $urlHelper = $this->getView()->plugin('url');
-            return $urlHelper('home') . 'themes/' . $currentTheme . '/' . $relPath;
-        }
-        return null;
     }
 
 }

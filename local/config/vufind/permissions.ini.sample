@@ -104,6 +104,10 @@
 ;[finna.authorized]
 ;require = ANY
 ;ipRange[] = 127.0.0.1
+
+; Optional IP-range name and description (not displayed in the UI):
+;ipRange[] = "127.0.0.1#name#description"
+
 ;authenticationStrategy[] = Shibboleth
 ;authenticationStrategy[] = ILS
 ;authenticationStrategy[] = ILS-statCode

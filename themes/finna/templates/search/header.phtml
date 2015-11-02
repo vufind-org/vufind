@@ -1,3 +1,4 @@
+<!-- START of: finna - search/header.phtml -->
 <?
     // Set default value if necessary:
     if (!isset($this->searchClassId)) {
@@ -23,23 +24,29 @@
     <? if (isset($this->overrideSearchHeading)): ?>
       <?=$this->overrideSearchHeading?>
     <? elseif ($this->params->getsearchType() == 'basic'): ?>
-      <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong>
+      <? if (empty($lookfor)): ?>
+        <?=$this->transEsc('history_empty_search');?>
+      <? else: ?>
+        <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($lookfor); ?></strong>
+      <? endif; ?>
     <? elseif ($this->params->getsearchType() == 'advanced'): ?>
-      <span class="adv_search_terms"><?=$this->transEsc("Your search terms")?> : <strong><?=$this->escapeHtml($this->lookfor)?></strong></span>
+      <span class="adv_search_terms"><?=$this->transEsc("Your search terms")?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong></span>
     <? endif; ?>
     <? else: ?>
       <?=$this->transEsc('nohit_heading')?>
   <? endif; ?>
   </h1>
   <? if ($this->recordsFound): ?>
-    <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
+    <span class="hidden-print">
+    <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this) ; ?>
+    </span>
   <? endif; ?>
 </div>
 <div class="col-sm-3"></div>
 
 <? if ($this->params->getsearchType() == 'advanced'): ?>
 <div class="col-xs-12">
-  <div id="searchForm">
+  <div id="searchForm hidden-print">
       <div class="adv_search_links">
         <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->results->getSearchId())?>"><i class="fa fa-pen"></i> <?=$this->transEsc("Edit this Advanced Search")?></a>
         <a href="<?=$this->url($advSearch)?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Start a new Advanced Search")?></a>
@@ -48,3 +55,4 @@
   </div>
 </div>
 <? endif; ?>
+<!-- END of: finna - search/header.phtml -->

@@ -1,3 +1,4 @@
+<!-- START of: finna - RecordDriver/SolrLido/core.phtml -->
 <? $this->headScript()->appendFile("finna-record.js"); ?>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <div class="col-sm-4">
@@ -6,27 +7,41 @@
       <? $img = $this->recordImage($this->record($this->driver))?>
       <?= $img->render('record', array('small' => array('w' => 50, 'h' => 50), 'medium' => array('w' => 1200, 'h' => 1200))) ?>
       <? /* Display qrcode if appropriate: */ ?>
-      <? $access = $this->driver->getAccessRestrictions(); if (!empty($access)): ?>
-        <div class="access-rights">
-          <div class="truncate-field">
-          <strong><?=$this->transEsc('Image Rights');?>:<br/></strong>
-          <? foreach ($access as $field): ?>
-            <span><?=$this->escapeHtml($field)?></span>
-          <? endforeach; ?>
-          </div>
+      <? $rights = $this->driver->getImageRights($this->layout()->userLang); ?>
+      <div class="access-rights">
+        <div class="image-rights">
+          <? $hasLink = isset($rights['link']); ?>
+          <strong><?= $this->translate("Image Rights") ?>:</strong> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
         </div>
-      <? endif; ?>
+        <div class="copyright truncate-field">
+          <? if (isset($rights['description'])): ?>
+            <? foreach ($rights['description'] as $item): ?>
+            <p><?= $this->transEsc($item) ?></p>
+            <? endforeach ?>
+          <? endif ?>
+          <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+            <p><?= $this->translate('Image Rights Default') ?>
+            <p><a href="<?= $this->url('content-page', array('page' => 'terms_conditions')) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
+          <? endif; ?>
+        </div>
+      </div>
       <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
       <? if($QRCode): ?>
         <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
       <? endif; ?>
     </div>
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/record-post-toolbar")): ?>
+    <div class="record-post-toolbar">
+      <?=$this->render($template)?>
+    </div>
+    <? endif; ?>
 
     <? // if you have a preview tab but want to move or remove the preview link
        // from this area of the record view, this can be split into
        // getPreviewData() (should stay here) and
        // getPreviewLink() (can go in your desired tab) ?>
     <?=$this->record($this->driver)->getPreviews()?>
+    <?=$this->record($this->driver)->getRating()?>
   </div>
 
   <div class="col-sm-8 record-information">
@@ -46,7 +61,7 @@
           </div>
     <? endif; ?>
     </div>
-    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
     <? if ($summary): ?>
       <div class="truncate-field wide">
         <p class="summary"><?=$summary?></p>
@@ -194,7 +209,7 @@
           <? foreach ($events as $event): ?>
             <? if ($event != $events[0]): ?><br/><? endif; ?>
             <? if (!empty($event['name'])): ?><?=$this->escapeHtml($event['name'])?><br/><? endif; ?>
-            <? if (!empty($event['date'])): ?><?=$this->escapeHtml($event['date'])?><br/><? elseif ($event['type'] != 'käyttö' && $event['type'] != 'näyttely'): ?> <?=$this->transEsc('(undated)')?><? endif; ?>
+            <? if (!empty($event['date'])): ?><?=$this->escapeHtml($event['date'])?><br/><? elseif ($event['type'] != 'käyttö' && $event['type'] != 'näyttely'): ?> <?=$this->transEsc('undated')?><? endif; ?>
             <? if (!empty($event['method'])): ?><?=$this->escapeHtml($event['method'])?><br/><? endif; ?>
             <? if (!empty($event['materials'])): ?>
               <?=implode('<br/>', array_map(array($this, 'escapeHtml'), $event['materials']))?><br/>
@@ -336,5 +351,13 @@
       <? endif; ?>
     </table>
     <?/* End Main Details */?>
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/record-post-metadata")): ?>
+    <div class="row">
+      <div class="col-xs-12">
+        <?=$this->render($template)?>
+      </div>
+    </div>
+    <? endif; ?>
   </div>
 </div>
+<!-- END of: finna - RecordDriver/SolrLido/core.phtml -->

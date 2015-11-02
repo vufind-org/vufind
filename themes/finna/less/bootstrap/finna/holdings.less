@@ -1,3 +1,35 @@
+/* --  Holdings styling  -- */
+.holding-details {
+    margin-top: 10px;
+}
+.groupLocation {
+    letter-spacing: 0.2px;
+    padding: 0;
+    padding-left: 16px;
+    & i {
+        vertical-align: middle;
+        margin-left: -17px;
+    }
+    & span.text-error {
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+    & span.text-success {
+        color: inherit;
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+    & .groupCallnumber {
+        color: @gray-light;
+        font-size: 0.9em;
+        line-height: 1.4em; 
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+}
+
+// Record view holdings styles
 .record-holdings-table {
     margin: 20px 0px;
     border: 1px solid @gray-lighter;
@@ -31,6 +63,7 @@
             background: @brand-primary;
             color: @body-bg;
             padding: 4px 8px;
+            vertical-align: middle;
         & th {
             background: none;
             border: none;
@@ -40,8 +73,21 @@
             }
         }
     }
+    & .dedup-select {
+        max-width: 130px;     
+        display: inline-block;
+        word-wrap: initial;
+    }
+    & .holdings-title {
+        .h4;
+        margin-right: 15px;
+        display: inline-block;        
+    }
     & .btn-primary {
         padding: 2px 4px;
         margin-bottom: 2px;
+    }
+    @media (max-width: 340px) {
+        table-layout: fixed;   
     }
 }

@@ -1,6 +1,5 @@
+<!-- START of: finna - RecordTab/hierarchytree.phtml -->
 <?
-  // Set page title.
-  $this->headTitle($this->translate('hierarchy_tree') . ': ' . $this->driver->getBreadcrumb());
   $hierarchyTreeList = $this->tab->getTreeList();
   $activeTree = $this->tab->getActiveTree();
 
@@ -48,3 +47,4 @@
     <div class="back-to-up hidden"><?=$this->transEsc("Back to top")?> <i class="fa fa-arrow-up"></i></div>
   </div>
 <? endif; ?>
+<!-- END of: finna - RecordTab/hierarchytree.phtml -->

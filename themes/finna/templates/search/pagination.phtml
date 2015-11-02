@@ -1,7 +1,7 @@
-
+<!-- START of: finna - search/pagination.phtml -->
 <? if ($this->pageCount && (isset($this->previous) || isset($this->next))): ?>
 
-  <ul class="pagination">
+  <ul class="pagination hidden-print">
     <? if (isset($this->previous)): ?>
       <li class="pagination-button"><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>"><i class="fa fa-first-page"></i><span class="sr-only"><?=$this->transEsc('First')?></span></a></li>
       <li class="pagination-button"><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><i class="fa fa-arrow-left"></i><span class="sr-only"><?=$this->transEsc('Prev')?></span></a></li>
@@ -21,3 +21,4 @@
     <? endif; ?>
   </ul>
 <? endif; ?>
+<!-- END of: finna - search/pagination.phtml -->

@@ -1,7 +1,12 @@
+<!-- START of: finna - content/help_sv.phtml -->
 <? $this->headTitle('Söktips'); $this->content()->setHeading('Söktips'); ?>
 
 <div class="row">
-  <div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="col-sm-3 sidebar">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="col-sm-9">
     <? if ($this->resolver('Content/Additions/helpBegin_sv.phtml')): ?>
       <?=$this->render('Content/Additions/helpBegin_sv.phtml')?>
     <? endif; ?>
@@ -163,8 +168,5 @@
       <?=$this->render('Content/Additions/helpEnd_sv.phtml')?>
     <? endif; ?>
   </div>
-  <div class="<?=$this->layoutClass('sidebar')?>">
-    <div class="content-navigation-menu">
-    </div>
-  </div>
 </div>
+<!-- END of: finna - content/help_sv.phtml -->

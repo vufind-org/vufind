@@ -1,0 +1,26 @@
+<?
+    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">Nelli Metasearch</h1></div>';
+?>
+<div class="row">
+  <div class="col-sm-9">
+    <div class="content">
+      <p>Nelli is a metasearch service for libraries.</p>
+      <p>Nelli search provides access to scientific articles, ebooks, and references that are not included in Primo Central Index.</p>
+      <p>Nelli search may require logging in with university credentials.</p>
+      <p>The service is provided using MetaLib by Ex Libris.</p>
+      <p>&nbsp;</p>
+      <img src="<?=$this->imageLink('nelli-logo.png')?>" alt="Nelli logo" />
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="sidebar hidden-print>">
+      <?= $this->context($this)->renderInContext(
+      'metalib/sidebar.phtml', []
+    );
+      ?>
+      <? if ($template = $this->content()->findTemplateForLng("layout/Additions/search-post-facets")): ?>
+          <?=$this->render($template)?>
+      <? endif; ?>
+    </div>
+  </div>
+</div>

@@ -52,4 +52,19 @@ class Factory extends \VuFind\Role\PermissionProvider\Factory
     {
         return new AuthenticationStrategy($sm->getServiceLocator());
     }
+
+    /**
+     * Factory for IpRange
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return IpRange
+     */
+    public static function getIpRange(ServiceManager $sm)
+    {
+        return new IpRange(
+            $sm->getServiceLocator()->get('Request'),
+            $sm->getServiceLocator()->get('VuFind\IpAddressUtils')
+        );
+    }
 }

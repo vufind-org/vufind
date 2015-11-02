@@ -11,7 +11,7 @@
 // add classes when there are too many tabs to fit on the screen
 .tabs-responsive {
     width: 100%;
-    overflow-x: scroll;
+    overflow-x: auto;
     &::-webkit-scrollbar {
         display: none;   
     }
@@ -160,15 +160,18 @@
   }
 }
 @media (max-width:@screen-xs-max) {
+.recordTabs > li > a {
+    text-transform: uppercase;   
+}
 .nav-tabs {
     text-align: center;
-    border-bottom: 3px solid @gray-light; 
+    border-bottom: 5px solid @gray-lighter; 
     & #details {
        display: none;  
     }
     & > li {
-        
-        word-wrap: break-word;   
+        margin-bottom: -5px;
+        word-wrap: break-word;
     }
     & > li > a {
         padding: 0px 10px 10px;
@@ -380,7 +383,7 @@
 
 // content-navigation-menu
 .main.template-dir-content.template-name-content .content-navigation-menu {
-    margin: 40px 0px 20px;
+    margin: 20px 0px;
     & h2 {
         background: @gray;
         color: #fff;
@@ -394,13 +397,17 @@
             cursor: pointer;
         }
     }
-    @media(min-width:@screen-sm-min) {
+    @media (min-width:@screen-sm-min) {
         &.attached {
             position: fixed;
             top: 0px;
             transition: all 0.5s linear;
         }
     }
-    
+    @media (min-width:@screen-sm-min) and (max-width: @screen-sm-max) {
+        &.attached {
+            max-width: 150px;
+        }
+    }
 }
 

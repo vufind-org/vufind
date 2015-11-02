@@ -18,6 +18,12 @@ finna.persona = (function(finna) {
     };
 
     var personaLogout = function() {
+        // This can be reached from logout observer as well as logout link click 
+        // event. Avoid double execution..
+        if (finna.persona.logoutInProgress) {
+            return false;
+        }
+        finna.persona.logoutInProgress = true;
         $.ajax({
             type: "GET",
             dataType: "json",
@@ -28,6 +34,7 @@ finna.persona = (function(finna) {
             },
             error: function(xhr, status, err) {
                 alert("logout failure: " + err);
+                finna.persona.logoutInProgress = false;
             }
         });
     };
@@ -40,7 +47,8 @@ finna.persona = (function(finna) {
     };
 
     var setupLogoutLinks = function() {
-        $('.persona-logout').click(function() {
+        $('.persona-logout').unbind('click').click('click', function(event) {
+            finna.persona.autoLogoutEnabled = false;
             navigator.id.logout();
             personaLogout();
             return false;
@@ -52,10 +60,12 @@ finna.persona = (function(finna) {
             // Persona support not properly loaded
             return;
         }
+        finna.persona.logoutInProgress = false;
+        finna.persona.autoLogoutEnabled = autoLogoutEnabled;
         navigator.id.watch({
             loggedInUser: currentUser,
             onlogin: function(assertion) {
-                $(".persona-login").addClass("persona-login-loading");
+                $('.persona-login i').addClass('fa-spinner fa-spin');
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -90,20 +100,20 @@ finna.persona = (function(finna) {
                                 }
                             }
                         } else {
-                            $(".persona-login").removeClass("persona-login-loading");
+                            $('.persona-login i').removeClass('fa-spinner fa-spin');
                             navigator.id.logout();
                             alert("Login failed");
                         }
                     },
                     error: function(xhr, status, err) {
                         navigator.id.logout();
-                        $(".persona-login").removeClass("persona-login-loading");
+                        $('.persona-login i').removeClass('fa-spinner fa-spin');
                         alert("login failure: " + err);
                     }
                 });
             },
             onlogout: function() {
-                if (!currentUser || !autoLogoutEnabled) {
+                if (!currentUser || !finna.persona.autoLogoutEnabled) {
                     return;
                 }
                 personaLogout();

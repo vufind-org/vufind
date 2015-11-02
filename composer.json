@@ -67,7 +67,7 @@
         "zf-commons/zfc-rbac": "~2.4"
     },
     "require-dev": {
-        "behat/mink": "1.6.*",
+        "behat/mink": "1.7.*",
         "behat/mink-zombie-driver": "*"
     }
 }

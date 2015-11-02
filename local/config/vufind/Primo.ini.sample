@@ -4,9 +4,10 @@ relative_path = ../finna/Primo.ini
 
 ; Add any overrides below
 
-; You can set regular expression / institution code pairs here to match up
-; IP addresses with institution codes.
+[General]
+; Whether Primo is enabled. Default is true.
+enabled = 0
+
 [Institutions]
-; Simple example:
-regex[] = "/.*/"           ; match all IPs
-code[] = "358FIN???"
+onCampusRule['358FIN???'] = "finna.authorized"
+defaultCode = "358FIN???"

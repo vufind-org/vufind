@@ -1,7 +1,5 @@
+<!-- START of: finna - RecordTab/collectionlist.phtml -->
 <?
-  // Set page title.
-  $this->headTitle($this->translate('Collection Items') . ': ' . $this->driver->getBreadcrumb());
-
   // Get search results
   $results = $this->tab->getResults();
   $params = $this->tab->getParams();
@@ -11,8 +9,8 @@
   <? foreach ($results->getRecommendations('top') as $current): ?>
     <?=$this->recommend($current)?>
   <? endforeach; ?>
-  <div class="hidden-print search-controls row">
-    <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right">
+  <div class="search-controls row">
+    <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right hidden-print">
       <?=$this->render('search/controls/view.phtml', $searchDetails)?>
       <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
     </div>
@@ -34,3 +32,4 @@
 <? else: ?>
   <h4><?=$this->transEsc('collection_empty')?></h4><br><br>
 <? endif; ?>
+<!-- END of: finna - RecordTab/collectionlist.phtml -->

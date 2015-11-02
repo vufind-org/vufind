@@ -5,37 +5,40 @@
     & ul.nav-tabs {
         border-bottom: none;
         margin: 0 0 0 15px;
-            @media(max-width: @screen-xs-max) {
-                margin-left: 0;  
-            }
-            @media(max-width: @screen-sm-max) {
-
-            display: flex;
-                & li {
-                    display: flex;
-                }
-            }
+        @media(max-width: @screen-sm-max) {
+            margin-left: 0;  
+        }
 
         > li {
             color: #fff;
             margin: 0 4px 0 0;
-
             > a {
-                background-color: @link-color;
+                background-color: @main-tabs-background-color;
                 padding: 10px 15px 10px 15px;
                 margin-bottom: 0;
                 border: 0;
                 border-radius: 0;
                 font-size: 1em;
                 font-weight: bold;
-                color: #fff;
+                color: @main-tabs-link-color;
                 transition: none;
-                @media(max-width: @screen-xs-max) {
-                    max-width: 100px;
-                    padding: 8px 10px;
-                    font-size: .9em;
+                @media (max-width: @screen-xs-max) {
+                    max-width: 87px;
+                    padding: 8px 6px;
+                    font-size: .85em;
                     display: block;
                     line-height: 1.3em;
+                    min-height: 62px;
+                    & i {
+                        display: block;
+                        margin-top: 3px;   
+                    }
+                }
+                @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+                    max-width: none;
+                    & i {
+                    display: inline;
+                    }
                 }
             }
 
@@ -49,7 +52,7 @@
             &:not(.active) > a {
                 transition: background-color 0.1s linear;
                 &:hover, &:active, &:focus {
-                    background: darken(@link-color,4%);
+                    background: darken(@main-tabs-background-color,4%);
                 }
             }
         }
@@ -76,6 +79,19 @@
         & .comment-text {
             padding-top: 5px;
         }
+        & .comment-rating {
+            display: inline-block;
+        }
+        & .comment-info {
+            display: inline;
+            margin-left: 10px;
+        }
+    }
+    & #usercomments-tab {
+        & form.comment .rating-holder .info {
+            float: left;
+            margin-right: 5px;
+        }
     }
     & #toc-tab, ul.toc {
         margin-left: 10px;
@@ -95,6 +111,9 @@
         margin-bottom: 5px;
         & .searchterms {
             font-weight: bold;   
+        }
+        @media (max-width: @screen-xs-max) {
+            display: block;   
         }
     }
 

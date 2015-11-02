@@ -1,0 +1,179 @@
+<!-- START of: finna - content/help_fi.phtml -->
+<? $this->headTitle('Ohje'); $this->content()->setHeading('Ohje'); ?>
+
+<div class="row">
+  <div class="col-sm-3 sidebar">
+    <div class="content-navigation-menu">
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <? if ($this->resolver('Content/Additions/helpBegin.phtml')): ?>
+      <?=$this->render('Content/Additions/helpBegin.phtml')?>
+    <? endif; ?>
+    <div id="basicsearch" class="content-section">
+      <h2><i class="fa fa-search"></i> Perushaku</h2>
+      <p>Pelkällä välilyönnillä erotetut hakusanat käyttäytyvät AND-hakulogiikalla eli hakutuloksien tulee sisältää kaikki antamasi hakusanat.</p><p>Esimerkiksi <i>mannerheim carl</i> on sama haku kuin <i>mannerheim AND carl</i>.</p>
+      <p>Voit esirajata haun valitsemalla pudotusvalikosta joko tietyn sektorin (museo, arkisto, kirjasto) tai aineistotyypin (kirja, artikkeli, jne.)</p>
+    </div>
+    <div id="narrowsearch" class="content-section">
+      <h2>Haun rajaaminen</h2>
+      <p>Rajaa hakua -valikon avulla voit rajata hakuasi aineistotyypin (esim. kuva), organisaation (esim. Kansallisarkisto) tai kielen mukaan.</p>
+      <p>Hakutulosjoukkoa saa rajattua suppeammaksi käyttämällä useita rajauksia</p>
+      <p>Valikko näyttää oletusarvoisesti eniten hakutuloksia keränneet hakuarvot ylimmäisenä.</p>
+      <h4>Vuosirajaus ja aikajana</h4>
+      <p>Voit rajata valmistusvuosia joko kirjoittamalla tietyt vuosivälit joille haku kohdistuu tai käyttämällä visuaalista aikajanatyökalua. <p>
+      <p>Nuolta klikkaamalla voit valita näkyville alemman hierarkiatason sijainteja tai aineistoa (esim. kooste, arkistosarja, DVD).</p>
+      <p>Voit poistaa tehtyjä rajauksia <strong>Rajaa hakua</strong> -valikon alta.</p>   
+      <h4>Säilytä käytössä oleva rajaus</h4>
+      <p>Valinta säilyttää tekemäsi rajaukset rajaa hakua -valikossa. Tekemäsi rajaukset säilyvät oletusarvoisesti uutta perushakua tehtäessä. Jos haluat tehdä uuden haun ilman rajauksia, poista tämä valinta</p>
+    </div>
+    <div id="advancedsearch" class="content-section">
+      <h2><i class="fa fa-search-adv"></i> Tarkennettu haku</h2>
+      <h4>Hakukentät</h4>
+      <p>Tarkennetun haun sivulla on useita hakukenttiä, joihin voi kirjoittaa hakutermejä ja –lausekkeita sekä hakuoperaattoreita.</p>
+      <p>Jokaisen hakukentän vieressä on alasvetovalikko, josta voi valita, mihin tietueen kenttään haku kohdistetaan (kaikki kentät, otsikko, tekijä, ym.). Useita termejä yhdistelevän haun voi tarvittaessa kohdistaa useampaan kenttään</p>
+      <h4>Hae-valikko</h4>
+      <p>Hae-valikko määrittelee, miten useita hakukenttiä sisältävä kysely käsitellään: </p>
+      <ul>
+        <li>
+        <strong>Kaikilla termeillä (AND)</strong> — Tuottaa tulokseksi tietueet, jotka täsmäävät kaikkien hakukenttien sisältöön.
+        </li>
+        <li>
+        <strong>Millä tahansa termillä (OR)</strong> — Tuottaa tulokseksi tietueet, jotka täsmäävät yhden tai useamman hakukentän sisältöön. 
+        </li>
+        <li>
+        <strong>Ei millään termeistä (NOT)</strong> — Tuottaa tulokseksi tietueet, joissa ei esiinny yhdenkään hakukentän sisältöä. 
+        </li>
+      </ul>
+      <p>Lisää hakukenttä –painikkeella lomakkeelle pystyy lisäämään uuden hakukentän. </p>
+      <ul>
+        <li><strong>Lisää hakuryhmä</strong> –painike lisää uuden ryhmän hakukenttiä</li>
+        <li><strong>Poista hakuryhmä</strong> –painikkeella ryhmiä voidaan poistaa.</li>
+      </ul>
+      <p>Hakuryhmien välisiä suhteita määritellään käyttäen <strong>Kaikki ryhmät (AND)</strong> ja <strong>Mitkä tahansa ryhmät (OR)</strong> –hakuoperaattoreita. </p>
+      <ul>
+        <li>Yllä olevan esimerkin Intian tai Kiinan historiasta voi hakuryhmien avulla toteuttaa seuraavasti: </li>
+        <li>Ensimmäisen hakuryhmän hakukenttiin lisätään termit "Intia" ja "Kiina" ja määritellään hakukenttien välinen suhde <strong>Hae</strong>-alasvetovalikosta <strong>Millä tahansa termillä (OR).</strong></li>
+        <li>Luodaan uusi hakuryhmä ja lisätään sen hakukenttään termi "historia". Hakuryhmien väliseksi suhteeksi määritellään <strong>Kaikki ryhmät (AND).</strong></li>
+      </ul>
+    </div>
+    <div id="myaccount" class="content-section"><h2><i class="fa fa-user"></i> Oma tili ja kirjautuminen</h2>
+      <p>Kirjautuneet käyttäjät voivat esimerkiksi tallentaa hakuja, kommentoida Finnan sisältöjä ja varata teoksia kirjastokortilla, jos kirjasto on mukana Finnassa.</p>
+      <h4><i class="fa fa-sign-in"></i> Kirjautuminen sisään</h4>
+      <p>Voit kirjautua sisään valitsemalla ylävalikosta <a href="https://www.finna.fi/MyResearch/Home">Kirjaudu sisään.</a> Kirjautumistapoja on kolme:
+      </p>
+      <ul>
+        <li><strong>Mozilla Persona -tunnuksen</strong> voivat luoda kaikki käyttäjät. Tunnukseen voi myös liittää oman kirjastokortin, jos kirjasto on mukana Finnassa.</li>
+        <li><strong>HAKA-kirjautuminen</strong> on tarkoitettu erityisesti korkeakoulujen opiskelijoille ja henkilökunnalle. Palveluun voi liittää oman, Finnassa mukana olevan kirjaston kirjastokortin sisäänkirjautumisen jälkeen.</li>
+        <li><p>Jos kirjastosi on mukana Finnassa voit kirjautua suoraan omalla <strong>kirjastokortilla.</strong></p><p><a href="https://www.finna.fi/Content/Organisations">Katso Finnassa mukana olevat kirjastot, joiden kirjastokorteilla voit kirjautua</a></p></li>
+      </ul>
+      <h4>Oman tilin toiminnot:</h4>
+      <h4><i class="fa fa-heart"></i> Suosikit</h4>
+      <p>Voit lisätä tietueita suosikeiksi hakutulos- tai tietuesivulla sydämenmuotoisella painikkeella. Voit järjestellä valittuja tietueita erilaisiksi suosikkilistoiksi, viedä tietueet Refworksiin, lähettää ne sähköpostilla tai tulostaa MARC-muodossa.</p> 
+      <h4>Tallennetut haut, hakuhistoria ja uutuusvahti</h4>
+      <p>Voit tallentaa viimeisimmät hakusi joko hakutulossivulla tai tallennettujen hakujen viimeisimmistä hauista Tallenna-painikkeella. Tallennetut haut näkyvät ylimmäisenä.</p>
+      <p>Voit asettaa uutuusvahdin tallennetuille hauille joko viikoittain tai päivittäin. Ilmoitukset uutuuksista tulevat sähköpostiisi.</p> 
+      <p></p>
+      <h4>Lainat</h4>
+      <p>Voit tarkastella lainojasi ja uusia lainassa olevaa aineistoa.</p>
+      <h4>Varaukset ja tilaukset</h4>
+      <p>Tarkastele tekemiäsi varauksia ja tilauksia kirjastokortillasi. Voit perua varauksiasi tällä välilehdellä./p&gt;
+      </p><h4>Maksut</h4>
+      <p>Näe kirjastokortillesi merkityt maksut esimerkiksi myöhästyneistä lainoista.</p>
+      <h4>Kirjastokortit ja kirjastokortin liittäminen</h4>
+      <p>Voit lisätä Finnaan oman kirjastokorttisi Lisää-painikkeella, jos kirjastosi on liitetty mukaan Finnaan. Voit lisätä useita kirjastokortteja.</p>
+      <h4>Omat tiedot</h4>
+      <p>Voit vaihtaa sähköpostiosoitteesi, asettaa eräpäivämuistutuksen sekä valita ensisijaisen kirjaston, jonne haluat varauksesi ja kaukolainasi.</p>
+      <p>Kirjaston yhteystietoja voit muuttaa ottamalla yhteyttä omaan kirjastoosi.</p>
+      <h4>PIN-koodin tai salasanan vaihtaminen</h4>
+      <p>Voit vaihtaa salasanaa tai PIN-koodia Omat tiedot -välilehdellä.</p>      
+    </div>
+    <div id="contactus" class="content-section"><h2><i class="fa fa-envelope"></i> Palaute</h2>
+      <p>Voit lähettää palautetta Finnasta <a href="https://www.finna.fi/Feedback/Home">yleisen palautelomakkeen</a> avulla esimerkiksi käyttöliittymästä ja teknisistä asioista. Palaute ohjautuu Kansalliskirjastolle, jossa se käsitellään ja ohjataan edelleen asiasta vastaavalle taholle.</p>
+      <p>Mikäli haluat antaa palautetta palvelun sisällöistä tai aineistoja koskevista tiedoista, kannattaa käyttää yksittäisen tietuesivun <strong>Lähetä palautetta</strong> -linkkiä. Tämä palaute ohjautuu siihen organisaatioon, joka on toimittanut kyseisen aineiston Finnaan.</p>
+    </div>
+    <div id="booleanoperators" class="content-section"><h2>Loogiset hakuoperaattorit</h2>
+      <p>Termejä voi yhdistellä monimutkaisemmiksi kyselyiksi Boolen hakuoperaattoreilla. Seuraavat operaattorit ovat käytettävissä: <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>, <strong>NOT</strong> ja <strong>-</strong>.</p>
+      <p><strong>Huomio!</strong> Boolen hakuoperaattorit hauissa kirjoitetaan ISOIN KIRJAIMIN.</p>
+      <h4 title="AND">AND</h4>
+      <p><strong>AND</strong> eli konjunktio-operaattori on järjestelmän oletusarvoinen operaattori monitermisille kyselyille, joihin ei ole sisällytetty mitään operaattoria. <strong>AND</strong>-operaattoria käytettäessä kyselyn tuloksena saadaan tietueet, joissa esiintyy kukin hakukentissä esiintyvistä termeistä.</p>
+      <p>Esimerkki: etsitään tietueita, joissa esiintyy sekä "economics" että "Keynes":</p>
+      <pre class="code">economics Keynes</pre>
+      <p>tai</p>
+      <pre class="code">economics AND Keynes</pre>
+      <h4 title="+">+</h4>
+      <p>Merkillä <strong>+</strong> voidaan ilmaista vaatimusta siitä, että termin on esiinnyttävä jokaisessa hakutuloksessa.</p>
+      <p>Esimerkki: etsitään tietueita, joissa esiintyy ehdottomasti "economics" ja joissa voi lisäksi esiintyä "Keynes":</p>
+      <pre class="code">+economics Keynes</pre>
+      <h4 title="OR">OR</h4>
+      <p><strong>OR</strong>-operaattorin käyttö haussa tuottaa tulokseksi tietueita, joissa esiintyy yksi tai useampi operaattorin yhdistämistä termeistä.</p>
+      <p>Esimerkki: etsitään tietueita, joissa esiintyy joko "economics Keynes" tai ainoastaan "Keynes":</p>
+      <pre class="code">"economics Keynes" OR Keynes</pre>
+      <h4 title="!-">!-</h4>
+      <p>Merkkiyhdistelmällä <strong>!-</strong> voidaan poistaa hakutuloksista tietueet, joissa esiintyy kyselyssä merkkiä seuraava termi.</p>
+      <p>Esimerkki: etsitään tietueita, joissa on termi "economics" mutta ei termiä "Keynes":</p>
+      <pre class="code">economics !-Keynes</pre>
+      <p>Huomio! Merkkiyhdistelmää ei voi käyttää yksitermisissä kyselyissä.</p>
+      <p>Esimerkki: seuraava kysely ei tuota lainkaan tuloksia:</p>
+      <pre class="code">!-economics</pre>
+      <p>Huomio! Jos jokin hakutermeistä alkaa tällä merkkiyhdistelmällä, saadaan se otettua mukaan kyselyyn käyttämällä kenoviivaa (\).</p>
+      <p>Esimerkki: etsitään hakusanoilla <i>!-merkki hakuehtona</i>:</p><p>
+      </p><pre class="code">\!-merkki hakuehtona</pre>
+      <p>Huomio! <strong>NOT</strong>-operaattoria voidaan käyttää samaan tapaan tämän merkkiyhdistelmän kanssa. <strong>NOT</strong>-operaattori antaa kuitenkin yhdysmerkkiä enemmän hakutuloksia, joissa osassa saattaa esiintyä pois suljettava hakutermi.
+      </p>
+      <h4 title="Phrase searches">Fraasihaut</h4>
+      <p>Tarkan fraasihaun voi tehdä kirjoittamalla hakusanat lainausmerkkeihin.</p>
+      <p>Esimerkki: etsitään vain tietueita, joissa on termi "keskiajan historia", ei esimerkiksi "keskiajan kulttuurihistoria":
+      </p>
+      <pre class="code">"keskiajan historia"</pre>
+      <p>Fraasihakua voi käyttää myös yksittäisen hakusanan kohdalla, jolloin haku kohdistuu vain annettuun hakusanaan, eikä esimerkiksi muihin taivutusmuotoihin.</p>
+    </div>
+      
+    <div id="wildcardsearches" class="content-section"><h2>Jokerimerkit</h2>
+      <p><strong class="helpTerm">?</strong> korvaa yhden merkin hakutermistä.</p>
+      <p>Esimerkki: termejä "text" ja "test" voidaan hakea samalla kyselyllä:</p>
+      <pre class="code">te?t</pre>
+      <p><strong class="helpTerm">*</strong> korvaa 0, 1 tai useampia merkkejä hakutermistä.</p>
+      <p>Esimerkki: termejä "test", "tests" ja "tester" voidaan hakea kyselyllä:</p>
+      <pre class="code">test*</pre>
+      <p>Jokerimerkkejä voi käyttää myös hakutermin keskellä:</p>
+      <pre class="code">te*t</pre>
+      <p>Huomio! Jokerimerkkejä <strong>?</strong> ja <strong>*</strong> ei voi käyttää hakutermin ensimmäisenä merkkinä.</p>
+    </div>  
+    <div id="fuzzysearches"  class="content-section"><h2>Sumeat haut</h2>
+      <p>Sumea haku hakee myös sellaisia tuloksia, joissa on mainittu hakusanan kaltainen sana</p>
+      <p><strong class="helpTerm">~</strong> toteuttaa sumean haun yksisanaisen haun viimeisenä merkkinä.</p>
+      <p>Esimerkki: sumea haku termille "roam":</p>
+      <pre class="code">roam~</pre>
+      <p>Tämä haku löytää esimerkiksi termit "foam" ja "roams".</p>
+      <p>Haun samankaltaisuutta kantatermiin voidaan säädellä parametrilla, jonka arvo on välillä 0 ja 1. Mitä lähempänä annettu arvo on lukua 1, sen samankaltaisempi termin on oltava kantatermin kanssa.</p>
+      <pre class="code">roam~0.8</pre>
+      <p>Oletusarvona parametrille on 0.5, jos arvoa ei sumeassa haussa erikseen määritetä.</p>
+    </div>
+  
+    <div id="proxitimitysearches" class="content-section"><h2>Etäisyyshaut</h2>
+      <p>Etäisyyshaulla saadaan tuloksia, joissa hakusanat ovat lähekkäin mutta niiden ei tarvitse olla välttämättä peräkkäin</p>
+      <p><strong class="helpTerm">~</strong> toteuttaa etäisyyshaun monitermisen hakulausekkeen lopussa etäisyysarvon kanssa.</p>
+      <p>Esimerkki: etsitään termejä "economics" ja "keynes" niiden esiintyessä korkeintaan 10 termin etäisyydellä toisistaan:</p>   
+      <pre class="code">"economics Keynes"~10</pre>
+    </div>
+    <div id="rangesearches"class="content-section"><h2>Arvovälihaut</h2>
+      <p>Arvovälihaut tehdään käyttämällä joko aaltosulkeita <strong>{ }</strong> tai hakasulkeita <strong>[ ]</strong>. Aaltosulkeita käytettäessä huomioidaan vain arvot annettujen termien välillä pois lukien kyseiset termit. Hakasulkeet puolestaan sisällyttävät myös annetut termit etsittävälle arvovälille.</p>
+      <p>Esimerkki: etsittäessä termiä, joka alkaa kirjaimella B tai C, voidaan käyttää kyselyä:</p>
+      <pre class="code">{A TO D}</pre>
+      <p>Esimerkki: etsittäessä arvoja 2002—2003 voidaan haku tehdä seuraavasti:</p>
+      <pre class="code">[2002 TO 2003]</pre>
+      <p>Huomio! Sana TO arvojen välillä kirjoitetaan ISOIN KIRJAIMIN.</p>
+    </div>
+  
+    <div id="boostingaterm" class="content-section"><h2>Termin painottaminen</h2>
+      <p><strong class="helpTerm">^</strong> nostaa termin painoarvoa kyselyssä.</p>
+      <p>Esimerkki: haussa termin "Keynes" painoarvoa on nostettu:</p>
+      <pre class="code">economics Keynes^5</pre>
+    </div>
+    <? if ($this->resolver('Content/Additions/helpEnd.phtml')): ?>
+      <?=$this->render('Content/Additions/helpEnd.phtml')?>
+    <? endif; ?>
+  </div>
+</div>
+<!-- END of: finna - content/help_fi.phtml -->

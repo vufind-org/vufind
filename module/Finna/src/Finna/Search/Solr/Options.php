@@ -58,6 +58,23 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
+     * Translate a field name to a displayable string for rendering a query in
+     * human-readable format:
+     *
+     * @param string $field Field name to display.
+     *
+     * @return string       Human-readable version of field name.
+     */
+    public function getHumanReadableFieldName($field)
+    {
+        $result = parent::getHumanReadableFieldName($field);
+        if ($result != $field) {
+            return $result;
+        }
+        return $this->translate("search_field_$field", null, $field);
+    }
+
+    /**
      * Return the route name for the search results action.
      *
      * @return string

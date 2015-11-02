@@ -60,10 +60,10 @@ class PluginFactory extends \VuFind\Search\Results\PluginFactory
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
         $name, $requestedName
     ) {
-        $params = $serviceLocator->getServiceLocator()
-            ->get('VuFind\SearchParamsPluginManager')->get($requestedName);
         $class = $this->getClassName($name, $requestedName);
         if (class_exists($class)) {
+            $params = $serviceLocator->getServiceLocator()
+                ->get('VuFind\SearchParamsPluginManager')->get($requestedName);
             return new $class($params);
         } else {
             $this->defaultNamespace = 'VuFind\Search';

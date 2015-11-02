@@ -20,6 +20,11 @@ login_field = PATRON_PIN
 ; user has no PIN code. Disabled by default.
 fallback_login_field = LAST_NAME  
 
+; Optional PATRON table field (colon-separated from text field label)
+; that is prompted when the user attempts to log in or add a library card to his 
+; account.
+;secondary_login_field = "LAST_NAME:Last Name"
+
 ; This is the timeout value for making HTTP requests to the Voyager API.
 http_timeout = 30
 
@@ -268,3 +273,10 @@ display_borrowing_location = true
 ; PIN change parameters. The default limits are taken from the interface documentation.
 minLength = 5
 maxLength = 12
+
+; These settings control authorization.
+[Authorization]
+; Whether authorization based on login is enabled. Default is false.
+;enabled = true
+; An optional colon-separated list of patron stat codes that are authorized.
+;stat_codes = 'S:EA'

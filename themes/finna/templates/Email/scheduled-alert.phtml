@@ -22,7 +22,7 @@
 <?= $info['recordCount'] . ' ' . $this->translate('Newest Results') ?>:
 
 <? foreach ($records as $result): ?>
-<?= $this->record($result)->getSearchResult('email'); ?>
+<?= $this->record($result)->getSearchResult('email') . PHP_EOL; ?>
 <? endforeach; ?>
 
 

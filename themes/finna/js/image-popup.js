@@ -137,7 +137,8 @@ finna.imagePopup = (function(finna) {
                         var recordIndex = $.magnificPopup.instance.currItem.data.recordInd;
 
                         $(".imagepopup-holder .image img").one("load", function() {
-				            $(".imagepopup-holder .image").addClass('loaded');
+                            $(".imagepopup-holder .image").addClass('loaded');
+                            initDimensions();
                         }).each(function() {
                             if(this.complete) {
                                 $(this).load();
@@ -217,10 +218,42 @@ finna.imagePopup = (function(finna) {
         });
     };
 
+    var resolveRecordImageSize = function() {
+        $(".image-popup-trigger img").one('load', function() {
+            if (this.naturalWidth > 10 && this.naturalHeight > 10) {
+                initThumbnailNavi();
+                initRecordImage();
+            } else {
+                $(this).closest('a.image-popup-trigger')
+                    .addClass('disable')
+                    .unbind('click').on('click', function() { return false; }
+                );
+            }
+        });
+    };
+
+    var initDimensions = function() {
+      if ($('.open-link a').attr('href') != 'undefined') {
+          var img = document.createElement('img')
+          img.src = $('.open-link a').attr('href');
+          img.onload = function() {
+            if (this.width == 10 && this.height == 10) { 
+              $('.open-link').hide();
+            }
+            else {
+              $('.open-link .image-dimensions').text( '('+ this.width + ' X ' + this.height + ')')
+            }
+          }
+      }
+    }
     var my = {
         init: function() {
-            initThumbnailNavi();
-            initRecordImage();
+            if (module != 'record') {
+                initThumbnailNavi();
+                initRecordImage();
+            } else {
+                resolveRecordImageSize();
+            }
 
             if (location.hash == '#image') {
                 openPopup($('.image-popup-trigger'));

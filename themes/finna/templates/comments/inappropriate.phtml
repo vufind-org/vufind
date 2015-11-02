@@ -1,0 +1,14 @@
+<form class="form-horizontal comment-inappropriate-form" method="post" name="commentInappropriateForm">
+  <input type="hidden" name="comment" value="<?=$this->escapeHtmlAttr($this->comment)?>"/>
+  <div class="form-group">
+    <div class="col-sm-8">
+      <p><?=$this->transEsc('Select') ?>:</p>
+      <ul>
+        <? for ($i=1; $i<=5; $i++): ?>
+        <li><label for="inapp<?=$i?>"><input id="inapp<?=$i?>" type="radio" name="reason" <?= $i == 1 ? 'checked="checked"' : ''?> value="<?=$this->escapeHtmlAttr($this->translate('inappropriate_reason_' . $i))?>" /> <?=$this->translate('inappropriate_reason_' . $i)?></label></li>
+        <? endfor; ?>
+      </ul>
+    </div>
+  </div>
+  <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Submit')?>" />
+</form>

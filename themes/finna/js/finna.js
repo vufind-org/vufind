@@ -14,6 +14,7 @@ var finna = (function() {
                 'itemStatus',
                 'layout',
                 'libraryCards',
+                'metalibLinks',
                 'myList',
                 'openUrl',
                 'persona',

@@ -1,10 +1,12 @@
+<!-- START of: finna - combined/results.phtml -->
 <?
   // Set up page title:
   $lookfor = $this->params->getDisplayQuery();
+  $this->headMeta()->appendName('robots', 'noindex,follow');
   if (isset($this->overrideTitle)) {
     $this->headTitle($this->overrideTitle);
   } else {
-      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+      $this->headTitle((empty($lookfor) ? "{$this->transEsc('history_empty_search')}" : "{$lookfor}") . ' | ' . $this->translate('Search Results'));
   }
 
   // Set up search box:
@@ -15,7 +17,7 @@
       'searchIndex' => $this->params->getSearchHandler(),
       'searchType' => $this->params->getSearchType(),
       'searchId' => $this->results->getSearchId(),
-      'searchClassId' => $this->params->getsearchClassId(),
+      'searchClassId' => $this->params->getSearchClassId(),
       'checkboxFilters' => $this->params->getCheckboxFacets(),
       'filterList' => $this->params->getFilters(),
       'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
@@ -89,3 +91,4 @@
   );
 
 ?>
+<!-- END of: finna - combined/results.phtml -->

@@ -1,26 +1,27 @@
+<!-- START of: finna - myresearch/profile-my-information.phtml -->
 <? if ($user): ?>
 <div class="row">
   <div class="col-xs-12 myresearch-profile-list">
     <div class="col-xs-12">
       <h2><?=$this->transEsc('my_profile')?></h2>
-    </div> 
+    </div>
     <form name="my_profile_form" class="inline" method="post">
-      <div class="col-xs-4 col-sm-4 "> 
-        <?=$this->transEsc("Email") ?>:
+      <div class="col-sm-4 ">
+        <label for="email"><?=$this->transEsc("Email") ?>:</label>
       </div>
-      <div class="col-xs-8 col-sm-4"> 
+      <div class="col-sm-4">
         <input id="email" type="email" class="form-control" name="email" value="<?=$user->email?>"/>
       </div>
       <div class="clearfix visible-xs"></div>
-      <div class="col-sm-4"> 
+      <div class="col-sm-4">
         <i class="fa fa-info-big"></i>  <?=$this->transEsc("email_info") ?>
       </div>
       <div class="clearfix visible-xs"><br/></div>
       <? if (!empty($user->cat_username)): ?>
-      <div class="col-xs-4 col-sm-4"> 
-         <?=$this->transEsc("due_date_reminder") ?>:
+      <div class="col-sm-4">
+         <label for="due_date_reminder"><?=$this->transEsc("due_date_reminder") ?>:</label>
       </div>
-      <div class="col-xs-8 col-sm-4">
+      <div class="col-sm-4">
           <select id="due-date-reminder" name="due_date_reminder" class="form-control">
             <option value="0" <?= $user->finna_due_date_reminder == 0 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_none") ?></option>
             <option value="1" <?= $user->finna_due_date_reminder == 1 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_one_day") ?></option>
@@ -43,3 +44,4 @@
   </div>
 </div>
 <? endif; ?>
+<!-- END of: finna - myresearch/profile-my-information.phtml -->

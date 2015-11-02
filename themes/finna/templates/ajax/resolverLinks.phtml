@@ -1,3 +1,4 @@
+<!-- START of: finna - ajax/resolverLinks.phtml -->
 <div>
   <? if (!empty($this->electronic)): ?>
     <div class="openurls">
@@ -32,8 +33,9 @@
     </div>
   <? endif; ?>
   <? if (empty($this->electronic) || $this->searchClassId != 'Primo'): ?>
-    <div class="openurls more-options">
+    <div class="openurls more-options hidden-print">
       <a href="<?=$this->escapeHtmlAttr($this->openUrlBase)?>?<?=$this->escapeHtmlAttr($this->openUrl)?>" target="_blank"><?=$this->transEsc('More options')?> <i class="fa fa-new-window"></i></a>
     </div>
  <? endif; ?>
 </div>
+<!-- END of: finna - ajax/resolverLinks.phtml -->

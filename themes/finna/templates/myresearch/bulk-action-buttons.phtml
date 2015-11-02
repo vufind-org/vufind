@@ -1,9 +1,10 @@
+<!-- START of: finna - myresearch/bulk-action-buttons.phtml -->
 <? if (isset($list)): ?>
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />
   <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>" />
 <? endif; ?>
 <? $user = $this->auth()->isLoggedIn(); ?>
-<div class="row bulk-action-buttons-row">
+<div class="row bulk-action-buttons-row hidden-print">
   <div class="col-xs-12 bulk-action-buttons-col">
     <div class="checkboxFilter mylist-select-all">
       <div class="checkbox">
@@ -38,3 +39,4 @@
   </div>
   </div>
 </div>
+<!-- END of: finna - myresearch/bulk-action-buttons.phtml -->

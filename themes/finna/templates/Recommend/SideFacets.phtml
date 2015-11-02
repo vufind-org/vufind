@@ -1,3 +1,4 @@
+<!-- START of: finna - Recommend/SideFacets.phtml -->
 <?
   $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js');
   $datePickerLang = 'en';
@@ -29,7 +30,7 @@
     $availableRecords = $availCount < 0 ? '' : $this->localizedNumber($availCount);
     $html .= '<div class="checkbox';
     if ($current['selected']) {
-      $html .= ' checked">'; 
+      $html .= ' checked">';
     }
     else {
       $html .= '">';
@@ -106,10 +107,11 @@
           <span class="pull-right"><i class="fa fa-times"></i></span>
           <? if (isset($filter['field']) && isset($newItemsFacets[$filter['field']])): ?>
             <?=$this->transEsc($field)?>:
-            <? if (!empty($newItemsFacets[$filter['field']]['translatable'])): ?>
-              <?=$this->transEsc($newItemsFacets[$filter['field']]['translatable']) ?>
+            <? $newItemsFacet = $newItemsFacets[$filter['field']]; ?>
+            <? if (!empty($newItemsFacet['translatable'])): ?>
+              <?=$this->transEsc($newItemsFacet['translatable']) ?>
             <? else: ?>
-              <?=$this->DateTime()->convertToDisplayDate('Y-m-d', substr($newItemsFacets[$filter['field']]['raw'], 0, 10)); ?>&ndash;
+              <?=$this->dateTime()->convertToDisplayDate('Y-m-d', $newItemsFacet['date']) ?>&ndash;
             <? endif; ?>
           <? else: ?>
             <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?>
@@ -147,7 +149,7 @@
                 $type =$spatialFilter['type'];
               }
               if ($params->getSearchType() != 'advanced') {
-                $lookfor = $params->getQuery()->getString();  
+                $lookfor = $params->getQuery()->getString();
                 if ($lookfor == '' && $fromVal === null && $toVal === null) {
                   $plotFrom = 0;
                 }
@@ -177,12 +179,12 @@
                 <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter" class="form-inline">
                   <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
                   <label for="<?=$this->escapeHtmlAttr($title)?>from"><?=$this->transEsc('new_items_from')?></label>
-                  <input type="text" class="form-control form-inline date-picker-field" autocomplete="off" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" maxlength="10" size="10" value="<?=!empty($filterList[$title][0]) && is_numeric($filterList[$title][0][0]) ? $this->escapeHtmlAttr($filterList[$title][0]) : ''?>">
+                  <input type="text" class="form-control form-inline date-picker-field" autocomplete="off" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" maxlength="10" size="10" value="<?=$this->escapeHtmlAttr($this->dateTime()->convertToDisplayDate('Y-m-d', $newItemsFacets[$title]['date'])) ?>" placeholder="<?=$this->dateTime()->getDisplayDateFormat() ?>">
                   <button class="btn btn-primary btn-default date-picker-button" type="submit" value=""><i class="fa fa-search"></i></button>
                 </form>
 <?
   $component = $this->escapeHtmlAttr($title) . 'from';
-  $endDate = $this->DateTime()->convertToDisplayDate('U', time());
+  $endDate = $this->dateTime()->convertToDisplayDate('U', time());
   $this->headScript()->appendScript(<<<EOT
 $(document).ready(function() {
   $('#$component').datepicker({
@@ -214,7 +216,7 @@ EOT
               'type' => $type,
               'backend' => $module == 'search' ? 'solr' : $module,
               'daterangeFacet' => $daterangeFacetField,
-              'plotFrom' => $plotFrom              
+              'plotFrom' => $plotFrom
               ]);
               ?>
             </div>
@@ -276,7 +278,7 @@ JS;
             <?
             $script = <<<JS
 $(document).ready(function() {
-  initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
+  finna.layout.initHierarchicalFacet($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
             ?>
@@ -285,7 +287,7 @@ JS;
             <?
             $script = <<<JS
 $('#side-collapse-{$this->escapeHtmlAttr($title)}').on('show.bs.collapse', function() {
-  initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
+  finna.layout.initHierarchicalFacet($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
             ?>
@@ -357,3 +359,4 @@ JS;
     </div>
   <? endforeach; ?>
 <? endif; ?>
+<!-- END of: finna - Recommend/SideFacets.phtml -->

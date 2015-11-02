@@ -1,3 +1,4 @@
+<!-- START of: finna - navibar.phtml -->
 <? $account = $this->auth()->getManager(); ?>
 <div class="navbar-header">
   <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse">
@@ -15,9 +16,9 @@
         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-nav-<?= $val['label'] ?>"></i><?= $this->transEsc($val['label']) ?> <b class="caret"></b></a>
         <ul role="presentation" class="dropdown-menu">
           <? foreach ($val['items'] as $itemKey => $itemVal): ?>
-          <? if (!(0 === strpos($itemVal['url'], 'primo')) || ($this->primo()->isAvailable())) : ?>
+          <? if ((0 !== strncmp($itemVal['url'], 'combined-', 9) || $this->combined()->isAvailable()) && (0 !== strncmp($itemVal['url'], 'metalib-', 8) || $this->metalib()->isAvailable()) && (0 !== strncmp($itemVal['url'], 'primo-', 6) || $this->primo()->isAvailable())): ?>
           <li role="menuitem">
-            <a href="<?= $this->navibar()->getMenuItemUrl($itemVal) ?>">
+            <a<?= isset($itemVal['target']) ? ' target="' . $this->escapeHtmlAttr($itemVal['target']) . '"' : ''?> href="<?= $this->navibar()->getMenuItemUrl($itemVal) ?>">
               <div><?= $this->transEsc($itemVal['label']) ?></div>
               <? if(isset($itemVal['desc'])): ?>
               <div class="description" role="note"><?= $this->transEsc($itemVal['desc']) ?></div>
@@ -33,9 +34,6 @@
       <li><a href="<?= $this->navibar()->getMenuItemUrl($val) ?>"><i class="fa fa-nav-<?= $val['label'] ?>"></i><?= $this->transEsc($val['label']) ?></a></li>
       <? endif; ?>
       <? endforeach; ?>
-      <li class="custom">
-        <?=$this->render('layout/Additions/header-navibar.phtml')?>
-      </li>
     </ul>
     <ul role="menubar" class="nav navbar-nav">
       <? $cart = $this->cart(); if ($cart->isActive()): ?>
@@ -63,17 +61,24 @@
           </ul>
         </li>
       <? endif; ?>
-
-      <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-        <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
-        <? if ($this->layout()->userLang != $langCode): ?>
+    </ul>
+    <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+      <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+      <? if ($this->layout()->userLang != $langCode): ?>
+      <ul role="menubar" class="nav navbar-nav language">
         <li role="menuitem">
           <a class="preserve-anchor" href="<?=$this->escapeHtmlAttr($this->navibar()->getLanguageUrl($langCode))?>"><?=$this->displayLanguageOption($langName)?></a>
         </li>
-        <? endif ?>
-        <? endforeach; ?>
-      <? endif; ?>
+      </ul>
+      <? endif ?>
+      <? endforeach; ?>
+    <? endif; ?>
+
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/header-navibar")): ?>
+    <ul role="menubar" class="nav navbar-nav">
+      <?=$this->render($template)?>
     </ul>
+    <? endif; ?>
   </div>
 
   <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
@@ -105,3 +110,4 @@
   </ul>
   <? endif; ?>
 <? endif; ?>
+<!-- END of: finna - navibar.phtml -->

@@ -66,7 +66,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
       <? endif; ?>
       <div class="record-link"><a href="<?= $this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('To the record') ?></a></div>
       <? $rights = $this->driver->getImageRights($this->layout()->userLang) ?>
-      <div class="open-link"><a target="_blank" href="<?= $originalImage ?>"><i class="fa fa-new-window"></i> <?= $this->translate('Show image in new window') ?></a></div>
+      <div class="open-link"><a target="_blank" href="<?= $originalImage ?>"><i class="fa fa-new-window"></i> <?= $this->translate('Show image in new window') ?></a> <span class="image-dimensions"></span></div>
       <div class="image-rights">
         <div class="rights">
           <? $hasLink = isset($rights['link']); ?>

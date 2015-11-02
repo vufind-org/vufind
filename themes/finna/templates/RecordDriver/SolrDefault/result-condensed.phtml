@@ -1,4 +1,4 @@
-<!-- start of Default result-condensed.phtml -->
+<!-- START of: finna - RecordDriver/SolrDefault/result-condensed.phtml -->
 <?
     $formats = $this->driver->tryMethod('getFormats');
     $this->record($this->driver)->getFormatClass(end($formats)) === '0database' ? $database = 'true' :  $database = 'false';
@@ -83,6 +83,11 @@
       </div>
       <div class="col-sm-6 col-md-4">
         <?=$this->record($this->driver)->getOnlineUrls('results')?>
+        <? $formats = $this->driver->getFormats(); ?>
+        <?= ($this->metalib()->isAvailable() && !empty($formats) && strstr($formats[0]->__toString(), '0/Database') !== false)
+            ? $this->partial('RecordDriver/MetaLib/search-link.phtml', ['id' => $this->driver->getUniqueID()])
+            : ''
+        ?>
         <?=$this->record($this->driver)->getPreviews()?>
         <? /*** TODO how to show if this database usage needs authorizing
                 <? if  ($database == 'true') && ($authorize == 'true') :?>
@@ -235,5 +240,4 @@
   </div>
   </div>
 </div>
-<!-- End of Default result-condensed.phtml -->
-
+<!-- END of: finna - RecordDriver/SolrDefault/result-condensed.phtml -->

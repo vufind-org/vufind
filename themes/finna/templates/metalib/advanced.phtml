@@ -1,0 +1,122 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Advanced Search'));
+
+    // Disable top search box -- this page has a special layout.
+    $this->layout()->searchbox = false;
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Advanced Search') . '</li>';
+
+    // Set up saved search details:
+    if (isset($this->saved) && is_object($this->saved)) {
+        $searchDetails = $this->saved->getParams()->getQuery();
+        $currentSet = $this->saved->getParams()->getMetaLibSearchSet();
+        if ($searchDetails instanceof \VuFindSearch\Query\Query) {
+            // Not an advanced query -- ignore it.
+            $searchDetails = $groups = false;
+        } else {
+            $groups = $searchDetails->getQueries();
+        }
+        $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
+        $searchFilters = $this->saved->getParams()->getFilterList();
+    } else {
+        $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
+    }
+?>
+<form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" class="form-horizontal">
+  <input type="hidden" name="join" value="AND" />
+      <?
+        $this->searchType = 'advanced';
+        $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, []);
+        $this->layout()->finnaMainTabs = $this->render('search/searchTabs', ['searchTabs' => $searchTabs]);
+        $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3>' . $this->transEsc('Advanced Nelli Metasearch') . '</h3></div>';
+      ?>
+      <? if ($groups !== false) {
+          $numGroups = count($groups);
+        }
+        if (!isset($numGroups) || $numGroups < 3) {
+          $numGroups = 1;
+        }
+      ?>
+      <? for ($i = 0; $i < $numGroups; $i++):
+           $operator = 'AND';
+           if (isset($groups[$i])) {
+             $currentGroup = $groups[$i]->getQueries();
+             $numRows = count($currentGroup);
+            } else {
+              $currentGroup = false;
+            }
+            if (!isset($numRows) || $numRows < 3) {
+              $numRows = 3;
+            }
+       ?>
+  <div class="row">
+    <div class="col-sm-12 col-md-10 col-lg-9" id="group<?=$i?>SearchHolder"><h4><?=$this->transEsc("adv_search_label")?><? if (!$this->translationEmpty('tooltip_metalib_advanced_html')): ?><span class="tooltip-metalib-advanced pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title='<?=$this->transesc("tooltip_metalib_advanced_html") ?>'><i class="fa fa-info-big"></i> <?=$this->transEsc("Help with Advanced Search")?></span><? endif; ?></h4></div>
+  </div>
+  
+  <div class="group well col-sm-12 col-md-10 col-lg-9" id="group<?=$i?>">
+    <div class="row">
+      <div class="col-sm-4 match">
+        <label class="search_bool"><?=$this->transEsc("search_match")?>:</label>
+        <select name="bool<?=$i ?>[]" id="search_bool<?=$i ?>" class="form-control form-inline">
+          <option value="AND"<? if('AND' == $operator):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
+          <option value="OR"<? if('OR' == $operator):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
+          <option value="NOT"<? if('NOT' == $operator):?> selected<?endif;?>><?=$this->transEsc("search_NOT")?></option>
+        </select>
+      </div>
+      
+      <div class="col-sm-8">
+        <div class="row">
+          <? for ($j = 0; $j < $numRows; $j++): ?>
+          <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
+          <div class="col-xs-12 primo-advanced-search-fields">
+            <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control form-inline responsive-field" placeholder="<?=$this->transEsc('Search words')?>..." />
+            <label for="search_type<?=$i?>_<?=$j?>"><?=$this->transEsc('in')?></label>
+            <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control form-inline">
+              <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+              <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+              <? endforeach; ?>
+            </select>
+          </div>
+          <? endfor; ?>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <h4><?= $this->translate('Search In Set')?>:</h4>
+        <?
+          $cnt = 0;
+          foreach ($this->sets as $set => $label):
+        ?>
+        <label class="radiobutton" for="set_<?=$cnt?>">
+          <input id="set_<?=$cnt++?>" name="set" type="radio" value="<?=$this->escapeHtmlAttr($set)?>"<?= $currentSet == $set ? ' checked="checked"': ''?> /><?= $this->transEsc($label)?></label><br>
+        <? endforeach ?>          
+
+          <? if ($this->recentSets): ?>
+          <div class="search-sets recent">
+            <div>
+              <? foreach ($this->recentSets as $set => $label): ?>
+              <label class="radiobutton" for="set_<?=$cnt?>">
+                <input id="set_<?=$cnt++?>" name="set" type="radio" value="<?=$this->escapeHtmlAttr($set)?>"<?= $currentSet == $set ? ' checked="checked"': ''?> /><?= $this->transEsc($label)?></label><br>
+      <? endforeach; ?>
+            </div>
+          </div>
+          <? endif; ?>
+      </div>
+    </div>
+  </div>
+  <? endfor; ?>
+  <div class="row">
+    <div class="col-sm-12 col-md-10 col-lg-9"><button type="submit" class="btn btn-primary pull-right" name="submit" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Find")?></button></div>
+  </div>
+  <? $lastSort = $this->options->getLastSort(); ?>
+  <? if (!empty($lastSort)): ?>
+  <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
+  <? endif; ?>
+  
+  <? if ($hasDefaultsApplied): ?>
+  <input type="hidden" name="dfApplied" value="1" />
+      <? endif ?>
+</form>

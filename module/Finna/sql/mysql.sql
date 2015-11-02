@@ -10,6 +10,15 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Additional columns for comments
+--
+ALTER TABLE comments ADD COLUMN `finna_visible` tinyint(1) DEFAULT '1';
+ALTER TABLE comments ADD COLUMN `finna_rating` float DEFAULT NULL;
+ALTER TABLE comments ADD COLUMN `finna_type` tinyint(1) NOT NULL;
+ALTER TABLE comments ADD COLUMN `finna_updated` datetime DEFAULT NULL;
+ALTER TABLE comments ADD INDEX `finna_visible` (`finna_visible`);
+ALTER TABLE comments ADD INDEX `finna_rating` (`finna_rating`);
+--
 -- Additional columns for search
 --
 ALTER TABLE search ADD COLUMN `finna_search_id` char(32) DEFAULT '';
@@ -28,6 +37,28 @@ ALTER TABLE `user` ADD  `finna_due_date_reminder` int(11) NOT NULL DEFAULT '0';
 CREATE INDEX `finna_user_due_date_reminder_key` ON user (`finna_due_date_reminder`);
 
 
+CREATE TABLE `finna_comments_record` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `record_id` varchar(255) NOT NULL,
+  `comment_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `comment_id` (`comment_id`),
+  KEY `key_record_id` (`record_id`),
+  CONSTRAINT `comments_record_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `finna_comments_inappropriate` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `comment_id` int(11) NOT NULL DEFAULT '0',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `reason` varchar(1000) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `comment_id` (`comment_id`),
+  CONSTRAINT `comments_inappropriate_ibfk_2` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `finna_user` (
@@ -43,6 +74,16 @@ CREATE TABLE `finna_user` (
   CONSTRAINT `finna_user_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `finna_metalib_search` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `finna_search_id` char(32) DEFAULT '',
+  `search_object` longtext,
+  PRIMARY KEY (`id`),
+  KEY `finna_search_id` (`finna_search_id`),
+  KEY `created` (`created`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

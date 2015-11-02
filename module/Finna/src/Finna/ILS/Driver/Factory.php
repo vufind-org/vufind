@@ -42,6 +42,33 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Factory for MultiBackend driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MultiBackend
+     */
+    public static function getMultiBackend(ServiceManager $sm)
+    {
+        return new MultiBackend(
+            $sm->getServiceLocator()->get('VuFind\Config'),
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+        );
+    }
+
+    /**
+     * Factory for Voyager driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Voyager
+     */
+    public static function getVoyager(ServiceManager $sm)
+    {
+        return new Voyager($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
      * Factory for VoyagerRestful driver.
      *
      * @param ServiceManager $sm Service manager.

@@ -27,7 +27,7 @@ url             = "http://"
 ; Inherit main configuration
 [Parent_Config]
 relative_path = ../finna/config.ini
-override_full_sections = "Languages,AlphaBrowse_Types"
+override_full_sections = "Languages,AlphaBrowse_Types,SearchTabs"
 
 [Languages]
 en-gb       = "English"              ; British spellings

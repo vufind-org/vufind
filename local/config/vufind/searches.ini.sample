@@ -1,4 +1,5 @@
 [Parent_Config]
 relative_path = "../finna/searches.ini"
+override_full_sections = "Views"
 
 ; Add any overrides below

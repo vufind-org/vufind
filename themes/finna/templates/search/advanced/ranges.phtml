@@ -1,3 +1,4 @@
+<!-- START of: finna - search/advanced/ranges.phtml -->
 <? if (isset($this->ranges) && !empty($this->ranges)): ?>
   <? $params = $this->searchParams($this->searchClassId); $params->activateAllFacets(); ?>
   <? foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
@@ -45,6 +46,9 @@ $(document).ready(function() {
        'max':{$max},
        'handle':"square",
        'value':[{$low},{$high}],
+       'formatter': function(value) {
+		     return value[0]+' - '+value[1];
+	     },
     })
     .on('slide', fillTexts)
     .data('slider');
@@ -58,3 +62,4 @@ JS;
     </fieldset>
   <? endforeach; ?>
 <? endif; ?>
+<!-- END of: finna - search/advanced/ranges.phtml -->

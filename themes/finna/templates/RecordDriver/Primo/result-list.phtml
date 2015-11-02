@@ -1,4 +1,4 @@
-<!-- start of Primo result-list.phtml -->
+<!-- START of: finna - RecordDriver/Primo/result-list.phtml -->
 <?
   $combinedView = $this->layout()->templateDir === 'combined';
 ?>
@@ -7,7 +7,7 @@
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
     </div>
-    <div class="col-xs-11 col-sm-8">
+    <div class="col-sm-11">
       <div>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
         <?
@@ -134,13 +134,8 @@
       $openUrl = $this->openUrl($driver, 'results');
       $openUrlActive = $openUrl->isActive();
       ?>
-       <? if ($openUrlActive) : ?>
-        <div class="more-options hidden-xs">
-          <? echo $openUrl->renderMoreOptions();?>
-        </div>
-       <? endif; ?>
     </div>
-    <div class="<?= $combinedView ? 'hidden' : 'hidden-xs' ?> col-sm-1 col-sm-push-3 hidden-print">
+    <div class="<?= $combinedView ? 'hidden' : 'hidden-xs' ?> col-sm-1 hidden-print">
       <? /* Display qrcode if appropriate: */ ?>
       <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
         <?
@@ -157,13 +152,13 @@
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
-        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a><br/>
+        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link hidden-print" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a><br/>
       <? endif; ?>
 
       <? /* Hierarchy tree link */ ?>
       <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
         <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
-          <div class="hierarchyTreeLink">
+          <div class="hierarchyTreeLink hidden-print">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
             <a class="hierarchyTreeLinkText modal-link" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
               <i class="fa fa-sitemap"></i>
@@ -174,7 +169,7 @@
       <? endif; ?>
     </div>
     <div class="clearfix visible-xs"></div>
-    <div class="<?= $combinedView ? ' col-sm-4' : 'col-sm-3 col-sm-pull-1' ?>">
+    <div class="col-xs-12">
       <?=$this->record($this->driver)->getOnlineUrls('results')?>
     </div>
     <div class="col-xs-12">
@@ -184,14 +179,20 @@
           <strong><?=$this->transEsc("Saved in")?>:</strong>
         </div>
     <? endif; ?>
+    <? if ($this->layout()->templateDir === 'list'): ?>
+    <div class="row">
+      <div class="col-xs-12">
+        <?=$this->render('list/list-notes.phtml')?>
+      </div>
+    </div>
+    <? endif; ?>
     </div>
     <div class="clearfix visible-xs"></div>
     <div class="col-xs-12 <?= $combinedView ? '' : 'visible-xs' ?>">
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
-        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record <?= $combinedView ? 'pull-left combined-save-record' : '' ?>  modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span><?=$this->transEsc('Add to favorites')?></span></a>
+        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record hidden-print <?= $combinedView ? 'pull-left combined-save-record' : '' ?>  modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span><?=$this->transEsc('Add to favorites')?></span></a>
     <? endif; ?>
     </div>
-
 </div>
-<!-- end of result-list.phtml -->
+<!-- END of: finna - RecordDriver/Primo/result-list.phtml -->

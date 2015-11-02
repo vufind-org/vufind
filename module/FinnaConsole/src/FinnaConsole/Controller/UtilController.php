@@ -29,8 +29,9 @@ namespace FinnaConsole\Controller;
 use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader,
     Zend\Console\Console,
     Zend\Log\Logger, Zend\Log\Writer\Stream,
-    VuFind\Search\Solr\Options, VuFind\Search\Solr\Params,
-    VuFind\Search\UrlQueryHelper;
+    Zend\Stdlib\Parameters,
+    Finna\Search\Solr\Options, Finna\Search\Solr\Params,
+    Finna\Search\UrlQueryHelper;
 
 /**
  * This controller handles various command-line tools
@@ -380,7 +381,8 @@ class UtilController extends \VuFindConsole\Controller\UtilController
                 ->setLocale($language);
 
             // Prepare query
-            $searchObject = $s->getSearchObject();
+            $finnaSearchObject = $s->getSearchObject();
+            $searchObject = $finnaSearchObject->getParentSO();
             $searchService = $this->getServiceLocator()->get('VuFind\Search');
 
             if ($searchObject->cl != 'Solr') {
@@ -394,6 +396,23 @@ class UtilController extends \VuFindConsole\Controller\UtilController
             $options = new Options($configLoader);
             $params = new Params($options, $configLoader);
             $params->deminify($searchObject);
+            $params->deminifyFinnaSearch($finnaSearchObject);
+
+            // Add daterange filter
+            $daterangeField = $params::SPATIAL_DATERANGE_FIELD;
+            $filters = $searchObject->f;
+            if (isset($filters[$daterangeField])) {
+                $req = new Parameters();
+                if (isset($finnaSearchObject->f_dty)) {
+                    $req->set("{$daterangeField}_type", $finnaSearchObject->f_dty);
+                }
+                $req->set(
+                    'filter',
+                    ["$daterangeField:" . $filters[$daterangeField][0]]
+                );
+                $params->initSpatialDateRangeFilter($req);
+            }
+
             $params->setLimit($limit);
             $params->setSort('first_indexed+desc');
 
@@ -552,7 +571,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
                     $currentFilters = [];
                 }
                 $currentFilters[] = [
-                    'value' => $f['value'],
+                    'value' => $f['displayText'],
                     'operator' => $f['operator']
                 ];
             }

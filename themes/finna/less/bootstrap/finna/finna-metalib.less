@@ -1,0 +1,98 @@
+.metalib-link {
+    display: block;
+    margin-bottom: 10px;
+    & .fa-spinner {
+        margin-left: 0;
+    }
+}
+.myresearch-row {
+    .holding-details {
+        display: none;
+    }
+}
+.main.template-dir-metalib {
+    &.template-name-home {
+        & .content {
+            margin-bottom: 20px;
+        }
+    }
+
+    .mobile-navigation .active-filters {
+        display: none;
+    }
+
+    & .search-controls.search-advanced {
+        margin-top: 30px;
+    }
+    & .loading {
+        margin: 20px;
+        text-align: center;
+        & .txt {
+            font-weight: bold;
+        }
+        & .fa-spinner {
+            margin: 10px 0 10px 0;
+        }
+    }
+    & .search-controls {
+        margin-bottom: 0;
+    }
+    &.template-name-home .metalib-home {
+        padding-top: 30px;
+    }
+    & .paginationSimple {
+        font-size: inherit;
+        padding-left: 15px;
+    }
+    & .sidebar {
+        & .browse {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 10px;
+
+            @media(max-width: @screen-xs-max) {
+                margin: 7px;
+            }
+
+            & .fa {
+                margin-right: 8px;
+            }
+        }
+    }
+    & .search-sets {
+        margin-left: 2px;
+        margin-top: 10px;
+
+        @media(max-width: @screen-xs-max) {
+            margin: 10px;
+        }
+
+        & label {
+            margin-left: 22px;
+            & input {
+                margin-left: -24px;
+            }
+        }
+
+        &.recent {
+            padding-top: 10px;
+            border-top: 1px @gray-light solid;
+            & > p {
+                font-weight: bold;
+            }
+        }
+    }
+
+    .metalib-available-online {
+        @media(max-width: @screen-xs-max) {
+            margin-bottom: 10px;
+        }
+    }
+}
+.main.template-dir-record {
+    .metalib-available-online-record {
+        .fulltextField a {
+            word-wrap: break-word;
+        }
+    }
+}

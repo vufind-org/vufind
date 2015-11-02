@@ -1,3 +1,4 @@
+<!-- START of: finna - RecordTab/holdingsils.phtml -->
 <?
     // Set up convenience variables:
     $account = $this->auth()->getManager();
@@ -23,9 +24,6 @@
             }
         }
     }
-
-    // Set page title.
-    $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb() . ' - '. $this->transEsc('source_' . $this->driver->tryMethod('getDataSource')));
 ?>
 
 <? if ($offlineMode == "ils-offline"): ?>
@@ -41,7 +39,7 @@
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
       <div class="pull-right">
-        <a href="<?=$this->currentPath()?>?login=true&amp;catalogLogin=true" class="btn btn-primary"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
+        <a href="?login=true&amp;catalogLogin=true" class="btn btn-primary"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
       </div>
       <div class="clearfix"></div>
     <? elseif (!$user->cat_username): ?>
@@ -62,13 +60,13 @@
   <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
 <? endif; ?>
 <? if ($holdsAllowed): ?>
-  <div class="place-hold-wrapper text-right">
+  <div class="place-hold-wrapper text-right hidden-print">
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn(), 'label' => 'Library Card')); ?>
   <? if ($illRequestLink): ?>
     <a class="expandedCheckILLRequest modal-link placeILLRequest btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>"  title="<?=$this->transEsc("ill_request_check_text")?>"><?=$this->transEsc("ill_request_check_text")?></a>
   <? endif; ?>
   <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
-    <a class="placehold modal-link btn btn-primary" title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
+    <a class="placehold modal-link btn btn-primary hidden-print" title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
   <? elseif ($user): ?>
     <? $patron = $this->ils()->patronLogin($user->cat_username, $user->getCatPassword()); if ($patron): ?>
       <? if ($profile = $this->ils()->getMyProfile($patron)): ?>
@@ -85,27 +83,30 @@
 
 <table class="table record-holdings-table">
   <tr>
-    <th <? if (!empty($holdings)): ?>colspan="3" <? endif; ?>class="headers">
+    <th <? if (!empty($holdings)): ?> colspan="3" <? endif; ?> class="headers">
       <? $currentSource = $this->driver->tryMethod('getDataSource'); ?>
       <? $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
-      <? if ($mergedData && count($mergedData['records']) > 1): ?>
-        <div class="dedup-information">
-          <select class="dedup-select form-control jumpMenuUrl" role="listbox" aria-haspopup="true">
-          <? foreach ($mergedData['records'] as $current): ?>
-            <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
-            <option value="<?=$this->escapeHtmlAttr($this->url('record') . urlencode($current['id'])) ?>" role="option"<?=$currentSource == $current['source'] ? ' selected="selected"' : '' ?>><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
-          <? endforeach; ?>
+      <div class="dedup-information">
+        <span class="holdings-title"><?=$this->transEsc("source_$currentSource", null, $currentSource) ?></span>
+        <? if ($mergedData && count($mergedData['records']) > 1): ?>
+          <select class="dedup-select form-control jumpMenuUrl hidden-print" role="listbox" aria-haspopup="true">
+            <option value="#" role="option" selected="selected"><?=$this->transEsc('Other Libraries'); ?></option>
+            <? foreach ($mergedData['records'] as $current): ?>
+              <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
+              <? if ($currentSource != $current['source']): ?>
+                <option value="<?=$this->escapeHtmlAttr($this->url('record') . urlencode($current['id'])) ?>" role="option"><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
+              <? endif; ?>
+            <? endforeach; ?>
           </select>
+        <? endif; ?>
         </div>
-      <? else: ?>
-        <div class="dedup-information">
-          <strong><?=$this->transEsc("source_$currentSource", null, $currentSource) ?></strong>
-        </div>
-      <? endif; ?>
-    </th>
+      </th>
     <? if (!empty($holdings)): ?>
       <? // N.B. The division to 3 + 2 cols is required for the table to be valid HTML ?>
-      <th colspan="2" class="headers">
+      <th class="headers">
+      </th>
+      <th class="headers">
+        <?=$this->transEsc("shelf_location"); ?>
       </th>
     <? endif; ?>
   </tr>
@@ -173,8 +174,8 @@
     <? if (!empty($holding[$textField])): ?>
       <tr class="copy-details <?=$holdingsDetails?>">
         <? // Translation for summary is a special case for backwards-compatibility ?>
-        <td class="copy-title"><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>:</td>
-        <td colspan="4">
+        <td class="copy-title" colspan="2"><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>:</td>
+        <td colspan="3">
           <? foreach ($holding[$textField] as $current): ?>
             <?=$this->escapeHtml($current)?><br/>
           <? endforeach; ?>
@@ -204,13 +205,13 @@
               <span class="text-success"><i class="fa fa-ok"></i> <?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
               <div class="pull-right">
               <? if (isset($row['link']) && $row['link'] && $holdsAllowed): ?>
-                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock modal-link placehold btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" title="<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?>"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock modal-link placehold btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" title="<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?>"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
               <? endif; ?>
               <? if (isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
-                <a class="<?=$checkStorageRetrievalRequest ? "{$holdingsDetails}CheckStorageRetrievalRequest " : ''?>inlineblock modal-link placeStorageRetrievalRequest btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>" title="<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?>"><?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
+                <a class="<?=$checkStorageRetrievalRequest ? "{$holdingsDetails}CheckStorageRetrievalRequest " : ''?>inlineblock modal-link placeStorageRetrievalRequest btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>" title="<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?>"><?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
               <? endif; ?>
               <? if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']): ?>
-                <a class="<?=$checkILLRequest ? "{$holdingsDetails}CheckILLRequest " : ''?>inlineblock modal-link placeILLRequest btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"  title="<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?>"><?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
+                <a class="<?=$checkILLRequest ? "{$holdingsDetails}CheckILLRequest " : ''?>inlineblock modal-link placeILLRequest btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"  title="<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?>"><?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
               <? endif; ?>
               </div>
             <? else: ?>
@@ -225,7 +226,7 @@
               <? endif; ?>
               <? if (isset($row['link']) && $row['link'] && $holdsAllowed): ?>
               <div class="pull-right">
-                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock modal-link placehold btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock modal-link placehold btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
               </div>
               <? endif; ?>
             <? endif; ?>
@@ -271,10 +272,20 @@
 <? if (is_array($history) && !empty($history)): ?>
 <table class="table record-holdings-table">
   <tr>
-    <th class="headers"><h4><?=$this->transEsc("Most Recent Received Issues")?></4></th>
+    <th class="headers"><span class="holdings-title"><?=$this->transEsc("Most Recent Received Issues")?></span></th>
   </tr>
   <? foreach ($history as $row): ?>
     <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>
   <? endforeach; ?>
 </table>
 <? endif; ?>
+
+<?
+  $this->inlineScript(
+    \Zend\View\Helper\HeadScript::SCRIPT,
+    'finna.record.setupHoldingsTab();',
+    'SET'
+  );
+  echo $this->inlineScript();
+?>
+<!-- END of: finna - RecordTab/holdingsils.phtml -->

@@ -1,10 +1,11 @@
 [General]
-enabled = false
 url = http://metalib.server/X
 x_user = username
 x_password = password
-institution = INST
-cache_timeout = 60
+timeout = 60
+case_sensitive_bools = 1
+default_sort = rank
+result_limit = 2000
 
 [Basic_Searches]
 AllFields    = "All Fields"
@@ -24,8 +25,12 @@ ISSN         = ISSN
 ISBN         = ISBN
 WYR          = Year
 
-; Sorting: primary,secondary
 [Sorting]
 rank = sort_relevance
 year,rank = "sort_year asc"
 title = sort_title
+
+[Record]
+; Set this to true in order to enable "next" and "previous" links to navigate
+; through the current result set from within the record view.
+next_prev_navigation = true

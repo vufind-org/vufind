@@ -14,10 +14,7 @@
 <?= PHP_EOL . $this->translate('Main Year') . ': ' . $this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>–<?=$this->escapeHtml($dates[1])?><? endif; ?>
 <? endif; ?>
 <? if (!empty($format)) : ?>
-<?= PHP_EOL  . $format ?>
+<?= PHP_EOL  . $this->translate($format) ?>
 <? endif; ?>
 
-
 <?= $this->translate('View Full Record') . ": {$info['baseUrl']}$url"; ?>
-
-

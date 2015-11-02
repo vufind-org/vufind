@@ -1,3 +1,4 @@
+<!-- START of: finna - librarycards/selectcard.phtml -->
 <? if ($this->user): ?>
   <?$cards = $this->user->getLibraryCards(); if ($cards->count() > 1): ?>
     <form class="form-inline" action="<?=$this->url('librarycards-selectcard')?>" method="get">
@@ -25,3 +26,4 @@
     </form>
   <? endif; ?>
 <? endif; ?>
+<!-- END of: finna - librarycards/selectcard.phtml -->

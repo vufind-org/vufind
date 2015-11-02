@@ -70,8 +70,8 @@ defaultAccountPage = Favorites
 ; Allow access to the Admin module? (See [AdminAuth] below for more granular ways
 ; to restrict Admin access).
 admin_enabled = false
-; Show sidebar on the left side instead of right
-sidebarOnLeft = false
+; Show sidebar on the left side instead of right. This only affects on facet sidebar in search result view
+sidebarOnLeft = true
 ; Show (true) / Hide (false) Book Bag - Default is Hide.  The Book Bag is currently
 ; only supported by the blueprint theme; other themes will ignore this setting.
 showBookBag = false
@@ -942,11 +942,11 @@ hide_holdings[] = "World Wide Web"
 ; Available options:
 ;    Editions - Alternate editions (in the Solr index) based on WorldCat lookup
 ;    Similar - Similarity based on Solr lookup
+;    SimilarDeferred - Like Similar but asynchronous
 ;    WorldCatEditions - Alternate editions (in the WorldCat index) based on WorldCat
 ;        lookup
 ;    WorldCatSimilar - Similarity based on WorldCat lookup
-related[] = "Similar"
-related[] = "Editions"
+related[] = "SimilarDeferred"
 
 ; Presenter roles that are displayed separately from other authors
 presenter_roles[] = "esitt."
@@ -1011,13 +1011,12 @@ HMACkey = mySuperSecretValue
 ;userWhitelist[] = username2
 
 ; This section sets global defaults for caches; file caching is used by default.
+; A custom directory for caching can be defined by the environment variable
+; VUFIND_CACHE_DIR (see httpd-vufind.conf). The default location is inside the
+; local settings directory.
 [Cache]
 ; Set time to live value for Zend caches (in seconds), 0 means maximum possible.
 ttl = 60
-; This setting can be used to force caching in a specific location other than the
-; default location inside the local settings directory. This directory must exist
-; and be writable by the web server.
-;cache_dir = "local/cache/"
 ; Override umask for cache directories and files.
 ;umask = 022
 ; Permissions for Zend-created cache directories and files, subject to umask
@@ -1163,3 +1162,38 @@ authentication_methods[] = Shibboleth
 [NormalizationPreview]
 ; Backend URL
 url = http://finna-be-1.csc.fi/preview
+
+; Links to copyright information used for image rights.
+[ImageRights]
+fi['CC0'] = "http://creativecommons.org/about/cc0"
+sv['CC0'] = "http://creativecommons.org/about/cc0"
+en-gb['CC0'] = "http://creativecommons.org/about/cc0"
+
+fi['CC BY 4.0'] = "http://creativecommons.org/licenses/by/4.0/deed.fi"
+sv['CC BY 4.0'] = "http://creativecommons.org/licenses/by/4.0/deed.sv"
+en-gb['CC BY 4.0'] = "http://creativecommons.org/licenses/by/4.0/deed.en"
+
+fi['CC BY-SA 4.0'] = "http://creativecommons.org/licenses/by-sa/4.0/deed.fi"
+sv['CC BY-SA 4.0'] = "http://creativecommons.org/licenses/by-sa/4.0/deed.sv"
+en-gb['CC BY-SA 4.0'] = "http://creativecommons.org/licenses/by-sa/4.0/deed.en"
+
+fi['CC BY-ND 4.0'] = "http://creativecommons.org/licenses/by-nd/4.0/deed.fi"
+sv['CC BY-ND 4.0'] = "http://creativecommons.org/licenses/by-nd/4.0/deed.sv"
+en-gb['CC BY-ND 4.0'] = "http://creativecommons.org/licenses/by-nd/4.0/deed.en"
+
+fi['CC BY-NC 4.0'] = "http://creativecommons.org/licenses/by-nc/4.0/deed.fi"
+sv['CC BY-NC 4.0'] = "http://creativecommons.org/licenses/by-nc/4.0/deed.sv"
+en-gb['CC BY-NC 4.0'] = "http://creativecommons.org/licenses/by-nc/4.0/deed.en"
+
+fi['CC BY-NC-SA 4.0'] = "http://creativecommons.org/licenses/by-nc-sa/4.0/deed.fi"
+sv['CC BY-NC-SA 4.0'] = "http://creativecommons.org/licenses/by-nc-sa/4.0/deed.sv"
+en-gb['CC BY-NC-SA 4.0'] = "http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
+
+fi['CC BY-NC-ND 4.0'] = "http://creativecommons.org/licenses/by-nc-nd/4.0/deed.fi"
+sv['CC BY-NC_ND 4.0'] = "http://creativecommons.org/licenses/by-nc-nd/4.0/deed.sv"
+en-gb['CC BY-NC-ND 4.0'] = "http://creativecommons.org/licenses/by-nc-nd/4.0/deed.en"
+
+fi['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.html"
+sv['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.html"
+en-gb['FREE ACCESS - NO-REUSE'] = "http://www.europeana.eu/portal/rights/rr-f.html"
+

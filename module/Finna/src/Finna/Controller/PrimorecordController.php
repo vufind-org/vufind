@@ -39,4 +39,21 @@ namespace Finna\Controller;
 class PrimorecordController extends \VuFind\Controller\PrimorecordController
 {
     use RecordControllerTrait;
+
+    /**
+     * Handle onDispatch event
+     *
+     * @param \Zend\Mvc\MvcEvent $e Event
+     *
+     * @return mixed
+     */
+    public function onDispatch(\Zend\Mvc\MvcEvent $e)
+    {
+        $primoHelper = $this->getViewRenderer()->plugin('primo');
+        if (!$primoHelper->isAvailable()) {
+            throw new \Exception('Primo is disabled');
+        }
+
+        return parent::onDispatch($e);
+    }
 }

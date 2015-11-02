@@ -1,0 +1,22 @@
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
+  <div class="col-sm-9">
+    <input type="text" name="username" id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"/>
+  </div>
+</div>
+
+<? if ($label = $this->auth()->getManager()->getSecondaryLoginFieldLabel()): ?>
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_secondary_username"><?=$this->transEsc($label)?>:</label>
+  <div class="col-sm-9">
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_secondary_username" type="text" name="secondary_username" value="<?=$this->escapeHtmlAttr($this->request->get('secondary_username'))?>" class="form-control"/>
+  </div>
+</div>
+<? endif; ?>
+
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
+  <div class="col-sm-9">
+    <input type="password" name="password" id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" class="form-control"/>
+  </div>
+</div>

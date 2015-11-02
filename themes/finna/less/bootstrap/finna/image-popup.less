@@ -35,17 +35,19 @@
 	}
 }
 .mfp-inline-holder .mfp-content, .mfp-ajax-holder .mfp-content {
-	width:auto;
+	width: auto;
 	background: #fff;
 	max-width: 99%;
 	box-shadow: 0px 10px 40px rgba(1,1,1,0.8);
+	@media (min-width: @screen-sm-min) {
+	    max-height: 100%;
+	    overflow-y: scroll;
+	}
 }
 .mfp-close-btn-in .mfp-close {
 	background: #fff;	
 }
-.mfp-wrap {
-	z-index: 20001;	
-}
+
 .mfp-container {
     padding: 8px;
     & .mfp-arrow-right.touch-device {
@@ -71,8 +73,7 @@
     width: 132px;
 }
 .imagepopup-container {
-	display: inline-block;
-	display: inline-flex;
+	display: block;
 	width: auto;
 	background: white;
 	padding-bottom: 5px;
@@ -130,42 +131,46 @@
             }
     }
     & .content {
-	    padding: 10px 50px 0 15px;
+	    padding: 10px 40px 0 25px;
         text-align: left;
+        vertical-align: top;
         background-color: @body-bg;
         clear: right;
-        width: auto; 
+        display: inline-block;
         height: 100%;
-        float: left;
         text-align: left;
 	    transition: height 0.3s ease-in-out;
-	    max-width: 320px;
-	    min-width: 20%;
+	    width: 320px;
     }
 
 }
 
 .imagepopup-holder {
-	text-align: center;
+	text-align: left;
 	margin: auto;
 	width: 100%;
 	height: 90%;  
 
     .image {    
-        float: left;
+        display: inline-block;
 	    max-width: 68%;
+	    vertical-align: initial;
 	    @media(max-width:@screen-md-max) and (min-width: @screen-md-min) {
                 max-width: 60%;
         }
         @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-                max-width: 54%;
+                max-width: 50%;
+                min-width: 200px;
         }
-	    z-index: 99999999;
+        @media (min-width: @screen-sm-min) {
+        	   max-height: 100%;
+        }
+	    z-index: 3000;
 	    min-width: 130px;
 	    min-height: 130px;
 	    margin-bottom: -5px;
 	    padding: 0px;
-	    margin-right: 20px;
+	    margin-right: 0px;
 	    text-align: left;
 	    background-position: 75px 60px;
         
@@ -207,7 +212,10 @@
 	        z-index: 10;
             max-width: 100%;
             width: auto;
-            
+            vertical-align: initial;
+            @media (min-width: @screen-sm-min) {
+        	    max-height: 99vh;
+        	}
         }
     }
 
@@ -257,6 +265,10 @@
             padding-right: 2px;    
         }
     }
+    & .image-dimensions {
+	    color: @gray-light;
+		font-size: .8em;
+	}
 
     & .image-info .record-index {
         display: none;
@@ -346,7 +358,7 @@
 	.imagepopup-holder {
 		width: 100%;
 		max-height: 90%;
-
+        text-align: center;
         & h3.title {
             border:none;
         }

@@ -53,4 +53,30 @@ class Module
             ],
         ];
     }
+
+    /**
+     * Return service configuration.
+     *
+     * @return array
+     */
+    public function getServiceConfig()
+    {
+        return [
+            'factories' => [
+                'VuFindTheme\ThemeInfo' => 'FinnaTheme\Module::getThemeInfo',
+            ],
+        ];
+    }
+
+    /**
+     * Factory function for ThemeInfo object.
+     *
+     * @return ThemeInfo
+     */
+    public static function getThemeInfo()
+    {
+        return new \VuFindTheme\ThemeInfo(
+            realpath(APPLICATION_PATH . '/themes'), 'bootprint3'
+        );
+    }
 }

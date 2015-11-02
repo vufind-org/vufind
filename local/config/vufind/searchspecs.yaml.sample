@@ -245,8 +245,7 @@ Subject:
 JournalTitle:
   DismaxFields:
     - title_short^500
-    - title_full_unstemmed^4500
-    - title_full^400
+    - title_txtP^4500
     - title^300
     - container_title^250
     - title_alt^200
@@ -257,11 +256,9 @@ JournalTitle:
   QueryFields:
     title_short:
       - [onephrase, 500]
-    title_full_unstemmed:
+    title_txtP:
       - [onephrase, 4500]
       - [and, 400]
-    title_full:
-      - [onephrase, 400]
     title:
       - [onephrase, 300]
       - [and, 250]
@@ -283,9 +280,9 @@ JournalTitle:
   FilterQuery: "format:0/Journal/"
   ExactSettings:
     DismaxFields:
-      - title_full_unstemmed^450
+      - title_txtP^450
     QueryFields:
-      - title_full_unstemmed:
+      - title_txtP:
         - [onephrase, 450]
         - [and, 400]
     FilterQuery: "format:0/Journal/"
@@ -293,8 +290,7 @@ JournalTitle:
 Title:
   DismaxFields:
     - title_short^500
-    - title_full_unstemmed^4500
-    - title_full^400
+    - title_txtP^4500
     - title^300
     - title_alt^200
     - title_new^100
@@ -304,11 +300,9 @@ Title:
   QueryFields:
     title_short:
       - [onephrase, 500]
-    title_full_unstemmed:
+    title_txtP:
       - [onephrase, 4500]
       - [and, 400]
-    title_full:
-      - [onephrase, 400]
     title:
       - [onephrase, 300]
       - [and, 250]
@@ -374,6 +368,7 @@ AllFields:
     - isbn
     - issn
     - ismn_isn_mv
+    - collection_txt_mv
   QueryFields:
     0:
       0:
@@ -437,6 +432,8 @@ AllFields:
       - [onephrase, ~]
     ismn_isn_mv:
       - [onephrase, ~]
+    collection_txt_mv:
+      - [and, ~]
   ExactSettings:
     DismaxFields:
       - title_txtP^8600
@@ -447,6 +444,7 @@ AllFields:
       - isbn
       - issn
       - ismn_isn_mv
+      - collection_txt_mv
     QueryFields:
       title_txtP:
         - [onephrase, 8600]
@@ -467,6 +465,8 @@ AllFields:
         - [onephrase, ~]
       ismn_isn_mv:
         - [onephrase, ~]
+      collection_txt_mv:
+        - [and, ~]
 
 # These are advanced searches that never use Dismax:
 id:
@@ -635,3 +635,8 @@ oclc_num:
   QueryFields:
     oclc_num:
       - [oclc_num, ~]
+
+hierarchy_parent_id:
+  QueryFields:
+    hierarchy_parent_id:
+      - [or, ~]

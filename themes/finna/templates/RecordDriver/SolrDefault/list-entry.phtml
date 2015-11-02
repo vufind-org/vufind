@@ -1,3 +1,4 @@
+<!-- START of: finna - RecordDriver/SolrDefault/list-entry.phtml -->
 <?
   // Set up some convenience variables:
   $id = $this->driver->getUniqueId();
@@ -12,7 +13,7 @@
 ?>
 <!-- start list-entry -->
 <div class="row record-container<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?> myresearch-row">
-  <div class="col-xs-2 col-sm-1">
+  <div class="col-xs-2 col-sm-1 hidden-print">
     <div class="checkboxFilter">
       <div class="checkbox">
         <? // Request a checkbox with a label (can't add the label here as checkbox template contains more than one field): ?>
@@ -97,50 +98,7 @@
       <br/>
     <? endif; ?>
 
-      <div class="holding-details">
-      <?
-      /* Display information on duplicate records if available */
-      $dedupData = $this->driver->getDedupData();
-      if (count($dedupData) > 1): ?>
-        <div class="dedupInformation">
-            <select class="dedup-select form-control" role="listbox" aria-haspopup="true">
-            <? foreach ($dedupData as $source => $current): ?>
-              <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>" role="option"><?=$this->transEsc("source_$source", null, $source) ?></option>
-            <? endforeach; ?>
-            </select>
-        </div>
-      <? else: ?>
-        <?
-          if (!empty($dedupData)) {
-            reset($dedupData);
-            $source = key($dedupData);
-          } else {
-            $source = $this->driver->tryMethod('getDataSource');
-          }
-        ?>
-        <? if ($source): ?>
-        <div class="dedupInformation">
-          <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
-        </div>
-        <? endif; ?>
-      <? endif; ?>
-        <div class="callnumAndLocation">
-        <? if ($this->driver->supportsAjaxStatus()): ?>
-          <strong class="hideIfDetailed"></strong>
-          <span class="callnumber ajax-availability hidden">
-            <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...
-          </span><br class="hideIfDetailed"/>
-          <strong></strong>
-          <span class="location ajax-availability hidden">
-          </span>
-          <div class="locationDetails hidden"></div>
-        <? else: ?>
-          <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
-            <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
-          <? endif; ?>
-        <? endif; ?>
-        </div>
-      </div>
+      <?=$this->partial('RecordDriver/SolrDefault/holdings.phtml') ?>
       <?=$this->record($this->driver)->getOnlineUrls('results')?>
       <?=$this->record($this->driver)->getPreviews()?>
     </div>
@@ -207,5 +165,4 @@
   </div>
 </div>
 <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
-
-<!-- End list entry -->
+<!-- END of: finna - RecordDriver/SolrDefault/list-entry.phtml -->

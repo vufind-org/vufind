@@ -55,7 +55,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if ($view === false) {
             $view = parent::checkedoutAction();
             $view->profile = $this->getCatalogProfile();
-
+            $transactions = count($view->transactions);
             $renewResult = $view->renewResult;
             if (isset($renewResult) && is_array($renewResult)) {
                 $renewedCount = 0;
@@ -70,7 +70,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $flashMsg = $this->flashMessenger();
                 if ($renewedCount > 0) {
                     $msg = $this->translate(
-                        'renew_ok', ['%%count%%' => $renewedCount]
+                        'renew_ok', ['%%count%%' => $renewedCount,
+                        '%%transactionscount%%' => $transactions]
                     );
                     $flashMsg->setNamespace('info')->addMessage($msg);
                 }
@@ -274,31 +275,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Create sort list for public list page.
-     * If no sort option selected, set first one from the list to default.
-     *
-     * @return array
-     */
-    protected function createSortList()
-    {
-        $sortOptions = self::getFavoritesSortList();
-        $sort = isset($_GET['sort']) ? $_GET['sort'] : false;
-        if (!$sort) {
-            reset($sortOptions);
-            $sort = key($sortOptions);
-        }
-        $sortList = [];
-        foreach ($sortOptions as $key => $value) {
-            $sortList[$key] = [
-                'desc' => $value,
-                'selected' => $key === $sort,
-            ];
-        }
-
-        return $sortList;
-    }
-
-    /**
      * Send list of holds to view
      *
      * @return mixed
@@ -344,15 +320,48 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             );
         }
         // Append logout parameter to indicate user-initiated logout
-        if ($p = strpos($logoutTarget, '?')) {
-            $logoutTarget = substr($logoutTarget, 0, $p + 1) . 'logout=1&'
-                . substr($logoutTarget, $p + 1);
-        } else {
+        $logoutTarget = preg_replace(
+            '/([?&])logout=[^&]*&?/', '$1', $logoutTarget
+        );
+        if (substr($logoutTarget, -1) == '?') {
+            $logoutTarget .= 'logout=1';
+        } elseif (strstr($logoutTarget, '?') === false) {
             $logoutTarget .= '?logout=1';
+        } else {
+            $logoutTarget .= '&logout=1';
         }
 
         return $this->redirect()
             ->toUrl($this->getAuthManager()->logout($logoutTarget));
+    }
+
+    /**
+     * Save alert schedule for a saved search into DB
+     *
+     * @return mixed
+     */
+    public function savesearchAction()
+    {
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+        $schedule = $this->params()->fromQuery('schedule', false);
+        $sid = $this->params()->fromQuery('searchid', false);
+
+        if ($schedule !== false && $sid !== false) {
+            $search = $this->getTable('Search');
+            $baseurl = rtrim($this->getServerUrl('home'), '/');
+            $row = $search->select(
+                ['id' => $sid, 'user_id' => $user->id]
+            )->current();
+            if ($row) {
+                $row->setSchedule($schedule, $baseurl);
+            }
+            return $this->redirect()->toRoute('search-history');
+        } else {
+            parent::savesearchAction();
+        }
     }
 
     /**
@@ -452,6 +461,60 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 = $this->getRequest()->getRequestUri() . '&confirm=1';
         }
         return $view;
+    }
+
+    /**
+     * Create sort list for public list page.
+     * If no sort option selected, set first one from the list to default.
+     *
+     * @return array
+     */
+    protected function createSortList()
+    {
+        $sortOptions = self::getFavoritesSortList();
+        $sort = isset($_GET['sort']) ? $_GET['sort'] : false;
+        if (!$sort) {
+            reset($sortOptions);
+            $sort = key($sortOptions);
+        }
+        $sortList = [];
+        foreach ($sortOptions as $key => $value) {
+            $sortList[$key] = [
+                'desc' => $value,
+                'selected' => $key === $sort,
+            ];
+        }
+
+        return $sortList;
+    }
+
+    /**
+     * Check if current library card supports a function. If not supported, show
+     * a message and a notice about the possibility to change library card.
+     *
+     * @param string  $function      Function to check
+     * @param boolean $checkFunction Use checkFunction() if true,
+     * checkCapability() otherwise
+     *
+     * @return mixed \Zend\View if the function is not supported, false otherwise
+     */
+    protected function createViewIfUnsupported($function, $checkFunction = false)
+    {
+        $params = ['patron' => $this->catalogLogin()];
+        if ($checkFunction) {
+            $supported = $this->getILS()->checkFunction($function, $params);
+        } else {
+            $supported = $this->getILS()->checkCapability($function, $params);
+        }
+
+        if (!$supported) {
+            $view = $this->createViewModel();
+            $view->noSupport = true;
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('no_ils_support_for_' . strtolower($function));
+            return $view;
+        }
+        return false;
     }
 
     /**
@@ -568,63 +631,5 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $profile;
         }
         return null;
-    }
-
-    /**
-     * Check if current library card supports a function. If not supported, show
-     * a message and a notice about the possibility to change library card.
-     *
-     * @param string  $function      Function to check
-     * @param boolean $checkFunction Use checkFunction() if true,
-     * checkCapability() otherwise
-     *
-     * @return mixed \Zend\View if the function is not supported, false otherwise
-     */
-    public function createViewIfUnsupported($function, $checkFunction = false)
-    {
-        $params = ['patron' => $this->catalogLogin()];
-        if ($checkFunction) {
-            $supported = $this->getILS()->checkFunction($function, $params);
-        } else {
-            $supported = $this->getILS()->checkCapability($function, $params);
-        }
-
-        if (!$supported) {
-            $view = $this->createViewModel();
-            $view->noSupport = true;
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('no_ils_support_for_' . strtolower($function));
-            return $view;
-        }
-        return false;
-    }
-
-    /**
-     * Save alert schedule for a saved search into DB
-     *
-     * @return mixed
-     */
-    public function savesearchAction()
-    {
-        $user = $this->getUser();
-        if ($user == false) {
-            return $this->forceLogin();
-        }
-        $schedule = $this->params()->fromQuery('schedule', false);
-        $sid = $this->params()->fromQuery('searchid', false);
-
-        if ($schedule !== false && $sid !== false) {
-            $search = $this->getTable('Search');
-            $baseurl = rtrim($this->getServerUrl('home'), '/');
-            $row = $search->select(
-                ['id' => $sid, 'user_id' => $user->id]
-            )->current();
-            if ($row) {
-                $row->setSchedule($schedule, $baseurl);
-            }
-            return $this->redirect()->toRoute('search-history');
-        } else {
-            parent::savesearchAction();
-        }
     }
 }

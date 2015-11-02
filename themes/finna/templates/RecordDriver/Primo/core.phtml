@@ -1,3 +1,4 @@
+<!-- START of: finna - RecordDriver/Primo/core.phtml -->
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
 
 
@@ -460,5 +461,13 @@
       </div>
     <? endif; ?>
     <?/* End Main Details */?>
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/record-post-metadata")): ?>
+    <div class="row">
+      <div class="col-xs-12">
+        <?=$this->render($template)?>
+      </div>
+    </div>
+    <? endif; ?>
   </div>
 </div>
+<!-- END of: finna - RecordDriver/Primo/core.phtml -->

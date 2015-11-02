@@ -16,7 +16,7 @@
 //== Custom styling
 //== Background
 //@background-image-url: url('../images/customhomebg');
-@background-image-attachment: scroll;  // set to fixed or scroll (fixed doesnt scoll along with page)
+//@background-image-attachment: scroll;  // set to fixed or scroll (fixed doesnt scoll along with page)
 //@background-start-color: rgba(1,1,1,0.01); // gradient color for background image
 //@background-end-color:  rgba(1,1,1,0.3); // gradient color for background image
 //@background-start-percent: 15%;
@@ -28,6 +28,7 @@
 //@logo-separator-color: #fff; // Color of hr line under main logo
 //@header-background-color: rgba(1,1,1,0.8); // Color of main navigation bar top
 //@footer-background: @gray;
+//@footer-text-color: @body-bg;
 //@finna-main-header-background: @brand-secondary; // Color of page header background and search results tabs
 //@finna-searchbox-link-color: #fff; // style searchbox link text color contrast with background
 //@finna-searchbox-link-background: rgba(100,100,100,0.3); // style searchbox links (advanced search etc.) background contrast with background
@@ -37,6 +38,8 @@
 //@finna-button-radius: 10px; // Defines some radiuses
 //@finna-header-font-size: 1.6em; // Adjust header of each page
 //@record-title-font-size: 1.7em; // adjust record view header title size
+//@main-tabs-background-color: @brand-primary;
+//@main-tabs-link-color: #fff;
 
 //== Finna home page
 //@introduction-header: 2.7em;    // adjust slogan size on main page
@@ -78,10 +81,16 @@
 //== List feed styles
 //@list-feed-background: @body-bg;
 //@list-feed-padding: 10px;
-//@list-feed-header-color: red;
+
+//== List feed header style
+//@list-feed-header-background: none;
+//@list-feed-header-padding: none;
+//@list-feed-header-color: @gray;
+
 
 //== Myreresearch custom styles
 //@myresearch-header-background: #b0e9db;
+//@myresearch-tabs-color: @gray;
 
 //== Scaffolding
 //
@@ -376,7 +385,8 @@
 //** Tooltip arrow width
 //@tooltip-arrow-width:         5px;
 //** Tooltip arrow color
-//@tooltip-arrow-color:         @gray-light;
+//@tooltip-arrow-color:         @body-bg;
+//@tooltip-header-color:        @gray-light;
 
 //== Labels
 //

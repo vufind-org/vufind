@@ -1,8 +1,20 @@
+; Example:
+;
+; [menu]
+; menu_item_1 = 'search-home'
+; menu_item_2 = 'content-about'
+; menu_item_3 = 'http://www.finna.fi'
+; menu_item_4 = 'http://www.finna.fi,_blank'
+
 [search]
-pci_search = 'primo-home'
 advanced_search = 'search-advanced'
+pci_search = 'primo-home'
 pci_advanced = 'primo-advanced'
+metalib_search = 'metalib-home'
+metalib_advanced = 'metalib-advanced'
 browse = 'browse-home'
+browse-database = 'browse-database'
+browse-journal = 'browse-journal'
 history = 'search-history'
 
 [about_us]

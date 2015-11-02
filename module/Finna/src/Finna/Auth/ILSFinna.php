@@ -39,6 +39,30 @@ namespace Finna\Auth;
 trait ILSFinna
 {
     /**
+     * Get secondary login field label (if any)
+     *
+     * @param string $target Login target (MultiILS)
+     *
+     * @return string
+     */
+    public function getSecondaryLoginFieldLabel($target)
+    {
+        $catalog = $this->getCatalog();
+        if (!$catalog->checkCapability(
+            'getConfig', ['cat_username' => "$target.login"]
+        )) {
+            return '';
+        }
+        $config = $this->getCatalog()->getConfig(
+            'patronLogin', ['cat_username' => "$target.login"]
+        );
+        if (!empty($config['secondary_login_field_label'])) {
+            return $config['secondary_login_field_label'];
+        }
+        return '';
+    }
+
+    /**
      * Update the database using details from the ILS, then return the User object.
      *
      * @param array $info User details returned by ILS driver.
@@ -73,9 +97,10 @@ trait ILSFinna
         $fields = ['firstname', 'lastname', 'email', 'major', 'college'];
         foreach ($fields as $field) {
             // Special case: don't override existing email address:
-            $email = trim($user->email);
-            if ($field == 'email' && !empty($email)) {
-                continue;
+            if ($field == 'email') {
+                if (isset($user->email) && trim($user->email) != '') {
+                    continue;
+                }
             }
             $user->$field = isset($info[$field]) ? $info[$field] : ' ';
         }
@@ -88,4 +113,5 @@ trait ILSFinna
 
         return $user;
     }
+
 }

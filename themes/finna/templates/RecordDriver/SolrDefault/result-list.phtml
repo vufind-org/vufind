@@ -1,4 +1,4 @@
-<!-- start of Default result-list.phtml -->
+<!-- START of: finna - RecordDriver/SolrDefault/result-list.phtml -->
 <?
   $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
 ?>
@@ -121,54 +121,15 @@
           <? endif; ?>
         <? endif; ?>
       <? endif; ?>
-      <div class="holding-details">
-      <?
-      /* Display information on duplicate records if available */
-      $dedupData = $this->driver->getDedupData();
-      if (count($dedupData) > 1): ?>
-        <div class="dedupInformation">
-            <select class="dedup-select form-control" role="listbox" aria-haspopup="true">
-            <? foreach ($dedupData as $source => $current): ?>
-              <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>" role="option"><?=$this->transEsc("source_$source", null, $source) ?></option>
-            <? endforeach; ?>
-            </select>
-        </div>
-      <? else: ?>
-        <?
-          if (!empty($dedupData)) {
-            reset($dedupData);
-            $source = key($dedupData);
-          } else {
-            $source = $this->driver->tryMethod('getDataSource');
-          }
-        ?>
-        <? if ($source): ?>
-          <div class="dedupInformation">
-            <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
-          </div>
-        <? endif; ?>
-      <? endif; ?>
 
-      <div class="callnumAndLocation ajax-availability<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
-        <span class="availability-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/></span>
-        <? if ($this->driver->supportsAjaxStatus()): ?>
-          <strong class="hideIfDetailed"></strong>
-          <span class="callnumber ajax-availability hidden">
-          </span>
-          <span class="location ajax-availability hidden">
-          </span>
-          <div class="locationDetails clearfix"></div>
-        <? else: ?>
-          <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
-            <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
-          <? endif; ?>
-        <? endif; ?>
-        <div class="no-holdings<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
-          <?=$this->transEsc('No Holdings Available')?>
-        </div>
-      </div>
-    </div>
+    <?=$this->partial('RecordDriver/SolrDefault/holdings.phtml') ?>
     <?=$this->record($this->driver)->getOnlineUrls('results')?>
+    <?
+      $formats = $this->driver->tryMethod('getFormats');
+      if ($this->record($this->driver)->getFormatClass(end($formats)) === '0database'):
+    ?>
+       <?= $this->partial('RecordDriver/MetaLib/search-link.phtml', ['id' => $this->driver->getUniqueID()]); ?>
+    <? endif; ?>
     <?=$this->record($this->driver)->getPreviews()?>
 
   </div>
@@ -225,5 +186,4 @@
     <? endif; ?>
   </div>
 </div>
-<!-- End of Default result-list.phtml -->
-
+<!-- END of: finna - RecordDriver/SolrDefault/result-list.phtml -->

@@ -242,6 +242,17 @@ finna.layout = (function() {
             nSelectedText: vufindString.selected,
             buttonClass: "form-control",
         });
+        // use click events only if there is a multi-select element
+        if ($('.multi-select').length) {
+          $('.multiselect.dropdown-toggle').click(function(e) {
+              $(this).siblings('.multiselect-container').toggleClass('show');
+          });
+          $('html').on('click', function(e) {
+              if (!$(e.target).hasClass('multiselect') && !$(e.target).parent().hasClass('multiselect')) {
+                  $('.multiselect-container.show').removeClass('show');
+              }
+          });
+        }
     };
 
     var initMobileNarrowSearch = function() {
@@ -329,10 +340,6 @@ finna.layout = (function() {
             $('#hierarchyTree, #modal').animate({scrollTop: 0 }, 200);
         });
       });
-
-      $('.template-dir-record .back-to-up').click(function() {
-        $('html, body').animate({scrollTop: $('#hierarchyTreeHolder').offset().top-70}, 200);
-      });
     };
 
     var initSearchboxFunctions = function() {
@@ -347,7 +354,7 @@ finna.layout = (function() {
           form.find('.clear-button').addClass('hidden');
         }
       });
-      
+
       $('.clear-button').click(function() {
         var form = $(this).closest('.searchForm');
         form.find('.searchForm_lookfor').val('');
@@ -358,12 +365,12 @@ finna.layout = (function() {
       $('.autocomplete').on('typeahead:selected', function () {
         $('.navbar-form').submit();
       });
-      
+
       $('.select-type').click(function() {
         $('input[name=type]:hidden').val($(this).children().val());
         $('.type-dropdown .dropdown-toggle span').text($(this).text());
       });
-      
+
     };
 
     var initToolTips = function () {
@@ -510,7 +517,7 @@ finna.layout = (function() {
             }
         });
     }
-    
+
     var initTouchDeviceGallery = function () {
         if ($('.result-view-grid')[0] != null && isTouchDevice()) {
             $('.result-view-grid').addClass('touch-device');
@@ -530,6 +537,46 @@ finna.layout = (function() {
         });
     };
 
+    var initHierarchicalFacet = function(treeNode, inSidebar) {
+        treeNode.bind('ready.jstree', function() {
+            var tree = $(this);
+            // if hierarchical facet contains 2 or less top level items, it is opened by default
+            if (tree.find('ul > li').length <= 2) {
+                tree.find('ul > li.jstree-node.jstree-closed > i.jstree-ocl').each(function() {
+                    tree.jstree('open_node', this, null, false);
+                });
+            }
+            // open facet if it has children and it is selected
+            $(tree.find('.jstree-node.active.jstree-closed')).each(function() {
+                tree.jstree('open_node', this, null, false);
+            });
+        });
+        initFacetTree(treeNode, inSidebar);
+    };
+
+    var initJumpMenus = function(holder) {
+        if (typeof(holder) == "undefined") {
+            holder = $("body");
+        }
+        holder.find('select.jumpMenu').unbind('change').change(function() { $(this).closest('form').submit(); });
+        holder.find('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });
+    }
+
+    var initSecondaryLoginField = function(labels, topClass) {
+        $('#login_target').change(function() {
+            var target = $('#login_target').val();
+            var field = $('#login_' + (topClass ? topClass + '_' : '') + 'secondary_username');
+            if (labels[target] === '') {
+                field.val('');
+                field.closest('.form-group').hide();
+            } else {
+                var group = field.closest('.form-group');
+                group.find('label').text(labels[target] + ':');
+                group.show();
+            }
+        }).change();
+    }
+
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -540,10 +587,12 @@ finna.layout = (function() {
         initSaveRecordLinks: initSaveRecordLinks,
         initLightbox: initLightbox,
         updateLoginName: updateLoginName,
+        initHierarchicalFacet: initHierarchicalFacet,
+        initJumpMenus: initJumpMenus,
+        initMobileNarrowSearch: initMobileNarrowSearch,
+        initSecondaryLoginField: initSecondaryLoginField,
         init: function() {
-            $('select.jumpMenu').unbind('change').change(function() { $(this).closest('form').submit(); });
-            $('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });
-
+            initJumpMenus();
             initAnchorNavigationLinks();
             initFixFooter();
             initHideDetails();

@@ -1,8 +1,14 @@
+<!-- START of: finna - record/view.phtml -->
 <?
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
   $this->headScript()->appendFile("check_save_statuses.js");
-  if ($this->driver->getResourceSource() == 'Primo') {
+  $this->headScript()->appendFile("finna-comments.js");
+  if ($this->record($this->driver)->ratingAllowed()) {
+     $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
+     $this->headLink()->appendStylesheet('vendor/bootstrap-rating.css');
+  }
+  if (in_array($this->driver->getResourceSource(), ['MetaLib', 'Primo'])) {
     $this->headScript()->appendFile("finna-bx.js");
   }
   // Activate Syndetics Plus if necessary:
@@ -20,8 +26,22 @@
     '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
 
   $this->layout()->title = $this->driver->getShortTitle();
+
+  $this->headMeta()->appendName('format-detection', 'telephone=no');
+
+  // Set page title.
+  $dataSource = $this->driver->tryMethod('getDataSource');
+  $headText = $this->driver->getBreadcrumb() . (isset($dataSource) ? ' | ' . $this->transEsc('source_'. $dataSource) : '');
+  $this->headTitle($headText);
+
+  // Load default tab
+  $script = <<<EOT
+$(document).ready(function() {
+  ajaxLoadTab('{$this->activeTab}');
+});
+EOT;
+  $this->headScript()->appendScript($script);
 ?>
-<meta name="format-detection" content="telephone=no">
 </div>
 <div class="container-fluid record-view-header">
  <div class="container">
@@ -62,14 +82,13 @@
 </div>
 <div class="container">
 <div class="row record-row">
-  <div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="col-sm-9">
     <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getToolbar()?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
-
     </div>
 
     <? if (count($this->tabs) > 0): ?>
@@ -77,7 +96,7 @@
       <? if (count($this->tabs) > 3): ?>
       <div class="tabs-responsive">
       <? endif; ?>
-      <ul class="recordTabs nav nav-tabs hidden-print">
+      <ul class="recordTabs nav nav-tabs">
         <? foreach ($this->tabs as $tab => $obj): ?>
         <? // add current tab to breadcrumbs if applicable:
           $desc = $obj->getDescription();
@@ -92,33 +111,40 @@
           $comments = $this->driver->getComments();
         ?>
         <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<?= count($comments) ?>)<? endif; ?></a>
+          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($comments) ?></span>)<? endif; ?></a>
         </li>
         <? endforeach; ?>
-        <? if (count($this->tabs) > 3): ?>
-        </div>
-        <? endif; ?>
       </ul>
+      <? if (count($this->tabs) > 3): ?>
+      </div>
+      <? endif; ?>
     <? endif; ?>
 
     <div class="tab-content" id="record-tabs">
       <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
-        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+        <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading') ?>...
       </div>
     </div>
 
     <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenURL()).'"></span>':''?>
   </div>
 
-  <div class="<?=$this->layoutClass('sidebar')?>">
+  <div class="col-sm-3 sidebar">
     <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind'): ?>
       <?=$this->render('record/record-organisation-menu.phtml') ?>
     <? endif; ?>
     <? foreach ($this->related()->getList($this->driver) as $current): ?>
       <?=$this->related()->render($current)?>
     <? endforeach; ?>
-    <? if ($this->driver->getResourceSource() == 'Primo'): ?>
+    <? if (in_array($this->driver->getResourceSource(), ['MetaLib', 'Primo'])): ?>
       <div id="bx-recommendations-holder">
+      </div>
+    <? endif; ?>
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/record-post-recommendations")): ?>
+      <div class="row">
+        <div class="col-xs-12">
+          <?=$this->render($template)?>
+        </div>
       </div>
     <? endif; ?>
   </div>
@@ -126,3 +152,4 @@
 </div>
 <?=$this->partial('RecordDriver/SolrDefault/toolbar_mobile.phtml') ?>
 <div>
+<!-- END of: finna - record/view.phtml -->

@@ -1,4 +1,5 @@
-<? if (($srcUrl = $this->imageSrc('customhomelogo_' . $this->layout()->userLang)) || ($srcUrl = $this->imageSrc('customhomelogo'))): ?>
+<!-- START of: finna - search/logosection.phtml -->
+<? if (($srcUrl = $this->imageSrc('finna-logo.' . $this->layout()->userLang)) || ($srcUrl = $this->imageSrc('finna-logo'))): ?>
   <a href="<?=$this->url('home');?>"><span class="sr-only"><?=$this->transEsc('Home');?></span>
     <img src="<?=$srcUrl; ?>" alt="Logo" />
   </a>
@@ -8,3 +9,4 @@
 <? if ($this->layout()->templateName === 'home') : ?>
 <hr>
 <? endif; ?>
+<!-- END of: finna - search/logosection.phtml -->

@@ -6,6 +6,5 @@ return array(
         'settings.css'
     ),
     'js' => array(
-        'custom.js'
     )
 );

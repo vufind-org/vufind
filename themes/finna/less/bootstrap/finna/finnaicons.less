@@ -131,6 +131,9 @@ table .iconlabel {
     & .iconlabel {
         display: block;   
     }
+    &.disable {
+        cursor: default;
+    }
 }
 .grid-image .image-popup-trigger.no-image {
     @media (max-width:@screen-xs-max) {
@@ -142,7 +145,6 @@ table .iconlabel {
 }
 .fa-spinner {
   margin-left: 5px;
-  vertical-align: middle;
 }
 .fa-spinner:before {
   font-family:'Fontawesome';
@@ -218,11 +220,19 @@ table .iconlabel {
 	content: "\e61b";
 }
 .fa-external-link:before, .openUrlEmbed:before {
-    font-size: 1.3em;
-    vertical-align: middle;
+    font-size: 1.18em;
 }
 .fa-www-link:before, .iconlabel.format-electronic:before, .fa-external-link:before, .openUrlEmbed:before {
-    content: "\e615";
+    font-family: 'FontAwesome';
+    content: "\F138";
+}
+.fa-link:before {
+    font-family: 'FontAwesome';
+    content: "\f0c1";
+}
+.fa-unlink:before {
+    font-family: 'FontAwesome';
+    content: "\F127";
 }
 .fa-handle-left:before, .slick-prev:before {
     content: "\e60a";
@@ -327,10 +337,13 @@ table .iconlabel {
 .fa-uniE03B:before {
     content: "\e03b";
 }
-.fa-expand:before {
+.fa-expand:before, .fa-magnify:before {
     content: "\e03a";
 }
-.fa-search-adv:before, .fa-magnify:before {
+.fa-condense:before {
+    content: "\e61d";  
+}
+.fa-search-adv:before {
     content: "\e600";
 }
 .fa-pinterest:before {
@@ -341,6 +354,9 @@ table .iconlabel {
 }
 .fa-facebook:before {
     content: "\e036";
+}
+.fa-facebook-button:before {
+    content: "\e61e";   
 }
 .fa-bell:before {
     content: "\e035";
@@ -411,7 +427,7 @@ table .iconlabel {
 .fa-send-feedback:before {
     content: "\e020";
 }
-.fa-envelope:before {
+.fa-envelope:before, .iconlabel.format-1otherletter:before {
     content: "\e01f";
 }
 .fa-user-document:before {
@@ -419,6 +435,9 @@ table .iconlabel {
 }
 .fa-UserComments:before {
     content: "\e01d";
+}
+.fa-Map:before {
+	  content: "\e002";
 }
 .fa-search-small:before {
     content: "\e01c";
@@ -462,6 +481,13 @@ table .iconlabel {
 .fa-user:before {
     content: "\e00e";
 }
+.fa-star:before {
+    content: "\e02b";
+}
+.fa-star-empty:before {
+    content: "\e60f";
+}
+
 .iconlabel.format-1bookebook:before, .iconlabel.format-1bookebooksection:before, .iconlabel.format-1otherelectronic:before {
     content: "\e617";
 }
@@ -477,7 +503,7 @@ table .iconlabel {
 .iconlabel.format-1placebuilding:before, .iconlabel.format-1placeplace:before, .iconlabel.format-1placearchaeologicalsite:before {
     content: "\e60e";
 }
-.iconlabel.format-1otherother:before, .iconlabel.format-1otherkit:before, .iconlabel.format-1othermanuscript:before, .iconlabel.format-1othertext:before {
+.iconlabel.format-1otherother:before, .iconlabel.format-1othercollection:before, .iconlabel.format-1othersubunit:before, .iconlabel.format-1otherkit:before, .iconlabel.format-1othermanuscript:before, .iconlabel.format-1othertext:before {
     content: "\e00d";
 }
 .iconlabel.format-manuscript:before, .iconlabel.format-1thesisother:before, .iconlabel.format-1thesisgradu:before, .iconlabel.format-1thesisthesis:before, .iconlabel.format-1thesislaudatur:before, .iconlabel.format-1thesismasters:before, .iconlabel.format-1thesisbachelorspolytechnic:before, .iconlabel.format-1thesisbachelors:before, .iconlabel.format-1thesismasterspolytechnic:before, .iconlabel.yamk:before, .iconlabel.format-1thesislicentiate:before, .iconlabel.format-1otherresearchdata:before {
@@ -495,7 +521,7 @@ table .iconlabel {
 .iconlabel.format-1imagephoto:before, .iconlabel.format-1imageimage:before, .iconlabel.format-1imagephotograph:before, .iconlabel.format-1imageslide:before, .iconlabel.format-1imagedrawing:before, .iconlabel.format-1imagetransparency:before {
     content: "\e008";
 }
-.icon-smallpress:before {
+.iconlabel-smallpress:before, .iconlabel.format-1otherprint:before {
     content: "\e007";
 }
 .fa.fa-TOC:before, .iconlabel.format-1document:before, .iconlabel.format-1documentarchive:before, .iconlabel.format-1documentarchivematerial:before, .iconlabel.format-1documentarchiveitem:before, .iconlabel.format-1documentarchivefonds:before, .iconlabel.format-1documentarchiveseries:before, .iconlabel.format-1documentarchivecollection:before, .iconlabel.format-1documentdigitizedarchiveitem:before {
@@ -507,7 +533,7 @@ table .iconlabel {
 .iconlabel.format-0database:before {
     content: "\e004";
 }
-.iconlabel.esine:before, .iconlabel.format-1physicalobjectother:before, .iconlabel.format-1physicalobjectculturehistoricalobject:before {
+.iconlabel.esine:before, .iconlabel.format-1physicalobjectother:before, .iconlabel.format-1physicalobjectculturehistoricalobject:before, .iconlabel.format-0physicalobject:before {
     content: "\e003";
 }
 .iconlabel.format-1mapmap:before, .iconlabel.format-1mapatlas:before, .iconlabel.karttapallo:before {
@@ -590,25 +616,33 @@ table .iconlabel {
 /* Image gallery popup icons */
 .fa-magnify {
     position: absolute;
-    font-size: 1em;
+    font-size: .9em;
     opacity: 0;
     transition: opacity 0.2s linear;
     color: @body-bg;
     right: 20px;
-    top: 6px;
+    top: 8px;
     z-index: 2;
     &:before {
-        padding: 1px 3px 3px;
+        padding: 3px 3px;
         background: rgba(1,1,1, 0.1);
-        font-size: 1.5em;
+        font-size: 1.4em;
     }
     @media (max-width: @screen-sm-max) {
         .opacity(0.3);
     }
 }
+.template-dir-record .recordcover-holder {
+    @media (max-width: @screen-xs-max) {
+        & .fa-magnify {
+            right: auto;
+            margin-left: -26px;
+        }
+    }
+}
 .grid .fa-magnify {
     right: 14px;
-    top: 5px;
+    top: 7px;
 }
 .recordcover-holder:hover .fa-magnify {
     opacity: 1;

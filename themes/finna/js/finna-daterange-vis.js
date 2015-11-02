@@ -78,10 +78,10 @@ finna.dateRangeVis = (function() {
         // Save default timeline parameters
         searchParams = baseParams;
 
-        var field = holder.find(".year-from");
+        var field = holder.find('.year-from');
         if (field.length) {
             startVal = field.val();
-            if (startVal != "") {
+            if (startVal != '') {
                 visDateStart = parseInt(startVal, 10);
             }
         }
@@ -90,29 +90,29 @@ finna.dateRangeVis = (function() {
             visDateStart = start;
         }
 
-        field = holder.find(".year-to");
+        field = holder.find('.year-to');
         if (field.length) {
             endVal = field.val();
-            if (endVal != "") {
+            if (endVal != '') {
                 visDateEnd = parseInt(endVal, 10);
             }
         }
 
         initTimelineNavigation(backend, h);
-        h.closest(".daterange-facet").find(".year-form").each(function() {
+        h.closest('.daterange-facet').find('.year-form').each(function() {
             initForm($(this), backend, facet);
         });
 
         openTimelineCallback = function() { loadVis(backend, 'prev', params); };
-        if ((typeof plotImmediately != "undefined" && plotImmediately)
-           || !$(".daterange-facet .list-group-item").hasClass("collapsed")) {
+        if ((typeof plotImmediately != 'undefined' && plotImmediately)
+           || !$('.daterange-facet .list-group-item').hasClass('collapsed')) {
             openTimelineCallback();
         }
     };
 
     var loadVis = function(backend, action, params) {
         // Load and display timeline (called at initial open and after timeline navigation)
-        var url = path + "/AJAX/JSON" + params + "&method=dateRangeVisual&backend=" + backend;
+        var url = path + '/AJAX/JSON' + params + '&method=dateRangeVisual&backend=' + backend;
 
         // Widen selected date range by configured amount of years
         var regex = new RegExp('filter\\[\\]=' + facetField + '.*\\[(\\d+|\\*)\\+TO\\+(\\d+|\\*)\\]"');
@@ -132,13 +132,13 @@ finna.dateRangeVis = (function() {
             }
         );
 
-        holder.find(".content").addClass('loading');
+        holder.find('.content').addClass('loading');
         loading = true;
 
         $.getJSON(url, function (data) {
             loading = false;
-            var vis = holder.find(".date-vis");
-            vis.closest(".content").removeClass('loading');
+            var vis = holder.find('.date-vis');
+            vis.closest('.content').removeClass('loading');
             if (data.status == 'OK') {
                 $.each(data['data'], function(key, val) {
                     // Get data limits
@@ -188,7 +188,7 @@ finna.dateRangeVis = (function() {
             return;
         }
 
-        if (typeof delay != "undefined") {
+        if (typeof delay !== 'undefined') {
             clearInterval(plotDelayId);
             plotDelayId = setTimeout(plotData, delay);
             return;
@@ -198,17 +198,17 @@ finna.dateRangeVis = (function() {
         var end = visDateEnd;
 
         var options = getGraphOptions(start-plotExtra, end+plotExtra+1);
-        var vis = holder.find(".date-vis");
+        var vis = holder.find('.date-vis');
 
         // Draw the plot
         var graph = $.plot(vis, [visData], options);
-        var form = holder.find(".year-form");
-        var fromElement = holder.find(".year-from");
-        var toElement = holder.find(".year-to");
+        var form = holder.find('.year-form');
+        var fromElement = holder.find('.year-from');
+        var toElement = holder.find('.year-to');
         var plotInited = false;
 
         // Bind events
-        vis.unbind("plotclick").bind("plotclick", function (event, pos, item) {
+        vis.unbind('plotclick').bind('plotclick', function (event, pos, item) {
             if (!visRangeSelected) {
                 var year = Math.floor(pos.x);
                 graph.setSelection({ x1: year , x2: year+1});
@@ -218,10 +218,10 @@ finna.dateRangeVis = (function() {
             visRangeSelected = false;
         });
 
-        vis.unbind("plotselected").bind("plotselected", function (event, ranges) {
+        vis.unbind('plotselecting plotselected').bind('plotselecting plotselected', function (event, ranges) {
             visRangeSelected = true;
 
-            if (!plotInited) {
+            if (!plotInited || ranges === null) {
                 return;
             }
             from = Math.floor(ranges.xaxis.from);
@@ -233,7 +233,9 @@ finna.dateRangeVis = (function() {
                 toElement.val(to);
             }
 
-            $('body').click();
+            if (event.type == 'plotselected') {
+                $('body').click();
+            }
         });
 
         // Set pre-selections
@@ -254,11 +256,11 @@ finna.dateRangeVis = (function() {
             series: {
                 bars: {
                     show: true,
-                    color: "#00a3b5",
-                    fillColor: "#00a3b5"
+                    color: '#00a3b5',
+                    fillColor: '#00a3b5'
                 }
             },
-            colors: ["#00a3b5"],
+            colors: ['#00a3b5'],
             legend: { noColumns: 2 },
             xaxis: {
                 min: start,
@@ -281,38 +283,40 @@ finna.dateRangeVis = (function() {
             }
         };
 
-        options['selection'] = {mode: "x", color:'#00a3b5;', borderWidth:0};
+        options['selection'] = {mode: 'x', color:'#00a3b5;', borderWidth:0};
         return options;
     };
 
     var initTimelineNavigation = function(backend, holder) {
         holder.find('.navigation div:not(.expand-modal)').on(
-            "click",
+            'click',
             {callback: timelineAction},
             function(e) {
                 e.data.callback(backend, $(this).attr('class').split(' ')[0]);
             }
         );
         holder.find('.navigation div.expand-modal').on(
-            "click",
+            'click',
             function(e) {
                 $(this).closest('.list-group-item.daterange').toggleClass('expand');
+                $('i', this).toggleClass('fa-condense');
                 plotData();
             }
         );
     };
 
     var initFacetBar = function() {
-        var facet = $(".daterange-facet");
-        var facetItem = facet.find(".list-group-item");
-        var title = facet.find(".title");
-        title.on("click", function(e) {
+        var facet = $('.daterange-facet');
+        var facetItem = facet.find('.list-group-item');
+        var title = facet.find('.title');
+        title.on('click', function(e) {
             facet.find('.list-group-item.daterange').removeClass('expand');
+            facet.find('.expand-modal i').removeClass('fa-condense');
             plotData(200);
         });
 
-        if (facetItem.hasClass("collapsed")) {
-            title.on("click", function(e) {
+        if (facetItem.hasClass('collapsed')) {
+            title.on('click', function(e) {
                 if (!plotted) {
                     showVis();
                 }
@@ -321,15 +325,15 @@ finna.dateRangeVis = (function() {
     };
 
     var initResizeListener = function() {
-        $(window).on("resize.screen.finna", function(e, data) {
+        $(window).on('resize.screen.finna', function(e, data) {
             plotData();
         });
     };
 
     var initForm = function(form, backend, facetField) {
-        form.find("a.submit").on("click",
+        form.find('a.submit').on('click',
            function() {
-               $(this).closest("form").submit();
+               $(this).closest('form').submit();
                return false;
            }
         );
@@ -338,19 +342,19 @@ finna.dateRangeVis = (function() {
             e.preventDefault();
 
             // Get dates, build query
-            var fromElement = $(this).find(".year-from");
+            var fromElement = $(this).find('.year-from');
             var from = fromElement.val();
-            var toElement = $(this).find(".year-to");
+            var toElement = $(this).find('.year-to');
             var to = toElement.val();
             var action = $(this).attr('action');
-            if (action.indexOf("?") < 0) {
+            if (action.indexOf('?') < 0) {
                 action += '?'; // No other parameters, therefore add ?
             } else {
                 action += '&'; // Other parameters found, therefore add &
             }
 
             var query = action;
-            var isSolr = backend == "solr";
+            var isSolr = backend == 'solr';
 
 
             var type = null;
@@ -358,7 +362,7 @@ finna.dateRangeVis = (function() {
                 type = $(this).find('input[type=radio][name=type]:checked');
                 if (type.length) {
                     type = type.val();
-                    query += facetField + "_type=" + type + "&";
+                    query += facetField + '_type=' + type + '&';
                 }
             }
             fromElement.removeClass('error');
@@ -388,7 +392,7 @@ finna.dateRangeVis = (function() {
                     query += isSolr ? '*' : (from <= 2100 ? 2100 : from+100);
                     query += ']"';
                 } else if (parseInt(from, 10) > parseInt(to, 10)) {
-                    fromElement.addClass("error");
+                    fromElement.addClass('error');
                     toElement.addClass('error');
                     return false;
                 } else { // both dates set

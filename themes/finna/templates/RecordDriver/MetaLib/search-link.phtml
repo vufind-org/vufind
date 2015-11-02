@@ -1,0 +1,14 @@
+<?
+list($source, $ird) = explode('.', $id);
+?>
+<div class="metalib-link" data-ird="<?=$this->escapeHtmlAttr($ird)?>">
+  <div class="loading"><i class="fa fa-spin fa-spinner"></i></div>
+  <span id="metalib-link_<?=$this->escapeHtmlAttr($id)?>" class="allowed hide">
+    <a href="<?= $this->url('metalib-home')?>?set=_ird:<?=$this->escapeHtmlAttr($ird)?>">
+      <i class="fa fa-search"></i>
+      <?= $this->translate('Search in this database')?>
+    </a>
+  </span>
+  <span id="metalib-link-na_<?=$this->escapeHtmlAttr($id)?>" class="denied hide"><?= $this->translate('metalib_not_authorized_single')?><br/></span>
+</div>
+

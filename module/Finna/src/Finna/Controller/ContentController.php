@@ -54,14 +54,23 @@ class ContentController extends \VuFind\Controller\AbstractBase
         $themeInfo  = $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
         $translator = $this->getServiceLocator()->get('VuFind\Translator');
         $language   = $translator->getLocale();
-        $action = "{$page}Action";
+        $action     = "{$page}Action";
+        $defaultLanguage = $this->getConfig()->Site->language;
 
+        // Try template with current language first and default language as a
+        // fallback
         if (!is_null(
             $themeInfo->findContainingTheme(
                 "templates/content/{$page}_$language.phtml"
             )
         )) {
             $page = "{$page}_$language";
+        } elseif (!is_null(
+            $themeInfo->findContainingTheme(
+                "templates/content/{$page}_$defaultLanguage.phtml"
+            )
+        )) {
+            $page = "{$page}_$defaultLanguage";
         }
 
         $view = $this->createViewModel(['page' => $page]);

@@ -1,13 +1,14 @@
+<!-- START of: finna - search/results.phtml -->
 <?
   $browse = isset($browse) ? $browse : false;
   $this->layout()->browse = $browse;
-
+  $this->headMeta()->appendName('robots', 'noindex,follow');
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
   if (isset($this->overrideTitle)) {
       $this->headTitle($this->overrideTitle);
   } else {
-      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+      $this->headTitle((empty($lookfor) ? "{$this->transEsc('history_empty_search')}" : "{$lookfor}") . ' | ' . $this->translate('Search Results'));
   }
 
   // Set up search box:
@@ -64,50 +65,55 @@
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("finna-search-tabs-recommendations.js");
   $this->headScript()->appendFile("finna-item-status.js");
+  $this->headScript()->appendFile("finna-metalib-links.js");
+
+  $topRecommendations = $this->results->getRecommendations('top');
 ?>
-    <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+<? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
       <? foreach ($this->results->getRecommendations('top') as $current): ?>
         <?=$this->recommend($current)?>
       <? endforeach; ?>
     <? endif; ?>
     <?=$this->flashmessages()?>
-    <div class="hidden-print search-controls row">
-      <? if ($recordTotal > 0): ?>
+    <? if ($recordTotal > 0): ?>
+    <div class="search-controls row">
         <? if (!$browse): ?>
-        <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right">
+        <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right hidden-print">
           <?=$this->render('search/controls/view.phtml')?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/limit.phtml')?>
         </div>
         <? endif; ?>
-        <div<?= !$browse ? ' class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8"' : '' ?>>
+        <div<?= !$browse ? ' class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8"' : ' class="col-xs-12"' ?>>
             <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results, 'label' => $browse ? "browse_extended_" . ucfirst($browse) : 'Showing'))?>
         </div>
-      <? endif; ?>
     </div>
-<div class="row results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
-  <div class="<?=$this->layoutClass('mainbody')?>">
-
-    <? /* End Listing Options */ ?>
-
-    <? if ($recordTotal < 1): ?>
-        <? if (isset($this->overrideEmptyMessage)): ?>
-          <p><?=$this->overrideEmptyMessage?></p>
-        <? elseif ($lookfor == '' && $this->params->getsearchClassId() == 'Primo'): ?>
-          <h4 class="alert alert-info"><?=$this->transEsc('primo_no_searchword')?></h4>
-        <? else: ?>
-          <p class="alert alert-info"><?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?></p>
-        <? endif; ?>
-      <? if (isset($this->parseError)): ?>
-        <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
       <? endif; ?>
-      <? foreach (($top = $this->results->getRecommendations('top')) as $current): ?>
+<div class="row results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
+  <? if ($recordTotal < 1): ?>
+  <div class="col-sm-9">
+    <? if (isset($this->overrideEmptyMessage)): ?>
+    <p><?=$this->overrideEmptyMessage?></p>
+    <? elseif ($lookfor == '' && $this->params->getsearchClassId() == 'Primo'): ?>
+      <h4 class="no-results"><?=$this->transEsc('primo_no_searchword')?></h4>
+    <? else: ?>
+      <h4 class="no-results"><?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?></h4>
+    <? endif; ?>
+    <? if (isset($this->parseError)): ?>
+      <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
+    <? endif; ?>
+    <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
+      <? if (!in_array($current, $topRecommendations)): ?>
         <?=$this->recommend($current)?>
-      <? endforeach; ?>
-      <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
-        <? if (!in_array($current, $top)): ?>
-          <?=$this->recommend($current)?>
-        <? endif; ?>
+      <? endif; ?>
+    <? endforeach; ?>
+  </div>
+  <? endif; ?>
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <? /* End Listing Options */ ?>
+    <? if ($recordTotal < 1): ?>
+      <? foreach ($topRecommendations as $current): ?>
+        <?=$this->recommend($current)?>
       <? endforeach; ?>
       <? if (!$browse && $this->searchTabsRecommendations()->getConfig($this->params->getSearchClassId())): ?>
         <div id="search-tabs-recommendations-holder" data-search-hash="<?=$this->escapeHtmlAttr($this->results->getSearchHash())?>"></div>
@@ -130,11 +136,18 @@
     <? foreach ($this->results->getRecommendations('side') as $current): ?>
       <?=$this->recommend($current)?>
     <? endforeach; ?>
+    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/search-post-facets")): ?>
+      <div class="row">
+        <div class="col-xs-12">
+          <?=$this->render($template)?>
+        </div>
+      </div>
+    <? endif; ?>
   </div>
   <? /* End Narrow Search Options */ ?>
 </div>
 </div>
-<? $pagination = $this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results)); if (trim($pagination)): ?>
+<? $pagination = $this->paginationControl($this->results->getPaginator()->setPageRange(5), 'Sliding', 'search/pagination.phtml', array('results' => $this->results)); if (trim($pagination)): ?>
 <div class="container-fluid pagination-background">
   <div class="container">
     <div class="row">
@@ -165,9 +178,9 @@
   </div>
 </div>
 <? endif; ?>
-<div class="mobile-navigation brand-primary visible-xs">
+<div class="mobile-navigation brand-primary visible-xs hidden-print">
   <ul>
     <li class="sidebar-navigation"><i class="fa fa-arrow-up"></i> <?=$this->transEsc('Narrow Search')?> <span class="active-filters hidden"><?=$this->transEsc('Active filters')?>: </span></li>
   </ul>
 </div>
-
+<!-- END of: finna - search/results.phtml -->

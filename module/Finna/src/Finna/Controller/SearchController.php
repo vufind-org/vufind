@@ -27,7 +27,8 @@
  */
 namespace Finna\Controller;
 
-use VuFindCode\ISBN;
+use Finna\Search\Solr\Options,
+    VuFindCode\ISBN;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -142,64 +143,10 @@ class SearchController extends \VuFind\Controller\SearchController
             return $response;
         }
 
-        // Otherwise just display results
-        $view = $this->createViewModel();
-        $view->results = $results;
-        $view->params = $results->getParams();
-
-        // TODO: the following is copied from AbstractSearch, refactor?
-
-        // If we received an EmptySet back, that indicates that the real search
-        // failed due to some kind of syntax error, and we should display a
-        // warning to the user; otherwise, we should proceed with normal post-search
-        // processing.
-        if ($results instanceof \VuFind\Search\EmptySet\Results) {
-            $view->parseError = true;
-        } else {
-            // Remember the current URL as the last search.
-            $this->rememberSearch($results);
-
-            // Add to search history:
-            if ($this->saveToHistory) {
-                $user = $this->getUser();
-                $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')
-                    ->getId();
-                $history = $this->getTable('Search');
-                $history->saveSearch(
-                    $this->getResultsManager(), $results, $sessId,
-                    $history->getSearches(
-                        $sessId, isset($user->id) ? $user->id : null
-                    )
-                );
-            }
-
-            // Set up results scroller:
-            if ($this->resultScrollerActive()) {
-                $this->resultScroller()->init($results);
-            }
-        }
-
-        // Save statistics:
-        if ($this->logStatistics) {
-            $this->getServiceLocator()->get('VuFind\SearchStats')
-                ->log($results, $this->getRequest());
-        }
-
-        // Special case: If we're in RSS view, we need to render differently:
-        if (isset($view->params) && $view->params->getView() == 'rss') {
-            $response = $this->getResponse();
-            $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
-            $feed = $this->getViewRenderer()->plugin('resultfeed');
-            $response->setContent($feed($view->results)->export('rss'));
-            return $response;
-        }
-
-        // Search toolbar
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-        $view->showBulkOptions = isset($config->Site->showBulkOptions)
-          && $config->Site->showBulkOptions;
-
-        return $view;
+        // Otherwise redirect to results
+        $url = $this->url()->fromRoute($results->getOptions()->getSearchAction())
+            . $results->getUrlQuery()->getParams(false);
+        return $this->redirect()->toUrl($url);
     }
 
     /**
@@ -238,42 +185,56 @@ class SearchController extends \VuFind\Controller\SearchController
             throw new \Exception("Missing configuration for browse action: $type");
         }
 
-        $config = $config[$type];
-        $query = $this->getRequest()->getQuery();
-        $query->set('view', 'condensed');
-        if (!$query->get('limit')) {
-            $query->set('limit', $config['resultLimit'] ?: 100);
+        // Preserve last result view
+        $configLoader = $this->getServiceLocator()->get('VuFind\Config');
+        $options = new Options($configLoader);
+        $lastView = $options->getLastView();
+
+        try {
+            $config = $config[$type];
+            $query = $this->getRequest()->getQuery();
+            $query->set('view', 'condensed');
+            if (!$query->get('limit')) {
+                $query->set('limit', $config['resultLimit'] ?: 100);
+            }
+            if (!$query->get('sort')) {
+                $query->set('sort', $config['sort'] ?: 'title');
+            }
+            if (!$query->get('type')) {
+                $query->set('type', $config['type'] ?: 'Title');
+            }
+            $queryType = $query->get('type');
+
+            $query->set('hiddenFilters', $config['filter']->toArray() ?: []);
+            $query->set(
+                'recommendOverride',
+                ['side' => ["SideFacets:Browse{$type}:CheckboxFacets:facets-browse"]]
+            );
+
+            $view = $this->forwardTo('Search', 'Results');
+
+            $view->overrideTitle = "browse_extended_$type";
+            $type = strtolower($type);
+            $view->browse = $type;
+            $view->defaultBrowseHandler = $config['type'];
+
+            $view->results->getParams()->setBrowseHandler($queryType);
+
+            // Update last search URL
+            $view->results->getParams()->getOptions()
+                ->setBrowseAction("browse-$type");
+            $this->getSearchMemory()->forgetSearch();
+            $this->rememberSearch($view->results);
+
+            $view->results->getParams()->getQuery()->setHandler($queryType);
+
+            // Restore last result view
+            $view->results->getOptions()->rememberLastView($lastView);
+
+            return $view;
+        } catch (\Exception $e) {
+            $options->rememberLastView($lastView);
         }
-        if (!$query->get('sort')) {
-            $query->set('sort', $config['sort'] ?: 'title');
-        }
-        if (!$query->get('type')) {
-            $query->set('type', $config['type'] ?: 'Title');
-        }
-        $queryType = $query->get('type');
-
-        $query->set('hiddenFilters', $config['filter']->toArray() ?: []);
-        $query->set(
-            'recommendOverride',
-            ['side' => ["SideFacets:Browse{$type}:CheckboxFacets:facets-browse"]]
-        );
-
-        $view = $this->forwardTo('Search', 'Results');
-
-        $view->overrideTitle = "browse_extended_$type";
-        $type = strtolower($type);
-        $view->browse = $type;
-        $view->defaultBrowseHandler = $config['type'];
-
-        $view->results->getParams()->setBrowseHandler($queryType);
-
-        // Update last search URL
-        $view->results->getParams()->getOptions()->setBrowseAction("browse-$type");
-        $this->getSearchMemory()->forgetSearch();
-        $this->rememberSearch($view->results);
-
-        $view->results->getParams()->getQuery()->setHandler($queryType);
-        return $view;
     }
 
     /**
@@ -388,12 +349,12 @@ class SearchController extends \VuFind\Controller\SearchController
         // Journal first..
         if (!$params['eissn']
             || !($results = $this->trySearch(
-                $runner, ['issn' => $params['eissn']]
+                $runner, ['ISN' => $params['eissn']]
             ))
         ) {
             if ($params['issn']) {
                 $results = $this->trySearch(
-                    $runner, ['issn' => $params['issn']]
+                    $runner, ['ISN' => $params['issn']]
                 );
             }
         }
@@ -431,7 +392,7 @@ class SearchController extends \VuFind\Controller\SearchController
                     $query['container_start_page'] = $params['spage'];
                 }
                 if ($params['atitle']) {
-                    $query['title'] = $params['atitle'];
+                    $query['Title'] = $params['atitle'];
                 }
                 if ($articles = $this->trySearch($runner, $query)) {
                     return $articles;
@@ -457,15 +418,15 @@ class SearchController extends \VuFind\Controller\SearchController
         // Try to find a book or something
         if (!$params['isbn']
             || !($results = $this->trySearch(
-                $runner, ['isbn' => $params['isbn']]
+                $runner, ['ISN' => $params['isbn']]
             ))
         ) {
             $query = [];
             if ($params['title']) {
-                $query['title'] = $params['title'];
+                $query['Title'] = $params['title'];
             }
             if ($params['author']) {
-                $query['author'] = $params['author'];
+                $query['Author'] = $params['author'];
             }
             if ($query) {
                 $results = $this->trySearch($runner, $query);
@@ -519,25 +480,24 @@ class SearchController extends \VuFind\Controller\SearchController
             return addcslashes($val, '"');
         };
 
-        $query = '';
+        $query = ['join' => 'AND'];
+        $i = 0;
         foreach ($params as $key => $param) {
-            if ($query) {
-                $query .= ' AND ';
-            }
+            $query["type$i"][] = $key;
+            $query["bool$i"] = ['AND'];
             if (is_array($param)) {
                 $imploded = implode('" OR "', array_map($mapFunc, $param));
-                $query .= "$key:(\"$imploded\")";
+                $query["lookfor$i"][] = "\"$imploded\"";
             } else {
                 if (strstr($param, ' ')) {
                     $param = "($param)";
                 }
-                $query .= "$key:" . addcslashes($param, '"');
+                $query["lookfor$i"][] = addcslashes($param, '"');
             }
+            ++$i;
         }
 
-        $results = $runner->run(
-            ['lookfor0' => [$query], 'join' => 'AND', 'bool0' => ['AND']]
-        );
+        $results = $runner->run($query);
         if ($results->getResultTotal() > 0) {
             return $results;
         }

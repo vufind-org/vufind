@@ -1,3 +1,4 @@
+<!-- START of: finna - Auth/MultiILS/login.phtml -->
 <? $account = $this->auth()->getManager(); ?>
 <? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
 <? if (!$sessionInitiator): // display default login form if no login URL provided ?>
@@ -22,3 +23,4 @@
 <? else: ?>
   <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
 <? endif; ?>
+<!-- END of: finna - Auth/MultiILS/login.phtml -->

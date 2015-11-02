@@ -1,3 +1,4 @@
+<!-- START of: finna - list/list.phtml -->
 <?
 $list = $this->results->getListObject();
 // Set up page title:
@@ -8,7 +9,7 @@ $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
     'lookfor' => $list->title,
     )
 );
-$this->headScript()->appendFile("check_item_statuses.js");
+$this->headScript()->appendFile("finna-item-status.js");
 $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1");
 ?>
 <?= $this->flashmessages() ?>
@@ -21,7 +22,7 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
           </div>
           <div class="public-list-info col-xs-5 col-sm-4">
             <div>
-              <?= $this->transEsc("collection_author"); ?>: 
+              <?= $this->transEsc("collection_author"); ?>:
               <span class="public-list-username"><?=$this->escapeHtml(trim($this->userPublicName($this->list_username)))?></span>
             </div>
             <div><?= $this->transEsc("modified"); ?>: <?= $this->DateTime()->convertToDisplayDate('Y-m-d H:i:s', $list->created); ?></div>
@@ -31,11 +32,11 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-12 col-md-10 col-lg-9">
+    <div class="col-sm-12 col-md-10 col-lg-9 search-controls">
         <div class="pull-left">
             <?= $this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results)) ?>
         </div>
-        <div class="pull-right">
+        <div class="pull-right hidden-print">
           <?=$this->render('search/controls/view.phtml')?>
           <?=$this->render('search/controls/sort.phtml')?>
           <?=$this->render('search/controls/limit.phtml')?>
@@ -56,3 +57,4 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
       <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
     </div>
 </div>
+<!-- END of: finna - list/list.phtml -->

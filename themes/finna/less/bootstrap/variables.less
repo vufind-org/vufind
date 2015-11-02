@@ -38,6 +38,7 @@
 @logo-separator-color: #fff; // Color of hr line under main logo
 @header-background-color: rgba(1,1,1,0.8); // Color of navigation bar top
 @footer-background: @gray;
+@footer-text-color: @body-bg;
 @finna-main-header-background: @brand-secondary; // Color of page header background and search results tabs
 @finna-searchbox-link-color: #fff; // style searchbox link text color contrast with background
 @finna-searchbox-link-background: rgba(1,1,1,0.6); // style searchbox links (advanced search etc.) background contrast with background
@@ -50,6 +51,8 @@
 @finna-button-radius: 10px; // Defines all button radiuses
 @finna-header-font-size: 1.6em;
 @record-title-font-size: 1.7em;
+@main-tabs-background-color: @brand-primary;
+@main-tabs-link-color: #fff;
 
 //== Finna custom tooltip
 @finna-tooltip-opacity: 0.7;
@@ -80,6 +83,7 @@
    //== Styling the header of carousel
 @carousel-header-background: rgba(140, 140, 140, 0.8);
 @carousel-header-color: #fff;
+@carousel-header-padding: 10px;
    //== Styling the horizontal header of each slide
 @carousel-slide-header-background: rgba(1, 1, 1, 0.6);
 @carousel-slide-header-color: @carousel-header-color;
@@ -94,10 +98,15 @@
 //== List feed styles
 @list-feed-background: @body-bg;
 @list-feed-padding: 10px;
-@list-feed-header-color: red;
+
+//== List feed header style
+@list-feed-header-background: none;
+@list-feed-header-padding: none;
+@list-feed-header-color: @gray;
 
 //== Myreresearch custom styles
 @myresearch-header-background: #b0e9db;
+@myresearch-tabs-color: @gray;
 
 //== Scaffolding
 //
@@ -570,6 +579,7 @@
 @tooltip-myaccount:           inline;
 @tooltip-local-advanced:      inline;
 @tooltip-pci-advanced:        inline;
+@tooltip-metalib-advanced:        inline;
 @tooltip-button-color:        #fff;
 
 
@@ -586,7 +596,7 @@
 @tooltip-arrow-width:         6px;
 //** Tooltip arrow color
 @tooltip-arrow-color:         @brand-secondary;
-
+@tooltip-header-color:        @gray;
 
 //== Popovers
 //

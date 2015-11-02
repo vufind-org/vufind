@@ -1,7 +1,4 @@
-<?
-    // Set page title.
-    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
-?>
+<!-- START of: finna - RecordTab/staffviewmarc.phtml -->
 <?=\VuFind\XSLT\Processor::process('record-marc.xsl', $this->driver->getXML('marc21'))?>
 <hr>
 <table class="citation table table-striped">
@@ -17,3 +14,4 @@
     </tr>
   <? endforeach; ?>
 </table>
+<!-- END of: finna - RecordTab/staffviewmarc.phtml -->

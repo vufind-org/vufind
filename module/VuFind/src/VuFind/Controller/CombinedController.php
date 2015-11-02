@@ -73,7 +73,8 @@ class CombinedController extends AbstractSearch
         $searchClassId = $this->params()->fromQuery('id');
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
             ->toArray();
-        if (!isset($config[$searchClassId])) {
+        $tabConfig = $this->getTabConfig($config);
+        if (!isset($tabConfig[$searchClassId])) {
             throw new \Exception('Illegal ID');
         }
 
@@ -83,7 +84,7 @@ class CombinedController extends AbstractSearch
         $currentOptions = $options->get($searchClassId);
         list($controller, $action)
             = explode('-', $currentOptions->getSearchAction());
-        $settings = $config[$searchClassId];
+        $settings = $tabConfig[$searchClassId];
 
         $this->adjustQueryForSettings($settings);
         $settings['view'] = $this->forwardTo($controller, $action);
@@ -149,11 +150,7 @@ class CombinedController extends AbstractSearch
             ->toArray();
         $supportsCart = false;
         $supportsCartOptions = [];
-        foreach ($config as $current => $settings) {
-            // Special case -- ignore recommendation config:
-            if ($current == 'Layout' || $current == 'RecommendationModules') {
-                continue;
-            }
+        foreach ($this->getTabConfig($config) as $current => $settings) {
             $this->adjustQueryForSettings($settings);
             $currentOptions = $options->get($current);
             $supportsCartOptions[] = $currentOptions->supportsCart();
@@ -273,5 +270,21 @@ class CombinedController extends AbstractSearch
         } else {
             $query->noRecommend = 'top,side';
         }
+    }
+
+    /**
+     * Get tab configuration based on the full combined results configuration.
+     *
+     * @param array $config Combined results configuration
+     *
+     * @return array
+     */
+    protected function getTabConfig($config)
+    {
+        // Strip out non-tab sections of the configuration:
+        unset($config['Layout']);
+        unset($config['RecommendationModules']);
+
+        return $config;
     }
 }
