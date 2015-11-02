@@ -177,7 +177,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 // stripping subfield codes from call numbers
                 $callnumber = preg_replace('/\|(a|b)/', ' ', $callnumber);
             } else { 
-                 $callnumber = "";
+                $callnumber = "";
             }
         }
         return $callnumber;
@@ -520,7 +520,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                     $availability = true;
                 } else {
                     $availability = false;
-    }
+                }
                 $location = $this->getLocationText($resultArray[1], $resultArray[5]);
                 $itemInfo = [
                     "id" => $id,
