@@ -242,14 +242,17 @@ finna.layout = (function() {
             nSelectedText: vufindString.selected,
             buttonClass: "form-control",
         });
-        $('.multiselect.dropdown-toggle').click(function(e) {
-            $(this).siblings('.multiselect-container').toggleClass('show');
-        });
-        $('html').on('click', function(e) {
-            if ($(e.target).parent().attr('class') != 'multiselect-selected-text' && !$(e.target).parent().hasClass('multiselect')) {
-                $('.multiselect-container.show').removeClass('show');
-            }
-        });
+        // use click events only if there is a multi-select element
+        if ($('.multi-select').length) {
+          $('.multiselect.dropdown-toggle').click(function(e) {
+              $(this).siblings('.multiselect-container').toggleClass('show');
+          });
+          $('html').on('click', function(e) {
+              if (!$(e.target).hasClass('multiselect') && !$(e.target).parent().hasClass('multiselect')) {
+                  $('.multiselect-container.show').removeClass('show');
+              }
+          });
+        }
     };
 
     var initMobileNarrowSearch = function() {
