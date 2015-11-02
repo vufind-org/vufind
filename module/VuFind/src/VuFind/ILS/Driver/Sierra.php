@@ -171,12 +171,12 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             $results = pg_query_params(
                 $this->db, $query, [$this->idStrip($id)]
             );
-            if (pg_num_rows($results)>0) {
+            if (pg_num_rows($results) > 0) {
                 $callnumberarray = pg_fetch_array($results, 0, PGSQL_NUM);
                 $callnumber = $callnumberarray[0];
                 // stripping subfield codes from call numbers
                 $callnumber = preg_replace('/\|(a|b)/', ' ', $callnumber);
-            } else { 
+            } else {
                 $callnumber = "";
             }
         }
