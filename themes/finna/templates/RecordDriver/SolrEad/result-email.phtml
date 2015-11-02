@@ -7,7 +7,7 @@
 ?>
 
 <? if (!empty($format)) : ?>
-<?= $format . PHP_EOL ?>
+<?= PHP_EOL . $this->translate($format) ?>
 <? endif; ?>
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
 <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
@@ -30,6 +30,5 @@
 <? if (!empty($dates)) : ?>
 <?= PHP_EOL . $this->translate('Published') . ': ' . $this->escapeHtml($dates);?>
 <? endif; ?>
-
 
 <?= $this->translate('View Full Record') . ": {$info['baseUrl']}$url"; ?>
