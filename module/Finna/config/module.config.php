@@ -280,7 +280,8 @@ $config = [
     'zfc_rbac' => [
         'vufind_permission_provider_manager' => [
             'factories' => [
-                'authenticationStrategy' => 'Finna\Role\PermissionProvider\Factory::getAuthenticationStrategy'
+                'authenticationStrategy' => 'Finna\Role\PermissionProvider\Factory::getAuthenticationStrategy',
+                'ipRange' => 'Finna\Role\PermissionProvider\Factory::getIpRange'
             ],
         ],
     ],
