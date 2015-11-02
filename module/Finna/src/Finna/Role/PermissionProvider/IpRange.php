@@ -58,6 +58,7 @@ class IpRange extends \VuFind\Role\PermissionProvider\IpRange
         foreach ($options as &$range) {
             // Remove IP-range name and description
             list($range,) = explode('#', $range, 2);
+            $range = trim($range);
         }
         return parent::getPermissions($options);
     }
