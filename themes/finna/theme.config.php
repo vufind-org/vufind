@@ -4,6 +4,7 @@ return array(
     'helpers' => array(
         'factories' => array(
             'authorizationNote' => 'Finna\View\Helper\Root\Factory::getAuthorizationNote',
+            'browse' => 'Finna\View\Helper\Root\Factory::getBrowse',
             'combined' => 'Finna\View\Helper\Root\Factory::getCombined',
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
