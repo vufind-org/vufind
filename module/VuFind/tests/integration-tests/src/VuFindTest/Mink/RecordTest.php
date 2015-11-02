@@ -42,14 +42,17 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test record tabs for a particular ID.
      *
-     * @param Session $session Session
-     * @param string  $id      ID to load
+     * @param Session $session  Session
+     * @param string  $id       ID to load
+     * @param bool    $encodeId Should we URL encode the ID?
      *
      * @return void
      */
-    protected function tryRecordTabsOnId(Session $session, $id)
+    protected function tryRecordTabsOnId(Session $session, $id, $encodeId = true)
     {
-        $url = $this->getVuFindUrl('/Record/' . str_replace('+', '%20', urlencode($id)));
+        $url = $this->getVuFindUrl(
+            '/Record/' . ($encodeId ? rawurlencode($id) : $id)
+        );
         $session->visit($url);
         $this->assertEquals(200, $session->getStatusCode());
         $page = $session->getPage();
@@ -77,15 +80,30 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test that record tabs work with a "weird" ID.
+     * Test that record tabs work with an ID with a space in it.
      *
      * @return void
      */
-    public function testRecordTabsOnWeirdId()
+    public function testRecordTabsOnSpacedId()
     {
         $session = $this->getMinkSession();
         $session->start();
         $this->tryRecordTabsOnId($session, 'dot.dash-underscore__3.space suffix');
+        $session->stop();
+    }
+
+    /**
+     * Test that record tabs work with an ID with a plus in it.
+     *
+     * @return void
+     */
+    public function testRecordTabsOnPlusId()
+    {
+        $session = $this->getMinkSession();
+        $session->start();
+        // Skip encoding on this one, because Zend Framework doesn't URL encode
+        // plus signs in route segments!
+        $this->tryRecordTabsOnId($session, 'theplus+andtheminus-', false);
         $session->stop();
     }
 }

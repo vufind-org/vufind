@@ -79,6 +79,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         return $page;
     }
 
+    protected function stripHash($url)
+    {
+        $parts = explode('#', $url);
+        return $parts[0];
+    }
+
     public function testAddRecordToFavoritesNewAccount()
     {
         // Change the theme:
@@ -122,10 +128,10 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertNotNull($page->find('css', '.alert.alert-info')); // .success?
         $page->find('css', '.modal-body .btn.btn-default')->click();
         // Check list page
-        $recordURL = $session->getCurrentUrl();
+        $recordURL = $this->stripHash($session->getCurrentUrl());
         $page->find('css', '#savedLists a')->click();
         $page->find('css', '.resultItemLine1 a')->click();
-        $this->assertEquals($session->getCurrentUrl(), $recordURL);
+        $this->assertEquals($recordURL, $this->stripHash($session->getCurrentUrl()));
         $page->find('css', '.logoutOptions a[title="Log Out"]')->click();
         $session->stop();
     }

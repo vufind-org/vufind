@@ -167,10 +167,9 @@ trait UserCreationTrait
         $userTable = $test->getTable('User');
         foreach ((array)$users as $username) {
             $user = $userTable->getByUsername($username, false);
-            if (empty($user)) {
-                throw new \Exception("Problem deleting expected user ($username).");
+            if (!empty($user)) {
+                $user->delete();
             }
-            $user->delete();
         }
     }
 }
