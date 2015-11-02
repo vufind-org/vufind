@@ -47,7 +47,15 @@ trait ILSFinna
      */
     public function getSecondaryLoginFieldLabel($target)
     {
-        $config = $this->getCatalog()->getConfig('patronLogin', "$target.login");
+        $catalog = $this->getCatalog();
+        if (!$catalog->checkCapability(
+            'getConfig', ['cat_username' => "$target.login"]
+        )) {
+            return '';
+        }
+        $config = $this->getCatalog()->getConfig(
+            'patronLogin', ['cat_username' => "$target.login"]
+        );
         if (!empty($config['secondary_login_field_label'])) {
             return $config['secondary_login_field_label'];
         }
