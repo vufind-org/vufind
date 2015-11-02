@@ -287,7 +287,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 . "t2.occ_num = '0' ORDER BY t1.field_content;";
             $results = pg_query($query);
             $instructors = [];
-	    $j = 0;
+            $j = 0;
             while ($row = pg_fetch_row($results)) {
                 if ($instructors[$row[2]] != null) {
                     $fakeId = $row[2] . "-" . $j;
@@ -497,10 +497,10 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
-		$barcode = null;
+                $barcode = null;
                 $results1 = pg_execute($this->db, "prep_query", [$item]);
                 $number = null;
-		while ($row1 = pg_fetch_row($results1)) {
+                while ($row1 = pg_fetch_row($results1)) {
                     if ($row1[4] == "b") {
                         $barcode = $row1[3];
                     } elseif ($row1[4] == "c") {
@@ -508,13 +508,13 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                     } elseif ($row1[4] == "v") {
                         $number = $row1[3];
                     }
-                }
+    }
 
                 $finalcallnumber = $this->processCallNumber($callnumber, $id);
 
                 $resultArray = pg_fetch_array($results1, 0);
 
-                if (($resultArray[0] == "-" && $resultArray[2] == null)
+    if (($resultArray[0] == "-" && $resultArray[2] == null)
                     || ($resultArray[0] == "o" && $resultArray[2] == null)
                 ) {
                     $availability = true;
