@@ -22,48 +22,44 @@
 
       <div class="dateyeartype">
         <div class="resultItemFormat"><?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?></div>
-        <? if($this->driver->isCollection()): ?>
-          <div class="truncate-field">
-            <?=implode('<br><br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
-          </div>
-        <? else: ?>
-          <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
-          <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
-            $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
-            echo !empty($summHighlightedAuthor)
-                ? $this->highlight($summHighlightedAuthor)
-                : $this->escapeHtml($summAuthor);
-          ?></a>
-          <? endif; ?>
+        <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
+        <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
+          $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
+          echo !empty($summHighlightedAuthor)
+              ? $this->highlight($summHighlightedAuthor)
+              : $this->escapeHtml($summAuthor);
+        ?></a>
+        <? endif; ?>
 
-          <div class="resultHierarchyLinks">
-            <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
-            <? if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
-            <?=implode(', ', array_map(function($str) { return $this->escapeHtml($this->translate("source_$str", array(), $str)); }, $this->driver->getInstitutions())); ?>
-            <? if ($origination = $this->driver->getOrigination()): ?>
-              <br/><span class="archive-label"><?=$this->transEsc('Archive Origination')?>:</span>
-              <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($origination)?>%22&amp;type=Author"><?=$this->escapeHtml($origination)?></a>
+        <div class="resultHierarchyLinks">
+          <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
+          <? if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
+          <?=implode(', ', array_map(function($str) { return $this->escapeHtml($this->translate("source_$str", array(), $str)); }, $this->driver->getInstitutions())); ?>
+          <? if ($origination = $this->driver->getOrigination()): ?>
+            <br/><span class="archive-label"><?=$this->transEsc('Archive Origination')?>:</span>
+            <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($origination)?>%22&amp;type=Author"><?=$this->escapeHtml($origination)?></a>
+          <? endif; ?>
+          <? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats()))): ?>
+            <? if ($this->driver->isPartOfArchiveSeries()): ?>
+              <? $topIds = $this->driver->getHierarchyTopId(); $topTitles = $this->driver->getHierarchyTopTitle(); ?>
+            <? else: ?>
+              <? $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
             <? endif; ?>
-            <? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats()))): ?>
-              <? if ($this->driver->isPartOfArchiveSeries()): ?>
-                <? $topIds = $this->driver->getHierarchyTopId(); $topTitles = $this->driver->getHierarchyTopTitle(); ?>
-              <? else: ?>
-                <? $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
-              <? endif; ?>
+            <? if (!$this->driver->isCollection()): ?>
               <br/><span class="archive-label"><?=$this->transEsc('Archive')?>:</span>
               <? foreach($topIds as $index => $parentId): ?>
                 <a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
               <? endforeach; ?>
             <? endif; ?>
-            <? if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
-              <br/><span class="archive-label"><?=$this->transEsc('Archive Series')?>:</span>
-              <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
-              <? foreach ($parentIds as $index => $parentId): ?>
-                <a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
-              <? endforeach; ?>
-            <? endif; ?>
-          </div>
-        <? endif; ?>
+          <? endif; ?>
+          <? if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
+            <br/><span class="archive-label"><?=$this->transEsc('Archive Series')?>:</span>
+            <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
+            <? foreach ($parentIds as $index => $parentId): ?>
+              <a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
+            <? endforeach; ?>
+          <? endif; ?>
+        </div>
       </div>
 
       <? if(!$this->driver->isCollection()): ?>
