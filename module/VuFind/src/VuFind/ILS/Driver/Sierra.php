@@ -515,12 +515,12 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 $resultArray = pg_fetch_array($results1, 0);
 
                 if (($resultArray[0] == "-" && $resultArray[2] == null)
-        || ($resultArray[0] == "o" && $resultArray[2] == null)
-    ) {
+                    || ($resultArray[0] == "o" && $resultArray[2] == null)
+                ) {
                     $availability = true;
-    } else {
+                } else {
                     $availability = false;
-                }
+    }
                 $location = $this->getLocationText($resultArray[1], $resultArray[5]);
                 $itemInfo = [
                     "id" => $id,
