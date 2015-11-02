@@ -794,8 +794,11 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                             $desc = $address;
                         }
 
-                        if (!$this->urlBlacklisted($address, $desc)) {
-                            $retVal[] = ['url' => $address, 'desc' => $desc];
+                        $data = ['url' => $address, 'desc' => $desc];
+                        if (!$this->urlBlacklisted($address, $desc)
+                            && !in_array($data, $retVal)
+                        ) {
+                            $retVal[] = $data;
                         }
                     }
                 }
