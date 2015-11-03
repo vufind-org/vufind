@@ -117,8 +117,17 @@
     <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
+  <target name="composer" description="Install dependencies with Composer">
+    <httpget url="https://getcomposer.org/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+    <echo message="Installing dependencies..." />
+    <exec command="php ${srcdir}/composer.phar install" />
+  </target>
+
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
+    <!-- get dependencies -->
+    <phingcall target="composer" />
+
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${srcdir}/local/cache" />
 
@@ -232,6 +241,9 @@
     <delete dir="${srcdir}/solr/biblio/spellchecker" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />
     <delete file="${srcdir}/import/solrmarc.log" failonerror="true" />
+    <delete file="${srcdir}/composer.lock" failonerror="false" />
+    <delete file="${srcdir}/composer.phar" failonerror="false" />
+    <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
     <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
     <exec command="git reset --hard" />
   </target>
@@ -241,20 +253,33 @@
     <!-- make sure the work area is empty, then rebuild it -->
     <delete dir="${builddir}/packages" includeemptydirs="true" failonerror="false" />
     <mkdir dir="${builddir}/packages" />
+    <delete dir="${builddir}/export" includeemptydirs="true" failonerror="false" />
+    <mkdir dir="${builddir}/export/vufind/usr/local/vufind2" />
+
+    <!-- load the relevant files into the work area -->
+    <phingcall target="composer" />
+    <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind2" />
+    <copy todir = "${builddir}/export/vufind/usr/local/vufind2/vendor">
+      <fileset dir="${srcdir}/vendor" defaultexcludes="false" />
+    </copy>
+
+    <!-- create a version-specific symlink so that tar/zip packages will have
+         appropriate directory structures. -->
+    <exec command="ln -s ${builddir}/export/vufind/usr/local/vufind2 ${builddir}/export/vufind-${version}" />
 
     <!-- build the standard tar.gz archive -->
-    <exec command="git archive HEAD --format=tar --prefix=vufind-${version}/ -o ${builddir}/packages/vufind-${version}.tar" />
-    <exec command="gzip ${builddir}/packages/vufind-${version}.tar" />
+    <echo message="Building .tar.gz...." />
+    <exec command="cd ${builddir}/export ; tar czfh ${builddir}/packages/vufind-${version}.tar.gz vufind-${version}" checkreturn="true" />
 
     <!-- build the a zip archive -->
-    <exec command="git archive HEAD --format=zip --prefix=vufind-${version}/ -o ${builddir}/packages/vufind-${version}.zip" />
+    <echo message="Building .zip...." />
+    <exec command="cd ${builddir}/export ; zip -r ${builddir}/packages/vufind-${version}.zip vufind-${version}" checkreturn="true" />
 
     <!-- build the DEB package -->
-    <mkdir dir="${builddir}/export/vufind/usr/local/vufind2" />
-    <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind2" />
+    <echo message="Building .deb...." />
     <move file="${builddir}/export/vufind/usr/local/vufind2/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
     <exec command="chmod 0775 ${builddir}/export/vufind/DEBIAN/postinst" />
-    <exec command="dpkg-deb -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />
+    <exec command="dpkg-deb -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" checkreturn="true" />
 
     <!-- clean up -->
     <delete dir="${builddir}/export" includeemptydirs="true" failonerror="true" />
