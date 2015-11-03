@@ -96,7 +96,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $session->start();
         $page = $this->gotoRecord($session);
 
-        $page->findById('save-record')->click();
+        $page->find('css', '.save-record')->click();
         $page->find('css', '.modal-body .createAccountLink')->click();
         // Empty
         $this->assertNotNull(
@@ -147,7 +147,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $session->start();
         $page = $this->gotoRecord($session);
 
-        $page->findById('save-record')->click();
+        $page->find('css', '.save-record')->click();
         // Login
         // - empty
         $this->submitLoginForm($page);
@@ -199,7 +199,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page);
         $session->reload();
         // Save Record
-        $page->findById('save-record')->click();
+        $page->find('css', '.save-record')->click();
         $this->assertNotNull($page->find('css', '#save_list'));
         $page->find('css', '.modal-body .btn.btn-primary')->click();
         $this->assertNotNull($page->find('css', '.alert.alert-info')); // .success?
@@ -331,18 +331,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertNotNull($page->find('css', '.alert.alert-info')); // .success?
         $session->stop();
     }
-/*
-    public function testAddSearchToFavoritesNewAccount()
-    {
-    }
-
-    public function testAddSearchToFavoritesLogin()
-    {
-    }
-
-    public function testAddSearchToFavoritesLoggedIn()
-    {
-    } */
 
     /**
      * Standard teardown method.
