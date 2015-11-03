@@ -412,39 +412,6 @@ class SolrDefault extends AbstractBase
     public function getDeduplicatedAuthors()
     {
         $authors = [
-            'main' => $this->getPrimaryAuthors(),
-            'corporate' => $this->getCorporateAuthor(),
-            'secondary' => $this->getSecondaryAuthors()
-        ];
-
-        // The secondary author array may contain a corporate or primary author;
-        // let's be sure we filter out duplicate values.
-        $duplicates = [];
-        if (!empty($authors['main'])) {
-            $duplicates = $authors['main'];
-        }
-        if (!empty($authors['corporate'])) {
-            // Remove duplicate corporate author from "main" section.
-            $authors['main']
-                = array_diff($authors['main'], [$authors['corporate']]);
-            $duplicates[] = $authors['corporate'];
-        }
-        if (!empty($duplicates)) {
-            $authors['secondary'] = array_diff($authors['secondary'], $duplicates);
-        }
-
-        return $authors;
-    }
-
-    /**
-     * Deduplicate author information into associative array with main/corporate/
-     * secondary keys.
-     *
-     * @return array
-     */
-    public function getDeduplicatedAuthorsRoles()
-    {
-        $authors = [
             'main' => $this->getAuthorRolesArray(
                 $this->getPrimaryAuthors(),
                 $this->getPrimaryAuthorsRoles()

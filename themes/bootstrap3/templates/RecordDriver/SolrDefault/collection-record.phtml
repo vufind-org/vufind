@@ -15,15 +15,17 @@
     <tr valign="top">
       <th><?=$this->transEsc(count($authors['main']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
       <td>
-        <? $i = 0; foreach ($authors['main'] as $field): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a><? endforeach; ?>
+        <? $i = 0; foreach ($authors['main'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><? if (count($roles) > 0): ?> (<? foreach ($roles as $role): ?><?=$this->transEsc($role)?><? endforeach; ?>)<? endif; ?><? endforeach; ?>
       </td>
     </tr>
   <? endif; ?>
 
   <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
     <tr valign="top">
-      <th><?=$this->transEsc('Corporate Author')?>: </th>
-      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></td>
+      <th><?=$this->transEsc(count($authors['corporate']) > 1 ? 'Corporate Author' : 'Corporate Authors')?>: </th>
+      <td>
+        <? $i = 0; foreach ($authors['corporate'] as $corporate => $roles): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $corporate)?>"><?=$this->escapeHtml($corporate)?></a><? if (count($roles) > 0): ?> (<? foreach ($roles as $role): ?><?=$this->transEsc($role)?><? endforeach; ?>)<? endif; ?><? endforeach; ?>
+      </td>
     </tr>
   <? endif; ?>
 
