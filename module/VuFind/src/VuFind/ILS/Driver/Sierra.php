@@ -171,11 +171,15 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             $results = pg_query_params(
                 $this->db, $query, [$this->idStrip($id)]
             );
-            $callnumberarray = pg_fetch_array($results, 0, PGSQL_NUM);
-            $callnumber = $callnumberarray[0];
+            if (pg_num_rows($results) > 0) {
+                $callnumberarray = pg_fetch_array($results, 0, PGSQL_NUM);
+                $callnumber = $callnumberarray[0];
+                // stripping subfield codes from call numbers
+                $callnumber = preg_replace('/\|(a|b)/', ' ', $callnumber);
+            } else {
+                $callnumber = '';
+            }
         }
-        // stripping subfield codes from call numbers
-        $callnumber = preg_replace('/\|(a|b)/', ' ', $callnumber);
         return $callnumber;
     }
 
@@ -493,7 +497,9 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
+                $barcode = null;
                 $results1 = pg_execute($this->db, "prep_query", [$item]);
+                $number = null;
                 while ($row1 = pg_fetch_row($results1)) {
                     if ($row1[4] == "b") {
                         $barcode = $row1[3];

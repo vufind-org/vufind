@@ -52,7 +52,7 @@ abstract class EdsApi_REST_Base
      *
      * @var string
      */
-     protected $edsApiHost = 'http://eds-api.ebscohost.com/edsapi/rest';
+    protected $edsApiHost = 'http://eds-api.ebscohost.com/edsapi/rest';
 
     /**
      * Auth host

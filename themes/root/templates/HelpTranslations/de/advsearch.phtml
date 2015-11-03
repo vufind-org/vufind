@@ -8,52 +8,53 @@
 <dl class="Content">
   <dt><a name="Search Fields"></a>Suchfelder</dt>
   <dd>
-    <p>Wenn sie das erste mal die erweiterte Suche aufrufen, erscheinen 
-       verschiedene Suchfelder. In jedem Feld können sie einen Suchbegriff 
+    <p>Wenn Sie das erste Mal die erweiterte Suche aufrufen, erscheinen 
+       verschiedene Suchfelder. In jedem Feld können Sie einen Suchbegriff 
        eingeben. Folgende <a href="Home?topic=search">Suchoperatoren</a>
        sind erlaubt.</p>
-    <p>Jedes Feld ist mit einem Auswahlmenü versehen, mit welchem sie die
-       Suche spezifizieren können (z.B. Titel, Autor). Sie können auch
-       die Suche beliebig spezifizieren und kombinieren.</p>
-    <p>Mit den Einstellungen "Übereinstimmung" können sie festlegen wie die
-       einzelnen Felder behandelt werden sollen.</p>
+    <p>Jedes Eingabefeld ist mit einem Auswahlmenü versehen, mit welchem Sie das
+       Suchfeld auswählen können (z.B. Titel, Autor). Sie können auch
+       die Suche beliebig kombinieren.</p>
+    <p>Mit der Einstellung "Suchbedingung" können Sie die Relation zwischen den
+       einzelnen Feldern innerhalb einer Suchgruppe festlegen.</p>
     <ul>
-      <li>Mit ALLEN Wörtern - Gibt nur die Treffer zurück, die mit allen Wörtern
-          übereinstimmen (entspricht dem boolschen UND).</li>
-      <li>Mit IRGENDEINEM der Wörter - Gibt die Treffer zurück, die mit mindestens
-          einem der Wörter übereinstimmen (entspricht dem boolschen ODER).</li>
-      <li>OHNE die Wörter - Gibt alle Treffer zurück, die nicht mit den
-          angegebenen Wörtern übereinstimmen (entspricht dem boolschen NICHT ODER).
+      <li>"Mit ALLEN Wörtern" - Gibt nur die Treffer zurück, die alle Wörtern
+          bzw. Phrasen enthalten (entspricht dem boolschen UND).</li>
+      <li>"Mit IRGENDEINEM der Wörter" - Gibt die Treffer zurück, die mit mindestens
+          eines der Wörter oder Phrasen enthalten (entspricht dem boolschen ODER).</li>
+      <li>"OHNE die Wörter" - Gibt alle Treffer zurück, die nicht die
+          angegebenen Wörtern oder Phrasen enthalten (entspricht dem boolschen NICHT ODER).
       </li>
     </ul>
     <p>Mit der Schaltfläche "Suchfeld hinzufügen" können weitere Suchfelder
-       hinzugefügt werden.</p>
+       hinzugefügt werden und mit den Kreuzchen können sie wieder entfernt werden..</p>
   </dd>
   
-  <dt><a name="Search Groups"></a>Suchmengen</dt>
+  <dt><a name="Search Groups"></a>Suchgruppen</dt>
   <dd>
-    <p>Manche Suchen sind komplizierter und eine einfache Suche reicht hierfür
-       nicht aus. Beispiel: Sie wolle nach Titeln zur Geschichte Indiens und 
-       Chinas suchen. Wenn sie die Suchbegriffe in das Feld "Mit ALLEN Wörtern"
-       eingeben, so erhalten sie nur die Titel, welche die Geschichte von Indien
-       UND China behandeln. Verwenden Sie das Suchfeld "Mit IRGENDEINEM der
-       Wörter", so erhalten sie auch Titel, die nichts mit China oder Indien
-       zu tun haben.</p>
-    <p>Mit Suchmengen können sie Suchfelder zu einer Suche gruppieren. Jedes
-       Mal, wenn sie die Schaltfläche "Gruppe hinzufügen" anwählen, wird eine
-       neue Gruppe von Suchfeldern hinzugefügt. Sie können auch Gruppen mit der
-       Schaltfläche "Suchmenge entfernen" aus der Suche entfernen. Mit "ALLE"
-       oder "IRGENDEINE" können sie steuern, ob für die Suche alle
-       Mengen oder irgendeiner Menge beachtet werden sollen.
+    <p>Manche Suchen sind komplizierter und eine einfache Suche über verschiedene Felder
+       reicht hierfür nicht aus. Beispiel: Sie wollen nach Titeln zur Geschichte Indiens und 
+       Chinas suchen. Wenn Sie die Suchbegriffe in das Feld "Mit ALLEN Wörtern"
+       eingeben, so erhalten Sie nur die Titel, welche die Geschichte von Indien
+       UND China behandeln. Verwenden Sie die Suchbedingung "Mit IRGENDEINEM der
+       Wörter", so erhalten Sie auch Titel, die nichts mit China oder Indien
+       zu tun haben sondern nur den Begriff "Geschichte" enthalten.</p>
+    <p>Mit Suchgruppen können Sie Suchfelder zu einer Suche gruppieren. Jedes
+       Mal, wenn Sie die Schaltfläche "Suchgruppe hinzufügen" anwählen, wird eine
+       neue Gruppe von Suchfeldern hinzugefügt. Sie können auch Gruppen mit dem Kreuzchen,
+       das rechts oben in einer Gruppe erscheint wenn mindestens zwei Gruppen angezeigt werden,
+       wieder aus der Suche entfernen. Mit "Mit ALLEN Wortgruppen"
+       oder "Mit IRGENDEINER Wortgruppe" können Sie steuern, ob für die Suche alle
+       Gruppen oder nur mindestens eine berücksichtigt werden sollen.
     </p>
-    <p>Für das weiter oben beschriebene Beispiel, können sie die Suche mit den
-       Suchmenge folgendermaßen lösen:</p>
+    <p>Für das weiter oben beschriebene Beispiel, können Sie die Suche mit den
+       Suchkriterien folgendermaßen lösen:</p>
     <ul>
-      <li>Fügen Sie in die erste Suchmenge den Begriff "Indien" und "China"
-          ein und setzen sie "Treffer" auf "MINDESTES EIN Begriff"</li> 
-      <li>Fügen sie eine weitere Suchmenge hinzu und geben sie dort "Geschichte"
-          ein</li>
-      <li>Setzen sie die Suchmenge auf "ALLE"</li>
+      <li>Fügen Sie in die Eingabefelder der ersten Suchgruppe den Begriff "Indien" und "China"
+          ein und setzen Sie "Suchbedingung" auf "Mit IRGENEINEM der Wörter".</li> 
+      <li>Fügen Sie eine weitere Suchgruppe hinzu und geben Sie dort "Geschichte"
+          ein.</li>
+      <li>Setzen Sie die Suchbedingung auf "Mit ALLEN Wörtern".</li>
     </ul>
   </dd>
 </dl>

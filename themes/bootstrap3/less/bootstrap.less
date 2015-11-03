@@ -326,6 +326,7 @@ h3 {
 
 /* --- Sidebar --- */
 /* Sidebar rounded corners */
+.narrow-toggle { text-align: center; }
 .sidebar {
   label:not(.list-group-item) {margin-left: 20px;}
   .list-group:not(.filters) .title {
@@ -354,7 +355,11 @@ h3 {
     border-bottom-right-radius: @border-radius-base;
   }
 }
-.list-group-item, .badge i.fa {cursor: inherit;}
+.list-group-item, .badge {
+  i.fa {
+    cursor: inherit;
+  }
+}
 .sidebar .facet a {text-decoration: none;}
 .top-row .applied {
   font-weight: bold;

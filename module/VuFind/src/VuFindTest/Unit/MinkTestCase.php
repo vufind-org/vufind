@@ -40,7 +40,7 @@ use Behat\Mink\Driver\ZombieDriver, Behat\Mink\Session,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-abstract class MinkTestCase extends TestCase
+abstract class MinkTestCase extends DbTestCase
 {
     /**
      * Mink driver

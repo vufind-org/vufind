@@ -74,13 +74,6 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $upgrader->run();
         $results = $upgrader->getNewConfigs();
 
-        // We should always update BulkExport options to latest full set when
-        // upgrading a default configuration:
-        $this->assertEquals(
-            'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX:RIS',
-            $results['config.ini']['BulkExport']['options']
-        );
-
         // Prior to 1.4, Advanced should always == HomePage after upgrade:
         if ((float)$version < 1.4) {
             $this->assertEquals(
@@ -311,8 +304,9 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $upgrader = $this->getUpgrader('permissions');
         $upgrader->run();
         $results = $upgrader->getNewConfigs();
+
+        // Admin assertions:
         $this->assertFalse(isset($results['config.ini']['AdminAuth']));
-        $this->assertFalse(isset($results['Summon.ini']['Auth']));
         $adminConfig = [
             'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
             'username' => ['username1', 'username2'],
@@ -321,6 +315,9 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             $adminConfig, $results['permissions.ini']['access.AdminModule']
         );
+
+        // Summon assertions
+        $this->assertFalse(isset($results['Summon.ini']['Auth']));
         $summonConfig = [
             'role' => ['loggedin'],
             'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
@@ -331,10 +328,34 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             $summonConfig,
             $results['permissions.ini']['access.SummonExtendedResults']
         );
+
+        // EIT assertions:
         $eitConfig = ['role' => 'loggedin', 'permission' => 'access.EITModule'];
         $this->assertEquals(
             $eitConfig, $results['permissions.ini']['default.EITModule']
         );
+
+        // Primo assertions:
+        $this->assertFalse(isset($results['Primo.ini']['Institutions']['code']));
+        $this->assertFalse(isset($results['Primo.ini']['Institutions']['regex']));
+        $this->assertEquals(
+            'DEFAULT', $results['Primo.ini']['Institutions']['defaultCode']
+        );
+        $expectedRegex = [
+            'MEMBER1' => '/^1\.2\..*/',
+            'MEMBER2' => ['/^2\.3\..*/', '/^3\.4\..*/']
+        ];
+        foreach ($expectedRegex as $code => $regex) {
+            $perm = "access.PrimoInstitution.$code";
+            $this->assertEquals(
+                $perm, $results['Primo.ini']['Institutions']["onCampusRule['$code']"]
+            );
+            $permDetails = [
+                'ipRegEx' => $regex,
+                'permission' => $perm
+            ];
+            $this->assertEquals($permDetails, $results['permissions.ini'][$perm]);
+        }
     }
 
     /**

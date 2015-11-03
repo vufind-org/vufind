@@ -88,8 +88,7 @@ class DAIA extends AbstractBase implements
     protected $contentTypesResponse;
 
     /**
-     * ContentTypes to use in PAIA HTTP requests
-     * in HTTP header
+     * ContentTypes to use in DAIA HTTP requests in HTTP header
      *
      * @var array
      */
