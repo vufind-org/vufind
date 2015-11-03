@@ -369,14 +369,25 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get the main corporate author (if any) for the record.
+     * Get the main corporate authors (if any) for the record.
      *
-     * @return string
+     * @return array
      */
-    public function getCorporateAuthor()
+    public function getCorporateAuthors()
     {
-        // Not currently stored in the Solr index
-        return null;
+        return isset($this->fields['author_corporate']) ?
+            $this->fields['author_corporate'] : [];
+    }
+
+    /**
+     * Get an array of all main corporate authors roles.
+     *
+     * @return array
+     */
+    public function getCorporateAuthorsRoles()
+    {
+        return isset($this->fields['author_corporate_role']) ?
+            $this->fields['author_corporate_role'] : [];
     }
 
     /**
@@ -438,23 +449,15 @@ class SolrDefault extends AbstractBase
                 $this->getPrimaryAuthors(),
                 $this->getPrimaryAuthorsRoles()
             ),
-            'corporate' => [$this->getCorporateAuthor()],
+            'corporate' => $this->getAuthorRolesArray(
+                $this->getCorporateAuthors(),
+                $this->getCorporateAuthorsRoles()
+            ),
             'secondary' => $this->getAuthorRolesArray(
                 $this->getSecondaryAuthors(),
                 $this->getSecondaryAuthorsRoles()
             )
         ];
-
-        // build corporate array
-        if (!empty($authors['corporate'])) {
-            $corporate = [];
-            foreach ($authors['corporate'] as $index => $corp) {
-                if (!isset($corporate[$corp])) {
-                    $corporate[$corp] = [];
-                }
-            }
-            $authors['corporate'] = $corporate;
-        }
 
         // deduplicate
         $dedup = function (&$array1, &$array2) {
