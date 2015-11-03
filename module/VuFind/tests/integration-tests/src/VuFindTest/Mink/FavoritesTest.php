@@ -95,8 +95,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->start();
         $page = $this->gotoRecord($session);
-
-        $page->findById('save-record')->click();
+        // Click Save To List
+        $page->find('css', '.save-record')->click();
+        $this->assertNotNull($page->find('css', '.modal.in'));
+        var_dump($page->find('css', '.modal-body')->getText());
+        $this->assertNotNull($page->find('css', '.modal-body form'));
+        $this->assertNotNull($page->find('css', '.modal-body .createAccountLink'));
         $page->find('css', '.modal-body .createAccountLink')->click();
         // Empty
         $this->assertNotNull(

@@ -352,7 +352,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $submit = $page->find('css', '.modal-body input[name=submit]');
         $this->assertTrue(is_object($submit));
         $submit->click();
-        $result = $page->find('css', '.modal-body .alert-info');
+        $result = $page->find('css', '.modal-body .alert-success');
         $this->assertTrue(is_object($result));
         $this->assertEquals(
             'Your item(s) were saved successfully', $result->getText()
