@@ -9,14 +9,14 @@
 
     // Set up Javascript for use below:
     $searchClassIdEncoded = urlencode($searchClassId);
-    $searchClassIdHtmlEscaped = $this->escapeHtml($searchClassId);
+    $targetIdHtmlEscaped = $this->escapeHtml('#' . $currentSearch['domId']);
     $lookforEncoded = urlencode($lookfor);
     $loadJs = <<<JS
 $(document).ready(function(){
-    var url = VuFind.getPath() + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
-    $('#combined_$searchClassIdHtmlEscaped').load(url, '', function(responseText) {
+    var url = path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
+    $('$targetIdHtmlEscaped').load(url, '', function(responseText) {
         if (responseText.length == 0) {
-            $('#combined_$searchClassIdHtmlEscaped').hide();
+            $('$targetIdHtmlEscaped').hide();
         }
         $('a.openUrlEmbed').click(function() {
             embedOpenUrlLinks($(this));
