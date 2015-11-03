@@ -50,5 +50,6 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
         $session->visit($this->getVuFindUrl());
         $this->assertEquals(200, $session->getStatusCode());
         $this->assertTrue(false !== strstr($session->getPage()->getContent(), 'VuFind'));
+        $session->stop();
     }
 }

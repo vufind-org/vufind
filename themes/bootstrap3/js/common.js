@@ -398,7 +398,7 @@ function ajaxLogin(form) {
                 salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
             );
             // hex encode the encrypted password
-            params[form.elements[i].name] = hexEncode(password)
+            params[form.elements[i].name] = hexEncode(password);
           } else {
             params[form.elements[i].name] = form.elements[i].value;
           }
