@@ -90,6 +90,7 @@ $config = [
         ],
         'invokables' => [
             'ajax' => 'Finna\Controller\AjaxController',
+            'searchapi' => 'Finna\Controller\SearchApiController',
             'combined' => 'Finna\Controller\CombinedController',
             'comments' => 'Finna\Controller\CommentsController',
             'contentpage' => 'Finna\Controller\ContentController',
@@ -295,13 +296,14 @@ $recordRoutes = [
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
     'Comments' => ['inappropriate' => 'inappropriate/[:id]'],
-    'LibraryCards' => ['newLibraryCardPassword' => 'newPassword/[:id]'],
+    'LibraryCards' => ['newLibraryCardPassword' => 'newPassword/[:id]']
 ];
 
 $staticRoutes = [
-   'Browse/Database', 'Browse/Journal',
-   'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
-   'PCI/Home', 'PCI/Search', 'PCI/Record'
+    'Browse/Database', 'Browse/Journal',
+    'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
+    'PCI/Home', 'PCI/Search', 'PCI/Record',
+    'SearchApi/Search'
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();

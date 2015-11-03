@@ -1,0 +1,497 @@
+<?php
+/**
+ * Search API Module Controller
+ *
+ * PHP Version 5
+ *
+ * Copyright (C) The National Library of Finland 2015.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ *
+ * @category VuFind2
+ * @package  Controller
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ */
+namespace Finna\Controller;
+
+use VuFind\I18n\TranslatableString;
+use Finna\RecordDriver\SolrQdc;
+
+/**
+ * SearchApiController Class
+ *
+ * Controls the Search API functionality
+ *
+ * @category VuFind2
+ * @package  Controller
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ */
+class SearchApiController extends \VuFind\Controller\AbstractSearch
+    implements FinnaApiInterface
+{
+    use FinnaApiTrait;
+
+    protected $recordFields = [
+        'accessRestrictions' => 'getAccessRestrictions',
+        'alternativeTitles' => 'getAlternativeTitles',
+        'authors' => 'getDeduplicatedAuthors',
+        'awards' => 'getAwards',
+        'bibliographicLevel' => 'getBibliographicLevel',
+        'building' => 'getBuilding',
+        'callNumbers' => 'getCallNumbers',
+        'childRecordCount' => 'getChildRecordCount',
+        'classifications' => 'getClassifications',
+        'cleanDoi' => 'getCleanDOI',
+        'cleanIsbn' => 'getCleanISBN',
+        'cleanIssn' => 'getCleanISSN',
+        'cleanOclcNumber' => 'getCleanOCLCNum',
+        'cleanUpc' => 'getCleanUPC',
+        'comments' => ['method' => 'getRecordComments'],
+        'containerEndPage' => 'getContainerEndPage',
+        'containerIssue' => 'getContainerIssue',
+        'containerReference' => 'getContainerReference',
+        'containerStartPage' => 'getContainerStartPage',
+        'containerTitle' => 'getContainerTitle',
+        'containerVolume' => 'getContainerVolume',
+        'corporateAuthor' => 'getCorporateAuthor',
+        'dateSpan' => 'getCleanDateSpan',
+        'dedupInfo' => 'getDedupData',
+        'dissertationNote' => 'getDissertationNote',
+        'edition' => 'getEdition',
+        'embeddedComponentPart' => 'getEmbeddedComponentParts',
+        'findingAids' => 'getFindingAids',
+        'formats' => 'getFormats',
+        'fullRecord' => ['method' => 'getFullRecord'],
+        'generalNotes' => 'getGeneralNotes',
+        'hierarchicalPlaceNames' => 'getHierarchicalPlaceNames',
+        'hierarchyParentId' => 'getHierarchyParentId',
+        'hierarchyParentTitle' => 'getHierarchyParentTitle',
+        'hierarchyTopId' => 'getHierarchyTopId',
+        'hierarchyTopTitle' => 'getHierarchyTopTitle',
+        'humanReadablePublicationDates' => 'getHumanReadablePublicationDates',
+        'id' => 'getUniqueID',
+        'identifierString' => 'getIdentifier',
+        'imageRights' => ['method' => 'getRecordImageRights'],
+        'images' => ['method' => 'getRecordImages'],
+        'institutions' => 'getInstitutions',
+        'isbns' => 'getISBNs',
+        'isCollection' => 'isCollection',
+        'isDigitized' => 'isDigitized',
+        'isPartOfArchiveSeries' => 'isPartOfArchiveSeries',
+        'issns' => 'getISSNs',
+        'languages' => 'getLanguages',
+        'lccn' => 'getLCCN',
+        'manufacturer' => 'getManufacturer',
+        'newerTitles' => 'getNewerTitles',
+        'nonPresenterAuthors' => 'getNonPresenterAuthors',
+        'oclc' => 'getOCLC',
+        'onlineUrls' => 'getOnlineUrls',
+        'openUrl' => 'getOpenUrl',
+        'originalLanguages' => 'getOriginalLanguages',
+        'otherLinks' => 'getOtherLinks',
+        'physicalDescription' => 'getPhysicalDescription',
+        'physicalLocations' => 'getPhysicalLocations',
+        'placesOfPublication' => 'getPlacesOfPublication',
+        'playingTimes' => 'getPlayingTimes',
+        'presenters' => ['method' => 'getRecordPresenters'],
+        'previousTitles' => 'getPreviousTitles',
+        'productionCredits' => 'getProductionCredits',
+        'projectedPublicationDate' => 'getProjectedPublicationDate',
+        'publicationDates' => 'getPublicationDates',
+        'publicationEndDate' => 'getPublicationEndDate',
+        'publicationFrequency' => 'getPublicationFrequency',
+        'publicationInfo' => 'getPublicationInfo',
+        'publishers' => 'getPublishers',
+        'rating' => 'getAverageRating',
+        'rawData' => ['method' => 'getRecordRawData'],
+        'recordLinks' => 'getAllRecordLinks',
+        'relationshipNotes' => 'getRelationshipNotes',
+        'series' => 'getSeries',
+        'serviceUrls' => 'getServiceURLs',
+        'sfxObjectId' => 'getSfxObjectId',
+        'shortTitle' => 'getShortTitle',
+        'subjects' => 'getAllSubjectHeadings',
+        'subTitle' => 'getSubTitle',
+        'summary' => 'getSummary',
+        'systemDetails' => 'getSystemDetails',
+        'targetAudienceNotes' => 'getTargetAudienceNotes',
+        'title' => 'getTitle',
+        'titleSection' => 'getTitleSection',
+        'titleStatement' => 'getTitleStatement',
+        'toc' => 'getTOC',
+        'uniformTitles' => 'getUniformTitles',
+        'unitId' => 'getUnitID',
+        'upc' => 'getUPC',
+        'urls' => 'getURLs',
+    ];
+
+    /**
+     * Default fields to return if request does not define the fields
+     *
+     * @var array
+     */
+    protected $defaultFields = [
+        'building',
+        'comments',
+        'formats',
+        'imageRights',
+        'languages',
+        'nonPresenterAuthors',
+        'onlineUrls',
+        'presenters',
+        'rating',
+        'series',
+        'serviceUrls',
+        'subjects',
+        'title',
+        'onlineUrls',
+        'urls',
+        'images',
+        'imageRights'
+    ];
+
+    /**
+     * Search action
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function searchAction()
+    {
+        $this->determineOutputMode();
+        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+
+        // Send both GET and POST variables to search class:
+        $request = $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray();
+
+        $this->jsonpCallback = isset($request['callback'])
+            ? $request['callback'] : null;
+        $this->jsonPrettyPrint = isset($request['prettyPrint'])
+            && $request['prettyPrint'];
+        $this->outputMode = !empty($this->jsonpCallback) ? 'jsonp' : 'json';
+
+        $requestedFields = [];
+        if (isset($request['field'])) {
+            if (!empty($request['field']) && is_array($request['field'])) {
+                $requestedFields = $request['field'];
+            }
+        } else {
+            $requestedFields = $this->defaultFields;
+        }
+
+        $facetConfig = $this->getConfig('facets');
+        $hierarchicalFacets = isset($facetConfig->SpecialFacets->hierarchical)
+            ? $facetConfig->SpecialFacets->hierarchical->toArray()
+            : [];
+
+        $results = $runner->run(
+            $request,
+            $this->searchClassId,
+            function ($runner, $params, $searchId) use (
+                $hierarchicalFacets, $request, $requestedFields
+            ) {
+                foreach (isset($request['facet']) ? $request['facet'] : []
+                    as $facet
+                ) {
+                    if (!isset($hierarchicalFacets[$facet])) {
+                        $params->addFacet($facet);
+                    }
+                }
+                if ($requestedFields) {
+                    $limit = isset($request['limit']) ? $request['limit'] : 20;
+                    $params->setLimit($limit < 100 ? $limit : 100);
+                } else {
+                    $params->setLimit(0);
+                }
+            }
+        );
+
+        // If we received an EmptySet back, that indicates that the real search
+        // failed due to some kind of syntax error, and we should display a
+        // warning to the user; otherwise, we should proceed with normal post-search
+        // processing.
+        if ($results instanceof \VuFind\Search\EmptySet\Results) {
+            return $this->output(null, self::STATUS_ERROR);
+        }
+
+        $allFacets = array_merge(
+            $this->getRequest()->getQuery('facet', []),
+            $this->getRequest()->getQuery('orfacet', [])
+        );
+
+        $facets = [];
+        if ($results->getResultTotal() > 0 && $allFacets) {
+            $facets = $results->getFacetList();
+
+            // Get requested hierarchical facets
+            $requestedHierarchicalFacets = array_intersect(
+                $allFacets, $hierarchicalFacets
+            );
+            if ($requestedHierarchicalFacets) {
+                $facetData = $this->getHierarchicalFacetData(
+                    $requestedHierarchicalFacets
+                );
+                foreach ($facetData as $facet => $data) {
+                    $facets[$facet]['list'] = $data;
+                }
+            }
+            $facets = $this->buildResultFacets($facets);
+        }
+
+        $records = [];
+        foreach ($results->getResults() as $result) {
+            $records[] = $this->getFields($result, $requestedFields);
+        }
+
+        $response = [
+            'resultCount' => $results->getResultTotal(),
+        ];
+        if ($records) {
+            $response['records'] = $records;
+        }
+        if ($facets) {
+            $response['facets'] = $facets;
+        }
+
+        return $this->output($response, self::STATUS_OK, null);
+    }
+
+    /**
+     * Recursive function to create a facet value list for a single facet
+     *
+     * @param array $list Facet items
+     *
+     * @return array
+     */
+    protected function buildFacetValues($list)
+    {
+        $result = [];
+        foreach ($list as $value) {
+            $resultValue = [];
+            foreach ($value as $key => $item) {
+                if (!in_array($key, ['value', 'displayText', 'count', 'children'])) {
+                    continue;
+                }
+                if ($key == 'children') {
+                    if (!empty($item)) {
+                        $resultValue[$key] = $this->buildFacetValues($item);
+                    }
+                } else {
+                    $resultValue[$key] = $item;
+                }
+            }
+            $result[] = $resultValue;
+        }
+        return $result;
+    }
+
+    /**
+     * Create the result facet list
+     *
+     * @param array $facetList All the facet data
+     *
+     * @return array
+     */
+    protected function buildResultFacets($facetList)
+    {
+        $result = [];
+
+        foreach ($facetList as $facetName => $facetData) {
+            $result[$facetName] = $this->buildFacetValues($facetData['list']);
+        }
+        return $result;
+    }
+
+    /**
+     * Get hierarchical facet data for the given facet fields
+     *
+     * @param array $facets Facet fields
+     *
+     * @return array
+     */
+    protected function getHierarchicalFacetData($facets)
+    {
+        $results = $this->getResultsManager()->get('Solr');
+        $params = $results->getParams();
+        foreach ($facets as $facet) {
+            $params->addFacet($facet, null, false);
+        }
+        $params->initFromRequest($this->getRequest()->getQuery());
+
+        $facetResults = $results->getFullFieldFacets($facets, false, -1, 'count');
+
+        $facetHelper = $this->getServiceLocator()
+            ->get('VuFind\HierarchicalFacetHelper');
+
+        $facetList = [];
+        foreach ($facets as $facet) {
+            if (empty($facetResults[$facet]['data']['list'])) {
+                $facetList[$facet] = [];
+                continue;
+            }
+            $facetList[$facet] = $facetHelper->buildFacetArray(
+                $facet,
+                $facetResults[$facet]['data']['list'],
+                $results->getUrlQuery()
+            );
+        }
+
+        return $facetList;
+    }
+
+    /**
+     * Get fields from a record as an array
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     * @param array                            $fields Fields to get
+     *
+     * @return array
+     */
+    protected function getFields($record, $fields)
+    {
+        $result = [];
+        foreach ($fields as $field) {
+            if (!isset($this->recordFields[$field])) {
+                continue;
+            }
+            if (isset($this->recordFields[$field]['method'])) {
+                $value = $this->{$this->recordFields[$field]['method']}($record);
+            } else {
+                $value = $record->tryMethod($this->recordFields[$field]);
+            }
+            if ($value !== null && (!is_array($value) || $value !== [])) {
+                $result[$field] = $value;
+            }
+        }
+        // Convert any translation aware string classes to strings
+        $translate = $this->getViewRenderer()->plugin('translate');
+        array_walk_recursive(
+            $result,
+            function (&$value) use ($translate) {
+                if (is_object($value)) {
+                    if ($value instanceof TranslatableString) {
+                        $value = [
+                            'value' => (string)$value,
+                            'translated' => $translate($value)
+                        ];
+                    } else {
+                        $value = (string)$value;
+                    }
+                }
+            }
+        );
+
+        return $result;
+    }
+
+    /**
+     * Get comments for a record as an array
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array
+     */
+    protected function getRecordComments($record)
+    {
+        $comments = [];
+        foreach ($record->tryMethod('getComments') as $comment) {
+            $comments[] = [
+                'comment' => $comment->comment,
+                'created' => $comment->created,
+                'rating' => $comment->finna_rating
+            ];
+        }
+        return $comments;
+    }
+
+    /**
+     * Get raw data for a record as an array
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array
+     */
+    protected function getRecordRawData($record)
+    {
+        $rawData = $record->tryMethod('getRawData');
+        if ($xml = $record->tryMethod('getFilteredXML')) {
+            $rawData['fullrecord'] = $xml;
+        }
+        // description in MARC and QDC records may contain non-CC0 text, so leave
+        // it out
+        if ($record instanceof SolrMarc or $record instanceof SolrQdc) {
+            unset($rawData['description']);
+        }
+
+        // Leave out spelling data
+        unset($rawData['spelling']);
+
+        return $rawData;
+    }
+
+    /**
+     * Get image rights
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getRecordImageRights($record)
+    {
+        $lang = $this->getServiceLocator()->get('VuFind\Translator')->getLocale();
+        $rights = $record->tryMethod('getImageRights', [$lang]);
+        return $rights ? $rights : null;
+    }
+
+    /**
+     * Get images
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array
+     */
+    protected function getRecordImages($record)
+    {
+        $images = [];
+        $imageHelper = $this->getViewRenderer()->plugin('recordImage', [$record]);
+        $recordHelper = $this->getViewRenderer()->plugin('record');
+        $serverUrlHelper = $this->getViewRenderer()->plugin('serverUrl');
+        for ($i = 0; $i < $recordHelper($record)->getNumOfRecordImages('large');
+            $i++
+        ) {
+            $images[] = $serverUrlHelper()
+                . $imageHelper($recordHelper($record))->getLargeImage($i);
+        }
+        return $images;
+    }
+
+    /**
+     * Get presenters
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getRecordPresenters($record)
+    {
+        $presenters = $record->tryMethod('getPresenters');
+        return !empty($presenters['presenters']) || !empty($presenters['details'])
+            ? $presenters : null;
+    }
+
+}

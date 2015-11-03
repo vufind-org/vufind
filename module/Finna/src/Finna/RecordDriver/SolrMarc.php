@@ -394,6 +394,18 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Return full record as filtered XML
+     *
+     * @return string
+     */
+    public function getFilteredXML()
+    {
+        $record = clone($this->getMarcRecord());
+        $record->deleteFields('520');
+        return $record->toXML();
+    }
+
+    /**
      * Return whether holds are allowed.
      *
      * @return boolean
