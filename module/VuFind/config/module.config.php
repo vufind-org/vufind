@@ -187,9 +187,10 @@ $config = [
             'VuFind\WorldCatUtils' => 'VuFind\Service\Factory::getWorldCatUtils',
         ],
         'invokables' => [
+            'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper',
+            'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
             'VuFind\Search'         => 'VuFindSearch\Service',
             'VuFind\Search\Memory'  => 'VuFind\Search\Memory',
-            'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper'
         ],
         'initializers' => [
             'VuFind\ServiceManager\Initializer::initInstance',

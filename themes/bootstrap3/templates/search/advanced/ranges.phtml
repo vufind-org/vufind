@@ -30,6 +30,7 @@
           $max = intval($max);
           $low = intval($low);
           $high = intval($high);
+          $reversed = $this->layout()->rtl ? 'true' : 'false';
           $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
           $script = <<<JS
 $(document).ready(function() {
@@ -44,7 +45,8 @@ $(document).ready(function() {
        'max':{$max},
        'handle':"square",
        'tooltip':"hide",
-       'value':[{$low},{$high}]
+       'value':[{$low},{$high}],
+       'reversed': {$reversed}
     })
     .on('slide', fillTexts)
     .data('slider');

@@ -120,7 +120,8 @@ class Options extends \VuFind\Search\Base\Options
         $this->searchIni = $this->facetsIni = 'EDS';
         $searchSettings = $configLoader->get($this->searchIni);
         parent::__construct($configLoader);
-        $this->resultLimit = 100;
+        // 2015-06-30 RF - Changed to unlimited
+        //$this->resultLimit = 100;
         $this->viewOptions = [
             'list|title' => 'Title View', 'list|brief' => 'Brief View',
             'list|detailed' => 'Detailed View'

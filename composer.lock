@@ -4,7 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1723bad3925fc92b726a16829ea9e8ac",
+    "hash": "13addb1d00149675674e0eb872487257",
+    "content-hash": "c0684fc3892cc78260dabb20c7652811",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -184,7 +185,7 @@
             "version": "dev-master",
             "dist": {
                 "type": "file",
-                "url": "http://mobileesp.googlecode.com/svn/PHP/mdetect.php",
+                "url": "https://raw.githubusercontent.com/ahand/mobileesp/master/PHP/mdetect.php",
                 "reference": null,
                 "shasum": null
             },
@@ -260,16 +261,16 @@
         },
         {
             "name": "oyejorge/less.php",
-            "version": "v1.7.0.5",
+            "version": "v1.7.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/oyejorge/less.php.git",
-                "reference": "4385036b1dbfaf37f5380bd26a1e6006fc43149f"
+                "reference": "fb64e2f6ef647a229c50e9fa0f2076240a3484c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/oyejorge/less.php/zipball/4385036b1dbfaf37f5380bd26a1e6006fc43149f",
-                "reference": "4385036b1dbfaf37f5380bd26a1e6006fc43149f",
+                "url": "https://api.github.com/repos/oyejorge/less.php/zipball/fb64e2f6ef647a229c50e9fa0f2076240a3484c6",
+                "reference": "fb64e2f6ef647a229c50e9fa0f2076240a3484c6",
                 "shasum": ""
             },
             "require": {
@@ -315,7 +316,7 @@
                 "php",
                 "stylesheet"
             ],
-            "time": "2015-07-13 20:34:18"
+            "time": "2015-09-28 01:11:47"
         },
         {
             "name": "pear-pear.php.net/Archive_Tar",
@@ -377,10 +378,10 @@
         },
         {
             "name": "pear-pear.php.net/File_MARC",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/File_MARC-1.1.1.tgz",
+                "url": "http://pear.php.net/get/File_MARC-1.1.2.tgz",
                 "reference": null,
                 "shasum": null
             },
@@ -388,7 +389,7 @@
                 "php": ">=5.3.0.0"
             },
             "replace": {
-                "pear-pear/file_marc": "== 1.1.1.0"
+                "pear-pear/file_marc": "== 1.1.2.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -406,28 +407,28 @@
         },
         {
             "name": "pear-pear.php.net/PEAR",
-            "version": "1.9.5",
+            "version": "1.10.1",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/PEAR-1.9.5.tgz",
+                "url": "http://pear.php.net/get/PEAR-1.10.1.tgz",
                 "reference": null,
                 "shasum": null
             },
             "require": {
                 "ext-pcre": "*",
                 "ext-xml": "*",
-                "pear-pear.php.net/archive_tar": ">=1.3.11.0",
-                "pear-pear.php.net/console_getopt": ">=1.2.0.0",
-                "pear-pear.php.net/structures_graph": ">=1.0.2.0",
-                "pear-pear.php.net/xml_util": ">=1.2.0.0",
-                "php": ">=4.4.0.0,!=5.0.0.0,!=5.1.0.0,!=5.1.1.0,!=5.1.2.0,!=5.1.3.0,!=5.1.4.0,!=5.1.5.0"
+                "pear-pear.php.net/archive_tar": ">=1.4.0.0",
+                "pear-pear.php.net/console_getopt": ">=1.4.1.0",
+                "pear-pear.php.net/structures_graph": ">=1.1.0.0",
+                "pear-pear.php.net/xml_util": ">=1.3.0.0",
+                "php": ">=5.4.0.0"
             },
             "conflict": {
                 "pear-pear.php.net/pear_frontend_gtk": "<0.4.0.0",
                 "pear-pear.php.net/pear_frontend_web": "<=0.4.0.0"
             },
             "replace": {
-                "pear-pear/pear": "== 1.9.5.0"
+                "pear-pear/pear": "== 1.10.1.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -596,23 +597,20 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.7.3",
+            "version": "v2.7.6",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/Yaml.git",
-                "reference": "71340e996171474a53f3d29111d046be4ad8a0ff"
+                "url": "https://github.com/symfony/yaml.git",
+                "reference": "eca9019c88fbe250164affd107bc8057771f3f4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/71340e996171474a53f3d29111d046be4ad8a0ff",
-                "reference": "71340e996171474a53f3d29111d046be4ad8a0ff",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/eca9019c88fbe250164affd107bc8057771f3f4d",
+                "reference": "eca9019c88fbe250164affd107bc8057771f3f4d",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9"
-            },
-            "require-dev": {
-                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
@@ -641,7 +639,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2015-07-28 14:07:07"
+            "time": "2015-10-11 09:39:48"
         },
         {
             "name": "vufind-org/vufindcode",
@@ -852,13 +850,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendRest.git",
-                "reference": "7427d242b4546e5aef1206d2c97e402109d8843e"
+                "reference": "9d2d631af7b4b54bfa2a7f5ca5f455192e3e0916"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendrest-7427d242b4546e5aef1206d2c97e402109d8843e-zip-da96cc.zip",
-                "reference": "7427d242b4546e5aef1206d2c97e402109d8843e",
-                "shasum": "cd304d9e2fccccbd98348bfbead7d42b102e565a"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendrest-2.0.2-2f9805.zip",
+                "reference": "9d2d631af7b4b54bfa2a7f5ca5f455192e3e0916",
+                "shasum": "445d681551a5c9f2be25b241e615e754278d79ba"
             },
             "require": {
                 "php": ">=5.3.3",
@@ -881,10 +879,6 @@
                 "rest",
                 "zf2"
             ],
-            "support": {
-                "source": "https://github.com/zendframework/ZendRest/tree/release-2.0.2",
-                "issues": "https://github.com/zendframework/ZendRest/issues"
-            },
             "time": "2014-03-05 22:32:09"
         },
         {
@@ -1127,21 +1121,24 @@
     "packages-dev": [
         {
             "name": "behat/mink",
-            "version": "v1.6.1",
+            "version": "v1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/minkphp/Mink.git",
-                "reference": "8b68523a339ec991bcd638b39dc8f04f808da88a"
+                "reference": "6c129030ec2cc029905cf969a56ca8f087b2dfdf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/minkphp/Mink/zipball/8b68523a339ec991bcd638b39dc8f04f808da88a",
-                "reference": "8b68523a339ec991bcd638b39dc8f04f808da88a",
+                "url": "https://api.github.com/repos/minkphp/Mink/zipball/6c129030ec2cc029905cf969a56ca8f087b2dfdf",
+                "reference": "6c129030ec2cc029905cf969a56ca8f087b2dfdf",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.1",
-                "symfony/css-selector": "~2.0"
+                "symfony/css-selector": "~2.1"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "~2.7"
             },
             "suggest": {
                 "behat/mink-browserkit-driver": "extremely fast headless driver for Symfony\\Kernel-based apps (Sf2, Silex)",
@@ -1152,7 +1149,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.6.x-dev"
+                    "dev-master": "1.7.x-dev"
                 }
             },
             "autoload": {
@@ -1178,36 +1175,40 @@
                 "testing",
                 "web"
             ],
-            "time": "2015-02-04 17:02:06"
+            "time": "2015-09-20 20:24:03"
         },
         {
             "name": "behat/mink-zombie-driver",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/minkphp/MinkZombieDriver.git",
-                "reference": "cf15a3a0cc4865bb55253cd033a03a20cee6d2d1"
+                "reference": "257a2d46ffdc8cba28d107c2f1368fc1e5637d1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/minkphp/MinkZombieDriver/zipball/cf15a3a0cc4865bb55253cd033a03a20cee6d2d1",
-                "reference": "cf15a3a0cc4865bb55253cd033a03a20cee6d2d1",
+                "url": "https://api.github.com/repos/minkphp/MinkZombieDriver/zipball/257a2d46ffdc8cba28d107c2f1368fc1e5637d1b",
+                "reference": "257a2d46ffdc8cba28d107c2f1368fc1e5637d1b",
                 "shasum": ""
             },
             "require": {
-                "behat/mink": "~1.6@dev",
+                "behat/mink": "~1.7@dev",
+                "ext-sockets": "*",
                 "php": ">=5.3.1",
                 "symfony/process": "~2.1"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "mink-driver",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2.x-dev"
+                    "dev-master": "1.3.x-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Behat\\Mink\\Driver": "src/"
+                "psr-4": {
+                    "Behat\\Mink\\Driver\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1236,27 +1237,24 @@
                 "testing",
                 "zombie"
             ],
-            "time": "2014-09-26 12:26:25"
+            "time": "2015-09-21 21:07:53"
         },
         {
             "name": "symfony/css-selector",
-            "version": "v2.7.3",
+            "version": "v2.7.6",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/CssSelector.git",
-                "reference": "0b5c07b516226b7dd32afbbc82fe547a469c5092"
+                "url": "https://github.com/symfony/css-selector.git",
+                "reference": "e1b865b26be4a56d22a8dee398375044a80c865b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/CssSelector/zipball/0b5c07b516226b7dd32afbbc82fe547a469c5092",
-                "reference": "0b5c07b516226b7dd32afbbc82fe547a469c5092",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/e1b865b26be4a56d22a8dee398375044a80c865b",
+                "reference": "e1b865b26be4a56d22a8dee398375044a80c865b",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9"
-            },
-            "require-dev": {
-                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
@@ -1289,27 +1287,24 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "https://symfony.com",
-            "time": "2015-05-15 13:33:16"
+            "time": "2015-10-11 09:39:48"
         },
         {
             "name": "symfony/process",
-            "version": "v2.7.3",
+            "version": "v2.7.6",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/Process.git",
-                "reference": "48aeb0e48600321c272955132d7606ab0a49adb3"
+                "url": "https://github.com/symfony/process.git",
+                "reference": "4a959dd4e19c2c5d7512689413921e0a74386ec7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/48aeb0e48600321c272955132d7606ab0a49adb3",
-                "reference": "48aeb0e48600321c272955132d7606ab0a49adb3",
+                "url": "https://api.github.com/repos/symfony/process/zipball/4a959dd4e19c2c5d7512689413921e0a74386ec7",
+                "reference": "4a959dd4e19c2c5d7512689413921e0a74386ec7",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9"
-            },
-            "require-dev": {
-                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
@@ -1338,7 +1333,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2015-07-01 11:25:50"
+            "time": "2015-10-23 14:47:27"
         }
     ],
     "aliases": [],

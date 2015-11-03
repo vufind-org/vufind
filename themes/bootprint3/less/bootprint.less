@@ -23,9 +23,8 @@ body {
     font-size:85%;
     margin-top:1px;
   }
-  .label {
-    padding-top:.3em;
-  }
+  .label { padding-top:.3em; }
+  .modal-dialog { width: 650px; }
 }
 .btn {
   padding:3px 5px 2px;
@@ -241,8 +240,17 @@ footer {
 }
 
 /* --- Offcanvas --- */
-.offcanvas.active .sidebar {color: #FFF;}
-.offcanvas .sidebar .list-group {color: #000;}
+body.offcanvas .sidebar .list-group {color: #000;}
+body.offcanvas .sidebar .list-group {color: #000;}
+body.offcanvas .offcanvas-toggle {
+  padding-bottom: 18px;
+  font-size: 16px;
+  background: #fff;
+  box-shadow: 0 0 2px #000;
+  color: @brand-primary;
+}
+body.offcanvas.active .sidebar {color: #FFF;}
+body.offcanvas.active .offcanvas-toggle {box-shadow: none;}
 
 /* --- PubDateVis --- */
 #dateVisColorSettings {

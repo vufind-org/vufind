@@ -71,7 +71,7 @@ class MultiBackend extends AbstractBase
      *
      * @var object[]
      */
-     protected $cache = [];
+    protected $cache = [];
 
     /**
      * The array of booleans letting us know if a
@@ -79,7 +79,7 @@ class MultiBackend extends AbstractBase
      *
      * @var boolean[]
      */
-     protected $isInitialized = [];
+    protected $isInitialized = [];
 
     /**
      * The array of driver configuration options.
