@@ -67,14 +67,13 @@ trait FinnaApiTrait
      */
     protected function determineOutputMode()
     {
-        $accept = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : '';
-
-        $view = $this->getRequest()->getQuery('view');
-        if ($view == 'json' || stristr($accept, 'application/json')) {
-            $this->outputMode = 'json';
-        } elseif ($view == 'jsonp' || stristr($accept, 'application/javascript')) {
-            $this->outputMode = 'jsonp';
-        }
+        $request = $this->getRequest();
+        $this->jsonpCallback
+            = $request->getQuery('callback', $request->getPost('callback', null));
+        $this->jsonPrettyPrint = $request->getQuery(
+            'prettyPrint', $request->getPost('prettyPrint', null)
+        );
+        $this->outputMode = !empty($this->jsonpCallback) ? 'jsonp' : 'json';
     }
 
     /**
@@ -83,12 +82,17 @@ trait FinnaApiTrait
      * @param mixed  $data     The response data
      * @param string $status   Status of the request
      * @param int    $httpCode A custom HTTP Status Code
+     * @param string $message  Status message
      *
      * @return \Zend\Http\Response
      * @throws \Exception
      */
-    protected function output($data, $status, $httpCode = null)
+    protected function output($data, $status, $httpCode = null, $message = '')
     {
+        // Expire the session
+        $sessionManager = $this->getServiceLocator()->get('VuFind\SessionManager');
+        $sessionManager->destroy();
+
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
@@ -99,6 +103,9 @@ trait FinnaApiTrait
         $output = $data;
         if (!isset($output['status'])) {
             $output['status'] = $status;
+        }
+        if ($message && !isset($output['statusMessage'])) {
+            $output['statusMessage'] = $message;
         }
         $jsonOptions = $this->jsonPrettyPrint ? JSON_PRETTY_PRINT : 0;
         if ($this->outputMode == 'json') {
@@ -116,29 +123,6 @@ trait FinnaApiTrait
             return $response;
         } else {
             throw new \Exception('Invalid output mode');
-        }
-    }
-
-    /**
-     * Convert an array to XML
-     *
-     * @param array             $array Array to convert
-     * @param \SimpleXMLElement $xml   Target XML
-     *
-     * @return void
-     */
-    protected function arrayToXml($array, \SimpleXMLElement $xml)
-    {
-        foreach ($array as $key => $item) {
-            if (is_array($item)) {
-                $this->arrayToXml($item, $xml->addChild($key));
-            } else {
-                if (is_numeric($key)) {
-
-                } else {
-                    $xml->addChild($key, $item);
-                }
-            }
         }
     }
 }

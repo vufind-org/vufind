@@ -70,7 +70,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'containerVolume' => 'getContainerVolume',
         'corporateAuthor' => 'getCorporateAuthor',
         'dateSpan' => 'getCleanDateSpan',
-        'dedupInfo' => 'getDedupData',
+        'dedupIds' => ['method' => 'getRecordDedupIds'],
         'dissertationNote' => 'getDissertationNote',
         'edition' => 'getEdition',
         'embeddedComponentPart' => 'getEmbeddedComponentParts',
@@ -137,7 +137,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'uniformTitles' => 'getUniformTitles',
         'unitId' => 'getUnitID',
         'upc' => 'getUPC',
-        'urls' => 'getURLs',
+        'urls' => 'getURLs'
     ];
 
     /**
@@ -149,6 +149,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'building',
         'comments',
         'formats',
+        'id',
         'imageRights',
         'languages',
         'nonPresenterAuthors',
@@ -166,39 +167,72 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     ];
 
     /**
+     * Record action
+     *
+     * @return \Zend\Http\Response
+     */
+    public function recordAction()
+    {
+        $this->determineOutputMode();
+
+        $request = $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray();
+
+        if (!isset($request['id'])) {
+            return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
+        }
+
+        $requestedFields = $this->getFieldList($request);
+
+        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        if (is_array($request['id'])) {
+            $results = $loader->loadBatchForSource($request['id']);
+        } else {
+            $results[] = $loader->load($request['id']);
+        }
+
+        $records = [];
+        foreach ($results as $result) {
+            $records[] = $this->getFields($result, $requestedFields);
+        }
+
+        $response = [
+            'resultCount' => count($results)
+        ];
+        if ($records) {
+            $response['records'] = $records;
+        }
+
+        return $this->output($response, self::STATUS_OK);
+    }
+
+    /**
      * Search action
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Zend\Http\Response
      */
     public function searchAction()
     {
         $this->determineOutputMode();
-        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
 
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
 
-        $this->jsonpCallback = isset($request['callback'])
-            ? $request['callback'] : null;
-        $this->jsonPrettyPrint = isset($request['prettyPrint'])
-            && $request['prettyPrint'];
-        $this->outputMode = !empty($this->jsonpCallback) ? 'jsonp' : 'json';
-
-        $requestedFields = [];
-        if (isset($request['field'])) {
-            if (!empty($request['field']) && is_array($request['field'])) {
-                $requestedFields = $request['field'];
-            }
-        } else {
-            $requestedFields = $this->defaultFields;
+        if (isset($request['limit'])
+            && ($request['limit'] < 0 || $request['limit'] > 100)
+        ) {
+            return $this->output([], self::STATUS_ERROR, 400, 'Invalid limit');
         }
+
+        $requestedFields = $this->getFieldList($request);
 
         $facetConfig = $this->getConfig('facets');
         $hierarchicalFacets = isset($facetConfig->SpecialFacets->hierarchical)
             ? $facetConfig->SpecialFacets->hierarchical->toArray()
             : [];
 
+        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
         $results = $runner->run(
             $request,
             $this->searchClassId,
@@ -214,7 +248,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 }
                 if ($requestedFields) {
                     $limit = isset($request['limit']) ? $request['limit'] : 20;
-                    $params->setLimit($limit < 100 ? $limit : 100);
+                    $params->setLimit($limit);
                 } else {
                     $params->setLimit(0);
                 }
@@ -226,21 +260,18 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         // warning to the user; otherwise, we should proceed with normal post-search
         // processing.
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
-            return $this->output(null, self::STATUS_ERROR);
+            return $this->output([], self::STATUS_ERROR, 400, 'Invalid search');
         }
 
-        $allFacets = array_merge(
-            $this->getRequest()->getQuery('facet', []),
-            $this->getRequest()->getQuery('orfacet', [])
-        );
+        $requestedFacets = isset($request['facet']) ? $request['facet'] : [];
 
         $facets = [];
-        if ($results->getResultTotal() > 0 && $allFacets) {
+        if ($results->getResultTotal() > 0 && $requestedFacets) {
             $facets = $results->getFacetList();
 
             // Get requested hierarchical facets
             $requestedHierarchicalFacets = array_intersect(
-                $allFacets, $hierarchicalFacets
+                $requestedFacets, $hierarchicalFacets
             );
             if ($requestedHierarchicalFacets) {
                 $facetData = $this->getHierarchicalFacetData(
@@ -268,7 +299,27 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             $response['facets'] = $facets;
         }
 
-        return $this->output($response, self::STATUS_OK, null);
+        return $this->output($response, self::STATUS_OK);
+    }
+
+    /**
+     * Check if an array is practically empty
+     *
+     * @param array $array Array to check
+     *
+     * @return bool
+     */
+    protected function arrayEmpty($array)
+    {
+        $result = true;
+
+        array_walk_recursive($array, function ($value) use (&$result) {
+            if (!empty($value)) {
+                $result = false;
+            }
+        });
+
+        return $result;
     }
 
     /**
@@ -354,6 +405,19 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         return $facetList;
     }
 
+    protected function getFieldList($request)
+    {
+        $fieldList = [];
+        if (isset($request['field'])) {
+            if (!empty($request['field']) && is_array($request['field'])) {
+                $fieldList = $request['field'];
+            }
+        } else {
+            $fieldList = $this->defaultFields;
+        }
+        return $fieldList;
+    }
+
     /**
      * Get fields from a record as an array
      *
@@ -374,7 +438,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             } else {
                 $value = $record->tryMethod($this->recordFields[$field]);
             }
-            if ($value !== null && (!is_array($value) || $value !== [])) {
+            if (!empty($value) && (!is_array($value) || !$this->arrayEmpty($value))
+            ) {
                 $result[$field] = $value;
             }
         }
@@ -477,6 +542,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             $images[] = $serverUrlHelper()
                 . $imageHelper($recordHelper($record))->getLargeImage($i);
         }
+        if (empty($images) && $record->getCleanISBN()) {
+            if ($url = $imageHelper($recordHelper($record))->getLargeImage(0, [], true)) {
+                $images[] = $url;
+            }
+        }
         return $images;
     }
 
@@ -494,4 +564,20 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             ? $presenters : null;
     }
 
+    /**
+     * Get dedup IDs
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getRecordDedupIds($record)
+    {
+        $dedupData = $record->getDedupData();
+        $result = [];
+        foreach ($dedupData as $item) {
+            $result[] = $item['id'];
+        }
+        return $result ? $result : null;
+    }
 }

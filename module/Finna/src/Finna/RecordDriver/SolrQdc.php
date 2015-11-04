@@ -102,7 +102,7 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Return full record as filtered XML
+     * Return full record as filtered XML for public APIs.
      *
      * @return string
      */

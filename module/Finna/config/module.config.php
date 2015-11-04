@@ -302,13 +302,35 @@ $dynamicRoutes = [
 $staticRoutes = [
     'Browse/Database', 'Browse/Journal',
     'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
-    'PCI/Home', 'PCI/Search', 'PCI/Record',
-    'SearchApi/Search'
+    'PCI/Home', 'PCI/Search', 'PCI/Record'
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
+
+// API routes
+$config['router']['routes']['searchApi'] = [
+    'type' => 'Zend\Mvc\Router\Http\Literal',
+    'options' => [
+        'route'    => '/api/search',
+        'defaults' => [
+            'controller' => 'SearchApi',
+            'action'     => 'search',
+        ]
+    ]
+];
+$config['router']['routes']['searchApiRecord'] = [
+    'type' => 'Zend\Mvc\Router\Http\Literal',
+    'options' => [
+        'route'    => '/api/record',
+        'defaults' => [
+            'controller' => 'SearchApi',
+            'action'     => 'record',
+        ]
+    ]
+];
+
 
 return $config;

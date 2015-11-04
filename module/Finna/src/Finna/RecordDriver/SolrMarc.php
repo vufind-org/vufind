@@ -394,7 +394,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
-     * Return full record as filtered XML
+     * Return full record as filtered XML for public APIs.
      *
      * @return string
      */
