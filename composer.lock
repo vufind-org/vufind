@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "13addb1d00149675674e0eb872487257",
-    "content-hash": "c0684fc3892cc78260dabb20c7652811",
+    "hash": "d9e4891b308b5a643f2e03962bb5a048",
+    "content-hash": "f626d06e9c07fc5d23349944b72d9fc0",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -50,6 +50,41 @@
                 "qrcode"
             ],
             "time": "2013-07-08 09:39:08"
+        },
+        {
+            "name": "cap60552/php-sip2",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cap60552/php-sip2.git",
+                "reference": "9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cap60552/php-sip2/zipball/9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1",
+                "reference": "9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "John Wohlers",
+                    "email": "john@wohlershome.net",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "PHP class library to facilitate communication with Integrated Library System (ILS) servers via 3M's SIP2.",
+            "homepage": "https://github.com/cap60552/php-sip2",
+            "time": "2015-11-03 04:42:39"
         },
         {
             "name": "jasig/phpcas",
@@ -103,22 +138,6 @@
                 "jasig"
             ],
             "time": "2014-07-24 20:29:29"
-        },
-        {
-            "name": "johnwohlers/sip2",
-            "version": "dev-master",
-            "dist": {
-                "type": "file",
-                "url": "https://php-sip2.googlecode.com/svn/trunk/sip2.class.php",
-                "reference": null,
-                "shasum": null
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "/"
-                ]
-            }
         },
         {
             "name": "los/losrecaptcha",
@@ -1339,7 +1358,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "johnwohlers/sip2": 20,
         "mobileesp/mdetect": 20
     },
     "prefer-stable": false,

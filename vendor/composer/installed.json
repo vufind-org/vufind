@@ -101,24 +101,6 @@
         ]
     },
     {
-        "name": "johnwohlers/sip2",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "dist": {
-            "type": "file",
-            "url": "https://php-sip2.googlecode.com/svn/trunk/sip2.class.php",
-            "reference": null,
-            "shasum": null
-        },
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "/"
-            ]
-        }
-    },
-    {
         "name": "zendframework/zendxml",
         "version": "1.0.1",
         "version_normalized": "1.0.1.0",
@@ -1382,5 +1364,42 @@
             "sqs",
             "zf2"
         ]
+    },
+    {
+        "name": "cap60552/php-sip2",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/cap60552/php-sip2.git",
+            "reference": "9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/cap60552/php-sip2/zipball/9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1",
+            "reference": "9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1",
+            "shasum": ""
+        },
+        "time": "2015-11-03 04:42:39",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-3.0"
+        ],
+        "authors": [
+            {
+                "name": "John Wohlers",
+                "email": "john@wohlershome.net",
+                "role": "Maintainer"
+            }
+        ],
+        "description": "PHP class library to facilitate communication with Integrated Library System (ILS) servers via 3M's SIP2.",
+        "homepage": "https://github.com/cap60552/php-sip2"
     }
 ]
