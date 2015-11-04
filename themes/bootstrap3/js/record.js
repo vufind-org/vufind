@@ -154,7 +154,7 @@ function ajaxLoadTab(tabid) {
   }
 
   // Parse out the base URL for the current record:
-  var urlParts = document.URL.split('#');
+  var urlParts = document.URL.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
   var pathInUrl = urlWithoutFragment.indexOf(path);
   var chunks = urlWithoutFragment.substring(pathInUrl + path.length + 1).split('/');
