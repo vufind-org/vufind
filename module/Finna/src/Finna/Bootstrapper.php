@@ -37,18 +37,56 @@ use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Bootstrapper extends \VuFind\Bootstrapper
+class Bootstrapper
 {
     /**
-     * Set up configuration manager.
+     * Main VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config = null;
+
+    /**
+     * Current MVC event
+     *
+     * @var MvcEvent
+     */
+    protected $event;
+
+    /**
+     * Event manager
+     *
+     * @var \Zend\EventManager\EventManagerInterface
+     */
+    protected $events;
+
+    /**
+     * Constructor
+     *
+     * @param MvcEvent $event Zend MVC Event object
+     */
+    public function __construct(MvcEvent $event)
+    {
+        $this->event = $event;
+        $this->events = $event->getApplication()->getEventManager();
+        $sm = $this->event->getApplication()->getServiceManager();
+        $this->config = $sm->get('VuFind\Config')->get('config');
+    }
+
+    /**
+     * Bootstrap all necessary resources.
      *
      * @return void
      */
-    protected function initConfig()
+    public function bootstrap()
     {
-        // This is needed for initConfig to be called before
-        // overridden initLanguage and initTheme
-        parent::initConfig();
+        // automatically call all methods starting with "init":
+        $methods = get_class_methods($this);
+        foreach ($methods as $method) {
+            if (substr($method, 0, 4) == 'init') {
+                $this->$method();
+            }
+        }
     }
 
     /**
@@ -58,39 +96,25 @@ class Bootstrapper extends \VuFind\Bootstrapper
      */
     protected function initLanguage()
     {
-        $config = & $this->config;
-        $browserCallback = [$this, 'detectBrowserLanguage'];
-        $callback = function ($event) use ($config, $browserCallback) {
-            $sm = $event->getApplication()->getServiceManager();
+        $config = &$this->config;
+        $sm = $this->event->getApplication()->getServiceManager();
 
-            if (!Console::isConsole()) {
-                $validBrowserLanguage = call_user_func($browserCallback);
-
-                // Setup Translator
-                $request = $event->getRequest();
-                $sm = $event->getApplication()->getServiceManager();
-                if (($language = $request->getPost()->get('mylang', false))
-                    || ($language = $request->getQuery()->get('lng', false))
-                ) {
-                    $cookieManager = $sm->get('VuFind\CookieManager');
-                    $cookieManager->set('language', $language);
-                } elseif (!empty($request->getCookie()->language)) {
-                    $language = $request->getCookie()->language;
-                } else {
-                    $language = (false !== $validBrowserLanguage)
-                        ? $validBrowserLanguage : $config->Site->language;
-                }
-                // Make sure language code is valid, reset to default if bad:
-                if (!in_array(
-                    $language, array_keys($config->Languages->toArray())
-                )) {
-                    $language = $config->Site->language;
-                }
-            } else {
+        $callback = function ($event) use ($config, $sm) {
+            // Special initialization only for CLI and API routes
+            if (!Console::isConsole() && !$this->isApiRoute($event)) {
+                return;
+            }
+            $request = $event->getRequest();
+            if (Console::isConsole()) {
+                $language = $config->Site->language;
+            } elseif (!(($language = $request->getPost()->get('mylang', false))
+                || ($language = $request->getQuery()->get('lng', false)))
+            ) {
                 $language = $config->Site->language;
             }
 
             try {
+                $sm = $event->getApplication()->getServiceManager();
                 $sm->get('VuFind\Translator')
                     ->addTranslationFile('ExtendedIni', null, 'default', $language)
                     ->setLocale($language);
@@ -107,8 +131,8 @@ class Bootstrapper extends \VuFind\Bootstrapper
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
         };
-        $this->events->attach('dispatch.error', $callback, 10000);
-        $this->events->attach('dispatch', $callback, 10000);
+        $this->events->attach('dispatch.error', $callback, 9000);
+        $this->events->attach('dispatch', $callback, 9000);
     }
 
     /**
@@ -129,10 +153,25 @@ class Bootstrapper extends \VuFind\Bootstrapper
         // priority (TODO: use priority constant once defined by framework):
         $config = $this->config->Site;
         $callback = function ($event) use ($config) {
+            if ($this->isApiRoute($event)) {
+                return;
+            }
             $theme = new \FinnaTheme\Initializer($config, $event);
             $theme->init();
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);
+    }
+
+    /**
+     * Check if we're processing an API route
+     *
+     * @return boolean
+     */
+    protected function isApiRoute($event)
+    {
+        $routeMatch = $event->getRouteMatch();
+        $routeName = $routeMatch->getMatchedRouteName();
+        return substr($routeName, -3) === 'Api';
     }
 }
