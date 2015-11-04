@@ -166,6 +166,8 @@ class Bootstrapper
     /**
      * Check if we're processing an API route
      *
+     * @param MvcEvent $event Event being handled
+     *
      * @return boolean
      */
     protected function isApiRoute($event)
