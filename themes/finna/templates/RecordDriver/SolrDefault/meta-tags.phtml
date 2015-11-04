@@ -1,7 +1,10 @@
 <?
   // Set up some variables for convenience:
   $summary = $this->driver->getSummary();
-  $authors = $this->driver->getNonPresenterAuthors();
+  $authors = $this->driver->tryMethod('getNonPresenterAuthors');
+  if ($authors === null) {
+      $authors = $this->driver->tryMethod('getCreators');
+  }
   $publisher = $this->driver->getPublishers();
   $imagePath = $this->recordImage($this->record($this->driver))->getLargeImage();
   $baseUrl = $this->serverURL();
@@ -13,7 +16,7 @@
     $this->headMeta()->setProperty('og:description', mb_strimwidth($summary[0],0,156,'...','utf-8')); // max 156
   }
   if ($authors) {
-    $authNames = array(); 
+    $authNames = [];
     foreach ($authors as $author) {
       $authNames[] = $this->escapeHtml($author['name']);
     }
