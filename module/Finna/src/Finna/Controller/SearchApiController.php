@@ -313,11 +313,14 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     {
         $result = true;
 
-        array_walk_recursive($array, function ($value) use (&$result) {
-            if (!empty($value)) {
-                $result = false;
+        array_walk_recursive(
+            $array,
+            function ($value) use (&$result) {
+                if (!empty($value)) {
+                    $result = false;
+                }
             }
-        });
+        );
 
         return $result;
     }
@@ -405,6 +408,13 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         return $facetList;
     }
 
+    /**
+     * Get field list based on the request
+     *
+     * @param array $request Request params
+     *
+     * @return array
+     */
     protected function getFieldList($request)
     {
         $fieldList = [];
@@ -543,7 +553,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 . $imageHelper($recordHelper($record))->getLargeImage($i);
         }
         if (empty($images) && $record->getCleanISBN()) {
-            if ($url = $imageHelper($recordHelper($record))->getLargeImage(0, [], true)) {
+            $url = $imageHelper($recordHelper($record))->getLargeImage(0, [], true);
+            if ($url) {
                 $images[] = $url;
             }
         }

@@ -73,9 +73,10 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
     /**
      * Return URL to large record image.
      *
-     * @param int   $index  Record image index.
-     * @param array $params Optional array of image parameters.
-     *                      See RecordImage::render.
+     * @param int   $index     Record image index.
+     * @param array $params    Optional array of image parameters.
+     *                         See RecordImage::render.
+     * @param bool  $canonical Whether to return a canonical URL instead of relative
      *
      * @return mixed string URL or false if no
      * image with the given index was found.
