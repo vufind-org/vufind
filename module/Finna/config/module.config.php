@@ -332,5 +332,4 @@ $config['router']['routes']['searchApiRecord'] = [
     ]
 ];
 
-
 return $config;
