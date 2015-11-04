@@ -79,7 +79,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // completely failing.
         for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $updateCart->click();
-            $content = $this->findCss($page, '.popover-content');
+            $content = $page->find('css', '.popover-content');
             if (is_object($content)) {
                 $this->assertEquals(
                     'No items were selected. '
