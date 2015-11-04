@@ -232,7 +232,8 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $session = $this->getMinkSession();
         $session->start();
         $page = $this->setUpGenericCartTest($session);
-        $delete = $page->find('css', '#cart-delete-label');
+        $delete = $page->findById('cart-delete-label');
+        $this->assertTrue(is_object($delete));
 
         // First try deleting without selecting anything:
         $delete->click();
@@ -269,7 +270,8 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->setUpGenericCartTest($session);
 
         // Activate the "empty" control:
-        $empty = $page->find('css', '#cart-empty-label');
+        $empty = $page->findById('cart-empty-label');
+        $this->assertTrue(is_object($empty));
         $empty->click();
         $emptyConfirm = $page->find('css', '#cart-confirm-empty');
         $this->assertTrue(is_object($emptyConfirm));
@@ -297,6 +299,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $session->start();
         $page = $this->setUpGenericCartTest($session);
         $button = $page->find('css', '.cart-controls button[name=email]');
+        $this->assertTrue(is_object($button));
 
         // First try clicking without selecting anything:
         $button->click();
@@ -332,6 +335,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $session->start();
         $page = $this->setUpGenericCartTest($session);
         $button = $page->find('css', '.cart-controls button[name=saveCart]');
+        $this->assertTrue(is_object($button));
 
         // First try clicking without selecting anything:
         $button->click();
@@ -378,6 +382,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $session->start();
         $page = $this->setUpGenericCartTest($session);
         $button = $page->find('css', '.cart-controls button[name=export]');
+        $this->assertTrue(is_object($button));
 
         // First try clicking without selecting anything:
         $button->click();
@@ -416,6 +421,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $session->start();
         $page = $this->setUpGenericCartTest($session);
         $button = $page->find('css', '.cart-controls button[name=print]');
+        $this->assertTrue(is_object($button));
 
         // First try clicking without selecting anything:
         $button->click();

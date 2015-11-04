@@ -111,9 +111,11 @@ abstract class MinkTestCase extends DbTestCase
     protected function getMinkDriver()
     {
         if (self::$driver === false) {
-            self::$driver = new ZombieDriver(
-                new \Behat\Mink\Driver\NodeJS\Server\ZombieServer()
-            );
+            self::$driver = (getenv('VUFIND_MINK_DRIVER') === 'selenium')
+                ? new \Behat\Mink\Driver\Selenium2Driver('firefox')
+                : new ZombieDriver(
+                    new \Behat\Mink\Driver\NodeJS\Server\ZombieServer()
+                );
         }
         return self::$driver;
     }
