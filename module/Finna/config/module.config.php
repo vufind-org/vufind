@@ -110,6 +110,7 @@ $config = [
         'allow_override' => true,
         'factories' => [
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
+            'VuFind\CookieManager' => 'Finna\Service\Factory::getCookieManager',
             'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
             'VuFind\DbTablePluginManager' => 'Finna\Service\Factory::getDbTablePluginManager',
             'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',

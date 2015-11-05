@@ -10,6 +10,7 @@ return array(
     'ZendXml\\' => array($vendorDir . '/zendframework/zendxml/library'),
     'ZendService\\Amazon\\' => array($vendorDir . '/zendframework/zendservice-amazon/library'),
     'ZendRest' => array($vendorDir . '/zendframework/zendrest/library'),
+    'WebDriver' => array($vendorDir . '/instaclick/php-webdriver/lib'),
     'VuFindHttp\\' => array($vendorDir . '/vufind-org/vufindhttp/src'),
     'VuFindCode\\' => array($vendorDir . '/vufind-org/vufindcode/src'),
     'SerialsSolutions' => array($vendorDir . '/serialssolutions/summon'),

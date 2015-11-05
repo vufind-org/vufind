@@ -20,6 +20,7 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
+  <property name="mink_driver" value="zombiejs" /><!-- may also be set to selenium -->
   <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use" />
 
 
@@ -109,12 +110,12 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- Install and Activate VuFind -->
@@ -239,7 +240,7 @@
   <!-- Prepare VuFind for distribution -->
   <target name="package" description="build VuFind packages for distribution">
     <!-- make sure the work area is empty, then rebuild it -->
-    <delete dir="${builddir}/packages" includeemptydirs="true" failonerror="true" />
+    <delete dir="${builddir}/packages" includeemptydirs="true" failonerror="false" />
     <mkdir dir="${builddir}/packages" />
 
     <!-- build the standard tar.gz archive -->

@@ -10,11 +10,7 @@
   $controllerClass = 'controller:' . $this->record($this->driver)->getController();
   $cart = $this->cart();
   $cartId = $this->driver->getResourceSource() . '|' . $id;
-  $mediumThumb = $this->record($this->driver)->getThumbnail('medium');
   $largeThumb = $this->record($this->driver)->getThumbnail('large');
-  $summary = $this->driver->getSummary();
-  $author = $this->driver->getDeduplicatedAuthors();
-  $publisher = $this->driver->getPublicationDetails();
 ?>
 <div class="row hidden-xs">
 <div class="col-xs-12">
@@ -55,14 +51,6 @@
         <a class="addthis_button_pinterest_share"><i class="fa fa-pinterest"></i></a>
         <!-- <a class="addthis_button_google_plusone_share"><i class="fa fa-google-plus"></i></a> -->
       </div>
-      <? // Fetch correct image link and metadata here for Facebook, Twitter and Pinterest ?>
-      <!--
-      <meta property="og:title" content="<?=$this->escapeHtml($this->driver->getShortTitle()); ?>" />
-      <? if ($summary): ?><meta property="og:description" content="<?=$this->truncate($summary[0], 100)?>" /><? endif; ?>
-      <? if ($author): /* TODO */ ?><meta property="article:author" content="" /><? endif; ?>
-      <? if ($publisher): /* TODO */ ?><meta property="article:publisher" content="" /><? endif; ?>
-      <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>" />
-      -->
     </li>
   <? endif; ?>
   <? if ($cart->isActive()): ?>

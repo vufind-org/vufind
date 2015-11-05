@@ -1,0 +1,37 @@
+<?
+  // Set up some variables for convenience:
+  $summary = $this->driver->getSummary();
+  $authors = $this->driver->tryMethod('getNonPresenterAuthors');
+  if ($authors === null) {
+      $authors = $this->driver->tryMethod('getCreators');
+  }
+  $publisher = $this->driver->getPublishers();
+  $imagePath = $this->recordImage($this->record($this->driver))->getLargeImage();
+  $baseUrl = $this->serverURL();
+
+  // Fetch correct image link and metadata here for Facebook, Pinterest and Twitter
+  $this->doctype(Zend\View\Helper\Doctype::XHTML1_RDFA); // See: http://framework.zend.com/manual/current/en/modules/zend.view.helpers.head-meta.html
+  $this->headMeta()->setProperty('og:title', $this->driver->getShortTitle());
+  if ($summary) {
+    $this->headMeta()->setProperty('og:description', mb_strimwidth($summary[0],0,156,'...','utf-8')); // max 156
+  }
+  if ($authors) {
+    $authNames = [];
+    foreach ($authors as $author) {
+      $authNames[] = $this->escapeHtml($author['name']);
+    }
+    $this->headMeta()->setProperty('article:author', implode('; ', $authNames));
+  }
+  if ($publisher) {
+    $this->headMeta()->setProperty('article:publisher', $publisher[0]);
+  }
+  if (!empty($imagePath)) {
+    $this->headMeta()->setProperty('og:image', $baseUrl.$imagePath);
+    $this->headMeta()->appendName('twitter:image', $baseUrl.$imagePath);
+  }
+  $this->headMeta()->appendName('twitter:card', 'summary');
+  $this->headMeta()->appendName('twitter:site', '@finnafi');
+  $this->headMeta()->appendName('twitter:title', $this->driver->getShortTitle());
+  if ($summary) {
+    $this->headMeta()->appendName('twitter:description', mb_strimwidth($summary[0],0,200,'...','utf-8')); // max 200
+  }
