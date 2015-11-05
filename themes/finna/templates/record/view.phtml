@@ -37,7 +37,7 @@
   // Load default tab
   $script = <<<EOT
 $(document).ready(function() {
-  ajaxLoadTab('{$this->activeTab}');
+  ajaxLoadTab('{$this->activeTab}', false);
 });
 EOT;
   $this->headScript()->appendScript($script);
