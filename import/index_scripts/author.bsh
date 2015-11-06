@@ -136,6 +136,20 @@ public List getAuthorsFilteredByRelator(Record record, String tagList,
 public List getAuthorsFilteredByRelator(Record record, String tagList,
     String acceptWithoutRelator, String relatorConfig
 ) {
+    String[] relatorConfigArray = relatorConfig.split(":");
+    if (relatorConfigArray.length > 1) {
+        List result = new LinkedList();
+        for (String rltrConfig: relatorConfigArray) {
+            // default firstOnly to false!
+            result.addAll(
+                getAuthorsFilteredByRelator(
+                    record, tagList, acceptWithoutRelator, rltrConfig, false
+                    )
+                );
+        }
+        return result;
+    }
+    
     // default firstOnly to false!
     return getAuthorsFilteredByRelator(
         record, tagList, acceptWithoutRelator, relatorConfig, false
@@ -239,6 +253,21 @@ public List getRelatorsFilteredByRelator(Record record, String tagList,
 public List getRelatorsFilteredByRelator(Record record, String tagList,
     String acceptWithoutRelator, String relatorConfig
 ) {
+    String[] relatorConfigArray = relatorConfig.split(":");
+    if (relatorConfigArray.length > 1) {
+        List result = new LinkedList();
+    
+        for (String rltrConfig: relatorConfigArray) {
+            // default firstOnly to false!
+            result.addAll(
+                getRelatorsFilteredByRelator(
+                    record, tagList, acceptWithoutRelator, rltrConfig, false, ""
+                    )
+                );
+        }
+        return result;
+    }
+
     // default firstOnly to false!
     return getRelatorsFilteredByRelator(
         record, tagList, acceptWithoutRelator, relatorConfig, false, ""

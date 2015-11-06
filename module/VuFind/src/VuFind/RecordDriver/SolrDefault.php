@@ -444,7 +444,7 @@ class SolrDefault extends AbstractBase
             if (!empty($array1) && !empty($array2)) {
                 foreach ($array1 as $author => $roles) {
                     if (isset($array2[$author])) {
-                        $array2[$author] = array_merge(
+                        $array1[$author] = array_merge(
                             $array1[$author],
                             $array2[$author]
                         );
@@ -457,6 +457,18 @@ class SolrDefault extends AbstractBase
         $dedup($authors['main'], $authors['corporate']);
         $dedup($authors['secondary'], $authors['corporate']);
         $dedup($authors['main'], $authors['secondary']);
+
+        $dedup_roles = function (&$array) {
+            foreach ($array as $author => $roles) {
+                if (is_array($roles)) {
+                    $array[$author] = array_unique($roles);
+                }
+            }
+        };
+
+        $dedup_roles($authors['main']);
+        $dedup_roles($authors['secondary']);
+        $dedup_roles($authors['corporate']);
 
         return $authors;
     }
