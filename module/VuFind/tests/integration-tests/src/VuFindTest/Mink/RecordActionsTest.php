@@ -292,7 +292,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord();
         // Click SMS
         $this->findCss($page, '#sms-record')->click();
-        $this->findCss($page, '.modal #sms_to');
         // Type invalid phone numbers
         // - too empty
         $this->findCss($page, '.modal #sms_to')->setValue('');
