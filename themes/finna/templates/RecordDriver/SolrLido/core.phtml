@@ -100,7 +100,7 @@
       </tr>
       <? endif; ?>
       <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
-      <tr>
+      <tr class="recordFormat">
         <th><?=$this->transEsc('Published in')?>:</th>
         <td>
           <? $containerID = $this->driver->getContainerRecordID(); ?>
@@ -123,7 +123,7 @@
       <? endif; ?>
 
       <? if (!empty($prevTitles)): ?>
-      <tr>
+      <tr class="recordPrevTitles">
         <th><?=$this->transEsc('Previous Title')?>: </th>
         <td>
           <? foreach($prevTitles as $field): ?>
@@ -164,7 +164,7 @@
 
 
       <? if ($results = $this->driver->getInstitutions()): ?>
-      <tr>
+      <tr class="recordInstitution">
         <th><?=$this->transEsc('Organisation')?>:</th>
         <td>
         <? foreach($results as $index => $institution): ?>

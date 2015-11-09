@@ -89,7 +89,7 @@
     <table class="table table-finna-record record-details">
 
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
-      <tr>
+      <tr class="recordFormat">
         <th><?=$this->transEsc('Format');?>:</th>
         <td colspan>
           <?=$this->record($this->driver)->getFormatList()?>
@@ -181,7 +181,7 @@
       <? endif; ?>
 
       <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
-        <tr>
+        <tr class="recordLanguage">
           <th><?=$this->transEsc('Language')?>: </th>
           <td><? foreach ($langs as $lang): ?><?= $this->escapeHtml($lang)?><br/><? endforeach; ?></td>
         </tr>
@@ -218,7 +218,7 @@
 
       <?/* Display series section if at least one series exists. */?>
       <? $series = $this->driver->getSeries(); if (!empty($series)): ?>
-      <tr>
+      <tr class="recordSeries">
         <th><?=$this->transEsc('Series')?>: </th>
         <td>
           <? foreach ($series as $field): ?>
@@ -288,7 +288,7 @@
 
   <? $freq = $this->driver->getPublicationFrequency(); if (!empty($freq)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedFrequency">
       <th><?=$this->transEsc('Publication Frequency')?>: </th>
       <td>
         <? foreach ($freq as $field): ?>
@@ -300,7 +300,7 @@
 
   <? $playTime = $this->driver->getPlayingTimes(); if (!empty($playTime)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedPlayTime">
       <th><?=$this->transEsc('Playing Time')?>: </th>
       <td>
         <? foreach ($playTime as $field): ?>
@@ -312,7 +312,7 @@
 
   <? $system = $this->driver->getSystemDetails(); if (!empty($system)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedSystem">
       <th><?=$this->transEsc('Format')?>: </th>
       <td>
         <? foreach ($system as $field): ?>
@@ -324,7 +324,7 @@
 
   <? $audience = $this->driver->getTargetAudienceNotes(); if (!empty($audience)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedAudience">
       <th><?=$this->transEsc('Audience')?>: </th>
       <td>
         <? foreach ($audience as $field): ?>
@@ -336,7 +336,7 @@
 
   <? $awards = $this->driver->getAwards(); if (!empty($awards)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedAwards">
       <th><?=$this->transEsc('Awards')?>: </th>
       <td>
         <? foreach ($awards as $field): ?>
@@ -348,7 +348,7 @@
 
   <? $credits = $this->driver->getProductionCredits(); if (!empty($credits)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedCredits">
       <th><?=$this->transEsc('Production Credits')?>: </th>
       <td>
         <? foreach ($credits as $field): ?>
@@ -360,7 +360,7 @@
 
   <? $bib = $this->driver->getBibliographyNotes(); if (!empty($bib)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedBibliography">
       <th><?=$this->transEsc('Bibliography')?>: </th>
       <td>
         <? foreach ($bib as $field): ?>
@@ -372,7 +372,7 @@
 
   <? $isbns = $this->driver->getISBNs(); if (!empty($isbns)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedISBNs">
       <th><?=$this->transEsc('ISBN')?>: </th>
       <td>
         <? foreach ($isbns as $field): ?>
@@ -384,7 +384,7 @@
 
   <? $issns = $this->driver->getISSNs(); if (!empty($issns)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedISSNs">
       <th><?=$this->transEsc('ISSN')?>: </th>
       <td>
         <? foreach ($issns as $field): ?>
@@ -404,7 +404,7 @@
 
   <? $related = $this->driver->getRelationshipNotes(); if (!empty($related)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedRelatedItems">
       <th><?=$this->transEsc('Related Items')?>: </th>
       <td>
         <? foreach ($related as $field): ?>
@@ -416,7 +416,7 @@
 
   <? $access = $this->driver->getAccessRestrictions(); if (!empty($access)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedAccess">
       <th><?=$this->transEsc('Access Restrictions')?>: </th>
       <td>
         <? foreach ($access as $field): ?>
@@ -428,7 +428,7 @@
 
   <? $findingAids = $this->driver->getFindingAids(); if (!empty($findingAids)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedFindingAids">
       <th><?=$this->transEsc('Finding Aid')?>: </th>
       <td>
         <? foreach ($findingAids as $field): ?>
@@ -452,7 +452,7 @@
 
   <? $authorNotes = empty($isbn) ? [] : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
     <? $contentDisplayed = true; ?>
-    <tr>
+    <tr class="extendedAuthorNotes">
       <th><?=$this->transEsc('Author Notes')?>: </th>
       <td>
         <? foreach ($authorNotes as $provider => $list): ?>
@@ -465,7 +465,7 @@
   <? endif; ?>
 
   <? if ($locations = $this->driver->getPhysicalLocations()): ?>
-    <tr>
+    <tr class="recordPhysicalLocation">
       <th><?=$this->transEsc('Location'); ?>: </th>
       <td>
         <? foreach ($locations as $field): ?>

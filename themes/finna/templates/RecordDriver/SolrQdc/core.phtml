@@ -101,7 +101,7 @@
 
     <? if ($abstracts = $this->driver->getAbstracts()): ?>
       <div class="truncate-field wide">
-        <p class="summary">
+        <p class="summary recordSummary">
         <? if (isset($abstracts[$this->layout()->userLang])): ?>
             <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
           <? else: ?>
