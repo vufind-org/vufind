@@ -147,12 +147,17 @@ class Bootstrapper
     }
 
     /**
-     * Initialize dynamic debug mode.
+     * Initialize dynamic debug mode (debug initiated by a ?debug=true parameter).
      *
      * @return void
      */
     protected function initDynamicDebug()
     {
+        // Query parameters do not apply in console mode:
+        if (Console::isConsole()) {
+            return;
+        }
+
         $app = $this->event->getApplication();
         $sm = $app->getServiceManager();
         $debugOverride = $sm->get('Request')->getQuery()->get('debug');
