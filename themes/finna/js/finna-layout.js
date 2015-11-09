@@ -528,6 +528,7 @@ finna.layout = (function() {
             $(this).one("load",function() {
                 if (this.naturalWidth && this.naturalWidth == 10 && this.naturalHeight == 10) {
                     $(this).parent().addClass('no-image');
+                    $('.rating-stars').addClass('hidden-xs');
                 }
             }).each(function() {
                 if (this.complete) {
