@@ -328,6 +328,32 @@
         </td>
       </tr>
       <? endif; ?>
+
+      <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
+      <tr class="recordClassifications">
+        <th><?=$this->transEsc('Classification')?>: </th>
+        <td>
+          <div class="truncate-field">
+            <p>
+            <?
+              $result = '';
+              $i = 0;
+              foreach ($classifications as $class => $field) {
+                $field = array_unique($field);
+                foreach ($field as $j => $subfield) {
+                  $result = $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
+                  ?>
+                  <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('Classification', $result)?>"><? if (!$this->translationEmpty('classification::'.$result)): ?><?=$this->transEsc('classification::'.$result).'<span class="classification-detail"> (' . $result . ')</span>' ;?><? else: ?><?= $result; ?><? endif; ?></a></br>
+                <?
+                }
+              }
+            ?>
+            </p>
+          </div>
+        </td>
+      </tr>
+      <? endif; ?>
+
       <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
       <tr class="recordSubjects">
         <th><?=$this->transEsc('Subjects')?>: </th>
@@ -379,28 +405,6 @@
               <? endforeach; ?>
             </div>
             <? endforeach; ?>
-          </div>
-        </td>
-      </tr>
-      <? endif; ?>
-
-      <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
-      <tr class="recordClassifications">
-        <th><?=$this->transEsc('Classification')?>: </th>
-        <td>
-          <div class="truncate-field">
-            <?
-              $result = '';
-              $i = 0;
-              foreach ($classifications as $class => $field) {
-                $result .= $i++ > 0 ? ', ' : '';
-                foreach ($field as $j => $subfield) {
-                  $result .= $j++ > 0 ? ', ' : '';
-                  $result .= $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
-                }
-              }
-            ?>
-            <?=$result ?>
           </div>
         </td>
       </tr>

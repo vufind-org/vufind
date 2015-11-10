@@ -102,30 +102,22 @@
   <div class="condensed-collapse-data col-xs-12">
   <? if  ($database === 'false' && $ejournal === 'false'): ?>
     <div class="col-xs-9 col-sm-push-2">
-        <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
+          <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
             <div class="resultClassification">
-              <?=$this->transEsc('Classification') ?>:
               <?
                 $result = '';
                 $i = 0;
-                $more = false;
                 foreach ($classifications as $class => $field) {
-                  $result .= $i++ > 0 ? ', ' : '';
                   foreach ($field as $j => $subfield) {
-                    if ($j > 0) {
-                      $more = true;
-                      break;
-                    }
-                    $result .= $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
+                    $result = $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
+                    ?>
+                    <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('Classification', $result)?>"><? if (!$this->translationEmpty('classification::'.$result)): ?><?=$this->transEsc('classification::'.$result).'<span class="classification-detail"> (' . $result . ')</span>' ;?><? else: ?><?= $result; ?><? endif; ?></a>
+                <?
                   }
                 }
-                if ($more) {
-                  $result .= '&hellip;';
-                }
-              ?>
-              <?=$result ?>
+                ?>
             </div>
-        <? endif; ?>
+          <? endif; ?>
 
 
           <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
