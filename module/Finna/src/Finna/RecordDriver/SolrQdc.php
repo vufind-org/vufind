@@ -112,9 +112,6 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
         while ($record->abstract) {
             unset($record->abstract[0]);
         }
-        while ($record->description) {
-            unset($record->description[0]);
-        }
         return $record->asXML();
     }
 
