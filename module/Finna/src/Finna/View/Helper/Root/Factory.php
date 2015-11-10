@@ -135,7 +135,7 @@ class Factory extends \VuFind\View\Helper\Root\Factory
      */
     public static function getCombined(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('Combined');
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('combined');
         return new Combined($config);
     }
 

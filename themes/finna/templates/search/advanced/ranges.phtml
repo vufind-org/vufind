@@ -46,6 +46,9 @@ $(document).ready(function() {
        'max':{$max},
        'handle':"square",
        'value':[{$low},{$high}],
+       'formatter': function(value) {
+		     return value[0]+' - '+value[1];
+	     },
     })
     .on('slide', fillTexts)
     .data('slider');

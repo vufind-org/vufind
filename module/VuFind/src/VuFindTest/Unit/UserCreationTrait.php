@@ -75,8 +75,7 @@ trait UserCreationTrait
      */
     protected function assertLightboxWarning(Element $page, $message)
     {
-        $warning = $page->find('css', '.modal-body .alert-danger .message');
-        $this->assertTrue(is_object($warning));
+        $warning = $this->findCss($page, '.modal-body .alert-danger .message');
         $this->assertEquals($message, $warning->getText());
     }
 
@@ -100,8 +99,7 @@ trait UserCreationTrait
         ];
 
         foreach ($defaults as $field => $default) {
-            $element = $page->findById('account_' . $field);
-            $this->assertNotNull($element);
+            $element = $this->findCss($page, '#account_' . $field);
             $element->setValue(
                 isset($overrides[$field]) ? $overrides[$field] : $default
             );
@@ -120,13 +118,11 @@ trait UserCreationTrait
     protected function fillInLoginForm(Element $page, $username, $password)
     {
         if (null !== $username) {
-            $usernameField = $page->find('css', '.modal-body [name="username"]');
-            $this->assertNotNull($usernameField);
+            $usernameField = $this->findCss($page, '.modal-body [name="username"]');
             $usernameField->setValue($username);
         }
         if (null !== $password) {
-            $passwordField = $page->find('css', '.modal-body [name="password"]');
-            $this->assertNotNull($passwordField);
+            $passwordField = $this->findCss($page, '.modal-body [name="password"]');
             $passwordField->setValue($password);
         }
     }
@@ -140,8 +136,7 @@ trait UserCreationTrait
      */
     protected function submitLoginForm(Element $page)
     {
-        $button = $page->find('css', '.modal-body .btn.btn-primary');
-        $this->assertNotNull($button);
+        $button = $this->findCss($page, '.modal-body .btn.btn-primary');
         $button->click();
     }
 

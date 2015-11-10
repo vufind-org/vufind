@@ -261,3 +261,20 @@ table.content-table {
 .table.citation {
     table-layout: fixed;   
 }
+
+table#componentparts {
+    & th {
+        background-color: #f5f5f5;
+        border-right: 2px solid @body-bg;
+        &.sorting_asc,&.sorting_desc,&.sorting {
+            background-position: center left;
+            padding-left: 20px;
+        }
+    }
+    & .even td {
+        background: fade(@nav-tabs-border-color, 5%);   
+    }
+    & td a {
+        font-weight: bold;   
+    }
+}

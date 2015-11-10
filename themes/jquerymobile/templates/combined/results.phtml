@@ -13,7 +13,7 @@
     <?=$this->flashmessages()?>
     <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
       <? if ((!isset($currentSearch['ajax']) || !$currentSearch['ajax']) && isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty'] && $currentSearch['view']->results->getResultTotal() == 0) { continue; } ?>
-      <div class="combinedResult" id="combined_<?=$this->escapeHtml($searchClassId)?>">
+      <div class="combinedResult" id="<?=$this->escapeHtmlAttr($currentSearch['domId'])?>">
         <? if (isset($currentSearch['ajax']) && $currentSearch['ajax']): ?>
           <?=$this->render('combined/results-ajax.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
         <? else: ?>

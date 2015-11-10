@@ -380,10 +380,17 @@ class UtilController extends \VuFindConsole\Controller\UtilController
                 )
                 ->setLocale($language);
 
+            $limit = 50;
+
             // Prepare query
-            $finnaSearchObject = $s->getSearchObject();
-            $searchObject = $finnaSearchObject->getParentSO();
             $searchService = $this->getServiceLocator()->get('VuFind\Search');
+
+            $searchObject = $s->getSearchObject();
+            $finnaSearchObject = null;
+            if ($searchObject instanceof \Finna\Search\Minified) {
+                $finnaSearchObject = $searchObject;
+                $searchObject = $finnaSearchObject->getParentSO();
+            }
 
             if ($searchObject->cl != 'Solr') {
                 $this->err(
@@ -392,18 +399,19 @@ class UtilController extends \VuFindConsole\Controller\UtilController
                 continue;
             }
 
-            $limit = 50;
             $options = new Options($configLoader);
             $params = new Params($options, $configLoader);
             $params->deminify($searchObject);
-            $params->deminifyFinnaSearch($finnaSearchObject);
+            if ($finnaSearchObject) {
+                $params->deminifyFinnaSearch($finnaSearchObject);
+            }
 
             // Add daterange filter
             $daterangeField = $params::SPATIAL_DATERANGE_FIELD;
             $filters = $searchObject->f;
             if (isset($filters[$daterangeField])) {
                 $req = new Parameters();
-                if (isset($finnaSearchObject->f_dty)) {
+                if ($finnaSearchObject && isset($finnaSearchObject->f_dty)) {
                     $req->set("{$daterangeField}_type", $finnaSearchObject->f_dty);
                 }
                 $req->set(
@@ -499,7 +507,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
                 $this->getServiceLocator()->get('VuFind\Mailer')->send(
                     $to, $from, $subject, $message
                 );
-            } catch (MailException $e) {
+            } catch (\Exception $e) {
                 $this->err(
                     "Failed to send message to {$user->email}: " . $e->getMessage()
                 );

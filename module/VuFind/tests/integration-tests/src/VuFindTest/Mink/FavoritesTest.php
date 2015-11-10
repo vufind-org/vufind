@@ -63,19 +63,20 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         }
     }
 
-    protected function gotoSearch($session)
+    protected function gotoSearch()
     {
+        $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
-        $page->find('css', '.searchForm [name="lookfor"]')->setValue('Dewey');
-        $page->find('css', '.btn.btn-primary')->click();
+        $this->findCss($page, '.searchForm [name="lookfor"]')->setValue('Dewey');
+        $this->findCss($page, '.btn.btn-primary')->click();
         return $page;
     }
 
-    protected function gotoRecord($session)
+    protected function gotoRecord()
     {
-        $page = $this->gotoSearch($session);
-        $page->find('css', '.result a.title')->click();
+        $page = $this->gotoSearch();
+        $this->findCss($page, '.result a.title')->click();
         return $page;
     }
 
@@ -92,48 +93,44 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             ['config' => ['Site' => ['theme' => 'bootstrap3']]]
         );
 
-        $session = $this->getMinkSession();
-        $session->start();
-        $page = $this->gotoRecord($session);
+        $page = $this->gotoRecord();
 
-        $page->findById('save-record')->click();
-        $page->find('css', '.modal-body .createAccountLink')->click();
+        $this->findCss($page, '#save-record')->click();
+        $this->findCss($page, '.modal-body .createAccountLink')->click();
         // Empty
-        $this->assertNotNull(
-            $page->find('css', '.modal-body .btn.btn-primary.disabled')
-        );
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '.modal-body .btn.btn-primary.disabled');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
 
         // Invalid email
         $this->fillInAccountForm($page, ['email' => 'blargasaurus']);
-        $this->assertNull(
-            $page->find('css', '.modal-body .btn.btn-primary.disabled')
-        );
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         // Correct
-        $page->findById('account_email')->setValue('username1@ignore.com');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->findById('save_list'));
+        $this->findCss($page, '#account_email')->setValue('username1@ignore.com');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '#save_list');
         // Make list
-        $page->findById('make-list')->click();
+        $this->findCss($page, '#make-list')->click();
         // Empty
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->findById('list_title'));
-        $page->findById('list_title')->setValue('Test List');
-        $page->findById('list_desc')->setValue('Just. THE BEST.');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertEquals($page->find('css', '#save_list option[selected]')->getHtml(), 'Test List');
-        $page->findById('add_mytags')->setValue('test1 test2 "test 3"');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->find('css', '.alert.alert-info')); // .success?
-        $page->find('css', '.modal-body .btn.btn-default')->click();
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '#list_title');
+        $this->findCss($page, '#list_title')->setValue('Test List');
+        $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->assertEquals($this->findCss($page, '#save_list option[selected]')->getHtml(), 'Test List');
+        $this->findCss($page, '#add_mytags')->setValue('test1 test2 "test 3"');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '.modal .alert.alert-info'); // .success?
+        $this->findCss($page, '.modal-body .btn.btn-default')->click();
         // Check list page
+        $session = $this->getMinkSession();
         $recordURL = $this->stripHash($session->getCurrentUrl());
-        $page->find('css', '#savedLists a')->click();
-        $page->find('css', '.resultItemLine1 a')->click();
+        $this->snooze();
+        $this->findCss($page, '#savedLists a')->click();
+        $this->snooze();
+        $this->findCss($page, '.resultItemLine1 a')->click();
         $this->assertEquals($recordURL, $this->stripHash($session->getCurrentUrl()));
-        $page->find('css', '.logoutOptions a[title="Log Out"]')->click();
-        $session->stop();
+        $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
     }
 
     public function testAddRecordToFavoritesLogin()
@@ -143,11 +140,9 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             ['config' => ['Site' => ['theme' => 'bootstrap3']]]
         );
 
-        $session = $this->getMinkSession();
-        $session->start();
-        $page = $this->gotoRecord($session);
+        $page = $this->gotoRecord();
 
-        $page->findById('save-record')->click();
+        $this->findCss($page, '#save-record')->click();
         // Login
         // - empty
         $this->submitLoginForm($page);
@@ -163,24 +158,23 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertNull($page->find('css', '.modal-body #save_list'));
         // Make Two Lists
         // - One for the next test
-        $page->findById('make-list')->click();
-        $page->findById('list_title')->setValue('Future List');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '#make-list')->click();
+        $this->findCss($page, '#list_title')->setValue('Future List');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->assertEquals(
-            $page->find('css', '#save_list option[selected]')->getHtml(),
+            $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Future List'
         );
         // - One for now
-        $page->findById('make-list')->click();
-        $page->findById('list_title')->setValue('Login Test List');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '#make-list')->click();
+        $this->findCss($page, '#list_title')->setValue('Login Test List');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->assertEquals(
-            $page->find('css', '#save_list option[selected]')->getHtml(),
+            $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Login Test List'
         );
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->find('css', '.alert.alert-info')); // .success?
-        $session->stop();
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '.modal .alert.alert-info'); // .success?
     }
 
     public function testAddRecordToFavoritesLoggedIn()
@@ -190,20 +184,19 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             ['config' => ['Site' => ['theme' => 'bootstrap3']]]
         );
 
-        $session = $this->getMinkSession();
-        $session->start();
-        $page = $this->gotoRecord($session);
+        $page = $this->gotoRecord();
         // Login
-        $page->find('css', '#loginOptions a')->click();
+        $this->findCss($page, '#loginOptions a')->click();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
-        $session->reload();
+        //$this->getMinkSession()->reload();
         // Save Record
-        $page->findById('save-record')->click();
-        $this->assertNotNull($page->find('css', '#save_list'));
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->find('css', '.alert.alert-info')); // .success?
-        $session->stop();
+        $this->snooze();
+        $this->findCss($page, '#save-record')->click();
+        $this->snooze();
+        $this->findCss($page, '#save_list');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '.modal .alert.alert-info'); // .success?
     }
 
     public function testAddSearchItemToFavoritesNewAccount()
@@ -213,57 +206,54 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             ['config' => ['Site' => ['theme' => 'bootstrap3']]]
         );
 
-        $session = $this->getMinkSession();
-        $session->start();
-        $page = $this->gotoSearch($session);
+        $page = $this->gotoSearch();
 
-        $page->find('css', '.save-record')->click();
-        $page->find('css', '.modal-body .createAccountLink')->click();
+        $this->findCss($page, '.save-record')->click();
+        $this->findCss($page, '.modal-body .createAccountLink')->click();
         // Empty
-        $this->assertNotNull(
-            $page->find('css', '.modal-body .btn.btn-primary.disabled')
-        );
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '.modal-body .btn.btn-primary.disabled');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->fillInAccountForm(
             $page, ['username' => 'username2', 'email' => 'blargasaurus']
         );
-        $this->assertNull(
-            $page->find('css', '.modal-body .btn.btn-primary.disabled')
-        );
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $page->findById('account_email')->setValue('username2@ignore.com');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '#account_email')->setValue('username2@ignore.com');
         // Test taken
-        $page->findById('account_username')->setValue('username1');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->findById('account_firstname'));
-        $page->findById('account_username')->setValue('username2');
+        $this->findCss($page, '#account_username')->setValue('username1');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '#account_firstname');
+        $this->findCss($page, '#account_username')->setValue('username2');
         // Correct
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->findById('save_list'));
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '#save_list');
         // Make list
-        $page->findById('make-list')->click();
+        $this->findCss($page, '#make-list')->click();
         // Empty
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->findById('list_title'));
-        $page->findById('list_title')->setValue('Test List');
-        $page->findById('list_desc')->setValue('Just. THE BEST.');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '#list_title');
+        $this->findCss($page, '#list_title')->setValue('Test List');
+        $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->assertEquals(
-            $page->find('css', '#save_list option[selected]')->getHtml(),
+            $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Test List'
         );
-        $page->findById('add_mytags')->setValue('test1 test2 "test 3"');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->find('css', '.alert.alert-info')); // .success?
-        $page->find('css', '.modal-header .close')->click();
+        $this->findCss($page, '#add_mytags')->setValue('test1 test2 "test 3"');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '.alert.alert-info'); // .success?
+        $this->findCss($page, '.modal-header .close')->click();
         // Check list page
-        $page->find('css', '.result a.title')->click();
+        $this->snooze();
+        $this->findCss($page, '.result a.title')->click();
+        $this->snooze();
+        $session = $this->getMinkSession();
         $recordURL = $session->getCurrentUrl();
-        $page->find('css', '.savedLists a')->click();
-        $page->find('css', '.resultItemLine1 a')->click();
-        $this->assertEquals($session->getCurrentUrl(), $recordURL);
-        $page->find('css', '.logoutOptions a[title="Log Out"]')->click();
-        $session->stop();
+        $this->findCss($page, '.savedLists a')->click();
+        $this->snooze();
+        $this->findCss($page, '.resultItemLine1 a')->click();
+        $this->snooze();
+        $this->assertEquals($recordURL, $session->getCurrentUrl());
+        $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
     }
 
     public function testAddSearchItemToFavoritesLogin()
@@ -273,11 +263,9 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             ['config' => ['Site' => ['theme' => 'bootstrap3']]]
         );
 
-        $session = $this->getMinkSession();
-        $session->start();
-        $page = $this->gotoSearch($session);
+        $page = $this->gotoSearch();
 
-        $page->find('css', '.save-record')->click();
+        $this->findCss($page, '.save-record')->click();
         // Login
         // - empty
         $this->submitLoginForm($page);
@@ -289,24 +277,24 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertNull($page->find('css', '.modal-body #save_list'));
         // Make Two Lists
         // - One for the next test
-        $page->findById('make-list')->click();
-        $page->findById('list_title')->setValue('Future List');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '#make-list')->click();
+        $this->findCss($page, '#list_title')->setValue('Future List');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->assertEquals(
-            $page->find('css', '#save_list option[selected]')->getHtml(),
+            $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Future List'
         );
         // - One for now
-        $page->findById('make-list')->click();
-        $page->findById('list_title')->setValue('Login Test List');
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
+        $this->findCss($page, '#make-list')->click();
+        $this->findCss($page, '#list_title')->setValue('Login Test List');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->assertEquals(
-            $page->find('css', '#save_list option[selected]')->getHtml(),
+            $this->findCss($page, '#save_list option[selected]')->getHtml(),
             'Login Test List'
         );
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->find('css', '.alert.alert-info')); // .success?
-        $session->stop();
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+        $this->findCss($page, '.alert.alert-info'); // .success?
     }
 
     public function testAddSearchItemToFavoritesLoggedIn()
@@ -316,33 +304,20 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             ['config' => ['Site' => ['theme' => 'bootstrap3']]]
         );
 
-        $session = $this->getMinkSession();
-        $session->start();
-        $page = $this->gotoSearch($session);
+        $page = $this->gotoSearch();
         // Login
-        $page->find('css', '#loginOptions a')->click();
+        $this->findCss($page, '#loginOptions a')->click();
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
-        $session->reload();
+        $this->snooze();    // wait for login
         // Save Record
-        $page->find('css', '.save-record')->click();
-        $this->assertNotNull($page->find('css', '#save_list'));
-        $page->find('css', '.modal-body .btn.btn-primary')->click();
-        $this->assertNotNull($page->find('css', '.alert.alert-info')); // .success?
-        $session->stop();
+        $this->findCss($page, '.save-record')->click();
+        $this->snooze();
+        $this->findCss($page, '#save_list');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+        $this->findCss($page, '.alert.alert-info'); // .success?
     }
-/*
-    public function testAddSearchToFavoritesNewAccount()
-    {
-    }
-
-    public function testAddSearchToFavoritesLogin()
-    {
-    }
-
-    public function testAddSearchToFavoritesLoggedIn()
-    {
-    } */
 
     /**
      * Standard teardown method.

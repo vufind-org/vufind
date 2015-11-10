@@ -118,7 +118,7 @@
             <div id="group<?=$group ?>" class="group well">
               <a href="#" class="group-close hidden" title="<?=$this->transEsc("del_search")?>"><i class="fa fa-times"></i> <?=$this->transEsc("del_search")?></a>
               <div class="row">
-              <div class="col-sm-4 match">
+              <div class="col-sm-5 col-sm-push-7 match">
                   <label class="search_bool"><?=$this->transEsc("search_match")?>:</label>
                   <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control form-inline">
                     <option value="AND"<? if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
@@ -126,7 +126,7 @@
                     <option value="NOT"<? if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_NOT")?></option>
                   </select>
               </div>
-              <div class="col-sm-8">
+              <div class="col-sm-7 col-sm-pull-5">
                 <div class="row">
                   <div class="col-xs-12">
                     <? for($search=0 ; $search<3 || (isset($setQueries[$group]) && $search<count($setQueries[$group])) ; $search++): ?>
@@ -164,14 +164,14 @@
       <span class="clearfix"></span>
       <div class="row">
         <div class="col-xs-12">
-          
+
           <div id="groupJoin" class="form text-center">
             <label for="groupJoinOptions"><?=$this->transEsc("search_match")?>:</label>
             <select id="groupJoinOptions" name="join" class="form-control form-inline">
               <option value="AND"<? if($searchDetails && $searchDetails->getOperator()=='ALL'):?> selected<?endif?>><?= $this->transEsc('group_AND') ?></option>
               <option value="OR"<? if($searchDetails && $searchDetails->getOperator()=='OR'):?> selected<?endif?>><?= $this->transEsc('group_OR') ?></option>
             </select>
-          </div> 
+          </div>
         </div>
       </div>
       <? if (isset($this->extraAdvancedControls)): ?>

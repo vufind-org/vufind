@@ -175,6 +175,16 @@ class Record extends \VuFind\View\Helper\Root\Record
     }
 
     /**
+     * Render meta tags for use on the record view.
+     *
+     * @return string
+     */
+    public function getMetaTags()
+    {
+        return $this->renderTemplate('meta-tags.phtml');
+    }
+
+    /**
      * Render average rating
      *
      * @return string
