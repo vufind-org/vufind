@@ -323,6 +323,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $optionElement = $this->findCss($page, '.modal #sms_provider option');
         $page->selectFieldOption('sms_provider', 'verizon');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         // Check for confirmation message
         $this->findCss($page, '.modal .alert-info');
     }

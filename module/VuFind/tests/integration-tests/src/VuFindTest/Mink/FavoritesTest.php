@@ -120,6 +120,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals($this->findCss($page, '#save_list option[selected]')->getHtml(), 'Test List');
         $this->findCss($page, '#add_mytags')->setValue('test1 test2 "test 3"');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '.modal .alert.alert-info'); // .success?
         $this->findCss($page, '.modal-body .btn.btn-default')->click();
         // Check list page
@@ -174,6 +175,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             'Login Test List'
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '.modal .alert.alert-info'); // .success?
     }
 
@@ -196,6 +198,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->findCss($page, '#save_list');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '.modal .alert.alert-info'); // .success?
     }
 
