@@ -522,7 +522,14 @@ input[type="checkbox"],
 
 .feedback-form {
     & .form-group {
-        margin-bottom: 20px;   
+        margin-bottom: 20px;
+        & label {
+            clear: both;
+            display: block;
+        }
+        & textarea, & input {
+            max-width: 100%;   
+        }
     }
     & .feedback-info, .captcha {
         padding-top: 10px;
