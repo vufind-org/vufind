@@ -3,6 +3,7 @@
     display: none;
 }
 body {
+    -webkit-overflow-scrolling: touch;
     background: @background-image-url;
     background-attachment: @background-image-attachment;
     background-size: 100% auto;
@@ -453,24 +454,26 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         }
     }
     @media(max-width:@screen-sm-max) {
-        font-size: .9em;
-        
+        font-size: .8em;
         & .stars {
-            margin-right: 0;        
+            margin-right: -1px;        
         }
-    }
-    @media(max-width:@screen-xs-max) {
-           
     }
 }
 .rating-holder {
     margin-bottom: 5px;
     .info {
-        line-height: 2em;   
+        line-height: 2em;
+        @media(max-width:@screen-sm-max) {
+            line-height: 2.4em;   
+        }
     }
     .rating-symbol {
         margin-right: 3px;
         font-size: 1.4em;
+        @media(max-width:@screen-sm-max) {
+            font-size: 1.8em;   
+        }
     }
 }
 
