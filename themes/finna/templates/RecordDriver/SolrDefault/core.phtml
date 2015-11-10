@@ -317,7 +317,7 @@
         </td>
       </tr>
       <? endif; ?>
-      
+
       <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
       <tr class="recordClassifications">
         <th><?=$this->transEsc('Classification')?>: </th>
@@ -332,7 +332,7 @@
                 foreach ($field as $j => $subfield) {
                   $result = $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
                   ?>
-                  <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('Classification', $result)?>"><? if (!$this->translationEmpty('class_'.$result)): ?><?=$this->transEsc('class_'.$result).'<span class="classification-detail"> (' . $result . ')</span>' ;?><? else: ?><?= $result; ?><? endif; ?></a></br>
+                  <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('Classification', $result)?>"><? if (!$this->translationEmpty('classification::'.$result)): ?><?=$this->transEsc('classification::'.$result).'<span class="classification-detail"> (' . $result . ')</span>' ;?><? else: ?><?= $result; ?><? endif; ?></a></br>
                 <?
                 }
               }
@@ -342,7 +342,7 @@
         </td>
       </tr>
       <? endif; ?>
-      
+
       <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
       <tr class="recordSubjects">
         <th><?=$this->transEsc('Subjects')?>: </th>
