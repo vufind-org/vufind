@@ -1,6 +1,9 @@
 @import "bootstrap/bootstrap";
-
+::-ms-clear {
+    display: none;
+}
 body {
+    -webkit-overflow-scrolling: touch;
     background: @background-image-url;
     background-attachment: @background-image-attachment;
     background-size: 100% auto;
@@ -429,11 +432,48 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .part-authors-padded {
 	  padding-left: 10px;
 }
+.rating-symbol-background {
+    font-weight: bold;
+    margin-right: 1px;
+    color: @gray-light;
+}
 .record .rating-average {
     margin-top: 10px;
+    text-align: center;
+    .count {
+        display: inline-block;
+        color: @gray-light;
+        &:hover {
+            cursor: pointer;   
+        }
+    }
     & .stars {
-        float: left;
-        margin-right: 10px;
+        display: inline-block;
+        &:hover, & .rating-symbol-background:hover {
+            cursor: pointer;   
+        }
+    }
+    @media(max-width:@screen-sm-max) {
+        font-size: .8em;
+        & .stars {
+            margin-right: -1px;        
+        }
+    }
+}
+.rating-holder {
+    margin-bottom: 5px;
+    .info {
+        line-height: 2em;
+        @media(max-width:@screen-sm-max) {
+            line-height: 2.4em;   
+        }
+    }
+    .rating-symbol {
+        margin-right: 3px;
+        font-size: 1.4em;
+        @media(max-width:@screen-sm-max) {
+            font-size: 1.8em;   
+        }
     }
 }
 

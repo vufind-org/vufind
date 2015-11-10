@@ -1,12 +1,21 @@
 .finna-main-tabs {
     background-color: @finna-main-header-background;
     margin-bottom: 30px;
-
     & ul.nav-tabs {
         border-bottom: none;
         margin: 0 0 0 15px;
         @media(max-width: @screen-sm-max) {
             margin-left: 0;  
+        }
+        @media(max-width: 390px) {
+            &.many-tabs > li {
+                max-width: 64px;
+                & a {
+                    min-height: 70px;
+                    padding: 4px 4px;
+                    font-size: .8em;
+                }
+            }
         }
 
         > li {

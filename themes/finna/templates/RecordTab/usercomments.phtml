@@ -28,7 +28,7 @@
           </div>
         </div>
         <? endif; ?>
-        <textarea id="comment" name="comment" class="form-control" rows="3" cols="35" required></textarea><br/>
+        <textarea id="comment" name="comment" class="form-control" rows="4" cols="37" max-length="8000" required></textarea><br/>
         <input class="btn btn-primary save" data-label-new="<?=$this->transEsc('Add your comment') ?>" data-label-edit="<?=$this->transEsc('Save') ?>" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc($ratings ? 'Add your rating' : 'Add your comment')?>"/>
         <input class="btn btn-primary cancel hide" type="submit" value="<?=$this->transEsc("Reset")?>"/>
       <? else: ?>
@@ -38,7 +38,7 @@
   </form>
 <? else: ?>
   <div>
-    <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'UserComments')?>?login=true"><?= $this->translate('Login'); ?></a> <?= $this->translate(($ratings ? 'rating' : 'comment') . '_login') ?>
+    <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'UserComments')?>?login=true" class="btn btn-primary"><?= $this->translate('Login'); ?></a> <?= $this->translate(($ratings ? 'rating' : 'comment') . '_login') ?>
   </div>
 <? endif; ?>
 <!-- END of: finna - RecordTab/usercomments.phtml -->

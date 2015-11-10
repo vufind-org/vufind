@@ -2,27 +2,44 @@
 <? $this->headScript()->appendFile("finna-record.js"); ?>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <div class="col-sm-2">
-    <div class="cover-wrapper">
-      <? /* Display thumbnail if appropriate: */ ?>
-      <? $img = $this->recordImage($this->record($this->driver)) ?>
-      <?= $img->render('record', array('small' => array('w' => 50, 'h' => 50), 'medium' => array('w' => 1200, 'h' => 1200))) ?>
-      <? /* Display qrcode if appropriate: */ ?>
-      <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
-      <? if($QRCode): ?>
-        <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
-      <? endif; ?>
+    <div class="row">
+      <div class="col-xs-12 image-information">
+        <div class="cover-wrapper">
+          <? /* Display thumbnail if appropriate: */ ?>
+          <? $img = $this->recordImage($this->record($this->driver)) ?>
+          <?= $img->render('record', array('small' => array('w' => 50, 'h' => 50), 'medium' => array('w' => 1200, 'h' => 1200))) ?>
+          <? /* Display qrcode if appropriate: */ ?>
+          <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
+          <? if($QRCode): ?>
+            <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
+          <? endif; ?>
+        </div>
+        <? // if you have a preview tab but want to move or remove the preview link
+         // from this area of the record view, this can be split into
+         // getPreviewData() (should stay here) and
+         // getPreviewLink() (can go in your desired tab) ?>
+        <?=$this->record($this->driver)->getPreviews()?>
+      </div>
     </div>
+
+    <div class="row">
+      <div class="col-xs-12 rating-stars">
+        <span onclick="ajaxLoadTab('usercomments');">
+          <?=$this->record($this->driver)->getRating()?>
+        </span>
+      </div>
+    </div>
+
     <? if ($template = $this->content()->findTemplateForLng("layout/Additions/record-post-toolbar")): ?>
-    <div class="record-post-toolbar">
-      <?=$this->render($template)?>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="record-post-toolbar">
+          <?=$this->render($template)?>
+        </div>
+      </div>
     </div>
     <? endif; ?>
-    <? // if you have a preview tab but want to move or remove the preview link
-       // from this area of the record view, this can be split into
-       // getPreviewData() (should stay here) and
-       // getPreviewLink() (can go in your desired tab) ?>
-    <?=$this->record($this->driver)->getPreviews()?>
-    <?=$this->record($this->driver)->getRating()?>
+
   </div>
 
   <div class="col-sm-10 record-information">
@@ -84,7 +101,7 @@
 
     <? if ($abstracts = $this->driver->getAbstracts()): ?>
       <div class="truncate-field wide">
-        <p class="summary">
+        <p class="summary recordSummary">
         <? if (isset($abstracts[$this->layout()->userLang])): ?>
             <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
           <? else: ?>
@@ -111,7 +128,7 @@
     <?/* Display Main Details */?>
     <table class="table table-finna-record record-details">
       <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
-      <tr>
+      <tr class="recordContainerReference">
         <th><?=$this->transEsc('Published in')?>:</th>
         <td>
           <? $containerID = $this->driver->getContainerRecordID(); ?>
@@ -134,7 +151,7 @@
       <? endif; ?>
 
       <? if (!empty($prevTitles)): ?>
-      <tr>
+      <tr class="recordPrevTitles">
         <th><?=$this->transEsc('Previous Title')?>: </th>
         <td>
           <? foreach($prevTitles as $field): ?>
@@ -145,14 +162,14 @@
       <? endif; ?>
 
       <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
-        <tr>
+        <tr class="recordLanguage">
           <th><?=$this->transEsc('Language')?>: </th>
           <td><? foreach ($langs as $lang): ?><?= $this->escapeHtml($lang)?><br/><? endforeach; ?></td>
         </tr>
       <? endif; ?>
 
       <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
-      <tr>
+      <tr class="recordEdition">
         <th><?=$this->transEsc('Edition')?>: </th>
         <td property="bookEdition"><?=$this->escapeHtml($edition)?></td>
       </tr>
@@ -160,7 +177,7 @@
 
       <?/* Display series section if at least one series exists. */?>
       <? $series = $this->driver->getSeries(); if (!empty($series)): ?>
-      <tr>
+      <tr class="recordSeries">
         <th><?=$this->transEsc('Series')?>: </th>
         <td>
           <? foreach ($series as $field): ?>
@@ -184,7 +201,7 @@
       <? endif; ?>
 
       <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
-      <tr>
+      <tr class="recordSubjects">
         <th><?=$this->transEsc('Subjects')?>: </th>
         <td>
           <div class="truncate-field">
