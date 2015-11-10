@@ -241,7 +241,7 @@ public List getRelatorsFilteredByRelator(Record record, String tagList,
 ) {
     // default firstOnly to false!
     return getRelatorsFilteredByRelator(
-        record, tagList, acceptWithoutRelator, relatorConfig, false, "default_relator"
+        record, tagList, acceptWithoutRelator, relatorConfig, false, ""
     );
 }
 
@@ -253,14 +253,26 @@ public List getRelatorsFilteredByRelator(Record record, String tagList,
  * @param setting Setting to load from .ini or colon-delimited list.
  * @returns String[]
  */
-public String[] loadRelatorConfig(String setting){
-    String[] parts = setting.split(":");
-    if (parts.length > 1) {
-        return parts;
+public String[] loadRelatorConfig(String setting) {
+    StringBuilder relators = new StringBuilder();
+
+    // check for pipe-delimited string
+    String[] relatorSettings = setting.split("\\|");
+    for (String relatorSetting: relatorSettings) {
+        // check for colon-delimited string
+        String[] relatorArray = relatorSetting.split(":");
+        if (relatorArray.length > 1) {
+            for (int i = 0; i < relatorArray.length; i++) {
+                relators.append(relatorArray[i]).append(",");
+            }
+        } else {
+            relators.append(indexer.getConfigSetting(
+                "author-classification.ini", "AuthorRoles", relatorSetting
+            )).append(",");
+        }
     }
-    return indexer
-        .getConfigSetting("author-classification.ini", "AuthorRoles", setting)
-        .split(",");
+
+    return relators.toString().split(",");
 }
 
 /**

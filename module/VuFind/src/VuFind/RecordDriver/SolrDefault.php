@@ -382,14 +382,25 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get the main corporate author (if any) for the record.
+     * Get the main corporate authors (if any) for the record.
      *
-     * @return string
+     * @return array
      */
-    public function getCorporateAuthor()
+    public function getCorporateAuthors()
     {
-        // Not currently stored in the Solr index
-        return null;
+        return isset($this->fields['author_corporate']) ?
+            $this->fields['author_corporate'] : [];
+    }
+
+    /**
+     * Get an array of all main corporate authors roles.
+     *
+     * @return array
+     */
+    public function getCorporateAuthorsRoles()
+    {
+        return isset($this->fields['author_corporate_role']) ?
+            $this->fields['author_corporate_role'] : [];
     }
 
     /**
@@ -414,28 +425,79 @@ class SolrDefault extends AbstractBase
     public function getDeduplicatedAuthors()
     {
         $authors = [
-            'main' => $this->getPrimaryAuthors(),
-            'corporate' => $this->getCorporateAuthor(),
-            'secondary' => $this->getSecondaryAuthors()
+            'main' => $this->getAuthorRolesArray(
+                $this->getPrimaryAuthors(),
+                $this->getPrimaryAuthorsRoles()
+            ),
+            'corporate' => $this->getAuthorRolesArray(
+                $this->getCorporateAuthors(),
+                $this->getCorporateAuthorsRoles()
+            ),
+            'secondary' => $this->getAuthorRolesArray(
+                $this->getSecondaryAuthors(),
+                $this->getSecondaryAuthorsRoles()
+            )
         ];
 
-        // The secondary author array may contain a corporate or primary author;
-        // let's be sure we filter out duplicate values.
-        $duplicates = [];
-        if (!empty($authors['main'])) {
-            $duplicates = $authors['main'];
-        }
-        if (!empty($authors['corporate'])) {
-            // Remove duplicate corporate author from "main" section.
-            $authors['main']
-                = array_diff($authors['main'], [$authors['corporate']]);
-            $duplicates[] = $authors['corporate'];
-        }
-        if (!empty($duplicates)) {
-            $authors['secondary'] = array_diff($authors['secondary'], $duplicates);
-        }
+        // deduplicate
+        $dedup = function (&$array1, &$array2) {
+            if (!empty($array1) && !empty($array2)) {
+                foreach ($array1 as $author => $roles) {
+                    if (isset($array2[$author])) {
+                        $array1[$author] = array_merge(
+                            $array1[$author],
+                            $array2[$author]
+                        );
+                        unset($array2[$author]);
+                    }
+                }
+            }
+        };
+
+        $dedup($authors['main'], $authors['corporate']);
+        $dedup($authors['secondary'], $authors['corporate']);
+        $dedup($authors['main'], $authors['secondary']);
+
+        $dedup_roles = function (&$array) {
+            foreach ($array as $author => $roles) {
+                if (is_array($roles)) {
+                    $array[$author] = array_unique($roles);
+                }
+            }
+        };
+
+        $dedup_roles($authors['main']);
+        $dedup_roles($authors['secondary']);
+        $dedup_roles($authors['corporate']);
 
         return $authors;
+    }
+
+    /**
+     * Helper function to restructure author arrays including relators
+     *
+     * @param array $authors Array of authors
+     * @param array $roles   Array with relators of authors
+     *
+     * @return array
+     */
+    protected function getAuthorRolesArray($authors = [], $roles = [])
+    {
+        $authorRolesArray = [];
+
+        if (!empty($authors)) {
+            foreach ($authors as $index => $author) {
+                if (!isset($authorRolesArray[$author])) {
+                    $authorRolesArray[$author] = [];
+                }
+                if (isset($roles[$index]) && !empty($roles[$index])
+                ) {
+                    $authorRolesArray[$author][] = $roles[$index];
+                }
+            }
+        }
+
+        return $authorRolesArray;
     }
 
     /**
@@ -999,6 +1061,18 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get an array of all main authors roles (complementing
+     * getSecondaryAuthorsRoles()).
+     *
+     * @return array
+     */
+    public function getPrimaryAuthorsRoles()
+    {
+        return isset($this->fields['author_role']) ?
+            $this->fields['author_role'] : [];
+    }
+
+    /**
      * Get credits of people involved in production of the item.
      *
      * @return array
@@ -1125,6 +1199,18 @@ class SolrDefault extends AbstractBase
     {
         return isset($this->fields['author2']) ?
             $this->fields['author2'] : [];
+    }
+
+    /**
+     * Get an array of all secondary authors roles (complementing
+     * getPrimaryAuthorsRoles()).
+     *
+     * @return array
+     */
+    public function getSecondaryAuthorsRoles()
+    {
+        return isset($this->fields['author2_role']) ?
+            $this->fields['author2_role'] : [];
     }
 
     /**
