@@ -166,6 +166,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Add tags
         $this->findCss($page, '.modal #addtag_tag')->setValue('one 2 "three 4" five');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $success = $this->findCss($page, '.modal-body .alert-info');
         $this->assertTrue(is_object($success));
         $this->assertEquals('Tags Saved', $success->getText());
@@ -246,6 +247,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Login in Lightbox
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
+        $this->snooze();
         // Make sure Lightbox redirects to email view
         $this->findCss($page, '.modal #email_to');
         // Close lightbox
