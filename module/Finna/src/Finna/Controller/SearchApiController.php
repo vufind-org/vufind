@@ -52,7 +52,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'authors' => 'getDeduplicatedAuthors',
         'awards' => 'getAwards',
         'bibliographicLevel' => 'getBibliographicLevel',
-        'building' => 'getBuilding',
+        'buildings' => 'getBuilding',
         'callNumbers' => 'getCallNumbers',
         'childRecordCount' => 'getChildRecordCount',
         'classifications' => 'getClassifications',
@@ -61,6 +61,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'cleanIssn' => 'getCleanISSN',
         'cleanOclcNumber' => 'getCleanOCLCNum',
         'cleanUpc' => 'getCleanUPC',
+        'collections' => 'getCollections',
         'comments' => ['method' => 'getRecordComments'],
         'containerEndPage' => 'getContainerEndPage',
         'containerIssue' => 'getContainerIssue',
@@ -73,11 +74,13 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'dedupIds' => ['method' => 'getRecordDedupIds'],
         'dissertationNote' => 'getDissertationNote',
         'edition' => 'getEdition',
-        'embeddedComponentPart' => 'getEmbeddedComponentParts',
+        'embeddedComponentParts' => 'getEmbeddedComponentParts',
+        'events' => 'getEvents',
         'findingAids' => 'getFindingAids',
         'formats' => 'getFormats',
-        'fullRecord' => ['method' => 'getFullRecord'],
+        'fullRecord' => ['method' => 'getRecordFullRecord'],
         'generalNotes' => 'getGeneralNotes',
+        'genres' => 'getGenres',
         'hierarchicalPlaceNames' => 'getHierarchicalPlaceNames',
         'hierarchyParentId' => 'getHierarchyParentId',
         'hierarchyParentTitle' => 'getHierarchyParentTitle',
@@ -97,6 +100,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'languages' => 'getLanguages',
         'lccn' => 'getLCCN',
         'manufacturer' => 'getManufacturer',
+        'measurements' => 'getMeasurements',
         'newerTitles' => 'getNewerTitles',
         'nonPresenterAuthors' => 'getNonPresenterAuthors',
         'oclc' => 'getOCLC',
@@ -122,9 +126,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'recordLinks' => 'getAllRecordLinks',
         'relationshipNotes' => 'getRelationshipNotes',
         'series' => 'getSeries',
-        'serviceUrls' => 'getServiceURLs',
         'sfxObjectId' => 'getSfxObjectId',
         'shortTitle' => 'getShortTitle',
+        'source' => 'getSource',
         'subjects' => 'getAllSubjectHeadings',
         'subTitle' => 'getSubTitle',
         'summary' => 'getSummary',
@@ -137,7 +141,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'uniformTitles' => 'getUniformTitles',
         'unitId' => 'getUnitID',
         'upc' => 'getUPC',
-        'urls' => 'getURLs'
+        'urls' => ['method' => 'getRecordURLs']
     ];
 
     /**
@@ -146,7 +150,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      * @var array
      */
     protected $defaultFields = [
-        'building',
+        'buildings',
         'comments',
         'formats',
         'id',
@@ -157,7 +161,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'presenters',
         'rating',
         'series',
-        'serviceUrls',
         'subjects',
         'title',
         'onlineUrls',
@@ -448,7 +451,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             } else {
                 $value = $record->tryMethod($this->recordFields[$field]);
             }
-            if (!empty($value) && (!is_array($value) || !$this->arrayEmpty($value))
+            if ((!empty($value) || $value === 0 || $value === '0')
+                && (!is_array($value) || !$this->arrayEmpty($value))
             ) {
                 $result[$field] = $value;
             }
@@ -492,6 +496,39 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             ];
         }
         return $comments;
+    }
+
+    /**
+     * Get dedup IDs
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getRecordDedupIds($record)
+    {
+        $dedupData = $record->getDedupData();
+        $result = [];
+        foreach ($dedupData as $item) {
+            $result[] = $item['id'];
+        }
+        return $result ? $result : null;
+    }
+
+    /**
+     * Get full record for a record as XML
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return string|null
+     */
+    protected function getRecordFullRecord($record)
+    {
+        if ($xml = $record->tryMethod('getFilteredXML')) {
+            return $xml;
+        }
+        $rawData = $record->tryMethod('getRawData');
+        return isset($rawData['fullrecord']) ? $rawData['fullrecord'] : null;
     }
 
     /**
@@ -576,19 +613,25 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     }
 
     /**
-     * Get dedup IDs
+     * Get URLs for a record as an array
      *
      * @param \VuFind\RecordDriver\SolrDefault $record Record driver
      *
      * @return array|null
      */
-    protected function getRecordDedupIds($record)
+    protected function getRecordURLs($record)
     {
-        $dedupData = $record->getDedupData();
-        $result = [];
-        foreach ($dedupData as $item) {
-            $result[] = $item['id'];
+        $urls = $record->getURLs();
+        $serviceUrls = $record->tryMethod('getServiceUrls');
+        if ($serviceUrls) {
+            $source = $record->getDataSource();
+            foreach ($serviceUrls as &$url) {
+                if (isset($url['desc'])) {
+                    $url['desc'] = $this->translate($source . '_' . $url['desc']);
+                }
+            }
+            $urls += $serviceUrls;
         }
-        return $result ? $result : null;
+        return $urls ? $urls : null;
     }
 }
