@@ -113,6 +113,8 @@ class CachingProxy
      *
      * @param string   $file     Filename to update
      * @param Response $response Response to write
+     *
+     * @return void
      */
     protected function setCache($file, Response $response)
     {
