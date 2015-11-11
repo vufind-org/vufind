@@ -328,8 +328,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page);
 
         // Save the favorites.
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
-        $submit->click();
+        $this->findCss($page, '.modal-body input[name=submit]')->click();
         $result = $this->findCss($page, '.modal-body .alert-info');
         $this->assertEquals(
             'Your item(s) were saved successfully', $result->getText()
