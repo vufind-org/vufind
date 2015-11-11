@@ -555,7 +555,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         return null;
     }
 
-
     /**
      * Get raw data for a record as an array
      *
