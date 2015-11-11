@@ -138,6 +138,7 @@ trait UserCreationTrait
     {
         $button = $this->findCss($page, '.modal-body .btn.btn-primary');
         $button->click();
+        $this->snooze();
     }
 
     /**
