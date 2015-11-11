@@ -107,6 +107,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         // Make sure page updated for login
         $page = $this->gotoRecord();
         $this->findCss($page, '#usercomments')->click();
