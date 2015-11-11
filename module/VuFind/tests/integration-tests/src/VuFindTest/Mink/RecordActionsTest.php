@@ -104,12 +104,12 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal [name="username"]');
         // Create new account
         $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->snooze();
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         // Make sure page updated for login
         $page = $this->gotoRecord();
         $this->findCss($page, '#usercomments')->click();
-        $this->snooze();
         $this->assertEquals(
             'Add your comment',
             $this->findCss($page, 'form.comment .btn.btn-primary')->getValue()
