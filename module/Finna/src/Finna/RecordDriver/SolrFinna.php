@@ -378,7 +378,8 @@ trait SolrFinna
      */
     public function getSource()
     {
-        return isset($this->fields['source']) ? $this->fields['source'] : false;
+        return isset($this->fields['source_str_mv'])
+            ? $this->fields['source_str_mv'] : false;
     }
 
     /**
