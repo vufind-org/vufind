@@ -161,6 +161,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Login
         $page = $this->gotoRecord(); // redirects to search home???
         $this->findCss($page, '#tagRecord')->click();
+        $this->snooze();
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
         // Add tags
