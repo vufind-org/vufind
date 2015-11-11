@@ -146,6 +146,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord();
         // Click to add tag
         $this->findCss($page, '#tagRecord')->click();
+        $this->snooze();
         // Lightbox login open?
         $this->findCss($page, '.modal.in [name="username"]');
         // Make account
@@ -158,6 +159,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal .close')->click();
         $this->snooze(); // wait for display to update
         $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
+        $this->snooze();
         // Login
         $page = $this->gotoRecord(); // redirects to search home???
         $this->findCss($page, '#tagRecord')->click();
@@ -169,7 +171,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
         $success = $this->findCss($page, '.modal-body .alert-info');
-        $this->assertTrue(is_object($success));
         $this->assertEquals('Tags Saved', $success->getText());
         $this->findCss($page, '.modal .close')->click();
         // Count tags
