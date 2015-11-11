@@ -256,6 +256,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Click email
         $page = $this->gotoRecord();
         $this->findCss($page, '#mail-record')->click();
+        $this->snooze();
         $this->findCss($page, '.modal #email_to');
         // Type invalid email
         $this->findCss($page, '.modal #email_to')->setValue('blargarsaurus');
