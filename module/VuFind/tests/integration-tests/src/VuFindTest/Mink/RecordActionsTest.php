@@ -109,6 +109,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Make sure page updated for login
         $page = $this->gotoRecord();
         $this->findCss($page, '#usercomments')->click();
+        $this->snooze();
         $this->assertEquals(
             'Add your comment',
             $this->findCss($page, 'form.comment .btn.btn-primary')->getValue()
@@ -270,6 +271,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Send text to false email
         $this->findCss($page, '.modal #email_to')->setValue('asdf@vufind.org');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         // Check for confirmation message
         $this->findCss($page, '.modal .alert-info');
         // Logout

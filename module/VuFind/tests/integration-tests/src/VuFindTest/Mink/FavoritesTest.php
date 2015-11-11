@@ -111,6 +111,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#save_list');
         // Make list
         $this->findCss($page, '#make-list')->click();
+        $this->snooze();
         // Empty
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
@@ -231,7 +232,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#make-list')->click();
         // Empty
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->findCss($page, '#list_title');
+        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Test List');
         $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
