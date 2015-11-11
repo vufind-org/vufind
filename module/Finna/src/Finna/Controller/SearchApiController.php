@@ -91,7 +91,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'identifierString' => 'getIdentifier',
         'imageRights' => ['method' => 'getRecordImageRights'],
         'images' => ['method' => 'getRecordImages'],
-        'institutions' => 'getInstitutions',
+        'institutions' => ['method' => 'getRecordInstitutions'],
         'isbns' => 'getISBNs',
         'isCollection' => 'isCollection',
         'isDigitized' => 'isDigitized',
@@ -128,7 +128,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'series' => 'getSeries',
         'sfxObjectId' => 'getSfxObjectId',
         'shortTitle' => 'getShortTitle',
-        'source' => 'getSource',
+        'source' => ['method' => 'getRecordSource'],
         'subjects' => 'getAllSubjectHeadings',
         'subTitle' => 'getSubTitle',
         'summary' => 'getSummary',
@@ -532,6 +532,31 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     }
 
     /**
+     * Get institutions
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getRecordInstitutions($record)
+    {
+        if ($institutions = $record->tryMethod('getInstitutions')) {
+            $result = [];
+            foreach ($institutions as $institution) {
+                $result[] = [
+                    'value' => $institution,
+                    'translated' => $this->translate(
+                        "0/$institution/", null, $institution
+                    )
+                ];
+            }
+            return $result;
+        }
+        return null;
+    }
+
+
+    /**
      * Get raw data for a record as an array
      *
      * @param \VuFind\RecordDriver\SolrDefault $record Record driver
@@ -610,6 +635,28 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $presenters = $record->tryMethod('getPresenters');
         return !empty($presenters['presenters']) || !empty($presenters['details'])
             ? $presenters : null;
+    }
+
+    /**
+     * Get source
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getRecordSource($record)
+    {
+        if ($sources = $record->tryMethod('getSource')) {
+            $result = [];
+            foreach ($sources as $source) {
+                $result[] = [
+                    'value' => $source,
+                    'translated' => $this->translate("source_$source")
+                ];
+            }
+            return $result;
+        }
+        return null;
     }
 
     /**
