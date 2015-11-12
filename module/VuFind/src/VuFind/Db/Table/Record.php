@@ -31,7 +31,6 @@
 namespace VuFind\Db\Table;
 
 use Zend\Db\Sql\Predicate\Expression;
-use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 
 /**
