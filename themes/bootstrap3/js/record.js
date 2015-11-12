@@ -167,15 +167,17 @@ function ajaxLoadTab(tabid, setHash) {
     var urlroot = '/' + chunks[0] + '/' + chunks[1];
   }
 
+  $('#record-tabs .tab-pane.active').removeClass('active');
+  $('#'+tabid+'-tab').addClass('active');
+  $('#'+tabid).tab('show');
+  
   // Request the tab via AJAX:
   $.ajax({
     url: path + urlroot + '/AjaxTab',
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
-      $('#record-tabs .tab-pane.active').removeClass('active');
-      $('#'+tabid+'-tab').html(data).addClass('active');
-      $('#'+tabid).tab('show');
+      $('#'+tabid+'-tab').html(data);
       registerTabEvents();
       if(typeof syn_get_widget === "function") {
         syn_get_widget();
@@ -265,10 +267,11 @@ $(document).ready(function(){
       window.location.hash = tabid;
       return false;
     } else {
+      var initialTab = $('#record-tabs .tab-pane.active').length == 0;
       $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+vufindString['loading']+'...</div>');
       $('#record-tabs .tab-pane.active').removeClass('active');
       $('#'+tabid+'-tab').addClass('active');
-      return ajaxLoadTab(tabid);
+      return ajaxLoadTab(tabid, !initialTab);
     }
   });
   applyRecordTabHash();

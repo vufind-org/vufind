@@ -57,7 +57,9 @@
           $desc = $obj->getDescription();
           $tab_classes = array();
           if (0 === strcasecmp($this->activeTab, $tab)) {
-            $tab_classes[] = 'active';
+            if (!$this->ajaxTabs || !$obj->supportsAjax()) {
+              $tab_classes[] = 'active';
+            }
             $tab_classes[] = 'initiallyActive';
             $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
             $activeTabObj = $obj;
@@ -73,9 +75,11 @@
     <? endif; ?>
 
     <div class="tab-content" id="record-tabs">
-      <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
-        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-      </div>
+      <? if (!$this->ajaxTabs || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+        <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
+          <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+        </div>
+      <? endif; ?>
     </div>
 
     <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenURL()).'"></span>':''?>
