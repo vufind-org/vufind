@@ -70,6 +70,48 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Return access restriction notes for the record.
+     *
+     * @return array
+     */
+    public function getAccessRestrictions()
+    {
+        $result = [];
+        $fields = $this->getMarcRecord()->getFields('506');
+        foreach ($fields as $field) {
+            if ($subfield = $field->getSubfield('a')) {
+                $access = $this->stripTrailingPunctuation($subfield->getData());
+                if ($subfield = $field->getSubfield('e')) {
+                    $access .= ' (' .
+                        $this->stripTrailingPunctuation($subfield->getData()) . ')';
+                }
+                $result[] = $access;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Return type of access restriction for the record.
+     *
+     * @return mixed array with keys:
+     *   'copyright'   Copyright (e.g. 'CC BY 4.0')
+     *   'link'        Link to copyright info, see IndexRecord::getRightsLink
+     *   or false if no access restriction type is defined.
+     */
+    public function getAccessRestrictionsType()
+    {
+        $fields = $this->getMarcRecord()->getFields('506');
+        foreach ($fields as $field) {
+            if ($subfield = $field->getSubfield('u')) {
+                return ['link' => $subfield->getData()];
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get all subject headings associated with this record.  Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
@@ -391,6 +433,18 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         }
 
         return $componentParts;
+    }
+
+    /**
+     * Return full record as filtered XML for public APIs.
+     *
+     * @return string
+     */
+    public function getFilteredXML()
+    {
+        $record = clone($this->getMarcRecord());
+        $record->deleteFields('520');
+        return $record->toXML();
     }
 
     /**

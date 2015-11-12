@@ -454,10 +454,10 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      */
     protected function getSimpleXML()
     {
-        if ($this->simpleXML !== null) {
-            return $this->simpleXML;
+        if ($this->simpleXML === null) {
+            $this->simpleXML = simplexml_load_string($this->fields['fullrecord']);
         }
-        return simplexml_load_string($this->fields['fullrecord']);
+        return $this->simpleXML;
     }
 
     /**

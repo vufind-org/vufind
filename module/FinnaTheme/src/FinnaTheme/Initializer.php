@@ -52,7 +52,8 @@ class Initializer extends \VuFindTheme\Initializer
         if (Console::isConsole()) {
             return $this->config->theme;
         } else {
-            return parent::pickTheme($request);
+            // Theme is already set up in VuFindTheme initializer
+            return $this->tools->getTheme();
         }
     }
 }
