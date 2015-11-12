@@ -116,12 +116,14 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
             $this->findCss($page, 'form.comment .btn.btn-primary')->getValue()
         ); // Can Comment?
         $this->assertNull($page->find('css', '.comment.row'));
+        // "Add" empty comment
+        $this->findCss($page, 'form.comment .btn-primary')->click();
+        $this->snooze();
+        $this->assertNull($page->find('css', '.comment.row'));
         // Add comment
         $this->findCss($page, '#comment')->setValue('one');
         $this->findCss($page, 'form.comment .btn-primary')->click();
-        $this->findCss($page, '.comment.row');
-        // "Add" empty comment
-        $this->findCss($page, 'form.comment .btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '.comment.row');
         // Remove comment
         $this->findCss($page, '.comment.row .delete')->click();
@@ -146,7 +148,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click to add tag
-        $this->findCss($page, '#tagRecord')->click();
+        $this->findCss($page, '.tagRecord')->click();
         $this->snooze();
         // Lightbox login open?
         $this->findCss($page, '.modal.in [name="username"]');
@@ -245,7 +247,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click email record without logging in
-        $this->findCss($page, '#mail-record')->click();
+        $this->findCss($page, '.mail-record')->click();
         $this->findCss($page, '.modal.in [name="username"]');
         // Login in Lightbox
         $this->fillInLoginForm($page, 'username1', 'test');
@@ -297,7 +299,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click SMS
-        $this->findCss($page, '#sms-record')->click();
+        $this->findCss($page, '.sms-record')->click();
         // Type invalid phone numbers
         // - too empty
         $this->findCss($page, '.modal #sms_to')->setValue('');

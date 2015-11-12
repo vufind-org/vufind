@@ -108,13 +108,14 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Correct
         $this->findCss($page, '#account_email')->setValue('username1@ignore.com');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+        $this->snooze();
         $this->findCss($page, '#save_list');
         // Make list
         $this->findCss($page, '#make-list')->click();
         $this->snooze();
         // Empty
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Test List');
         $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
@@ -145,7 +146,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 
         $page = $this->gotoRecord();
 
-        $this->findCss($page, '#save-record')->click();
+        $this->findCss($page, '.save-record')->click();
         // Login
         // - empty
         $this->submitLoginForm($page);
@@ -158,6 +159,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInLoginForm($page, null, 'test');
         $this->submitLoginForm($page);
         // Make sure we don't have Favorites because we have another populated list
+        die();
         $this->assertNull($page->find('css', '.modal-body #save_list'));
         // Make Two Lists
         // - One for the next test
@@ -194,7 +196,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         // Save Record
-        $this->findCss($page, '#save-record')->click();
+        $this->findCss($page, '.save-record')->click();
         $this->snooze();
         $this->findCss($page, '#save_list');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
