@@ -1,0 +1,56 @@
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
+  <div class="col-sm-9">
+    <input type="<?=$this->maxRecipients != 1 ? 'text' : 'email'?>" id="email_to" class="form-control" size="35" oninvalid="$('#modal .fa-spinner').remove()" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
+    <? if ($this->maxRecipients != 1): ?>
+      <br />
+      <?=$this->transEsc('email_multiple_recipients_note')?>
+      <? if ($this->maxRecipients > 1): ?>
+        <?=$this->transEsc('email_maximum_recipients_note', array('%%max%%' => $this->maxRecipients))?>
+      <? endif; ?>
+    <? endif; ?>
+  </div>
+</div>
+<? if (!$this->disableFrom): ?>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="email_from"><?=$this->transEsc('From')?>:</label>
+    <div class="col-sm-9">
+      <input type="email" id="email_from" oninvalid="$('#modal .fa-spinner').remove()" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="35" class="form-control"/>
+    </div>
+  </div>
+<? endif; ?>
+<? if ($this->editableSubject): ?>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="email_subject"><?=$this->transEsc('email_subject')?>:</label>
+    <div class="col-sm-9">
+      <input type="text" id="email_subject" oninvalid="$('#modal .fa-spinner').remove()" name="subject" value="<?=isset($this->subject) ? $this->subject : ''?>" size="37" class="form-control"/>
+    </div>
+  </div>
+<? endif; ?>
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
+  <div class="col-sm-9">
+    <textarea id="email_message" class="form-control" name="message" rows="4" cols="33"><?=isset($this->message) ? $this->message : ''?></textarea>
+  </div>
+</div>
+<? if ($this->disableFrom && $this->userEmailInFrom): ?>
+  <div class="form-group">
+    <div class="col-sm-9 col-sm-offset-3">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" name="ccself"/> <?=$this->translate('send_email_copy_to_me'); ?>
+        </label>
+      </div>
+    </div>
+  </div>
+<? endif ?>
+<div class="form-group">
+  <div class="col-sm-9 col-sm-offset-3">
+    <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+  </div>
+</div>
+<div class="form-group">
+  <div class="col-sm-9 col-sm-offset-3">
+    <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEsc('Send')?>"/>
+  </div>
+</div>
