@@ -209,6 +209,8 @@ class Loader extends \VuFind\ImageLoader
      *
      * @param array $settings Settings from loadImage (with missing defaults
      * already filled in).
+     *
+     * @return void
      */
     protected function storeSanitizedSettings($settings)
     {
