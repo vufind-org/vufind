@@ -116,27 +116,26 @@ class Record extends Gateway
      */
     public function cleanup()
     {
-        $sql = new Sql($this->getAdapter());
-        $select = $sql->select()->from('record');
-        $select->columns(['id']);
-        $select->join(
-            'resource',
-            new Expression(
-                'record.record_id = resource.record_id'
-                . ' AND record.source = resource.source'
-            ),
-            []
-        )->join(
-            'user_resource',
-            'resource.id = user_resource.resource_id',
-            [],
-            $select::JOIN_LEFT
-        );
-        $select->where->isNull('user_resource.id');
+        $callback = function ($select) {
+            $select->columns(['id']);
+            $select->join(
+                'resource',
+                new Expression(
+                    'record.record_id = resource.record_id'
+                    . ' AND record.source = resource.source'
+                ),
+                []
+            )->join(
+                'user_resource',
+                'resource.id = user_resource.resource_id',
+                [],
+                $select::JOIN_LEFT
+            );
+            $select->where->isNull('user_resource.id');
+        };
 
         $count = 0;
-        $statement = $sql->prepareStatementForSqlObject($select);
-        $results = $statement->execute();
+        $results = $this->select($callback);
         foreach ($results as $result) {
             ++$count;
             $this->delete(['id' => $result['id']]);
