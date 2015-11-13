@@ -101,549 +101,6 @@
         ]
     },
     {
-        "name": "johnwohlers/sip2",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "dist": {
-            "type": "file",
-            "url": "https://php-sip2.googlecode.com/svn/trunk/sip2.class.php",
-            "reference": null,
-            "shasum": null
-        },
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "/"
-            ]
-        }
-    },
-    {
-        "name": "mobileesp/mdetect",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "dist": {
-            "type": "file",
-            "url": "http://mobileesp.googlecode.com/svn/PHP/mdetect.php",
-            "reference": null,
-            "shasum": null
-        },
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "/"
-            ]
-        }
-    },
-    {
-        "name": "serialssolutions/summon",
-        "version": "v1.0.0",
-        "version_normalized": "1.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/summon/Summon.php.git",
-            "reference": "ce26752adfded96aff2f4422991078eedfc740a5"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/summon/Summon.php/zipball/ce26752adfded96aff2f4422991078eedfc740a5",
-            "reference": "ce26752adfded96aff2f4422991078eedfc740a5",
-            "shasum": ""
-        },
-        "time": "2013-11-13 19:07:09",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "SerialsSolutions": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-2.0"
-        ],
-        "authors": [
-            {
-                "name": "Demian Katz",
-                "email": "demian.katz@villanova.edu"
-            }
-        ],
-        "description": "Library for interacting with Serials Solutions' Summon API."
-    },
-    {
-        "name": "los/losrecaptcha",
-        "version": "1.0.0",
-        "version_normalized": "1.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Lansoweb/LosReCaptcha.git",
-            "reference": "2e18af8d57286c28c1951c7305f8379e7304b203"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Lansoweb/LosReCaptcha/zipball/2e18af8d57286c28c1951c7305f8379e7304b203",
-            "reference": "2e18af8d57286c28c1951c7305f8379e7304b203",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4.0",
-            "zendframework/zendframework": ">=2.3.2,<3.0.0"
-        },
-        "require-dev": {
-            "satooshi/php-coveralls": "dev-master"
-        },
-        "suggest": {
-            "los/losbase": "los/losbase for some abstract classes to speed development ",
-            "los/loslog": "los/loslog for logging",
-            "los/losui": "los/losui for twitter bootstrap 3 styling, jquery, chosen and other libraries"
-        },
-        "time": "2015-04-28 15:40:23",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "LosReCaptcha\\": "src/"
-            },
-            "psr-0": {
-                "LosReCaptcha\\": "src/"
-            },
-            "classmap": [
-                "./"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Leandro Silva",
-                "email": "leandro@leandrosilva.info",
-                "homepage": "http://leandrosilva.info"
-            }
-        ],
-        "description": "ZF2 module for integration with new ReCaptcha service form Google",
-        "homepage": "http://github.com/Lansoweb/LosReCaptcha",
-        "keywords": [
-            "captcha",
-            "los",
-            "module",
-            "recaptcha",
-            "zf2"
-        ]
-    },
-    {
-        "name": "pear-pear.php.net/XML_Util",
-        "version": "1.3.0",
-        "version_normalized": "1.3.0.0",
-        "dist": {
-            "type": "file",
-            "url": "http://pear.php.net/get/XML_Util-1.3.0.tgz",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "ext-pcre": "*",
-            "php": ">=5.3.0.0"
-        },
-        "replace": {
-            "pear-pear/xml_util": "== 1.3.0.0"
-        },
-        "type": "pear-library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                ""
-            ]
-        },
-        "include-path": [
-            "/"
-        ],
-        "license": [
-            "BSD License"
-        ],
-        "description": "Selection of methods that are often needed when working with XML documents.  Functionality includes creating of attribute lists from arrays, creation of tags, validation of XML names and more."
-    },
-    {
-        "name": "pear-pear.php.net/PEAR",
-        "version": "1.9.5",
-        "version_normalized": "1.9.5.0",
-        "dist": {
-            "type": "file",
-            "url": "http://pear.php.net/get/PEAR-1.9.5.tgz",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "ext-pcre": "*",
-            "ext-xml": "*",
-            "pear-pear.php.net/archive_tar": ">=1.3.11.0",
-            "pear-pear.php.net/console_getopt": ">=1.2.0.0",
-            "pear-pear.php.net/structures_graph": ">=1.0.2.0",
-            "pear-pear.php.net/xml_util": ">=1.2.0.0",
-            "php": ">=4.4.0.0,!=5.0.0.0,!=5.1.0.0,!=5.1.1.0,!=5.1.2.0,!=5.1.3.0,!=5.1.4.0,!=5.1.5.0"
-        },
-        "conflict": {
-            "pear-pear.php.net/pear_frontend_gtk": "<0.4.0.0",
-            "pear-pear.php.net/pear_frontend_web": "<=0.4.0.0"
-        },
-        "replace": {
-            "pear-pear/pear": "== 1.9.5.0"
-        },
-        "type": "pear-library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                ""
-            ]
-        },
-        "include-path": [
-            "/"
-        ],
-        "license": [
-            "New BSD License"
-        ],
-        "description": "The PEAR package contains:\n * the PEAR installer, for creating, distributing\n   and installing packages\n * the PEAR_Exception PHP5 error handling mechanism\n * the PEAR_ErrorStack advanced error handling mechanism\n * the PEAR_Error error handling mechanism\n * the OS_Guess class for retrieving info about the OS\n   where PHP is running on\n * the System class for quick handling of common operations\n   with files and directories\n * the PEAR base class\n  Features in a nutshell:\n  * full support for channels\n  * pre-download dependency validation\n  * new package.xml 2.0 format allows tremendous flexibility while maintaining BC\n  * support for optional dependency groups and limited support for sub-packaging\n  * robust dependency support\n  * full dependency validation on uninstall\n  * remote install for hosts with only ftp access - no more problems with\n    restricted host installation\n  * full support for mirroring\n  * support for bundling several packages into a single tarball\n  * support for static dependencies on a url-based package\n  * support for custom file roles and installation tasks"
-    },
-    {
-        "name": "pear-pear.php.net/Validate",
-        "version": "0.8.5",
-        "version_normalized": "0.8.5.0",
-        "dist": {
-            "type": "file",
-            "url": "http://pear.php.net/get/Validate-0.8.5.tgz",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "php": ">=4.2.0.0"
-        },
-        "replace": {
-            "pear-pear/validate": "== 0.8.5.0"
-        },
-        "type": "pear-library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                ""
-            ]
-        },
-        "include-path": [
-            "/"
-        ],
-        "license": [
-            "New BSD"
-        ],
-        "description": "Package to validate various datas. It includes :\n    - numbers (min/max, decimal or not)\n    - email (syntax, domain check, rfc822)\n    - string (predifined type alpha upper and/or lowercase, numeric,...)\n    - date (min, max, rfc822 compliant)\n    - uri (RFC2396)\n    - possibility valid multiple data with a single method call (::multiple)"
-    },
-    {
-        "name": "pear-pear.php.net/Validate_ISPN",
-        "version": "0.6.1",
-        "version_normalized": "0.6.1.0",
-        "dist": {
-            "type": "file",
-            "url": "http://pear.php.net/get/Validate_ISPN-0.6.1.tgz",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "pear-pear.php.net/validate": ">=0.5.0.0",
-            "php": ">=4.1.0.0"
-        },
-        "replace": {
-            "pear-pear/validate_ispn": "== 0.6.1.0"
-        },
-        "type": "pear-library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                ""
-            ]
-        },
-        "include-path": [
-            "/"
-        ],
-        "license": [
-            "New BSD"
-        ],
-        "description": "Package containes ISPN (International Standard Product Numbers) validations such as:\n * ISSN\n * ISBN\n * ISMN\n * ISRC (International Standard Recording Code)\n * EAN8\n * EAN13\n * EAN14\n * UCC12\n * SSCC"
-    },
-    {
-        "name": "vufind-org/vufindcode",
-        "version": "v1.0.2",
-        "version_normalized": "1.0.2.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/vufind-org/vufindcode.git",
-            "reference": "1c6a0ad73cdf24c363f0e0564ac29ef1ba323ec0"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/vufind-org/vufindcode/zipball/1c6a0ad73cdf24c363f0e0564ac29ef1ba323ec0",
-            "reference": "1c6a0ad73cdf24c363f0e0564ac29ef1ba323ec0",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.0"
-        },
-        "time": "2014-09-17 15:48:11",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "VuFindCode\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-2.0"
-        ],
-        "authors": [
-            {
-                "name": "Demian Katz",
-                "email": "demian.katz@villanova.edu"
-            }
-        ],
-        "description": "Class for representing ISBNs (a VuFind support library)"
-    },
-    {
-        "name": "zendframework/zendrest",
-        "version": "2.0.2",
-        "version_normalized": "2.0.2.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/zendframework/ZendRest.git",
-            "reference": "7427d242b4546e5aef1206d2c97e402109d8843e"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendrest-7427d242b4546e5aef1206d2c97e402109d8843e-zip-da96cc.zip",
-            "reference": "7427d242b4546e5aef1206d2c97e402109d8843e",
-            "shasum": "cd304d9e2fccccbd98348bfbead7d42b102e565a"
-        },
-        "require": {
-            "php": ">=5.3.3",
-            "zendframework/zend-http": "~2.0",
-            "zendframework/zend-uri": "~2.0",
-            "zendframework/zendxml": "~1.0-dev"
-        },
-        "time": "2014-03-05 22:32:09",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "ZendRest": "library/"
-            }
-        },
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "description": " ",
-        "homepage": "http://packages.zendframework.com/",
-        "keywords": [
-            "rest",
-            "zf2"
-        ],
-        "support": {
-            "source": "https://github.com/zendframework/ZendRest/tree/release-2.0.2",
-            "issues": "https://github.com/zendframework/ZendRest/issues"
-        }
-    },
-    {
-        "name": "zfr/rbac",
-        "version": "1.2.0",
-        "version_normalized": "1.2.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/zf-fr/rbac.git",
-            "reference": "493711bfc2a637fd7c6f23b71b7b55a621c35d9d"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/zf-fr/rbac/zipball/493711bfc2a637fd7c6f23b71b7b55a621c35d9d",
-            "reference": "493711bfc2a637fd7c6f23b71b7b55a621c35d9d",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "~3.7",
-            "satooshi/php-coveralls": "~0.6",
-            "squizlabs/php_codesniffer": "1.4.*",
-            "zendframework/zend-servicemanager": "~2.2"
-        },
-        "time": "2014-02-06 14:18:34",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Rbac\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Michaël Gallego",
-                "email": "mic.gallego@gmail.com",
-                "homepage": "http://michaelgallego.fr"
-            }
-        ],
-        "description": "Zend Framework 3 prototype for Zend\\Permissions\\Rbac.",
-        "homepage": "https://github.com/zf-fr/rbac",
-        "keywords": [
-            "rbac",
-            "security",
-            "zf2",
-            "zf3"
-        ]
-    },
-    {
-        "name": "zendframework/zendservice-amazon",
-        "version": "2.0.4",
-        "version_normalized": "2.0.4.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/zendframework/ZendService_Amazon.git",
-            "reference": "a44eec522c622970a6c6666dc308ec6daad08ed4"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendservice-amazon-2.0.4-db4e7c.zip",
-            "reference": "a44eec522c622970a6c6666dc308ec6daad08ed4",
-            "shasum": "6725f42e30e9fa4fa2f8476d650fc07118900569"
-        },
-        "require": {
-            "php": ">=5.3.3",
-            "zendframework/zend-crypt": "~2.0",
-            "zendframework/zend-http": "~2.0",
-            "zendframework/zend-json": "~2.0",
-            "zendframework/zendrest": "~2.0",
-            "zendframework/zendxml": "~1.0-dev"
-        },
-        "require-dev": {
-            "fabpot/php-cs-fixer": "~1.7.0",
-            "phpunit/phpunit": "~4.0",
-            "zendframework/zend-i18n": "~2.0"
-        },
-        "suggest": {
-            "zendframework/zend-uri": "Zend\\Uri component"
-        },
-        "time": "2015-06-04 19:47:46",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "ZendService\\Amazon\\": "library/"
-            }
-        },
-        "autoload-dev": {
-            "psr-0": {
-                "ZendServiceTest\\Amazon\\": "tests/ZendServiceTest/Amazon/"
-            }
-        },
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "description": "OOP wrapper for the Amazon web service",
-        "homepage": "http://packages.zendframework.com/",
-        "keywords": [
-            "amazon",
-            "ec2",
-            "s3",
-            "simpledb",
-            "sqs",
-            "zf2"
-        ]
-    },
-    {
-        "name": "zf-commons/zfc-rbac",
-        "version": "v2.5.2",
-        "version_normalized": "2.5.2.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/ZF-Commons/zfc-rbac.git",
-            "reference": "8046ed9683739ac227ca4f8da7318c2ea330589f"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/8046ed9683739ac227ca4f8da7318c2ea330589f",
-            "reference": "8046ed9683739ac227ca4f8da7318c2ea330589f",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4",
-            "zendframework/zend-mvc": "~2.2",
-            "zendframework/zend-servicemanager": "~2.2",
-            "zfr/rbac": "~1.2"
-        },
-        "require-dev": {
-            "doctrine/common": "~2.4",
-            "doctrine/doctrine-module": "~0.8",
-            "doctrine/doctrine-orm-module": "~0.8",
-            "phpunit/phpunit": "~3.7",
-            "satooshi/php-coveralls": "~0.6",
-            "squizlabs/php_codesniffer": "1.4.*",
-            "zendframework/zend-developer-tools": "dev-master",
-            "zendframework/zendframework": "~2.2"
-        },
-        "suggest": {
-            "doctrine/doctrine-module": "if you want to use Doctrine role provider",
-            "zendframework/zend-developer-tools": "if you want to show information about the roles"
-        },
-        "time": "2015-05-29 10:13:14",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.4-dev",
-                "dev-develop": "3.0-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "ZfcRbac\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Kyle Spraggs",
-                "email": "theman@spiffyjr.me",
-                "homepage": "http://www.spiffyjr.me/"
-            },
-            {
-                "name": "Jean-Marie Leroux",
-                "email": "jmleroux.pro@gmail.com"
-            },
-            {
-                "name": "Michaël Gallego",
-                "email": "mic.gallego@gmail.com",
-                "homepage": "http://www.michaelgallego.fr"
-            }
-        ],
-        "description": "Zend Framework 2 Module that provides a layer of features of Zend\\Permissions\\Rbac",
-        "homepage": "http://www.github.com/ZF-Commons/zfc-rbac",
-        "keywords": [
-            "module",
-            "permissions",
-            "rbac",
-            "zf2"
-        ]
-    },
-    {
         "name": "zendframework/zendxml",
         "version": "1.0.1",
         "version_normalized": "1.0.1.0",
@@ -693,164 +150,6 @@
             "xml",
             "zf2"
         ]
-    },
-    {
-        "name": "ocramius/proxy-manager",
-        "version": "1.0.2",
-        "version_normalized": "1.0.2.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Ocramius/ProxyManager.git",
-            "reference": "57e9272ec0e8deccf09421596e0e2252df440e11"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/57e9272ec0e8deccf09421596e0e2252df440e11",
-            "reference": "57e9272ec0e8deccf09421596e0e2252df440e11",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3",
-            "zendframework/zend-code": ">2.2.5,<3.0"
-        },
-        "require-dev": {
-            "ext-phar": "*",
-            "phpunit/phpunit": "~4.0",
-            "squizlabs/php_codesniffer": "1.5.*"
-        },
-        "suggest": {
-            "ocramius/generated-hydrator": "To have very fast object to array to object conversion for ghost objects",
-            "zendframework/zend-json": "To have the JsonRpc adapter (Remote Object feature)",
-            "zendframework/zend-soap": "To have the Soap adapter (Remote Object feature)",
-            "zendframework/zend-stdlib": "To use the hydrator proxy",
-            "zendframework/zend-xmlrpc": "To have the XmlRpc adapter (Remote Object feature)"
-        },
-        "time": "2015-08-09 04:28:19",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "ProxyManager\\": "src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Marco Pivetta",
-                "email": "ocramius@gmail.com",
-                "homepage": "http://ocramius.github.com/"
-            }
-        ],
-        "description": "A library providing utilities to generate, instantiate and generally operate with Object Proxies",
-        "homepage": "https://github.com/Ocramius/ProxyManager",
-        "keywords": [
-            "aop",
-            "lazy loading",
-            "proxy",
-            "proxy pattern",
-            "service proxies"
-        ]
-    },
-    {
-        "name": "pear-pear.php.net/Archive_Tar",
-        "version": "1.4.0",
-        "version_normalized": "1.4.0.0",
-        "dist": {
-            "type": "file",
-            "url": "http://pear.php.net/get/Archive_Tar-1.4.0.tgz",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "php": ">=5.2.0.0"
-        },
-        "replace": {
-            "pear-pear/archive_tar": "== 1.4.0.0"
-        },
-        "type": "pear-library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                ""
-            ]
-        },
-        "include-path": [
-            "/"
-        ],
-        "license": [
-            "New BSD License"
-        ],
-        "description": "This class provides handling of tar files in PHP.\nIt supports creating, listing, extracting and adding to tar files.\nGzip support is available if PHP has the zlib extension built-in or\nloaded. Bz2 compression is also supported with the bz2 extension loaded."
-    },
-    {
-        "name": "pear-pear.php.net/Console_Getopt",
-        "version": "1.4.1",
-        "version_normalized": "1.4.1.0",
-        "dist": {
-            "type": "file",
-            "url": "http://pear.php.net/get/Console_Getopt-1.4.1.tgz",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "php": ">=5.4.0.0"
-        },
-        "replace": {
-            "pear-pear/console_getopt": "== 1.4.1.0"
-        },
-        "type": "pear-library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                ""
-            ]
-        },
-        "include-path": [
-            "/"
-        ],
-        "license": [
-            "BSD-2-Clause"
-        ],
-        "description": "This is a PHP implementation of \"getopt\" supporting both\nshort and long options."
-    },
-    {
-        "name": "pear-pear.php.net/Structures_Graph",
-        "version": "1.1.1",
-        "version_normalized": "1.1.1.0",
-        "dist": {
-            "type": "file",
-            "url": "http://pear.php.net/get/Structures_Graph-1.1.1.tgz",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "php": ">=5.3.0.0"
-        },
-        "replace": {
-            "pear-pear/structures_graph": "== 1.1.1.0"
-        },
-        "type": "pear-library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                ""
-            ]
-        },
-        "include-path": [
-            "/"
-        ],
-        "license": [
-            "LGPL-3.0+"
-        ],
-        "description": "Structures_Graph is a package for creating and manipulating graph datastructures. It allows building of directed\nand undirected graphs, with data and metadata stored in nodes. The library provides functions for graph traversing\nas well as for characteristic extraction from the graph topology."
     },
     {
         "name": "zendframework/zendframework",
@@ -976,52 +275,149 @@
         ]
     },
     {
-        "name": "vufind-org/vufindhttp",
-        "version": "v2.0.0",
-        "version_normalized": "2.0.0.0",
+        "name": "los/losrecaptcha",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/vufind-org/vufindhttp.git",
-            "reference": "781a14b4daccbf699eefaa22311de0b6307c20bd"
+            "url": "https://github.com/Lansoweb/LosReCaptcha.git",
+            "reference": "2e18af8d57286c28c1951c7305f8379e7304b203"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/781a14b4daccbf699eefaa22311de0b6307c20bd",
-            "reference": "781a14b4daccbf699eefaa22311de0b6307c20bd",
+            "url": "https://api.github.com/repos/Lansoweb/LosReCaptcha/zipball/2e18af8d57286c28c1951c7305f8379e7304b203",
+            "reference": "2e18af8d57286c28c1951c7305f8379e7304b203",
             "shasum": ""
         },
         "require": {
-            "zendframework/zend-http": ">=2.2"
+            "php": ">=5.4.0",
+            "zendframework/zendframework": ">=2.3.2,<3.0.0"
         },
         "require-dev": {
-            "zendframework/zend-uri": ">=2.2"
+            "satooshi/php-coveralls": "dev-master"
         },
-        "time": "2015-08-28 14:44:20",
+        "suggest": {
+            "los/losbase": "los/losbase for some abstract classes to speed development ",
+            "los/loslog": "los/loslog for logging",
+            "los/losui": "los/losui for twitter bootstrap 3 styling, jquery, chosen and other libraries"
+        },
+        "time": "2015-04-28 15:40:23",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
+            "psr-4": {
+                "LosReCaptcha\\": "src/"
+            },
             "psr-0": {
-                "VuFindHttp\\": "src/"
+                "LosReCaptcha\\": "src/"
+            },
+            "classmap": [
+                "./"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Leandro Silva",
+                "email": "leandro@leandrosilva.info",
+                "homepage": "http://leandrosilva.info"
+            }
+        ],
+        "description": "ZF2 module for integration with new ReCaptcha service form Google",
+        "homepage": "http://github.com/Lansoweb/LosReCaptcha",
+        "keywords": [
+            "captcha",
+            "los",
+            "module",
+            "recaptcha",
+            "zf2"
+        ]
+    },
+    {
+        "name": "mobileesp/mdetect",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "dist": {
+            "type": "file",
+            "url": "https://raw.githubusercontent.com/ahand/mobileesp/master/PHP/mdetect.php",
+            "reference": null,
+            "shasum": null
+        },
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "/"
+            ]
+        }
+    },
+    {
+        "name": "ocramius/proxy-manager",
+        "version": "1.0.2",
+        "version_normalized": "1.0.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Ocramius/ProxyManager.git",
+            "reference": "57e9272ec0e8deccf09421596e0e2252df440e11"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/57e9272ec0e8deccf09421596e0e2252df440e11",
+            "reference": "57e9272ec0e8deccf09421596e0e2252df440e11",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3",
+            "zendframework/zend-code": ">2.2.5,<3.0"
+        },
+        "require-dev": {
+            "ext-phar": "*",
+            "phpunit/phpunit": "~4.0",
+            "squizlabs/php_codesniffer": "1.5.*"
+        },
+        "suggest": {
+            "ocramius/generated-hydrator": "To have very fast object to array to object conversion for ghost objects",
+            "zendframework/zend-json": "To have the JsonRpc adapter (Remote Object feature)",
+            "zendframework/zend-soap": "To have the Soap adapter (Remote Object feature)",
+            "zendframework/zend-stdlib": "To use the hydrator proxy",
+            "zendframework/zend-xmlrpc": "To have the XmlRpc adapter (Remote Object feature)"
+        },
+        "time": "2015-08-09 04:28:19",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "ProxyManager\\": "src"
             }
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "GPL-2.0"
+            "MIT"
         ],
         "authors": [
             {
-                "name": "David Maus",
-                "email": "maus@hab.de",
-                "role": "Developer"
-            },
-            {
-                "name": "Demian Katz",
-                "email": "demian.katz@villanova.edu",
-                "role": "Maintainer"
+                "name": "Marco Pivetta",
+                "email": "ocramius@gmail.com",
+                "homepage": "http://ocramius.github.com/"
             }
         ],
-        "description": "VuFind 2.x HTTP service library",
-        "homepage": "http://vufind.org/"
+        "description": "A library providing utilities to generate, instantiate and generally operate with Object Proxies",
+        "homepage": "https://github.com/Ocramius/ProxyManager",
+        "keywords": [
+            "aop",
+            "lazy loading",
+            "proxy",
+            "proxy pattern",
+            "service proxies"
+        ]
     },
     {
         "name": "oyejorge/less.php",
@@ -1116,27 +512,288 @@
         "description": "The standard for machine-readable cataloging (MARC) records is documented at http://loc.gov/marc/. This package enables you to read existing MARC records from a file, string, or (using the YAZ extension), from a Z39.50 source. You can also use this package to create new MARC records.\n\nThis package is based on the PHP MARC package, originally called \"php-marc\", that is part of the Emilda Project (http://www.emilda.org).  Christoffer Landtman generously agreed to make the \"php-marc\" code available under the GNU LGPL so it could be used as the basis of this PEAR package."
     },
     {
-        "name": "symfony/yaml",
-        "version": "v2.7.5",
-        "version_normalized": "2.7.5.0",
+        "name": "pear-pear.php.net/XML_Util",
+        "version": "1.3.0",
+        "version_normalized": "1.3.0.0",
+        "dist": {
+            "type": "file",
+            "url": "http://pear.php.net/get/XML_Util-1.3.0.tgz",
+            "reference": null,
+            "shasum": null
+        },
+        "require": {
+            "ext-pcre": "*",
+            "php": ">=5.3.0.0"
+        },
+        "replace": {
+            "pear-pear/xml_util": "== 1.3.0.0"
+        },
+        "type": "pear-library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                ""
+            ]
+        },
+        "include-path": [
+            "/"
+        ],
+        "license": [
+            "BSD License"
+        ],
+        "description": "Selection of methods that are often needed when working with XML documents.  Functionality includes creating of attribute lists from arrays, creation of tags, validation of XML names and more."
+    },
+    {
+        "name": "pear-pear.php.net/Console_Getopt",
+        "version": "1.4.1",
+        "version_normalized": "1.4.1.0",
+        "dist": {
+            "type": "file",
+            "url": "http://pear.php.net/get/Console_Getopt-1.4.1.tgz",
+            "reference": null,
+            "shasum": null
+        },
+        "require": {
+            "php": ">=5.4.0.0"
+        },
+        "replace": {
+            "pear-pear/console_getopt": "== 1.4.1.0"
+        },
+        "type": "pear-library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                ""
+            ]
+        },
+        "include-path": [
+            "/"
+        ],
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "description": "This is a PHP implementation of \"getopt\" supporting both\nshort and long options."
+    },
+    {
+        "name": "pear-pear.php.net/Structures_Graph",
+        "version": "1.1.1",
+        "version_normalized": "1.1.1.0",
+        "dist": {
+            "type": "file",
+            "url": "http://pear.php.net/get/Structures_Graph-1.1.1.tgz",
+            "reference": null,
+            "shasum": null
+        },
+        "require": {
+            "php": ">=5.3.0.0"
+        },
+        "replace": {
+            "pear-pear/structures_graph": "== 1.1.1.0"
+        },
+        "type": "pear-library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                ""
+            ]
+        },
+        "include-path": [
+            "/"
+        ],
+        "license": [
+            "LGPL-3.0+"
+        ],
+        "description": "Structures_Graph is a package for creating and manipulating graph datastructures. It allows building of directed\nand undirected graphs, with data and metadata stored in nodes. The library provides functions for graph traversing\nas well as for characteristic extraction from the graph topology."
+    },
+    {
+        "name": "pear-pear.php.net/Archive_Tar",
+        "version": "1.4.0",
+        "version_normalized": "1.4.0.0",
+        "dist": {
+            "type": "file",
+            "url": "http://pear.php.net/get/Archive_Tar-1.4.0.tgz",
+            "reference": null,
+            "shasum": null
+        },
+        "require": {
+            "php": ">=5.2.0.0"
+        },
+        "replace": {
+            "pear-pear/archive_tar": "== 1.4.0.0"
+        },
+        "type": "pear-library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                ""
+            ]
+        },
+        "include-path": [
+            "/"
+        ],
+        "license": [
+            "New BSD License"
+        ],
+        "description": "This class provides handling of tar files in PHP.\nIt supports creating, listing, extracting and adding to tar files.\nGzip support is available if PHP has the zlib extension built-in or\nloaded. Bz2 compression is also supported with the bz2 extension loaded."
+    },
+    {
+        "name": "pear-pear.php.net/PEAR",
+        "version": "1.10.1",
+        "version_normalized": "1.10.1.0",
+        "dist": {
+            "type": "file",
+            "url": "http://pear.php.net/get/PEAR-1.10.1.tgz",
+            "reference": null,
+            "shasum": null
+        },
+        "require": {
+            "ext-pcre": "*",
+            "ext-xml": "*",
+            "pear-pear.php.net/archive_tar": ">=1.4.0.0",
+            "pear-pear.php.net/console_getopt": ">=1.4.1.0",
+            "pear-pear.php.net/structures_graph": ">=1.1.0.0",
+            "pear-pear.php.net/xml_util": ">=1.3.0.0",
+            "php": ">=5.4.0.0"
+        },
+        "conflict": {
+            "pear-pear.php.net/pear_frontend_gtk": "<0.4.0.0",
+            "pear-pear.php.net/pear_frontend_web": "<=0.4.0.0"
+        },
+        "replace": {
+            "pear-pear/pear": "== 1.10.1.0"
+        },
+        "type": "pear-library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                ""
+            ]
+        },
+        "include-path": [
+            "/"
+        ],
+        "license": [
+            "New BSD License"
+        ],
+        "description": "The PEAR package contains:\n * the PEAR installer, for creating, distributing\n   and installing packages\n * the PEAR_Exception PHP5 error handling mechanism\n * the PEAR_ErrorStack advanced error handling mechanism\n * the PEAR_Error error handling mechanism\n * the OS_Guess class for retrieving info about the OS\n   where PHP is running on\n * the System class for quick handling of common operations\n   with files and directories\n * the PEAR base class\n  Features in a nutshell:\n  * full support for channels\n  * pre-download dependency validation\n  * new package.xml 2.0 format allows tremendous flexibility while maintaining BC\n  * support for optional dependency groups and limited support for sub-packaging\n  * robust dependency support\n  * full dependency validation on uninstall\n  * remote install for hosts with only ftp access - no more problems with\n    restricted host installation\n  * full support for mirroring\n  * support for bundling several packages into a single tarball\n  * support for static dependencies on a url-based package\n  * support for custom file roles and installation tasks"
+    },
+    {
+        "name": "pear-pear.php.net/Validate",
+        "version": "0.8.5",
+        "version_normalized": "0.8.5.0",
+        "dist": {
+            "type": "file",
+            "url": "http://pear.php.net/get/Validate-0.8.5.tgz",
+            "reference": null,
+            "shasum": null
+        },
+        "require": {
+            "php": ">=4.2.0.0"
+        },
+        "replace": {
+            "pear-pear/validate": "== 0.8.5.0"
+        },
+        "type": "pear-library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                ""
+            ]
+        },
+        "include-path": [
+            "/"
+        ],
+        "license": [
+            "New BSD"
+        ],
+        "description": "Package to validate various datas. It includes :\n    - numbers (min/max, decimal or not)\n    - email (syntax, domain check, rfc822)\n    - string (predifined type alpha upper and/or lowercase, numeric,...)\n    - date (min, max, rfc822 compliant)\n    - uri (RFC2396)\n    - possibility valid multiple data with a single method call (::multiple)"
+    },
+    {
+        "name": "pear-pear.php.net/Validate_ISPN",
+        "version": "0.6.1",
+        "version_normalized": "0.6.1.0",
+        "dist": {
+            "type": "file",
+            "url": "http://pear.php.net/get/Validate_ISPN-0.6.1.tgz",
+            "reference": null,
+            "shasum": null
+        },
+        "require": {
+            "pear-pear.php.net/validate": ">=0.5.0.0",
+            "php": ">=4.1.0.0"
+        },
+        "replace": {
+            "pear-pear/validate_ispn": "== 0.6.1.0"
+        },
+        "type": "pear-library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                ""
+            ]
+        },
+        "include-path": [
+            "/"
+        ],
+        "license": [
+            "New BSD"
+        ],
+        "description": "Package containes ISPN (International Standard Product Numbers) validations such as:\n * ISSN\n * ISBN\n * ISMN\n * ISRC (International Standard Recording Code)\n * EAN8\n * EAN13\n * EAN14\n * UCC12\n * SSCC"
+    },
+    {
+        "name": "serialssolutions/summon",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/symfony/yaml.git",
-            "reference": "31cb2ad0155c95b88ee55fe12bc7ff92232c1770"
+            "url": "https://github.com/summon/Summon.php.git",
+            "reference": "ce26752adfded96aff2f4422991078eedfc740a5"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/yaml/zipball/31cb2ad0155c95b88ee55fe12bc7ff92232c1770",
-            "reference": "31cb2ad0155c95b88ee55fe12bc7ff92232c1770",
+            "url": "https://api.github.com/repos/summon/Summon.php/zipball/ce26752adfded96aff2f4422991078eedfc740a5",
+            "reference": "ce26752adfded96aff2f4422991078eedfc740a5",
+            "shasum": ""
+        },
+        "time": "2013-11-13 19:07:09",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "SerialsSolutions": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Demian Katz",
+                "email": "demian.katz@villanova.edu"
+            }
+        ],
+        "description": "Library for interacting with Serials Solutions' Summon API."
+    },
+    {
+        "name": "symfony/yaml",
+        "version": "v2.7.6",
+        "version_normalized": "2.7.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/yaml.git",
+            "reference": "eca9019c88fbe250164affd107bc8057771f3f4d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/yaml/zipball/eca9019c88fbe250164affd107bc8057771f3f4d",
+            "reference": "eca9019c88fbe250164affd107bc8057771f3f4d",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.9"
         },
-        "require-dev": {
-            "symfony/phpunit-bridge": "~2.7"
-        },
-        "time": "2015-09-14 14:14:09",
+        "time": "2015-10-11 09:39:48",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1167,27 +824,288 @@
         "homepage": "https://symfony.com"
     },
     {
-        "name": "symfony/css-selector",
-        "version": "v2.7.5",
-        "version_normalized": "2.7.5.0",
+        "name": "vufind-org/vufindcode",
+        "version": "v1.0.2",
+        "version_normalized": "1.0.2.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/symfony/css-selector.git",
-            "reference": "abe19cc0429a06be0c133056d1f9859854860970"
+            "url": "https://github.com/vufind-org/vufindcode.git",
+            "reference": "1c6a0ad73cdf24c363f0e0564ac29ef1ba323ec0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/css-selector/zipball/abe19cc0429a06be0c133056d1f9859854860970",
-            "reference": "abe19cc0429a06be0c133056d1f9859854860970",
+            "url": "https://api.github.com/repos/vufind-org/vufindcode/zipball/1c6a0ad73cdf24c363f0e0564ac29ef1ba323ec0",
+            "reference": "1c6a0ad73cdf24c363f0e0564ac29ef1ba323ec0",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2014-09-17 15:48:11",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "VuFindCode\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Demian Katz",
+                "email": "demian.katz@villanova.edu"
+            }
+        ],
+        "description": "Class for representing ISBNs (a VuFind support library)"
+    },
+    {
+        "name": "vufind-org/vufindhttp",
+        "version": "v2.0.0",
+        "version_normalized": "2.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/vufind-org/vufindhttp.git",
+            "reference": "781a14b4daccbf699eefaa22311de0b6307c20bd"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/781a14b4daccbf699eefaa22311de0b6307c20bd",
+            "reference": "781a14b4daccbf699eefaa22311de0b6307c20bd",
+            "shasum": ""
+        },
+        "require": {
+            "zendframework/zend-http": ">=2.2"
+        },
+        "require-dev": {
+            "zendframework/zend-uri": ">=2.2"
+        },
+        "time": "2015-08-28 14:44:20",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "VuFindHttp\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-2.0"
+        ],
+        "authors": [
+            {
+                "name": "David Maus",
+                "email": "maus@hab.de",
+                "role": "Developer"
+            },
+            {
+                "name": "Demian Katz",
+                "email": "demian.katz@villanova.edu",
+                "role": "Maintainer"
+            }
+        ],
+        "description": "VuFind 2.x HTTP service library",
+        "homepage": "http://vufind.org/"
+    },
+    {
+        "name": "zfr/rbac",
+        "version": "1.2.0",
+        "version_normalized": "1.2.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zf-fr/rbac.git",
+            "reference": "493711bfc2a637fd7c6f23b71b7b55a621c35d9d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/zf-fr/rbac/zipball/493711bfc2a637fd7c6f23b71b7b55a621c35d9d",
+            "reference": "493711bfc2a637fd7c6f23b71b7b55a621c35d9d",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~3.7",
+            "satooshi/php-coveralls": "~0.6",
+            "squizlabs/php_codesniffer": "1.4.*",
+            "zendframework/zend-servicemanager": "~2.2"
+        },
+        "time": "2014-02-06 14:18:34",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Rbac\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Michaël Gallego",
+                "email": "mic.gallego@gmail.com",
+                "homepage": "http://michaelgallego.fr"
+            }
+        ],
+        "description": "Zend Framework 3 prototype for Zend\\Permissions\\Rbac.",
+        "homepage": "https://github.com/zf-fr/rbac",
+        "keywords": [
+            "rbac",
+            "security",
+            "zf2",
+            "zf3"
+        ]
+    },
+    {
+        "name": "zf-commons/zfc-rbac",
+        "version": "v2.5.2",
+        "version_normalized": "2.5.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ZF-Commons/zfc-rbac.git",
+            "reference": "8046ed9683739ac227ca4f8da7318c2ea330589f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/8046ed9683739ac227ca4f8da7318c2ea330589f",
+            "reference": "8046ed9683739ac227ca4f8da7318c2ea330589f",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4",
+            "zendframework/zend-mvc": "~2.2",
+            "zendframework/zend-servicemanager": "~2.2",
+            "zfr/rbac": "~1.2"
+        },
+        "require-dev": {
+            "doctrine/common": "~2.4",
+            "doctrine/doctrine-module": "~0.8",
+            "doctrine/doctrine-orm-module": "~0.8",
+            "phpunit/phpunit": "~3.7",
+            "satooshi/php-coveralls": "~0.6",
+            "squizlabs/php_codesniffer": "1.4.*",
+            "zendframework/zend-developer-tools": "dev-master",
+            "zendframework/zendframework": "~2.2"
+        },
+        "suggest": {
+            "doctrine/doctrine-module": "if you want to use Doctrine role provider",
+            "zendframework/zend-developer-tools": "if you want to show information about the roles"
+        },
+        "time": "2015-05-29 10:13:14",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.4-dev",
+                "dev-develop": "3.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "ZfcRbac\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Kyle Spraggs",
+                "email": "theman@spiffyjr.me",
+                "homepage": "http://www.spiffyjr.me/"
+            },
+            {
+                "name": "Jean-Marie Leroux",
+                "email": "jmleroux.pro@gmail.com"
+            },
+            {
+                "name": "Michaël Gallego",
+                "email": "mic.gallego@gmail.com",
+                "homepage": "http://www.michaelgallego.fr"
+            }
+        ],
+        "description": "Zend Framework 2 Module that provides a layer of features of Zend\\Permissions\\Rbac",
+        "homepage": "http://www.github.com/ZF-Commons/zfc-rbac",
+        "keywords": [
+            "module",
+            "permissions",
+            "rbac",
+            "zf2"
+        ]
+    },
+    {
+        "name": "symfony/process",
+        "version": "v2.7.6",
+        "version_normalized": "2.7.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/process.git",
+            "reference": "4a959dd4e19c2c5d7512689413921e0a74386ec7"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/process/zipball/4a959dd4e19c2c5d7512689413921e0a74386ec7",
+            "reference": "4a959dd4e19c2c5d7512689413921e0a74386ec7",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.9"
         },
-        "require-dev": {
-            "symfony/phpunit-bridge": "~2.7"
+        "time": "2015-10-23 14:47:27",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.7-dev"
+            }
         },
-        "time": "2015-09-22 13:49:29",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Component\\Process\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony Process Component",
+        "homepage": "https://symfony.com"
+    },
+    {
+        "name": "symfony/css-selector",
+        "version": "v2.7.6",
+        "version_normalized": "2.7.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/css-selector.git",
+            "reference": "e1b865b26be4a56d22a8dee398375044a80c865b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/css-selector/zipball/e1b865b26be4a56d22a8dee398375044a80c865b",
+            "reference": "e1b865b26be4a56d22a8dee398375044a80c865b",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.9"
+        },
+        "time": "2015-10-11 09:39:48",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1219,57 +1137,6 @@
             }
         ],
         "description": "Symfony CssSelector Component",
-        "homepage": "https://symfony.com"
-    },
-    {
-        "name": "symfony/process",
-        "version": "v2.7.5",
-        "version_normalized": "2.7.5.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/process.git",
-            "reference": "b27c8e317922cd3cdd3600850273cf6b82b2e8e9"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/process/zipball/b27c8e317922cd3cdd3600850273cf6b82b2e8e9",
-            "reference": "b27c8e317922cd3cdd3600850273cf6b82b2e8e9",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.9"
-        },
-        "require-dev": {
-            "symfony/phpunit-bridge": "~2.7"
-        },
-        "time": "2015-09-19 19:59:23",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.7-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Symfony\\Component\\Process\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            },
-            {
-                "name": "Symfony Community",
-                "homepage": "https://symfony.com/contributors"
-            }
-        ],
-        "description": "Symfony Process Component",
         "homepage": "https://symfony.com"
     },
     {
@@ -1394,6 +1261,268 @@
             "javascript",
             "testing",
             "zombie"
+        ]
+    },
+    {
+        "name": "zendframework/zendrest",
+        "version": "2.0.2",
+        "version_normalized": "2.0.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zendframework/ZendRest.git",
+            "reference": "9d2d631af7b4b54bfa2a7f5ca5f455192e3e0916"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://packages.zendframework.com/composer/zendframework-zendrest-2.0.2-2f9805.zip",
+            "reference": "9d2d631af7b4b54bfa2a7f5ca5f455192e3e0916",
+            "shasum": "445d681551a5c9f2be25b241e615e754278d79ba"
+        },
+        "require": {
+            "php": ">=5.3.3",
+            "zendframework/zend-http": "~2.0",
+            "zendframework/zend-uri": "~2.0",
+            "zendframework/zendxml": "~1.0-dev"
+        },
+        "time": "2014-03-05 22:32:09",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "ZendRest": "library/"
+            }
+        },
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "description": " ",
+        "homepage": "http://packages.zendframework.com/",
+        "keywords": [
+            "rest",
+            "zf2"
+        ]
+    },
+    {
+        "name": "zendframework/zendservice-amazon",
+        "version": "2.0.4",
+        "version_normalized": "2.0.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zendframework/ZendService_Amazon.git",
+            "reference": "a44eec522c622970a6c6666dc308ec6daad08ed4"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://packages.zendframework.com/composer/zendframework-zendservice-amazon-2.0.4-db4e7c.zip",
+            "reference": "a44eec522c622970a6c6666dc308ec6daad08ed4",
+            "shasum": "6725f42e30e9fa4fa2f8476d650fc07118900569"
+        },
+        "require": {
+            "php": ">=5.3.3",
+            "zendframework/zend-crypt": "~2.0",
+            "zendframework/zend-http": "~2.0",
+            "zendframework/zend-json": "~2.0",
+            "zendframework/zendrest": "~2.0",
+            "zendframework/zendxml": "~1.0-dev"
+        },
+        "require-dev": {
+            "fabpot/php-cs-fixer": "~1.7.0",
+            "phpunit/phpunit": "~4.0",
+            "zendframework/zend-i18n": "~2.0"
+        },
+        "suggest": {
+            "zendframework/zend-uri": "Zend\\Uri component"
+        },
+        "time": "2015-06-04 19:47:46",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "ZendService\\Amazon\\": "library/"
+            }
+        },
+        "autoload-dev": {
+            "psr-0": {
+                "ZendServiceTest\\Amazon\\": "tests/ZendServiceTest/Amazon/"
+            }
+        },
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "description": "OOP wrapper for the Amazon web service",
+        "homepage": "http://packages.zendframework.com/",
+        "keywords": [
+            "amazon",
+            "ec2",
+            "s3",
+            "simpledb",
+            "sqs",
+            "zf2"
+        ]
+    },
+    {
+        "name": "cap60552/php-sip2",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/cap60552/php-sip2.git",
+            "reference": "9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/cap60552/php-sip2/zipball/9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1",
+            "reference": "9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1",
+            "shasum": ""
+        },
+        "time": "2015-11-03 04:42:39",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-3.0"
+        ],
+        "authors": [
+            {
+                "name": "John Wohlers",
+                "email": "john@wohlershome.net",
+                "role": "Maintainer"
+            }
+        ],
+        "description": "PHP class library to facilitate communication with Integrated Library System (ILS) servers via 3M's SIP2.",
+        "homepage": "https://github.com/cap60552/php-sip2"
+    },
+    {
+        "name": "instaclick/php-webdriver",
+        "version": "1.4.3",
+        "version_normalized": "1.4.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/instaclick/php-webdriver.git",
+            "reference": "0c20707dcf30a32728fd6bdeeab996c887fdb2fb"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/instaclick/php-webdriver/zipball/0c20707dcf30a32728fd6bdeeab996c887fdb2fb",
+            "reference": "0c20707dcf30a32728fd6bdeeab996c887fdb2fb",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.3.2"
+        },
+        "require-dev": {
+            "satooshi/php-coveralls": "dev-master"
+        },
+        "time": "2015-06-15 20:19:33",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.4.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "WebDriver": "lib/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Justin Bishop",
+                "email": "jubishop@gmail.com",
+                "role": "Developer"
+            },
+            {
+                "name": "Anthon Pang",
+                "email": "apang@softwaredevelopment.ca",
+                "role": "Fork Maintainer"
+            }
+        ],
+        "description": "PHP WebDriver for Selenium 2",
+        "homepage": "http://instaclick.com/",
+        "keywords": [
+            "browser",
+            "selenium",
+            "webdriver",
+            "webtest"
+        ]
+    },
+    {
+        "name": "behat/mink-selenium2-driver",
+        "version": "v1.3.0",
+        "version_normalized": "1.3.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/minkphp/MinkSelenium2Driver.git",
+            "reference": "bedbf1999c7ba1bc6921b30ee2eadf383e7ff5c9"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/minkphp/MinkSelenium2Driver/zipball/bedbf1999c7ba1bc6921b30ee2eadf383e7ff5c9",
+            "reference": "bedbf1999c7ba1bc6921b30ee2eadf383e7ff5c9",
+            "shasum": ""
+        },
+        "require": {
+            "behat/mink": "~1.7@dev",
+            "instaclick/php-webdriver": "~1.1",
+            "php": ">=5.3.1"
+        },
+        "require-dev": {
+            "symfony/phpunit-bridge": "~2.7"
+        },
+        "time": "2015-09-21 21:02:54",
+        "type": "mink-driver",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.3.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Behat\\Mink\\Driver\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Konstantin Kudryashov",
+                "email": "ever.zet@gmail.com",
+                "homepage": "http://everzet.com"
+            },
+            {
+                "name": "Pete Otaqui",
+                "email": "pete@otaqui.com",
+                "homepage": "https://github.com/pete-otaqui"
+            }
+        ],
+        "description": "Selenium2 (WebDriver) driver for Mink framework",
+        "homepage": "http://mink.behat.org/",
+        "keywords": [
+            "ajax",
+            "browser",
+            "javascript",
+            "selenium",
+            "testing",
+            "webdriver"
         ]
     }
 ]

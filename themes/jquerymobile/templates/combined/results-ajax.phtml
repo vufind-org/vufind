@@ -7,7 +7,7 @@
     // Set up Javascript for use below:
     $loadJs = 'var url = path + "/Combined/Result?id=' . urlencode($searchClassId)
         . '&lookfor=' . urlencode($lookfor) . '";'
-        . "\$('#combined_" . $this->escapeHtml($searchClassId) . "').load(url, '', function(responseText) {"
+        . "\$('#" . $this->escapeHtml($currentSearch['domId']) . "').load(url, '', function(responseText) {"
         . "if (responseText.length == 0) $('#combined_" . $this->escapeHtml($searchClassId) . "').hide();"
         . "$('.combinedButton').button(); });";
 ?>

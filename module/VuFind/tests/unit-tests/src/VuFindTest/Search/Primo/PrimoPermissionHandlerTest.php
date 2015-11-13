@@ -141,20 +141,13 @@ class PrimoPermissionHandlerTest extends TestCase
      * This should throw an Exception.
      *
      * @return void
+     *
+     * @expectedException Exception
+     * @expectedExceptionMessage No institutionCode found.
      */
     public function testWithoutConfig()
     {
-        // TODO: make this test work properly
-        $this->markTestSkipped();
-        try {
-            $handler = new PrimoPermissionHandler(null);
-        } catch(Exception $e){
-            $this->assertEquals(
-                "The Primo Permission System has not been configured.
-                Please configure section [Institutions] in Primo.ini.",
-                $e->getMessage()
-            );
-        }
+        new PrimoPermissionHandler(null);
     }
 
     /**
@@ -166,6 +159,20 @@ class PrimoPermissionHandlerTest extends TestCase
     public function testWithoutAuthorizationService()
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
+        $this->assertEquals(false, $handler->hasPermission());
+    }
+
+    /**
+     * Test the handler without setting an authorization service.
+     * This should always return false.
+     *
+     * @return void
+     */
+    public function testWithoutAuthorizationServiceWithZendConfigObject()
+    {
+        $handler = new PrimoPermissionHandler(
+            new \Zend\Config\Config($this->primoConfig)
+        );
         $this->assertEquals(false, $handler->hasPermission());
     }
 

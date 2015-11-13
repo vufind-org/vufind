@@ -594,6 +594,24 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Support method to load tab information from the RecordTabPluginManager.
+     *
+     * @return void
+     */
+    protected function loadTabDetails()
+    {
+        $driver = $this->loadRecord();
+        $request = $this->getRequest();
+        $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
+        $details = $rtpm->getTabDetailsForRecord(
+            $driver, $this->getTabConfiguration(), $request,
+            $this->fallbackDefaultTab
+        );
+        $this->allTabs = $details['tabs'];
+        $this->defaultTab = $details['default'] ? $details['default'] : false;
+    }
+
+    /**
      * Get default tab for a given driver
      *
      * @return string
@@ -602,26 +620,8 @@ class AbstractRecord extends AbstractBase
     {
         // Load default tab if not already retrieved:
         if (null === $this->defaultTab) {
-            // Load record driver tab configuration:
-            $driver = $this->loadRecord();
-            $this->defaultTab = $this->getServiceLocator()
-                ->get('VuFind\RecordTabPluginManager')
-                ->getDefaultTabForRecord($driver, $this->getTabConfiguration());
-
-            // Missing/invalid record driver configuration? Fall back to configured
-            // default:
-            $tabs = $this->getAllTabs();
-            if (empty($this->defaultTab) || !isset($tabs[$this->defaultTab])) {
-                $this->defaultTab = $this->fallbackDefaultTab;
-            }
-
-            // Is configured tab also invalid? If so, pick first existing tab:
-            if (empty($this->defaultTab) || !isset($tabs[$this->defaultTab])) {
-                $keys = array_keys($tabs);
-                $this->defaultTab = isset($keys[0]) ? $keys[0] : '';
-            }
+            $this->loadTabDetails();
         }
-
         return $this->defaultTab;
     }
 
@@ -633,11 +633,7 @@ class AbstractRecord extends AbstractBase
     protected function getAllTabs()
     {
         if (null === $this->allTabs) {
-            $driver = $this->loadRecord();
-            $request = $this->getRequest();
-            $this->allTabs = $this->getServiceLocator()
-                ->get('VuFind\RecordTabPluginManager')
-                ->getTabsForRecord($driver, $this->getTabConfiguration(), $request);
+            $this->loadTabDetails();
         }
         return $this->allTabs;
     }

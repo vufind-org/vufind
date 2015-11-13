@@ -21,7 +21,7 @@
             // Enable bulk options if appropriate:
             $viewParams['showBulkOptions'] = $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions;
           ?>
-          <div id="combined_<?=$this->escapeHtmlAttr($searchClassId)?>">
+          <div id="<?=$this->escapeHtmlAttr($currentSearch['domId'])?>">
             <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
             <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
           </div>

@@ -57,5 +57,32 @@ class WebController extends AbstractSearch
         // Do nothing -- just display template
         return $this->createViewModel();
     }
-}
 
+    /**
+     * Process the jumpto parameter -- either redirect to a specific record and
+     * return view model, or ignore the parameter and return false.
+     *
+     * @param \VuFind\Search\Base\Results $results Search results object.
+     *
+     * @return mixed
+     */
+    protected function processJumpTo($results)
+    {
+        // Missing/invalid parameter?  Ignore it:
+        $jumpto = $this->params()->fromQuery('jumpto');
+        if (empty($jumpto) || !is_numeric($jumpto)) {
+            return false;
+        }
+
+        // Parameter out of range?  Ignore it:
+        $recordList = $results->getResults();
+        if (!isset($recordList[$jumpto - 1])) {
+            return false;
+        }
+
+        // If we got this far, we have a valid parameter so we should redirect
+        // and report success:
+        $url = $recordList[$jumpto - 1]->getUrl();
+        return $url ? $this->redirect()->toUrl($url) : false;
+    }
+}
