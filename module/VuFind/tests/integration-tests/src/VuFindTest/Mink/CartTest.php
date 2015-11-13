@@ -89,6 +89,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
                 return;
             }
         }
+        die();
         $this->fail('Too many retries on check for error message.');
     }
 

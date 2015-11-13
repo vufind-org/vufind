@@ -93,13 +93,13 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord();
         // Click add comment without logging in
         // TODO Rewrite for comment and login coming
-        $this->findCss($page, '#usercomments')->click();
-        $this->findCss($page, '#comment');
-        $this->assertEquals(
+        $this->findCss($page, '.record-tabs .usercomments')->click();
+        $this->findCss($page, '.comment-form');
+        $this->assertEquals( // Can Comment?
             'You must be logged in first',
-            $this->findCss($page, 'form.comment .btn.btn-primary')->getValue()
-        ); // Can Comment?
-        $this->findCss($page, 'form.comment .btn-primary')->click();
+            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
+        );
+        $this->findCss($page, 'form.comment-form .btn-primary')->click();
         $this->findCss($page, '.modal.in'); // Lightbox open
         $this->findCss($page, '.modal [name="username"]');
         // Create new account
@@ -110,18 +110,17 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         // Make sure page updated for login
         $page = $this->gotoRecord();
-        $this->findCss($page, '#usercomments')->click();
-        $this->assertEquals(
+        $this->findCss($page, '.record-tabs .usercomments')->click();
+        $this->assertEquals( // Can Comment?
             'Add your comment',
-            $this->findCss($page, 'form.comment .btn.btn-primary')->getValue()
-        ); // Can Comment?
+            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
+        );
+        // "Add" empty comment
+        $this->findCss($page, 'form.comment-form .btn-primary')->click();
         $this->assertNull($page->find('css', '.comment.row'));
         // Add comment
-        $this->findCss($page, '#comment')->setValue('one');
-        $this->findCss($page, 'form.comment .btn-primary')->click();
-        $this->findCss($page, '.comment.row');
-        // "Add" empty comment
-        $this->findCss($page, 'form.comment .btn-primary')->click();
+        $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
+        $this->findCss($page, 'form.comment-form .btn-primary')->click();
         $this->findCss($page, '.comment.row');
         // Remove comment
         $this->findCss($page, '.comment.row .delete')->click();
@@ -146,7 +145,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click to add tag
-        $this->findCss($page, '#tagRecord')->click();
+        $this->snooze();
+        $this->findCss($page, '.tag-record')->click();
         $this->snooze();
         // Lightbox login open?
         $this->findCss($page, '.modal.in [name="username"]');
@@ -156,6 +156,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
             $page, ['username' => 'username2', 'email' => 'test2@com.com']
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '.modal #addtag_tag');
         $this->findCss($page, '.modal .close')->click();
         $this->snooze(); // wait for display to update
@@ -163,7 +164,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         // Login
         $page = $this->gotoRecord(); // redirects to search home???
-        $this->findCss($page, '#tagRecord')->click();
+        $this->findCss($page, '.tag-record')->click();
         $this->snooze();
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
@@ -176,7 +177,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal .close')->click();
         // Count tags
         $this->snooze(); // wait for UI update
-        $tags = $page->findAll('css', '#tagList .tag');
+        $tags = $page->findAll('css', '.tagList .tag');
         $this->assertEquals(4, count($tags));
         $tvals = [];
         foreach ($tags as $i => $t) {
@@ -188,7 +189,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Remove a tag
         $tags[0]->find('css', 'button')->click();
         $this->snooze(); // wait for UI update
-        $tags = $page->findAll('css', '#tagList .tag');
+        $tags = $page->findAll('css', '.tagList .tag');
         // Count tags with missing
         $sum = 0;
         foreach ($tags as $t) {
@@ -203,8 +204,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze(); // wait for UI update
 
         // Flat tags
-        $this->assertNull($page->find('css', '#tagList .tag.selected'));
-        $this->assertNull($page->find('css', '#tagList .tag .fa'));
+        $this->assertNull($page->find('css', '.tagList .tag.selected'));
+        $this->assertNull($page->find('css', '.tagList .tag .fa'));
         // Login with second account
         $this->findCss($page, '#loginOptions a')->click();
         $this->snooze();
@@ -214,19 +215,19 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $page = $this->gotoRecord();
         // Check selected == 0
-        $this->assertNull($page->find('css', '#tagList .tag.selected'));
-        $this->findCss($page, '#tagList .tag');
-        $this->findCss($page, '#tagList .tag .fa-plus');
+        $this->assertNull($page->find('css', '.tagList .tag.selected'));
+        $this->findCss($page, '.tagList .tag');
+        $this->findCss($page, '.tagList .tag .fa-plus');
         // Click one
-        $this->findCss($page, '#tagList .tag button')->click();
+        $this->findCss($page, '.tagList .tag button')->click();
         $this->snooze();
         // Check selected == 1
-        $this->findCss($page, '#tagList .tag.selected');
+        $this->findCss($page, '.tagList .tag.selected');
         // Click again
-        $this->findCss($page, '#tagList .tag button')->click();
+        $this->findCss($page, '.tagList .tag button')->click();
         $this->snooze();
         // Check selected == 0
-        $this->assertNull($page->find('css', '#tagList .tag.selected'));
+        $this->assertNull($page->find('css', '.tagList .tag.selected'));
         $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
     }
 
@@ -245,7 +246,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click email record without logging in
-        $this->findCss($page, '#mail-record')->click();
+        $this->findCss($page, '.mail-record')->click();
         $this->findCss($page, '.modal.in [name="username"]');
         // Login in Lightbox
         $this->fillInLoginForm($page, 'username1', 'test');
@@ -256,7 +257,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal .close')->click();
         // Click email
         $page = $this->gotoRecord();
-        $this->findCss($page, '#mail-record')->click();
+        $this->findCss($page, '.mail-record')->click();
         $this->snooze();
         $this->findCss($page, '.modal #email_to');
         // Type invalid email
@@ -297,7 +298,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click SMS
-        $this->findCss($page, '#sms-record')->click();
+        $this->findCss($page, '.sms-record')->click();
         // Type invalid phone numbers
         // - too empty
         $this->findCss($page, '.modal #sms_to')->setValue('');
