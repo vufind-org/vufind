@@ -230,6 +230,8 @@ class HttpService implements HttpServiceInterface
         }
         if (null !== $this->defaultAdapter) {
             $client->setAdapter($this->defaultAdapter);
+        } else {
+            $client->setAdapter(new \Zend\Http\Client\Adapter\Curl());
         }
         if (null !== $url) {
             $client->setUri($url);
