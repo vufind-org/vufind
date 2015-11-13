@@ -287,7 +287,7 @@ function setupRecordToolbar(target) {
   });
 }
 
-$(document).ready(function(){
+function recordDocReady() {
   var id = $('.hiddenId')[0].value;
   registerTabEvents();
 
@@ -348,4 +348,4 @@ $(document).ready(function(){
     refreshTagList(true);
     Lightbox.confirm(vufindString['add_tag_success']);
   });
-});
+}
