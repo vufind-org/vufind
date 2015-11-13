@@ -256,8 +256,7 @@ function ajaxLogin(form) {
   });
 }
 
-$(document).ready(function() {
-  // Off canvas
+function setupOffcanvas() {
   if($('.sidebar').length > 0) {
     $('[data-toggle="offcanvas"]').click(function () {
       $('body.offcanvas').toggleClass('active');
@@ -273,10 +272,9 @@ $(document).ready(function() {
   } else {
     $('[data-toggle="offcanvas"]').addClass('hidden');
   }
+}
 
-  // support "jump menu" dropdown boxes
-  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
-
+function setupBacklinks() {
   // Highlight previous links, grey out following
   $('.backlink')
     .mouseover(function() {
@@ -307,7 +305,9 @@ $(document).ready(function() {
         t = t.next();
       } while(t.length > 0);
     });
+}
 
+function setupAutocomplete() {
   // Search autocomplete
   $('.autocomplete').each(function (i, element) {
     $(element).typeahead(
@@ -343,11 +343,24 @@ $(document).ready(function() {
       }
     );
   });
+  // Update autocomplete on type change
   $('.searchForm_type').change(function() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
     var query = $lookfor.val();
     $lookfor.focus().typeahead('val', '').typeahead('val', query);
   });
+}
+
+$(document).ready(function() {
+  // Setup search autocomplete
+  setupAutocomplete();
+  // Setup highlighting of backlinks
+  setupBacklinks() ;
+  // Off canvas
+  setupOffcanvas();
+
+  // support "jump menu" dropdown boxes
+  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
 
   // Checkbox select all
   $('.checkbox-select-all').change(function() {
@@ -366,15 +379,12 @@ $(document).ready(function() {
     }
 
     var holder = $(this).next('.qrcode');
-
     if (holder.find('img').length == 0) {
       // We need to insert the QRCode image
       var template = holder.find('.qrCodeImgTag').html();
       holder.html(template);
     }
-
     holder.toggleClass('hidden');
-
     return false;
   });
 
@@ -405,105 +415,5 @@ $(document).ready(function() {
     $(this).closest('form').find('[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
-  });
-
-  /******************************
-   * LIGHTBOX DEFAULT BEHAVIOUR *
-   ******************************/
-  Lightbox.addOpenAction(registerLightboxEvents);
-
-  Lightbox.addFormCallback('newList', Lightbox.changeContent);
-  Lightbox.addFormCallback('accountForm', newAccountHandler);
-  Lightbox.addFormCallback('bulkDelete', function(html) {
-    location.reload();
-  });
-  Lightbox.addFormCallback('bulkSave', function(html) {
-    Lightbox.addCloseAction(refreshPageForLogin);
-    Lightbox.confirm(vufindString['bulk_save_success']);
-  });
-  Lightbox.addFormCallback('bulkRecord', function(html) {
-    Lightbox.close();
-    checkSaveStatuses();
-  });
-  Lightbox.addFormCallback('emailSearch', function(html) {
-    Lightbox.confirm(vufindString['bulk_email_success']);
-  });
-  Lightbox.addFormCallback('saveRecord', function(html) {
-    Lightbox.close();
-    checkSaveStatuses();
-  });
-
-  Lightbox.addFormHandler('exportForm', function(evt) {
-    $.ajax({
-      url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
-      type:'POST',
-      dataType:'json',
-      data:Lightbox.getFormData($(evt.target)),
-      success:function(data) {
-        if(data.data.export_type == 'download' || data.data.needs_redirect) {
-          document.location.href = data.data.result_url;
-          Lightbox.close();
-          return false;
-        } else {
-          Lightbox.changeContent(data.data.result_additional);
-        }
-      },
-      error:function(d,e) {
-        //console.log(d,e); // Error reporting
-      }
-    });
-    return false;
-  });
-  Lightbox.addFormHandler('feedback', function(evt) {
-    var $form = $(evt.target);
-    // Grabs hidden inputs
-    var formSuccess     = $form.find("input#formSuccess").val();
-    var feedbackFailure = $form.find("input#feedbackFailure").val();
-    var feedbackSuccess = $form.find("input#feedbackSuccess").val();
-    // validate and process form here
-    var name  = $form.find("input#name").val();
-    var email = $form.find("input#email").val();
-    var comments = $form.find("textarea#comments").val();
-    if (name.length == 0 || comments.length == 0) {
-      Lightbox.displayError(feedbackFailure);
-    } else {
-      Lightbox.get('Feedback', 'Email', {}, {'name':name,'email':email,'comments':comments}, function() {
-        Lightbox.changeContent('<div class="alert alert-info">'+formSuccess+'</div>');
-      });
-    }
-    return false;
-  });
-  Lightbox.addFormHandler('loginForm', function(evt) {
-    ajaxLogin(evt.target);
-    return false;
-  });
-
-  // Feedback
-  $('#feedbackLink').click(function() {
-    return Lightbox.get('Feedback', 'Home');
-  });
-  // Help links
-  $('.help-link').click(function() {
-    var split = this.href.split('=');
-    return Lightbox.get('Help','Home',{topic:split[1]});
-  });
-  // Hierarchy links
-  $('.hierarchyTreeLink a').click(function() {
-    var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
-    var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
-    return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
-  });
-  // Login link
-  $('#loginOptions a.modal-link').click(function() {
-    return Lightbox.get('MyResearch','UserLogin');
-  });
-  // Email search link
-  $('.mailSearch').click(function() {
-    return Lightbox.get('Search','Email',{url:document.URL});
-  });
-  // Save record links
-  $('.save-record').click(function() {
-    var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
   });
 });
