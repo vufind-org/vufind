@@ -85,19 +85,13 @@ function lessFacets(id) {
 }
 
 // Phone number validation
-var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"];
-var libphoneErrorStrings = ["Phone number invalid", "Invalid country calling code", "Invalid region code", "The string supplied did not seem to be a phone number", "The string supplied is too long to be a phone number", "The string supplied is too short to be a phone number", "Phone number too short after IDD"];
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
   var valid = isPhoneNumberValid(number, regionCode);
   if(valid != true) {
     if(typeof valid === 'string') {
-      for(var i=libphoneErrorStrings.length;i--;) {
-        if(valid.match(libphoneErrorStrings[i])) {
-          valid = vufindString[libphoneTranslateCodes[i]];
-        }
-      }
+      valid = vufindString[valid];
     } else {
       valid = vufindString['libphonenumber_invalid'];
     }
