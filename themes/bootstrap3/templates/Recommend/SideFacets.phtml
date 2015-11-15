@@ -161,7 +161,7 @@ JS;
               ?>
               <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
             <? if ($i == 6): ?>
-              <a id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>" class="list-group-item" href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('more')?> ...</a>
+              <a id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>" class="list-group-item narrow-toggle" href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('more')?> ...</a>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
               <a class="list-group-item active<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>">
@@ -200,7 +200,7 @@ JS;
               <? endif; ?>
             <? endif; ?>
           <? endforeach; ?>
-          <? if ($i > 5): ?><a class="list-group-item <?=$moreClass ?>" href="javascript:lessFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('less')?> ...</a><? endif; ?>
+          <? if ($i > 5): ?><a class="list-group-item narrow-toggle <?=$moreClass ?>" href="javascript:lessFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('less')?> ...</a><? endif; ?>
         <? endif; ?>
         <? if (in_array($title, $hierarchicalFacets)): ?>
           </noscript>

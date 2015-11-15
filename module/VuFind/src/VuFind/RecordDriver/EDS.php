@@ -39,6 +39,13 @@ namespace VuFind\RecordDriver;
 class EDS extends SolrDefault
 {
     /**
+     * Document types that are treated as PDF links.
+     *
+     * @var array
+     */
+    protected $pdfTypes = ['ebook-pdf', 'pdflink'];
+
+    /**
      * Return the unique identifier of this record within the Solr index;
      * useful for retrieving additional information (like tags and user
      * comments) from the external MySQL database.
@@ -133,8 +140,8 @@ class EDS extends SolrDefault
      */
     public function getCustomLinks()
     {
-        return isset($this->fields['CustomLinks']) ?
-        $this->fields['CustomLinks'] : [];
+        return isset($this->fields['CustomLinks'])
+            ? $this->fields['CustomLinks'] : [];
     }
 
     /**
@@ -144,8 +151,8 @@ class EDS extends SolrDefault
      */
     public function getFTCustomLinks()
     {
-        return isset($this->fields['FullText']['CustomLinks']) ?
-        $this->fields['FullText']['CustomLinks'] : [];
+        return isset($this->fields['FullText']['CustomLinks'])
+            ? $this->fields['FullText']['CustomLinks'] : [];
     }
 
     /**
@@ -155,8 +162,8 @@ class EDS extends SolrDefault
      */
     public function getDbLabel()
     {
-        return isset($this->fields['Header']['DbLabel']) ?
-        $this->fields['Header']['DbLabel'] : '';
+        return isset($this->fields['Header']['DbLabel'])
+            ? $this->fields['Header']['DbLabel'] : '';
     }
 
     /**
@@ -166,10 +173,8 @@ class EDS extends SolrDefault
      */
     public function getHTMLFullText()
     {
-        return (isset($this->fields['FullText']) &&
-                isset($this->fields['FullText']['Text']) &&
-                isset($this->fields['FullText']['Text']['Value'])) ?
-        $this->toHTML($this->fields['FullText']['Text']['Value']) : '';
+        return isset($this->fields['FullText']['Text']['Value'])
+            ? $this->toHTML($this->fields['FullText']['Text']['Value']) : '';
     }
 
     /**
@@ -179,11 +184,8 @@ class EDS extends SolrDefault
      */
     public function hasHTMLFullTextAvailable()
     {
-        return (isset($this->fields['FullText']) &&
-                isset($this->fields['FullText']['Text']) &&
-                isset($this->fields['FullText']['Text']['Availability']) &&
-                '1' == $this->fields['FullText']['Text']['Availability']) ?
-                true : false;
+        return isset($this->fields['FullText']['Text']['Availability'])
+            && ('1' == $this->fields['FullText']['Text']['Availability']);
     }
 
     /**
@@ -246,15 +248,11 @@ class EDS extends SolrDefault
      */
     public function hasPdfAvailable()
     {
-        if (isset($this->fields['FullText'])
-            && isset($this->fields['FullText']['Links'])
-        ) {
+        if (isset($this->fields['FullText']['Links'])) {
             foreach ($this->fields['FullText']['Links'] as $link) {
-                if (isset($link['Type']) && 'pdflink' == $link['Type']) {
-                    return true;
-                }
-                // 2015-05-10 RF - added support for pdf
-                if (isset($link['Type']) && 'ebook-pdf' == $link['Type']) {
+                if (isset($link['Type'])
+                    && in_array($link['Type'], $this->pdfTypes)
+                ) {
                     return true;
                 }
             }
@@ -269,15 +267,12 @@ class EDS extends SolrDefault
      */
     public function getPdfLink()
     {
-        if (isset($this->fields['FullText'])
-            && isset($this->fields['FullText']['Links'])
-        ) {
+        if (isset($this->fields['FullText']['Links'])) {
             foreach ($this->fields['FullText']['Links'] as $link) {
-                if (isset($link['Type']) && 'pdflink' == $link['Type']) {
-                    return $link["Url"]; // return PDF link
-                }
-                if (isset($link['Type']) && 'ebook-pdf' == $link['Type']) {
-                    return $link["Url"]; // return PDF link
+                if (isset($link['Type'])
+                    && in_array($link['Type'], $this->pdfTypes)
+                ) {
+                    return $link['Url']; // return PDF link
                 }
             }
         }
