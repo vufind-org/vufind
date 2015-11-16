@@ -65,7 +65,7 @@ class Record extends Gateway
     public function findRecord($id, $source)
     {
         $records = $this->select(['record_id' => $id, 'source' => $source]);
-        return $records->count() > 0 ? $records->current() : null;
+        return $records->count() > 0 ? $records->current() : false;
     }
 
     /**
@@ -75,12 +75,12 @@ class Record extends Gateway
      * @param string $source Record source
      *
      * @throws \Exception
-     * @return null|array of record row objects
+     * @return array Array of record row objects found
      */
     public function findRecords($ids, $source)
     {
         if (empty($ids)) {
-            return null;
+            return [];
         }
 
         $where = new Where();
