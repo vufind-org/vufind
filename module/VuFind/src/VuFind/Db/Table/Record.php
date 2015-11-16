@@ -97,7 +97,7 @@ class Record extends Gateway
     /**
      * Update an existing entry in the record table or create a new one
      *
-     * @param string id       Record ID
+     * @param string $id      Record ID
      * @param string $source  Data source
      * @param string $rawData Raw data from source
      *
