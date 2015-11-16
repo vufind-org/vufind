@@ -77,43 +77,47 @@ class CacheTest extends TestCase
     }
 
     /**
-     * Test successful lookups
+     * Test lookup
      *
      * @return void
      */
-    public function testLookupSuccess()
+    public function testLookup()
     {
         $recordCache = $this->getRecordCache();
 
-        $record = $recordCache->lookup(['020645147'], 'Solr');
+        $record = $recordCache->lookup('020645147', 'Solr');
         $this->assertNotEmpty($record);
 
-        $record = $recordCache->lookup(['70764764'], 'WorldCat');
+        $record = $recordCache->lookup('70764764', 'WorldCat');
         $this->assertNotEmpty($record);
+
+        $record = $recordCache->lookup('1234', 'Solr');
+        $this->assertEmpty($record);
+
+        $record = $recordCache->lookup('0206451', 'Solr');
+        $this->assertEmpty($record);
     }
 
     /**
-     * Test lookup failures
+     * Test lookupBatch
      *
      * @return void
      */
-    public function testLookupFailure()
+    public function testLookupBatch()
     {
         $recordCache = $this->getRecordCache();
 
-        $record = $recordCache->lookup(
-            ['Solr|020645147']
-        );
+        $records = $recordCache->lookupBatch(['020645147', '00033321'], 'Solr');
+        $this->assertCount(2, $records);
 
-        $record = $recordCache->lookup(
-            ['Solr|1234']
-        );
+        $records = $recordCache->lookupBatch(['020645147', '1234'], 'Solr');
+        $this->assertCount(1, $records);
 
-        $record = $recordCache->lookup(
-            ['Solr|0206451']
-        );
+        $records = $recordCache->lookupBatch(['020645147', '00033321'], 'WorldCat');
+        $this->assertEmpty($records);
 
-        $this->assertEmpty($record);
+        $records = $recordCache->lookupBatch(['0206451', '1234'], 'Solr');
+        $this->assertEmpty($records);
     }
 
     /**
@@ -173,22 +177,13 @@ class CacheTest extends TestCase
         $this->assertFalse($recordCache->isPrimary('Solr'));
         $this->assertFalse($recordCache->isFallback('Solr'));
 
-        $record = $recordCache->lookup(['00033321'], 'Solr');
-        $this->assertEmpty($record);
-
         $recordCache->setContext('Fallback');
         $this->assertFalse($recordCache->isPrimary('Solr'));
         $this->assertTrue($recordCache->isFallback('Solr'));
 
-        $record = $recordCache->lookup(['00033321'], 'Solr');
-        $this->assertNotEmpty($record);
-
         $recordCache->setContext('Default');
         $this->assertTrue($recordCache->isPrimary('Solr'));
         $this->assertFalse($recordCache->isFallback('Solr'));
-
-        $record = $recordCache->lookup(['00033321'], 'Solr');
-        $this->assertNotEmpty($record);
     }
 
     /**
@@ -202,7 +197,7 @@ class CacheTest extends TestCase
 
         $recordCache->createOrUpdate('112233', 'Solr', serialize('dummy_data'));
 
-        $record = $recordCache->lookup(['112233'], 'Solr');
+        $record = $recordCache->lookup('112233', 'Solr');
         $this->assertNotEmpty($record);
     }
 
@@ -238,23 +233,36 @@ class CacheTest extends TestCase
      */
     protected function getRecordTable()
     {
-        $callback = function ($id) {
+        $findRecordsCallback = function ($ids, $source) {
+            $results = [];
             foreach ($this->recordTable as $row) {
-                if ($row['record_id'] == $id[0]['id']
-                    && $row['source'] == $id[0]['source']
+                if (in_array($row['record_id'], $ids)
+                    && $row['source'] == $source
                 ) {
-                    return [$row];
+                    $results[] = $row;
                 }
             }
-            return [];
+            return $results;
+        };
+
+        $findRecordCallback = function ($id, $source) {
+            foreach ($this->recordTable as $row) {
+                if ($row['record_id'] == $id
+                    && $row['source'] == $source
+                ) {
+                    return $row;
+                }
+            }
+            return false;
         };
 
         $recordTable = $this->getMock('VuFind\Db\Table\Record');
-        $recordTable->method('findRecords')->will($this->returnCallback($callback));
+        $recordTable->method('findRecords')
+            ->will($this->returnCallback($findRecordsCallback));
+        $recordTable->method('findRecord')
+            ->will($this->returnCallback($findRecordCallback));
 
-        $updateRecordCallback = function(
-            $recordId, $source, $rawData
-        ) {
+        $updateRecordCallback = function ($recordId, $source, $rawData) {
             $this->recordTable[] = [
                 'record_id' => $recordId,
                 'source' => $source,
