@@ -83,7 +83,7 @@ function refreshCommentList($target, recordId, recordSource) {
         $commentList.empty();
         $commentList.append(response.data);
         $commentList.find('.delete').unbind('click').click(function() {
-          var commentId = $(this).attr('id');
+          var commentId = $(this).attr('id').substr('recordComment'.length);
           deleteRecordComment(this, recordId, recordSource, commentId);
           return false;
         });
@@ -125,7 +125,8 @@ function registerAjaxCommentRecord() {
   });
   // Delete links
   $('.delete').click(function() {
-    deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));
+    var commentId = this.id.substr('recordComment'.length);
+    deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), commentId);
     return false;
   });
 }
