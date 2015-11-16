@@ -85,19 +85,13 @@ function lessFacets(id) {
 }
 
 // Phone number validation
-var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"];
-var libphoneErrorStrings = ["Phone number invalid", "Invalid country calling code", "Invalid region code", "The string supplied did not seem to be a phone number", "The string supplied is too long to be a phone number", "The string supplied is too short to be a phone number", "Phone number too short after IDD"];
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
   var valid = isPhoneNumberValid(number, regionCode);
   if(valid != true) {
     if(typeof valid === 'string') {
-      for(var i=libphoneErrorStrings.length;i--;) {
-        if(valid.match(libphoneErrorStrings[i])) {
-          valid = vufindString[libphoneTranslateCodes[i]];
-        }
-      }
+      valid = vufindString[valid];
     } else {
       valid = vufindString['libphonenumber_invalid'];
     }
@@ -188,53 +182,19 @@ function registerLightboxEvents() {
     }
   });
 }
-function updatePageForLogin() {
-  // Hide "log in" options and show "log out" options:
-  $('#loginOptions').addClass('hidden');
-  $('.logoutOptions').removeClass('hidden');
 
-  var recordId = $('#record_id').val();
-
-  // Update user save statuses if the current context calls for it:
-  if (typeof(checkSaveStatuses) == 'function') {
-    checkSaveStatuses();
-  }
-
-  // refresh the comment list so the "Delete" links will show
-  $('.commentList').each(function(){
-    var recordSource = extractSource($('#record'));
-    refreshCommentList(recordId, recordSource);
-  });
-
-  var summon = false;
-  $('.hiddenSource').each(function(i, e) {
-    if(e.value == 'Summon') {
-      summon = true;
-      // If summon, queue reload for when we close
-      Lightbox.addCloseAction(function(){document.location.reload(true);});
-    }
-  });
-
-  // Refresh tab content
-  var recordTabs = $('.recordTabs');
-  if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
-    var tab = recordTabs.find('.active a').attr('id');
-    ajaxLoadTab(tab);
-  }
-
-  // Refresh tag list
-  if(typeof refreshTagList === "function") {
-    refreshTagList(true);
-  }
+function refreshPageForLogin() {
+  window.location.reload();
 }
+
 function newAccountHandler(html) {
-  updatePageForLogin();
+  Lightbox.addCloseAction(refreshPageForLogin);
   var params = deparam(Lightbox.openingURL);
-  if (params['subaction'] != 'UserLogin') {
+  if (params['subaction'] == 'UserLogin') {
+    Lightbox.close();
+  } else {
     Lightbox.getByUrl(Lightbox.openingURL);
     Lightbox.openingURL = false;
-  } else {
-    Lightbox.close();
   }
 }
 
@@ -258,7 +218,7 @@ function ajaxLogin(form) {
                 salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
             );
             // hex encode the encrypted password
-            params[form.elements[i].name] = hexEncode(password)
+            params[form.elements[i].name] = hexEncode(password);
           } else {
             params[form.elements[i].name] = form.elements[i].value;
           }
@@ -272,7 +232,7 @@ function ajaxLogin(form) {
           data: params,
           success: function(response) {
             if (response.status == 'OK') {
-              updatePageForLogin();
+              Lightbox.addCloseAction(refreshPageForLogin);
               // and we update the modal
               var params = deparam(Lightbox.lastURL);
               if (params['subaction'] == 'UserLogin') {
@@ -296,8 +256,7 @@ function ajaxLogin(form) {
   });
 }
 
-$(document).ready(function() {
-  // Off canvas
+function setupOffcanvas() {
   if($('.sidebar').length > 0) {
     $('[data-toggle="offcanvas"]').click(function () {
       $('body.offcanvas').toggleClass('active');
@@ -313,10 +272,9 @@ $(document).ready(function() {
   } else {
     $('[data-toggle="offcanvas"]').addClass('hidden');
   }
+}
 
-  // support "jump menu" dropdown boxes
-  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
-
+function setupBacklinks() {
   // Highlight previous links, grey out following
   $('.backlink')
     .mouseover(function() {
@@ -347,7 +305,9 @@ $(document).ready(function() {
         t = t.next();
       } while(t.length > 0);
     });
+}
 
+function setupAutocomplete() {
   // Search autocomplete
   $('.autocomplete').each(function (i, element) {
     $(element).typeahead(
@@ -383,11 +343,24 @@ $(document).ready(function() {
       }
     );
   });
+  // Update autocomplete on type change
   $('.searchForm_type').change(function() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
     var query = $lookfor.val();
     $lookfor.focus().typeahead('val', '').typeahead('val', query);
   });
+}
+
+$(document).ready(function() {
+  // Setup search autocomplete
+  setupAutocomplete();
+  // Setup highlighting of backlinks
+  setupBacklinks() ;
+  // Off canvas
+  setupOffcanvas();
+
+  // support "jump menu" dropdown boxes
+  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
 
   // Checkbox select all
   $('.checkbox-select-all').change(function() {
@@ -406,15 +379,12 @@ $(document).ready(function() {
     }
 
     var holder = $(this).next('.qrcode');
-
     if (holder.find('img').length == 0) {
       // We need to insert the QRCode image
       var template = holder.find('.qrCodeImgTag').html();
       holder.html(template);
     }
-
     holder.toggleClass('hidden');
-
     return false;
   });
 
@@ -445,105 +415,5 @@ $(document).ready(function() {
     $(this).closest('form').find('[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
-  });
-
-  /******************************
-   * LIGHTBOX DEFAULT BEHAVIOUR *
-   ******************************/
-  Lightbox.addOpenAction(registerLightboxEvents);
-
-  Lightbox.addFormCallback('newList', Lightbox.changeContent);
-  Lightbox.addFormCallback('accountForm', newAccountHandler);
-  Lightbox.addFormCallback('bulkDelete', function(html) {
-    location.reload();
-  });
-  Lightbox.addFormCallback('bulkSave', function(html) {
-    Lightbox.addCloseAction(updatePageForLogin);
-    Lightbox.confirm(vufindString['bulk_save_success']);
-  });
-  Lightbox.addFormCallback('bulkRecord', function(html) {
-    Lightbox.close();
-    checkSaveStatuses();
-  });
-  Lightbox.addFormCallback('emailSearch', function(html) {
-    Lightbox.confirm(vufindString['bulk_email_success']);
-  });
-  Lightbox.addFormCallback('saveRecord', function(html) {
-    Lightbox.close();
-    checkSaveStatuses();
-  });
-
-  Lightbox.addFormHandler('exportForm', function(evt) {
-    $.ajax({
-      url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
-      type:'POST',
-      dataType:'json',
-      data:Lightbox.getFormData($(evt.target)),
-      success:function(data) {
-        if(data.data.export_type == 'download' || data.data.needs_redirect) {
-          document.location.href = data.data.result_url;
-          Lightbox.close();
-          return false;
-        } else {
-          Lightbox.changeContent(data.data.result_additional);
-        }
-      },
-      error:function(d,e) {
-        //console.log(d,e); // Error reporting
-      }
-    });
-    return false;
-  });
-  Lightbox.addFormHandler('feedback', function(evt) {
-    var $form = $(evt.target);
-    // Grabs hidden inputs
-    var formSuccess     = $form.find("input#formSuccess").val();
-    var feedbackFailure = $form.find("input#feedbackFailure").val();
-    var feedbackSuccess = $form.find("input#feedbackSuccess").val();
-    // validate and process form here
-    var name  = $form.find("input#name").val();
-    var email = $form.find("input#email").val();
-    var comments = $form.find("textarea#comments").val();
-    if (name.length == 0 || comments.length == 0) {
-      Lightbox.displayError(feedbackFailure);
-    } else {
-      Lightbox.get('Feedback', 'Email', {}, {'name':name,'email':email,'comments':comments}, function() {
-        Lightbox.changeContent('<div class="alert alert-info">'+formSuccess+'</div>');
-      });
-    }
-    return false;
-  });
-  Lightbox.addFormHandler('loginForm', function(evt) {
-    ajaxLogin(evt.target);
-    return false;
-  });
-
-  // Feedback
-  $('#feedbackLink').click(function() {
-    return Lightbox.get('Feedback', 'Home');
-  });
-  // Help links
-  $('.help-link').click(function() {
-    var split = this.href.split('=');
-    return Lightbox.get('Help','Home',{topic:split[1]});
-  });
-  // Hierarchy links
-  $('.hierarchyTreeLink a').click(function() {
-    var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
-    var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
-    return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
-  });
-  // Login link
-  $('#loginOptions a.modal-link').click(function() {
-    return Lightbox.get('MyResearch','UserLogin');
-  });
-  // Email search link
-  $('.mailSearch').click(function() {
-    return Lightbox.get('Search','Email',{url:document.URL});
-  });
-  // Save record links
-  $('.save-record').click(function() {
-    var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
   });
 });
