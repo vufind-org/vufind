@@ -96,15 +96,15 @@ class Loader
     {
         $results = [];
         if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
-            $results = $this->recordCache->lookup(["$source|$id"]);
+            $results = $this->recordCache->lookup($id, $source);
         }
         if (empty($results)) {
             $results = $this->searchService->retrieve($source, $id)->getRecords();
         }
-        if (null !== $this->recordCache && $this->recordCache->isFallback($source)
-            && empty($results)
+        if (empty($results) && null !== $this->recordCache
+            && $this->recordCache->isFallback($source)
         ) {
-            $results = $this->recordCache->lookup(["$source|$id"]);
+            $results = $this->recordCache->lookup($id, $source);
         }
 
         if (!empty($results)) {
@@ -136,11 +136,13 @@ class Loader
         $cachedRecords = [];
         if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
             // Try to load records from cache if source is cachable
-            $cachedRecords = $this->recordCache->lookup($ids, $source);
+            $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
             // Check which records could not be loaded from the record cache
             foreach ($cachedRecords as $cachedRecord) {
                 $key = array_search($cachedRecord->getUniqueId(), $ids);
-                unset($ids[$key]);
+                if ($key !== false) {
+                    unset($ids[$key]);
+                }
             }
         }
 
@@ -152,7 +154,9 @@ class Loader
 
             foreach ($genuineRecords as $genuineRecord) {
                 $key = array_search($genuineRecord->getUniqueId(), $ids);
-                unset($ids[$key]);
+                if ($key !== false) {
+                    unset($ids[$key]);
+                }
             }
         }
 
@@ -160,7 +164,7 @@ class Loader
             && $this->recordCache->isFallback($source)
         ) {
             // Try to load missing records from cache if source is cachable
-            $cachedRecords = $this->recordCache->lookup($ids, $source);
+            $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
         }
 
         // Merge records found in cache and records loaded from original $source

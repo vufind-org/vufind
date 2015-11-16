@@ -111,24 +111,36 @@ class Cache
     }
 
     /**
-     * Fetch records using an array of associative arrays with id and source keys
-     * (or pipe-separated source|id strings)
+     * Given a record ID, look up a record for that source.
      *
-     * @param array  $ids    Array of associative arrays with id/source keys or
-     * strings in source|id format
-     * @param string $source Source if $ids is an array of strings without source
+     * @param string $id     Record ID
+     * @param string $source Record source
      *
-     * @return array Array of record drivers
+     * @return array Array of \VuFind\RecordDriver\AbstractBase
      */
-    public function lookup($ids, $source = null)
+    public function lookup($id, $source)
     {
-        $ids = $this->normalizeIds($ids, $source);
+        $record = $this->recordTable->findRecord($id, $source);
+        return $record !== false ? [$this->getVuFindRecord($record)] : [];
+    }
+
+    /**
+     * Given an array of IDs and a record source, look up a batch of records for
+     * that source.
+     *
+     * @param array  $ids    Record IDs
+     * @param string $source Record source
+     *
+     * @return array Array of \VuFind\RecordDriver\AbstractBase
+     */
+    public function lookupBatch($ids, $source)
+    {
         if (empty($ids)) {
             return [];
         }
 
         $vufindRecords = [];
-        $cachedRecords = $this->recordTable->findRecords($ids);
+        $cachedRecords = $this->recordTable->findRecords($ids, $source);
         foreach ($cachedRecords as $cachedRecord) {
             $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
         }
@@ -229,38 +241,5 @@ class Cache
         $driver->setSourceIdentifier($source);
 
         return $driver;
-    }
-
-    /**
-     * Normalize record ID array to ['source' => 'xyz', 'id' => '123']
-     *
-     * @param array  $ids    Array of associative arrays with id/source keys or
-     * strings in source|id format
-     * @param string $source Source if $ids is an array of strings without source
-     *
-     * @return array
-     */
-    protected function normalizeIds($ids, $source)
-    {
-        $ids = array_map(
-            function ($id) use ($source) {
-                if (null !== $source) {
-                    return ['source' => $source, 'id' => $id];
-                }
-                if (is_array($id)) {
-                    return $id;
-                }
-                $parts = explode('|', $id, 2);
-                return ['source' => $parts[0], 'id' => $parts[1]];
-            },
-            $ids
-        );
-
-        return array_filter(
-            $ids,
-            function ($id) {
-                return $this->isCachable($id['source']);
-            }
-        );
     }
 }

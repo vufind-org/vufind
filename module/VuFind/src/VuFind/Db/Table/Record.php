@@ -54,14 +54,30 @@ class Record extends Gateway
     }
 
     /**
+     * Find a record by id
+     *
+     * @param string $id     Record IDs
+     * @param string $source Record source
+     *
+     * @throws \Exception
+     * @return false|Record row object
+     */
+    public function findRecord($id, $source)
+    {
+        $records = $this->select(['record_id' => $id, 'source' => $source]);
+        return $records->count() > 0 ? $records->current() : null;
+    }
+
+    /**
      * Find records by ids
      *
-     * @param array $ids An array of record IDs
+     * @param array  $ids    Record IDs
+     * @param string $source Record source
      *
      * @throws \Exception
      * @return null|array of record row objects
      */
-    public function findRecords($ids)
+    public function findRecords($ids, $source)
     {
         if (empty($ids)) {
             return null;
@@ -71,7 +87,7 @@ class Record extends Gateway
         foreach ($ids as $id) {
             $nested = $where->or->nest();
             $nested->addPredicates(
-                ['record_id' => $id['id'], 'source' => $id['source']]
+                ['record_id' => $id, 'source' => $source]
             );
         }
 
@@ -81,22 +97,22 @@ class Record extends Gateway
     /**
      * Update an existing entry in the record table or create a new one
      *
-     * @param string $recordId Record ID
-     * @param string $source   Data source
-     * @param string $rawData  Raw data from source
+     * @param string id       Record ID
+     * @param string $source  Data source
+     * @param string $rawData Raw data from source
      *
      * @return Updated or newly added record
      */
-    public function updateRecord($recordId, $source, $rawData)
+    public function updateRecord($id, $source, $rawData)
     {
-        $records = $this->select(['record_id' => $recordId, 'source' => $source]);
+        $records = $this->select(['record_id' => $id, 'source' => $source]);
         if ($records->count() == 0) {
             $record = $this->createRow();
         } else {
             $record = $records->current();
         }
 
-        $record->record_id = $recordId;
+        $record->record_id = $id;
         $record->source = $source;
         $record->data = serialize($rawData);
         $record->version = \VuFind\Config\Version::getBuildVersion();
@@ -133,13 +149,11 @@ class Record extends Gateway
             $select->where->isNull('user_resource.id');
         };
 
-        $count = 0;
         $results = $this->select($callback);
         foreach ($results as $result) {
-            ++$count;
             $this->delete(['id' => $result['id']]);
         }
 
-        return $count;
+        return count($results);
     }
 }

@@ -170,8 +170,7 @@ class Results extends BaseResults
                 'id' => $row->record_id, 'source' => $row->source,
                 'extra_fields' => [
                     'title' => $row->title
-                ],
-                'userId' => $userId,
+                ]
             ];
         }
 
