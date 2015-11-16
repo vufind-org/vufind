@@ -67,8 +67,10 @@ class PrimoPermissionHandler
      */
     public function __construct($primoPermConfig)
     {
-        $this->primoConfig = is_array($primoPermConfig)
-            ? $primoPermConfig : $primoPermConfig->toArray();
+        if ($primoPermConfig instanceof \Zend\Config\Config) {
+            $primoPermConfig = $primoPermConfig->toArray();
+        }
+        $this->primoConfig = is_array($primoPermConfig) ? $primoPermConfig : [];
         $this->checkLegacySettings();
         $this->checkConfig();
     }
