@@ -95,7 +95,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // TODO Rewrite for comment and login coming
         $this->findCss($page, '.record-tabs .usercomments')->click();
         $this->findCss($page, '.comment-form');
-        $this->assertEquals( // Can Comment?
+        $this->assertEquals(// Can Comment?
             'You must be logged in first',
             $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
         );
@@ -111,7 +111,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Make sure page updated for login
         $page = $this->gotoRecord();
         $this->findCss($page, '.record-tabs .usercomments')->click();
-        $this->assertEquals( // Can Comment?
+        $this->assertEquals(// Can Comment?
             'Add your comment',
             $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
         );
