@@ -102,6 +102,33 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return full record as filtered XML for public APIs.
+     *
+     * @return string
+     */
+    public function getFilteredXML()
+    {
+        $record = clone($this->getSimpleXML());
+        while ($record->abstract) {
+            unset($record->abstract[0]);
+        }
+        return $record->asXML();
+    }
+
+    /**
+     * Get the original record as a SimpleXML object
+     *
+     * @return SimpleXMLElement The record as SimpleXML
+     */
+    protected function getSimpleXML()
+    {
+        if ($this->simpleXML === null) {
+            $this->simpleXML = new \SimpleXMLElement($this->fields['fullrecord']);
+        }
+        return $this->simpleXML;
+    }
+
+    /**
      * Set raw data to initialize the object.
      *
      * @param mixed $data Raw data representing the record; Record Model
@@ -116,18 +143,5 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
     {
         parent::setRawData($data);
         $this->simpleXML = null;
-    }
-
-    /**
-     * Get the original record as a SimpleXML object
-     *
-     * @return SimpleXMLElement The record as SimpleXML
-     */
-    protected function getSimpleXML()
-    {
-        if ($this->simpleXML !== null) {
-            return $this->simpleXML;
-        }
-        return simplexml_load_string($this->fields['fullrecord']);
     }
 }

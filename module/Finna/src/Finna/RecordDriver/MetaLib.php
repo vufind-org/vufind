@@ -122,13 +122,15 @@ class MetaLib extends \VuFind\RecordDriver\SolrMarc
     /**
      * Return image rights.
      *
+     * @param string $language Language
+     *
      * @return mixed array with keys:
      *   'copyright'  Copyright (e.g. 'CC BY 4.0') (optional)
      *   'description Human readable description (array)
      *   'link'       Link to copyright info
      *   or false if the record contains no images
      */
-    public function getImageRights()
+    public function getImageRights($language)
     {
         return false;
     }

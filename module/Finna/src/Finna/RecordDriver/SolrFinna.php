@@ -84,7 +84,7 @@ trait SolrFinna
     /**
      * Get record rating.
      *
-     * @return null|float
+     * @return array Keys 'average' and 'count'
      */
     public function getAverageRating()
     {
@@ -174,13 +174,15 @@ trait SolrFinna
     /**
      * Return image rights.
      *
+     * @param string $language Language
+     *
      * @return mixed array with keys:
      *   'copyright'  Copyright (e.g. 'CC BY 4.0') (optional)
      *   'description Human readable description (array)
      *   'link'       Link to copyright info
      *   or false if the record contains no images
      */
-    public function getImageRights()
+    public function getImageRights($language)
     {
         return false;
     }
@@ -376,7 +378,8 @@ trait SolrFinna
      */
     public function getSource()
     {
-        return isset($this->fields['source']) ? $this->fields['source'] : false;
+        return isset($this->fields['source_str_mv'])
+            ? $this->fields['source_str_mv'] : false;
     }
 
     /**

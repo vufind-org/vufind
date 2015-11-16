@@ -73,14 +73,15 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
     /**
      * Return URL to large record image.
      *
-     * @param int   $index  Record image index.
-     * @param array $params Optional array of image parameters.
-     *                      See RecordImage::render.
+     * @param int   $index     Record image index.
+     * @param array $params    Optional array of image parameters.
+     *                         See RecordImage::render.
+     * @param bool  $canonical Whether to return a canonical URL instead of relative
      *
      * @return mixed string URL or false if no
      * image with the given index was found.
      */
-    public function getLargeImage($index = 0, $params = [])
+    public function getLargeImage($index = 0, $params = [], $canonical = false)
     {
         $cnt = $this->record->getNumOfRecordImages('large');
         $urlHelper = $this->getView()->plugin('url');
@@ -91,10 +92,9 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
         $imageParams = array_merge($imageParams, $this->params['large']);
         $imageParams = array_merge($imageParams, $params);
 
-        return $urlHelper('cover-show') . '?' .
-            http_build_query($imageParams);
-
-        return false;
+        return $urlHelper(
+            'cover-show', [], $canonical ? ['force_canonical' => true] : []
+        ) . '?' . http_build_query($imageParams);
     }
 
     /**

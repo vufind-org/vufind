@@ -626,8 +626,10 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $cacheDir = $this->getServiceLocator()->get('VuFind\CacheManager')
             ->getCache('feed')->getOptions()->getCacheDir();
 
-        $localFile = "$cacheDir/" . md5(var_export($config, true)) . '.xml';
+        $cacheKey = $config->toArray();
+        $cacheKey['language'] = $language;
 
+        $localFile = "$cacheDir/" . md5(var_export($cacheKey, true)) . '.xml';
         $cacheConfig = $this->getServiceLocator()
             ->get('VuFind\Config')->get('config');
         $maxAge = isset($cacheConfig->Content->feedcachetime)

@@ -15,32 +15,34 @@
 
 <?=$this->flashmessages()?>
 
-  <form class="form-inline feedback-form" method="post" name="feedbackRecord" action="<?= $this->recordLink()->getActionUrl($this->driver, 'Feedback') ?>">
-    <input type="hidden" name="id" value="<?= $this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" />
-    <div class="form-group">
-      <div class="col-sm-12 feedback-info">
-        <label for="feedback_from" class="control-label">
-          <?= $this->TransEsc('Send feedback on record'); ?>: <?= $institutionTranslated; if ($sourceTranslated != $institutionTranslated): ?> / <?= $sourceTranslated ?><? endif; ?>
-        </label>
+  <form class="form feedback-form" method="post" name="feedbackRecord" action="<?= $this->recordLink()->getActionUrl($this->driver, 'Feedback') ?>">
+    <div class="row">
+      <input type="hidden" name="id" value="<?= $this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" />
+      <div class="form-group">
+        <div class="col-sm-12 feedback-info">
+          <label for="feedback_from" class="control-label">
+            <?= $this->TransEsc('Send feedback on record'); ?>: <?= $institutionTranslated; if ($sourceTranslated != $institutionTranslated): ?> / <?= $sourceTranslated ?><? endif; ?>
+          </label>
+        </div>
+        <div class="clear-col"></div>
+      </div>
+      <div class="form-group">
+        <label for="feedback_from" class="col-sm-12 control-label">* <?= $this->TransEsc('email_from'); ?>:</label>
+        <div class="col-sm-12">
+          <input id="feedback_from" type="text" name="from" size="37" class="form-control" required aria-required="true" value="<?=isset($user->email) ? $user->email : '' ?>" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="feedback_message" class="col-sm-12 control-label">* <?= $this->TransEsc('feedback_message'); ?>:</label>
+        <div class="col-sm-12">
+          <textarea id="feedback_message" name="feedback_message" rows="3" cols="35" class="form-control" required aria-required="true"></textarea>
+        </div>
       </div>
       <div class="clear-col"></div>
-    </div>
-    <div class="form-group">
-      <label for="feedback_from" class="col-sm-12 control-label">* <?= $this->TransEsc('email_from'); ?>:</label>
-      <div class="col-sm-12">
-        <input id="feedback_from" type="text" name="from" size="40" class="form-control" required aria-required="true" value="<?=isset($user->email) ? $user->email : '' ?>" />
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="feedback_message" class="col-sm-12 control-label">* <?= $this->TransEsc('feedback_message'); ?>:</label>
-      <div class="col-sm-12">
-        <textarea id="feedback_message" name="feedback_message" rows="3" cols="40" class="form-control" required aria-required="true"></textarea>
-      </div>
-    </div>
-    <div class="clear-col"></div>
-    <div class="form-group">
-      <div class="col-sm-12">
-          <input class="btn btn-primary" type="submit" name="submitFeedback" value="<?= $this->TransEsc('Send'); ?>"/>
+      <div class="form-group">
+        <div class="col-sm-12">
+            <input class="btn btn-primary" type="submit" name="submitFeedback" value="<?= $this->TransEsc('Send'); ?>"/>
+        </div>
       </div>
     </div>
   </form>
