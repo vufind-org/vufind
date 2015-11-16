@@ -255,8 +255,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal #email_to');
         // Close lightbox
         $this->findCss($page, '.modal .close')->click();
+        $this->snooze();
         // Click email
-        $page = $this->gotoRecord();
         $this->findCss($page, '.mail-record')->click();
         $this->snooze();
         $this->findCss($page, '.modal #email_to');
