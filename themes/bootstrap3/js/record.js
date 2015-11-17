@@ -31,19 +31,13 @@ function checkRequestIsValid(element, requestType, blockedClass) {
 
 function setUpCheckRequest() {
   $('.checkRequest').each(function(i) {
-    if ($(this).hasClass('checkRequest')) {
-      var isValid = checkRequestIsValid(this, 'Hold', 'holdBlocked');
-    }
+    checkRequestIsValid(this, 'Hold', 'holdBlocked');
   });
   $('.checkStorageRetrievalRequest').each(function(i) {
-    if ($(this).hasClass('checkStorageRetrievalRequest')) {
-      var isValid = checkRequestIsValid(this, 'StorageRetrievalRequest', 'StorageRetrievalRequestBlocked');
-    }
+    checkRequestIsValid(this, 'StorageRetrievalRequest', 'StorageRetrievalRequestBlocked');
   });
   $('.checkILLRequest').each(function(i) {
-    if ($(this).hasClass('checkILLRequest')) {
-      var isValid = checkRequestIsValid(this,'ILLRequest', 'ILLRequestBlocked');
-    }
+    checkRequestIsValid(this, 'ILLRequest', 'ILLRequestBlocked');
   });
 }
 
