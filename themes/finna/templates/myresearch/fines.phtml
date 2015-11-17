@@ -13,6 +13,21 @@
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9">
+    <? if ($user): ?>
+      <? if (!empty($this->paymentFinesChanged)): ?>
+        <div class="alert alert-danger"><?= $this->translate('online_payment_fines_changed'); ?></div>
+      <? elseif (isset($this->onlinePaymentError)):?>
+        <div class="alert alert-danger"><?= $this->translate($this->onlinePaymentError); ?></div>
+      <? elseif (!empty($this->registerPayment)): ?>
+        <div class="alert alert-info">
+          <span class="register-payment-spinner"><i class="fa fa-spinner fa-spin"></i> <?= $this->translate('Registering Payment'); ?></span>
+          <div id="online-payment-status" class="info hide"></div>
+        </div>
+      <? elseif (!empty($this->paymentOk)):?>
+        <div class="alert alert-success"><?= $this->translate('online_payment_successful'); ?></div>
+      <? endif; ?>
+    <? endif; ?>
+
     <? if (!$this->translationEmpty('fines_instructions')): ?><p class="no-content-message"><?=$this->transEsc('fines_instructions')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
@@ -28,17 +43,26 @@
     <? if (empty($this->fines)): ?>
     <h4><?=$this->transEsc('You do not have any fines')?></h4>
     <? else: ?>
-    <table class="table table-striped useraccount-table">
+    <table class="table table-striped useraccount-table<?= $this->onlinePayment ? ' online-payment' : ''?>">
     <tr class="headers">
       <th class="user-account-table-title"><?=$this->transEsc('Title')?></th>
       <th><?=$this->transEsc('fine_checkout_date')?></th>
       <th><?=$this->transEsc('Due Date')?></th>
       <th><?=$this->transEsc('fine_description')?></th>
-      <th><?=$this->transEsc('Fee')?></th>
       <th class="balance"><?=$this->transEsc('Balance')?></th>
     </tr>
     <? $totalDue = 0; ?>
     <? foreach ($this->fines as $record): ?>
+    <?
+      $showNonPayable = $this->onlinePayment && !$record['payableOnline'];
+      $fine = null;
+      if (isset($record['fine'])) {
+        $fine = $record['fine'];
+        if (!$this->translationEmpty("status_$fine")) {
+          $fine = "status_$fine";
+        }
+      }
+    ?>
     <tr>
       <td class="user-account-table-title">
         <? if (empty($record['title'])): ?>
@@ -51,17 +75,56 @@
       </td>
       <td><?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?></td>
       <td><?=isset($record['duedate']) ? $this->escapeHtml($record['duedate']) : ''?></td>
-      <td><?=isset($record['fine']) ? $this->transEsc('status_' . $this->escapeHtml($record['fine'])) : ''?></td>
-      <td><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount']/100.00) : ''?></td>
-      <td class="balance"><?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance']/100.00) : ''?></td>
+      <td><?=isset($fine) ? $this->transEsc($fine) : ''?></td>
+      <td class="balance">
+        <? if ($showNonPayable): ?>
+        <span class="online-payment-nonpayable">
+        <? endif; ?>
+        <?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance']/100.00) : ''?>
+        <? if ($showNonPayable): ?>
+        </span>
+        <? endif; ?>
+        <? if ($showNonPayable): ?>
+        <div class="online-payment-remark"><?= $this->translate('online_payment_nonpayable_fees');?></div>
+        <? endif; ?>
+      </td>
     </tr>
       <? $totalDue += $record['balance']; ?>
     <? endforeach; ?>
-    <tr>
-      <th colspan="5" class="total-balance"><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>)</th>
-      <th class="total-balance"><?=$this->safeMoneyFormat($totalDue/100.00) ?></th>
-    </tr>
-    </table>
+
+      <tr>
+        <td colspan="5" class="total-balance"><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>): <span class="amount"><?=$this->safeMoneyFormat($totalDue/100.00) ?></span></td>
+      </tr>
+  </table>
+  <div class="row">
+      <? if ($this->onlinePayment): ?>
+        <div class="col-sm-6 col-sm-push-6 text-right online-payment-data">
+          <p><?=$this->transEsc('online_payment_payable_online'); ?> (<?= $payableOnlineCnt ?>): <span class="amount"><?= $this->safeMoneyFormat($payableOnline/100.00); ?></span></p>
+          <p><?=$this->transEsc('online_payment_transaction_fee'); ?>: <span class="amount"><?= $this->safeMoneyFormat($transactionFee/100.00) ?></span></p>
+
+          <? if ($this->onlinePaymentEnabled): ?>
+            <?= $this->onlinePayment($paymentHandler, $transactionId, $payableTotal); ?>
+          <? elseif (!empty($this->nonPayableReason)): ?>
+            <p><?=$this->transEsc($this->nonPayableReason); ?><?= $this->nonPayableReason == 'online_payment_minimum_fee' ?  (': <span class="amount">' . $this->safeMoneyFormat($this->minimumFee/100.00)) . '</span>' : '' ?>
+          <? endif; ?>
+       </div>
+       <? if ($template = $this->content()->findTemplateForLng("layout/Additions/online-payment")): ?>
+       <div class="col-sm-6 col-sm-pull-6 online-payment-note"><?=$this->render($template)?></div>
+       <? endif; ?>
+      <? endif; ?>
+      <? if (isset($this->registerPayment) && $this->registerPayment): ?>
+        <? $this->headScript()->appendFile("finna-online-payment.js"); ?>
+        <?=
+        $this->inlineScript(
+          \Zend\View\Helper\HeadScript::SCRIPT,
+          '$(document).ready(function() {
+              finna.onlinePayment.registerPayment("' . $paymentReturnUrl . '");
+          });',
+          'SET'
+        );
+        ?>
+      <? endif; ?>
+  </div>
     <? endif; ?>
     <? endif; ?>
   </div>

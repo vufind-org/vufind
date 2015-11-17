@@ -1,0 +1,14 @@
+<form id="paytrail-form" class="online-payment-form" action="<?= $this->url('myresearch-fines');?>" method="post">
+  <img src="<?= $this->imageLink('online-payment-paytrail.png'); ?>" id="paytrail-logo" alt="Paytrail" />
+  <input name="transactionId" type="hidden" value="<?= $this->transactionId; ?>">
+  <input name="pay" type="hidden" value="1">
+  <input type="submit" name="pay" class="btn btn-primary" value="<?= $this->transEsc('online_payment_go_to_pay'); ?> <?= $this->safeMoneyFormat($this->amount/100.00); ?>" />
+</form>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $('.online-payment-form').on('submit', function() {
+    $(this).find('input[type=submit]').prop('disabled', "disabled");
+  });
+});
+</script>

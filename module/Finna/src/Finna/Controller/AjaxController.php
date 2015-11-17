@@ -45,6 +45,7 @@ use VuFindSearch\ParamBag as ParamBag,
 class AjaxController extends \VuFind\Controller\AjaxController
 {
     use MetaLibIrdTrait,
+        OnlinePaymentControllerTrait,
         SearchControllerTrait;
 
     /**
@@ -1324,6 +1325,35 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         return $this->output($results, self::STATUS_OK);
+    }
+
+    /**
+     * Register online paid fines to the ILS.
+     *
+     * @return \Zend\Http\Response
+     */
+    public function registerOnlinePaymentAjax()
+    {
+        $url = parse_url($this->getRequest()->getPost('url'));
+        parse_str($url['query'], $params);
+        $res = $this->processPayment($params);
+        $returnUrl = $this->url()->fromRoute('myresearch-fines');
+        return $this->output(
+            $returnUrl,
+            $res['success'] ? self::STATUS_OK : self::STATUS_ERROR
+        );
+    }
+
+    /**
+     * Handle Paytrail notification request.
+     *
+     * @return void
+     */
+    public function paytrailNotifyAjax()
+    {
+        parse_str($_SERVER['REQUEST_URI'], $params);
+        $res = $this->processPayment($params);
+        exit();
     }
 
     /**

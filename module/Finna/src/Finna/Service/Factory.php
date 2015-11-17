@@ -110,6 +110,19 @@ class Factory extends \VuFind\Service\Factory
     }
 
     /**
+     * Construct the online payment manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\OnlinePayment\OnlinePayment
+     */
+    public static function getOnlinePayment(ServiceManager $sm)
+    {
+        $config = $sm->get('VuFind\Config')->get('datasources');
+        return new \Finna\OnlinePayment\OnlinePayment($sm, $config);
+    }
+
+    /**
      * Construct the Search\Results Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.

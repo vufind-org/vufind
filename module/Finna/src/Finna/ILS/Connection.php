@@ -29,6 +29,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace Finna\ILS;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Catalog Connection Class
@@ -77,6 +78,19 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
+     * Return total amount of fees that may be paid online.
+     *
+     * @param array $patron Patron
+     *
+     * @return mixed Associative array of payment info,
+     * false if an ILSException occurred.
+     */
+    public function getOnlinePayableAmount($patron)
+    {
+        return $this->getDriver()->getOnlinePayableAmount($patron);
+    }
+
+    /**
      * Patron Login with a cache
      *
      * This is a wrapper to ILS drivers' patronLogin() with a session-based cache
@@ -114,5 +128,21 @@ class Connection extends \VuFind\ILS\Connection
         throw new ILSException(
             'Cannot call method: ' . $this->getDriverClass() . '::patronLogin'
         );
+    }
+
+    /**
+     * Check if online payment is supported.
+     *
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return boolean
+     */
+    protected function checkMethodmarkFeesAsPaid($functionConfig, $params)
+    {
+        if ($this->checkCapability('markFeesAsPaid', [$params ?: []])) {
+            return ['function' => 'markFeesAsPaid'];
+        }
+        return false;
     }
 }
