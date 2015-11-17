@@ -3,21 +3,12 @@
 /**
  * Functions and event handlers specific to record pages.
  */
-function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
-  var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
-  var vars = {}, hash;
-  var hashes = requestURL.slice(requestURL.indexOf('?') + 1).split('&');
-
-  for(var i = 0; i < hashes.length; i++)
-  {
-    hash = hashes[i].split('=');
-    var x = hash[0];
-    var y = hash[1];
-    vars[x] = y;
-  }
+function checkRequestIsValid(element, requestType, blockedClass) {
+  var recordId = element.href.match(/\/Record\/([^\/]+)\//)[1];
+  var vars = deparam(element.href);
   vars['id'] = recordId;
 
-  var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
+  var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
   $.ajax({
     dataType: 'json',
     cache: false,
@@ -41,19 +32,17 @@ function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
 function setUpCheckRequest() {
   $('.checkRequest').each(function(i) {
     if ($(this).hasClass('checkRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'Hold', 'holdBlocked');
+      var isValid = checkRequestIsValid(this, 'Hold', 'holdBlocked');
     }
   });
   $('.checkStorageRetrievalRequest').each(function(i) {
     if ($(this).hasClass('checkStorageRetrievalRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
-          'StorageRetrievalRequestBlocked');
+      var isValid = checkRequestIsValid(this, 'StorageRetrievalRequest', 'StorageRetrievalRequestBlocked');
     }
   });
   $('.checkILLRequest').each(function(i) {
     if ($(this).hasClass('checkILLRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'ILLRequest',
-          'ILLRequestBlocked');
+      var isValid = checkRequestIsValid(this,'ILLRequest', 'ILLRequestBlocked');
     }
   });
 }
