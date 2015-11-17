@@ -30,6 +30,8 @@
  */
 namespace Finna\ILS;
 
+use VuFind\Exception\ILS as ILSException;
+
 /**
  * Catalog Connection Class
  *
