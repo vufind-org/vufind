@@ -23,30 +23,6 @@ function extractClassParams(str) {
   }
   return params;
 }
-function jqEscape(myid) {
-  return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g, "\\$&");
-}
-function html_entity_decode(string, quote_style)
-{
-  var hash_map = {},
-    symbol = '',
-    tmp_str = '',
-    entity = '';
-  tmp_str = string.toString();
-
-  delete(hash_map['&']);
-  hash_map['&'] = '&amp;';
-  hash_map['>'] = '&gt;';
-  hash_map['<'] = '&lt;';
-
-  for (symbol in hash_map) {
-    entity = hash_map[symbol];
-    tmp_str = tmp_str.split(entity).join(symbol);
-  }
-  tmp_str = tmp_str.split('&#039;').join("'");
-
-  return tmp_str;
-}
 
 // Turn GET string into array
 function deparam(url) {

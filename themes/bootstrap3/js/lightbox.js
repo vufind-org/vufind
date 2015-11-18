@@ -154,6 +154,9 @@ var Lightbox = {
   confirm: function(message) {
     this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
   },
+  success: function(message) {
+    this.changeContent('<div class="alert alert-success">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+  },
   /**
    * Regexes a piece of html to find an error alert
    * If one is found, display it
@@ -439,14 +442,14 @@ $(document).ready(function() {
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
     Lightbox.addCloseAction(refreshPageForLogin);
-    Lightbox.confirm(vufindString['bulk_save_success']);
+    Lightbox.success(vufindString['bulk_save_success']);
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
   });
   Lightbox.addFormCallback('emailSearch', function(html) {
-    Lightbox.confirm(vufindString['bulk_email_success']);
+    Lightbox.success(vufindString['bulk_email_success']);
   });
   Lightbox.addFormCallback('saveRecord', function(html) {
     Lightbox.close();

@@ -3,18 +3,9 @@
 /**
  * Functions and event handlers specific to record pages.
  */
-function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
-  var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
-  var vars = {}, hash;
-  var hashes = requestURL.slice(requestURL.indexOf('?') + 1).split('&');
-
-  for(var i = 0; i < hashes.length; i++)
-  {
-    hash = hashes[i].split('=');
-    var x = hash[0];
-    var y = hash[1];
-    vars[x] = y;
-  }
+function checkRequestIsValid(element, requestType, blockedClass) {
+  var recordId = element.href.match(/\/Record\/([^\/]+)\//)[1];
+  var vars = deparam(element.href);
   vars['id'] = recordId;
 
   var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
@@ -40,21 +31,13 @@ function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
 
 function setUpCheckRequest() {
   $('.checkRequest').each(function(i) {
-    if ($(this).hasClass('checkRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'Hold', 'holdBlocked');
-    }
+    checkRequestIsValid(this, 'Hold', 'holdBlocked');
   });
   $('.checkStorageRetrievalRequest').each(function(i) {
-    if ($(this).hasClass('checkStorageRetrievalRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
-          'StorageRetrievalRequestBlocked');
-    }
+    checkRequestIsValid(this, 'StorageRetrievalRequest', 'StorageRetrievalRequestBlocked');
   });
   $('.checkILLRequest').each(function(i) {
-    if ($(this).hasClass('checkILLRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'ILLRequest',
-          'ILLRequestBlocked');
-    }
+    checkRequestIsValid(this, 'ILLRequest', 'ILLRequestBlocked');
   });
 }
 
@@ -83,7 +66,7 @@ function refreshCommentList($target, recordId, recordSource) {
         $commentList.empty();
         $commentList.append(response.data);
         $commentList.find('.delete').unbind('click').click(function() {
-          var commentId = $(this).attr('id');
+          var commentId = $(this).attr('id').substr('recordComment'.length);
           deleteRecordComment(this, recordId, recordSource, commentId);
           return false;
         });
@@ -125,7 +108,8 @@ function registerAjaxCommentRecord() {
   });
   // Delete links
   $('.delete').click(function() {
-    deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));
+    var commentId = this.id.substr('recordComment'.length);
+    deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), commentId);
     return false;
   });
 }
