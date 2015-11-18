@@ -6,9 +6,27 @@
   if (count($dedupData) > 1): ?>
     <div class="dedupInformation">
         <select class="dedup-select form-control" role="listbox" aria-haspopup="true">
-        <? foreach ($dedupData as $source => $current): ?>
-          <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>" role="option"><?=$this->transEsc("source_$source", null, $source) ?></option>
-        <? endforeach; ?>
+          <?
+            if ($user = $this->auth()->getManager()->isLoggedIn()) {
+              $catUsername = $user->cat_username;
+            }
+            $sourceOptions = array();
+            foreach ($dedupData as $source => $current) {
+              $optionHtml = "<option value=".$this->escapeHtmlAttr($current['id'])." class='dedup-data-id' data-source=".$this->escapeHtmlAttr($source)." role='option'>".$this->transEsc("source_$source", null, $source)." </option>";
+              // see if logged in and no organisations selected in facets
+              if ($user && !strpos(urlDecode($_SERVER['REQUEST_URI']), "0/", 0)) {
+                // see if source and the users's organisation match, if so move to first  
+                if (strstr($catUsername, $source)) {
+                  array_unshift($sourceOptions, $optionHtml);
+                } else {
+                  $sourceOptions[] = $optionHtml;
+                }
+              } else {
+                $sourceOptions[] = $optionHtml;
+              }
+            }
+            echo implode('', $sourceOptions);
+          ?>
         </select>
     </div>
   <? else: ?>
