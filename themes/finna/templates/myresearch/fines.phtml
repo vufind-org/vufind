@@ -94,8 +94,9 @@
       <? if ($this->onlinePayment): ?>
         <div class="col-sm-6 col-sm-push-6 text-right online-payment-data">
           <p><?=$this->transEsc('online_payment_payable_online'); ?> (<?=$payableOnlineCnt ?>): <span class="amount"><?=$this->safeMoneyFormat($payableOnline/100.00);?></span></p>
+          <? if (!empty($transactionFee)): ?>
           <p><?=$this->transEsc('online_payment_transaction_fee'); ?>: <span class="amount"><?=$this->safeMoneyFormat($transactionFee/100.00);?></span></p>
-
+          <? endif; ?>
           <? if ($this->onlinePaymentEnabled): ?>
             <?=$this->onlinePayment($paymentHandler, $transactionId, $payableTotal);?>
           <? elseif (!empty($this->nonPayableReason)): ?>
