@@ -36,10 +36,10 @@
     <li><a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>"><i class="fa fa-bookmark"></i> <?=$this->transEsc('Bookmark')?></a></li>
   <? endif; ?>
   <? if ($cart->isActive()): ?>
-    <li id="bookbag-menu">
+    <li class="bookbag-menu">
       <input class="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />
-      <a class="cart-add <? if(!$cart->contains($cartId)): ?>correct <? endif ?>hidden" href="#"><i class="fa fa-plus"></i> <?=$this->transEsc('Add to Book Bag') ?></a>
-      <a class="cart-remove <? if($cart->contains($cartId)): ?>correct <? endif ?>hidden" href="#"><i class="fa fa-minus-circle"></i> <?=$this->transEsc('Remove from Book Bag') ?></a>
+      <a class="cart-add hidden<? if(!$cart->contains($cartId)): ?> correct<? endif ?>" href="#"><i class="fa fa-plus"></i> <?=$this->transEsc('Add to Book Bag') ?></a>
+      <a class="cart-remove hidden<? if($cart->contains($cartId)): ?> correct<? endif ?>"href="#"><i class="fa fa-minus-circle"></i> <?=$this->transEsc('Remove from Book Bag') ?></a>
       <noscript>
         <form method="post" name="addForm" action="<?=$this->url('cart-home')?>">
           <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />

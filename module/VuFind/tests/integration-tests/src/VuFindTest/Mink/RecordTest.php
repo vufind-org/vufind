@@ -26,7 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindTest\Mink;
-use Behat\Mink\Session;
 
 /**
  * Mink test class for basic record functionality.
@@ -42,27 +41,26 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test record tabs for a particular ID.
      *
-     * @param Session $session  Session
-     * @param string  $id       ID to load
-     * @param bool    $encodeId Should we URL encode the ID?
+     * @param string $id       ID to load
+     * @param bool   $encodeId Should we URL encode the ID?
      *
      * @return void
      */
-    protected function tryRecordTabsOnId(Session $session, $id, $encodeId = true)
+    protected function tryRecordTabsOnId($id, $encodeId = true)
     {
         $url = $this->getVuFindUrl(
             '/Record/' . ($encodeId ? rawurlencode($id) : $id)
         );
+        $session = $this->getMinkSession();
         $session->visit($url);
-        $this->assertEquals(200, $session->getStatusCode());
+        $this->assertHttpStatus(200);
         $page = $session->getPage();
-        $staffViewTab = $page->findById('details');
-        $this->assertTrue(is_object($staffViewTab));
+        $staffViewTab = $this->findCss($page, '.record-tabs .details');
         $this->assertEquals('Staff View', $staffViewTab->getText());
         $staffViewTab->click();
+        $this->snooze();
         $this->assertEquals($url . '#details', $session->getCurrentUrl());
-        $staffViewTable = $page->find('css', '#details-tab table.citation');
-        $this->assertTrue(is_object($staffViewTable));
+        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.citation');
         $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
     }
 
@@ -73,10 +71,7 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testRecordTabsOnNormalId()
     {
-        $session = $this->getMinkSession();
-        $session->start();
-        $this->tryRecordTabsOnId($session, 'testsample1');
-        $session->stop();
+        $this->tryRecordTabsOnId('testsample1');
     }
 
     /**
@@ -86,10 +81,7 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testRecordTabsOnSpacedId()
     {
-        $session = $this->getMinkSession();
-        $session->start();
-        $this->tryRecordTabsOnId($session, 'dot.dash-underscore__3.space suffix');
-        $session->stop();
+        $this->tryRecordTabsOnId('dot.dash-underscore__3.space suffix');
     }
 
     /**
@@ -99,11 +91,8 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testRecordTabsOnPlusId()
     {
-        $session = $this->getMinkSession();
-        $session->start();
         // Skip encoding on this one, because Zend Framework doesn't URL encode
         // plus signs in route segments!
-        $this->tryRecordTabsOnId($session, 'theplus+andtheminus-', false);
-        $session->stop();
+        $this->tryRecordTabsOnId('theplus+andtheminus-', false);
     }
 }

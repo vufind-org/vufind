@@ -2,25 +2,25 @@
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
   if (isset($this->overrideTitle)) {
-      $this->headTitle($this->overrideTitle);
+    $this->headTitle($this->overrideTitle);
   } else {
-      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+    $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
   }
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
-      'search/searchbox.phtml',
-      array(
-        'lookfor' => $lookfor,
-        'searchIndex' => $this->params->getSearchHandler(),
-        'searchType' => $this->params->getSearchType(),
-        'searchId' => $this->results->getSearchId(),
-        'searchClassId' => $this->params->getsearchClassId(),
-        'checkboxFilters' => $this->params->getCheckboxFacets(),
-        'filterList' => $this->params->getFilters(),
-        'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
-        'selectedShards' => $this->params->getSelectedShards()
-      )
+    'search/searchbox.phtml',
+    array(
+      'lookfor' => $lookfor,
+      'searchIndex' => $this->params->getSearchHandler(),
+      'searchType' => $this->params->getSearchType(),
+      'searchId' => $this->results->getSearchId(),
+      'searchClassId' => $this->params->getsearchClassId(),
+      'checkboxFilters' => $this->params->getCheckboxFacets(),
+      'filterList' => $this->params->getFilters(),
+      'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
+      'selectedShards' => $this->params->getSelectedShards()
+    )
   );
 
   // Set up breadcrumbs:
@@ -36,8 +36,9 @@
   $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
 
   // Load Javascript only if list view parameter is NOT full:
-  if ($this->params->getOptions()->getListViewOption()!="full") {
-     $this->headScript()->appendFile("full_view.js");
+  if ($this->params->getOptions()->getListViewOption() != "full") {
+    $this->headScript()->appendFile("record.js");
+    $this->headScript()->appendFile("full_view.js");
   }
 
   // Load Javascript dependencies into header:

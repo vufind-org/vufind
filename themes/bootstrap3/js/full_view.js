@@ -1,4 +1,4 @@
-/*global path, registerAjaxCommentRecord, registerLightboxRecordActions, registerTabEvents*/
+/*global path, registerAjaxCommentRecord, registerTabEvents, setupRecordToolbar */
 
 function showhideTabs(tabid) {
   //console.log(tabid);
@@ -64,9 +64,15 @@ $(document).ready(function() {
           url: url,
           success: function(response) {
             if (response.status == 'OK') {
+              // Insert tabs html
               longNode.html(response.data);
+              // Hide loading
               loadingNode.addClass("hidden");
-              registerLightboxRecordActions(longNode, div_id);
+              // Load first tab
+              ajaxFLLoadTab($(longNode).find('.recordTabs li.active a').attr('id'));
+              // Add events to record toolbar
+              setupRecordToolbar(longNode, div_id);
+              // Lightbox handler for tagRecord
               Lightbox.addFormCallback('tagRecord', function() {
                 refreshTagList(true, longNode);
                 Lightbox.confirm(vufindString['add_tag_success']);
