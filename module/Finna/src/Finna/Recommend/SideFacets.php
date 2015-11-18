@@ -50,13 +50,6 @@ class SideFacets extends \VuFind\Recommend\SideFacets
     use SideFacetsTrait;
 
     /**
-     * New items facet configuration
-     *
-     * @var array
-     */
-    protected $newItemsFacets = [];
-
-    /**
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
