@@ -793,6 +793,91 @@ class InstallController extends AbstractBase
     }
 
     /**
+     * Check if SSL configuration is set properly.
+     *
+     * @return array
+     */
+    public function checkSslCerts()
+    {
+        // Try to retrieve an SSL URL; if we're misconfigured, it will fail.
+        try {
+            $this->getServiceLocator()->get('VuFind\Http')
+                ->get('https://google.com');
+            $status = true;
+        } catch (\VuFindHttp\Exception\RuntimeException $e) {
+            // Any exception means we have a problem!
+            $status = false;
+        }
+
+        return [
+            'title' => 'SSL', 'status' => $status, 'fix' => 'fixsslcerts'
+        ];
+    }
+
+    /**
+     * Display repair instructions for SSL certificate problems.
+     *
+     * @return mixed
+     */
+    public function fixsslcertsAction()
+    {
+        // Bail out if we've fixed the problem:
+        $result = $this->checkSslCerts();
+        if ($result['status'] == true) {
+            $this->flashMessenger()->addMessage('SSL configuration fixed.', 'info');
+            return $this->redirect()->toRoute('install-home');
+        }
+
+        // Find out which test to try next:
+        $try = $this->params()->fromQuery('try', 0);
+
+        // Configurations to test:
+        $configsToTest = [
+            ['sslcapath' => '/etc/ssl/certs'],
+            ['sslcafile' => '/etc/pki/tls/cert.pem'],
+            [], // reset configuration as last attempt
+        ];
+        if (isset($configsToTest[$try])) {
+            return $this->testSslCertConfig($configsToTest[$try], $try);
+        }
+
+        // If we got this far, we can't fix this automatically and must display
+        // a message.
+        $view = $this->createViewModel();
+        return $view;
+    }
+
+    /**
+     * Try switching to a specific SSL configuration.
+     *
+     * @param array $config Setting(s) to add to [Http] section of config.ini.
+     * @param int   $try    Which config index are we trying right now?
+     *
+     * @return void
+     */
+    protected function testSslCertConfig($config, $try)
+    {
+        $file = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $writer = new ConfigWriter($file);
+        // Reset old settings
+        $writer->clear('Http', 'sslcapath');
+        $writer->clear('Http', 'sslcafile');
+        // Load new settings
+        foreach ($config as $setting => $value) {
+            $writer->set('Http', $setting, $value);
+        }
+        if (!$writer->save()) {
+            throw new \Exception('Cannot write config to disk.');
+        }
+
+        // Jump back to fix action so we can check if it worked (and attempt
+        // the next config by incrementing the $try variable, if necessary):
+        return $this->redirect()->toRoute(
+            'install-fixsslcerts', [], ['query' => ['try' => $try + 1]]
+        );
+    }
+
+    /**
      * Disable auto-configuration.
      *
      * @return mixed

@@ -265,6 +265,10 @@ class CombinedController extends AbstractSearch
         $query->filter = isset($settings['filter'])
             ? (array)$settings['filter'] : null;
 
+        // Apply shards, if any:
+        $query->shard = isset($settings['shard'])
+            ? (array)$settings['shard'] : null;
+
         // Reset override to avoid bleed-over from one section to the next!
         $query->recommendOverride = false;
 
