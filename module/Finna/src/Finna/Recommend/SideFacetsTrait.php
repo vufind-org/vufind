@@ -44,6 +44,13 @@ use VuFind\Solr\Utils as SolrUtils;
 trait SideFacetsTrait
 {
     /**
+     * New items facet configuration
+     *
+     * @var array
+     */
+    protected $newItemsFacets = [];
+
+    /**
      * Get new items facets (facet titles)
      *
      * @return array
@@ -66,14 +73,10 @@ trait SideFacetsTrait
                     }
                 }
             }
-            $translatable = '';
-            if (preg_match('/^NOW-(\w+)/', $from, $matches)) {
-                $translatable = 'new_items_' . strtolower($matches[1]);
-            }
             $result[$current] = [
                 'raw' => $from,
-                'translatable' => $translatable,
-                'date' => substr($from, 0, 10)
+                'date' => preg_match('/^\d{4}-\d{2}-\d{2}/', $from)
+                    ? substr($from, 0, 10) : str_replace('/DAY', '', $from)
             ];
         }
         return $result;
