@@ -159,6 +159,7 @@ class Upgrade
         $this->upgradeSitemap();
         $this->upgradeSms();
         $this->upgradeSummon();
+        $this->upgradePrimo();
         $this->upgradeWorldCat();
 
         // The previous upgrade routines may have added values to permissions.ini,
@@ -292,7 +293,7 @@ class Upgrade
         $configs = [
             'config.ini', 'authority.ini', 'facets.ini', 'reserves.ini',
             'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini',
-            'permissions.ini'
+            'Primo.ini', 'permissions.ini'
         ];
         foreach ($configs as $config) {
             // Special case for config.ini, since we may need to overlay extra
@@ -971,6 +972,80 @@ class Upgrade
 
             // Remove any old settings remaining in Summon.ini:
             unset($config['Auth']);
+        }
+    }
+
+    /**
+     * Upgrade Primo.ini.
+     *
+     * @throws FileAccessException
+     * @return void
+     */
+    protected function upgradePrimo()
+    {
+        // we want to retain the old installation's search and facet settings
+        // exactly as-is
+        $groups = [
+            'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting'
+        ];
+        $this->applyOldSettings('Primo.ini', $groups);
+
+        // update permission settings
+        $this->upgradePrimoPermissions();
+
+        // save the file
+        $this->saveModifiedConfig('Primo.ini');
+    }
+
+    /**
+     * Translate obsolete permission settings.
+     *
+     * @return void
+     */
+    protected function upgradePrimoPermissions()
+    {
+        $config = & $this->newConfigs['Primo.ini'];
+        $permissions = & $this->newConfigs['permissions.ini'];
+        if (isset($config['Institutions']['code'])
+            && isset($config['Institutions']['regex'])
+        ) {
+            $codes = $config['Institutions']['code'];
+            $regex = $config['Institutions']['regex'];
+            if (count($regex) != count($codes)) {
+                $this->addWarning(
+                    'Mismatched code/regex counts in Primo.ini [Institutions].'
+                );
+            }
+
+            // Map parallel arrays into code => array of regexes and detect
+            // wildcard regex to treat as default code.
+            $map = [];
+            $default = null;
+            foreach ($codes as $i => $code) {
+                if ($regex[$i] == '/.*/') {
+                    $default = $code;
+                } else {
+                    $map[$code] = !isset($map[$code])
+                        ? [$regex[$i]]
+                        : array_merge($map[$code], [$regex[$i]]);
+                }
+            }
+            foreach ($map as $code => $regexes) {
+                $perm = "access.PrimoInstitution.$code";
+                $config['Institutions']["onCampusRule['$code']"] = $perm;
+                $permissions[$perm] = [
+                    'ipRegEx' => count($regexes) == 1 ? $regexes[0] : $regexes,
+                    'permission' => $perm,
+                ];
+                $this->permissionsModified = true;
+            }
+            if (null !== $default) {
+                $config['Institutions']['defaultCode'] = $default;
+            }
+
+            // Remove any old settings remaining in Primo.ini:
+            unset($config['Institutions']['code']);
+            unset($config['Institutions']['regex']);
         }
     }
 

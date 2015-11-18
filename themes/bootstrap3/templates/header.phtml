@@ -33,8 +33,8 @@
             <a href="<?=$this->url('myresearch-logout')?>" class="modal-link" title="<?=$this->transEsc("Log Out")?>"><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></a>
           </li>
           <li id="loginOptions"<? if($account->isLoggedIn()): ?> class="hidden"<? endif ?>>
-            <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-              <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>
+            <? if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+              <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>
             <? else: ?>
               <a href="<?=$this->url('myresearch-userlogin')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
             <? endif; ?>
