@@ -17,17 +17,17 @@
   $publisher = $this->driver->getPublicationDetails();
   $currentSource = $this->driver->tryMethod('getDataSource');
   $mergedData = $this->driver->tryMethod('getMergedRecordData');
-  $dedupData = $this->driver->getDedupData(); 
+  $dedupData = $this->driver->getDedupData();
 ?>
 <div class="visible-xs">
   <div class="mobile-toolbar">
     <ul class="nav nav-pills mobile-actions hidden-print">
           <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <li><a id="save-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-plus"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
+          <li><a class="save-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-plus"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
           <? endif; ?>
-        
+
           <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
-          
+
           <? if(count($exportFormats) > 0): ?>
           <li class="dropdown dropup">
             <a class="export-toggle dropdown-toggle" data-toggle="dropdown" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>"><i class="fa fa-list-alt"></i> <span class="sr-only"><?=$this->transEsc('Export Record') ?></span></a>
@@ -38,13 +38,13 @@
             </ul>
           </li>
           <? endif; ?>
-          
+
           <? if (count($this->driver->getCitationFormats()) > 0): ?>
-          <li><a id="cite-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="fa fa-asterisk"></i> <span class="sr-only"><?=$this->transEsc('Cite this')?></span></a></li>
+          <li><a class="cite-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="fa fa-asterisk"></i> <span class="sr-only"><?=$this->transEsc('Cite this')?></span></a></li>
           <? endif; ?>
-          
+
           <li><span class="hidden-xs hidden-sm"><a href="javascript:window.print()"><i class="fa fa-print"></i> <?=$this->transEsc('Print')?></a></span></li>
-          
+
           <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
           <? if($QRCode): ?>
           <li class="dropdown dropup">
@@ -76,10 +76,10 @@
             -->
           </li>
           <li class="whatsapp">
-            <span class="visible-xs"><a id="whatsapp-record" href="whatsapp://send?text=<?=$this->url('record-sms', array('id'=>$id)) ?>" data-action="share/whatsapp/share"><i class="fa fa-phone"></i></a></span>
+            <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=$this->url('record-sms', array('id'=>$id)) ?>" data-action="share/whatsapp/share"><i class="fa fa-phone"></i></a></span>
           </li>
           <? endif; ?>
-          <li class="mail-record"><a id="mail-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>"><i class="fa fa-envelope"></i> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
+          <li class="mail-record"><a class="mail-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>"><i class="fa fa-envelope"></i> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
         </ul>
       </li>
     </ul>

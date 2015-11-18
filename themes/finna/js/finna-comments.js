@@ -3,7 +3,7 @@ finna.comments = (function() {
     var initCommentList = function(allowCommenting, allowRating, commentCount) {
         $(".recordTabs #usercomments .count").text(commentCount);
 
-        var form = $('form.comment');
+        var form = $('form.comment-form');
         form.toggle(allowCommenting);
         form.find('input[type=hidden][name=commentId]').val('');
 
@@ -39,7 +39,7 @@ finna.comments = (function() {
     var initCommentForm = function(parentMethod, allowRating) {
         parentMethod();
 
-        $('form.comment').unbind('submit').submit(function(){
+        $('form.comment-form').unbind('submit').submit(function(){
             var form = this;
             var id = form.id.value;
             var recordSource = form.source.value;
@@ -73,7 +73,7 @@ finna.comments = (function() {
                 dataType: 'json',
                 success: function(response) {
                     if (response.status == 'OK') {
-                        refreshCommentList(id, recordSource);
+                        requestRefreshComments();
                         $(form).find('textarea[name="comment"]').val('');
                     } else {
                         Lightbox.displayError(response.data);
@@ -131,15 +131,15 @@ finna.comments = (function() {
     };
 
     var initEditComment = function(allowCommenting, allowRating) {
-        $('#commentList .edit').unbind('click').click(function() {
+        $('.comment-list .edit').unbind('click').click(function() {
             var comment = $(this).closest('.comment');
-            var form = $('form.comment');
+            var form = $('form.comment-form');
             form.toggle(true);
 
             var save = form.find('input.save');
             save.val(save.data('label-edit'));
 
-            form.find("#comment").val(comment.find('.comment-text').text());
+            form.find('textarea[name="comment"]').val(comment.find('.comment-text').text());
             form.find('input[type=hidden][name=commentId]').val(comment.data('id'));
 
             if (allowRating) {
@@ -153,10 +153,10 @@ finna.comments = (function() {
             return false;
         });
 
-        $('form.comment input.cancel').unbind('click').click(function() {
-            var form = $('form.comment');
+        $('form.comment-form input.cancel').unbind('click').click(function() {
+            var form = $('form.comment-form');
             form.toggle(allowCommenting);
-            form.find('#comment').val('');
+            form.find('textarea[name="comment"]').val('');
             form.find('input[type=hidden][name=commentId]').val('');
 
             var save = form.find('input.save');
@@ -167,10 +167,11 @@ finna.comments = (function() {
     };
 
     var requestRefreshComments = function() {
-        var form = $('form.comment');
+        var form = $('form.comment-form');
         var record = form.find('input[name=id]').val();
         var source = form.find('input[name=source]').val();
-        refreshCommentList(record, source);
+        var $tab = form.closest('.tab-pane');
+        refreshCommentList($tab, record, source);
     };
 
     var my = {
