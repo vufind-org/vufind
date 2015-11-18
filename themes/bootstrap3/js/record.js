@@ -8,7 +8,7 @@ function checkRequestIsValid(element, requestType, blockedClass) {
   var vars = deparam(element.href);
   vars['id'] = recordId;
 
-  var url = VUFIND.getPath() + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
+  var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
   $.ajax({
     dataType: 'json',
     cache: false,
