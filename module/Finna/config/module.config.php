@@ -142,11 +142,10 @@ $config = [
                     'comments' => 'Finna\Db\Table\Comments',
                     'comments-inappropriate' => 'Finna\Db\Table\CommentsInappropriate',
                     'comments-record' => 'Finna\Db\Table\CommentsRecord',
+                    'fee' => 'Finna\Db\Table\Fee',
                     'metalibSearch' => 'Finna\Db\Table\MetaLibSearch',
                     'search' => 'Finna\Db\Table\Search',
                     'transaction' => 'Finna\Db\Table\Transaction',
-                    'transaction-fee' => 'Finna\Db\Table\TransactionFee',
-                    'transaction-fees' => 'Finna\Db\Table\TransactionFees'
                 ],
             ],
             'ils_driver' => [

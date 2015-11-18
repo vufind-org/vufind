@@ -21,7 +21,6 @@
  *
  * @category VuFind2
  * @package  Db_Table
- * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -33,7 +32,6 @@ namespace Finna\Db\Table;
  *
  * @category VuFind2
  * @package  Db_Table
- * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -152,14 +150,14 @@ class Transaction extends \VuFind\Db\Table\Gateway
      */
     public function getFailedTransactions()
     {
-        $t = $this->createRow();
-        $t->whereAdd('complete = ' . self::STATUS_REGISTRATION_FAILED);
-        $t->whereAdd('paid > 0');
-        $t->orderBy('user_id');
-        $t->find();
+        $callback = function ($select) {
+            $select->where->equalTo('complete', self::STATUS_REGISTRATION_FAILED);
+            $select->where->greaterThan('paid', 0);
+            $select->order('user_id');
+        };
 
         $items = [];
-        while ($t->fetch()) {
+        foreach ($this->select($callback) as $t) {
             $items[] = $t;
         }
         return $items;
@@ -174,20 +172,27 @@ class Transaction extends \VuFind\Db\Table\Gateway
      */
     public function getUnresolvedTransactions($interval)
     {
-        $t = $this->createRow();
-        $t->whereAdd(
-            'complete = ' . self::STATUS_REGISTRATION_EXPIRED
-            . ' OR complete = ' . self::STATUS_FINES_UPDATED
-        );
-        $t->whereAdd('paid > 0');
-        $t->whereAdd(
-            "reported = 0 OR NOW() > DATE_ADD(reported, INTERVAL $interval HOUR)"
-        );
-        $t->orderBy('user_id');
-        $t->find();
+        $updatedStatus = self::STATUS_FINES_UPDATED;
+        $expiredStatus = self::STATUS_REGISTRATION_EXPIRED;
+
+        $callback = function ($select) use (
+            $updatedStatus, $expiredStatus, $interval
+        ) {
+            $select->where->in(
+                'complete', [$updatedStatus, $expiredStatus]
+            );
+            $select->where->greaterThan('paid', 0);
+            $select->where(
+                sprintf(
+                    '(reported = 0 OR NOW() > DATE_ADD(reported, INTERVAL %u HOUR))',
+                    $interval
+                )
+            );
+            $select->order('user_id');
+        };
 
         $items = [];
-        while ($t->fetch()) {
+        foreach ($this->select($callback) as $t) {
             $items[] = $t;
         }
         return $items;
@@ -386,6 +391,6 @@ class Transaction extends \VuFind\Db\Table\Gateway
     public function getTransaction($transactionId)
     {
         $row = $this->select(['transaction_id' => $transactionId])->current();
-        return (empty($row)) ? false : $row;
+        return empty($row) ? false : $row;
     }
 }

@@ -14,17 +14,11 @@
 <div class="row">
   <div class="col-md-10 col-lg-9">
     <? if ($user): ?>
-      <? if (!empty($this->paymentFinesChanged)): ?>
-        <div class="alert alert-danger"><?= $this->translate('online_payment_fines_changed'); ?></div>
-      <? elseif (isset($this->onlinePaymentError)):?>
-        <div class="alert alert-danger"><?= $this->translate($this->onlinePaymentError); ?></div>
-      <? elseif (!empty($this->registerPayment)): ?>
+      <? if (!empty($this->registerPayment)): ?>
         <div class="alert alert-info">
-          <span class="register-payment-spinner"><i class="fa fa-spinner fa-spin"></i> <?= $this->translate('Registering Payment'); ?></span>
+          <span class="register-payment-spinner"><i class="fa fa-spinner fa-spin"></i> <?=$this->translate('Registering Payment');?></span>
           <div id="online-payment-status" class="info hide"></div>
         </div>
-      <? elseif (!empty($this->paymentOk)):?>
-        <div class="alert alert-success"><?= $this->translate('online_payment_successful'); ?></div>
       <? endif; ?>
     <? endif; ?>
 
@@ -43,7 +37,7 @@
     <? if (empty($this->fines)): ?>
     <h4><?=$this->transEsc('You do not have any fines')?></h4>
     <? else: ?>
-    <table class="table table-striped useraccount-table<?= $this->onlinePayment ? ' online-payment' : ''?>">
+    <table class="table table-striped useraccount-table<?=$this->onlinePayment ? ' online-payment' : ''?>">
     <tr class="headers">
       <th class="user-account-table-title"><?=$this->transEsc('Title')?></th>
       <th><?=$this->transEsc('fine_checkout_date')?></th>
@@ -85,7 +79,7 @@
         </span>
         <? endif; ?>
         <? if ($showNonPayable): ?>
-        <div class="online-payment-remark"><?= $this->translate('online_payment_nonpayable_fees');?></div>
+        <div class="online-payment-remark"><?=$this->translate('online_payment_nonpayable_fees');?></div>
         <? endif; ?>
       </td>
     </tr>
@@ -99,13 +93,13 @@
   <div class="row">
       <? if ($this->onlinePayment): ?>
         <div class="col-sm-6 col-sm-push-6 text-right online-payment-data">
-          <p><?=$this->transEsc('online_payment_payable_online'); ?> (<?= $payableOnlineCnt ?>): <span class="amount"><?= $this->safeMoneyFormat($payableOnline/100.00); ?></span></p>
-          <p><?=$this->transEsc('online_payment_transaction_fee'); ?>: <span class="amount"><?= $this->safeMoneyFormat($transactionFee/100.00) ?></span></p>
+          <p><?=$this->transEsc('online_payment_payable_online'); ?> (<?=$payableOnlineCnt ?>): <span class="amount"><?=$this->safeMoneyFormat($payableOnline/100.00);?></span></p>
+          <p><?=$this->transEsc('online_payment_transaction_fee'); ?>: <span class="amount"><?=$this->safeMoneyFormat($transactionFee/100.00);?></span></p>
 
           <? if ($this->onlinePaymentEnabled): ?>
-            <?= $this->onlinePayment($paymentHandler, $transactionId, $payableTotal); ?>
+            <?=$this->onlinePayment($paymentHandler, $transactionId, $payableTotal);?>
           <? elseif (!empty($this->nonPayableReason)): ?>
-            <p><?=$this->transEsc($this->nonPayableReason); ?><?= $this->nonPayableReason == 'online_payment_minimum_fee' ?  (': <span class="amount">' . $this->safeMoneyFormat($this->minimumFee/100.00)) . '</span>' : '' ?>
+            <p><?=$this->transEsc($this->nonPayableReason); ?><?=$this->nonPayableReason == 'online_payment_minimum_fee' ?  (': <span class="amount">' . $this->safeMoneyFormat($this->minimumFee/100.00)) . '</span>' : '';?>
           <? endif; ?>
        </div>
        <? if ($template = $this->content()->findTemplateForLng("layout/Additions/online-payment")): ?>
@@ -117,8 +111,8 @@
         <?=
         $this->inlineScript(
           \Zend\View\Helper\HeadScript::SCRIPT,
-          '$(document).ready(function() {
-              finna.onlinePayment.registerPayment("' . $paymentReturnUrl . '");
+          '$(document).ready(function() {'
+              . "finna.onlinePayment.registerPayment('" . $this->json($registerPaymentParams) . "');" . '
           });',
           'SET'
         );

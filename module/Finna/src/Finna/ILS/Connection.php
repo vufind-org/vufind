@@ -31,8 +31,6 @@
 namespace Finna\ILS;
 use VuFind\Exception\ILS as ILSException;
 
-use VuFind\Exception\ILS as ILSException;
-
 /**
  * Catalog Connection Class
  *
@@ -77,19 +75,6 @@ class Connection extends \VuFind\ILS\Connection
         }
 
         return $this->getDriver()->changePassword($details);
-    }
-
-    /**
-     * Return total amount of fees that may be paid online.
-     *
-     * @param array $patron Patron
-     *
-     * @return mixed Associative array of payment info,
-     * false if an ILSException occurred.
-     */
-    public function getOnlinePayableAmount($patron)
-    {
-        return $this->getDriver()->getOnlinePayableAmount($patron);
     }
 
     /**

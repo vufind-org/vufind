@@ -1,6 +1,6 @@
 <?php
 /**
- * Table Definition for online payment transaction fee
+ * Table Definition for online payment fee
  *
  * PHP version 5
  *
@@ -21,7 +21,6 @@
  *
  * @category VuFind2
  * @package  Db_Table
- * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -29,23 +28,22 @@
 namespace Finna\Db\Table;
 
 /**
- * Table Definition for online payment transaction fee
+ * Table Definition for online payment fee
  *
  * @category VuFind2
  * @package  Db_Table
- * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class TransactionFee extends \VuFind\Db\Table\Gateway
+class Fee extends \VuFind\Db\Table\Gateway
 {
     /**
      * Constructor
      */
     public function __construct()
     {
-        parent::__construct('finna_fee', 'Finna\Db\Row\TransactionFee');
+        parent::__construct('finna_fee', 'Finna\Db\Row\Fee');
     }
 
     /**
@@ -62,6 +60,7 @@ class TransactionFee extends \VuFind\Db\Table\Gateway
     {
         $fee = $this->createRow();
         $fee->user_id = $userId;
+        $fee->transaction_id = $transactionId;
         $fee->title = isset($fine['title']) ? $fine['title'] : '';
         $fee->type = $fine['fine'];
         $fee->amount = $fine['amount'];
@@ -70,14 +69,6 @@ class TransactionFee extends \VuFind\Db\Table\Gateway
             return false;
         }
         if (!$fee->save()) {
-            return false;
-        }
-
-        $table = $this->getDbTable('TransactionFees');
-        $row = $table->createRow();
-        $row->transaction_id = $transactionId;
-        $row->fee_id = $fee->id;
-        if (!$row->save()) {
             return false;
         }
         return true;

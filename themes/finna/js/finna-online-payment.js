@@ -1,18 +1,15 @@
 finna.onlinePayment = (function() {
 
-    var registerPayment = function(returnUrl) {
-        var url = path + '/AJAX/JSON?' + $.param({method:'registerOnlinePayment'});
+    var registerPayment = function(params) {
+        var url = path + '/AJAX/registerOnlinePayment';
         $.ajax({
             type: 'POST',
             url:  url,
-            data: {url: returnUrl},
+            data: jQuery.parseJSON(params),
             dataType: 'json',
             success: function(response) {
                 location.href = response.data;
             },
-            error: function(jqXHR, status, error) {
-                location.reload();
-            }
         });
 
         return false;

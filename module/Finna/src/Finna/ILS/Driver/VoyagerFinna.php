@@ -123,7 +123,9 @@ trait VoyagerFinna
                     'secondary_login_field_label' => $label
                 ];
             }
-        } else if ($function == 'onlinePayment') {
+        } else if ($function == 'onlinePayment'
+            && isset($this->config['OnlinePayment'])
+        ) {
             return $this->config['OnlinePayment'];
         }
 
@@ -234,21 +236,21 @@ trait VoyagerFinna
             $sip->scLocation = $params['locationCode'];
             $sip->UIDalgorithm = 0;
             $sip->PWDalgorithm = 0;
-            $login_msg = $sip->msgLogin(
+            $loginMsg = $sip->msgLogin(
                 $params['userId'], $params['password']
             );
-            $login_response = $sip->get_message($login_msg);
-            if (strncmp('94', $login_response, 2) == 0) {
-                $login_result = $sip->parseLoginResponse($login_response);
-                if ($login_result['fixed']['Ok'] == '1') {
+            $loginResponse = $sip->get_message($loginMsg);
+            if (strncmp('94', $loginResponse, 2) == 0) {
+                $loginResult = $sip->parseLoginResponse($loginResponse);
+                if ($loginResult['fixed']['Ok'] == '1') {
                     $sip->patron = $patronId;
-                    $feepaid_msg
+                    $feepaidMsg
                         = $sip->msgFeePaid(1, 0, $amount / 100.00, $currency);
-                    $feepaid_response = $sip->get_message($feepaid_msg);
-                    if (strncmp('38', $feepaid_response, 2) == 0) {
-                        $feepaid_result
-                            = $sip->parseFeePaidResponse($feepaid_response);
-                        if ($feepaid_result['fixed']['PaymentAccepted'] == 'Y') {
+                    $feepaidResponse = $sip->get_message($feepaidMsg);
+                    if (strncmp('38', $feepaidResponse, 2) == 0) {
+                        $feepaidResult
+                            = $sip->parseFeePaidResponse($feepaidResponse);
+                        if ($feepaidResult['fixed']['PaymentAccepted'] == 'Y') {
                             $sip->disconnect();
 
                             // Clear patron blocks cache
@@ -421,7 +423,9 @@ trait VoyagerFinna
     public function supportsMethod($method, $params)
     {
         if ($method == 'markFeesAsPaid') {
-            $required = ['enabled', 'registrationMethod', 'registrationParams'];
+            $required = [
+                'currency', 'enabled', 'registrationMethod', 'registrationParams'
+            ];
 
             foreach ($required as $req) {
                 if (empty($this->config['OnlinePayment'][$req])) {
@@ -456,6 +460,10 @@ trait VoyagerFinna
      */
     protected function markOnlinePayableFines($fines)
     {
+        if (!isset($this->config['OnlinePayment'])) {
+            return $fines;
+        }
+
         $accruedType = 'Accrued Fine';
 
         $config = $this->config['OnlinePayment'];

@@ -1,6 +1,6 @@
 <?php
 /**
- * Row definition for online payment transaction fees
+ * Row definition for online payment fee
  *
  * PHP version 5
  *
@@ -21,7 +21,6 @@
  *
  * @category VuFind2
  * @package  Db_Table
- * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -29,16 +28,15 @@
 namespace Finna\Db\Row;
 
 /**
- * Row definition for online payment transaction fees
+ * Row definition for online payment fee
  *
  * @category VuFind2
  * @package  Db_Table
- * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class TransactionFees extends \VuFind\Db\Row\RowGateway
+class Fee extends \VuFind\Db\Row\RowGateway
 {
     /**
      * Constructor
@@ -47,7 +45,6 @@ class TransactionFees extends \VuFind\Db\Row\RowGateway
      */
     public function __construct($adapter)
     {
-        parent::__construct('id', 'finna_transaction_fees', $adapter);
+        parent::__construct('id', 'finna_fee', $adapter);
     }
-
 }

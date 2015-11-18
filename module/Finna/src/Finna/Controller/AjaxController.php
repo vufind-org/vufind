@@ -1332,10 +1332,10 @@ class AjaxController extends \VuFind\Controller\AjaxController
      *
      * @return \Zend\Http\Response
      */
-    public function registerOnlinePaymentAjax()
+    public function registerOnlinePaymentAction()
     {
-        $url = parse_url($this->getRequest()->getPost('url'));
-        parse_str($url['query'], $params);
+        $this->outputMode = 'json';
+        $params = $this->getRequest()->getPost()->toArray();
         $res = $this->processPayment($params);
         $returnUrl = $this->url()->fromRoute('myresearch-fines');
         return $this->output(
@@ -1349,9 +1349,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
      *
      * @return void
      */
-    public function paytrailNotifyAjax()
+    public function paytrailNotifyAction()
     {
-        parse_str($_SERVER['REQUEST_URI'], $params);
+        $params = $this->getRequest()->getQuery()->toArray();
         $res = $this->processPayment($params);
         exit();
     }

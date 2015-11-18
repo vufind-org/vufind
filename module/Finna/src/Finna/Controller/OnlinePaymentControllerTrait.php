@@ -95,31 +95,27 @@ trait OnlinePaymentControllerTrait
     protected function handleOnlinePayment($patron, $fines, $view)
     {
         $view->onlinePaymentEnabled = false;
-        $user = $this->getUser();
-        if (!$user) {
-            return false;
-        }
-
         $session = $this->getOnlinePaymentSession();
+
+        $catalog = $this->getILS();
+
+        // Check if online payment configuration exists for ILS-driver
+        $paymentConfig = $catalog->getConfig('onlinePayment');
+        if (empty($paymentConfig)) {
+            return;
+        }
 
         // Check if payment handler is configured in datasources.ini
         $onlinePayment = $this->getServiceLocator()->get('Finna\OnlinePayment');
         if (!$onlinePayment->isEnabled($patron['source'])) {
-            return false;
+            return;
         }
 
         // Check if online payment is enabled for ILS-driver
-        $catalog = $this->getILS();
         if (!$catalog->checkFunction('markFeesAsPaid', $patron)) {
-            return false;
+            return;
         }
-        $paymentConfig = $catalog->getConfig('onlinePayment');
-        $patron = $this->catalogLogin();
-        try {
-            $payableOnline = $catalog->getOnlinePayableAmount($patron);
-        } catch (\Exception $e) {
-            return false;
-        }
+        $payableOnline = $catalog->getOnlinePayableAmount($patron);
 
         // Check if there is a payment in progress
         // or if the user has unregistered payments
@@ -137,7 +133,7 @@ trait OnlinePaymentControllerTrait
         try {
             $paymentHandler = $onlinePayment->getHandler($patron['source']);
         } catch (\Exception $e) {
-            return false;
+            return;
         }
 
         $f = function ($fine) {
@@ -174,8 +170,13 @@ trait OnlinePaymentControllerTrait
                 exit();
             }
             $finesUrl = $this->getServerUrl('myresearch-fines');
-            $ajaxUrl = $this->getServerUrl('home') . 'AJAX/JSON?method=';
+            $ajaxUrl = $this->getServerUrl('home') . 'AJAX';
             list($driver,) = explode('.', $patron['cat_username'], 2);
+
+            $user = $this->getUser();
+            if (!$user) {
+                return;
+            }
 
             // Start payment
             $paymentHandler->startPayment(
@@ -195,7 +196,8 @@ trait OnlinePaymentControllerTrait
         } else if ($payment) {
             // Payment response received. Display page and process via AJAX.
             $view->registerPayment = true;
-            $view->paymentReturnUrl = $_SERVER['REQUEST_URI'];
+            $view->registerPaymentParams
+                = $this->getRequest()->getQuery()->toArray();
         } else {
             $allowPayment
                 = $paymentPermittedForUser === true && $payableOnline
@@ -209,14 +211,21 @@ trait OnlinePaymentControllerTrait
 
             if (!empty($session->payment_fines_changed)) {
                 $view->paymentFinesChanged = true;
+                $this->flashMessenger()->addMessage(
+                    'online_payment_fines_changed', 'error'
+                );
                 unset($session->payment_fines_changed);
             } else if (!empty($session->paymentOk)) {
-                $view->paymentOk = true;
+                $this->flashMessenger()->addMessage(
+                    'online_payment_successful', 'success'
+                );
                 unset($session->paymentOk);
             } else {
                 $view->onlinePaymentEnabled = $allowPayment;
                 if ($paymentPermittedForUser !== true) {
-                    $view->onlinePaymentError = $paymentPermittedForUser;
+                    $this->flashMessenger()->addMessage(
+                        strip_tags($paymentPermittedForUser), 'error'
+                    );
                 } else if (!empty($payableOnline['reason'])) {
                     $view->nonPayableReason = $payableOnline['reason'];
                 }

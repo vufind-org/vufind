@@ -29,7 +29,9 @@
  */
 namespace Finna\OnlinePayment;
 use Finna\Db\Row\Transaction,
-    Finna\OnlinePayment\OnlinePaymentHanderInterface;
+    Finna\OnlinePayment\OnlinePaymentHanderInterface,
+    Zend\Log\LoggerAwareInterface,
+    Zend\Log\LoggerInterface;
 
 require_once 'Paytrail_Module_Rest.php';
 
@@ -44,7 +46,7 @@ require_once 'Paytrail_Module_Rest.php';
  * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
  * @link     http://docs.paytrail.com/ Paytrial API docoumentation
  */
-class Paytrail implements OnlinePaymentHandlerInterface
+class Paytrail implements OnlinePaymentHandlerInterface, LoggerAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait {
         getDbTable as getTable;
@@ -83,6 +85,18 @@ class Paytrail implements OnlinePaymentHandlerInterface
     }
 
     /**
+     * Set logger instance
+     *
+     * @param LoggerInterface $logger Logger
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
      * Start transaction.
      *
      * @param string $finesUrl           Return URL to MyResearch/Fines
@@ -112,7 +126,7 @@ class Paytrail implements OnlinePaymentHandlerInterface
             = "{$finesUrl}?{$statusParam}=" . self::PAYMENT_FAILURE
             . "&{$transactionIdParam}=" . urlencode($orderNumber);
         $notifyUrl
-            = "{$ajaxUrl}paytrailNotify&{$statusParam}=" . self::PAYMENT_NOTIFY
+            = "{$ajaxUrl}/paytrailNotify?{$statusParam}=" . self::PAYMENT_NOTIFY
             . "&{$transactionIdParam}=" . urlencode($orderNumber);
 
         $urlset
@@ -123,7 +137,7 @@ class Paytrail implements OnlinePaymentHandlerInterface
             = new Paytrail_Module_Rest_Payment_S1($orderNumber, $urlset, $totAmount);
 
         if (!$module = $this->initPaytrail()) {
-            $this->logError('Paytrail: error starting payment processing.');
+            $this->logger->err('Paytrail: error starting payment processing.');
             return false;
         }
 
@@ -132,7 +146,7 @@ class Paytrail implements OnlinePaymentHandlerInterface
         } catch (Paytrail_Exception $e) {
             $err = 'Paytrail: error starting payment processing: '
                 . $e->getMessage();
-            $this->logError($err);
+            $this->logger->err($err);
             header("Location: {$finesUrl}");
         }
 
@@ -147,14 +161,14 @@ class Paytrail implements OnlinePaymentHandlerInterface
         );
 
         if (!$t) {
-            $this->logError('Paytrail: error creating transaction');
+            $this->logger->err('Paytrail: error creating transaction');
             return false;
         }
 
-        $feeTable = $this->getTable('transaction-fee');
+        $feeTable = $this->getTable('fee');
         foreach ($fines as $fine) {
             if (!$feeTable->addFee($t->id, $fine, $t->user_id, $t->currency)) {
-                $this->logError('Paytrail: error adding fee to transaction.');
+                $this->logger->err('Paytrail: error adding fee to transaction.');
                 return false;
             }
         }
@@ -186,7 +200,7 @@ class Paytrail implements OnlinePaymentHandlerInterface
         }
 
         if (($t = $table->getTransaction($orderNum)) === false) {
-            $this->logError(
+            $this->logger->err(
                 "Paytrail: error processing transaction $orderNum"
                 . ': transaction not found'
             );
@@ -206,22 +220,22 @@ class Paytrail implements OnlinePaymentHandlerInterface
                 $params["METHOD"],
                 $params["RETURN_AUTHCODE"]
             )) {
-                $this->logError(
+                $this->logger->err(
                     'Paytrail: error processing response: invalid checksum'
                 );
-                $this->logError("   " . var_export($params, true));
+                $this->logger->err("   " . var_export($params, true));
                 return 'online_payment_failed';
             }
 
             if (!$table->setTransactionPaid($orderNum, $timestamp)) {
-                $this->logError(
+                $this->logger->err(
                     "Paytrail: error updating transaction $orderNum to paid"
                 );
             }
             $paid = true;
         } else if ($status == self::PAYMENT_FAILURE) {
             if (!$table->setTransactionCancelled($orderNum)) {
-                $this->logError(
+                $this->logger->err(
                     "Paytrail: error updating transaction $orderNum to cancelled"
                 );
             }
@@ -247,7 +261,7 @@ class Paytrail implements OnlinePaymentHandlerInterface
     {
         foreach (['merchantId', 'secret', 'url'] as $req) {
             if (!isset($this->config[$req])) {
-                $this->logError("Paytrail: missing parameter $req");
+                $this->logger->err("Paytrail: missing parameter $req");
                 return false;
             }
         }

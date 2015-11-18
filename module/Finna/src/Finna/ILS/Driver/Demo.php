@@ -170,7 +170,7 @@ class Demo extends \VuFind\ILS\Driver\Demo
      */
     public function markFeesAsPaid($patron, $amount)
     {
-        if (rand() > 0.8) {
+        if ((rand() % 10) > 8) {
             throw new ILSException('online_payment_registration_failed');
         }
 
@@ -203,7 +203,9 @@ class Demo extends \VuFind\ILS\Driver\Demo
     public function supportsMethod($method, $params)
     {
         if ($method == 'markFeesAsPaid') {
-            $required = ['enabled', 'registrationMethod', 'registrationParams'];
+            $required = [
+                'currency', 'enabled', 'registrationMethod', 'registrationParams'
+            ];
 
             foreach ($required as $req) {
                 if (!isset($this->config['OnlinePayment'][$req])
