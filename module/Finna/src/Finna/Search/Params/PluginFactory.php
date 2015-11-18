@@ -67,7 +67,8 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
             // Clone the options instance in case caller modifies it:
             return new \Finna\Search\Solr\Params(
                 clone($options),
-                $serviceLocator->getServiceLocator()->get('VuFind\Config')
+                $serviceLocator->getServiceLocator()->get('VuFind\Config'),
+                $serviceLocator->getServiceLocator()->get('VuFind\DateConverter')
             );
         } else if ($name === 'primo') {
             // Clone the options instance in case caller modifies it:
@@ -85,7 +86,8 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
             // Clone the options instance in case caller modifies it:
             return new \Finna\Search\Combined\Params(
                 clone($options),
-                $serviceLocator->getServiceLocator()->get('VuFind\Config')
+                $serviceLocator->getServiceLocator()->get('VuFind\Config'),
+                $serviceLocator->getServiceLocator()->get('VuFind\DateConverter')
             );
         } else if ($name === 'mixedlist') {
             // Clone the options instance in case caller modifies it:

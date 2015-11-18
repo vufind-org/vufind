@@ -689,9 +689,16 @@ table .iconlabel {
 .sidebar .list-group-item .main.applied i.fa.fa-check-square-o {
     margin-right:3px;
 }
-.searchbox .btn-link .fa-search-adv {
-    font-size: 1.55em;
-    margin-right: 5px;
+.searchbox .btn-link {
+    & .fa-search-adv {
+        font-size: 1.55em;
+        margin-right: 5px;
+        vertical-align: -3px;
+    }
+    & .fa-search {
+        vertical-align: -2px;
+        font-size: 1.1em;
+    }
 }
 .spelling-suggestions .fa-plus-small {
     vertical-align: -2px;

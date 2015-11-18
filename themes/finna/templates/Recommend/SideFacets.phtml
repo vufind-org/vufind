@@ -105,17 +105,7 @@
         ?>
         <a class="list-group-item active" href="<?=$removeLink?>">
           <span class="pull-right"><i class="fa fa-times"></i></span>
-          <? if (isset($filter['field']) && isset($newItemsFacets[$filter['field']])): ?>
-            <?=$this->transEsc($field)?>:
-            <? $newItemsFacet = $newItemsFacets[$filter['field']]; ?>
-            <? if (!empty($newItemsFacet['translatable'])): ?>
-              <?=$this->transEsc($newItemsFacet['translatable']) ?>
-            <? else: ?>
-              <?=$this->dateTime()->convertToDisplayDate('Y-m-d', str_replace('/DAY', '', $newItemsFacet['date'])) ?>&ndash;
-            <? endif; ?>
-          <? else: ?>
-            <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?>
-          <? endif; ?>
+          <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?>
         </a>
       <? endforeach; ?>
     <? endforeach; ?>
@@ -179,7 +169,7 @@
                 <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter" class="form-inline">
                   <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
                   <label for="<?=$this->escapeHtmlAttr($title)?>from"><?=$this->transEsc('new_items_from')?></label>
-                  <input type="text" class="form-control form-inline date-picker-field" autocomplete="off" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" maxlength="10" size="10" value="<?=$this->escapeHtmlAttr($this->dateTime()->convertToDisplayDate('Y-m-d', str_replace('/DAY', '', $newItemsFacets[$title]['date']))) ?>" placeholder="<?=$this->dateTime()->getDisplayDateFormat() ?>">
+                  <input type="text" class="form-control form-inline date-picker-field" autocomplete="off" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" maxlength="10" size="10" value="<?=$this->escapeHtmlAttr($this->dateTime()->convertToDisplayDate('Y-m-d', $newItemsFacets[$title]['date'])) ?>" placeholder="<?=$this->dateTime()->getDisplayDateFormat() ?>">
                   <button class="btn btn-primary btn-default date-picker-button" type="submit" value=""><i class="fa fa-search"></i></button>
                 </form>
 <?
