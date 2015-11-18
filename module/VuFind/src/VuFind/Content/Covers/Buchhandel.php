@@ -48,7 +48,7 @@ class Buchhandel extends \VuFind\Content\AbstractCover
     protected $url;
 
     /**
-     * API token for Buchhandel 
+     * API token for Buchhandel
      *
      * @var string
      */
@@ -57,8 +57,8 @@ class Buchhandel extends \VuFind\Content\AbstractCover
     /**
      * Constructor
      *
-     * @param string $url      Base URL for Buchhandel 
-     * @param string $apiToken API token for Buchhandel 
+     * @param string $url      Base URL for Buchhandel
+     * @param string $apiToken API token for Buchhandel
      */
     public function __construct($url, $apiToken)
     {
@@ -87,14 +87,16 @@ class Buchhandel extends \VuFind\Content\AbstractCover
         }
         $isbn = $ids['isbn']->get13();
         switch ($size) {
-        case 'small': $lsize = "s"; break;
-        case 'medium': $lsize = "m"; break;
-        case 'large': $lsize = "l"; break;
+        case 'small':
+        case 'medium':
+        case 'large':
+            $lsize = substr($size, 0, 1);
+            break;
         default:
             $lsize = "s";
             break;
         }
 
-        return $this->url . $isbn ."/" . $lsize . "?access_token=" . $this->apiToken;
+        return "{$this->url}{$isbn}/{$lsize}?access_token={$this->apiToken}";
     }
 }

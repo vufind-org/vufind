@@ -76,7 +76,7 @@ class Factory
         return new Booksite($url, $config->Booksite->key);
     }
 
-   /**
+    /**
      * Create Buchhandel.de loader
      *
      * @param ServiceManager $sm Service manager
@@ -84,7 +84,7 @@ class Factory
      * @return mixed
      */
     public static function getBuchhandel(ServiceManager $sm)
-    {   
+    {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $url = isset($config->Buchhandel->url)
             ? $config->Buchhandel->url  : 'https://api.vlb.de/api/v1/cover/';
