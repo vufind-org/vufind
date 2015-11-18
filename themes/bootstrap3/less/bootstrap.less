@@ -286,7 +286,7 @@ h3 {
   font-weight: bold;
   color: #000;
 }
-#tagList {
+.tagList {
   .tag {
     display: inline-block;
     margin: 0 1px 1px;
@@ -307,7 +307,7 @@ h3 {
   .tag-form {display: inline;}
   .tag-form button {border: 0;}
 }
-#tagList.loggedin .tag:not(.selected) .badge:hover {background-color: @brand-success;}
+.tagList.loggedin .tag:not(.selected) .badge:hover {background-color: @brand-success;}
 
 /* --- Search --- */
 .bulkActionButtons label {display: inline-block;}
@@ -340,6 +340,7 @@ h3 {
 
 /* --- Sidebar --- */
 /* Sidebar rounded corners */
+.narrow-toggle { text-align: center; }
 .sidebar {
   label:not(.list-group-item) {margin-left: 20px;}
   .list-group:not(.filters) .title {
@@ -368,8 +369,10 @@ h3 {
     border-bottom-right-radius: @border-radius-base;
   }
 }
-.list-group-item {
-  &, .badge, i.fa {cursor: inherit;}
+.list-group-item, .badge {
+  i.fa {
+    cursor: inherit;
+  }
 }
 .sidebar .facet a {text-decoration: none;}
 .top-row .applied {

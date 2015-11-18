@@ -5,17 +5,25 @@
   $user = $this->auth()->isLoggedIn()
 ?>
 
-<div id="commentList">
+<div class="comment-list">
   <?=$this->render('record/comments-list.phtml')?>
 </div>
 <form class="comment row" name="commentRecord" id="commentRecord" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post" <? if($user): ?>onSubmit="registerAjaxCommentRecord"<? else: ?>data-lightbox data-lightbox-after-login="commentLoginCallback"<? endif; ?>>
-  <div class="col-sm-3 name">
-    <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
-    <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>"/>
-    <strong><?=$this->transEsc("Your Comment")?></strong>
-  </div>
-  <div class="col-sm-9">
-    <textarea id="comment" name="comment" class="form-control" rows="3" required></textarea><br/>
-    <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
+  <div class="row">
+    <div class="col-sm-3 name">
+      <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
+      <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>"/>
+      <strong><?=$this->transEsc("Your Comment")?></strong>
+    </div>
+    <div class="col-sm-9">
+      <? $user = $this->auth()->isLoggedIn() ?>
+      <? if($user): ?>
+        <textarea name="comment" class="form-control" rows="3" required></textarea><br/>
+        <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
+      <? else: ?>
+        <textarea name="comment" class="form-control" rows="3" disabled></textarea><br/>
+        <input onClick="Lightbox.get('MyResearch', 'UserLogin'); return false;" class="btn btn-primary" type="submit" value="<?=$this->transEsc("You must be logged in first")?>"/>
+      <? endif; ?>
+    </div>
   </div>
 </form>

@@ -11,5 +11,6 @@ return array(
     'Symfony\\Component\\Process\\' => array($vendorDir . '/symfony/process'),
     'Symfony\\Component\\CssSelector\\' => array($vendorDir . '/symfony/css-selector'),
     'LosReCaptcha\\' => array($vendorDir . '/los/losrecaptcha/src'),
+    'Behat\\Mink\\Driver\\' => array($vendorDir . '/behat/mink-zombie-driver/src', $vendorDir . '/behat/mink-selenium2-driver/src'),
     'Behat\\Mink\\' => array($vendorDir . '/behat/mink/src'),
 );

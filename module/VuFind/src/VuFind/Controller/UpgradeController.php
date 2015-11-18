@@ -123,24 +123,6 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Support method -- given a directory, extract a version number from the
-     * build.xml file within that directory.
-     *
-     * @param string $dir Directory to search for build.xml
-     *
-     * @return string
-     */
-    protected function getVersion($dir)
-    {
-        $xml = simplexml_load_file($dir . '/build.xml');
-        if (!$xml) {
-            throw new \Exception('Cannot load ' . $dir . '/build.xml.');
-        }
-        $parts = $xml->xpath('/project/property[@name="version"]/@value');
-        return (string)$parts[0];
-    }
-
-    /**
      * Display disabled message.
      *
      * @return mixed
@@ -170,8 +152,10 @@ class UpgradeController extends AbstractBase
      */
     public function establishversionsAction()
     {
-        $this->cookie->newVersion = $this->getVersion(realpath(APPLICATION_PATH));
-        $this->cookie->oldVersion = $this->getVersion($this->cookie->sourceDir);
+        $this->cookie->newVersion = \VuFind\Config\Version::getBuildVersion();
+        $this->cookie->oldVersion = \VuFind\Config\Version::getBuildVersion(
+            $this->cookie->sourceDir
+        );
 
         // Block upgrade when encountering common errors:
         if (empty($this->cookie->oldVersion)) {
@@ -630,8 +614,7 @@ class UpgradeController extends AbstractBase
         // Process form submission:
         $version = $this->params()->fromPost('sourceversion');
         if (!empty($version)) {
-            $this->cookie->newVersion
-                = $this->getVersion(realpath(APPLICATION_PATH));
+            $this->cookie->newVersion = \VuFind\Config\Version::getBuildVersion();
             if (floor($version) != 2) {
                 $this->flashMessenger()
                     ->addMessage('Illegal version number.', 'error');

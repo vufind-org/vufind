@@ -3,18 +3,9 @@
 /**
  * Functions and event handlers specific to record pages.
  */
-function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
-  var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
-  var vars = {}, hash;
-  var hashes = requestURL.slice(requestURL.indexOf('?') + 1).split('&');
-
-  for(var i = 0; i < hashes.length; i++)
-  {
-    hash = hashes[i].split('=');
-    var x = hash[0];
-    var y = hash[1];
-    vars[x] = y;
-  }
+function checkRequestIsValid(element, requestType, blockedClass) {
+  var recordId = element.href.match(/\/Record\/([^\/]+)\//)[1];
+  var vars = deparam(element.href);
   vars['id'] = recordId;
 
   var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
@@ -40,21 +31,13 @@ function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
 
 function setUpCheckRequest() {
   $('.checkRequest').each(function(i) {
-    if ($(this).hasClass('checkRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'Hold', 'holdBlocked');
-    }
+    checkRequestIsValid(this, 'Hold', 'holdBlocked');
   });
   $('.checkStorageRetrievalRequest').each(function(i) {
-    if ($(this).hasClass('checkStorageRetrievalRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
-          'StorageRetrievalRequestBlocked');
-    }
+    checkRequestIsValid(this, 'StorageRetrievalRequest', 'StorageRetrievalRequestBlocked');
   });
   $('.checkILLRequest').each(function(i) {
-    if ($(this).hasClass('checkILLRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'ILLRequest',
-          'ILLRequestBlocked');
-    }
+    checkRequestIsValid(this, 'ILLRequest', 'ILLRequestBlocked');
   });
 }
 
@@ -65,13 +48,13 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
     url: url,
     success: function(response) {
       if (response.status == 'OK') {
-        $($(element).parents('.comment')[0]).remove();
+        $($(element).closest('.comment')[0]).remove();
       }
     }
   });
 }
 
-function refreshCommentList(recordId, recordSource) {
+function refreshCommentList($target, recordId, recordSource) {
   var url = path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
   $.ajax({
     dataType: 'json',
@@ -79,14 +62,15 @@ function refreshCommentList(recordId, recordSource) {
     success: function(response) {
       // Update HTML
       if (response.status == 'OK') {
-        $('#commentList').empty();
-        $('#commentList').append(response.data);
-        $('input[type="submit"]').button('reset');
-        $('.delete').unbind('click').click(function() {
+        var $commentList = $target.find('.comment-list');
+        $commentList.empty();
+        $commentList.append(response.data);
+        $commentList.find('.delete').unbind('click').click(function() {
           var commentId = $(this).attr('id').substr('recordComment'.length);
           deleteRecordComment(this, recordId, recordSource, commentId);
           return false;
         });
+        $target.find('.comment-form input[type="submit"]').button('reset');
       }
     }
   });
@@ -124,6 +108,13 @@ function registerAjaxCommentRecord() {
       }
     }
   });
+  // Delete links
+  $('.delete').click(function() {
+    var commentId = this.id.substr('recordComment'.length);
+    deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), commentId);
+    return false;
+  });
+  // Prevent form submit
   return false;
 }
 
@@ -138,50 +129,62 @@ function registerTabEvents() {
   constrainForms('form[data-lightbox]');
 }
 
-function ajaxLoadTab(tabid) {
-  var id = $('.hiddenId')[0].value;
-  // Try to parse out the controller portion of the URL. If this fails, or if
-  // we're flagged to skip AJAX for this tab, just return true and let the
-  // browser handle it.
-  var urlroot = document.URL.match(new RegExp('/[^/]+/'+id));
-  if(!urlroot || document.getElementById(tabid).parentNode.className.indexOf('noajax') > -1) {
-    return true;
+function ajaxLoadTab($newTab, tabid, setHash) {
+  // Parse out the base URL for the current record:
+  var urlParts = document.URL.split(/[?#]/);
+  var urlWithoutFragment = urlParts[0];
+  if (path == '') {
+    // special case -- VuFind installed at site root:
+    var chunks = urlWithoutFragment.split('/');
+    var urlroot = '/' + chunks[3] + '/' + chunks[4];
+  } else {
+    // standard case -- VuFind has its own path under site:
+    var pathInUrl = urlWithoutFragment.indexOf(path);
+    var chunks = urlWithoutFragment.substring(pathInUrl + path.length + 1).split('/');
+    var urlroot = '/' + chunks[0] + '/' + chunks[1];
   }
+
+  // Request the tab via AJAX:
   $.ajax({
     url: path + urlroot + '/AjaxTab',
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
-      $('#record-tabs .tab-pane.active').removeClass('active');
-      $('#'+tabid+'-tab').html(data).addClass('active');
-      $('#'+tabid).tab('show');
+      $newTab.html(data).addClass('active');
+      $newTab.closest('.record-tabs').find('.'+tabid).tab('show');
       registerTabEvents();
       if(typeof syn_get_widget === "function") {
         syn_get_widget();
+      }
+      if (typeof setHash == 'undefined' || setHash) {
+        window.location.hash = tabid;
       }
     }
   });
   return false;
 }
 
-function refreshTagList(loggedin) {
+function refreshTagList(target, loggedin) {
   loggedin = !!loggedin || userIsLoggedIn;
-  var recordId = $('#record_id').val();
-  var recordSource = $('.hiddenSource').val();
-  var tagList = $('#tagList');
-  if (tagList.length > 0) {
-    tagList.empty();
+  if (typeof target === 'undefined') {
+    target = document;
+  }
+  var recordId = $(target).find('.hiddenId').val();
+  var recordSource = $(target).find('.hiddenSource').val();
+  var $tagList = $(target).find('.tagList');
+  if ($tagList.length > 0) {
+    $tagList.empty();
     var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
     $.ajax({
       dataType: 'json',
       url: url,
       complete: function(response) {
         if(response.status == 200) {
-          tagList.html(response.responseText);
+          $tagList.replaceWith(response.responseText);
           if(loggedin) {
-            $('#tagList').addClass('loggedin');
+            $tagList.addClass('loggedin');
           } else {
-            $('#tagList').removeClass('loggedin');
+            $tagList.removeClass('loggedin');
           }
         }
       }
@@ -189,12 +192,16 @@ function refreshTagList(loggedin) {
   }
 }
 
-function ajaxTagUpdate(tag, remove) {
+function ajaxTagUpdate(link, tag, remove) {
+  if(typeof link === "undefined") {
+    link = document;
+  }
   if(typeof remove === "undefined") {
     remove = false;
   }
-  var recordId = $('#record_id').val();
-  var recordSource = $('.hiddenSource').val();
+  var $target = $(link).closest('.record');
+  var recordId = $target.find('.hiddenId').val();
+  var recordSource = $target.find('.hiddenSource').val();
   $.ajax({
     url:path+'/AJAX/JSON?method=tagRecord',
     method:'POST',
@@ -204,29 +211,53 @@ function ajaxTagUpdate(tag, remove) {
       source:recordSource,
       remove:remove
     },
-    complete:refreshTagList
+    complete: function() {
+      refreshTagList($target, false);
+    }
   });
 }
 
-$(document).ready(function(){
+function applyRecordTabHash() {
+  var activeTab = $('.record-tabs li.active a').attr('class');
+  var $initiallyActiveTab = $('.record-tabs li.initiallyActive a');
+  var newTab = typeof window.location.hash !== 'undefined'
+    ? window.location.hash.toLowerCase() : '';
+
+  // Open tag in url hash
+  if (newTab.length == 0 || newTab == '#tabnav') {
+    $initiallyActiveTab.click();
+  } else if (newTab.length > 0 && '#' + activeTab != newTab) {
+    $(newTab).click();
+  }
+}
+
+$(window).on('hashchange', applyRecordTabHash);
+
+function recordDocReady() {
   var id = $('.hiddenId')[0].value;
   registerTabEvents();
 
-  $('ul.recordTabs a').click(function (e) {
-    if($(this).parents('li.active').length > 0) {
+  $('.record-tabs .nav-tabs a').click(function (e) {
+    if ($(this.parentNode).hasClass('active')) {
       return true;
     }
-    var tabid = $(this).attr('id').toLowerCase();
-    if($('#'+tabid+'-tab').length > 0) {
-      $('#record-tabs .tab-pane.active').removeClass('active');
-      $('#'+tabid+'-tab').addClass('active');
-      $('#'+tabid).tab('show');
+    var tabid = this.className;
+    var $top = $(this).closest('.record-tabs');
+    $top.find('.tab-pane.active').removeClass('active');
+    if ($top.find('.'+tabid+'-tab').length > 0) {
+      $top.find('.'+tabid+'-tab').addClass('active');
+      $(this).tab('show');
+      window.location.hash = tabid;
       return false;
     } else {
-      $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+vufindString['loading']+'...</div>');
-      $('#record-tabs .tab-pane.active').removeClass('active');
-      $('#'+tabid+'-tab').addClass('active');
-      return ajaxLoadTab(tabid);
+      // if we're flagged to skip AJAX for this tab, just return true and let the browser handle it.
+      if ($(this.parentNode).hasClass('noajax')) {
+        return true;
+      }
+      var newTab = $('<div class="tab-pane active '+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+vufindString['loading']+'...</div>');
+      $top.find('.tab-content').append(newTab);
+      return ajaxLoadTab(newTab, tabid);
     }
   });
-});
+  applyRecordTabHash();
+}

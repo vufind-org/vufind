@@ -23,30 +23,6 @@ function extractClassParams(str) {
   }
   return params;
 }
-function jqEscape(myid) {
-  return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g, "\\$&");
-}
-function html_entity_decode(string, quote_style)
-{
-  var hash_map = {},
-    symbol = '',
-    tmp_str = '',
-    entity = '';
-  tmp_str = string.toString();
-
-  delete(hash_map['&']);
-  hash_map['&'] = '&amp;';
-  hash_map['>'] = '&gt;';
-  hash_map['<'] = '&lt;';
-
-  for (symbol in hash_map) {
-    entity = hash_map[symbol];
-    tmp_str = tmp_str.split(entity).join(symbol);
-  }
-  tmp_str = tmp_str.split('&#039;').join("'");
-
-  return tmp_str;
-}
 
 // Turn GET string into array
 function deparam(url) {
@@ -85,19 +61,13 @@ function lessFacets(id) {
 }
 
 // Phone number validation
-var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"];
-var libphoneErrorStrings = ["Phone number invalid", "Invalid country calling code", "Invalid region code", "The string supplied did not seem to be a phone number", "The string supplied is too long to be a phone number", "The string supplied is too short to be a phone number", "Phone number too short after IDD"];
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
   var valid = isPhoneNumberValid(number, regionCode);
   if(valid != true) {
     if(typeof valid === 'string') {
-      for(var i=libphoneErrorStrings.length;i--;) {
-        if(valid.match(libphoneErrorStrings[i])) {
-          valid = vufindString[libphoneTranslateCodes[i]];
-        }
-      }
+      valid = vufindString[valid];
     } else {
       valid = vufindString['libphonenumber_invalid'];
     }
@@ -110,34 +80,6 @@ function phoneNumberFormHandler(numID, regionCode) {
   return valid == true;
 }
 
-function refreshTags() {
-  var recordId = $('#record_id').val();
-  var recordSource = $('.hiddenSource').val();
-
-  // Update tag list (add tag)
-  var tagList = $('#tagList');
-  if (tagList.length > 0) {
-    tagList.empty();
-    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
-    $.ajax({
-      dataType: 'json',
-      url: url,
-      success: function(response) {
-        // console.log(response);
-        if (response.status == 'OK') {
-          $.each(response.data, function(i, tag) {
-            var href = path + '/Tag?' + $.param({lookfor:tag.tag});
-            var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
-            tagList.append(html);
-          });
-        } else if (response.data && response.data.length > 0) {
-          tagList.append(response.data);
-        }
-      }
-    });
-  }
-}
-
 // This is a full handler for the login form
 function ajaxLogin(event, data) {
   var form = event.target;
@@ -147,24 +89,21 @@ function ajaxLogin(event, data) {
     success: function(response) {
       if (response.status == 'OK') {
         var salt = response.data;
-        // get the user entered password
-        var password = form.password.value;
-
-        // base-64 encode the password (to allow support for Unicode)
-        // and then encrypt the password with the salt
-        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
-
-        // hex encode the encrypted password
-        password = hexEncode(password);
-
-        var params = {password:password};
-
-        // get any other form values
+        // extract form values
+        var params = {};
         for (var i = 0; i < form.length; i++) {
+          // special handling for password
           if (form.elements[i].name == 'password') {
-            continue;
+            // base-64 encode the password (to allow support for Unicode)
+            // and then encrypt the password with the salt
+            var password = rc4Encrypt(
+                salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
+            );
+            // hex encode the encrypted password
+            params[form.elements[i].name] = hexEncode(password);
+          } else {
+            params[form.elements[i].name] = form.elements[i].value;
           }
-          params[form.elements[i].name] = form.elements[i].value;
         }
 
         // login via ajax
@@ -199,8 +138,7 @@ function ajaxLogin(event, data) {
   });
 }
 
-$(document).ready(function() {
-  // Off canvas
+function setupOffcanvas() {
   if($('.sidebar').length > 0) {
     $('[data-toggle="offcanvas"]').click(function () {
       $('body.offcanvas').toggleClass('active');
@@ -216,10 +154,9 @@ $(document).ready(function() {
   } else {
     $('[data-toggle="offcanvas"]').addClass('hidden');
   }
+}
 
-  // support "jump menu" dropdown boxes
-  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
-
+function setupBacklinks() {
   // Highlight previous links, grey out following
   $('.backlink')
     .mouseover(function() {
@@ -250,7 +187,9 @@ $(document).ready(function() {
         t = t.next();
       } while(t.length > 0);
     });
+}
 
+function setupAutocomplete() {
   // Search autocomplete
   $('.autocomplete').each(function (i, element) {
     $(element).typeahead(
@@ -286,11 +225,24 @@ $(document).ready(function() {
       }
     );
   });
+  // Update autocomplete on type change
   $('.searchForm_type').change(function() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
     var query = $lookfor.val();
     $lookfor.focus().typeahead('val', '').typeahead('val', query);
   });
+}
+
+$(document).ready(function() {
+  // Setup search autocomplete
+  setupAutocomplete();
+  // Setup highlighting of backlinks
+  setupBacklinks() ;
+  // Off canvas
+  setupOffcanvas();
+
+  // support "jump menu" dropdown boxes
+  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
 
   // Checkbox select all
   $('.checkbox-select-all').change(function() {
@@ -309,15 +261,12 @@ $(document).ready(function() {
     }
 
     var holder = $(this).next('.qrcode');
-
     if (holder.find('img').length == 0) {
       // We need to insert the QRCode image
       var template = holder.find('.qrCodeImgTag').html();
       holder.html(template);
     }
-
     holder.toggleClass('hidden');
-
     return false;
   });
 

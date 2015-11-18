@@ -157,19 +157,22 @@ function registerUpdateCart($form) {
 
 $(document).ready(function() {
   // Record buttons
-  var cartId = $('#cartId');
-  if(cartId.length > 0) {
-    cartId = cartId.val().split('|');
-    currentId = cartId[1];
-    currentSource = cartId[0];
-    $('#cart-add.correct,#cart-remove.correct').removeClass('correct hidden');
-    $('#cart-add').click(function() {
-      addItemToCart(currentId,currentSource);
-      $('#cart-add,#cart-remove').toggleClass('hidden');
-    });
-    $('#cart-remove').click(function() {
-      removeItemFromCart(currentId,currentSource);
-      $('#cart-add,#cart-remove').toggleClass('hidden');
+  var $cartId = $('.cartId');
+  if($cartId.length > 0) {
+    $cartId.each(function() {
+      var cartId = this.value.split('|');
+      currentId = cartId[1];
+      currentSource = cartId[0];
+      var $parent = $(this).parent();
+      $parent.find('.cart-add.correct,.cart-remove.correct').removeClass('correct hidden');
+      $parent.find('.cart-add').click(function() {
+        addItemToCart(currentId,currentSource);
+        $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
+      });
+      $parent.find('.cart-remove').click(function() {
+        removeItemFromCart(currentId,currentSource);
+        $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
+      });
     });
   } else {
     // Search results
