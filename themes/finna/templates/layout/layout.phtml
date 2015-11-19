@@ -96,7 +96,7 @@
     }
     ?>
     <?=$this->headScript()?>
-    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/general-post-head")): ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/general-post-head")): ?>
       <?=$this->render($template)?>
     <? endif; ?>
   </head>
@@ -221,7 +221,7 @@
     </div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
-    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/general-post-body")): ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/general-post-body")): ?>
       <div class="container-fluid general-post-body">
         <div class="container">
           <div class="row">
