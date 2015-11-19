@@ -95,7 +95,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 
         $page = $this->gotoRecord();
 
-        $this->findCss($page, '#save-record')->click();
+        $this->findCss($page, '.save-record')->click();
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         // Empty
         $this->findCss($page, '.modal-body .btn.btn-primary.disabled');
@@ -108,25 +108,28 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Correct
         $this->findCss($page, '#account_email')->setValue('username1@ignore.com');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '#save_list');
         // Make list
         $this->findCss($page, '#make-list')->click();
+        $this->snooze();
         // Empty
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->findCss($page, '#list_title');
+        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Test List');
         $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->assertEquals($this->findCss($page, '#save_list option[selected]')->getHtml(), 'Test List');
         $this->findCss($page, '#add_mytags')->setValue('test1 test2 "test 3"');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '.modal .alert.alert-info'); // .success?
         $this->findCss($page, '.modal-body .btn.btn-default')->click();
         // Check list page
         $session = $this->getMinkSession();
         $recordURL = $this->stripHash($session->getCurrentUrl());
         $this->snooze();
-        $this->findCss($page, '#savedLists a')->click();
+        $this->findCss($page, '.savedLists a')->click();
         $this->snooze();
         $this->findCss($page, '.resultItemLine1 a')->click();
         $this->assertEquals($recordURL, $this->stripHash($session->getCurrentUrl()));
@@ -142,7 +145,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 
         $page = $this->gotoRecord();
 
-        $this->findCss($page, '#save-record')->click();
+        $this->findCss($page, '.save-record')->click();
         // Login
         // - empty
         $this->submitLoginForm($page);
@@ -174,6 +177,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             'Login Test List'
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '.modal .alert.alert-info'); // .success?
     }
 
@@ -189,13 +193,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#loginOptions a')->click();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
-        //$this->getMinkSession()->reload();
         // Save Record
-        $this->snooze();
-        $this->findCss($page, '#save-record')->click();
+        $this->findCss($page, '.save-record')->click();
         $this->snooze();
         $this->findCss($page, '#save_list');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '.modal .alert.alert-info'); // .success?
     }
 
@@ -228,9 +231,10 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#save_list');
         // Make list
         $this->findCss($page, '#make-list')->click();
+        $this->snooze();
         // Empty
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->findCss($page, '#list_title');
+        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Test List');
         $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
@@ -293,7 +297,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             'Login Test List'
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->snooze();
         $this->findCss($page, '.alert.alert-info'); // .success?
     }
 
@@ -309,7 +312,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#loginOptions a')->click();
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
-        $this->snooze();    // wait for login
         // Save Record
         $this->findCss($page, '.save-record')->click();
         $this->snooze();

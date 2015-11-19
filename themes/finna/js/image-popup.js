@@ -77,7 +77,7 @@ finna.imagePopup = (function(finna) {
                     id = $(this).closest('.record-container').find('.hiddenId');
                     if (!id.length) {
                         // record page
-                        id = $(this).closest('.record.recordId').find('.hiddenId');
+                        id = $(this).closest('.record').find('.hiddenId');
                     }
                 }
                 if (!id.length) {

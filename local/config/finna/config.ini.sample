@@ -720,6 +720,9 @@ url             = https://www.myendnoteweb.com/EndNoteWeb.html
 [Http]
 ;sslcapath = "/etc/ssl/certs"
 sslcafile = "/etc/ssl/certs/ca-bundle.crt"
+; This is required on RHEL6 with PHP 5.6 for unknown reasons. Otherwise e.g. Persona
+; login fails.
+ssltransport = tls
 
 ; Spelling Suggestions
 ;

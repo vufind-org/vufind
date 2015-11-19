@@ -50,11 +50,46 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected $browseHandler;
 
+    /**
+     * Date converter
+     *
+     * @var \Vufind\Date\Converter
+     */
+    protected $dateConverter;
+
+    /**
+     * New items facet configuration
+     *
+     * @var array
+     */
+    protected $newItemsFacets = [];
+
     // Date range index field
     const SPATIAL_DATERANGE_FIELD = 'search_daterange_mv';
 
     // Date range index field (VuFind1)
     const SPATIAL_DATERANGE_FIELD_VF1 = 'search_sdaterange_mv';
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Base\Options  $options       Options to use
+     * @param \VuFind\Config\PluginManager $configLoader  Config loader
+     * @param \VuFind\Date\Converter       $dateConverter Date converter
+     */
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader,
+        \VuFind\Date\Converter $dateConverter
+    ) {
+        parent::__construct($options, $configLoader);
+
+        $this->dateConverter = $dateConverter;
+        $config = $configLoader->get($options->getFacetsIni());
+
+        // New items facets
+        if (isset($config->SpecialFacets->newItems)) {
+            $this->newItemsFacets = $config->SpecialFacets->newItems->toArray();
+        }
+    }
 
     /**
      * Support method for initSearch() -- handle basic settings.
@@ -242,6 +277,71 @@ class Params extends \VuFind\Search\Solr\Params
         $this->spatialDateRangeFilter = $dateFilter;
 
         parent::addFilter($dateFilter['query']);
+    }
+
+    /**
+     * Format a single filter for use in getFilterList().
+     *
+     * @param string $field     Field name
+     * @param string $value     Field value
+     * @param string $operator  Operator (AND/OR/NOT)
+     * @param bool   $translate Should we translate the label?
+     *
+     * @return array
+     */
+    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    {
+        if (!in_array($field, $this->newItemsFacets)
+            || !($range = Utils::parseRange($value))
+        ) {
+            return parent::formatFilterListEntry(
+                $field, $value, $operator, $translate
+            );
+        }
+
+        $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
+        list($from, $fromDate) = $this->formatNewItemsDateForDisplay(
+            $range['from'], $domain
+        );
+        list($to, $toDate) = $this->formatNewItemsDateForDisplay(
+            $range['to'], $domain
+        );
+        $ndash = html_entity_decode('&#x2013;', ENT_NOQUOTES, 'UTF-8');
+        if ($fromDate && $toDate) {
+            $displayText = $from ? "$from $ndash" : $ndash;
+            $displayText .= $to ? " $to" : '';
+        } else {
+            $displayText = $from;
+            $displayText .= $to ? " $ndash $to" : '';
+        }
+
+        return compact('value', 'displayText', 'field', 'operator');
+    }
+
+    /**
+     * Format a Solr date for display
+     *
+     * @param string $date   Date
+     * @param string $domain Translation domain
+     *
+     * @return string
+     */
+    protected function formatNewItemsDateForDisplay($date, $domain)
+    {
+        if ($date == '' || $date == '*') {
+            return ['', true];
+        }
+        if (preg_match('/^NOW-(\w+)/', $date, $matches)) {
+            return [
+                $this->translate("$domain::new_items_" . strtolower($matches[1])),
+                false
+            ];
+        }
+        $date = substr($date, 0, 10);
+        return [
+            $this->dateConverter->convertToDisplayDate('Y-m-d', $date),
+            true
+        ];
     }
 
     /**

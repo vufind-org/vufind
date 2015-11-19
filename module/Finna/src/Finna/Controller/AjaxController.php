@@ -31,7 +31,8 @@ use VuFindSearch\ParamBag as ParamBag,
     Finna\MetaLib\MetaLibIrdTrait,
     Zend\Cache\StorageFactory,
     Zend\Feed\Reader\Reader,
-    Zend\Http\Request as HttpRequest;
+    Zend\Http\Request as HttpRequest,
+    Zend\Session\Container as SessionContainer;
 
 /**
  * This controller handles Finna AJAX functionality
@@ -1110,12 +1111,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
     public function inappropriateCommentAjax()
     {
         $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
-            );
-        }
 
         $query = $this->getRequest()->getPost();
         if (!$comment = $query->get('comment')) {
@@ -1131,8 +1126,15 @@ class AjaxController extends \VuFind\Controller\AjaxController
             );
         }
         $table = $this->getTable('Comments');
-        $table->markInappropriate($user->id, $comment, $reason);
+        $table->markInappropriate($user ? $user->id : null, $comment, $reason);
 
+        if (!$user) {
+            $session = new SessionContainer('inappropriateComments');
+            if (!isset($session->comments)) {
+                $session->comments = [];
+            }
+            $session->comments[] = $comment;
+        }
         return $this->output('', self::STATUS_OK);
     }
 

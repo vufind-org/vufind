@@ -16,9 +16,9 @@
 <div class="col-xs-12">
   <ul class="nav nav-pills hidden-print">
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-    <li><a id="save-record" class="modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-plus"></i><span class="hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a></li>
+    <li><a class="save-record modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-plus"></i><span class="hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a></li>
   <? endif; ?>
-    <li><a id="mail-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>"><i class="fa fa-envelope"></i><span class="hidden-xs"> <?=$this->transEsc('Email this')?></span></a></li>
+    <li><a class="mail-record modal-link <?=$controllerClass?>" href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>"><i class="fa fa-envelope"></i><span class="hidden-xs"> <?=$this->transEsc('Email this')?></span></a></li>
   <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
   <? if(count($exportFormats) > 0): ?>
     <li class="dropdown">
@@ -31,7 +31,7 @@
     </li>
   <? endif; ?>
   <? if (count($this->driver->getCitationFormats()) > 0): ?>
-    <li><a id="cite-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="fa fa-asterisk"></i><span class="hidden-xs"> <?=$this->transEsc('Cite this')?></span></a></li>
+    <li><a class="cite-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="fa fa-asterisk"></i><span class="hidden-xs"> <?=$this->transEsc('Cite this')?></span></a></li>
   <? endif; ?>
   <li class="hidden-xs hidden-sm"><span><a href="javascript:window.print()"><i class="fa fa-print"></i> <?=$this->transEsc('Print')?></a></span></li>
   <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
@@ -54,10 +54,10 @@
     </li>
   <? endif; ?>
   <? if ($cart->isActive()): ?>
-    <li id="bookbag-menu">
-      <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />
-      <a id="cart-add" class="<? if(!$cart->contains($cartId)): ?>correct <? endif ?>hidden" href="#"><i class="fa fa-plus"></i> <?=$this->transEsc('Add to Book Bag') ?></a>
-      <a id="cart-remove" class="<? if($cart->contains($cartId)): ?>correct <? endif ?>hidden" href="#"><i class="fa fa-minus-circle"></i> <?=$this->transEsc('Remove from Book Bag') ?></a>
+    <li class="bookbag-menu">
+      <input class="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />
+      <a class="cart-add hidden<? if(!$cart->contains($cartId)): ?> correct<? endif ?>" href="#"><i class="fa fa-plus"></i> <?=$this->transEsc('Add to Book Bag') ?></a>
+      <a class="cart-remove hidden<? if($cart->contains($cartId)): ?> correct<? endif ?>" href="#"><i class="fa fa-minus-circle"></i> <?=$this->transEsc('Remove from Book Bag') ?></a>
       <noscript>
         <form method="post" name="addForm" action="<?=$this->url('cart-home')?>">
           <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />

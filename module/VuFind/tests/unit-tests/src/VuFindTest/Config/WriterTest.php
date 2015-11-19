@@ -224,4 +224,19 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $expected = "[general]\nfoo              = \"bar\"\nfoofoofoofoofoofo = \"baz\"\n";
         $this->assertEquals($expected, $test->getContent());
     }
+
+    /**
+     * Test clearing values.
+     *
+     * @return void
+     */
+    public function testClear()
+    {
+        $cfg = "[a]\nb[]=1\nb[]=2\n[b]\nc=3\n";
+        $test = new Writer('fake.ini', $cfg);
+        $test->clear('a', 'b[]');   // clear array
+        $test->clear('b', 'c');     // clear single value
+        $test->clear('z', 'z');     // clear value that does not exist
+        $this->assertEquals("[a]\n[b]", trim($test->getContent()));
+    }
 }
