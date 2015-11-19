@@ -108,7 +108,8 @@ class Favorites extends AbstractPlugin
             $records = $recordLoader->loadBatch($cacheRecordIds);
             foreach ($records as $record) {
                 $recordCache->createOrUpdate(
-                    $record->getUniqueID(), $source, $record->getRawData()
+                    $record->getUniqueID(), $record->getResourceSource(),
+                    $record->getRawData()
                 );
             }
         }
