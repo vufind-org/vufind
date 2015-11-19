@@ -64,6 +64,14 @@ class Record extends Gateway
      */
     public function findRecord($id, $source)
     {
+        // Special case -- due to legacy database design, 'Solr' records are
+        // usually stored in the database as 'VuFind' records. Try that first.
+        if ($source === 'Solr') {
+            $record = $this->findRecord($id, 'VuFind');
+            if ($record) {
+                return $record;
+            }
+        }
         $records = $this->select(['record_id' => $id, 'source' => $source]);
         return $records->count() > 0 ? $records->current() : false;
     }
