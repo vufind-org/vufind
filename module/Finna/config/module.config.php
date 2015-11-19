@@ -110,6 +110,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
+            'Finna\OnlinePayment' => 'Finna\Service\Factory::getOnlinePayment',
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
             'VuFind\CookieManager' => 'Finna\Service\Factory::getCookieManager',
             'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
@@ -141,12 +142,15 @@ $config = [
                     'comments' => 'Finna\Db\Table\Comments',
                     'comments-inappropriate' => 'Finna\Db\Table\CommentsInappropriate',
                     'comments-record' => 'Finna\Db\Table\CommentsRecord',
+                    'fee' => 'Finna\Db\Table\Fee',
                     'metalibSearch' => 'Finna\Db\Table\MetaLibSearch',
-                    'search' => 'Finna\Db\Table\Search'
+                    'search' => 'Finna\Db\Table\Search',
+                    'transaction' => 'Finna\Db\Table\Transaction',
                 ],
             ],
             'ils_driver' => [
                 'factories' => [
+                    'demo' => 'Finna\ILS\Driver\Factory::getDemo',
                     'multibackend' => 'Finna\ILS\Driver\Factory::getMultiBackend',
                     'voyager' => 'Finna\ILS\Driver\Factory::getVoyager',
                     'voyagerrestful' => 'Finna\ILS\Driver\Factory::getVoyagerRestful',

@@ -38,6 +38,8 @@ namespace Finna\Controller;
  */
 class MyResearchController extends \VuFind\Controller\MyResearchController
 {
+    use OnlinePaymentControllerTrait;
+
     /**
      * Send list of checked out books to view.
      * Added profile to view, so borrow blocks can be shown.
@@ -422,6 +424,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if ($view === false) {
             $view = parent::finesAction();
             $view->profile = $this->getCatalogProfile();
+            if (isset($patron['source'])) {
+                $result = $this->handleOnlinePayment(
+                    $this->catalogLogin(), $view->fines, $view
+                );
+            }
         }
         return $view;
     }
