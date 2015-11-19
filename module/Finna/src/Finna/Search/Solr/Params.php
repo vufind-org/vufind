@@ -73,8 +73,9 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options  $options      Options to use
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param \VuFind\Search\Base\Options  $options       Options to use
+     * @param \VuFind\Config\PluginManager $configLoader  Config loader
+     * @param \VuFind\Date\Converter       $dateConverter Date converter
      */
     public function __construct($options, \VuFind\Config\PluginManager $configLoader,
         \VuFind\Date\Converter $dateConverter

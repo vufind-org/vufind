@@ -202,7 +202,7 @@ finna.layout = (function() {
         $('section.main').append("<div class='swipe-arrow-navigation arrow-navigation-left'><i class='fa fa-arrow-left'></i></div>");
         $('section.main').append("<div class='swipe-arrow-navigation arrow-navigation-right'><i class='fa fa-arrow-right'></i></div>");
         $('.swipe-arrow-navigation').hide();
-        $(".template-dir-record #record").swipe( {
+        $(".template-dir-record .record").swipe( {
         allowPageScroll:"vertical",
         swipeRight:function(event, phase, direction, distance, duration) {
           if ($('#view-pager .pager-previous-record a').length) {
@@ -453,7 +453,7 @@ finna.layout = (function() {
                                 $container = $container.find(".savedLists");
                             }
                             if ($container.length == 0) { // Record view
-                                $container = $('#savedLists');
+                                $container = $('.savedLists');
                             }
                             var $ul = $container.children('ul:first');
                             if ($ul.length == 0) {
