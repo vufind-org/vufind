@@ -157,6 +157,10 @@ class Cache
      */
     public function setContext($context)
     {
+        if (empty($context)) {
+            $this->cachableSources = [];
+            return;
+        }
         $context = ucfirst($context);
         if (!isset($this->cacheConfig->$context)) {
             $context = Cache::CONTEXT_DEFAULT;
