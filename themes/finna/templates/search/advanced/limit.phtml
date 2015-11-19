@@ -8,13 +8,11 @@
     $defaultLimit = empty($lastLimit) ? $this->options->getDefaultLimit() : $lastLimit;
 ?>
 <? if (count($limitList) > 1): ?>
-  <fieldset>
-    <label class="form-inline"><?=$this->transEsc('Results per page')?></label>
-    <select id="limit" name="limit" class="form-control form-inline">
-      <? foreach ($limitList as $limitVal): ?>
-        <option value="<?=$this->escapeHtmlAttr($limitVal)?>"<?=($limitVal == $defaultLimit) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($limitVal)?></option>
-      <? endforeach; ?>
-    </select>
-  </fieldset>
+  <label class="form-inline"><?=$this->transEsc('Results per page')?></label>
+  <select id="limit" name="limit" class="form-control form-inline">
+    <? foreach ($limitList as $limitVal): ?>
+      <option value="<?=$this->escapeHtmlAttr($limitVal)?>"<?=($limitVal == $defaultLimit) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($limitVal)?></option>
+    <? endforeach; ?>
+  </select>
 <? endif; ?>
 <!-- END of: finna - search/advanced/limit.phtml -->

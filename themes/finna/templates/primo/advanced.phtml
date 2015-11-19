@@ -24,6 +24,7 @@
         $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
     }
 ?>
+
 <form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" class="form-horizontal">
   <input type="hidden" name="join" value="AND" />
       <?
@@ -40,15 +41,11 @@
           $numGroups = 1;
         }
       ?>
-      <? for ($i = 0; $i < $numGroups; $i++): ?>
-        <input type="hidden" name="bool<?=$i?>[]" value="AND" />
-        <div class="row">
-          <div class="col-sm-12 col-md-10 col-lg-9" id="group<?=$i?>SearchHolder"><h4><?=$this->transEsc("adv_search_label")?><? if (!$this->translationEmpty('tooltip_pci_advanced_html')): ?><span class="tooltip-pci-advanced pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title='<?=$this->transesc("tooltip_pci_advanced_html") ?>'><i class="fa fa-info-big"></i> <?=$this->transEsc("Help with Advanced Search")?></span><? endif; ?></h4></div>
+      <div class="row">
+        <div class="col-sm-12 col-md-10 col-lg-9" id="group<?=$i?>SearchHolder"><h4><?=$this->transEsc("adv_search_label")?><? if (!$this->translationEmpty('tooltip_pci_advanced_html')): ?><span class="tooltip-pci-advanced pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title='<?=$this->transesc("tooltip_pci_advanced_html") ?>'><i class="fa fa-info-big"></i> <?=$this->transEsc("Help with Advanced Search")?></span><? endif; ?></h4></div>
         </div>
-        
-        <div class="group well col-sm-12 col-md-10 col-lg-9" id="group<?=$i?>">
-          <div class="row">
-            <?
+      <? for ($i = 0; $i < $numGroups; $i++):
+              $operator = 'AND';
               if (isset($groups[$i])) {
                 $currentGroup = $groups[$i]->getQueries();
                 $numRows = count($currentGroup);
@@ -59,23 +56,29 @@
                 $numRows = 3;
               }
             ?>
+
+        <div class="group well col-sm-7 col-md-10 col-lg-9" id="group<?=$i?>">
+          <div class="row">
+            <div class="col-sm-5 col-sm-push-7 match">
+              <label class="search_bool"><?=$this->transEsc("search_match")?>:</label>
+              <select name="bool<?=$i ?>[]" id="search_bool<?=$i ?>" class="form-control form-inline">
+                <option value="AND"<? if('AND' == $operator):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
+                <option value="OR"<? if('OR' == $operator):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
+              </select>
+            </div>
+            <div class="col-sm-7 col-sm-pull-5">
             <? for ($j = 0; $j < $numRows; $j++): ?>
               <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
-              <div class="col-xs-12 primo-advanced-search-fields">
-                  <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control form-inline responsive-field">
-                    <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
-                      <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
-                    <? endforeach; ?>
-                  </select>
+              <div class="primo-advanced-search-fields">
                   <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control form-inline responsive-field" placeholder="<?=$this->transEsc('Search words')?>..." />
-                  <label for="search_type<?=$i?>_<?=$j?>"><?=$this->transEsc('in')?></label>
-                  <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control form-inline">
+                  <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control form-inline responsive-field">
                   <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                     <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                   <? endforeach; ?>
                   </select>
               </div>
             <? endfor; ?>
+            </div>
           </div>
         </div>
       <? endfor; ?>
