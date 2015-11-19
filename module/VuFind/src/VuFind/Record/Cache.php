@@ -161,7 +161,17 @@ class Cache
         if (!isset($this->cacheConfig->$context)) {
             $context = Cache::CONTEXT_DEFAULT;
         }
-        $this->cachableSources = $this->cacheConfig->$context->toArray();
+        $this->cachableSources = isset($this->cacheConfig->$context)
+            ? $this->cacheConfig->$context->toArray() : [];
+        if ($context != Cache::CONTEXT_DEFAULT
+            && isset($this->cacheConfig->{Cache::CONTEXT_DEFAULT})
+        ) {
+            // Inherit settings from Default section
+            $this->cachableSources = array_merge(
+                $this->cacheConfig->{Cache::CONTEXT_DEFAULT}->toArray(),
+                $this->cachableSources
+            );
+        }
 
         foreach ($this->cachableSources as &$cachableSource) {
             if (!isset($cachableSource['operatingMode'])) {

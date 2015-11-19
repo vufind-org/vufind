@@ -75,6 +75,7 @@ class Favorites extends AbstractPlugin
 
         // Loop through all the IDs and save them:
         $tagParser = $this->getController()->getServiceLocator()->get('VuFind\Tags');
+        $cacheRecordIds = [];
         foreach ($params['ids'] as $current) {
             // Break apart components of ID:
             list($source, $id) = explode('|', $current, 2);
@@ -93,20 +94,23 @@ class Favorites extends AbstractPlugin
                 ->get('VuFind\RecordCache');
             $recordCache->setContext(Cache::CONTEXT_FAVORITE);
 
-            // Load and persist record only if the source is cachable
+            // Collect record IDs for caching
             if ($recordCache->isCachable($resource->source)) {
-                $recordLoader = $this->getController()->getServiceLocator()
-                    ->get('VuFind\RecordLoader');
-                $record = $recordLoader->load(
-                    $resource->record_id, $resource->source
-                );
-                $recordCache->createOrUpdate(
-                    $resource->record_id, $resource->source,
-                    $record->getRawData()
-                );
+                $cacheRecordIds[] = $current;
             }
         }
 
+        if ($cacheRecordIds) {
+            // Add records to cache
+            $recordLoader = $this->getController()->getServiceLocator()
+                ->get('VuFind\RecordLoader');
+            $records = $recordLoader->loadBatch($cacheRecordIds);
+            foreach ($records as $record) {
+                $recordCache->createOrUpdate(
+                    $record->getUniqueID(), $source, $record->getRawData()
+                );
+            }
+        }
     }
 
     /**
