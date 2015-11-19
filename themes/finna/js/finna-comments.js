@@ -167,11 +167,10 @@ finna.comments = (function() {
     };
 
     var requestRefreshComments = function() {
-        var form = $('form.comment-form');
-        var record = form.find('input[name=id]').val();
-        var source = form.find('input[name=source]').val();
-        var $tab = form.closest('.tab-pane');
-        refreshCommentList($tab, record, source);
+        var record = $('input.hiddenId').val();
+        var source = $('input.hiddenSource').val();
+        var tab = $('#usercomments-tab');
+        refreshCommentList(tab, record, source);
     };
 
     var my = {

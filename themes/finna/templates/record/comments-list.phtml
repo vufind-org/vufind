@@ -3,8 +3,15 @@
   $comments = $this->driver->getComments();
   $inappropriateComments = [];
   $user = $this->auth()->isLoggedIn();
-  if ($comments && $user) {
-     $inappropriateComments = $this->driver->tryMethod('getInappropriateComments', [$user->id]);
+  if ($comments) {
+     if ($user) {
+        $inappropriateComments = $this->driver->tryMethod('getInappropriateComments', [$user->id]);
+     } else {
+        $session = new \Zend\Session\Container('inappropriateComments');
+        if (isset($session->comments)) {
+           $inappropriateComments = $session->comments;
+        }
+     }
   }
   $ratings = $this->record($this->driver)->ratingAllowed();
   $comments = $this->driver->getComments();
