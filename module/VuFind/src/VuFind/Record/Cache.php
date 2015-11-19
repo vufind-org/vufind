@@ -143,7 +143,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
             return [];
         }
 
-        $this->debug("Cache: checking batch: " . implode(', ', $ids));
+        $this->debug("Cache: checking $source batch: " . implode(', ', $ids));
         $vufindRecords = [];
         $cachedRecords = $this->recordTable->findRecords($ids, $source);
         foreach ($cachedRecords as $cachedRecord) {
