@@ -411,8 +411,13 @@ trait SolrFinna
      */
     public function ratingAllowed()
     {
-        $sector = substr($this->fields['sector_str_mv'][0], 2, 3);
-        return $sector == 'lib';
+        $allowed = ['0/Book/', '0/Journal/', '0/Sound/', '0/Video/'];
+        foreach ($allowed as $allow) {
+            if (in_array($allow, $this->fields['format'])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

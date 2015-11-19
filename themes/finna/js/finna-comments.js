@@ -27,9 +27,16 @@ finna.comments = (function() {
             $.ajax({
                 dataType: 'json',
                 url: url,
+                data: {recordId: recordId},
                 success: function(response) {
                     if (response.status == 'OK') {
                         requestRefreshComments();
+                        if ('rating' in response.data) {
+                            updateAverageRating(
+                                response.data.rating.average,
+                                response.data.rating.count
+                            );
+                        }
                     }
                 }
             });
@@ -74,6 +81,12 @@ finna.comments = (function() {
                 success: function(response) {
                     if (response.status == 'OK') {
                         requestRefreshComments();
+                        if ('rating' in response.data) {
+                            updateAverageRating(
+                                response.data.rating.average,
+                                response.data.rating.count
+                            );
+                        }
                         $(form).find('textarea[name="comment"]').val('');
                     } else {
                         Lightbox.displayError(response.data);
@@ -86,6 +99,11 @@ finna.comments = (function() {
 
     var initRating = function() {
         $('#usercomments-tab .rating').rating();
+    };
+
+    var updateAverageRating = function(rating, count) {
+        $('.rating-average .rating').rating('rate', rating);
+        $('.rating-average .count>span').text(count);
     };
 
     var initInappropriateComment = function() {
