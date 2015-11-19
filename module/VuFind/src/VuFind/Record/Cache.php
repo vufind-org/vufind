@@ -42,8 +42,10 @@ use VuFind\Db\Table\Record as Record,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Cache
+class Cache implements \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     const CONTEXT_DEFAULT = 'Default';
     const CONTEXT_FAVORITE = 'Favorite';
 
@@ -106,6 +108,7 @@ class Cache
     public function createOrUpdate($recordId, $source, $rawData)
     {
         if (isset($this->cachableSources[$source])) {
+            $this->debug("Cache: updating {$source}|{$recordId}");
             $this->recordTable->updateRecord($recordId, $source, $rawData);
         }
     }
@@ -120,6 +123,7 @@ class Cache
      */
     public function lookup($id, $source)
     {
+        $this->debug("Cache: checking {$source}|{$id}");
         $record = $this->recordTable->findRecord($id, $source);
         return $record !== false ? [$this->getVuFindRecord($record)] : [];
     }
@@ -139,6 +143,7 @@ class Cache
             return [];
         }
 
+        $this->debug("Cache: checking batch: " . implode(', ', $ids));
         $vufindRecords = [];
         $cachedRecords = $this->recordTable->findRecords($ids, $source);
         foreach ($cachedRecords as $cachedRecord) {
@@ -157,6 +162,7 @@ class Cache
      */
     public function setContext($context)
     {
+        $this->debug("Cache: setting context to $context");
         if (empty($context)) {
             $this->cachableSources = [];
             return;
