@@ -425,9 +425,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $view = parent::finesAction();
             $view->profile = $this->getCatalogProfile();
             if (isset($patron['source'])) {
-                $result = $this->handleOnlinePayment(
-                    $this->catalogLogin(), $view->fines, $view
-                );
+                $result = $this->handleOnlinePayment($patron, $view->fines, $view);
             }
         }
         return $view;

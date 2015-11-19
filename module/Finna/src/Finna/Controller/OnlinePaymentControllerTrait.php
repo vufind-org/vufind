@@ -136,11 +136,10 @@ trait OnlinePaymentControllerTrait
             return;
         }
 
-        $f = function ($fine) {
+        $callback = function ($fine) {
             return $fine['payableOnline'];
         };
-
-        $payableFines = array_filter($fines, $f);
+        $payableFines = array_filter($fines, $callback);
 
         $view->onlinePayment = true;
         $view->paymentHandler = $onlinePayment->getHandlerName($patron['source']);
@@ -201,8 +200,7 @@ trait OnlinePaymentControllerTrait
         } else {
             $allowPayment
                 = $paymentPermittedForUser === true && $payableOnline
-                && $payableOnline['payable'] && $payableOnline['amount']
-            ;
+                && $payableOnline['payable'] && $payableOnline['amount'];
 
             // Display possible warning and store fines to session.
             $this->storeFines($patron, $fines);

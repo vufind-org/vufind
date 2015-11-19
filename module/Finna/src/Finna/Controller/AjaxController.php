@@ -1354,7 +1354,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
     public function paytrailNotifyAction()
     {
         $params = $this->getRequest()->getQuery()->toArray();
-        $res = $this->processPayment($params);
+        $this->processPayment($params);
+        // This action does not return anything but a HTTP 200 status.
         exit();
     }
 
