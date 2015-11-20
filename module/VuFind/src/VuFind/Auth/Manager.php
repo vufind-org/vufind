@@ -458,7 +458,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      *
      * @return bool
      */
-    protected function inPrivacyMode()
+    public function inPrivacyMode()
     {
         return isset($this->config->Authentication->privacy)
             && $this->config->Authentication->privacy;

@@ -142,6 +142,7 @@ class AccountCapabilities
      */
     protected function isAccountAvailable()
     {
-        return $this->auth->loginEnabled();
+        // We can't use account features if login is broken or privacy is on:
+        return $this->auth->loginEnabled() && !$this->auth->inPrivacyMode();
     }
 }
