@@ -103,7 +103,7 @@
             <p><?=$this->transEsc($this->nonPayableReason); ?><?=$this->nonPayableReason == 'online_payment_minimum_fee' ?  (': <span class="amount">' . $this->safeMoneyFormat($this->minimumFee/100.00)) . '</span>' : '';?>
           <? endif; ?>
        </div>
-       <? if ($template = $this->content()->findTemplateForLng("layout/Additions/online-payment")): ?>
+       <? if ($template = $this->content()->findTemplateForLng("content/Additions/online-payment")): ?>
        <div class="col-sm-6 col-sm-pull-6 online-payment-note"><?=$this->render($template)?></div>
        <? endif; ?>
       <? endif; ?>
