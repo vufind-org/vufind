@@ -79,14 +79,14 @@
     </div>
   </div>
   <? /* End Main Listing */ ?>
-  
+
   <? /* Narrow Search Options */ ?>
   <div class="<?=$this->layoutClass('sidebar')?>">
     <?= $this->context($this)->renderInContext(
     'metalib/sidebar.phtml', []
   );
     ?>
-    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/search-post-facets")): ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/search-post-facets")): ?>
     <div class="row">
       <div class="col-xs-12">
         <?=$this->render($template)?>

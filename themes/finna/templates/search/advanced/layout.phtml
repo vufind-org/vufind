@@ -96,12 +96,9 @@
 <form role="search" name="searchForm" id="advSearchForm" method="get" action="<?=$this->url($this->options->getSearchAction())?>">
   <div class="row">
     <div class="col-sm-12 col-md-10 col-lg-9">
-      <div class="row">
-        <div class="col-xs-12">
-          <h4><?=$this->transEsc("adv_search_label")?><? if (!$this->translationEmpty('tooltip_local_advanced_html')): ?><span class="tooltip-local-advanced pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title='<?=$this->transesc("tooltip_local_advanced_html") ?>'><i class="fa fa-info-big"></i> <?=$this->transEsc("Help with Advanced Search")?></span><? endif; ?></h4>
-        </div>
-      </div>
+      <h4><?=$this->transEsc("adv_search_label")?><? if (!$this->translationEmpty('tooltip_local_advanced_html')): ?><span class="tooltip-local-advanced pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title='<?=$this->transesc("tooltip_local_advanced_html") ?>'><i class="fa fa-info-big"></i> <?=$this->transEsc("Help with Advanced Search")?></span><? endif; ?></h4>
       <input type="hidden" name="sort" value="relevance">
+
       <? /* An empty div. This is the target for the javascript that builds this screen */ ?>
       <span id="groupPlaceHolder" class="hidden">
         <a href="#" onClick="addGroup()"> <i class="fa fa-plus-small"></i> <?= $this->transEsc('add_search_group') ?></a>
@@ -111,39 +108,34 @@
         <? if(!empty($this->formOverride)): ?>
           <?=$this->formOverride ?>
         <? else: ?>
+
           <? for($group=0 ; $group<3 || $group<=$setGroupCount ; $group++): ?>
             <? if($group == 0): ?>
-              <div id="new_group_template">
+            <div id="new_group_template">
             <? endif; ?>
-            <div id="group<?=$group ?>" class="group well">
-              <a href="#" class="group-close hidden" title="<?=$this->transEsc("del_search")?>"><i class="fa fa-times"></i> <?=$this->transEsc("del_search")?></a>
-              <div class="row">
-              <div class="col-sm-5 col-sm-push-7 match">
-                  <label class="search_bool"><?=$this->transEsc("search_match")?>:</label>
-                  <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control form-inline">
-                    <option value="AND"<? if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
-                    <option value="OR"<? if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
-                    <option value="NOT"<? if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_NOT")?></option>
-                  </select>
-              </div>
-              <div class="col-sm-7 col-sm-pull-5">
+              <div id="group<?=$group ?>" class="group well">
+                <a href="#" class="group-close hidden" title="<?=$this->transEsc("del_search")?>"><i class="fa fa-times"></i> <?=$this->transEsc("del_search")?></a>
                 <div class="row">
-                  <div class="col-xs-12">
+                  <div class="col-sm-5 col-sm-push-7 match">
+                    <label class="search_bool"><?=$this->transEsc("search_match")?>:</label>
+                    <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control form-inline">
+                      <option value="AND"<? if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
+                      <option value="OR"<? if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
+                      <option value="NOT"<? if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_NOT")?></option>
+                    </select>
+                  </div>
+                  <div class="col-sm-7 col-sm-pull-5">
                     <? for($search=0 ; $search<3 || (isset($setQueries[$group]) && $search<count($setQueries[$group])) ; $search++): ?>
                       <? if($group == 0 && $search == 0): ?>
                         <div id="new_search_template">
                       <? endif; ?>
                       <div id="search<?=$group.'_'.$search ?>" class="search">
-                        <div class="row">
-                          <div class="col-xs-12">
-                            <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="form-control form-inline responsive-field" placeholder="<?=$this->transEsc("Search words")?>..." type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
-                            <select class="type form-control form-inline responsive-field" name="type<?=$group ?>[]">
-                              <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                                <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>
-                              <? endforeach; ?>
-                            </select>
-                          </div>
-                        </div>
+                        <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="form-control form-inline responsive-field" placeholder="<?=$this->transEsc("Search words")?>..." type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
+                          <select class="type form-control form-inline responsive-field" name="type<?=$group ?>[]">
+                          <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                            <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>
+                          <? endforeach; ?>
+                          </select>
                       </div>
                       <? if($group == 0 && $search == 0): ?>
                           </div>
@@ -153,20 +145,17 @@
                   </div>
                 </div>
               </div>
-              </div>
-            </div>
             <? if($group == 0): ?>
-              </div>
+            </div>
             <? endif; ?>
           <? endfor; ?>
+
         <? endif; ?>
       </div>
-      <span class="clearfix"></span>
       <div class="row">
         <div class="col-xs-12">
-
           <div id="groupJoin" class="form text-center">
-            <label for="groupJoinOptions"><?=$this->transEsc("search_match")?>:</label>
+            <label for="groupJoinOptions" class="sr-only"><?=$this->transEsc("search_match")?>:</label>
             <select id="groupJoinOptions" name="join" class="form-control form-inline">
               <option value="AND"<? if($searchDetails && $searchDetails->getOperator()=='ALL'):?> selected<?endif?>><?= $this->transEsc('group_AND') ?></option>
               <option value="OR"<? if($searchDetails && $searchDetails->getOperator()=='OR'):?> selected<?endif?>><?= $this->transEsc('group_OR') ?></option>
@@ -174,12 +163,16 @@
           </div>
         </div>
       </div>
+      <span class="clearfix"></span>
       <? if (isset($this->extraAdvancedControls)): ?>
         <?=$this->extraAdvancedControls ?>
-        <div class="col-xs-12">
-          <button class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>"><i class="fa fa-search-adv"></i> <?= $this->transEsc('Find')?></button>
-        </div>
       <? endif; ?>
+      <div class="col-xs-12">
+          <span class="limit-container">
+              <?=$this->render('search/advanced/limit.phtml')?>
+          </span>
+          <button class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>"><i class="fa fa-search-adv"></i> <?= $this->transEsc('Find')?></button>
+      </div>
     </div>
 
     <div class="<?=$this->layoutClass('sidebar')?>">

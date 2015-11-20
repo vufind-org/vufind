@@ -39,6 +39,25 @@
         background: linear-gradient( @gray-light, darken(@gray-light,8%));
         color: @body-bg;
     }
+    & .online-payment-data {
+        font-size: 1.2em;
+        margin-bottom: 40px;
+        padding-right: 25px;
+        & .amount {
+            font-weight: bold;
+        }
+
+        & .online-payment-form {
+            & input {
+                margin-left: 20px;
+                font-weight: bold;
+            }
+        }
+    }
+    & .online-payment-note {
+        margin-bottom: 40px;
+    }
+
     & .library-profile {
         margin-bottom: 40px;
         padding-left: 0;
@@ -94,6 +113,9 @@
         border: 1px solid @gray-lighter;
         border-top: none;
         box-shadow: 0px 15px 30px -35px @gray;
+        &.online-payment {
+            margin-bottom: 15px;           
+        }
         &.library-cards {
             @media (max-width: @screen-xs-max) {
                 table-layout: fixed;
@@ -127,9 +149,19 @@
             border-top: 2px solid @gray-lighter;
             text-align: right;
             line-height: 2em;
+            font-size: 1.2em;
+            & .amount {
+                font-weight: bold;
+            }
         }
         & .balance {
             text-align: right;   
+        }        
+        & .online-payment-remark {
+            font-weight: bold;
+        }
+        & tr.payment-data>th {
+            background: @body-bg;
         }
         & th {
             font-size: 1.1em;   

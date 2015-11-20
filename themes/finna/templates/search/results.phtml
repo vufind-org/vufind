@@ -136,7 +136,7 @@
     <? foreach ($this->results->getRecommendations('side') as $current): ?>
       <?=$this->recommend($current)?>
     <? endforeach; ?>
-    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/search-post-facets")): ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/search-post-facets")): ?>
       <div class="row">
         <div class="col-xs-12">
           <?=$this->render($template)?>

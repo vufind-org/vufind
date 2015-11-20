@@ -22,11 +22,14 @@
  * @category VuFind2
  * @package  ILS_Drivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace Finna\ILS\Driver;
-use PDO;
+use VuFind\Exception\ILS as ILSException,
+    Finna\ILS\SIP2,
+    PDO;
 
 /**
  * Voyager/VoyagerRestful Common Trait
@@ -34,6 +37,7 @@ use PDO;
  * @category VuFind2
  * @package  ILS_Drivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
@@ -119,10 +123,159 @@ trait VoyagerFinna
                     'secondary_login_field_label' => $label
                 ];
             }
+        } else if ($function == 'onlinePayment'
+            && isset($this->config['OnlinePayment'])
+        ) {
+            return $this->config['OnlinePayment'];
         }
 
         if (is_callable('parent::getConfig')) {
             return parent::getConfig($function, $params);
+        }
+        return false;
+    }
+
+    /**
+     * Get Patron Fines
+     *
+     * This is responsible for retrieving all fines by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return mixed        Array of the patron's fines on success.
+     */
+    public function getMyFines($patron)
+    {
+        try {
+            $fines = parent::getMyFines($patron);
+            return $this->markOnlinePayableFines($fines);
+        } catch (ILSException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Return total amount of fees that may be paid online.
+     *
+     * @param array $patron Patron
+     *
+     * @throws ILSException
+     * @return array Associative array of payment info,
+     * false if an ILSException occurred.
+     */
+    public function getOnlinePayableAmount($patron)
+    {
+        $fines = $this->getMyFines($patron);
+        if (!empty($fines)) {
+            $nonPayableReason = false;
+            $amount = 0;
+            foreach ($fines as $fine) {
+                if (!$fine['payableOnline'] && !$fine['accruedFine']) {
+                    $nonPayableReason
+                        = 'online_payment_fines_contain_nonpayable_fees';
+                } else if ($fine['payableOnline']) {
+                    $amount += $fine['balance'];
+                }
+            }
+            $config = $this->getConfig('onlinePayment');
+            if (!$nonPayableReason
+                && isset($config['minimumFee']) && $amount < $config['minimumFee']
+            ) {
+                $nonPayableReason = 'online_payment_minimum_fee';
+            }
+            $res = ['payable' => empty($nonPayableReason), 'amount' => $amount];
+            if ($nonPayableReason) {
+                $res['reason'] = $nonPayableReason;
+            }
+            return $res;
+        }
+    }
+
+    /**
+     * Mark fees as paid.
+     *
+     * This is called after a successful online payment.
+     *
+     * @param array $patron Patron.
+     * @param int   $amount Amount to be registered as paid.
+     *
+     * @throws ILSException
+     * @return boolean success
+     */
+    public function markFeesAsPaid($patron, $amount)
+    {
+        $params
+            = isset($this->config['OnlinePayment']['registrationParams'])
+            ? $this->config['OnlinePayment']['registrationParams'] : []
+        ;
+
+        $required = ['host', 'port', 'userId', 'password', 'locationCode'];
+        foreach ($required as $req) {
+            if (!isset($params[$req]) && !empty($params[$req])) {
+                $this->error("Missing SIP2 parameter $req");
+                throw new ILSException("Missing SIP2 parameter $req");
+            }
+        }
+        $currency = $this->config['OnlinePayment']['currency'];
+        $patronId = $patron['cat_username'];
+        $errFun = function ($patronId, $error) {
+            $this->error("SIP2 payment error (patron $patronId): $error");
+            throw new ILSException($error);
+        };
+
+        $sip = new SIP2();
+        $sip->error_detection = false;
+        $sip->msgTerminator = "\r";
+        $sip->hostname = $params['host'];
+        $sip->port = $params['port'];
+        $sip->AO = '';
+
+        if ($sip->connect()) {
+            $sip->scLocation = $params['locationCode'];
+            $sip->UIDalgorithm = 0;
+            $sip->PWDalgorithm = 0;
+            $loginMsg = $sip->msgLogin(
+                $params['userId'], $params['password']
+            );
+            $loginResponse = $sip->get_message($loginMsg);
+            if (strncmp('94', $loginResponse, 2) == 0) {
+                $loginResult = $sip->parseLoginResponse($loginResponse);
+                if ($loginResult['fixed']['Ok'] == '1') {
+                    $sip->patron = $patronId;
+                    $feepaidMsg
+                        = $sip->msgFeePaid(1, 0, $amount / 100.00, $currency);
+                    $feepaidResponse = $sip->get_message($feepaidMsg);
+                    if (strncmp('38', $feepaidResponse, 2) == 0) {
+                        $feepaidResult
+                            = $sip->parseFeePaidResponse($feepaidResponse);
+                        if ($feepaidResult['fixed']['PaymentAccepted'] == 'Y') {
+                            $sip->disconnect();
+
+                            // Clear patron blocks cache
+                            $cacheId = "blocks_$patronId";
+                            unset($this->session->cache[$id]);
+
+                            return true;
+                        } else {
+                            $sip->disconnect();
+                            $errFun($patronId, 'payment rejected');
+                        }
+                    } else {
+                        $sip->disconnect();
+                        $errFun($patronId, 'payment failed');
+                    }
+                } else {
+                    $sip->disconnect();
+                    $errFun($patronId, 'login failed');
+                }
+            } else {
+                $sip->disconnect();
+                $errFun($patronId, 'login failed');
+            }
+        } else {
+            $errFun($patronId, 'connection error');
         }
         return false;
     }
@@ -253,5 +406,82 @@ trait VoyagerFinna
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
+    }
+
+    /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver.  Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        if ($method == 'markFeesAsPaid') {
+            $required = [
+                'currency', 'enabled', 'registrationMethod', 'registrationParams'
+            ];
+
+            foreach ($required as $req) {
+                if (empty($this->config['OnlinePayment'][$req])) {
+                    return false;
+                }
+            }
+
+            if (!$this->config['OnlinePayment']['enabled']) {
+                return false;
+            }
+
+            $regParams = $this->config['OnlinePayment']['registrationParams'];
+            $required = ['host', 'port', 'userId', 'password', 'locationCode'];
+            foreach ($required as $req) {
+                if (empty($regParams[$req])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return parent::supportsMethod($method, $params);
+    }
+
+    /**
+     * Support method for getMyFines.
+     *
+     * Appends booleans 'accruedFine' and 'payableOnline' to a fine.
+     *
+     * @param array $fines Processed fines.
+     *
+     * @return array $fines Fines.
+     */
+    protected function markOnlinePayableFines($fines)
+    {
+        if (!isset($this->config['OnlinePayment'])) {
+            return $fines;
+        }
+
+        $accruedType = 'Accrued Fine';
+
+        $config = $this->config['OnlinePayment'];
+        $nonPayable = isset($config['nonPayable'])
+            ? $config['nonPayable'] : []
+        ;
+        $nonPayable[] = $accruedType;
+        foreach ($fines as &$fine) {
+            $payableOnline = true;
+            if (isset($fine['fine'])) {
+                if (in_array($fine['fine'], $nonPayable)) {
+                    $payableOnline = false;
+                }
+            }
+            $fine['accruedFine'] = ($fine['fine'] === $accruedType);
+            $fine['payableOnline'] = $payableOnline;
+        }
+
+        return $fines;
     }
 }

@@ -65,6 +65,53 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
+     * Return total amount of fees that may be paid online.
+     *
+     * @param array $patron Patron
+     *
+     * @throws ILSException
+     * @return array Associative array of payment info,
+     * false if an ILSException occurred.
+     */
+    public function getOnlinePayableAmount($patron)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver
+        ) {
+            return $driver->getOnlinePayableAmount(
+                $this->stripIdPrefixes($patron, $source)
+            );
+        }
+        throw new ILSException('Online payment not supported');
+    }
+
+    /**
+     * Mark fees as paid.
+     *
+     * This is called after a successful online payment.
+     *
+     * @param array $patron Patron.
+     * @param int   $amount Amount to be registered as paid.
+     *
+     * @throws ILSException
+     * @return boolean success
+     */
+    public function markFeesAsPaid($patron, $amount)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver
+            && $this->methodSupported($driver, 'markFeesAsPaid')
+        ) {
+            return $driver->markFeesAsPaid(
+                $this->stripIdPrefixes($patron, $source), $amount
+            );
+        }
+        throw new ILSException('Online payment not supported');
+    }
+
+    /**
      * Patron Login
      *
      * This is responsible for authenticating a patron against the catalog.
@@ -88,6 +135,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
                 $this->getLocalId($username), $password, $secondary
             );
             $patron = $this->addIdPrefixes($patron, $source);
+            $patron['source'] = $source;
             return $patron;
         }
         throw new ILSException('No suitable backend driver found');

@@ -427,4 +427,16 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             = $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService');
         return new AuthorizationNotification($authService);
     }
+
+    /**
+     * Construct the Record helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Record
+     */
+    public static function getOnlinePayment(ServiceManager $sm)
+    {
+        return new OnlinePayment();
+    }
 }

@@ -42,6 +42,21 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Factory for Demo driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Demo
+     */
+    public static function getDemo(ServiceManager $sm)
+    {
+        return new Demo(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sm->getServiceLocator()->get('VuFind\Search')
+        );
+    }
+
+    /**
      * Factory for MultiBackend driver.
      *
      * @param ServiceManager $sm Service manager.

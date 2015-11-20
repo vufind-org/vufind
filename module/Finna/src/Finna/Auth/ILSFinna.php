@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace Finna\Auth;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * Additional functionality for ILS/MultiILS authentication.
@@ -75,7 +76,9 @@ trait ILSFinna
         if (empty($info['email'])) {
             // Try to fetch patron's profile to get the email address
             $profile = $this->getCatalog()->getMyProfile($info);
-            $info['email'] = $profile['email'];
+            if (!empty($profile['email'])) {
+                $info['email'] = $profile['email'];
+            }
         }
 
         // Figure out which field of the response to use as an identifier; fail

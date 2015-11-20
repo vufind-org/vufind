@@ -45,11 +45,6 @@ class CommentsController extends \Finna\Controller\AjaxController
      */
     public function inappropriateAction()
     {
-        $user = $this->getUser();
-        if ($user == false) {
-            return $this->forceLogin();
-        }
-
         $comment
             = $this->params()->fromRoute(
                 'comment',
