@@ -52,7 +52,11 @@ class User extends Gateway
      */
     public function __construct(\Zend\Config\Config $config)
     {
-        parent::__construct('user', 'VuFind\Db\Row\User');
+        // Use a special row class when we're in privacy mode:
+        $privacy = isset($config->Authentication->privacy)
+            && $config->Authentication->privacy;
+        $rowClass = 'VuFind\Db\Row\\' . ($privacy ? 'PrivateUser' : 'User');
+        parent::__construct('user', $rowClass);
         $this->config = $config;
     }
 
