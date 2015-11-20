@@ -126,7 +126,7 @@ search                 = true
 ; NOTE: To make changes take effect immediately, you may need to clear VuFind's
 ; cache after changing this section.
 [Advanced]
-callnumber-first = "Call Number"
+;callnumber-first = "Call Number"
 language         = Language
 format           = Format
 ;hierarchy_top_title   = Collections
