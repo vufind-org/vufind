@@ -329,7 +329,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // Save the favorites.
         $this->findCss($page, '.modal-body input[name=submit]')->click();
-        $result = $this->findCss($page, '.modal-body .alert-info');
+        $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
             'Your item(s) were saved successfully', $result->getText()
         );
