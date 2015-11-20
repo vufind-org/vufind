@@ -1,7 +1,6 @@
 /*global htmlEncode*/
 
-function PadDigits(n, totalDigits)
-{
+function PadDigits(n, totalDigits) {
   if (n <= 0){
     n= 1;
   }
