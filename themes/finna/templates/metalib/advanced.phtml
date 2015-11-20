@@ -42,6 +42,7 @@
       <? for ($i = 0; $i < $numGroups; $i++):
            $operator = 'AND';
            if (isset($groups[$i])) {
+             $operator = $groups[$i]->getOperator();
              $currentGroup = $groups[$i]->getQueries();
              $numRows = count($currentGroup);
             } else {
