@@ -299,45 +299,40 @@ function setupBacklinks() {
 
 function setupAutocomplete() {
   // Search autocomplete
-  $('.autocomplete').each(function (i, element) {
-    $(element).typeahead(
-      {
-        highlight: true,
-        minLength: 3
-      }, {
-        displayKey:'val',
-        source: function(query, cb) {
-          var searcher = extractClassParams(element);
-          $.ajax({
-            url: VuFind.getPath() + '/AJAX/JSON',
-            data: {
-              q:query,
-              method:'getACSuggestions',
-              searcher:searcher['searcher'],
-              type:searcher['type'] ? searcher['type'] : $(element).closest('.searchForm').find('.searchForm_type').val()
-            },
-            dataType:'json',
-            success: function(json) {
-              if (json.status == 'OK' && json.data.length > 0) {
-                var datums = [];
-                for (var i=0;i<json.data.length;i++) {
-                  datums.push({val:json.data[i]});
-                }
-                cb(datums);
-              } else {
-                cb([]);
+  $('.autocomplete').each(function(i, op) {
+    $(op).autocomplete({
+      maxResults: 10,
+      loadingString: VuFind.translate('loading')+'...',
+      handler: function(query, cb) {
+        var searcher = extractClassParams(op);
+        $.fn.autocomplete.ajax({
+          url: VuFind.getPath() + '/AJAX/JSON',
+          data: {
+            q:query,
+            method:'getACSuggestions',
+            searcher:searcher['searcher'],
+            type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val()
+          },
+          dataType:'json',
+          success: function(json) {
+            if (json.status == 'OK' && json.data.length > 0) {
+              var datums = [];
+              for (var i=0;i<json.data.length;i++) {
+                datums.push(json.data[i]);
               }
+              cb(datums);
+            } else {
+              cb([]);
             }
-          });
-        }
+          }
+        });
       }
-    );
+    });
   });
   // Update autocomplete on type change
   $('.searchForm_type').change(function() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
-    var query = $lookfor.val();
-    $lookfor.focus().typeahead('val', '').typeahead('val', query);
+    $lookfor.focus();
   });
 }
 
