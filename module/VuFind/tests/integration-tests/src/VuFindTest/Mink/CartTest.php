@@ -176,7 +176,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function checkForNonSelectedMessage(Element $page)
     {
-        $warning = $this->findCss($page, '.modal-body .alert .message');
+        $warning = $this->findCss($page, '.modal-body .alert');
         $this->assertEquals(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',

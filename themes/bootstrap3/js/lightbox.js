@@ -31,28 +31,12 @@ $(document).ready(function() {
 
 function updateLightbox(html, link, checkForAlert) {
   //console.log('updateLightbox');
-  var doConstrainLinks = !!link && !$(link).hasClass('help-link');
   if(html.match('<!DOCTYPE html>')) {
     html = $('<div>'+html+'</div>').find('.main > .container').html();
   }
-  if(true === checkForAlert) {
-    var alerts = $('<div>'+html+'</div>').find('.alert').not('form .alert');
-    if (alerts.length > 0) {
-      html = alerts[0].outerHTML;
-      console.log('reduced to alert');
-      doConstrainLinks = false;
-    }
-  }
   $('#modal .modal-body').html(html);
-  if(lightboxShown) { $('#modal').modal('handleUpdate'); }
-  if(doConstrainLinks) { $('#modal .modal-body a').click(constrainLink); }
-  if("undefined" !== typeof link && null !== link
-  && "undefined" !== typeof link.dataset
-  && "undefined" !== typeof link.dataset.lightboxClose) {
-    var forms = $('#modal .modal-body form');
-    for(var i=0;i<forms.length;i++) {
-      forms[i].dataset.lightboxClose = link.dataset.lightboxClose;
-    }
+  if(typeof link === 'undefined' || !$(link).hasClass('help-link')) {
+    $('#modal .modal-body a').click(constrainLink);
   }
   constrainForms('#modal form');
   // Select all checkboxes
@@ -62,6 +46,28 @@ function updateLightbox(html, link, checkForAlert) {
   $('#modal').find('.checkbox-select-item').change(function() {
     $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
   });
+  /*
+  if(true === checkForAlert) {
+    var $newContent = $('<div>'+html+'</div>');
+    if ($newContent.find('[name="loginForm"], [name="accountForm"]').length == 0) {
+      var alerts = $newContent.find('.alert').not('form .alert');
+      if (alerts.length > 0) {
+        html = alerts[0].outerHTML;
+        console.log('reduced to alert');
+        doConstrainLinks = false;
+      }
+    }
+  }
+  if(lightboxShown) { $('#modal').modal('handleUpdate'); }
+  if(doConstrainLinks) { $('#modal .modal-body a').click(constrainLink); }
+  if("undefined" !== typeof link && null !== link
+  && "undefined" !== typeof link.dataset
+  && "undefined" !== typeof link.dataset.lightboxClose) {
+    var forms = $('#modal .modal-body form');
+    for(var i=0;i<forms.length;i++) {
+      forms[i].dataset.lightboxClose = link.dataset.lightboxClose;
+    }
+  }*/
 }
 
 /**
@@ -195,7 +201,9 @@ function lightboxAJAX(event, data) {
     success: function(html, status) {
       if(dataset && 'undefined' !== typeof event.target.dataset.lightboxSuccess) {
         if("function" === typeof window[event.target.dataset.lightboxSuccess]) {
-          window[event.target.dataset.lightboxSuccess](html, status);
+          if (!window[event.target.dataset.lightboxSuccess](html, status)) {
+            return false;
+          }
         } else {
           updateLightbox('<div class="alert alert-success">'+event.target.dataset.lightboxSuccess+'</div>');
           lightboxCloseTimeout = setTimeout("$('#modal').modal('hide');", 2500);
