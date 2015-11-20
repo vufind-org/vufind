@@ -90,6 +90,18 @@ class AccountCapabilities
     }
 
     /**
+     * Get saved search setting.
+     *
+     * @return string
+     */
+    public function getSavedSearchSetting()
+    {
+        return isset($this->config->Site->allowSavedSearches)
+            && !$this->config->Site->allowSavedSearches
+            ? 'disabled' : 'enabled';
+    }
+
+    /**
      * Get tag setting.
      *
      * @return string

@@ -57,6 +57,20 @@ class Factory
     }
 
     /**
+     * Construct the AccountCapabilities helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return AccountCapabilities
+     */
+    public static function getAccountCapabilities(ServiceManager $sm)
+    {
+        return new AccountCapabilities(
+            $sm->getServiceLocator()->get('VuFind\AccountCapabilities')
+        );
+    }
+
+    /**
      * Construct the AlphaBrowse helper.
      *
      * @param ServiceManager $sm Service manager.
