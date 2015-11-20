@@ -50,10 +50,12 @@
       </a>
     <? endif; ?>
   <? endif; ?>
-  <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item<?=$this->active == 'history' ? ' active' : ''?>">
-    <?=$this->transEsc('history_saved_searches')?>
-    <span class="pull-right flip"><i class="fa fa-fw fa-search"></i></span>
-  </a>
+  <? if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
+    <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item<?=$this->active == 'history' ? ' active' : ''?>">
+      <?=$this->transEsc('history_saved_searches')?>
+      <span class="pull-right flip"><i class="fa fa-fw fa-search"></i></span>
+    </a>
+  <? endif; ?>
   <? if ($user = $this->auth()->isLoggedIn()): ?>
     <a href="<?=$this->url('myresearch-logout')?>" class="list-group-item">
       <?=$this->transEsc("Log Out")?>
