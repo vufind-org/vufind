@@ -415,7 +415,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Whether library cards are enabled
      *
-     * @return boolean
+     * @return bool
      */
     public function libraryCardsEnabled()
     {
