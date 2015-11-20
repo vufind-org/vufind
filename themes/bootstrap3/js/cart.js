@@ -202,7 +202,7 @@ $(document).ready(function() {
     return false;
   });
   Lightbox.addFormCallback('bulkEmail', function(html) {
-    Lightbox.confirm(vufindString['bulk_email_success']);
+    Lightbox.confirm(VuFind.translate('bulk_email_success'));
   });
   $('#modal').on('hidden.bs.modal', function() {
     // Update cart items (add to cart, remove from cart, cart lightbox interface)

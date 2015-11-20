@@ -273,7 +273,6 @@ function setupRecordToolbar(target) {
 }
 
 function recordDocReady() {
-  var id = $('.hiddenId')[0].value;
   registerTabEvents();
 
   $('.record-tabs .nav-tabs a').click(function (e) {

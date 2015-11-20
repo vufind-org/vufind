@@ -102,7 +102,7 @@
     var form = $(this).closest('form')[0];
     var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
     if(checkboxes.length == 0) {
-      Lightbox.displayError(vufindString['bulk_noitems_advice']);
+      Lightbox.displayError(VuFind.translate('bulk_noitems_advice'));
       return false;
     }
   });

@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, refreshCommentList, refreshTagList, unescape, VuFind */
+/*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape, VuFind */
 
 function VuFindNamespace(p, s) {
   var path = p;
@@ -36,7 +36,6 @@ function extractClassParams(str) {
   }
   return params;
 }
-
 // Turn GET string into array
 function deparam(url) {
   if(!url.match(/\?|&/)) {
@@ -80,9 +79,9 @@ function phoneNumberFormHandler(numID, regionCode) {
   var valid = isPhoneNumberValid(number, regionCode);
   if(valid != true) {
     if(typeof valid === 'string') {
-      valid = vufindString[valid];
+      valid = VuFind.translate(valid);
     } else {
-      valid = vufindString['libphonenumber_invalid'];
+      valid = VuFind.translate('libphonenumber_invalid');
     }
     $(phoneInput).siblings('.help-block.with-errors').html(valid);
     $(phoneInput).closest('.form-group').addClass('sms-error');
@@ -90,7 +89,6 @@ function phoneNumberFormHandler(numID, regionCode) {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
   }
-  return valid == true;
 }
 
 // Lightbox
@@ -105,7 +103,7 @@ function bulkActionSubmit($form) {
   var submit = button.attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
-    Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    Lightbox.displayError(VuFind.translate('bulk_noitems_advice'));
     return false;
   }
   if (submit == 'print') {
@@ -122,6 +120,7 @@ function bulkActionSubmit($form) {
   }
   return false;
 }
+
 function registerLightboxEvents() {
   var modal = $("#modal");
   // New list
@@ -185,6 +184,7 @@ function newAccountHandler(html) {
     Lightbox.getByUrl(Lightbox.openingURL);
     Lightbox.openingURL = false;
   }
+  return valid == true;
 }
 
 // This is a full handler for the login form
@@ -245,6 +245,7 @@ function ajaxLogin(form) {
   });
 }
 
+// Ready functions
 function setupOffcanvas() {
   if($('.sidebar').length > 0) {
     $('[data-toggle="offcanvas"]').click(function () {
@@ -362,9 +363,9 @@ $(document).ready(function() {
   // handle QR code links
   $('a.qrcodeLink').click(function() {
     if ($(this).hasClass("active")) {
-      $(this).html(vufindString.qrcode_show).removeClass("active");
+      $(this).html(VuFind.translate('qrcode_show')).removeClass("active");
     } else {
-      $(this).html(vufindString.qrcode_hide).addClass("active");
+      $(this).html(VuFind.translate('qrcode_hide')).addClass("active");
     }
 
     var holder = $(this).next('.qrcode');
@@ -390,7 +391,7 @@ $(document).ready(function() {
 
   // Advanced facets
   $('.facetOR').click(function() {
-    $(this).closest('.collapse').html('<div class="list-group-item">'+vufindString.loading+'...</div>');
+    $(this).closest('.collapse').html('<div class="list-group-item">'+VuFind.translate('loading')+'...</div>');
     window.location.assign($(this).attr('href'));
   });
 

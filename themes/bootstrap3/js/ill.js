@@ -28,7 +28,6 @@ function setUpILLRequestForm(recordId) {
         $("#ILLRequestForm #pickupLibraryLocationLabel i").removeClass("fa fa-spinner icon-spin");
       }
     });
-
   });
   $("#ILLRequestForm #pickupLibrary").change();
 }

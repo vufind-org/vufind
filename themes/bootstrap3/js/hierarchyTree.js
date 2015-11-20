@@ -1,6 +1,5 @@
 /*global hierarchySettings, VuFind */
 
-
 var hierarchyID, recordID, htmlID, hierarchyContext;
 var baseTreeSearchFullURL;
 
@@ -126,6 +125,7 @@ function buildJSONNodes(xml) {
   });
   return jsonNode;
 }
+
 function buildTreeWithXml(cb) {
   $.ajax({'url': VuFind.getPath() + '/Hierarchy/GetTree',
     'data': {

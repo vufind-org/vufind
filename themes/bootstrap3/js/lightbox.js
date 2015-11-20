@@ -136,7 +136,7 @@ var Lightbox = {
     // Reset content so we start fresh when we open a lightbox
     $('#modal').removeData('modal');
     $('#modal').find('.modal-title').html('&nbsp;');
-    $('#modal').find('.modal-body').html(vufindString.loading + "...");
+    $('#modal').find('.modal-body').html(VuFind.translate('loading') + "...");
   },
   /**
    * Call all the functions we need for when the modal loads
@@ -152,10 +152,10 @@ var Lightbox = {
    * This function changes the content of the lightbox to a message with a close button
    */
   confirm: function(message) {
-    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VuFind.translate('close')+'</button>');
   },
   success: function(message) {
-    this.changeContent('<div class="alert alert-success">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+    this.changeContent('<div class="alert alert-success">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VuFind.translate('close')+'</button>');
   },
   /**
    * Regexes a piece of html to find an error alert
@@ -186,9 +186,9 @@ var Lightbox = {
     $('#modal .modal-body .alert').remove();
     var html = $.parseHTML($('#modal .modal-body').html());
      // Empty or alert only, change to message with button
-    if($('#modal .modal-body').html() == vufindString.loading+"..."
+    if($('#modal .modal-body').html() == VuFind.translate('loading') + "..."
       || (html.length == 1 && $(html).hasClass('alert-'+type))) {
-      Lightbox.changeContent('<div class="alert alert-'+type+'" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+      Lightbox.changeContent('<div class="alert alert-'+type+'" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VuFind.translate('close')+'</button>');
     // Page without alert
     } else {
       $('#modal .modal-body').prepend('<div class="alert alert-'+type+' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><p class="message">'+message+'</p></div>');
@@ -401,7 +401,7 @@ var Lightbox = {
     } else {
       this.getByUrl(this.lastURL, {}, callback);
     }
-    $(this).find('.modal-body').html(vufindString.loading + "...");
+    $(this).find('.modal-body').html(VuFind.translate('loading') + "...");
   }
 };
 
@@ -443,14 +443,14 @@ $(document).ready(function() {
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
     Lightbox.addCloseAction(refreshPageForLogin);
-    Lightbox.success(vufindString['bulk_save_success']);
+    Lightbox.success(VuFind.translate('bulk_save_success'));
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
   });
   Lightbox.addFormCallback('emailSearch', function(html) {
-    Lightbox.success(vufindString['bulk_email_success']);
+    Lightbox.success(VuFind.translate('bulk_email_success'));
   });
   Lightbox.addFormCallback('saveRecord', function(html) {
     Lightbox.close();
