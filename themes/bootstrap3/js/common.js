@@ -72,6 +72,25 @@ function lessFacets(id) {
   $('#more-'+id).removeClass('hidden');
 }
 
+// Phone number validation
+function phoneNumberFormHandler(numID, regionCode) {
+  var phoneInput = document.getElementById(numID);
+  var number = phoneInput.value;
+  var valid = isPhoneNumberValid(number, regionCode);
+  if(valid != true) {
+    if(typeof valid === 'string') {
+      valid = VuFind.translate(valid);
+    } else {
+      valid = VuFind.translate('libphonenumber_invalid');
+    }
+    $(phoneInput).siblings('.help-block.with-errors').html(valid);
+    $(phoneInput).closest('.form-group').addClass('sms-error');
+  } else {
+    $(phoneInput).closest('.form-group').removeClass('sms-error');
+    $(phoneInput).siblings('.help-block.with-errors').html('');
+  }
+}
+
 // Lightbox
 /*
  * This function adds jQuery events to elements in the lightbox
@@ -100,25 +119,6 @@ function bulkActionSubmit($form) {
     Lightbox.submit($form, Lightbox.changeContent);
   }
   return false;
-}
-
-// Phone number validation
-function phoneNumberFormHandler(numID, regionCode) {
-  var phoneInput = document.getElementById(numID);
-  var number = phoneInput.value;
-  var valid = isPhoneNumberValid(number, regionCode);
-  if(valid != true) {
-    if(typeof valid === 'string') {
-      valid = VuFind.translate(valid);
-    } else {
-      valid = VuFind.translate('libphonenumber_invalid');
-    }
-    $(phoneInput).siblings('.help-block.with-errors').html(valid);
-    $(phoneInput).closest('.form-group').addClass('sms-error');
-  } else {
-    $(phoneInput).closest('.form-group').removeClass('sms-error');
-    $(phoneInput).siblings('.help-block.with-errors').html('');
-  }
 }
 
 function registerLightboxEvents() {
@@ -221,12 +221,12 @@ function ajaxLogin(form) {
           data: params,
           success: function(response) {
             if (response.status == 'OK') {
+              Lightbox.addCloseAction(refreshPageForLogin);
               // and we update the modal
               var params = deparam(Lightbox.lastURL);
               if (params['subaction'] == 'UserLogin') {
-                refreshPageForLogin();
+                Lightbox.close();
               } else {
-                Lightbox.addCloseAction(refreshPageForLogin);
                 Lightbox.getByUrl(
                   Lightbox.lastURL,
                   Lightbox.lastPOST,
@@ -332,6 +332,12 @@ function setupAutocomplete() {
         }
       }
     );
+  });
+  // Update autocomplete on type change
+  $('.searchForm_type').change(function() {
+    var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
+    var query = $lookfor.val();
+    $lookfor.focus().typeahead('val', '').typeahead('val', query);
   });
 }
 

@@ -145,6 +145,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click to add tag
+        $this->snooze();
         $this->findCss($page, '.tag-record')->click();
         $this->snooze();
         // Lightbox login open?

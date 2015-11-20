@@ -274,6 +274,8 @@ function setupRecordToolbar(target) {
 }
 
 function recordDocReady() {
+  registerTabEvents();
+
   $('.record-tabs .nav-tabs a').click(function (e) {
     if ($(this.parentNode).hasClass('active')) {
       return true;
