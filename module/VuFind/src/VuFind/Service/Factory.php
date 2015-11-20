@@ -51,7 +51,8 @@ class Factory
     public static function getAccountCapabilities(ServiceManager $sm)
     {
         return new \VuFind\Config\AccountCapabilities(
-            $sm->get('VuFind\Config')->get('config')
+            $sm->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\AuthManager')
         );
     }
 

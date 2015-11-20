@@ -27,6 +27,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Config;
+use VuFind\Auth\Manager as AuthManager;
 use Zend\Config\Config;
 
 /**
@@ -42,6 +43,13 @@ use Zend\Config\Config;
 class AccountCapabilities
 {
     /**
+     * Auth manager
+     *
+     * @var AuthManager
+     */
+    protected $auth;
+
+    /**
      * VuFind configuration
      *
      * @var Config
@@ -51,10 +59,12 @@ class AccountCapabilities
     /**
      * Constructor
      *
-     * @param Config $config VuFind configuration
+     * @param Config      $config VuFind configuration
+     * @param AuthManager $auth   Auth manager
      */
-    public function __construct(Config $config)
+    public function __construct(Config $config, AuthManager $auth)
     {
+        $this->auth = $auth;
         $this->config = $config;
     }
 
@@ -65,6 +75,9 @@ class AccountCapabilities
      */
     public function getCommentSetting()
     {
+        if (!$this->isAccountAvailable()) {
+            return 'disabled';
+        }
         return isset($this->config->Social->comments)
             && $this->config->Social->comments === 'disabled'
             ? 'disabled' : 'enabled';
@@ -77,6 +90,9 @@ class AccountCapabilities
      */
     public function getListSetting()
     {
+        if (!$this->isAccountAvailable()) {
+            return 'disabled';
+        }
         $setting = isset($this->config->Social->lists)
             ? trim(strtolower($this->config->Social->lists)) : 'enabled';
         if (!$setting) {
@@ -96,6 +112,9 @@ class AccountCapabilities
      */
     public function getSavedSearchSetting()
     {
+        if (!$this->isAccountAvailable()) {
+            return 'disabled';
+        }
         return isset($this->config->Site->allowSavedSearches)
             && !$this->config->Site->allowSavedSearches
             ? 'disabled' : 'enabled';
@@ -108,8 +127,21 @@ class AccountCapabilities
      */
     public function getTagSetting()
     {
+        if (!$this->isAccountAvailable()) {
+            return 'disabled';
+        }
         return isset($this->config->Social->tags)
             && $this->config->Social->tags === 'disabled'
             ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Is a user account capable of saving data currently available?
+     *
+     * @return bool
+     */
+    protected function isAccountAvailable()
+    {
+        return $this->auth->loginEnabled();
     }
 }
