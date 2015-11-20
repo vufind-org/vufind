@@ -49,7 +49,7 @@ class AccountCapabilities extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Helper $connection Capabilities helper
+     * @param Helper $helper Capabilities helper
      */
     public function __construct(Helper $helper)
     {
