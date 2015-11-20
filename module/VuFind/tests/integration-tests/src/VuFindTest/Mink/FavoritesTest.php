@@ -115,11 +115,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         // Empty
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '#list_title')->setValue('Test List');
         $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->assertEquals(
-        $this->findCss($page, '#save_list option[selected]')->getHtml(), 'Test List');
+        $this->assertEquals($this->findCss($page, '#save_list option[selected]')->getHtml(), 'Test List');
         $this->findCss($page, '#add_mytags')->setValue('test1 test2 "test 3"');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
@@ -158,7 +158,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInLoginForm($page, null, 'test');
         $this->submitLoginForm($page);
         // Make sure we don't have Favorites because we have another populated list
-        die();
         $this->assertNull($page->find('css', '.modal-body #save_list'));
         // Make Two Lists
         // - One for the next test

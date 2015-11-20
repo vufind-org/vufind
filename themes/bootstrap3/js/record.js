@@ -114,6 +114,27 @@ function registerAjaxCommentRecord() {
   });
 }
 
+function registerTabEvents() {
+  // register the record comment form to be submitted via AJAX
+  registerAjaxCommentRecord();
+
+  setUpCheckRequest();
+
+  // Place a Hold
+  // Place a Storage Hold
+  // Place an ILL Request
+  $('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').click(function() {
+    var parts = $(this).attr('href').split('?');
+    parts = parts[0].split('/');
+    var params = deparam($(this).attr('href'));
+    params.id = parts[parts.length-2];
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
+      Lightbox.checkForError(html, Lightbox.changeContent);
+    });
+  });
+}
+
 function ajaxLoadTab($newTab, tabid, setHash) {
   // Parse out the base URL for the current record:
   var path = VuFind.getPath();
@@ -139,7 +160,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     success: function(data) {
       $newTab.html(data).addClass('active');
       $newTab.closest('.record-tabs').find('.'+tabid).tab('show');
-      registerRecordEvents();
+      registerTabEvents();
       if(typeof syn_get_widget === "function") {
         syn_get_widget();
       }
@@ -249,40 +270,6 @@ function setupRecordToolbar(target) {
   $elem.find('.tag-record').unbind('click').click(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
-  });
-}
-
-function registerRecordEvents(parent, id) {
-  if(typeof parent === "undefined") {
-    parent = document;
-    id = $(this).closest('.record').find('.hiddenId').val();
-  }
-
-  setUpCheckRequest();
-  setupRecordToolbar(parent);
-  refreshCommentList(id, $(parent).find('.hiddenSource').val(), parent);
-
-  // Place a Hold
-  // Place a Storage Hold
-  // Place an ILL Request
-  $(parent).find('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').unbind('click').click(function() {
-    var parts = $(this).attr('href').split('?');
-    parts = parts[0].split('/');
-    var params = deparam($(this).attr('href'));
-    params.id = parts[parts.length-2];
-    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
-      Lightbox.checkForError(html, Lightbox.changeContent);
-    });
-  });
-
-  $(parent).find('form.comment input[type=submit]').unbind('click').click(function() {
-    if($.trim($(this).siblings('textarea').val()) == '') {
-      Lightbox.displayError(VuFind.translate('add_comment_fail_blank'));
-    } else {
-      registerAjaxCommentRecord(parent);
-    }
-    return false;
   });
 }
 

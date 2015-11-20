@@ -118,10 +118,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // "Add" empty comment
         $this->findCss($page, 'form.comment-form .btn-primary')->click();
         $this->assertNull($page->find('css', '.comment.row'));
-        // "Add" empty comment
-        $this->findCss($page, 'form.comment .btn-primary')->click();
-        $this->snooze();
-        $this->assertNull($page->find('css', '.comment.row'));
         // Add comment
         $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
         $this->findCss($page, 'form.comment-form .btn-primary')->click();

@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape, VuFind */
+/*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape, VuFind */
 
 function VuFindNamespace(p, s) {
   var path = p;
@@ -72,18 +72,6 @@ function lessFacets(id) {
   $('#more-'+id).removeClass('hidden');
 }
 
-// Advanced facets
-function updateOrFacets(url, op) {
-  window.location.assign(url);
-  var list = $(op).parents('ul');
-  var header = $(list).find('li.nav-header');
-  list.html(header[0].outerHTML+'<div class="alert alert-info">'+VuFind.translate('loading')+'...</div>');
-}
-function setupOrFacets() {
-  $('.facetOR').find('.icon-check').replaceWith('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().parent().attr(\'href\'), this)"/>');
-  $('.facetOR').find('.icon-check-empty').replaceWith('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
-}
-
 // Lightbox
 /*
  * This function adds jQuery events to elements in the lightbox
@@ -111,6 +99,7 @@ function bulkActionSubmit($form) {
     Lightbox.titleSet = true;
     Lightbox.submit($form, Lightbox.changeContent);
   }
+  return false;
 }
 
 // Phone number validation
