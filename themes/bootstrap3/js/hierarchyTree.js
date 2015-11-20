@@ -1,15 +1,13 @@
-/*global hierarchySettings, jqEscape, VuFind */
+/*global hierarchySettings, VuFind */
 
 var hierarchyID, recordID, htmlID, hierarchyContext;
 var baseTreeSearchFullURL;
 
 /* Utility functions */
-function htmlEncodeId(id)
-{
+function htmlEncodeId(id) {
   return id.replace(/\W/g, "-"); // Also change Hierarchy/TreeRenderer/JSTree.php
 }
-function html_entity_decode(string, quote_style)
-{
+function html_entity_decode(string, quote_style) {
   var hash_map = {
     '&': '&amp;',
     '>': '&gt;',
@@ -26,8 +24,7 @@ function html_entity_decode(string, quote_style)
   return tmp_str;
 }
 
-function getRecord(recordID)
-{
+function getRecord(recordID) {
   $.ajax({
     url: VuFind.getPath() + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
     dataType: 'html',
@@ -45,8 +42,7 @@ function getRecord(recordID)
   });
 }
 
-function changeNoResultLabel(display)
-{
+function changeNoResultLabel(display) {
   if (display) {
     $("#treeSearchNoResults").removeClass('hidden');
   } else {
@@ -54,8 +50,7 @@ function changeNoResultLabel(display)
   }
 }
 
-function changeLimitReachedLabel(display)
-{
+function changeLimitReachedLabel(display) {
   if (display) {
     $("#treeSearchLimitReached").removeClass('hidden');
   } else {
@@ -64,8 +59,7 @@ function changeLimitReachedLabel(display)
 }
 
 var searchAjax = false;
-function doTreeSearch()
-{
+function doTreeSearch() {
   $('#treeSearchLoadingImg').removeClass('hidden');
   var keyword = $("#treeSearchText").val();
   var type = $("#treeSearchType").val();
@@ -109,8 +103,7 @@ function doTreeSearch()
   }
 }
 
-function buildJSONNodes(xml)
-{
+function buildJSONNodes(xml) {
   var jsonNode = [];
   $(xml).children('item').each(function() {
     var content = $(this).children('content');
@@ -132,8 +125,8 @@ function buildJSONNodes(xml)
   });
   return jsonNode;
 }
-function buildTreeWithXml(cb)
-{
+
+function buildTreeWithXml(cb) {
   $.ajax({'url': VuFind.getPath() + '/Hierarchy/GetTree',
     'data': {
       'hierarchyID': hierarchyID,
@@ -148,8 +141,7 @@ function buildTreeWithXml(cb)
   });
 }
 
-$(document).ready(function()
-{
+$(document).ready(function() {
   // Code for the search button
   hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;
   recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;

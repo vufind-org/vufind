@@ -55,12 +55,12 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
         $session->visit($url);
         $this->assertHttpStatus(200);
         $page = $session->getPage();
-        $staffViewTab = $this->findCss($page, '#details');
+        $staffViewTab = $this->findCss($page, '.record-tabs .details');
         $this->assertEquals('Staff View', $staffViewTab->getText());
         $staffViewTab->click();
         $this->snooze();
         $this->assertEquals($url . '#details', $session->getCurrentUrl());
-        $staffViewTable = $this->findCss($page, '#details-tab table.citation');
+        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.citation');
         $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
     }
 

@@ -9,7 +9,6 @@ var Lightbox = {
   lastURL: false,
   lastPOST: false,
   openingURL: false,
-  refreshOnClose: false,
   shown: false,      // Is the lightbox deployed?
   XHR: false,        // Used for current in-progress XHR lightbox request
   openStack: [],     // Array of functions to be called after changeContent or the lightbox event 'shown'
@@ -95,9 +94,14 @@ var Lightbox = {
   changeContent: function(html) {
     var header = $('#modal .modal-header');
     if(!Lightbox.titleSet) {
-      var h2 = html.match(/<h2[^>]*>([^<]*)<\/h2>/);
+      var h2 = html.match(/<h2>([^<]*)<\/h2>/);
       if(h2) {
         header.find('.modal-title').html(h2[1]);
+      } else {
+        var pLead = html.match(/<p class="lead[^>]*>([^<]*)<\/p>/);
+        if(pLead) {
+          header.find('.modal-title').html(pLead[1]);
+        }
       }
       Lightbox.titleSet = false;
     }
@@ -121,22 +125,18 @@ var Lightbox = {
    * so it always runs when the lightbox is closed.
    */
   closeActions: function() {
-    if (Lightbox.refreshOnClose) {
-      window.location.reload();
-    } else {
-      Lightbox.shown = false;
-      Lightbox.openingURL = false;
-      // Clean out stack
-      while(Lightbox.closeStack.length > 0) {
-        var f = Lightbox.closeStack.pop();
-        f();
-      }
-      if(this.XHR) { this.XHR.abort(); }
-      // Reset content so we start fresh when we open a lightbox
-      $('#modal').removeData('modal');
-      $('#modal').find('.modal-title').html('');
-      $('#modal').find('.modal-body').html(VuFind.translate('loading')+"...");
+    Lightbox.shown = false;
+    Lightbox.openingURL = false;
+    // Clean out stack
+    while(Lightbox.closeStack.length > 0) {
+      var f = Lightbox.closeStack.pop();
+      f();
     }
+    if(this.XHR) { this.XHR.abort(); }
+    // Reset content so we start fresh when we open a lightbox
+    $('#modal').removeData('modal');
+    $('#modal').find('.modal-title').html('&nbsp;');
+    $('#modal').find('.modal-body').html(VuFind.translate('loading') + "...");
   },
   /**
    * Call all the functions we need for when the modal loads
@@ -149,7 +149,7 @@ var Lightbox = {
     }
   },
   /**
-   * These function changes the content of the lightbox to a message with a close button
+   * This function changes the content of the lightbox to a message with a close button
    */
   confirm: function(message) {
     this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VuFind.translate('close')+'</button>');
@@ -186,7 +186,7 @@ var Lightbox = {
     $('#modal .modal-body .alert').remove();
     var html = $.parseHTML($('#modal .modal-body').html());
      // Empty or alert only, change to message with button
-    if($('#modal .modal-body').html() == VuFind.translate('loading')+"..."
+    if($('#modal .modal-body').html() == VuFind.translate('loading') + "..."
       || (html.length == 1 && $(html).hasClass('alert-'+type))) {
       Lightbox.changeContent('<div class="alert alert-'+type+'" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VuFind.translate('close')+'</button>');
     // Page without alert
@@ -405,95 +405,6 @@ var Lightbox = {
   }
 };
 
-// Lightbox
-/*
- * This function adds jQuery events to elements in the lightbox
- *
- * This is a default open action, so it runs every time changeContent
- * is called and the 'shown' lightbox event is triggered
- */
-function bulkActionSubmit($form) {
-  var button = $form.find('[type="submit"][clicked=true]');
-  var submit = button.attr('name');
-  var checks = $form.find('input.checkbox-select-item:checked');
-  if(checks.length == 0 && submit != 'empty') {
-    Lightbox.displayError(VuFind.translate('bulk_noitems_advice'));
-    return false;
-  }
-  if (submit == 'print') {
-    //redirect page
-    var url = VuFind.getPath()+'/Records/Home?print=true';
-    for(var i=0;i<checks.length;i++) {
-      url += '&id[]='+checks[i].value;
-    }
-    document.location.href = url;
-  } else {
-    $('#modal .modal-title').html(button.attr('title'));
-    Lightbox.titleSet = true;
-    Lightbox.submit($form, Lightbox.changeContent);
-  }
-  return false;
-}
-function registerLightboxEvents() {
-  var modal = $("#modal");
-  // New list
-  $('#make-list').click(function() {
-    var get = deparam(this.href);
-    get['id'] = 'NEW';
-    return Lightbox.get('MyResearch', 'EditList', get);
-  });
-  // New account link handler
-  $('.createAccountLink').click(function() {
-    var get = deparam(this.href);
-    return Lightbox.get('MyResearch', 'Account', get);
-  });
-  $('.back-to-login').click(function() {
-    Lightbox.getByUrl(Lightbox.openingURL);
-    return false;
-  });
-  // Select all checkboxes
-  $(modal).find('.checkbox-select-all').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
-  });
-  $(modal).find('.checkbox-select-item').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
-  });
-  // Highlight which submit button clicked
-  $(modal).find("form [type=submit]").click(function() {
-    // Abort requests triggered by the lightbox
-    $('#modal .fa-spinner').remove();
-    // Remove other clicks
-    $(modal).find('[type="submit"][clicked=true]').attr('clicked', false);
-    // Add useful information
-    $(this).attr("clicked", "true");
-    // Add prettiness
-    if($(modal).find('.has-error,.sms-error').length == 0 && !$(this).hasClass('dropdown-toggle')) {
-      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
-    }
-  });
-  /**
-   * Hide the header in the lightbox content
-   * if it matches the title bar of the lightbox
-   */
-  var header = $('#modal .modal-title').html();
-  var contentHeader = $('#modal .modal-body h2');
-  contentHeader.each(function(i,op) {
-    if (op.innerHTML == header) {
-      $(op).hide();
-    }
-  });
-}
-function newAccountHandler(html) {
-  var params = deparam(Lightbox.openingURL);
-  if (params['subaction'] != 'UserLogin') {
-    Lightbox.getByUrl(Lightbox.openingURL);
-    Lightbox.openingURL = false;
-    Lightbox.refreshOnClose = true;
-  } else {
-    window.location.reload();
-  }
-}
-
 /**
  * This is where you add click events to open the lightbox.
  * We do it here so that non-JS users still have a good time.
@@ -509,7 +420,7 @@ $(document).ready(function() {
   $('#modal').on('hidden.bs.modal', Lightbox.closeActions);
   /**
    * If a link with the class .modal-link triggers the lightbox,
-   * look for a title="" to use as our lightbox title.
+   * look for a title attribute to use as our lightbox title.
    */
   $('.modal-link,.help-link').click(function() {
     var title = $(this).attr('title');
@@ -525,54 +436,27 @@ $(document).ready(function() {
    ******************************/
   Lightbox.addOpenAction(registerLightboxEvents);
 
-  // Form callbacks
+  Lightbox.addFormCallback('newList', Lightbox.changeContent);
   Lightbox.addFormCallback('accountForm', newAccountHandler);
   Lightbox.addFormCallback('bulkDelete', function(html) {
     location.reload();
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
-    Lightbox.refreshOnClose = true;
+    Lightbox.addCloseAction(refreshPageForLogin);
     Lightbox.success(VuFind.translate('bulk_save_success'));
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
   });
-  Lightbox.addFormCallback('emailRecord', function(){
-    Lightbox.success(VuFind.translate('bulk_email_success'));
-  });
   Lightbox.addFormCallback('emailSearch', function(html) {
     Lightbox.success(VuFind.translate('bulk_email_success'));
   });
-  Lightbox.addFormCallback('newList', Lightbox.changeContent);
-  Lightbox.addFormCallback('placeHold', function(html) {
-    Lightbox.checkForError(html, function(html) {
-      var divPattern = '<div class="alert alert-info">';
-      var fi = html.indexOf(divPattern);
-      var li = html.indexOf('</div>', fi+divPattern.length);
-      Lightbox.success(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
-    });
-  });
-  Lightbox.addFormCallback('placeILLRequest', function() {
-    document.location.href = VuFind.getPath()+'/MyResearch/ILLRequests';
-  });
-  Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
-    document.location.href = VuFind.getPath()+'/MyResearch/StorageRetrievalRequests';
-  });
-  Lightbox.addFormCallback('saveRecord', function() {
+  Lightbox.addFormCallback('saveRecord', function(html) {
+    Lightbox.close();
     checkSaveStatuses();
-    refreshTagList();
-    Lightbox.success(VuFind.translate('bulk_save_success'));
-  });
-  Lightbox.addFormCallback('smsRecord', function() {
-    Lightbox.success(VuFind.translate('sms_success'));
-  });
-  Lightbox.addFormCallback('tagRecord', function(html) {
-    refreshTagList(true);
-    Lightbox.success(VuFind.translate('add_tag_success'));
   });
 
-  // Form handlers
   Lightbox.addFormHandler('exportForm', function(evt) {
     $.ajax({
       url: VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),

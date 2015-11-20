@@ -140,7 +140,11 @@ abstract class MinkTestCase extends DbTestCase
     {
         // Sleep is not necessary for Zombie.js.
         if (!$this->isZombieDriver()) {
-            sleep($secs);
+            $snoozeMultiplier = intval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
+            if ($snoozeMultiplier < 1) {
+                $snoozeMultiplier = 1;
+            }
+            sleep($secs * $snoozeMultiplier);
         }
     }
 

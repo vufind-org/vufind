@@ -1,4 +1,4 @@
-<div class="tagList"<?=$loggedin ? ' loggedin' : ''?>">
+<div class="tagList<?=$loggedin ? ' loggedin' : ''?>">
   <? if (count($tagList) > 0): ?>
     <? foreach ($tagList as $tag): ?>
       <? $is_me = isset($tag['is_me']) && !is_null($tag['is_me']) ? $tag['is_me'] : false; ?>

@@ -24,7 +24,7 @@ function checkSaveStatuses() {
           $.each(response.data, function(i, result) {
             var $container = $('#result'+result.record_number).find('.savedLists');
             if ($container.length == 0) { // Record view
-              $container = $('#savedLists');
+              $container = $('.savedLists');
             }
             var $ul = $container.children('ul:first');
             if ($ul.length == 0) {
@@ -42,6 +42,4 @@ function checkSaveStatuses() {
   }
 }
 
-$(document).ready(function() {
-  checkSaveStatuses();
-});
+$(document).ready(checkSaveStatuses);

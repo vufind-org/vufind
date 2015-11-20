@@ -1,4 +1,4 @@
-/*global bulkActionSubmit, cartCookieDomain, Cookies, newAccountHandler, VuFind, Lightbox */
+/*global bulkActionSubmit, cartCookieDomain, Cookies, newAccountHandler, Lightbox, refreshPageForLogin, VuFind */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -188,7 +188,7 @@ $(document).ready(function() {
   });
   // Overwrite
   Lightbox.addFormCallback('accountForm', function(html) {
-    Lightbox.refreshOnClose = true;
+    Lightbox.addCloseAction(refreshPageForLogin);
     if (lastCartSubmit !== false) {
       bulkActionSubmit(lastCartSubmit);
       lastCartSubmit = false;

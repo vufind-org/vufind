@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, refreshCommentList, refreshTagList, unescape, VuFind */
+/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape, VuFind */
 
 function VuFindNamespace(p, s) {
   var path = p;
@@ -77,132 +77,40 @@ function updateOrFacets(url, op) {
   window.location.assign(url);
   var list = $(op).parents('ul');
   var header = $(list).find('li.nav-header');
-  list.html(header[0].outerHTML+'<div class="alert alert-info">'+vufindString.loading+'...</div>');
+  list.html(header[0].outerHTML+'<div class="alert alert-info">'+VuFind.translate('loading')+'...</div>');
 }
 function setupOrFacets() {
   $('.facetOR').find('.icon-check').replaceWith('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().parent().attr(\'href\'), this)"/>');
   $('.facetOR').find('.icon-check-empty').replaceWith('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
 }
 
-// Record
-function refreshCommentList(recordId, recordSource, parent) {
-  var url = VuFind.getPath+'/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
-  $.ajax({
-    dataType: 'json',
-    url: url,
-    success: function(response) {
-      // Update HTML
-      if (response.status == 'OK') {
-        $commentList = typeof parent === "undefined" || $(parent).find('.commentList').length === 0
-          ? $('.commentList')
-          : $(parent).find('.commentList');
-        $commentList.empty();
-        $commentList.append(response.data);
-        $('input[type="submit"]').button('reset');
-        $('.delete').unbind('click').click(function() {
-          var commentId = $(this).attr('id').substr('recordComment'.length);
-          deleteRecordComment(this, recordId, recordSource, commentId);
-          return false;
-        });
-      }
-    }
-  });
-}
-
-function refreshTagList(loggedin, parent) {
-  loggedin = !!loggedin || userIsLoggedIn;
-  var recordId = typeof parent === "undefined"
-    ? $('.hiddenId').val()
-    : $(parent).find('.hiddenId').val();
-  var recordSource = typeof parent === "undefined"
-    ? $('.hiddenSource').val()
-    : $(parent).find('.hiddenSource').val();
-  var $tagList = typeof parent === "undefined"
-    ? $('.tagList')
-    : $(parent).find('.tagList');
-  if ($tagList.length > 0) {
-    $tagList.empty();
-    var url = VuFind.getPath+'/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
-    $.ajax({
-      dataType: 'json',
-      url: url,
-      complete: function(response) {
-        if(response.status == 200) {
-          $tagList.html(response.responseText);
-          if(loggedin) {
-            $tagList.addClass('loggedin');
-          } else {
-            $tagList.removeClass('loggedin');
-          }
-        }
-      }
-    });
-  }
-}
-function ajaxTagUpdate(link, tag, remove) {
-  if(typeof remove === "undefined") {
-    remove = false;
-  }
-  var $parent = $(link).closest('.record');
-  var recordId = $parent.find('.hiddenId').val();
-  var recordSource = $parent.find('.hiddenSource').val();
-  $.ajax({
-    url:VuFind.getPath+'/AJAX/JSON?method=tagRecord',
-    method:'POST',
-    data:{
-      tag:'"'+tag.replace(/\+/g, ' ')+'"',
-      id:recordId,
-      source:recordSource,
-      remove:remove
-    },
-    complete:function() {
-      refreshTagList(false, $parent);
-    }
-  });
-}
-
-/**
- * @param string form Form or element containing the comment hidden, textarea, and button
+// Lightbox
+/*
+ * This function adds jQuery events to elements in the lightbox
+ *
+ * This is a default open action, so it runs every time changeContent
+ * is called and the 'shown' lightbox event is triggered
  */
-function registerAjaxCommentRecord(form) {
-  // Form submission
-  var $form = $(form);
-  var id = $form.find('[name="id"]').val();
-  var recordSource = $form.find('[name="source"]').val();
-  var url = VuFind.getPath+'/AJAX/JSON?' + $.param({method:'commentRecord'});
-  var data = {
-    comment:$form.find('[name="comment"]').val(),
-    id:id,
-    source:recordSource
-  };
-  $.ajax({
-    type: 'POST',
-    url:  url,
-    data: data,
-    dataType: 'json',
-    success: function(response) {
-      if (response.status == 'OK') {
-        refreshCommentList(id, recordSource, form);
-        $form.find('textarea[name="comment"]').val('');
-        $form.find('input[type="submit"]').button('loading');
-      } else {
-        Lightbox.displayError(response.data);
-      }
+function bulkActionSubmit($form) {
+  var button = $form.find('[type="submit"][clicked=true]');
+  var submit = button.attr('name');
+  var checks = $form.find('input.checkbox-select-item:checked');
+  if(checks.length == 0 && submit != 'empty') {
+    Lightbox.displayError(VuFind.translate('bulk_noitems_advice'));
+    return false;
+  }
+  if (submit == 'print') {
+    //redirect page
+    var url = VuFind.getPath() + '/Records/Home?print=true';
+    for(var i=0;i<checks.length;i++) {
+      url += '&id[]='+checks[i].value;
     }
-  });
-  return false;
-}
-function deleteRecordComment(element, recordId, recordSource, commentId) {
-  var url = VuFind.getPath+'/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
-  $.ajax({
-    dataType: 'json',
-    url: url,
-    success: function(response) {
-      if (response.status == 'OK') {
-        $($(element).parents('.comment')[0]).remove();
-      }
-    }
-  });
+    document.location.href = url;
+  } else {
+    $('#modal .modal-title').html(button.attr('title'));
+    Lightbox.titleSet = true;
+    Lightbox.submit($form, Lightbox.changeContent);
+  }
 }
 
 // Phone number validation
@@ -221,6 +129,71 @@ function phoneNumberFormHandler(numID, regionCode) {
   } else {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
+  }
+}
+
+function registerLightboxEvents() {
+  var modal = $("#modal");
+  // New list
+  $('#make-list').click(function() {
+    var get = deparam(this.href);
+    get['id'] = 'NEW';
+    return Lightbox.get('MyResearch', 'EditList', get);
+  });
+  // New account link handler
+  $('.createAccountLink').click(function() {
+    var get = deparam(this.href);
+    return Lightbox.get('MyResearch', 'Account', get);
+  });
+  $('.back-to-login').click(function() {
+    Lightbox.getByUrl(Lightbox.openingURL);
+    return false;
+  });
+  // Select all checkboxes
+  $(modal).find('.checkbox-select-all').change(function() {
+    $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
+  });
+  $(modal).find('.checkbox-select-item').change(function() {
+    $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
+  });
+  // Highlight which submit button clicked
+  $(modal).find("form [type=submit]").click(function() {
+    // Abort requests triggered by the lightbox
+    $('#modal .fa-spinner').remove();
+    // Remove other clicks
+    $(modal).find('[type="submit"][clicked=true]').attr('clicked', false);
+    // Add useful information
+    $(this).attr("clicked", "true");
+    // Add prettiness
+    if($(modal).find('.has-error,.sms-error').length == 0 && !$(this).hasClass('dropdown-toggle')) {
+      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+    }
+  });
+  /**
+   * Hide the header in the lightbox content
+   * if it matches the title bar of the lightbox
+   */
+  var header = $('#modal .modal-title').html();
+  var contentHeader = $('#modal .modal-body h2');
+  contentHeader.each(function(i,op) {
+    if (op.innerHTML == header) {
+      $(op).hide();
+    }
+  });
+}
+
+function refreshPageForLogin() {
+  window.location.reload();
+}
+
+function newAccountHandler(html) {
+  Lightbox.addCloseAction(refreshPageForLogin);
+  var params = deparam(Lightbox.openingURL);
+  if (params['subaction'] == 'UserLogin') {
+    Lightbox.close();
+  } else {
+    Lightbox.getByUrl(Lightbox.openingURL);
+    Lightbox.openingURL = false;
   }
   return valid == true;
 }
@@ -262,9 +235,9 @@ function ajaxLogin(form) {
               // and we update the modal
               var params = deparam(Lightbox.lastURL);
               if (params['subaction'] == 'UserLogin') {
-                window.location.reload();
+                refreshPageForLogin();
               } else {
-                Lightbox.refreshOnClose = true;
+                Lightbox.addCloseAction(refreshPageForLogin);
                 Lightbox.getByUrl(
                   Lightbox.lastURL,
                   Lightbox.lastPOST,
@@ -301,8 +274,10 @@ function setupOffcanvas() {
     $('[data-toggle="offcanvas"]').addClass('hidden');
   }
 }
-function bindBacklink(i, elem) {
-  $(elem)
+
+function setupBacklinks() {
+  // Highlight previous links, grey out following
+  $('.backlink')
     .mouseover(function() {
       // Underline back
       var t = $(this);
@@ -332,60 +307,55 @@ function bindBacklink(i, elem) {
       } while(t.length > 0);
     });
 }
-function bindAutocomplete(i, element) {
-  $(element).typeahead(
-    {
-      highlight: true,
-      minLength: 3
-    }, {
-      displayKey:'val',
-      source: function(query, cb) {
-        var searcher = extractClassParams(element);
-        $.ajax({
-          url: VuFind.getPath() + '/AJAX/JSON',
-          data: {
-            q:query,
-            method:'getACSuggestions',
-            searcher:searcher['searcher'],
-            type:searcher['type'] ? searcher['type'] : $(element).closest('.searchForm').find('.searchForm_type').val()
-          },
-          dataType:'json',
-          success: function(json) {
-            if (json.status == 'OK' && json.data.length > 0) {
-              var datums = [];
-              for (var i=0;i<json.data.length;i++) {
-                datums.push({val:json.data[i]});
+
+function setupAutocomplete() {
+  // Search autocomplete
+  $('.autocomplete').each(function (i, element) {
+    $(element).typeahead(
+      {
+        highlight: true,
+        minLength: 3
+      }, {
+        displayKey:'val',
+        source: function(query, cb) {
+          var searcher = extractClassParams(element);
+          $.ajax({
+            url: VuFind.getPath() + '/AJAX/JSON',
+            data: {
+              q:query,
+              method:'getACSuggestions',
+              searcher:searcher['searcher'],
+              type:searcher['type'] ? searcher['type'] : $(element).closest('.searchForm').find('.searchForm_type').val()
+            },
+            dataType:'json',
+            success: function(json) {
+              if (json.status == 'OK' && json.data.length > 0) {
+                var datums = [];
+                for (var i=0;i<json.data.length;i++) {
+                  datums.push({val:json.data[i]});
+                }
+                cb(datums);
+              } else {
+                cb([]);
               }
-              cb(datums);
-            } else {
-              cb([]);
             }
-          }
-        });
+          });
+        }
       }
-    }
-  );
+    );
+  });
 }
 
 $(document).ready(function() {
+  // Setup search autocomplete
+  setupAutocomplete();
+  // Setup highlighting of backlinks
+  setupBacklinks() ;
   // Off canvas
   setupOffcanvas();
 
   // support "jump menu" dropdown boxes
-  $('select.submit-on-select').change(function(){ $(this).parent('form').submit(); });
-
-  // Highlight previous links, grey out following
-  $('.backlink').each(bindBacklink);
-
-  // Search autocomplete
-  $('.autocomplete').each(bindAutocomplete);
-
-  // Refresh suggestions when search type changed
-  $('.searchForm_type').change(function() {
-    var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
-    var query = $lookfor.val();
-    $lookfor.focus().typeahead('val', '').typeahead('val', query);
-  });
+  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
 
   // Checkbox select all
   $('.checkbox-select-all').change(function() {
@@ -404,15 +374,12 @@ $(document).ready(function() {
     }
 
     var holder = $(this).next('.qrcode');
-
     if (holder.find('img').length == 0) {
       // We need to insert the QRCode image
       var template = holder.find('.qrCodeImgTag').html();
       holder.html(template);
     }
-
     holder.toggleClass('hidden');
-
     return false;
   });
 
@@ -424,7 +391,7 @@ $(document).ready(function() {
       window.print();
     });
     // Make an ajax call to ensure that ajaxStop is triggered
-    $.getJSON(VuFind.getPath+'/AJAX/JSON', {method: 'keepAlive'});
+    $.getJSON(VuFind.getPath() + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
   // Advanced facets

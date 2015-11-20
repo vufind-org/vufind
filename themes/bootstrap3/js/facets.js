@@ -72,7 +72,7 @@ function initFacetTree(treeNode, inSidebar)
   } else {
     treeNode.prepend('<div><i class="fa fa-spinner fa-spin"></i><div>');
   }
-  $.getJSON(path + '/AJAX/JSON?' + query,
+  $.getJSON(VuFind.getPath() + '/AJAX/JSON?' + query,
     {
       method: "getFacetData",
       facetName: facet,

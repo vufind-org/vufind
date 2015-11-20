@@ -11,7 +11,7 @@ function setUpHoldRequestForm(recordId) {
     var params = {
       method: 'getRequestGroupPickupLocations',
       id: recordId,
-      requestGroupId: $('#requestGroupId').val()              
+      requestGroupId: $('#requestGroupId').val()
     };
     $.ajax({
       data: params,
@@ -36,7 +36,7 @@ function setUpHoldRequestForm(recordId) {
         $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
         $('#pickUpLocation').removeAttr('disabled');
       }
-    });   
+    });
   });
   $('#requestGroupId').change();
 }
