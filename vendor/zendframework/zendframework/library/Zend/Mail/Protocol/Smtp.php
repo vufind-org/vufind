@@ -117,19 +117,18 @@ class Smtp extends AbstractProtocol
                 case 'ssl':
                     $this->transport = 'ssl';
                     $this->secure = 'ssl';
-                    if ($port == null) {
+                    if ($port === null) {
                         $port = 465;
                     }
                     break;
 
                 default:
                     throw new Exception\InvalidArgumentException($config['ssl'] . ' is unsupported SSL type');
-                    break;
             }
         }
 
         // If no port has been specified then check the master PHP ini file. Defaults to 25 if the ini setting is null.
-        if ($port == null) {
+        if ($port === null) {
             if (($port = ini_get('smtp_port')) == '') {
                 $port = 25;
             }
@@ -275,9 +274,7 @@ class Smtp extends AbstractProtocol
         $this->_expect(354, 120); // Timeout set for 2 minutes as per RFC 2821 4.5.3.2
 
         // Ensure newlines are CRLF (\r\n)
-        if (PHP_EOL === "\n") {
-            $data = str_replace("\n", "\r\n", str_replace("\r", '', $data));
-        }
+        $data = str_replace("\n", "\r\n", str_replace("\r", '', $data));
 
         foreach (explode(self::EOL, $data) as $line) {
             if (strpos($line, '.') === 0) {

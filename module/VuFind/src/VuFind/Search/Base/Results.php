@@ -304,11 +304,17 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function getStartRecord()
     {
-        if (!is_null($this->startRecordOverride)) {
+        if (null !== $this->startRecordOverride) {
             return $this->startRecordOverride;
         }
         $params = $this->getParams();
-        return (($params->getPage() - 1) * $params->getLimit()) + 1;
+        $page = $params->getPage();
+        $pageLimit = $params->getLimit();
+        $resultLimit = $this->getOptions()->getVisibleSearchResultLimit();
+        if ($resultLimit > -1 && $resultLimit < $page * $pageLimit) {
+            $page = ceil($resultLimit / $pageLimit);
+        }
+        return (($page - 1) * $pageLimit) + 1;
     }
 
     /**
@@ -319,16 +325,19 @@ abstract class Results implements ServiceLocatorAwareInterface
     public function getEndRecord()
     {
         $total = $this->getResultTotal();
-        $limit = $this->getParams()->getLimit();
-        $page = $this->getParams()->getPage();
-        if ($page * $limit > $total) {
-            // The end of the current page runs past the last record, use total
-            // results
-            return $total;
+        $params = $this->getParams();
+        $page = $params->getPage();
+        $pageLimit = $params->getLimit();
+        $resultLimit = $this->getOptions()->getVisibleSearchResultLimit();
+
+        if ($resultLimit > -1 && $resultLimit < ($page * $pageLimit)) {
+            $record = $resultLimit;
         } else {
-            // Otherwise use the last record on this page
-            return $page * $limit;
+            $record = $page * $pageLimit;
         }
+        // If the end of the current page runs past the last record, use total
+        // results; otherwise use the last record on this page:
+        return ($record > $total) ? $total : $record;
     }
 
     /**
@@ -454,7 +463,7 @@ abstract class Results implements ServiceLocatorAwareInterface
         }
 
         // Build the standard paginator control:
-        $nullAdapter = "Zend\Paginator\Adapter\Null";
+        $nullAdapter = "Zend\Paginator\Adapter\NullFill";
         $paginator = new Paginator(new $nullAdapter($total));
         $paginator->setCurrentPageNumber($this->getParams()->getPage())
             ->setItemCountPerPage($this->getParams()->getLimit())
@@ -602,14 +611,14 @@ abstract class Results implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
+     * Translate a string if a translator is available (proxies method in Options).
      *
      * @return string
      */
-    public function translate($msg)
+    public function translate()
     {
-        return $this->getOptions()->translate($msg);
+        return call_user_func_array(
+            [$this->getOptions(), 'translate'], func_get_args()
+        );
     }
 }

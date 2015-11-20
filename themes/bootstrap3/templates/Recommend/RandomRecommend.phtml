@@ -16,7 +16,7 @@
         <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
           <?=$this->record($driver)->getTitleHtml()?>
           <? $summAuthor = $driver->getPrimaryAuthor(); ?>
-          <span class="small<? if (!empty($summAuthor)): ?> pull-right<? endif; ?>">
+          <span class="small<? if (!empty($summAuthor)): ?> pull-right flip<? endif; ?>">
             <? $summDate = $driver->getPublicationDates(); ?>
             <? if (!empty($summDate)): ?>
               <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)

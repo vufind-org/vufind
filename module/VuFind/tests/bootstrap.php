@@ -46,6 +46,3 @@ if (file_exists('vendor/autoload.php')) {
 }
 
 define('PHPUNIT_SEARCH_FIXTURES', realpath(__DIR__ . '/../../VuFindSearch/tests/unit-tests/fixtures'));
-
-// Use output buffering -- some tests involve HTTP headers and will fail if there is output.
-ob_start();

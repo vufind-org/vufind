@@ -202,11 +202,22 @@ class Response extends AbstractMessage implements ResponseInterface
                 $isHeader = false;
                 continue;
             }
+
             if ($isHeader) {
+                if (preg_match("/[\r\n]/", $line)) {
+                    throw new Exception\RuntimeException('CRLF injection detected');
+                }
                 $headers[] = $line;
-            } else {
-                $content[] = $line;
+                continue;
             }
+
+            if (empty($content)
+                && preg_match('/^[a-z0-9!#$%&\'*+.^_`|~-]+:$/i', $line)
+            ) {
+                throw new Exception\RuntimeException('CRLF injection detected');
+            }
+
+            $content[] = $line;
         }
 
         if ($headers) {
@@ -245,8 +256,8 @@ class Response extends AbstractMessage implements ResponseInterface
                 $code
             ));
         }
-        $this->statusCode = (int) $code;
-        return $this;
+
+        return $this->saveStatusCode($code);
     }
 
     /**
@@ -276,6 +287,18 @@ class Response extends AbstractMessage implements ResponseInterface
             ));
         }
 
+        return $this->saveStatusCode($code);
+    }
+
+    /**
+     * Assign status code
+     *
+     * @param int $code
+     * @return self
+     */
+    protected function saveStatusCode($code)
+    {
+        $this->reasonPhrase = null;
         $this->statusCode = (int) $code;
         return $this;
     }
@@ -298,7 +321,7 @@ class Response extends AbstractMessage implements ResponseInterface
     public function getReasonPhrase()
     {
         if (null == $this->reasonPhrase and isset($this->recommendedReasonPhrases[$this->statusCode])) {
-            return $this->recommendedReasonPhrases[$this->statusCode];
+            $this->reasonPhrase = $this->recommendedReasonPhrases[$this->statusCode];
         }
         return $this->reasonPhrase;
     }

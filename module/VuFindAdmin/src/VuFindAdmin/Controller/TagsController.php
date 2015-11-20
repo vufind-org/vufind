@@ -162,8 +162,7 @@ class TagsController extends AbstractAdmin
                 : $this->params()->fromPost('idsAll');
 
             if (!is_array($ids) || empty($ids)) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('bulk_noitems_advice');
+                $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
                 return $this->redirect()->toUrl($originUrl);
             }
 
@@ -175,18 +174,16 @@ class TagsController extends AbstractAdmin
         }
 
         if (0 == $delete) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('tags_delete_fail');
+            $this->flashMessenger()->addMessage('tags_delete_fail', 'error');
             return $this->redirect()->toUrl($originUrl);
         }
 
-        $this->flashMessenger()->setNamespace('info')
-            ->addMessage(
-                [
-                    'msg' => 'tags_deleted',
-                    'tokens' => ['%count%' => $delete]
-                ]
-            );
+        $this->flashMessenger()->addMessage(
+            [
+                'msg' => 'tags_deleted',
+                'tokens' => ['%count%' => $delete]
+            ], 'success'
+        );
         return $this->redirect()->toUrl($originUrl);
     }
 

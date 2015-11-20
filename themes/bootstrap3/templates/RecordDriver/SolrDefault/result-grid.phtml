@@ -3,9 +3,10 @@
    but even if we don't plan to display the link, we still want to get the $openUrl
    value for use in generating a COinS (Z3988) tag -- see bottom of file.
 */
-$openUrl = $this->driver->getOpenURL();
-$openUrlActive = $this->driver->openURLActive('results');
-$urls = $this->record($this->driver)->getLinkDetails();
+$openUrl = $this->openUrl($this->driver, 'results');
+$openUrlActive = $openUrl->isActive();
+// Account for replace_other_urls setting
+$urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 ?>
 
 <div class="result <?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
@@ -29,8 +30,7 @@ $urls = $this->record($this->driver)->getLinkDetails();
     <? if ($openUrlActive || !empty($urls)): ?>
       <br/><br/>
       <? if ($openUrlActive): ?>
-        <?=$this->openUrl($openUrl)?><br />
-        <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
+        <?=$openUrl->renderTemplate()?><br />
       <? endif; ?>
       <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
         <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
@@ -40,4 +40,4 @@ $urls = $this->record($this->driver)->getLinkDetails();
   </div>
 </div>
 
-<?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+<?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>

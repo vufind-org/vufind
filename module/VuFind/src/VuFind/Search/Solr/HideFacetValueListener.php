@@ -118,9 +118,9 @@ class HideFacetValueListener
 
         foreach ($this->hideFacets as $facet => $value) {
             if (isset($facets[$facet])) {
-                foreach ((array)$value as $config_value) {
-                    foreach ($facets[$facet] as $facet_value => $count) {
-                        if ($facet_value == $config_value) {
+                foreach ((array)$value as $configValue) {
+                    foreach (array_keys($facets[$facet]) as $facetValue) {
+                        if ($facetValue == $configValue) {
                             $facets[$facet]->remove();
                         }
                     }

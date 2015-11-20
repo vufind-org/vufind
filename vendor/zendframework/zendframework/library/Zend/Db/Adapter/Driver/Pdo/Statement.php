@@ -179,7 +179,7 @@ class Statement implements StatementInterface, Profiler\ProfilerAwareInterface
             throw new Exception\RuntimeException('This statement has been prepared already');
         }
 
-        if ($sql == null) {
+        if ($sql === null) {
             $sql = $this->sql;
         }
 
@@ -202,7 +202,7 @@ class Statement implements StatementInterface, Profiler\ProfilerAwareInterface
     }
 
     /**
-     * @param mixed $parameters
+     * @param null|array|ParameterContainer $parameters
      * @throws Exception\InvalidQueryException
      * @return Result
      */

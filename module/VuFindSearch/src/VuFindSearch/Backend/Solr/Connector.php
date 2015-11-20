@@ -71,9 +71,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     const MAX_GET_URL_LENGTH = 2048;
 
     /**
-     * URL of SOLR core.
+     * URL or an array of alternative URLs of the SOLR core.
      *
-     * @var string
+     * @var string|array
      */
     protected $url;
 
@@ -117,9 +117,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param string     $url       SOLR base URL
-     * @param HandlerMap $map       Handler map
-     * @param string     $uniqueKey Solr field used to store unique identifier
+     * @param string|array $url       SOLR core URL or an array of alternative URLs
+     * @param HandlerMap   $map       Handler map
+     * @param string       $uniqueKey Solr field used to store unique identifier
      *
      * @return void
      */
@@ -248,29 +248,30 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $handler = 'update', ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
-        $url    = "{$this->url}/{$handler}";
+        $urlSuffix = "/{$handler}";
         if (count($params) > 0) {
-            $url .= '?' . implode('&', $params->request());
+            $urlSuffix .= '?' . implode('&', $params->request());
         }
-        $client = $this->createClient($url, 'POST');
-        switch ($format) {
-        case 'xml':
-            $client->setEncType('text/xml; charset=UTF-8');
-            $body = $document->asXML();
-            break;
-        case 'json':
-            $client->setEncType('application/json');
-            $body = $document->asJSON();
-            break;
-        default:
-            throw new InvalidArgumentException(
-                "Unable to serialize to selected format: {$format}"
-            );
-        }
-        $client->setRawBody($body);
-        $client->getRequest()->getHeaders()
-            ->addHeaderLine('Content-Length', strlen($body));
-        return $this->send($client);
+        $callback = function ($client) use ($document, $format) {
+            switch ($format) {
+            case 'xml':
+                $client->setEncType('text/xml; charset=UTF-8');
+                $body = $document->asXML();
+                break;
+            case 'json':
+                $client->setEncType('application/json');
+                $body = $document->asJSON();
+                break;
+            default:
+                throw new InvalidArgumentException(
+                    "Unable to serialize to selected format: {$format}"
+                );
+            }
+            $client->setRawBody($body);
+            $client->getRequest()->getHeaders()
+                ->addHeaderLine('Content-Length', strlen($body));
+        };
+        return $this->trySolrUrls('POST', $urlSuffix, $callback);
     }
 
     /**
@@ -344,33 +345,65 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      */
     public function query($handler, ParamBag $params)
     {
-
-        $url         = $this->url . '/' . $handler;
+        $urlSuffix = '/' . $handler;
         $paramString = implode('&', $params->request());
         if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
+            $callback = function ($client) use ($paramString) {
+                $client->setRawBody($paramString);
+                $client->setEncType(HttpClient::ENC_URLENCODED);
+                $client->setHeaders(['Content-Length' => strlen($paramString)]);
+            };
         } else {
             $method = Request::METHOD_GET;
-        }
-
-        if ($method === Request::METHOD_POST) {
-            $client = $this->createClient($url, $method);
-            $client->setRawBody($paramString);
-            $client->setEncType(HttpClient::ENC_URLENCODED);
-            $client->setHeaders(['Content-Length' => strlen($paramString)]);
-        } else {
-            $url = $url . '?' . $paramString;
-            $client = $this->createClient($url, $method);
+            $urlSuffix .= '?' . $paramString;
+            $callback = null;
         }
 
         $this->debug(sprintf('Query %s', $paramString));
-        return $this->send($client);
+        return $this->trySolrUrls($method, $urlSuffix, $callback);
+    }
+
+    /**
+     * Try all Solr URLs until we find one that works (or throw an exception).
+     *
+     * @param string   $method    HTTP method to use
+     * @param string   $urlSuffix Suffix to append to all URLs tried
+     * @param Callable $callback  Callback to configure client (null for none)
+     *
+     * @return string Response body
+     *
+     * @throws RemoteErrorException  SOLR signaled a server error (HTTP 5xx)
+     * @throws RequestErrorException SOLR signaled a client error (HTTP 4xx)
+     */
+    protected function trySolrUrls($method, $urlSuffix, $callback = null)
+    {
+        // This exception should never get thrown; it's just a safety in case
+        // something unanticipated occurs.
+        $exception = new \Exception('Unexpected exception.');
+
+        // Loop through all base URLs and try them in turn until one works.
+        foreach ((array)$this->url as $base) {
+            $client = $this->createClient($base . $urlSuffix, $method);
+            if (is_callable($callback)) {
+                $callback($client);
+            }
+            try {
+                return $this->send($client);
+            } catch (\Exception $ex) {
+                $exception = $ex;
+            }
+        }
+
+        // If we got this far, everything failed -- throw the most recent
+        // exception caught above.
+        throw $exception;
     }
 
     /**
      * Send request the SOLR and return the response.
      *
-     * @param HttpClient $client Prepare HTTP client
+     * @param HttpClient $client Prepared HTTP client
      *
      * @return string Response body
      *

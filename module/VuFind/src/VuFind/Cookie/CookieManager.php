@@ -117,6 +117,51 @@ class CookieManager
     }
 
     /**
+     * Support method for setGlobalCookie -- proxy PHP's setcookie() function
+     * for compatibility with unit testing.
+     *
+     * @return bool
+     */
+    public function proxySetCookie()
+    {
+        // Special case: in test suite -- don't actually write headers!
+        return defined('VUFIND_PHPUNIT_RUNNING')
+            ? true : call_user_func_array('setcookie', func_get_args());
+    }
+
+    /**
+     * Support method for set() -- set the actual cookie in PHP.
+     *
+     * @param string $key    Name of cookie to set
+     * @param mixed  $value  Value to set
+     * @param int    $expire Cookie expiration time
+     *
+     * @return bool
+     */
+    public function setGlobalCookie($key, $value, $expire)
+    {
+        // Simple case: flat value.
+        if (!is_array($value)) {
+            return $this->proxySetCookie(
+                $key, $value, $expire, $this->path, $this->domain, $this->secure
+            );
+        }
+
+        // Complex case: array of values.
+        $success = true;
+        foreach ($value as $i => $curr) {
+            $lastSuccess = $this->proxySetCookie(
+                $key . '[' . $i . ']', $curr, $expire,
+                $this->path, $this->domain, $this->secure
+            );
+            if (!$lastSuccess) {
+                $success = false;
+            }
+        }
+        return $success;
+    }
+
+    /**
      * Set a cookie.
      *
      * @param string $key    Name of cookie to set
@@ -127,23 +172,7 @@ class CookieManager
      */
     public function set($key, $value, $expire = 0)
     {
-        if (is_array($value)) {
-            $success = true;
-            foreach ($value as $i => $curr) {
-                $lastSuccess = setcookie(
-                    $key . '[' . $i . ']', $curr, $expire,
-                    $this->path, $this->domain, $this->secure
-                );
-                if (!$lastSuccess) {
-                    $success = false;
-                }
-            }
-        } else {
-            $success = setcookie(
-                $key, $value, $expire, $this->path, $this->domain, $this->secure
-            );
-        }
-        if ($success) {
+        if ($success = $this->setGlobalCookie($key, $value, $expire)) {
             $this->cookies[$key] = $value;
         }
         return $success;

@@ -209,7 +209,8 @@ class Collection extends Fieldset
         }
 
         // Check to see if elements have been replaced or removed
-        foreach ($this->byName as $name => $elementOrFieldset) {
+        $toRemove = array();
+        foreach ($this as $name => $elementOrFieldset) {
             if (isset($data[$name])) {
                 continue;
             }
@@ -221,6 +222,10 @@ class Collection extends Fieldset
                 ));
             }
 
+            $toRemove[] = $name;
+        }
+
+        foreach ($toRemove as $name) {
             $this->remove($name);
         }
 
@@ -382,7 +387,8 @@ class Collection extends Fieldset
     }
 
     /**
-     * If set to true, a template prototype is automatically added to the form to ease the creation of dynamic elements through JavaScript
+     * If set to true, a template prototype is automatically added to the form
+     * to ease the creation of dynamic elements through JavaScript
      *
      * @param bool $shouldCreateTemplate
      * @return Collection
@@ -485,7 +491,8 @@ class Collection extends Fieldset
 
         parent::prepareElement($form);
 
-        // The template element has been prepared, but we don't want it to be rendered nor validated, so remove it from the list
+        // The template element has been prepared, but we don't want it to be
+        // rendered nor validated, so remove it from the list.
         if ($this->shouldCreateTemplate) {
             $this->remove($this->templatePlaceholder);
         }
@@ -516,11 +523,11 @@ class Collection extends Fieldset
                 $values[$key] = $this->hydrator->extract($value);
                 continue;
             }
-            
+
             // If the target element is a fieldset that can accept the provided value
             // we should clone it, inject the value and extract the data
-            if ( $this->targetElement instanceof FieldsetInterface ) {
-                if ( ! $this->targetElement->allowObjectBinding($value) ) {
+            if ($this->targetElement instanceof FieldsetInterface) {
+                if (! $this->targetElement->allowObjectBinding($value)) {
                     continue;
                 }
                 $targetElement = clone $this->targetElement;
@@ -531,9 +538,9 @@ class Collection extends Fieldset
                 }
                 continue;
             }
-            
+
             // If the target element is a non-fieldset element, just use the value
-            if ( $this->targetElement instanceof ElementInterface ) {
+            if ($this->targetElement instanceof ElementInterface) {
                 $values[$key] = $value;
                 if (!$this->createNewObjects() && $this->has($key)) {
                     $this->get($key)->setValue($value);
@@ -590,7 +597,7 @@ class Collection extends Fieldset
     protected function createTemplateElement()
     {
         if (!$this->shouldCreateTemplate) {
-            return null;
+            return;
         }
 
         if ($this->templateElement) {

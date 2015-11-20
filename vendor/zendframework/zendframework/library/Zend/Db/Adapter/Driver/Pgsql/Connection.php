@@ -9,11 +9,10 @@
 
 namespace Zend\Db\Adapter\Driver\Pgsql;
 
-use Zend\Db\Adapter\Driver\ConnectionInterface;
+use Zend\Db\Adapter\Driver\AbstractConnection;
 use Zend\Db\Adapter\Exception;
-use Zend\Db\Adapter\Profiler;
 
-class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
+class Connection extends AbstractConnection
 {
     /**
      * @var Pgsql
@@ -21,28 +20,9 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
     protected $driver = null;
 
     /**
-     * @var Profiler\ProfilerInterface
+     * @var null|int PostgreSQL connection type
      */
-    protected $profiler = null;
-
-    /**
-     * Connection parameters
-     *
-     * @var array
-     */
-    protected $connectionParameters = array();
-
-    /**
-     * @var resource
-     */
-    protected $resource = null;
-
-    /**
-     * In transaction
-     *
-     * @var bool
-     */
-    protected $inTransaction = false;
+    protected $type = null;
 
     /**
      * Constructor
@@ -59,61 +39,40 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
     }
 
     /**
-     * Set connection parameters
-     *
-     * @param  array $connectionParameters
-     * @return Connection
-     */
-    public function setConnectionParameters(array $connectionParameters)
-    {
-        $this->connectionParameters = $connectionParameters;
-        return $this;
-    }
-
-    /**
      * Set driver
      *
      * @param  Pgsql $driver
-     * @return Connection
+     * @return self
      */
     public function setDriver(Pgsql $driver)
     {
         $this->driver = $driver;
+
         return $this;
     }
 
     /**
-     * @param Profiler\ProfilerInterface $profiler
-     * @return Connection
+     * @param int|null $type
+     * @return self
      */
-    public function setProfiler(Profiler\ProfilerInterface $profiler)
+    public function setType($type)
     {
-        $this->profiler = $profiler;
+        $invalidConectionType = ($type !== PGSQL_CONNECT_FORCE_NEW);
+
+        // Compatibility with PHP < 5.6
+        if ($invalidConectionType && defined('PGSQL_CONNECT_ASYNC')) {
+            $invalidConectionType = ($type !== PGSQL_CONNECT_ASYNC);
+        }
+
+        if ($invalidConectionType) {
+            throw new Exception\InvalidArgumentException('Connection type is not valid. (See: http://php.net/manual/en/function.pg-connect.php)');
+        }
+        $this->type = $type;
         return $this;
     }
 
     /**
-     * @return null|Profiler\ProfilerInterface
-     */
-    public function getProfiler()
-    {
-        return $this->profiler;
-    }
-
-    /**
-     * Set resource
-     *
-     * @param  resource $resource
-     * @return Connection
-     */
-    public function setResource($resource)
-    {
-        $this->resource = $resource;
-        return;
-    }
-
-    /**
-     * Get current schema
+     * {@inheritDoc}
      *
      * @return null|string
      */
@@ -125,28 +84,15 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
 
         $result = pg_query($this->resource, 'SELECT CURRENT_SCHEMA AS "currentschema"');
         if ($result == false) {
-            return null;
+            return;
         }
+
         return pg_fetch_result($result, 0, 'currentschema');
     }
 
     /**
-     * Get resource
+     * {@inheritDoc}
      *
-     * @return resource
-     */
-    public function getResource()
-    {
-        if (!$this->isConnected()) {
-            $this->connect();
-        }
-        return $this->resource;
-    }
-
-    /**
-     * Connect to the database
-     *
-     * @return Connection
      * @throws Exception\RuntimeException on failure
      */
     public function connect()
@@ -175,7 +121,7 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
     }
 
     /**
-     * @return bool
+     * {@inheritDoc}
      */
     public function isConnected()
     {
@@ -183,19 +129,20 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function disconnect()
     {
         pg_close($this->resource);
+        return $this;
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function beginTransaction()
     {
-        if ($this->inTransaction) {
+        if ($this->inTransaction()) {
             throw new Exception\RuntimeException('Nested transactions are not supported');
         }
 
@@ -205,46 +152,51 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
 
         pg_query($this->resource, 'BEGIN');
         $this->inTransaction = true;
+
+        return $this;
     }
 
     /**
-     * In transaction
-     *
-     * @return bool
-     */
-    public function inTransaction()
-    {
-        return $this->inTransaction;
-    }
-
-    /**
-     * @return void
+     * {@inheritDoc}
      */
     public function commit()
     {
-        if (!$this->inTransaction) {
+        if (!$this->isConnected()) {
+            $this->connect();
+        }
+
+        if (!$this->inTransaction()) {
             return; // We ignore attempts to commit non-existing transaction
         }
 
         pg_query($this->resource, 'COMMIT');
         $this->inTransaction = false;
+
+        return $this;
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function rollback()
     {
-        if (!$this->inTransaction) {
-            return;
+        if (!$this->isConnected()) {
+            throw new Exception\RuntimeException('Must be connected before you can rollback');
+        }
+
+        if (!$this->inTransaction()) {
+            throw new Exception\RuntimeException('Must call beginTransaction() before you can rollback');
         }
 
         pg_query($this->resource, 'ROLLBACK');
         $this->inTransaction = false;
+
+        return $this;
     }
 
     /**
-     * @param  string $sql
+     * {@inheritDoc}
+     *
      * @throws Exception\InvalidQueryException
      * @return resource|\Zend\Db\ResultSet\ResultSetInterface
      */
@@ -270,19 +222,22 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
         }
 
         $resultPrototype = $this->driver->createResult(($resultResource === true) ? $this->resource : $resultResource);
+
         return $resultPrototype;
     }
 
     /**
-     * @param  null $name Ignored
+     * {@inheritDoc}
+     *
      * @return string
      */
     public function getLastGeneratedValue($name = null)
     {
-        if ($name == null) {
-            return null;
+        if ($name === null) {
+            return;
         }
         $result = pg_query($this->resource, 'SELECT CURRVAL(\'' . str_replace('\'', '\\\'', $name) . '\') as "currval"');
+
         return pg_fetch_result($result, 0, 'currval');
     }
 
@@ -303,7 +258,7 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
                     return $p[$name];
                 }
             }
-            return null;
+            return;
         };
 
         $connectionParameters = array(

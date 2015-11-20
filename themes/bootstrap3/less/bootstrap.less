@@ -37,13 +37,22 @@ label.list-group-item {
 #modal {background-color: rgba(0,0,0,.2);}
 #modal .modal-body > h2:first-child {display: none;}
 .popover {width: 250px;}
-p.lead {
+h2 {
   @media (min-width: 768px) {
     font-size: 23px;
     font-weight: normal;
   }
   @media (max-width: 767px) {
     font-size: 20px;
+  }
+}
+h3 {
+  @media (min-width: 768px) {
+    font-size: 20px;
+    font-weight: normal;
+  }
+  @media (max-width: 767px) {
+    font-size: 16px;
   }
 }
 .recordcover {max-height: 300px;}
@@ -61,10 +70,10 @@ p.lead {
 .tab-content {padding: 4px;}
 @media (max-width: 991px) {
   header .container.navbar {margin-bottom: 0;}
-  #searchForm {margin-top: 0;}
+  .searchForm {margin-top: 0;}
 }
 @media (max-width: 767px) {
-  #searchForm {padding-top: 0;}
+  .searchForm {padding-top: 0;}
 }
 
 /* --- Advanced Search --- */
@@ -263,7 +272,7 @@ p.lead {
   font-weight: bold;
   color: #000;
 }
-#tagList {
+.tagList {
   .tag {
     display: inline-block;
     margin: 0 1px 1px;
@@ -284,7 +293,7 @@ p.lead {
   .tag-form {display: inline;}
   .tag-form button {border: 0;}
 }
-#tagList.loggedin .tag:not(.selected) .badge:hover {background-color: @brand-success;}
+.tagList.loggedin .tag:not(.selected) .badge:hover {background-color: @brand-success;}
 
 /* --- Search --- */
 .bulkActionButtons label {display: inline-block;}
@@ -317,6 +326,7 @@ p.lead {
 
 /* --- Sidebar --- */
 /* Sidebar rounded corners */
+.narrow-toggle { text-align: center; }
 .sidebar {
   label:not(.list-group-item) {margin-left: 20px;}
   .list-group:not(.filters) .title {
@@ -345,7 +355,11 @@ p.lead {
     border-bottom-right-radius: @border-radius-base;
   }
 }
-.list-group-item, .badge i.fa {cursor: inherit;}
+.list-group-item, .badge {
+  i.fa {
+    cursor: inherit;
+  }
+}
 .sidebar .facet a {text-decoration: none;}
 .top-row .applied {
   font-weight: bold;
@@ -563,7 +577,7 @@ li.jstree-facet ul {padding-left: 20px;}
       padding-right: 0;
       overflow-y: auto;
       h4 {padding-left: @padding-base-horizontal;}
-      .checkbox {margin-left: calc(20px + @padding-base-horizontal);}
+      .checkbox {margin-left: 20px + @padding-base-horizontal;}
       .list-group, .list-group-item {
         border-left: 0;
         border-right: 0;
@@ -572,7 +586,7 @@ li.jstree-facet ul {padding-left: 20px;}
     }
     &.active {overflow-y: hidden;}
     &.offcanvas-left {
-      padding-left: calc(@offcanvas-padding - @grid-gutter-width/2);
+      padding-left: @offcanvas-padding - @grid-gutter-width/2;
       & .main {background: #FFF;}
       &.active {
         margin-left: @offcanvas-offset;
@@ -589,7 +603,7 @@ li.jstree-facet ul {padding-left: 20px;}
       }
     }
     &.offcanvas-right {
-      padding-right: calc(@offcanvas-padding - @grid-gutter-width/2);
+      padding-right: @offcanvas-padding - @grid-gutter-width/2;
       & .main > .container {background: #FFF;}
       &.active {
         margin-left: -@offcanvas-offset;

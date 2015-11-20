@@ -385,5 +385,56 @@ class Initializer
                 $current->setPaths($templatePathStack);
             }
         }
+
+        // Add theme specific language files for translation
+        $this->updateTranslator($themes);
+    }
+
+    /**
+     * Support method for setUpThemes() - add theme specific language files for
+     * translation.
+     *
+     * @param array $themes Theme configuration information.
+     *
+     * @return void
+     */
+    protected function updateTranslator($themes)
+    {
+        $pathStack = [];
+        foreach (array_keys($themes) as $theme) {
+            $dir = APPLICATION_PATH . '/themes/' . $theme . '/languages';
+            if (is_dir($dir)) {
+                $pathStack[] = $dir;
+            }
+        }
+
+        if (!empty($pathStack)) {
+            try {
+                $translator = $this->serviceManager->get('VuFind\Translator');
+
+                $pm = $translator->getPluginManager();
+                $pm->get('extendedini')->addToPathStack($pathStack);
+            } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
+                // This exception likely indicates that translation is disabled,
+                // so we can't proceed.
+                return;
+            }
+
+            // Override the default cache with a theme-specific cache to avoid
+            // key collisions in a multi-theme environment.
+            try {
+                $cacheManager = $this->serviceManager->get('VuFind\CacheManager');
+                $cacheName = $cacheManager->addLanguageCacheForTheme($theme);
+                $translator->setCache($cacheManager->getCache($cacheName));
+            } catch (\Exception $e) {
+                // Don't let a cache failure kill the whole application, but make
+                // note of it:
+                $logger = $this->serviceManager->get('VuFind\Logger');
+                $logger->debug(
+                    'Problem loading cache: ' . get_class($e) . ' exception: '
+                    . $e->getMessage()
+                );
+            }
+        }
     }
 }

@@ -57,7 +57,7 @@ class Predicate extends PredicateSet
      */
     public function unnest()
     {
-        if ($this->unnest == null) {
+        if ($this->unnest === null) {
             throw new RuntimeException('Not nested');
         }
         $unnest       = $this->unnest;
@@ -376,6 +376,27 @@ class Predicate extends PredicateSet
         $this->addPredicate(
             new Between($identifier, $minValue, $maxValue),
             ($this->nextPredicateCombineOperator) ?: $this->defaultCombination
+        );
+        $this->nextPredicateCombineOperator = null;
+
+        return $this;
+    }
+
+    /**
+     * Use given predicate directly
+     *
+     * Contrary to {@link addPredicate()} this method respects formerly set
+     * AND / OR combination operator, thus allowing generic predicates to be
+     * used fluently within where chains as any other concrete predicate.
+     *
+     * @param  PredicateInterface $predicate
+     * @return Predicate
+     */
+    public function predicate(PredicateInterface $predicate)
+    {
+        $this->addPredicate(
+            $predicate,
+            $this->nextPredicateCombineOperator ?: $this->defaultCombination
         );
         $this->nextPredicateCombineOperator = null;
 

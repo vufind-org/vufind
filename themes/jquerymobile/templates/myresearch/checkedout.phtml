@@ -34,7 +34,7 @@
           <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
           <? $prefix = isset($ilsDetails['title']) ? $ilsDetails['title'] : $ilsDetails['item_id']; ?>
           <? if (isset($renewDetails['success']) && $renewDetails['success']): ?>
-            <div class="info"><?=$this->escapeHtml($prefix . ': ') . $this->transEsc('renew_success')?></div>
+            <div class="success"><?=$this->escapeHtml($prefix . ': ') . $this->transEsc('renew_success')?></div>
           <? else: ?>
             <div class="error"><?=$this->escapeHtml($prefix . ': ') . $this->transEsc('renew_fail')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escapeHtml($renewDetails['sysMessage'])?><? endif; ?></div>
           <? endif; ?>

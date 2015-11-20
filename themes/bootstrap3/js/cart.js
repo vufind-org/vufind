@@ -1,4 +1,4 @@
-/*global bulkActionSubmit, cartCookieDomain, Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
+/*global bulkActionSubmit, cartCookieDomain, Cookies, newAccountHandler, path, vufindString, Lightbox, refreshPageForLogin */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -157,19 +157,22 @@ function registerUpdateCart($form) {
 
 $(document).ready(function() {
   // Record buttons
-  var cartId = $('#cartId');
-  if(cartId.length > 0) {
-    cartId = cartId.val().split('|');
-    currentId = cartId[1];
-    currentSource = cartId[0];
-    $('#cart-add.correct,#cart-remove.correct').removeClass('correct hidden');
-    $('#cart-add').click(function() {
-      addItemToCart(currentId,currentSource);
-      $('#cart-add,#cart-remove').toggleClass('hidden');
-    });
-    $('#cart-remove').click(function() {
-      removeItemFromCart(currentId,currentSource);
-      $('#cart-add,#cart-remove').toggleClass('hidden');
+  var $cartId = $('.cartId');
+  if($cartId.length > 0) {
+    $cartId.each(function() {
+      var cartId = this.value.split('|');
+      currentId = cartId[1];
+      currentSource = cartId[0];
+      var $parent = $(this).parent();
+      $parent.find('.cart-add.correct,.cart-remove.correct').removeClass('correct hidden');
+      $parent.find('.cart-add').click(function() {
+        addItemToCart(currentId,currentSource);
+        $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
+      });
+      $parent.find('.cart-remove').click(function() {
+        removeItemFromCart(currentId,currentSource);
+        $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
+      });
     });
   } else {
     // Search results
@@ -185,7 +188,7 @@ $(document).ready(function() {
   });
   // Overwrite
   Lightbox.addFormCallback('accountForm', function(html) {
-    updatePageForLogin();
+    Lightbox.addCloseAction(refreshPageForLogin);
     if (lastCartSubmit !== false) {
       bulkActionSubmit(lastCartSubmit);
       lastCartSubmit = false;
@@ -200,13 +203,6 @@ $(document).ready(function() {
   });
   Lightbox.addFormCallback('bulkEmail', function(html) {
     Lightbox.confirm(vufindString['bulk_email_success']);
-  });
-  Lightbox.addFormCallback('bulkSave', function(html) {
-    // After we close the lightbox, redirect to list view
-    Lightbox.addCloseAction(function() {
-      document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
-    });
-    Lightbox.confirm(vufindString['bulk_save_success']);
   });
   $('#modal').on('hidden.bs.modal', function() {
     // Update cart items (add to cart, remove from cart, cart lightbox interface)

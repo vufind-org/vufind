@@ -56,7 +56,7 @@ abstract class AbstractLayoutClass extends \Zend\View\Helper\AbstractHelper
      * Constructor
      *
      * @param bool $left      Does the sidebar go on the left?
-     * @param bool $offcanvas Offcanvas config setting
+     * @param bool $offcanvas Is offcanvas menu active?
      */
     public function __construct($left = false, $offcanvas = false)
     {

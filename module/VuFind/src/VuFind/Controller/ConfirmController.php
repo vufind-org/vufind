@@ -53,8 +53,6 @@ class ConfirmController extends AbstractBase
 
         // Assign Flash Messages
         if (isset($data['messages'])) {
-            $this->flashMessenger()->setNamespace('info');
-
             foreach ($data['messages'] as $message) {
                 $flash = (true === is_array($message))
                     ? [
@@ -62,7 +60,7 @@ class ConfirmController extends AbstractBase
                         'tokens' => $message['tokens']
                     ]
                     : $message;
-                $this->flashMessenger()->addMessage($flash);
+                $this->flashMessenger()->addMessage($flash, 'info');
             }
         }
 

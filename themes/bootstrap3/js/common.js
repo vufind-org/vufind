@@ -23,33 +23,12 @@ function extractClassParams(str) {
   }
   return params;
 }
-function jqEscape(myid) {
-  return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g, "\\$&");
-}
-function html_entity_decode(string, quote_style)
-{
-  var hash_map = {},
-    symbol = '',
-    tmp_str = '',
-    entity = '';
-  tmp_str = string.toString();
-
-  delete(hash_map['&']);
-  hash_map['&'] = '&amp;';
-  hash_map['>'] = '&gt;';
-  hash_map['<'] = '&lt;';
-
-  for (symbol in hash_map) {
-    entity = hash_map[symbol];
-    tmp_str = tmp_str.split(entity).join(symbol);
-  }
-  tmp_str = tmp_str.split('&#039;').join("'");
-
-  return tmp_str;
-}
 
 // Turn GET string into array
 function deparam(url) {
+  if(!url.match(/\?|&/)) {
+    return [];
+  }
   var request = {};
   var pairs = url.substring(url.indexOf('?') + 1).split('&');
   for (var i = 0; i < pairs.length; i++) {
@@ -82,19 +61,13 @@ function lessFacets(id) {
 }
 
 // Phone number validation
-var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"];
-var libphoneErrorStrings = ["Phone number invalid", "Invalid country calling code", "Invalid region code", "The string supplied did not seem to be a phone number", "The string supplied is too long to be a phone number", "The string supplied is too short to be a phone number", "Phone number too short after IDD"];
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
   var valid = isPhoneNumberValid(number, regionCode);
   if(valid != true) {
     if(typeof valid === 'string') {
-      for(var i=libphoneErrorStrings.length;i--;) {
-        if(valid.match(libphoneErrorStrings[i])) {
-          valid = vufindString[libphoneTranslateCodes[i]];
-        }
-      }
+      valid = vufindString[valid];
     } else {
       valid = vufindString['libphonenumber_invalid'];
     }
@@ -115,10 +88,12 @@ function phoneNumberFormHandler(numID, regionCode) {
  * is called and the 'shown' lightbox event is triggered
  */
 function bulkActionSubmit($form) {
-  var submit = $form.find('[type="submit"][clicked=true]').attr('name');
+  var button = $form.find('[type="submit"][clicked=true]');
+  var submit = button.attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
-    return Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    return false;
   }
   if (submit == 'print') {
     //redirect page
@@ -128,6 +103,8 @@ function bulkActionSubmit($form) {
     }
     document.location.href = url;
   } else {
+    $('#modal .modal-title').html(button.attr('title'));
+    Lightbox.titleSet = true;
     Lightbox.submit($form, Lightbox.changeContent);
   }
   return false;
@@ -136,15 +113,13 @@ function registerLightboxEvents() {
   var modal = $("#modal");
   // New list
   $('#make-list').click(function() {
-    var parts = this.href.split('?');
-    var get = deparam(parts[1]);
+    var get = deparam(this.href);
     get['id'] = 'NEW';
     return Lightbox.get('MyResearch', 'EditList', get);
   });
   // New account link handler
   $('.createAccountLink').click(function() {
-    var parts = this.href.split('?');
-    var get = deparam(parts[1]);
+    var get = deparam(this.href);
     return Lightbox.get('MyResearch', 'Account', get);
   });
   $('.back-to-login').click(function() {
@@ -176,63 +151,26 @@ function registerLightboxEvents() {
    * if it matches the title bar of the lightbox
    */
   var header = $('#modal .modal-title').html();
-  var contentHeader = $('#modal .modal-body .lead');
-  if(contentHeader.length == 0) {
-    contentHeader = $('#modal .modal-body h2');
-  }
+  var contentHeader = $('#modal .modal-body h2');
   contentHeader.each(function(i,op) {
     if (op.innerHTML == header) {
       $(op).hide();
     }
   });
 }
-function updatePageForLogin() {
-  // Hide "log in" options and show "log out" options:
-  $('#loginOptions').addClass('hidden');
-  $('.logoutOptions').removeClass('hidden');
 
-  var recordId = $('#record_id').val();
-
-  // Update user save statuses if the current context calls for it:
-  if (typeof(checkSaveStatuses) == 'function') {
-    checkSaveStatuses();
-  }
-
-  // refresh the comment list so the "Delete" links will show
-  $('.commentList').each(function(){
-    var recordSource = extractSource($('#record'));
-    refreshCommentList(recordId, recordSource);
-  });
-
-  var summon = false;
-  $('.hiddenSource').each(function(i, e) {
-    if(e.value == 'Summon') {
-      summon = true;
-      // If summon, queue reload for when we close
-      Lightbox.addCloseAction(function(){document.location.reload(true);});
-    }
-  });
-
-  // Refresh tab content
-  var recordTabs = $('.recordTabs');
-  if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
-    var tab = recordTabs.find('.active a').attr('id');
-    ajaxLoadTab(tab);
-  }
-
-  // Refresh tag list
-  if(typeof refreshTagList === "function") {
-    refreshTagList(true);
-  }
+function refreshPageForLogin() {
+  window.location.reload();
 }
+
 function newAccountHandler(html) {
-  updatePageForLogin();
+  Lightbox.addCloseAction(refreshPageForLogin);
   var params = deparam(Lightbox.openingURL);
-  if (params['subaction'] != 'UserLogin') {
+  if (params['subaction'] == 'UserLogin') {
+    Lightbox.close();
+  } else {
     Lightbox.getByUrl(Lightbox.openingURL);
     Lightbox.openingURL = false;
-  } else {
-    Lightbox.close();
   }
 }
 
@@ -245,24 +183,21 @@ function ajaxLogin(form) {
       if (response.status == 'OK') {
         var salt = response.data;
 
-        // get the user entered password
-        var password = form.password.value;
-
-        // base-64 encode the password (to allow support for Unicode)
-        // and then encrypt the password with the salt
-        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
-
-        // hex encode the encrypted password
-        password = hexEncode(password);
-
-        var params = {password:password};
-
-        // get any other form values
+        // extract form values
+        var params = {};
         for (var i = 0; i < form.length; i++) {
+          // special handling for password
           if (form.elements[i].name == 'password') {
-            continue;
+            // base-64 encode the password (to allow support for Unicode)
+            // and then encrypt the password with the salt
+            var password = rc4Encrypt(
+                salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
+            );
+            // hex encode the encrypted password
+            params[form.elements[i].name] = hexEncode(password);
+          } else {
+            params[form.elements[i].name] = form.elements[i].value;
           }
-          params[form.elements[i].name] = form.elements[i].value;
         }
 
         // login via ajax
@@ -273,7 +208,7 @@ function ajaxLogin(form) {
           data: params,
           success: function(response) {
             if (response.status == 'OK') {
-              updatePageForLogin();
+              Lightbox.addCloseAction(refreshPageForLogin);
               // and we update the modal
               var params = deparam(Lightbox.lastURL);
               if (params['subaction'] == 'UserLogin') {
@@ -297,8 +232,7 @@ function ajaxLogin(form) {
   });
 }
 
-$(document).ready(function() {
-  // Off canvas
+function setupOffcanvas() {
   if($('.sidebar').length > 0) {
     $('[data-toggle="offcanvas"]').click(function () {
       $('body.offcanvas').toggleClass('active');
@@ -314,10 +248,9 @@ $(document).ready(function() {
   } else {
     $('[data-toggle="offcanvas"]').addClass('hidden');
   }
+}
 
-  // support "jump menu" dropdown boxes
-  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
-
+function setupBacklinks() {
   // Highlight previous links, grey out following
   $('.backlink')
     .mouseover(function() {
@@ -348,44 +281,62 @@ $(document).ready(function() {
         t = t.next();
       } while(t.length > 0);
     });
+}
 
+function setupAutocomplete() {
   // Search autocomplete
-  $('.autocomplete').typeahead(
-    {
-      highlight: true,
-      minLength: 3
-    }, {
-      displayKey:'val',
-      source: function(query, cb) {
-        var searcher = extractClassParams('.autocomplete');
-        $.ajax({
-          url: path + '/AJAX/JSON',
-          data: {
-            q:query,
-            method:'getACSuggestions',
-            searcher:searcher['searcher'],
-            type:$('#searchForm_type').val()
-          },
-          dataType:'json',
-          success: function(json) {
-            if (json.status == 'OK' && json.data.length > 0) {
-              var datums = [];
-              for (var i=0;i<json.data.length;i++) {
-                datums.push({val:json.data[i]});
+  $('.autocomplete').each(function (i, element) {
+    $(element).typeahead(
+      {
+        highlight: true,
+        minLength: 3
+      }, {
+        displayKey:'val',
+        source: function(query, cb) {
+          var searcher = extractClassParams(element);
+          $.ajax({
+            url: path + '/AJAX/JSON',
+            data: {
+              q:query,
+              method:'getACSuggestions',
+              searcher:searcher['searcher'],
+              type:searcher['type'] ? searcher['type'] : $(element).closest('.searchForm').find('.searchForm_type').val()
+            },
+            dataType:'json',
+            success: function(json) {
+              if (json.status == 'OK' && json.data.length > 0) {
+                var datums = [];
+                for (var i=0;i<json.data.length;i++) {
+                  datums.push({val:json.data[i]});
+                }
+                cb(datums);
+              } else {
+                cb([]);
               }
-              cb(datums);
-            } else {
-              cb([]);
             }
-          }
-        });
+          });
+        }
       }
-    }
-  );
-  $('#searchForm_type').change(function() {
-    var query = $('#searchForm_lookfor').val();
-    $('#searchForm_lookfor').focus().typeahead('val', '').typeahead('val', query);
+    );
   });
+  // Update autocomplete on type change
+  $('.searchForm_type').change(function() {
+    var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
+    var query = $lookfor.val();
+    $lookfor.focus().typeahead('val', '').typeahead('val', query);
+  });
+}
+
+$(document).ready(function() {
+  // Setup search autocomplete
+  setupAutocomplete();
+  // Setup highlighting of backlinks
+  setupBacklinks() ;
+  // Off canvas
+  setupOffcanvas();
+
+  // support "jump menu" dropdown boxes
+  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
 
   // Checkbox select all
   $('.checkbox-select-all').change(function() {
@@ -404,15 +355,12 @@ $(document).ready(function() {
     }
 
     var holder = $(this).next('.qrcode');
-
     if (holder.find('img').length == 0) {
       // We need to insert the QRCode image
       var template = holder.find('.qrCodeImgTag').html();
       holder.html(template);
     }
-
     holder.toggleClass('hidden');
-
     return false;
   });
 
@@ -443,99 +391,5 @@ $(document).ready(function() {
     $(this).closest('form').find('[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
-  });
-
-  /******************************
-   * LIGHTBOX DEFAULT BEHAVIOUR *
-   ******************************/
-  Lightbox.addOpenAction(registerLightboxEvents);
-
-  Lightbox.addFormCallback('newList', Lightbox.changeContent);
-  Lightbox.addFormCallback('accountForm', newAccountHandler);
-  Lightbox.addFormCallback('bulkDelete', function(html) {
-    location.reload();
-  });
-  Lightbox.addFormCallback('bulkRecord', function(html) {
-    Lightbox.close();
-    checkSaveStatuses();
-  });
-  Lightbox.addFormCallback('emailSearch', function(html) {
-    Lightbox.confirm(vufindString['bulk_email_success']);
-  });
-  Lightbox.addFormCallback('saveRecord', function(html) {
-    Lightbox.close();
-    checkSaveStatuses();
-  });
-
-  Lightbox.addFormHandler('exportForm', function(evt) {
-    $.ajax({
-      url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
-      type:'POST',
-      dataType:'json',
-      data:Lightbox.getFormData($(evt.target)),
-      success:function(data) {
-        if(data.data.needs_redirect) {
-          document.location.href = data.data.result_url;
-        } else {
-          Lightbox.changeContent(data.data.result_additional);
-        }
-      },
-      error:function(d,e) {
-        //console.log(d,e); // Error reporting
-      }
-    });
-    return false;
-  });
-  Lightbox.addFormHandler('feedback', function(evt) {
-    var $form = $(evt.target);
-    // Grabs hidden inputs
-    var formSuccess     = $form.find("input#formSuccess").val();
-    var feedbackFailure = $form.find("input#feedbackFailure").val();
-    var feedbackSuccess = $form.find("input#feedbackSuccess").val();
-    // validate and process form here
-    var name  = $form.find("input#name").val();
-    var email = $form.find("input#email").val();
-    var comments = $form.find("textarea#comments").val();
-    if (name.length == 0 || comments.length == 0) {
-      Lightbox.displayError(feedbackFailure);
-    } else {
-      Lightbox.get('Feedback', 'Email', {}, {'name':name,'email':email,'comments':comments}, function() {
-        Lightbox.changeContent('<div class="alert alert-info">'+formSuccess+'</div>');
-      });
-    }
-    return false;
-  });
-  Lightbox.addFormHandler('loginForm', function(evt) {
-    ajaxLogin(evt.target);
-    return false;
-  });
-
-  // Feedback
-  $('#feedbackLink').click(function() {
-    return Lightbox.get('Feedback', 'Home');
-  });
-  // Help links
-  $('.help-link').click(function() {
-    var split = this.href.split('=');
-    return Lightbox.get('Help','Home',{topic:split[1]});
-  });
-  // Hierarchy links
-  $('.hierarchyTreeLink a').click(function() {
-    var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
-    var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
-    return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
-  });
-  // Login link
-  $('#loginOptions a.modal-link').click(function() {
-    return Lightbox.get('MyResearch','UserLogin');
-  });
-  // Email search link
-  $('.mailSearch').click(function() {
-    return Lightbox.get('Search','Email',{url:document.URL});
-  });
-  // Save record links
-  $('.save-record').click(function() {
-    var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
   });
 });

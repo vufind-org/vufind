@@ -1,3 +1,26 @@
+1.3.0 / 2015-09-21
+==================
+
+New features:
+
+* Updated the driver to use findElementsXpaths for Mink 1.7 and forward compatibility with Mink 2
+
+Bug fixes:
+
+* Added a dependency on PHP's sockets extension
+* Upgrade the authentication logic for Zombie 3
+* Fixed header retrieval for Zombie 4.x+ versions
+* Updated `triggerBrowserEvent` to include any output from `evalJs` in the exception message
+
+Testsuite:
+
+* Add testing on PHP 7
+* Add testing for Zombie 4.x using IO.JS
+
+Misc:
+
+* Updated the repository structure to PSR-4
+
 1.2.0 / 2014-09-26
 ==================
 

@@ -123,24 +123,6 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Support method -- given a directory, extract a version number from the
-     * build.xml file within that directory.
-     *
-     * @param string $dir Directory to search for build.xml
-     *
-     * @return string
-     */
-    protected function getVersion($dir)
-    {
-        $xml = simplexml_load_file($dir . '/build.xml');
-        if (!$xml) {
-            throw new \Exception('Cannot load ' . $dir . '/build.xml.');
-        }
-        $parts = $xml->xpath('/project/property[@name="version"]/@value');
-        return (string)$parts[0];
-    }
-
-    /**
      * Display disabled message.
      *
      * @return mixed
@@ -170,25 +152,27 @@ class UpgradeController extends AbstractBase
      */
     public function establishversionsAction()
     {
-        $this->cookie->newVersion = $this->getVersion(realpath(APPLICATION_PATH));
-        $this->cookie->oldVersion = $this->getVersion($this->cookie->sourceDir);
+        $this->cookie->newVersion = \VuFind\Config\Version::getBuildVersion();
+        $this->cookie->oldVersion = \VuFind\Config\Version::getBuildVersion(
+            $this->cookie->sourceDir
+        );
 
         // Block upgrade when encountering common errors:
         if (empty($this->cookie->oldVersion)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Cannot determine source version.');
+            $this->flashMessenger()
+                ->addMessage('Cannot determine source version.', 'error');
             unset($this->cookie->oldVersion);
             return $this->forwardTo('Upgrade', 'Error');
         }
         if (empty($this->cookie->newVersion)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Cannot determine destination version.');
+            $this->flashMessenger()
+                ->addMessage('Cannot determine destination version.', 'error');
             unset($this->cookie->newVersion);
             return $this->forwardTo('Upgrade', 'Error');
         }
         if ($this->cookie->newVersion == $this->cookie->oldVersion) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Cannot upgrade version to itself.');
+            $this->flashMessenger()
+                ->addMessage('Cannot upgrade version to itself.', 'error');
             unset($this->cookie->newVersion);
             return $this->forwardTo('Upgrade', 'Error');
         }
@@ -221,8 +205,9 @@ class UpgradeController extends AbstractBase
         } catch (\Exception $e) {
             $extra = is_a($e, 'VuFind\Exception\FileAccess')
                 ? '  Check file permissions.' : '';
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Config upgrade failed: ' . $e->getMessage() . $extra);
+            $this->flashMessenger()->addMessage(
+                'Config upgrade failed: ' . $e->getMessage() . $extra, 'error'
+            );
             return $this->forwardTo('Upgrade', 'Error');
         }
     }
@@ -391,8 +376,9 @@ class UpgradeController extends AbstractBase
                 return $this->forwardTo('Upgrade', 'FixDuplicateTags');
             }
         } catch (\Exception $e) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Database upgrade failed: ' . $e->getMessage());
+            $this->flashMessenger()->addMessage(
+                'Database upgrade failed: ' . $e->getMessage(), 'error'
+            );
             return $this->forwardTo('Upgrade', 'Error');
         }
 
@@ -449,8 +435,9 @@ class UpgradeController extends AbstractBase
                     $this->session->dbRootPass = $pass;
                     return $this->forwardTo('Upgrade', 'FixDatabase');
                 } catch (\Exception $e) {
-                    $this->flashMessenger()->setNamespace('error')
-                        ->addMessage('Could not connect; please try again.');
+                    $this->flashMessenger()->addMessage(
+                        'Could not connect; please try again.', 'error'
+                    );
                 }
             }
         }
@@ -493,14 +480,14 @@ class UpgradeController extends AbstractBase
         if ($this->formWasSubmitted('submit')) {
             $user = $this->params()->fromPost('username');
             if (empty($user)) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('Username must not be empty.');
+                $this->flashMessenger()
+                    ->addMessage('Username must not be empty.', 'error');
             } else {
                 $userTable = $this->getTable('User');
                 $user = $userTable->getByUsername($user, false);
                 if (empty($user) || !is_object($user) || !isset($user->id)) {
-                    $this->flashMessenger()->setNamespace('error')
-                        ->addMessage("User {$user} not found.");
+                    $this->flashMessenger()
+                        ->addMessage("User {$user} not found.", 'error');
                 } else {
                     $table = $this->getTable('ResourceTags');
                     $table->assignAnonymousTags($user->id);
@@ -598,12 +585,13 @@ class UpgradeController extends AbstractBase
         $dir = $this->params()->fromPost('sourcedir');
         if (!empty($dir)) {
             if (!is_dir($dir)) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($dir . ' does not exist.');
+                $this->flashMessenger()
+                    ->addMessage($dir . ' does not exist.', 'error');
             } else if (!file_exists($dir . '/build.xml')) {
-                $this->flashMessenger()->setNamespace('error')->addMessage(
+                $this->flashMessenger()->addMessage(
                     'Could not find build.xml in source directory;'
-                    . ' upgrade does not support VuFind versions prior to 1.1.'
+                    . ' upgrade does not support VuFind versions prior to 1.1.',
+                    'error'
                 );
             } else {
                 $this->cookie->sourceDir = rtrim($dir, '\/');
@@ -626,14 +614,14 @@ class UpgradeController extends AbstractBase
         // Process form submission:
         $version = $this->params()->fromPost('sourceversion');
         if (!empty($version)) {
-            $this->cookie->newVersion
-                = $this->getVersion(realpath(APPLICATION_PATH));
+            $this->cookie->newVersion = \VuFind\Config\Version::getBuildVersion();
             if (floor($version) != 2) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('Illegal version number.');
+                $this->flashMessenger()
+                    ->addMessage('Illegal version number.', 'error');
             } else if ($version >= $this->cookie->newVersion) {
-                $this->flashMessenger()->setNamespace('error')->addMessage(
-                    "Source version must be less than {$this->cookie->newVersion}."
+                $this->flashMessenger()->addMessage(
+                    "Source version must be less than {$this->cookie->newVersion}.",
+                    'error'
                 );
             } else {
                 $this->cookie->oldVersion = $version;
@@ -700,8 +688,7 @@ class UpgradeController extends AbstractBase
             (array)$this->session->warnings
         );
         foreach ($allWarnings as $warning) {
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage($warning);
+            $this->flashMessenger()->addMessage($warning, 'info');
         }
 
         return $this->createViewModel(
