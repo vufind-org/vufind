@@ -129,6 +129,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
+            'VuFind\AccountCapabilities' => 'VuFind\Service\Factory::getAccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Factory::getManager',
             'VuFind\AuthPluginManager' => 'VuFind\Service\Factory::getAuthPluginManager',
             'VuFind\AutocompletePluginManager' => 'VuFind\Service\Factory::getAutocompletePluginManager',

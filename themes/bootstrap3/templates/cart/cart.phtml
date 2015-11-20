@@ -72,7 +72,7 @@
     }
   }
   function submitCartForm(elem, data) {
-    var url = path+'/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Home';
+    var url = VuFind.getPath() + '/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Home';
     $.post(url, data, determineCallback(elem));
   }
   function submitFormWithIds(elem, data) {

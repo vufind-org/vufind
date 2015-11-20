@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, path, Recaptcha, vufindString */
+/*global checkSaveStatuses, console, deparam, Recaptcha, VuFind */
 
 var Lightbox = {
   /**
@@ -262,7 +262,7 @@ var Lightbox = {
    */
   get: function(controller, action, get, post, callback) {
     // Build URL
-    var url = path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
+    var url = VuFind.getPath()+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
     if(typeof get !== "undefined" && get !== {}) {
       url += '&'+$.param(get);
     }
@@ -385,6 +385,7 @@ var Lightbox = {
     var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
     if($form.attr('action')) {
       // Parse action location
+      var path = VuFind.getPath();
       var action = $form.attr('action').substring($form.attr('action').indexOf(path)+path.length+1);
       var params = action.split('?');
       action = action.split('/');
@@ -458,7 +459,7 @@ $(document).ready(function() {
 
   Lightbox.addFormHandler('exportForm', function(evt) {
     $.ajax({
-      url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
+      url: VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
       dataType:'json',
       data:Lightbox.getFormData($(evt.target)),
