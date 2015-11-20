@@ -137,7 +137,6 @@ function registerTabEvents() {
 
 function ajaxLoadTab($newTab, tabid, setHash) {
   // Parse out the base URL for the current record:
-  var path = VuFind.getPath();
   var urlParts = document.URL.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
   var path = VuFind.getPath();
