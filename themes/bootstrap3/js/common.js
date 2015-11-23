@@ -14,7 +14,7 @@ function VuFindNamespace(p, s) {
 };
 
 /* --- GLOBAL FUNCTIONS --- */
-function htmlEncode(value){
+function htmlEncode(value) {
   if (value) {
     return jQuery('<div />').text(value).html();
   } else {
@@ -363,7 +363,7 @@ function keyboardShortcuts() {
                 $target = $('.pager').find('a.previous');
                 if ($target.length > 0) {
                     $target[0].click();
-                    return;                    
+                    return;
                 }
                 break;
               case 38: // up arrow key
@@ -371,23 +371,23 @@ function keyboardShortcuts() {
                     $target = $('.pager').find('a.backtosearch');
                     if ($target.length > 0) {
                         $target[0].click();
-                        return;                
-                    }                    
+                        return;
+                    }
                 }
                 break;
               case 39: //right arrow key
                 $target = $('.pager').find('a.next');
                 if ($target.length > 0) {
                     $target[0].click();
-                    return;                
+                    return;
                 }
                 break;
               case 40: // down arrow key
                 break;
-            }  
+            }
           }
         });
-    }  
+    }
 }
 
 $(document).ready(function() {
