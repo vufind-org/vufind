@@ -75,29 +75,17 @@ finna.persona = (function(finna) {
                     },
                     success: function(response, status, xhr) {
                         if (response.status === "OK") {
-                            if (Lightbox.shown === false) {
-                                // No reload to avoid POST request problems
-                                window.location = getDestinationUrl(false);
+                            Lightbox.addCloseAction(refreshPageForLogin);
+                            // and we update the modal
+                            var params = deparam(Lightbox.lastURL);
+                            if (params['subaction'] == 'UserLogin') {
+                                Lightbox.close();
                             } else {
-                                var params = deparam(Lightbox.lastURL);
-                                if (params.subaction === 'UserLogin') {
-                                    if ( $('#loginOptions a').hasClass('navibar-login-on') ) {
-                                        window.location = path+'/MyResearch/Home?redirect=0';
-                                    } else {
-                                        window.location = getDestinationUrl(false);
-                                    }
-                                } else {
-                                    // Update the modal
-                                    updatePageForLogin();
-                                    Lightbox.getByUrl(
-                                            Lightbox.lastURL,
-                                            Lightbox.lastPOST,
-                                            Lightbox.changeContent
-                                            );
-                                    // No page load, so have to add logout id
-                                    $('i.fa-sign-out').parent().attr('id', 'persona-logout');
-                                    Lightbox.addCloseAction(finna.persona.setLogoutLink);
-                                }
+                                Lightbox.getByUrl(
+                                    Lightbox.lastURL,
+                                    Lightbox.lastPOST,
+                                    Lightbox.changeContent
+                                );
                             }
                         } else {
                             $('.persona-login i').removeClass('fa-spinner fa-spin');

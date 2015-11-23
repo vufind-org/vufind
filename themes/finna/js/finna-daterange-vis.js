@@ -219,8 +219,6 @@ finna.dateRangeVis = (function() {
         });
 
         vis.unbind('plotselecting plotselected').bind('plotselecting plotselected', function (event, ranges) {
-            visRangeSelected = true;
-
             if (!plotInited || ranges === null) {
                 return;
             }
@@ -233,6 +231,7 @@ finna.dateRangeVis = (function() {
                 toElement.val(to);
             }
 
+            visRangeSelected = true;
             if (event.type == 'plotselected') {
                 $('body').click();
             }

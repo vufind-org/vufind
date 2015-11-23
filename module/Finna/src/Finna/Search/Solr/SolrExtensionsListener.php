@@ -120,16 +120,6 @@ class SolrExtensionsListener
         $backend = $event->getTarget();
         if ($backend === $this->backend) {
             $this->addDataSourceFilter($event);
-
-            $params = $event->getParam('params');
-            $context = $event->getParam('context');
-            $query = $event->getParam('query');
-            if ($params && ($context == 'search' || $context == 'similar')
-                && ($query === null || !is_callable([$query, 'getHandler'])
-                || $query->getHandler() !== 'ParentID')
-            ) {
-                $params->add('fq', '-hidden_component_boolean:TRUE');
-            }
         }
         return $event;
     }

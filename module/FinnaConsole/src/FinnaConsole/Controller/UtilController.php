@@ -31,7 +31,8 @@ use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader,
     Zend\Log\Logger, Zend\Log\Writer\Stream,
     Zend\Stdlib\Parameters,
     Finna\Search\Solr\Options, Finna\Search\Solr\Params,
-    Finna\Search\UrlQueryHelper;
+    Finna\Search\UrlQueryHelper,
+    VuFind\Date\Converter as DateConverter;
 
 /**
  * This controller handles various command-line tools
@@ -400,7 +401,8 @@ class UtilController extends \VuFindConsole\Controller\UtilController
             }
 
             $options = new Options($configLoader);
-            $params = new Params($options, $configLoader);
+            $dateConverter = new DateConverter();
+            $params = new Params($options, $configLoader, $dateConverter);
             $params->deminify($searchObject);
             if ($finnaSearchObject) {
                 $params->deminifyFinnaSearch($finnaSearchObject);

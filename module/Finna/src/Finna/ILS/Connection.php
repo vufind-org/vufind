@@ -29,7 +29,6 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace Finna\ILS;
-
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -116,5 +115,21 @@ class Connection extends \VuFind\ILS\Connection
         throw new ILSException(
             'Cannot call method: ' . $this->getDriverClass() . '::patronLogin'
         );
+    }
+
+    /**
+     * Check if online payment is supported.
+     *
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return boolean
+     */
+    protected function checkMethodmarkFeesAsPaid($functionConfig, $params)
+    {
+        if ($this->checkCapability('markFeesAsPaid', [$params ?: []])) {
+            return ['function' => 'markFeesAsPaid'];
+        }
+        return false;
     }
 }

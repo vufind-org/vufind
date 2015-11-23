@@ -31,7 +31,8 @@ use VuFindSearch\ParamBag as ParamBag,
     Finna\MetaLib\MetaLibIrdTrait,
     Zend\Cache\StorageFactory,
     Zend\Feed\Reader\Reader,
-    Zend\Http\Request as HttpRequest;
+    Zend\Http\Request as HttpRequest,
+    Zend\Session\Container as SessionContainer;
 
 /**
  * This controller handles Finna AJAX functionality
@@ -45,6 +46,7 @@ use VuFindSearch\ParamBag as ParamBag,
 class AjaxController extends \VuFind\Controller\AjaxController
 {
     use MetaLibIrdTrait,
+        OnlinePaymentControllerTrait,
         SearchControllerTrait;
 
     /**
@@ -1110,12 +1112,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
     public function inappropriateCommentAjax()
     {
         $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
-            );
-        }
 
         $query = $this->getRequest()->getPost();
         if (!$comment = $query->get('comment')) {
@@ -1131,8 +1127,15 @@ class AjaxController extends \VuFind\Controller\AjaxController
             );
         }
         $table = $this->getTable('Comments');
-        $table->markInappropriate($user->id, $comment, $reason);
+        $table->markInappropriate($user ? $user->id : null, $comment, $reason);
 
+        if (!$user) {
+            $session = new SessionContainer('inappropriateComments');
+            if (!isset($session->comments)) {
+                $session->comments = [];
+            }
+            $session->comments[] = $comment;
+        }
         return $this->output('', self::STATUS_OK);
     }
 
@@ -1324,6 +1327,36 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         return $this->output($results, self::STATUS_OK);
+    }
+
+    /**
+     * Register online paid fines to the ILS.
+     *
+     * @return \Zend\Http\Response
+     */
+    public function registerOnlinePaymentAction()
+    {
+        $this->outputMode = 'json';
+        $params = $this->getRequest()->getPost()->toArray();
+        $res = $this->processPayment($params);
+        $returnUrl = $this->url()->fromRoute('myresearch-fines');
+        return $this->output(
+            $returnUrl,
+            $res['success'] ? self::STATUS_OK : self::STATUS_ERROR
+        );
+    }
+
+    /**
+     * Handle Paytrail notification request.
+     *
+     * @return void
+     */
+    public function paytrailNotifyAction()
+    {
+        $params = $this->getRequest()->getQuery()->toArray();
+        $this->processPayment($params);
+        // This action does not return anything but a HTTP 200 status.
+        exit();
     }
 
     /**

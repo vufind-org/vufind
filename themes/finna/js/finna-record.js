@@ -91,6 +91,10 @@ finna.record = (function() {
                 checkRequestsAreValid(rows.find('.collapsedCheckILLRequest').removeClass('collapsedCheckILLRequest'), 'ILLRequest', 'ILLRequestBlocked');
             }
         });
+        // Login link
+        $('a.login-link').click(function() {
+          return Lightbox.get('MyResearch','UserLogin');
+        });
     };
 
     var initRecordFeedbackForm = function() {
@@ -107,17 +111,17 @@ finna.record = (function() {
       
     var initMobileModals = function() {
       var id = $('.hiddenId')[0].value;
-      $('#cite-record-mobile').click(function() {
+      $('.cite-record-mobile').click(function() {
         var params = extractClassParams(this);
         return Lightbox.get(params['controller'], 'Cite', {id:id});
       });
       // Mail lightbox
-      $('#mail-record-mobile').click(function() {
+      $('.mail-record-mobile').click(function() {
         var params = extractClassParams(this);
         return Lightbox.get(params['controller'], 'Email', {id:id});
       });
       // Save lightbox
-      $('#save-record-mobile').click(function() {
+      $('.save-record-mobile').click(function() {
         var params = extractClassParams(this);
         return Lightbox.get(params['controller'], 'Save', {id:id});
       });
@@ -134,6 +138,7 @@ finna.record = (function() {
             initHoldingsControls();
             setUpCheckRequest();
             finna.layout.initJumpMenus($('#holdings-tab'));
+            finna.layout.initLightbox($('#holdings-tab'));
         }
     };
 

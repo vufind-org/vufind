@@ -17,6 +17,7 @@ return array(
             'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
             'metalib' => 'Finna\View\Helper\Root\Factory::getMetaLib',
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
+            'onlinePayment' => 'Finna\View\Helper\Root\Factory::getOnlinePayment',
             'openUrl' => 'Finna\View\Helper\Root\Factory::getOpenUrl',
             'organisationsList'
                 => 'Finna\View\Helper\Root\Factory::getOrganisationsList',

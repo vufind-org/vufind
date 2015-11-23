@@ -74,7 +74,7 @@
       <? endforeach; ?>
     <? endif; ?>
 
-    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/header-navibar")): ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/header-navibar")): ?>
     <ul role="menubar" class="nav navbar-nav">
       <?=$this->render($template)?>
     </ul>
@@ -84,18 +84,18 @@
   <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
   <ul role="menu" class="nav navbar-nav nav-absolute">
     <? $user = $account->isLoggedIn(); ?>
-    <li role="menuitem" class="logoutOptions<? if(!$user): ?> hidden<? endif ?>">
+    <li role="menuitem" class="logoutOptions<? if (!$user): ?> hidden<? endif ?>">
       <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <span class="username"><?=$user ? $this->escapeHtml($this->truncate($user->getDisplayName(), 20)) : $this->transEsc("Your Account")?></span> <b class="caret"></b></a>
       <ul role="menu" class="dropdown-menu">
-        <li role="menuitem" class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
+        <li role="menuitem" class="logoutOptions<? if (!$user): ?> hidden<? endif ?>">
           <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" class="modal-link" title="<?=$this->transEsc("Your Account")?>"><strong><i class="fa fa-user"></i> <?=$this->transEsc("Your Account")?></strong><div class="description"><?=$this->transEsc("your_account_info")?></div></a>
         </li>
-        <li role="menuitem" class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
+        <li role="menuitem" class="logoutOptions<? if (!$user): ?> hidden<? endif ?>">
           <? $logoutClass = $this->personaAuth()->getUser() === null ? '' : ' persona-logout' ?>
           <a href="<?=$this->url('myresearch-logout')?>" class="modal-link<?=$logoutClass?>" title="<?=$this->transEsc("Log Out")?>"><strong><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></strong></a>
         </li>
       </ul>
-    <? if(!$account->isLoggedIn()): ?></li><? endif; ?>
+    <? if (!$user): ?></li><? endif; ?>
     <li role="menuitem" id="loginOptions"<? if($account->isLoggedIn()): ?> class="hidden"<? endif ?>>
       <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
       <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>

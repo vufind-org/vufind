@@ -478,7 +478,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
                 '{nonPrefixedOriginationId}'
             ],
             [
-                urlencode($this->getUniqueID()),
+                urlencode($this->getIdentifier()),
                 urlencode($originationId),
                 urlencode($nonPrefixedOriginationId),
             ],

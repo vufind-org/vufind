@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/record-post-toolbar")): ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
     <div class="row">
       <div class="col-xs-12">
         <div class="record-post-toolbar">
@@ -256,7 +256,7 @@
           <th><?=$this->transEsc('Tags')?>: </th>
           <td>
             <span class="pull-right">
-              <i class="fa fa-plus"></i> <a id="tagRecord" class="modal-link" href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" title="<?=$this->transEsc('Add Tag')?>"><?=$this->transEsc('Add Tag')?></a>
+              <i class="fa fa-plus"></i> <a class="tag-record modal-link" href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" title="<?=$this->transEsc('Add Tag')?>"><?=$this->transEsc('Add Tag')?></a>
             </span>
             <div id="tagList">
               <? if (count($tagList) > 0): ?>
@@ -270,7 +270,7 @@
       <? endif; ?>
     </table>
     <?/* End Main Details */?>
-    <? if ($template = $this->content()->findTemplateForLng("layout/Additions/record-post-metadata")): ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-metadata")): ?>
     <div class="row">
       <div class="col-xs-12">
         <?=$this->render($template)?>
