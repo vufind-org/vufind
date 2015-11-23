@@ -1,4 +1,4 @@
-/*global path, registerAjaxCommentRecord, registerTabEvents, setupRecordToolbar */
+/*global registerAjaxCommentRecord, registerTabEvents, setupRecordToolbar, VuFind */
 
 function showhideTabs(tabid) {
   //console.log(tabid);
@@ -23,7 +23,7 @@ function ajaxFLLoadTab(tabid, reload) {
   tab = tab[0];
   if(!$('#'+tabid).hasClass('noajax') && (reload || $('#'+tabid+'-tab').is(':empty'))) {
     $.ajax({
-      url: path + '/' + urlroot + '/' + id + '/AjaxTab',
+      url: VuFind.getPath() + '/' + urlroot + '/' + id + '/AjaxTab',
       type: 'POST',
       data: {tab: tab},
       success: function(data) {
@@ -58,7 +58,7 @@ $(document).ready(function() {
       longNode.removeClass("hidden");
       if (longNode.is(':empty')) {
         loadingNode.removeClass("hidden");
-        var url = path + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType,source:div_source});
+        var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType,source:div_source});
         $.ajax({
           dataType: 'json',
           url: url,
@@ -75,7 +75,7 @@ $(document).ready(function() {
               // Lightbox handler for tagRecord
               Lightbox.addFormCallback('tagRecord', function() {
                 refreshTagList(true, longNode);
-                Lightbox.confirm(vufindString['add_tag_success']);
+                Lightbox.confirm(VuFind.translate('add_tag_success'));
               });
               $('.search_tabs .recordTabs a').unbind('click').click(function() {
                 return ajaxFLLoadTab($(this).attr('id'));
