@@ -1,6 +1,7 @@
 ; Inherit main configuration
 [Parent_Config]
 relative_path = ../finna/Primo.ini
+override_full_sections = "SideRecommendations,TopRecommendations,SpecialFacets,Facets,FacetsTop,Advanced_Facet_Settings,CheckboxFacets,Basic_Searches,Advanced_Searches,Advanced_Operators,Sorting,Institutions"
 
 ; Add any overrides below
 
