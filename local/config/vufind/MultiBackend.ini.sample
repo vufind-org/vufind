@@ -1,34 +1,16 @@
-[General]
-; (Optional) The name of a driver instance to use by default if no specific
-; instance can be determined as the best option (must correspond with a key
-; from the [Drivers] section below if set -- omit to have no default driver)
-default_driver = "NoILS"
+[Parent_Config]
+relative_path = "../finna/MultiBackend.ini"
+override_full_sections = "Login"
 
-; This section is for declaring which driver to use for each institution.
-; The key should be the Source ID of a specific institution, and the value
-; should be the name of an ILS driver.
-;      Example: instance1 = Voyager
-; In this case, the Voyager driver would be loaded and configured using an
-; instance1.ini file (which you should create as a copy of Voyager.ini).
-[Drivers]
-testi = Demo
-
-; This section allows for the use of custom delimeters between user data
-; and the identifying information that allows the MultiBackend driver to
-; determine which internal driver to use for a given request.
-;
-; Currently only custom login delimiters are supported.
-;
-; You should not set the delimiters to be common characters.
-[Delimiters]
-login = "."
-
-; This section allows you to override the default functionality set by
-; default_fallback_driver_selection on a method-by-method basis. See above
-; for explanations of legal values (merge/use_first)
-[FallbackDriverSelectionOverride]
-;getMyFines = merge
+; Add any overrides below
 
 [Login]
-default_driver = testi
+default_driver = jykdok
+drivers[] = jykdok
+drivers[] = alli
+drivers[] = tamcat
+drivers[] = helka
+drivers[] = leevi
+drivers[] = tyrni
+;drivers[] = vaski
 drivers[] = testi
