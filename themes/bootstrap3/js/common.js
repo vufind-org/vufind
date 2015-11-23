@@ -357,8 +357,9 @@ function setupAutocomplete() {
  */
 function keyboardShortcuts() {
     var $searchform = $('#searchForm_lookfor');
-    if ($('.pager').length > 0 && !$searchForm.is(':focus')) {
+    if ($('.pager').length > 0) {
         $(window).keydown(function(e) {
+          if (!$searchform.is(':focus')) {
             $target = null;
             switch (e.keyCode) {
               case 37: // left arrow key
@@ -387,7 +388,7 @@ function keyboardShortcuts() {
               case 40: // down arrow key
                 break;
             }  
-            e.preventDefault();
+          }
         });
     }  
 }
