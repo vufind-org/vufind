@@ -112,6 +112,35 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Get all record links related to the current record. Each link is returned as
+     * array.
+     * Format:
+     * array(
+     *        array(
+     *               'title' => label_for_title
+     *               'value' => link_name
+     *               'link'  => link_URI
+     *        ),
+     *        ...
+     * )
+     *
+     * @return null|array
+     */
+    public function getAllRecordLinks()
+    {
+        $result = parent::getAllRecordLinks();
+        if ($result !== null) {
+            foreach ($result as &$link) {
+                if (isset($link['value'])) {
+                    $link['value'] = $this->stripTrailingPunctuation($link['value']);
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Get all subject headings associated with this record.  Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
