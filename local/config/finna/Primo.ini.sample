@@ -67,7 +67,7 @@ highlighting = true
 ; Primo as they do in the regular Search module.
 [SideRecommendations]
 ; No search-specific settings by default -- add your own here.
-;[TopRecommendations]
+[TopRecommendations]
 ; No search-specific settings by default -- add your own here.
 
 ; This section is used to identify facets for special treatment by the SideFacets
@@ -88,7 +88,7 @@ creationdate = "Year of Publication"
 domain  = Source
 jtitle  = "Journal Title"
 topic   = Subjects
-;lang    = Language
+lang    = Language
 
 ; Top facets (not used by default)
 [FacetsTop]
