@@ -446,7 +446,9 @@ trait VoyagerFinna
             }
             return true;
         }
-        return parent::supportsMethod($method, $params);
+        return is_callable('parent::supportsMethod')
+            ? parent::supportsMethod($method, $params)
+            : is_callable([$this, $method]);
     }
 
     /**
