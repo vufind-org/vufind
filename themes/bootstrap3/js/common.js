@@ -356,7 +356,8 @@ function setupAutocomplete() {
  * @returns {undefined}
  */
 function keyboardShortcuts() {
-    if ($('.pager').length > 0) {
+    var $searchform = $('#searchForm_lookfor');
+    if ($('.pager').length > 0 && !$searchForm.is(':focus')) {
         $(window).keydown(function(e) {
             $target = null;
             switch (e.keyCode) {
