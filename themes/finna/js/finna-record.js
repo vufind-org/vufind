@@ -91,6 +91,10 @@ finna.record = (function() {
                 checkRequestsAreValid(rows.find('.collapsedCheckILLRequest').removeClass('collapsedCheckILLRequest'), 'ILLRequest', 'ILLRequestBlocked');
             }
         });
+        // Login link
+        $('a.login-link').click(function() {
+          return Lightbox.get('MyResearch','UserLogin');
+        });
     };
 
     var initRecordFeedbackForm = function() {
@@ -134,6 +138,7 @@ finna.record = (function() {
             initHoldingsControls();
             setUpCheckRequest();
             finna.layout.initJumpMenus($('#holdings-tab'));
+            finna.layout.initLightbox($('#holdings-tab'));
         }
     };
 
