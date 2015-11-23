@@ -104,8 +104,9 @@ class Favorites extends AbstractPlugin
             // Add records to cache
             $recordLoader = $this->getController()->getServiceLocator()
                 ->get('VuFind\RecordLoader');
-            $recordLoader->setCacheContext('');
+            $recordLoader->setCacheContext(Cache::CONTEXT_DISABLED);
             $records = $recordLoader->loadBatch($cacheRecordIds);
+            $recordLoader->setCacheContext(Cache::CONTEXT_FAVORITE);
             foreach ($records as $record) {
                 $recordCache->createOrUpdate(
                     $record->getUniqueID(), $record->getResourceSource(),

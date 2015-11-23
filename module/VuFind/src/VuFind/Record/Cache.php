@@ -46,6 +46,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
+    const CONTEXT_DISABLED = '';
     const CONTEXT_DEFAULT = 'Default';
     const CONTEXT_FAVORITE = 'Favorite';
 
@@ -125,6 +126,10 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     {
         $this->debug("Cache: checking {$source}|{$id}");
         $record = $this->recordTable->findRecord($id, $source);
+        $this->debug(
+            "Cache: cached record {$source}|{$id} "
+            . ($record !== false ? 'found' : 'not found')
+        );
         return $record !== false ? [$this->getVuFindRecord($record)] : [];
     }
 
@@ -150,6 +155,18 @@ class Cache implements \Zend\Log\LoggerAwareInterface
             $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
         }
 
+        $foundIds = [];
+        array_walk(
+            $vufindRecords,
+            function ($record) use (&$foundIds) {
+                $foundIds[] = $record->getUniqueID();
+            }
+        );
+        $this->debug(
+            "Cache: cached records for $source "
+            . ($foundIds ? 'found: ' . implode(', ', $foundIds) : 'not found')
+        );
+
         return $vufindRecords;
     }
 
@@ -162,7 +179,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     public function setContext($context)
     {
-        $this->debug("Cache: setting context to $context");
+        $this->debug("Cache: setting context to '$context'");
         if (empty($context)) {
             $this->cachableSources = [];
             return;
