@@ -88,7 +88,8 @@ class SearchController extends AbstractSearch
         $view->useRecaptcha = $this->recaptcha()->active('email');
         $view->url = $this->params()->fromPost(
             'url', $this->params()->fromQuery(
-                'url', $this->getRequest()->getServer()->get('HTTP_REFERER')
+                'url',
+                $this->getRequest()->getServer()->get('HTTP_REFERER')
             )
         );
 
