@@ -1,3 +1,4 @@
+/*global VuFind*/
 finna.metalibLinks = (function() {
     var initSearchLinks = function() {
         $('.metalib-link').each(function(ind, e) {
@@ -8,7 +9,7 @@ finna.metalibLinks = (function() {
     };
     var checkSearchLink = function(link) {
         var parent = link;
-        var jqxhr = $.getJSON(path + '/AJAX/JSON?method=metalibLinks', {id: [link.data('ird')]}, function(response) {
+        var jqxhr = $.getJSON(VuFind.getPath() + '/AJAX/JSON?method=metalibLinks', {id: [link.data('ird')]}, function(response) {
             if (response.status == 'OK') {
                 $(response.data).each(function(ind, ird) {
                     parent.find('.loading').remove();

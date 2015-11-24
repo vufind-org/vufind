@@ -1,3 +1,4 @@
+/*global VuFind*/
 finna.comments = (function() {
 
     var initCommentList = function(allowCommenting, allowRating, commentCount) {
@@ -22,7 +23,7 @@ finna.comments = (function() {
         };
 
         deleteRecordComment = function(element, recordId, recordSource, commentId) {
-            var url = path + '/AJAX/JSON?'
+            var url = VuFind.getPath() + '/AJAX/JSON?'
                 + $.param({method:'deleteRecordComment', id:commentId});
             $.ajax({
                 dataType: 'json',
@@ -78,7 +79,7 @@ finna.comments = (function() {
             $(this).find('input.cancel').toggleClass('hide', true);
             $(this).find('input[type="submit"]').attr('disabled', true).button('loading');
 
-            var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+            var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'commentRecord'});
             $.ajax({
                 type: 'POST',
                 url:  url,
@@ -137,7 +138,7 @@ finna.comments = (function() {
             var comment = form.find('input[type=hidden][name=comment]').val();
             var reason = form.find('input[name=reason]:checked').val();
 
-            var url = path + '/AJAX/JSON?method=inappropriateComment&comment';
+            var url = VuFind.getPath() + '/AJAX/JSON?method=inappropriateComment&comment';
             $.ajax({
                 dataType: 'json',
                 data: {comment: comment, reason: reason},

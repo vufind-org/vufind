@@ -1,3 +1,4 @@
+/*global VuFind*/
 finna.layout = (function() {
     var refreshPage = false;
 
@@ -104,7 +105,7 @@ finna.layout = (function() {
               $(this).after("<div class='more-link wide'><i class='fa fa-handle-open'></i></div><div class='less-link wide'> <i class='fa fa-handle-close'></i></div>");
             }
             else {
-              $(this).after("<div class='more-link'>"+vufindString.show_more+" <i class='fa fa-arrow-down'></i></div><div class='less-link'>"+vufindString.show_less+" <i class='fa fa-arrow-up'></i></div>");
+              $(this).after("<div class='more-link'>" + VuFind.translate('show_more') + " <i class='fa fa-arrow-down'></i></div><div class='less-link'>" + VuFind.translate('show_less') + " <i class='fa fa-arrow-up'></i></div>");
             }
             $('.less-link').hide();
 
@@ -238,8 +239,8 @@ finna.layout = (function() {
         $('.multi-select').multiselect({
             enableCaseInsensitiveFiltering: true,
             maxHeight: 310,
-            nonSelectedText: vufindString.none_selected,
-            nSelectedText: vufindString.selected,
+            nonSelectedText: VuFind.translate('none_selected'),
+            nSelectedText: VuFind.translate('selected'),
             buttonClass: "form-control",
         });
         // use click events only if there is a multi-select element
@@ -442,7 +443,7 @@ finna.layout = (function() {
             }
             $.ajax({
                 dataType: 'json',
-                url: path + '/AJAX/JSON?method=getSaveStatuses',
+                url: VuFind.getPath() + '/AJAX/JSON?method=getSaveStatuses',
                 data: {id:ids, 'source':srcs},
                 success: function(response) {
                     if(response.status == 'OK') {
@@ -460,7 +461,7 @@ finna.layout = (function() {
                                 $container.append('<ul></ul>');
                                 $ul = $container.children('ul:first');
                             }
-                            var html = '<li><a href="' + path + '/MyResearch/MyList/' + result.list_id + '">'
+                            var html = '<li><a href="' + VuFind.getPath() + '/MyResearch/MyList/' + result.list_id + '">'
                                 + result.list_title + '</a></li>';
                             $ul.append(html);
                             $container.removeClass('hidden');
@@ -509,7 +510,7 @@ finna.layout = (function() {
     var updateLoginName = function() {
         $.ajax({
             dataType: 'json',
-            url: path + '/AJAX/JSON?method=getUserDisplayName',
+            url: VuFind.getPath() + '/AJAX/JSON?method=getUserDisplayName',
             success: function (response) {
                 if (response.status == 'OK') {
                     $('.logoutOptions .username').text(response.data);

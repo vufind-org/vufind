@@ -1,3 +1,4 @@
+/*global VuFind*/
 finna.myList = (function() {
 
     var addNewListLabel = null;
@@ -25,7 +26,7 @@ finna.myList = (function() {
 
         if (type != 'add-list') {
             var description = processHTMLforSave($('.list-description span').html());
-            if (description == vufindString.add_list_description) {
+            if (description == VuFind.translate('add_list_description')) {
                 listParams['desc'] = '';
             } else {
                 listParams['desc'] = description;
@@ -59,7 +60,7 @@ finna.myList = (function() {
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            url: path + '/AJAX/JSON?method=editList',
+            url: VuFind.getPath() + '/AJAX/JSON?method=editList',
             data: {'params': listParams},
             success: function(data, status, jqXHR) {
                 if (type != 'add-list' && spinner) {
@@ -85,7 +86,7 @@ finna.myList = (function() {
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            url: path + '/AJAX/JSON?method=editListResource',
+            url: VuFind.getPath() + '/AJAX/JSON?method=editListResource',
             data: {'params': params},
             success: function(data, status, jqXHR) {
                 if (spinner) {
@@ -97,7 +98,7 @@ finna.myList = (function() {
                     input.closest('.myresearch-notes').find('.note-info').toggleClass('hide', !hasNotes);
                     input.data('empty', hasNotes == '' ? '1' : '0');
                     if (!hasNotes) {
-                        input.text(vufindString.add_note);
+                        input.text(VuFind.translate('add_note'));
                     }
                 } else {
                     toggleErrorMessage(true);
@@ -126,7 +127,7 @@ finna.myList = (function() {
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            url: path + '/AJAX/JSON?method=addToList',
+            url: VuFind.getPath() + '/AJAX/JSON?method=addToList',
             data: {params: {'listId': listId, 'source': 'Solr', 'ids': ids}},
             success: function(data, status, jqXHR) {
                 if (status == 'success' && data.status == 'OK') {
@@ -144,7 +145,7 @@ finna.myList = (function() {
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            url: path + '/AJAX/JSON?method=getMyLists',
+            url: VuFind.getPath() + '/AJAX/JSON?method=getMyLists',
             data: {'active': getActiveListId()},
             success: function(data, status, jqXHR) {
                 if (status == 'success' && data.status == 'OK') {
@@ -165,7 +166,7 @@ finna.myList = (function() {
         var description = $('.list-description span');
         if (description.html() == '') {
             description.data('empty', '1');
-            description.html(vufindString.add_list_description);
+            description.html(VuFind.translate('add_list_description'));
         } else {
             description.data('empty', '0');
         }
@@ -232,7 +233,7 @@ finna.myList = (function() {
                 'finish': function(e) {
                     if (typeof(e) === 'undefined' || !e.cancel) {
                         if (e.value == '' && e.target.data('empty') == '1') {
-                            e.target.text(vufindString.add_list_description);
+                            e.target.text(VuFind.translate('add_list_description'));
                             return;
                         }
                         updateList({}, listDescriptionChanged, 'desc');
@@ -313,7 +314,7 @@ finna.myList = (function() {
             'finish': function(e) {
                 if (typeof(e) === 'undefined' || !e.cancel) {
                     if (e.value == '' && e.target.data('empty') == '1') {
-                        e.target.text(vufindString.add_note);
+                        e.target.text(VuFind.translate('add_note'));
                         return;
                     }
 
@@ -347,7 +348,7 @@ finna.myList = (function() {
         // Prompt before leaving page if Ajax load is in progress
         window.onbeforeunload = function(e) {
             if ($('.list-save').length) {
-                return vufindString.loading + "...";
+                return VuFind.translate('loading') + '...';
             }
         };
     };

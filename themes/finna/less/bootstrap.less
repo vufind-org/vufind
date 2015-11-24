@@ -506,44 +506,31 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 
 /* --- Autocomplete --- */
-.twitter-typeahead {
-      background: transparent;
-      vertical-align: top;
-      padding-right: 20px;
-      .tt-hint {color: @gray-light !important;}
-}
 .form-control.search-query {
     padding-right: 20px;
 }
-.twitter-typeahead .form-control.search-query {
-    padding-right: 0px;
-}
-.tt-dropdown-menu {.list-group;margin-top:10px;}
+.autocomplete-results {
+  margin-top: 2px;
+  border: 1px solid @list-group-border;
+  background-color: #fff;
+  border-radius: 4px;
+  overflow: ellipsis;
 
-.tt-suggestion {
-  .list-group-item;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  border-bottom: 2px solid @gray-lighter;
-  &:last-child {
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
+  .item {
+    display: block;
+    padding-top: .75rem;
+    padding-right: 1rem;
+    padding-bottom: .75rem;
+    padding-left: 1.25rem;
+    border-bottom: 1px solid @list-group-border;
+    cursor: pointer;
+
+    &:last-child {border: 0;}
+    &:hover, &.selected {
+      background-color: @brand-primary;
+      color: #fff;
+    }
   }
-    &:first-child {
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-  &:last-of-type {
-    border: none;   
-  }
-  &.active {
-    white-space:inherit;
-  }
-  &.tt-cursor {
-    background-color:@brand-primary;
-    color:#FFF;
-  }
-  p {margin:0}
 }
 
 /* --- Badges - blend the links in --- */

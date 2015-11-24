@@ -1,3 +1,4 @@
+/*global VuFind*/
 finna.libraryCards = (function() {
 
     var initPasswordModal = function() {
@@ -22,7 +23,7 @@ finna.libraryCards = (function() {
                   Lightbox.displayError(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''), type);
                   $('#hash').val($('<div/>').html(html).find('#hash').val());
                 } else {
-                  Lightbox.confirm(vufindString['new_password_success']);
+                  Lightbox.confirm(VuFind.translate('new_password_success'));
                 }
             });
             return false;
