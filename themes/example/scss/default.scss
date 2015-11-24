@@ -1,0 +1,54 @@
+// We create a default.SCSS file for all sub-themes which imports the respective parent theme's default.scss
+// in the cascade. Then we extend it by adding to our new theme's SCSS only. This way we always have an
+// up-to-date default.SCSS imported which includes Foundation basic styles plus VuFind basic styles + all
+// subsequent customizations made in our theme (i.e. theme/example/scss/dedault.scss imports
+// theme/foundation/scss/default.scss etc).
+
+// 1.   First, we define or re-define key variables
+// 1.1 We  re-define site colours first because primary-color is used in our own variables
+// Primary-color is the key color of your theme. It is used as background for buttons, links etc
+$primary-color: #7fb2d5 !default; // this is used in links etc
+// Secondary-color can often be left alone, as the default is a decent grey
+// $secondary-color: #e7e7e7; // this is the default
+// Next come colors used as background in labels and alert boxes
+// $alert-color: #f04124; // this is the default // this is used for success alert boxes, labels etc
+$success-color: #7fd5a2; // #43AC6A is the default // this is used for success alert boxes, labels etc
+$warning-color: #ffd868 ; // #f08a24 is the default // this is used for success alert boxes, labels etc
+$info-color: darken(#7fb2d5,10%); // #a0d3e8 is the default // this is used for success alert boxes, labels etc
+// For more standard colors to overwrite, see themes/foundation5/scss/vendor/foundation/_settings.scss
+
+// 1.2. Then we define site-specific colors which do not override colors in the Foundation theme but are used
+// more than once on the site (we decided to use the pattern "color_abbreviation" for in-house colors to make
+// them easily identifiable. Such site-specific colors may be a
+// Dark in-house color
+$color_dk: darken($primary-color,15%);
+// Light in-house color
+$color_lgt: $primary-color; // we use primary color for the example, so we can easily change all occurances later to sth else
+// Action-button color
+$color_action: #d57fb2;
+// You can add more colors here
+// Once defined, use the variables only, to have the compile process replace them with the correct color whenever
+// you make changes
+
+// 2.   Re-define variables for key styles
+// 2.1 Re-define top-bar background and other styles etc. ...
+
+// 3. import entire FOUNDATION-FOLDER default.scss to have the variables and mixins above applied
+@import "../../foundation5/scss/default";
+
+// 4. Customize further
+// 4.1 Containers, page sections and other settings
+// e.g. Breadcrumbs
+.contain-to-grid {
+  .breadcrumbs {
+    background-color: ($color_dk);
+    max-width:100%;
+  }
+}
+// Date range slider bg color // will be fixed when new FNDTN slider is ready
+.slider-handle {
+  background-color: $primary-color !important;
+  background-image: -webkit-linear-gradient(top,$primary-color 0,	$warning-color 100%) !important;
+  background-image: -o-linear-gradient(top,$primary-color 0, $warning-color 100%) !important;
+  background-image: linear-gradient(to bottom,$primary-color 0, $warning-color 100%) !important;
+  }
