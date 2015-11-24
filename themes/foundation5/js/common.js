@@ -50,6 +50,9 @@ function html_entity_decode(string, quote_style)
 
 // Turn GET string into array
 function deparam(url) {
+  if(!url.match(/\?|&/)) {
+    return [];
+  }
   var request = {};
   var pairs = url.substring(url.indexOf('?') + 1).split('&');
   for (var i = 0; i < pairs.length; i++) {
@@ -115,10 +118,12 @@ function phoneNumberFormHandler(numID, regionCode) {
  * is called and the 'shown' lightbox event is triggered
  */
 function bulkActionSubmit($form) {
-  var submit = $form.find('[type="submit"][clicked=true]').attr('name');
+  var button = $form.find('[type="submit"][clicked=true]');
+  var submit = button.attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
-    return Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    return false;
   }
   if (submit == 'print') {
     //redirect page
@@ -136,22 +141,20 @@ function registerLightboxEvents() {
   var modal = $("#modal");
   // New list
   $('#make-list').click(function() {
-    var parts = this.href.split('?');
-    var get = deparam(parts[1]);
+    var get = deparam(this.href);
     get['id'] = 'NEW';
     return Lightbox.get('MyResearch', 'EditList', get);
   });
   // New account link handler
   $('.createAccountLink').click(function() {
-    var parts = this.href.split('?');
-    var get = deparam(parts[1]);
+    var get = deparam(this.href);
     return Lightbox.get('MyResearch', 'Account', get);
   });
   $('.back-to-login').click(function() {
     Lightbox.getByUrl(Lightbox.openingURL);
     return false;
   });
-  // Select all checkboxes
+  // Select-all checkboxes
   $(modal).find('.checkbox-select-all').change(function() {
     $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
   });
@@ -168,7 +171,7 @@ function registerLightboxEvents() {
     $(this).attr("clicked", "true");
     // Add prettiness
     if($(modal).find('.has-error,.sms-error').length == 0 && !$(this).hasClass('dropdown-toggle')) {
-    $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
     }
   });
   /**
@@ -242,24 +245,21 @@ function ajaxLogin(form) {
       if (response.status == 'OK') {
         var salt = response.data;
 
-        // get the user entered password
-        var password = form.password.value;
-
-        // base-64 encode the password (to allow support for Unicode)
-        // and then encrypt the password with the salt
-        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
-
-        // hex encode the encrypted password
-        password = hexEncode(password);
-
-        var params = {password:password};
-
-        // get any other form values
+        // extract form values
+        var params = {};
         for (var i = 0; i < form.length; i++) {
+          // special handling for password
           if (form.elements[i].name == 'password') {
-            continue;
+            // base-64 encode the password (to allow support for Unicode)
+            // and then encrypt the password with the salt
+            var password = rc4Encrypt(
+                salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
+            );
+            // hex encode the encrypted password
+            params[form.elements[i].name] = hexEncode(password);
+          } else {
+            params[form.elements[i].name] = form.elements[i].value;
           }
-          params[form.elements[i].name] = form.elements[i].value;
         }
 
         // login via ajax
@@ -295,8 +295,7 @@ function ajaxLogin(form) {
 }
 
 $(document).ready(function() {
-  // Off canvas
-  // fixme offcanvas - adapt if necessary - CK
+  // Off canvas - adapt if necessary - CK
   if($('.sidebar').length > 0) {
     $('[data-toggle="offcanvas"]').click(function () {
       $('body.offcanvas').toggleClass('active');
@@ -348,41 +347,44 @@ $(document).ready(function() {
     });
 
   // Search autocomplete
-  $('.autocomplete').typeahead(
-    {
-      highlight: true,
-      minLength: 3
-    }, {
-      displayKey:'val',
-      source: function(query, cb) {
-        var searcher = extractClassParams('.autocomplete');
-        $.ajax({
-          url: path + '/AJAX/JSON',
-          data: {
-            q:query,
-            method:'getACSuggestions',
-            searcher:searcher['searcher'],
-            type:$('#searchForm_type').val()
-          },
-          dataType:'json',
-          success: function(json) {
-            if (json.status == 'OK' && json.data.length > 0) {
-              var datums = [];
-              for (var i=0;i<json.data.length;i++) {
-                datums.push({val:json.data[i]});
+  $('.autocomplete').each(function (i, element) {
+    $(element).typeahead(
+      {
+        highlight: true,
+        minLength: 3
+      }, {
+        displayKey:'val',
+        source: function(query, cb) {
+          var searcher = extractClassParams(element);
+          $.ajax({
+            url: path + '/AJAX/JSON',
+            data: {
+              q:query,
+              method:'getACSuggestions',
+              searcher:searcher['searcher'],
+              type:searcher['type'] ? searcher['type'] : $(element).closest('.searchForm').find('.searchForm_type').val()
+            },
+            dataType:'json',
+            success: function(json) {
+              if (json.status == 'OK' && json.data.length > 0) {
+                var datums = [];
+                for (var i=0;i<json.data.length;i++) {
+                  datums.push({val:json.data[i]});
+                }
+                cb(datums);
+              } else {
+                cb([]);
               }
-              cb(datums);
-            } else {
-              cb([]);
             }
-          }
-        });
+          });
+        }
       }
-    }
-  );
-  $('#searchForm_type').change(function() {
-    var query = $('#searchForm_lookfor').val();
-    $('#searchForm_lookfor').focus().typeahead('val', '').typeahead('val', query);
+    );
+  });
+  $('.searchForm_type').change(function() {
+    var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
+    var query = $lookfor.val();
+    $lookfor.focus().typeahead('val', '').typeahead('val', query);
   });
 
   // Checkbox select all
@@ -453,6 +455,10 @@ $(document).ready(function() {
   Lightbox.addFormCallback('bulkDelete', function(html) {
     location.reload();
   });
+  Lightbox.addFormCallback('bulkSave', function(html) {
+    Lightbox.addCloseAction(updatePageForLogin);
+    Lightbox.confirm(vufindString['bulk_save_success']);
+  });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
@@ -472,8 +478,10 @@ $(document).ready(function() {
       dataType:'json',
       data:Lightbox.getFormData($(evt.target)),
       success:function(data) {
-        if(data.data.needs_redirect) {
+        if(data.data.export_type == 'download' || data.data.needs_redirect) {
           document.location.href = data.data.result_url;
+          Lightbox.close();
+          return false;
         } else {
           Lightbox.changeContent(data.data.result_additional);
         }
@@ -481,7 +489,7 @@ $(document).ready(function() {
       error:function(d,e) {
         //console.log(d,e); // Error reporting
       }
-  });
+    });
     return false;
   });
   Lightbox.addFormHandler('feedback', function(evt) {

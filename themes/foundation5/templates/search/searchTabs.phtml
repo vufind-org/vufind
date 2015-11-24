@@ -1,7 +1,7 @@
 <!-- search - searchtabs.PHTML -->
 <? $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType); ?>
 <? if (count($searchTabs) > 0): ?>
-  <ul class="tabs" data-tab>
+  <ul class="tabs"><? /* Don't use data-tab here as this would trigger normal tab behaviour - CK */?>
     <? foreach ($searchTabs as $tab): ?>
       <li class="tab-title<?=$tab['selected'] ? ' active' : ''?>">
         <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>

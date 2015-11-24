@@ -26,8 +26,7 @@ $cartId = $this->driver->getResourceSource() . '|' . $id;
     <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
     <? if (count($exportFormats) > 0): ?>
       <dd class="dropdown">
-        <a class="export-toggle" data-dropdown="exportDD" data-options="is_hover:true" href="<?= $this->recordLink()->getActionUrl($this->driver, 'Export') ?>" rel="nofollow"><i
-              class="fa fa-list-alt"></i> <?= $this->transEsc('Export Record') ?></a>
+        <a class="export-toggle" data-dropdown="exportDD" data-options="is_hover:true" href="<?= $this->recordLink()->getActionUrl($this->driver, 'Export') ?>" rel="nofollow"><i class="fa fa-list-alt"></i> <?= $this->transEsc('Export Record') ?></a>
         <ul id="exportDD" class="f-dropdown" role="menu" data-dropdown-content>
           <? foreach ($exportFormats as $exportFormat): ?>
             <li><a <? if ($this->export()->needsRedirect($exportFormat)): ?>target="<?= $this->escapeHtmlAttr($exportFormat) ?>Main"

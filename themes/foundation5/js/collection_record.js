@@ -3,8 +3,12 @@ function toggleCollectionInfo() {
 }
 
 function showMoreInfoToggle() {
+  // no rows in table? don't bother!
+  if ($("#collectionInfo").find('tr').length < 1) {
+      return;
+  }
   toggleCollectionInfo();
-  $("#moreInfoToggle").removeClass('hidden');
+  $("#moreInfoToggle").removeClass('hide');
   $("#moreInfoToggle").click(function(e) {
     e.preventDefault();
     toggleCollectionInfo();

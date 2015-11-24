@@ -46,7 +46,7 @@ if($loggedin = $this->auth()->isLoggedIn()) {
       <p><?=$this->truncate($summary, 300)?></p>
 
       <? if(strlen($summary) > 300): ?>
-        <p><a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a></p>
+        <p><a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>'><?=$this->transEsc('Full description')?></a></p>
       <? endif; ?>
     <? endif; ?>
 
@@ -127,7 +127,7 @@ if($loggedin = $this->auth()->isLoggedIn()) {
       <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
         <tr>
           <th><?=$this->transEsc('Language')?>: </th>
-          <td><? foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br/><? endforeach; ?></td>
+          <td><? foreach ($langs as $lang): ?><?= $this->escapeHtml($lang)?><br/><? endforeach; ?></td>
         </tr>
       <? endif; ?>
 
@@ -217,7 +217,7 @@ if($loggedin = $this->auth()->isLoggedIn()) {
         $openUrl = $this->openUrl($this->driver, 'record');
         $openUrlActive = $openUrl->isActive();
         // Account for replace_other_urls setting
-        $urls = $openUrlActive ? $this->record($this->driver)->getLinkDetailsForOpenUrl() : $this->record($this->driver)->getLinkDetails() ;
+        $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
       ?>
       <? if (!empty($urls) || $openUrlActive): ?>
       <tr>

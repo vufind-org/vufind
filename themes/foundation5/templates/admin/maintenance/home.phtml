@@ -11,19 +11,14 @@
     <?=$this->flashmessages()?>
     <form method="get" action="<?=$this->url('admin/maintenance', array('action' => 'DeleteExpiredSearches'))?>">
       <label for="del_daysOld">Delete unsaved user search histories older than</label>
-      <input id="del_daysOld" type="text" name="daysOld" size="5" value="2"
-             class="auto left" />
-      days.
-      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"
-             class="button small"/>
+      <input id="del_daysOld" type="text" name="daysOld" size="5" value="2" class="auto left" /> days.
+      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>" class="button small"/>
     </form>
     <hr />
     <form method="get" action="<?=$this->url('admin/maintenance', array('action' => 'DeleteExpiredSessions'))?>">
       <label for="delsess_daysOld">Delete user sessions older than</label>
-      <input id="delsess_daysOld" type="text" name="daysOld" size="5" value="2"
-      class="auto left" /> days.
-      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"
-             class="button small"/>
+      <input id="delsess_daysOld" type="text" name="daysOld" size="5" value="2" class="auto left" /> days.
+      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>" class="button small"/>
     </form>
     <hr />
     <form method="get" action="<?=$this->url('admin/maintenance', array('action' => 'ClearCache'))?>">
@@ -35,8 +30,7 @@
         </li>
       <? endforeach; ?>
       </ul>
-      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"
-             class="button small"/>
+      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>" class="button small"/>
     </form>
   </div>
 

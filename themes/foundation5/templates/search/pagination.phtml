@@ -3,7 +3,9 @@
 <div class="pagination-centered">
   <ul class="pagination hide-for-print" role="menubar" aria-label="Pagination">
     <? if (isset($this->previous)): ?>
+      <? if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a></li>
+      <? endif; ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
     <? endif; ?>
 

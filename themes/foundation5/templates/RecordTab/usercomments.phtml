@@ -7,7 +7,7 @@
 <div id="commentList">
   <?=$this->render('record/comments-list.phtml')?>
 </div>
-<form class="comment row" name="commentRecord" id="commentRecord" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post">
+<form class="comment row" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post">
   <div class="medium-3 columns name">
     <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
     <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>"/>

@@ -2,7 +2,8 @@
 <? if((isset($this->showBulkOptions)  && $this->showBulkOptions)
    || (isset($this->showCartControls) && $this->showCartControls)): ?>
   <div class="bulkActionButtons hide-for-print">
-    <div class="<? if (isset($this->showBulkOptions) && $this->showBulkOptions): ?>checkbox <? else: ?>checkbox left<? endif; ?> select-all"> <? /* solve this more elegantly - CK - fixme */ ?>
+    <div class="checkbox">
+    <? /* div class="<? if (isset($this->showBulkOptions) && $this->showBulkOptions): ?>checkbox <? else: ?>checkbox left<? endif; ?> select-all" */ ?>
       <label>
         <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"/> <?=$this->transEsc('select_page')?>
         &#124; <?=$this->transEsc('with_selected')?>:
@@ -20,7 +21,10 @@
         <? endif; ?>
       <? endif; ?>
       <? if (isset($this->showCartControls) && $this->showCartControls): ?>
-        <input id="<?=$this->idPrefix?>updateCart" type="submit" class="button secondary small" role="button" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
+       <input id="<?= $this->idPrefix ?>updateCart" class="button secondary small" role="button" type="submit" name="add" value="<?= $this->transEsc('Add to Book Bag') ?>" data-dropdown="<?= $this->idPrefix ?>bookbg-dd" data-options="is_hover:true; hover_timeout:5000" aria-controls="bookbg-dd" aria-haspopup="true" />
+        <ul id="<?= $this->idPrefix ?>bookbg-dd" class="f-dropdown" data-dropdown-content aria-hidden="true" aria-autoclose="true" tabindex="-1">
+          <li class="bookbg-msg"><?= $this->transEsc('Add to Book Bag') ?></li>
+        </ul>
       <? endif; ?>
     </div>
   </div>

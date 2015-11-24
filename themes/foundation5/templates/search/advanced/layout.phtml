@@ -70,7 +70,7 @@ if (isset($searchDetails) && is_object($searchDetails)) {
 
         <div id="groupJoin" class="right hide">
           <label for="groupJoinOptions"><?= $this->transEsc("search_match") ?>:</label>
-          <select id="groupJoinOptions" name="join" class="auto"><? /* leave class=auto - was form-control and used in advanced_search.js - check and fixme - CK */ ?>
+          <select id="groupJoinOptions" name="join" class="auto"><? /* leave class=auto - was form-control and used in advanced_search.js - CK */ ?>
             <option value="AND"<? if ($searchDetails && $searchDetails->getOperator() == 'ALL'): ?> selected<? endif ?>><?= $this->transEsc('group_AND') ?></option>
             <option value="OR"<? if ($searchDetails && $searchDetails->getOperator() == 'OR'): ?> selected<? endif ?>><?= $this->transEsc('group_OR') ?></option>
           </select>
@@ -156,6 +156,7 @@ if (isset($searchDetails) && is_object($searchDetails)) {
         <? endif; ?>
       </div>
     </div>
+
     <div class="<?= $this->layoutClass('sidebar') ?>">
       <? if ($hasDefaultsApplied): ?>
         <input type="hidden" name="dfApplied" value="1"/>

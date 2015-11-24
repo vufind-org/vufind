@@ -36,6 +36,8 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ *
+ * @codeCoverageIgnore
  */
 class Factory
 {
@@ -65,6 +67,8 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $left = !isset($config->Site->sidebarOnLeft)
             ? false : $config->Site->sidebarOnLeft;
-        return new LayoutClass($left);
+        $offcanvas = !isset($config->Site->offcanvas)
+            ? false : $config->Site->offcanvas;
+        return new LayoutClass($left, $offcanvas);
     }
 }

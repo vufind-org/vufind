@@ -1,18 +1,18 @@
 <!-- auth - abstractbase - loginfields.phtml -->
 <div class="row">
-  <div class="medium-3 columns">
-    <label for="right-label" class="right inline" for="login_username"><?=$this->transEsc('Username')?>:</label>
+  <div class="small-3 columns">
+    <label for="right-label" class="right inline" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
   </div>
-  <div class="medium-9 columns">
-    <input type="text" name="username" id="login_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="auto"/>
+  <div class="small-9 columns">
+    <input type="text" name="username" id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="auto"/>
   </div>
 </div>
 <div class="row">
-  <div class="medium-3 columns">
-    <label for="right-label" class="right inline" for="login_password"><?=$this->transEsc('Password')?>:</label>
+  <div class="small-3 columns">
+    <label for="right-label" class="right inline"  for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
   </div>
-  <div class="medium-9 columns">
-    <input type="password" name="password" id="login_password" class="auto"/>
+  <div class="small-9 columns">
+    <input type="password" name="password" id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" class="auto"/>
   </div>
 </div>
 <!-- auth - abstractbase - loginfields.phtml - END -->

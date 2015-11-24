@@ -26,7 +26,7 @@
       <? if($activeTree == $hierarchy): ?>
         <i class="fa fa-sitemap"></i> <?=$this->escapeHtml($hierarchyTitle)?>
       <? else: ?>
-        <i class="fa fa-sitemap text-muted"></i> <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchy)?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
+        <i class="fa fa-sitemap label secondary"></i> <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchy)?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
       <? endif; ?>
     <? endforeach; ?>
   </div>

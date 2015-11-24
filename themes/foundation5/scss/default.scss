@@ -1,21 +1,22 @@
 $include-html-classes: false;
-// import entire Foundation CSS - remove in header via theme.config.php
+// import entire Foundation CSS - remove redundant css-imports in page header via theme.config.php
 @import "vendor/foundation";
 
-// Our own mixins here
+// Our own mixins, variables and placeholders here
 
-// Change the grid width, if desired, in _settings.scss lines 89 or thereabouts
+// Change the GRID WIDTH, if desired, in _settings.scss lines 89 or thereabouts
 // Change the BASEFONT size, if desired, in _settings.scss lines 69 or thereabouts - make sure to remove or adapt the fs-smaller mixin
-// This is used to adjust the font size in the sidebar, labels and browse collections panels
+// This is used to adjust the FONT SIZE in the SIDEBAR, LABELS and BROWSE COLLECTIONS panels
+
 @mixin fs-smaller {
-  font-size: .875rem
+  font-size: .875rem;
 }
-// This is used for adjusting the max width (breadcrumbs etc.) to the max width of the content as set in _settings.scss
+// This is used for SETTING the MAX WIDTH (breadcrumbs etc.) TO MAX WIDTH of CONTENT as set in _settings.scss
 // 72 rem for 16px base font and 82px (82.285) for 14 px base font
 @mixin max-cont-width {
   max-width:82rem;
 }
-// Equal 1rem padding left and right used for boxes, standard spacing
+// Equal 1rem PADDING LEFT and RIGHT used for BOXES, standard spacing
 @mixin pad-l-r {
   padding-left: 1rem;
   padding-right: 1rem;
@@ -28,6 +29,8 @@ $include-html-classes: false;
     $padding: .5rem
   );
 }
+
+// Our own mixins, variables and placeholders - END
 
 // Avoid Mozilla horizontal jumps
 html {
@@ -494,7 +497,6 @@ ul.date-range-slider {
   input[type="text"] {
     margin-bottom: 0;
   }
-
   select {
     margin-bottom: .5em;
   }
@@ -527,6 +529,12 @@ ul.date-range-slider {
     button,
     .button {
       margin-bottom: 0;
+      // small buttons for mobile
+      @media only screen and (max-width: 767px) {
+        max-width: 50%;
+        float: left;
+      }
+
     }
   }
 
@@ -587,6 +595,7 @@ ul.date-range-slider {
 }
 
 // Shard selector checkboxes for developer machines + Keep Filters  - END
+
 // Searchbox on Home page - special case - searchbox not in header!
 .searchHomeContent .panel {
   padding-bottom: 0;
@@ -620,7 +629,7 @@ ul.date-range-slider {
     }
   }
 
-  // Advanced Search terms
+// Advanced Search terms
   p.adv_search_terms {
     background-color: #f1f1f1;
     border: 1px solid $iron;
@@ -670,8 +679,7 @@ ul.date-range-slider {
 
   // Advanced Search: search term insert - END
 
-
-  // Searchbox - END
+// Searchbox - END
 
   .grid {
     @media only screen and (max-width: 767px) {
@@ -759,6 +767,7 @@ ul.date-range-slider {
 // LIST VIEW
 // Rows
 .row.result {
+  margin-bottom: 1.5rem; // important for toolbars beneath list such as bulkActionButtons
   padding-bottom: 1rem;
   padding-top: 1rem;
   /*@include fs-smaller;*/
@@ -791,6 +800,7 @@ ul.date-range-slider {
 // Limit, sort and view selector dropdowns - END
 
 // Bulk action buttons, e.g. favourites list
+// seems to appear ONLY in myresearch/bulk-action-buttons.phtml
 .bulk-action-buttons {
   clear: both;
 }
@@ -1273,6 +1283,12 @@ li.jstree-facet ul {padding-left: 1rem;}
 // Tabs - END
 // DETAILS VIEW - END
 
+// BROWSE SUGGESTIONS lists on home/start page (prevent torn-apart look when 2 columns only)
+.browsesuggest.columns + .columns:last-child {
+  float: left;
+}
+// BROWSE SUGGESTIONS lists on home/start page - END
+
 // FOOTER
 footer {
   /*@include fs-smaller;*/
@@ -1320,7 +1336,7 @@ select {
     padding-left: 1.25rem;
     margin-bottom: 0;
     font-weight: normal;
-    line-height: .8rem;
+    // line-height: .8rem; causes faulty alignment refs #5991 - check and remove this comment if ok - fixme CK
     cursor: pointer;
 
     // set all checkbox-select-item labels to same font-size as select-all
@@ -1348,6 +1364,101 @@ select {
   // Move up sibling radios or checkboxes for tighter spacing
 }
 
+
+// OFF_CANVAS - 2b checked for redundant classes and BS3-related stuff that needs tanslating fixme - CK
+$offcanvas-offset: 75%;
+$offcanvas-padding: 2em;
+
+.offcanvas-overlay,
+.offcanvas-toggle {display: none;}
+
+@media screen and (max-width: 767px) {
+  body.offcanvas {
+    overflow-x: hidden; /* Prevent scroll on narrow devices */
+    .sidebar {
+      position: fixed;
+      height: 100%;
+      top: 0;
+      width: $offcanvas-offset;
+      padding-left: 0;
+      padding-right: 0;
+      overflow-y: auto;
+      h4 {padding-left: $offcanvas-padding;}
+      .checkbox {margin-left: calc(16px + #{$offcanvas-padding});} // check !!
+      .ul, .li {
+        border-left: 0;
+        border-right: 0;
+      }
+    }
+    &.active {overflow-y: hidden;}
+    &.offcanvas-left {
+      padding-left: calc(#{$offcanvas-padding} - .5em);  // check !!
+      & .main {background: #FFF;}
+      &.active {
+        margin-left: $offcanvas-offset;
+        margin-right: -$offcanvas-offset;
+        .sidebar {left: 0;}
+        .offcanvas-overlay {right: -$offcanvas-offset;}
+        .offcanvas-toggle {left: $offcanvas-offset;}
+      }
+      .sidebar {left: -$offcanvas-offset;}
+      .offcanvas-overlay {right: -100%;}
+      .offcanvas-toggle {
+        left: 0;
+      }
+    }
+    &.offcanvas-right {
+      padding-right: calc(#{$offcanvas-padding} - .5em); // CHECK
+      & .main > .container {background: #FFF;}
+      &.active {
+        margin-left: -$offcanvas-offset;
+        margin-right: $offcanvas-offset;
+        .sidebar {right: 0;}
+        .offcanvas-overlay {left: -$offcanvas-offset;}
+        .offcanvas-toggle {right: $offcanvas-offset;}
+      }
+      .sidebar {right: -$offcanvas-offset;}
+      .offcanvas-overlay {left: -100%;}
+      .offcanvas-toggle {
+        right: 0;
+      }
+    }
+    .offcanvas-overlay {
+      display: block;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,.3);
+      z-index: 3;
+    }
+    .offcanvas-toggle {
+      display: block;
+      position: fixed;
+      top: 50%;
+      width: calc(#{$offcanvas-padding} - 5px); // CHECK
+      padding: 1.5rem 0;
+      background: $primary-color; // CHECK
+      color: #EEE;
+      text-align: center;
+      z-index: 5;
+    }
+    .offcanvas-overlay,
+    .offcanvas-toggle,
+    .offcanvas-toggle * {cursor: pointer;}
+    &,.sidebar,
+    .offcanvas-overlay,
+    .offcanvas-toggle {
+      -webkit-transition: all .25s ease-out;
+      -o-transition: all .25s ease-out;
+      transition: all .25s ease-out;
+    }
+  }
+}
+
+// OFF-CANVAS - end
+
+
 // SPECIAL CLASSES
 
 // No Margins, used for buttons on top of content etc
@@ -1357,7 +1468,7 @@ select {
 
 // visibility classes - leave at end of file to overrule other display settings
 .hide {
-  display: none
+  display: none !important;
 }
 // display inline on small devices vudl - navigation
 .visible-small-inline {
@@ -1428,15 +1539,16 @@ select {
 
 // SPECIAL CLASSES - End
 
-// Offcanvas - move later fixme - CK
-.offcanvas-overlay,
-.offcanvas-toggle {display: none;}
 
 // PRINT STYLES
 @media print {
   .columns {
     width: auto
   }
+  // List view alignment
+  .column+.column:last-child,
+  .columns+.columns:last-child {float: left}
+
   // for similar layout as on screen
   // Print links
   // Show verbose links for certain elements
@@ -1454,5 +1566,9 @@ select {
     content: " (" attr(href) ")";
     text-decoration: underline
   }
+
+  // List view checkboxes
+  .checkbox-select-item, .checkbox-select-items {display: none; visibility: hidden}
+
 }
 // PRINT STYLES - end

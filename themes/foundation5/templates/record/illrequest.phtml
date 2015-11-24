@@ -110,9 +110,7 @@ $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc
         <label class="medium-3 columns"><?= $this->transEsc("hold_required_by") ?>:</label>
 
         <div class="medium-9 columns">
-          <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]"
-                 value="<?= (isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate) ?>"
-                 size="8" class="auto"/>
+          <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?= (isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate) ?>"  size="8" class="auto"/>
           (<?= $this->dateTime()->getDisplayDateFormat() ?>)
         </div>
       </div>
@@ -123,8 +121,7 @@ $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc
         <label class="medium-3 columns"><?= $this->transEsc("Comments") ?>:</label>
 
         <div class="medium-9 columns">
-          <textarea rows="3" cols="20" name="gatheredDetails[comment]"
-                    class="auto"><?= isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : '' ?></textarea>
+          <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="auto"><?= isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : '' ?></textarea>
         </div>
       </div>
     <? endif; ?>

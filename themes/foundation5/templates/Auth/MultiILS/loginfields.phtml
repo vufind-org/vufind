@@ -11,15 +11,15 @@
   </div>
 </div>
 <div class="row">
-  <label class="medium-3 columns" for="login_username"><?=$this->transEsc('Username')?>:</label>
+  <label class="medium-3 columns" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
   <div class="medium-9 columns">
-    <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="auto"/>
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="auto"/>
   </div>
 </div>
 <div class="row">
-  <label class="medium-3 columns" for="login_password"><?=$this->transEsc('Password')?>:</label>
+  <label class="medium-3 columns" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
   <div class="medium-9 columns">
-    <input id="login_password" type="password" name="password" class="auto"/>
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" type="password" name="password" class="auto"/>
   </div>
 </div>
 <!-- auth - multiils - loginfields.phtml - END -->

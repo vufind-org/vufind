@@ -19,7 +19,7 @@
       <input class="button secondary tiny" id="<?=$this->idPrefix?>delete_list_items_<?=!is_null($this->list) ? $this->escapeHtmlAttr($this->list->id) : ''?>" type="submit" name="delete" role="button" value="<?=$this->transEsc('Delete')?>" title="<?=$this->transEsc('delete_selected')?>"/>
     </li>
     <? endif; ?>
-    <? $exportOptions = $this->export()->getBulkOptions(); if (count($exportOptions) > 0): ?>
+    <? $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
     <li>
       <input class="button secondary tiny" type="submit" name="export" role="button" value="<?=$this->transEsc('Export')?>" title="<?=$this->transEsc('export_selected')?>"/>
     </li>

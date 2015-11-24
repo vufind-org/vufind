@@ -24,7 +24,7 @@ function ajaxGetView(pageObject) {
         if(tab.length > 0) {
           tab.click();
         } else {
-          currentTab = $('.nav-tabs li a:eq(0)')[0].id;
+          currentTab = $('.tabs li a:eq(0)')[0].id;
         }
       },
       error: function(d,e){
@@ -134,7 +134,7 @@ function scrollToSelected() {
 // Toggle side menu
 function toggleSideNav() {
   $('#side-nav').toggle();
-  var opener = $('#view .nav-tabs li.opener a');
+  var opener = $('#view .tabs li.opener a');
   opener.toggleClass('hidden');
   $('#view').toggleClass('col-sm-9').toggleClass('col-sm-12');
 }

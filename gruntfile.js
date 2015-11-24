@@ -1,29 +1,74 @@
 module.exports = function (grunt) {
+    grunt.loadNpmTasks('grunt-sass');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+
     grunt.initConfig({
-        pkg  : grunt.file.readJSON('package.json'),
+        pkg: grunt.file.readJSON('package.json'),
         // ADAPT THIS FOR FOUNDATION BASE THEME
-        sass : {
-            dist: {
-                options: {
-                    outputStyle: 'expanded' // specify style here
+        foundation: {
+            sass: {
+                dist: {
+                    options: {
+                        outputStyle: 'compressed' // specify style here
+                    }
                 },
-                files: [{
-                    expand: true, // allows you to specify directory instead of indiv. files
-                    cwd: 'themes/foundation5/scss', // current working directory
-                    src: ['**/*.scss'],
-                    dest: 'themes/foundation5/css',
-                    ext: '.css'
-                }]
+                tmp: {
+                    options: {
+                        outputStyle: 'expanded'
+                    }
+                },
+                options: {
+                    themeFolder: 'themes'
+                }
             }
         },
         watch: {
+            options: {
+                atBegin: true
+            },
             css: {
                 files: '**/*.scss',
-                tasks: ['sass']
+                tasks: ['foundation:sass:dev']
             }
         }
     });
-    grunt.loadNpmTasks('grunt-sass');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.registerTask('default', ['watch']);
+    grunt.registerMultiTask('foundation', function (arg1, arg2) {
+        var fs = require('fs')
+            , path = require('path')
+            , options = (arguments.length > 0 && this.data[arg1] && this.data[arg1].options) ? this.data[arg1].options : this.data.dist.options
+            , theme = (arguments.length > 1) ? arg2 : null
+            , themeFolder = this.data.options.themeFolder || 'themes'
+            , themeList = fs.readdirSync(path.resolve(themeFolder))
+            , sassConfig = {}
+            ;
+
+        for (var i in themeList) {
+            if (theme && themeList[i] !== theme) {
+                continue;
+            }
+            var sassDir = path.join(themeFolder, themeList[i], 'scss');
+            var cssDir = path.join(themeFolder, themeList[i], 'css');
+
+            try {
+                fs.statSync(sassDir);
+                sassConfig[themeList[i]] = {
+                    options: options,
+                    files: [{
+                        expand: true,
+                        cwd: sassDir,
+                        src: ['**/*.scss'],
+                        dest: cssDir,
+                        ext: '.css'
+                    }]
+                };
+            } catch (err) {
+                // silently suppress thrown errors when no sass sources exist in a theme
+            }
+        }
+
+        grunt.config.set('sass', sassConfig);
+        grunt.task.run('sass');
+    });
+
+    grunt.registerTask('default', ['foundation']);
 };

@@ -3,8 +3,7 @@
 <ul class="side-nav">
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
     <li>
-      <a href="<?= $this->url('myresearch-favorites') ?>"
-         class="<?= $this->active == 'favorites' ? ' active' : '' ?>">
+      <a href="<?= $this->url('myresearch-favorites') ?>" class="<?= $this->active == 'favorites' ? ' active' : '' ?>">
         <?= $this->transEsc('Favorites') ?>
         <span class="pull-right"><i class="fa fa-fw fa-star"></i></span>
       </a>
@@ -46,7 +45,7 @@
     <? if ($this->ils()->checkCapability('getMyFines')): ?>
       <li><a href="<?= $this->url('myresearch-fines') ?>" class="<?= $this->active == 'fines' ? ' active' : '' ?>">
           <?= $this->transEsc('Fines') ?>
-          <span class="pull-right"><i class="fa fa-fw fa-usd"></i></span>
+          <span class="pull-right"><i class="fa fa-fw fa-euro"></i></span>
         </a>
       </li>
     <? endif; ?>

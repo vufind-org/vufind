@@ -1,6 +1,5 @@
-<!-- layout.PHTML begin -->
 <?=$this->doctype('HTML5')?>
-<html lang="<?=$this->layout()->userLang?>">
+<html lang="<?=$this->layout()->userLang?>" <? if ($this->layout()->rtl): ?>dir="rtl" <? endif; ?>>
   <head>
     <?$this->headThemeResources()?>
     <meta charset="utf-8">
@@ -19,6 +18,11 @@
         )
       );
     ?>
+    <!-- RTL styling -->
+    <? /* should work out-of-the-box in FNDTN -
+        just change lang and dir in the <html class="no-js" lang="ar" dir="rtl">
+        and activate and change line 144 in foundation/_settings.scss to $text-direction: rtl; */
+    ?>
     <?=$this->headLink()?>
     <?=$this->headStyle()?>
     <?
@@ -31,6 +35,7 @@
           array(
             'add_tag_success' => 'add_tag_success',
             'bulk_email_success' => 'bulk_email_success',
+            'bulk_noitems_advice' => 'bulk_noitems_advice',
             'bulk_save_success' => 'bulk_save_success',
             'close' => 'close',
             'libphonenumber_invalid' => 'libphonenumber_invalid',
@@ -59,7 +64,6 @@
               'bookbagFull' => 'bookbag_full_msg',
               'bookbagMax' => $cart->getMaxSize(),
               'bookbagStatusFull' => 'bookbag_full',
-              'bulk_noitems_advice' => 'bulk_noitems_advice',
               'confirmDelete' => 'confirm_delete',
               'confirmEmpty' => 'bookbag_confirm_empty',
               'itemsAddBag' => 'items_added_to_bookbag',
@@ -84,7 +88,7 @@
     ?>
     <?=$this->headScript()?>
   </head>
-  <body class="<?=$this->layoutClass('offcanvas-row')?>">
+  <body class="<?=$this->layoutClass('offcanvas-row')?><? if ($this->layout()->rtl): ?> rtl<? endif; ?>">
     <? // Set up the search box -- there are three possible cases:
       // 1. No search box was set; we should default to the normal box
       // 2. It was set to false; we should display nothing
@@ -130,7 +134,7 @@
 
     <div class="row">
       <div id="content" role="main" class="main panel template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
-	    <div class="container">
+    <div class="container">
           <?=$this->layout()->content ?>
       </div>
     </div>
@@ -154,10 +158,9 @@
 <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
 <?=$this->googleanalytics()?>
 <?=$this->piwik()?>
-<!-- Initializing call for FOUNDATION functions -->
+<? /* Initializing call for FOUNDATION functions */ ?>
     <script>
         $(document).foundation();
     </script>
   </body>
 </html>
-<!-- layout.PHTML end -->

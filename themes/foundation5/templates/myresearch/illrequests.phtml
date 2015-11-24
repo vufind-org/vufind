@@ -140,16 +140,16 @@
             <? endif; ?>
 
             <? if (isset($ilsDetails['in_transit']) && $ilsDetails['in_transit']): ?>
-              <div class="text-success"><?=$this->transEsc("ill_request_in_transit") . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], array(), $ilsDetails['in_transit']) : '') ?></div>
+              <div class="label success"><?=$this->transEsc("ill_request_in_transit") . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], array(), $ilsDetails['in_transit']) : '') ?></div>
             <? endif; ?>
             <? if (isset($ilsDetails['processed']) && $ilsDetails['processed']): ?>
-              <div class="text-success"><?=$this->transEsc("ill_request_processed") . (is_string($ilsDetails['processed']) ? ': ' . $ilsDetails['processed'] : '') ?></div>
+              <div class="label success"><?=$this->transEsc("ill_request_processed") . (is_string($ilsDetails['processed']) ? ': ' . $ilsDetails['processed'] : '') ?></div>
             <? endif; ?>
             <? if (isset($ilsDetails['available']) && $ilsDetails['available']): ?>
-              <div class="text-success"><?=$this->transEsc("ill_request_available") ?></div>
+              <div class="label success"><?=$this->transEsc("ill_request_available") ?></div>
             <? endif; ?>
             <? if (isset($ilsDetails['canceled']) && $ilsDetails['canceled']): ?>
-              <div class="text-success"><?=$this->transEsc("ill_request_canceled") . (is_string($ilsDetails['canceled']) ? ': ' . $ilsDetails['canceled'] : '') ?></div>
+              <div class="label success"><?=$this->transEsc("ill_request_canceled") . (is_string($ilsDetails['canceled']) ? ': ' . $ilsDetails['canceled'] : '') ?></div>
             <? endif; ?>
             <? if (isset($ilsDetails['cancel_link'])): ?>
               <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("ill_request_cancel") ?></a></p>

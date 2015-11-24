@@ -17,8 +17,8 @@
 }
 
 .panel {border:1px solid #DDD}
-.panel .panel-heading {background:#EEE} /* as far as I can see, panel-heading is no longer in use, CK */
-.panel-collapse {max-height:500px;overflow-y:auto} /* as far as I can see, panel-collapse is no longer in use, CK */
+.panel .panel-heading {background:#EEE} /* as far as I can see, panel-heading is no longer in use, fixme CK */
+.panel-collapse {max-height:500px;overflow-y:auto} /* as far as I can see, panel-collapse is no longer in use, fixme CK */
 
 .details {text-align:center}
 .details .copyright {margin-bottom:1em}
@@ -51,8 +51,8 @@
 
 #allFiles .btn {display:block;margin:auto;max-width:400px}
 #download-button .details {font-size:1rem}
-div.xml { display:block;font:10pt Courier;text-align:left;padding-left:1em } /* CHECK if still required - refers to techinfo.phtml */
-div.xml.collapsed > div { display:none;margin-left:2px } /* CHECK if still required - refers to techinfo.phtml */
+div.xml { display:block;font:10pt Courier;text-align:left;padding-left:1em } /* CHECK if still required - refers to techinfo.phtml, fixme CK */
+div.xml.collapsed > div { display:none;margin-left:2px } /* CHECK if still required - refers to techinfo.phtml, fixme CK */
 
 .fa.fa-file:before {content: "\f0f6";}
 .fa.file-audio:before {content: "\f1c7";}

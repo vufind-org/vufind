@@ -3,7 +3,7 @@
   <? $similarAuthors = $this->recommend->getSimilarAuthors(); ?>
   <? if (!empty($similarAuthors['list'])): ?>
     <div class="row">
-      <p>Author Results for <strong><?=$this->escapeHtml($this->recommend->getSearchTerm()) ?></strong></p>
+      <p><?=$this->transEsc('Author Results for')?> <strong><?=$this->escapeHtml($this->recommend->getSearchTerm()) ?></strong></p>
       <div class="medium-4 columns">
       <? foreach($similarAuthors['list'] as $i => $author): ?>
         <? if ($i == 5): ?>

@@ -144,7 +144,7 @@
             <? endif; ?>
 
             <? if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
-              <div class="text-success"><?=$this->transEsc("hold_available") ?></div>
+              <div class="label success"><?=$this->transEsc("hold_available") ?></div>
             <? elseif (isset($ilsDetails['position'])): ?>
               <p><strong><?=$this->transEsc("hold_queue_position") ?>:</strong> <?=$this->escapeHtml($ilsDetails['position']) ?></p>
             <? endif; ?>

@@ -44,10 +44,10 @@ function checkItemStatuses() {
             for (var x=0; x<result.locationList.length; x++) {
               locationListHTML += '<div class="groupLocation">';
               if (result.locationList[x].availability) {
-                locationListHTML += '<i class="fa fa-ok text-success"></i> <span class="text-success">'
+                locationListHTML += '<i class="fa fa-ok label success "></i> <span class="label success">'
                   + result.locationList[x].location + '</span> ';
               } else {
-                locationListHTML += '<i class="fa fa-remove text-error"></i> <span class="text-error"">'
+                locationListHTML += '<i class="fa fa-remove label error"></i> <span class="label error"">'
                   + result.locationList[x].location + '</span> ';
               }
               locationListHTML += '</div>';

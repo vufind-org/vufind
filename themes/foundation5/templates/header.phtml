@@ -1,9 +1,9 @@
 <!-- HEADER.PHTML begin -->
 <? $account = $this->auth()->getManager(); ?>
-    <nav class="top-bar" role="navigation" data-topbar data-options="sticky_on:all">
+    <nav class="top-bar" data-topbar data-options="sticky_on:all">
         <ul class="title-area">
             <li class="name">
-                <h1><a role="logo" class="navbar-brand" href="<?=$this->url('home')?>">VuFind</a></h1>
+                <h1><a class="navbar-brand" href="<?=$this->url('home')?>">VuFind</a></h1>
             </li>
             <? /*Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone */ ?>
             <li class="toggle-topbar menu-icon"><a href="#"><span></span></a></li>
@@ -24,7 +24,7 @@
                     <? endif; ?>
                     <? $cart = $this->cart(); if ($cart->isActive()): ?>
                         <li id="cartSummary">
-                            <a id="cartItems" class="modal-link" title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><i class="fa fa-suitcase"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?><?=$cart->isFull() ? ' (' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
+                            <a id="cartItems" class="modal-link" title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><i class="fa fa-clipboard "></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?><?=$cart->isFull() ? ' (' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
                         </li>
                     <? endif; ?>
                     <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
