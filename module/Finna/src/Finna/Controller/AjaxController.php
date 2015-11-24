@@ -312,6 +312,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
             );
         }
 
+        $type = $this->params()->fromPost('type');
+        $id = $this->params()->fromPost('id');
+        $table = $this->getTable('Comments');
         if ($commentId = $this->params()->fromPost('commentId')) {
             // Edit existing comment
             $comment = $this->params()->fromPost('comment');
@@ -323,12 +326,15 @@ class AjaxController extends \VuFind\Controller\AjaxController
             $rating = $this->params()->fromPost('rating');
             $this->getTable('Comments')
                 ->edit($user->id, $commentId, $comment, $rating);
-            return $this->output($commentId, self::STATUS_OK);
+
+            $output = ['id' => $commentId];
+            if ($rating) {
+                $average = $table->getAverageRatingForResource($id);
+                $output['rating'] = $average;
+            }
+            return $this->output($output, self::STATUS_OK);
         }
 
-        $type = $this->getRequest()->getPost()->get('type');
-        $id = $this->params()->fromPost('id');
-        $table = $this->getTable('Comments');
         if ($type === '1') {
             // Allow only 1 rating/record for each user
             $comments = $table->getForResourceByUser($id, $user->id);
@@ -347,13 +353,15 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         $commentId = $data['data'];
+        $output = ['id' => $commentId];
 
         // Update type
         $table->setType($user->id, $commentId, $type);
 
         // Update rating
         $rating = $this->getRequest()->getPost()->get('rating');
-        if ($rating !== null && $rating > 0 && $rating <= 5) {
+        $updateRating = $rating !== null && $rating > 0 && $rating <= 5;
+        if ($updateRating) {
             $table = $this->getTable('Comments');
             $table->setRating($user->id, $commentId, $rating);
         }
@@ -376,11 +384,41 @@ class AjaxController extends \VuFind\Controller\AjaxController
         if (!$results instanceof \VuFind\Search\EmptySet\Results
             && count($results->getResults())
         ) {
-            $ids = reset($results->getResults())->getLocalIds();
+            $results = $results->getResults();
+            $ids = reset($results)->getLocalIds();
         }
 
         $commentsRecord = $this->getTable('CommentsRecord');
         $commentsRecord->addLinks($commentId, $ids);
+
+        if ($updateRating) {
+            $average = $table->getAverageRatingForResource($id);
+            $output['rating'] = $average;
+        }
+
+        return $this->output($output, self::STATUS_OK);
+    }
+
+    /**
+     * Delete a comment on a record.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function deleteRecordCommentAjax()
+    {
+        $output = parent::deleteRecordCommentAjax();
+        $data = json_decode($output->getContent(), true);
+
+        if ($data['status'] != 'OK') {
+            return $output;
+        }
+
+        $recordId = $this->params()->fromQuery('recordId');
+        if ($recordId !== null) {
+            $table = $this->getTable('Comments');
+            $average = $table->getAverageRatingForResource($recordId);
+            $this->output(['rating' => $average], self::STATUS_OK);
+        }
 
         return $output;
     }
