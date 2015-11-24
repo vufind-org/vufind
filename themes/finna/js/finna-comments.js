@@ -41,6 +41,12 @@ finna.comments = (function() {
                 }
             });
         };
+        
+        // Login link
+        $('a.login-link').click(function() {
+          return Lightbox.get('MyResearch','UserLogin');
+        });
+        finna.layout.initLightbox($('#usercomments-tab'));
     };
 
     var initCommentForm = function(parentMethod, allowRating) {

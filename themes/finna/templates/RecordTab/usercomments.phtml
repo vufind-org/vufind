@@ -38,7 +38,7 @@
   </form>
 <? else: ?>
   <div>
-    <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'UserComments')?>?login=true" class="btn btn-primary"><?= $this->translate('Login'); ?></a> <?= $this->translate(($ratings ? 'rating' : 'comment') . '_login') ?>
+    <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'UserComments')?>?login=true" class="btn btn-primary modal-link login-link" title="<?=$this->transEsc("Login")?>"><?= $this->translate('Login'); ?></a> <?= $this->translate(($ratings ? 'rating' : 'comment') . '_login') ?>
   </div>
 <? endif; ?>
 <!-- END of: finna - RecordTab/usercomments.phtml -->

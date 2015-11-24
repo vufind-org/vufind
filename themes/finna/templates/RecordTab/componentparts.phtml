@@ -32,7 +32,8 @@
       <td style="width: 10%"><?=$this->escapeHtml($part['number']) ?></td>
       <td>
         <? if (!empty($part['id'])): ?>
-          <a href="<?=$this->recordLink()->getUrl($part['id']) ?>"><?=$this->escapeHtml($part['title']) ?></a>
+          <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
+          <a href="<?=$this->escapeHtmlAttr($this->url('record') . urlencode($part['id'])) ?>"><?=$this->escapeHtml($part['title']) ?></a>
         <? else: ?>
           <?=$this->escapeHtml($part['title']) ?>
         <? endif; ?>
