@@ -40,11 +40,11 @@ use VuFind\Export, Zend\Config\Config;
 class ExportTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Test bulk options.
+     * Test bulk options using legacy (deprecated) configuration.
      *
      * @return void
      */
-    public function testGetBulkOptions()
+    public function testGetBulkOptionsLegacy()
     {
         $config = [
             'BulkExport' => [
@@ -60,6 +60,47 @@ class ExportTest extends \PHPUnit_Framework_TestCase
         ];
         $export = $this->getExport($config);
         $this->assertEquals(['foo', 'bar'], $export->getBulkOptions());
+    }
+
+    /**
+     * Test bulk options.
+     *
+     * @return void
+     */
+    public function testGetBulkOptions()
+    {
+        $config = [
+            'Export' => [
+                'foo' => 'record,bulk',
+                'bar' => 'record,bulk',
+                'baz' => 0,
+                'xyzzy' => 'record',
+            ],
+        ];
+        $export = $this->getExport($config);
+        $this->assertEquals(['foo', 'bar'], $export->getBulkOptions());
+    }
+
+    /**
+     * Test active formats.
+     *
+     * @return void
+     */
+    public function testGetActiveFormats()
+    {
+        $config = [
+            'Export' => [
+                'foo' => 'record,bulk',
+                'bar' => 'record,bulk',
+                'baz' => 0,
+                'xyzzy' => 1,
+            ],
+        ];
+        $export = $this->getExport($config);
+        $this->assertEquals(['foo', 'bar'], $export->getActiveFormats('bulk'));
+        $this->assertEquals(
+            ['foo', 'bar', 'xyzzy'], $export->getActiveFormats('record')
+        );
     }
 
     /**
@@ -173,13 +214,9 @@ class ExportTest extends \PHPUnit_Framework_TestCase
     public function testGetFormatsForRecords()
     {
         $mainConfig = [
-            'BulkExport' => [
-                'enabled' => 1,
-                'options' => 'anything:marc',
-            ],
             'Export' => [
-                'anything' => 1,
-                'marc' => 1,
+                'anything' => 'record,bulk',
+                'marc' => 'record,bulk',
             ],
         ];
         $exportConfig = [

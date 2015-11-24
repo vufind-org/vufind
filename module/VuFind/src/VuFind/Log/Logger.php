@@ -61,18 +61,9 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
     {
         // DEBUGGER
         if (!$config->System->debug == false) {
-            $writer = new Writer\Stream('php://output');
-            $formatter = new \Zend\Log\Formatter\Simple(
-                '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
-            );
-            $writer->setFormatter($formatter);
-            $this->addWriters(
-                $writer,
-                'debug-'
-                . (is_int($config->System->debug) ? $config->System->debug : '5')
-            );
+            $this->addDebugWriter($config->System->debug);
         }
-        
+
         // Activate database logging, if applicable:
         if (isset($config->Logging->database)) {
             $parts = explode(':', $config->Logging->database);
@@ -128,11 +119,35 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             $this->addWriters($writer, $filters);
         }
 
-        // Null writer to avoid errors
+        // Null (no-op) writer to avoid errors
         if (count($this->writers) == 0) {
-            $nullWriter = 'Zend\Log\Writer\Null';
+            $nullWriter = 'Zend\Log\Writer\Noop';
             $this->addWriter(new $nullWriter());
         }
+    }
+
+    /**
+     * Add the standard debug stream writer.
+     *
+     * @param bool|int $debug Debug mode/level
+     *
+     * @return void
+     */
+    public function addDebugWriter($debug)
+    {
+        // Only add debug writer ONCE!
+        static $hasDebugWriter = false;
+        if ($hasDebugWriter) {
+            return;
+        }
+
+        $hasDebugWriter = true;
+        $writer = new Writer\Stream('php://output');
+        $formatter = new \Zend\Log\Formatter\Simple(
+            '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
+        );
+        $writer->setFormatter($formatter);
+        $this->addWriters($writer, 'debug-' . (is_int($debug) ? $debug : '5'));
     }
 
     /**

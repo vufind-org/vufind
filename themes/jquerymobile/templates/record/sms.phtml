@@ -6,7 +6,7 @@
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
     <?=$this->flashmessages()?>
-    <form method="post" action="" name="smsRecord" data-ajax="false">
+    <form method="post" name="smsRecord" data-ajax="false">
       <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
       <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
       <div data-role="fieldcontain">

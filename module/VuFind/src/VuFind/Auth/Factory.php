@@ -79,7 +79,8 @@ class Factory
             // Indicate that initialization is complete to avoid reinitialization:
             $proxy->setProxyInitializer(null);
         };
-        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory();
+        $cfg = $sm->get('VuFind\ProxyConfig');
+        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
         return $factory->createProxy('VuFind\Auth\ILSAuthenticator', $callback);
     }
 

@@ -41,9 +41,10 @@ abstract class AbstractAddressList implements HeaderInterface
 
     public static function fromString($headerLine)
     {
-        $decodedLine = iconv_mime_decode($headerLine, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, 'UTF-8');
-        // split into name/value
-        list($fieldName, $fieldValue) = GenericHeader::splitHeaderLine($decodedLine);
+        list($fieldName, $fieldValue) = GenericHeader::splitHeaderLine($headerLine);
+        $decodedValue = HeaderWrap::mimeDecodeValue($fieldValue);
+        $wasEncoded = ($decodedValue !== $fieldValue);
+        $fieldValue = $decodedValue;
 
         if (strtolower($fieldName) !== static::$type) {
             throw new Exception\InvalidArgumentException(sprintf(
@@ -52,12 +53,12 @@ abstract class AbstractAddressList implements HeaderInterface
             ));
         }
         $header = new static();
-        if ($decodedLine != $headerLine) {
+        if ($wasEncoded) {
             $header->setEncoding('UTF-8');
         }
         // split value on ","
         $fieldValue = str_replace(Headers::FOLDING, ' ', $fieldValue);
-        $values     = explode(',', $fieldValue);
+        $values     = str_getcsv($fieldValue, ',');
         array_walk(
             $values,
             function (&$value) {
@@ -67,29 +68,7 @@ abstract class AbstractAddressList implements HeaderInterface
 
         $addressList = $header->getAddressList();
         foreach ($values as $address) {
-            // split values into name/email
-            if (!preg_match('/^((?P<name>.*?)<(?P<namedEmail>[^>]+)>|(?P<email>.+))$/', $address, $matches)) {
-                // Should we raise an exception here?
-                continue;
-            }
-            $name = null;
-            if (isset($matches['name'])) {
-                $name  = trim($matches['name']);
-            }
-            if (empty($name)) {
-                $name = null;
-            }
-
-            if (isset($matches['namedEmail'])) {
-                $email = $matches['namedEmail'];
-            }
-            if (isset($matches['email'])) {
-                $email = $matches['email'];
-            }
-            $email = trim($email); // we may have leading whitespace
-
-            // populate address list
-            $addressList->add($email, $name);
+            $addressList->addFromString($address);
         }
         return $header;
     }
@@ -103,22 +82,33 @@ abstract class AbstractAddressList implements HeaderInterface
     {
         $emails   = array();
         $encoding = $this->getEncoding();
+
         foreach ($this->getAddressList() as $address) {
             $email = $address->getEmail();
             $name  = $address->getName();
+
             if (empty($name)) {
                 $emails[] = $email;
-            } else {
-                if (false !== strstr($name, ',')) {
-                    $name = sprintf('"%s"', $name);
-                }
+                continue;
+            }
 
-                if ($format == HeaderInterface::FORMAT_ENCODED
-                    && 'ASCII' !== $encoding
-                ) {
-                    $name = HeaderWrap::mimeEncodeValue($name, $encoding);
-                }
-                $emails[] = sprintf('%s <%s>', $name, $email);
+            if (false !== strstr($name, ',')) {
+                $name = sprintf('"%s"', $name);
+            }
+
+            if ($format === HeaderInterface::FORMAT_ENCODED
+                && 'ASCII' !== $encoding
+            ) {
+                $name = HeaderWrap::mimeEncodeValue($name, $encoding);
+            }
+
+            $emails[] = sprintf('%s <%s>', $name, $email);
+        }
+
+        // Ensure the values are valid before sending them.
+        if ($format !== HeaderInterface::FORMAT_RAW) {
+            foreach ($emails as $email) {
+                HeaderValue::assertValid($email);
             }
         }
 

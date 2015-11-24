@@ -120,7 +120,8 @@ class Options extends \VuFind\Search\Base\Options
         $this->searchIni = $this->facetsIni = 'EDS';
         $searchSettings = $configLoader->get($this->searchIni);
         parent::__construct($configLoader);
-        $this->resultLimit = 100;
+        // 2015-06-30 RF - Changed to unlimited
+        //$this->resultLimit = 100;
         $this->viewOptions = [
             'list|title' => 'Title View', 'list|brief' => 'Brief View',
             'list|detailed' => 'Detailed View'
@@ -132,9 +133,9 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($facetConf->Advanced_Facet_Settings->translated_facets)
             && count($facetConf->Advanced_Facet_Settings->translated_facets) > 0
         ) {
-            foreach ($facetConf->Advanced_Facet_Settings->translated_facets as $c) {
-                $this->translatedFacets[] = $c;
-            }
+            $this->setTranslatedFacets(
+                $facetConf->Advanced_Facet_Settings->translated_facets->toArray()
+            );
         }
     }
 

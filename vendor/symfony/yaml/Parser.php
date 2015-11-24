@@ -20,7 +20,9 @@ use Symfony\Component\Yaml\Exception\ParseException;
  */
 class Parser
 {
-    const FOLDED_SCALAR_PATTERN = '(?P<separator>\||>)(?P<modifiers>\+|\-|\d+|\+\d+|\-\d+|\d+\+|\d+\-)?(?P<comments> +#.*)?';
+    const BLOCK_SCALAR_HEADER_PATTERN = '(?P<separator>\||>)(?P<modifiers>\+|\-|\d+|\+\d+|\-\d+|\d+\+|\d+\-)?(?P<comments> +#.*)?';
+    // BC - wrongly named
+    const FOLDED_SCALAR_PATTERN = self::BLOCK_SCALAR_HEADER_PATTERN;
 
     private $offset = 0;
     private $lines = array();
@@ -115,6 +117,9 @@ class Parser
                         $data[] = $this->parseValue($values['value'], $exceptionOnInvalidType, $objectSupport, $objectForMap);
                     }
                 }
+                if ($isRef) {
+                    $this->refs[$isRef] = end($data);
+                }
             } elseif (preg_match('#^(?P<key>'.Inline::REGEX_QUOTED_STRING.'|[^ \'"\[\{].*?) *\:(\s+(?P<value>.+?))?\s*$#u', $this->currentLine, $values) && (false === strpos($values['key'], ' #') || in_array($values['key'][0], array('"', "'")))) {
                 if ($context && 'sequence' == $context) {
                     throw new ParseException('You cannot define a mapping item when in a sequence');
@@ -130,6 +135,11 @@ class Parser
                     $e->setSnippet($this->currentLine);
 
                     throw $e;
+                }
+
+                // Convert float keys to strings, to avoid being converted to integers by PHP
+                if (is_float($key)) {
+                    $key = (string) $key;
                 }
 
                 if ('<<' === $key) {
@@ -227,6 +237,9 @@ class Parser
                         $data[$key] = $value;
                     }
                 }
+                if ($isRef) {
+                    $this->refs[$isRef] = $data[$key];
+                }
             } else {
                 // multiple documents are not supported
                 if ('---' === $this->currentLine) {
@@ -234,7 +247,7 @@ class Parser
                 }
 
                 // 1-liner optionally followed by newline(s)
-                if ($this->lines[0] === trim($value)) {
+                if (is_string($value) && $this->lines[0] === trim($value)) {
                     try {
                         $value = Inline::parse($this->lines[0], $exceptionOnInvalidType, $objectSupport, $objectForMap, $this->refs);
                     } catch (ParseException $e) {
@@ -283,10 +296,6 @@ class Parser
                 }
 
                 throw new ParseException($error, $this->getRealCurrentLineNb() + 1, $this->currentLine);
-            }
-
-            if ($isRef) {
-                $this->refs[$isRef] = end($data);
             }
         }
 
@@ -356,7 +365,7 @@ class Parser
             return;
         }
 
-        if ($inSequence && $oldLineIndentation === $newIndent && '-' === $data[0][0]) {
+        if ($inSequence && $oldLineIndentation === $newIndent && isset($data[0][0]) && '-' === $data[0][0]) {
             // the previous line contained a dash but no item content, this line is a sequence item with the same indentation
             // and therefore no nested list or mapping
             $this->moveToPreviousLine();
@@ -366,8 +375,8 @@ class Parser
 
         $isItUnindentedCollection = $this->isStringUnIndentedCollectionItem($this->currentLine);
 
-        // Comments must not be removed inside a string block (ie. after a line ending with "|")
-        $removeCommentsPattern = '~'.self::FOLDED_SCALAR_PATTERN.'$~';
+        // Comments must not be removed inside a block scalar
+        $removeCommentsPattern = '~'.self::BLOCK_SCALAR_HEADER_PATTERN.'$~';
         $removeComments = !preg_match($removeCommentsPattern, $this->currentLine);
 
         while ($this->moveToNextLine()) {
@@ -457,10 +466,10 @@ class Parser
             return $this->refs[$value];
         }
 
-        if (preg_match('/^'.self::FOLDED_SCALAR_PATTERN.'$/', $value, $matches)) {
+        if (preg_match('/^'.self::BLOCK_SCALAR_HEADER_PATTERN.'$/', $value, $matches)) {
             $modifiers = isset($matches['modifiers']) ? $matches['modifiers'] : '';
 
-            return $this->parseFoldedScalar($matches['separator'], preg_replace('#\d+#', '', $modifiers), (int) abs($modifiers));
+            return $this->parseBlockScalar($matches['separator'], preg_replace('#\d+#', '', $modifiers), (int) abs($modifiers));
         }
 
         try {
@@ -474,15 +483,15 @@ class Parser
     }
 
     /**
-     * Parses a folded scalar.
+     * Parses a block scalar.
      *
-     * @param string $separator   The separator that was used to begin this folded scalar (| or >)
-     * @param string $indicator   The indicator that was used to begin this folded scalar (+ or -)
-     * @param int    $indentation The indentation that was used to begin this folded scalar
+     * @param string $style       The style indicator that was used to begin this block scalar (| or >)
+     * @param string $chomping    The chomping indicator that was used to begin this block scalar (+ or -)
+     * @param int    $indentation The indentation indicator that was used to begin this block scalar
      *
      * @return string The text value
      */
-    private function parseFoldedScalar($separator, $indicator = '', $indentation = 0)
+    private function parseBlockScalar($style, $chomping = '', $indentation = 0)
     {
         $notEOF = $this->moveToNextLine();
         if (!$notEOF) {
@@ -537,18 +546,24 @@ class Parser
             $this->moveToPreviousLine();
         }
 
-        // replace all non-trailing single newlines with spaces in folded blocks
-        if ('>' === $separator) {
+        // folded style
+        if ('>' === $style) {
+            // folded lines
+            // replace all non-leading/non-trailing single newlines with spaces
             preg_match('/(\n*)$/', $text, $matches);
-            $text = preg_replace('/(?<!\n)\n(?!\n)/', ' ', rtrim($text, "\n"));
+            $text = preg_replace('/(?<!\n|^)\n(?!\n)/', ' ', rtrim($text, "\n"));
             $text .= $matches[1];
+
+            // empty separation lines
+            // remove one newline from each group of non-leading/non-trailing newlines
+            $text = preg_replace('/[^\n]\n+\K\n(?=[^\n])/', '', $text);
         }
 
-        // deal with trailing newlines as indicated
-        if ('' === $indicator) {
-            $text = preg_replace('/\n+$/s', "\n", $text);
-        } elseif ('-' === $indicator) {
-            $text = preg_replace('/\n+$/s', '', $text);
+        // deal with trailing newlines
+        if ('' === $chomping) {
+            $text = preg_replace('/\n+$/', "\n", $text);
+        } elseif ('-' === $chomping) {
+            $text = preg_replace('/\n+$/', '', $text);
         }
 
         return $text;
@@ -647,7 +662,7 @@ class Parser
             $value = $trimmedValue;
 
             // remove end of the document marker (...)
-            $value = preg_replace('#\.\.\.\s*$#s', '', $value);
+            $value = preg_replace('#\.\.\.\s*$#', '', $value);
         }
 
         return $value;

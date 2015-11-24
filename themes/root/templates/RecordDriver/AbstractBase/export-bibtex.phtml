@@ -129,8 +129,6 @@ foreach ($this->record($this->driver)->getUrlList() as $url) {
     echo "url = {{$url}}\n";
 }
 
-echo "crossref = {" . $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "},\n";
-
 // Record separator:
 echo "}\n\n";
 ?>

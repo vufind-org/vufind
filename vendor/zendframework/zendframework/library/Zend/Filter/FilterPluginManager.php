@@ -20,6 +20,11 @@ use Zend\ServiceManager\AbstractPluginManager;
  */
 class FilterPluginManager extends AbstractPluginManager
 {
+    protected $aliases = array(
+        'Zend\Filter\Int'            => 'Zend\Filter\ToInt',
+        'Zend\Filter\Null'           => 'Zend\Filter\ToNull',
+    );
+
     /**
      * Default set of plugins factories
      *
@@ -38,6 +43,7 @@ class FilterPluginManager extends AbstractPluginManager
         'alnum'                      => 'Zend\I18n\Filter\Alnum',
         'alpha'                      => 'Zend\I18n\Filter\Alpha',
         'basename'                   => 'Zend\Filter\BaseName',
+        'blacklist'                  => 'Zend\Filter\Blacklist',
         'boolean'                    => 'Zend\Filter\Boolean',
         'callback'                   => 'Zend\Filter\Callback',
         'compress'                   => 'Zend\Filter\Compress',
@@ -48,7 +54,10 @@ class FilterPluginManager extends AbstractPluginManager
         'compresssnappy'             => 'Zend\Filter\Compress\Snappy',
         'compresstar'                => 'Zend\Filter\Compress\Tar',
         'compresszip'                => 'Zend\Filter\Compress\Zip',
+        'dataunitformatter'          => 'Zend\Filter\DataUnitFormatter',
+        'dateselect'                 => 'Zend\Filter\DateSelect',
         'datetimeformatter'          => 'Zend\Filter\DateTimeFormatter',
+        'datetimeselect'             => 'Zend\Filter\DateTimeSelect',
         'decompress'                 => 'Zend\Filter\Decompress',
         'decrypt'                    => 'Zend\Filter\Decrypt',
         'digits'                     => 'Zend\Filter\Digits',
@@ -64,8 +73,9 @@ class FilterPluginManager extends AbstractPluginManager
         'fileuppercase'              => 'Zend\Filter\File\UpperCase',
         'htmlentities'               => 'Zend\Filter\HtmlEntities',
         'inflector'                  => 'Zend\Filter\Inflector',
-        'int'                        => 'Zend\Filter\Int',
-        'null'                       => 'Zend\Filter\Null',
+        'int'                        => 'Zend\Filter\ToInt',
+        'monthselect'                => 'Zend\Filter\MonthSelect',
+        'null'                       => 'Zend\Filter\ToNull',
         'numberformat'               => 'Zend\I18n\Filter\NumberFormat',
         'numberparse'                => 'Zend\I18n\Filter\NumberParse',
         'pregreplace'                => 'Zend\Filter\PregReplace',
@@ -75,7 +85,10 @@ class FilterPluginManager extends AbstractPluginManager
         'stringtrim'                 => 'Zend\Filter\StringTrim',
         'stripnewlines'              => 'Zend\Filter\StripNewlines',
         'striptags'                  => 'Zend\Filter\StripTags',
+        'toint'                      => 'Zend\Filter\ToInt',
+        'tonull'                     => 'Zend\Filter\ToNull',
         'urinormalize'               => 'Zend\Filter\UriNormalize',
+        'whitelist'                  => 'Zend\Filter\Whitelist',
         'wordcamelcasetodash'        => 'Zend\Filter\Word\CamelCaseToDash',
         'wordcamelcasetoseparator'   => 'Zend\Filter\Word\CamelCaseToSeparator',
         'wordcamelcasetounderscore'  => 'Zend\Filter\Word\CamelCaseToUnderscore',

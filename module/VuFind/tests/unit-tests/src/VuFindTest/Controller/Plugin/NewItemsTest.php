@@ -67,10 +67,8 @@ class NewItemsTest extends TestCase
     public function testGetBibIDsFromCatalogWithIDLimit()
     {
         $flash = $this->getMock('Zend\Mvc\Controller\Plugin\FlashMessenger');
-        $flash->expects($this->once())->method('setNamespace')
-            ->with($this->equalTo('info'))->will($this->returnValue($flash));
         $flash->expects($this->once())->method('addMessage')
-            ->with($this->equalTo('too_many_new_items'));
+            ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
         $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(

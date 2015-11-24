@@ -13,15 +13,33 @@ if (!empty($xhprof) && extension_loaded('xhprof')) {
 
 // Define path to application directory
 defined('APPLICATION_PATH')
-    || define('APPLICATION_PATH', dirname(__DIR__));
+    || define(
+        'APPLICATION_PATH',
+        (getenv('VUFIND_APPLICATION_PATH') ? getenv('VUFIND_APPLICATION_PATH')
+            : dirname(__DIR__))
+    );
 
 // Define application environment
 defined('APPLICATION_ENV')
-    || define('APPLICATION_ENV', (getenv('VUFIND_ENV') ? getenv('VUFIND_ENV') : 'production'));
+    || define(
+        'APPLICATION_ENV',
+        (getenv('VUFIND_ENV') ? getenv('VUFIND_ENV') : 'production')
+    );
 
 // Define path to local override directory
 defined('LOCAL_OVERRIDE_DIR')
-    || define('LOCAL_OVERRIDE_DIR', (getenv('VUFIND_LOCAL_DIR') ? getenv('VUFIND_LOCAL_DIR') : ''));
+    || define(
+        'LOCAL_OVERRIDE_DIR',
+        (getenv('VUFIND_LOCAL_DIR') ? getenv('VUFIND_LOCAL_DIR') : '')
+    );
+
+// Define path to cache directory
+defined('LOCAL_CACHE_DIR')
+    || define(
+        'LOCAL_CACHE_DIR',
+        (getenv('VUFIND_CACHE_DIR')
+            ? getenv('VUFIND_CACHE_DIR') : LOCAL_OVERRIDE_DIR . '/cache')
+    );
 
 // Save original working directory in case we need to remember our context, then
 // switch to the application directory for convenience:

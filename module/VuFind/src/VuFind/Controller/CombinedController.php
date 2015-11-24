@@ -70,12 +70,14 @@ class CombinedController extends AbstractSearch
         $this->getSearchMemory()->disable();
 
         // Validate configuration:
-        $searchClassId = $this->params()->fromQuery('id');
+        $sectionId = $this->params()->fromQuery('id');
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
             ->toArray();
-        if (!isset($config[$searchClassId])) {
+        $tabConfig = $this->getTabConfig($config);
+        if (!isset($tabConfig[$sectionId])) {
             throw new \Exception('Illegal ID');
         }
+        list($searchClassId) = explode(':', $sectionId);
 
         // Retrieve results:
         $options = $this->getServiceLocator()
@@ -83,7 +85,7 @@ class CombinedController extends AbstractSearch
         $currentOptions = $options->get($searchClassId);
         list($controller, $action)
             = explode('-', $currentOptions->getSearchAction());
-        $settings = $config[$searchClassId];
+        $settings = $tabConfig[$sectionId];
 
         $this->adjustQueryForSettings($settings);
         $settings['view'] = $this->forwardTo($controller, $action);
@@ -149,13 +151,10 @@ class CombinedController extends AbstractSearch
             ->toArray();
         $supportsCart = false;
         $supportsCartOptions = [];
-        foreach ($config as $current => $settings) {
-            // Special case -- ignore recommendation config:
-            if ($current == 'Layout' || $current == 'RecommendationModules') {
-                continue;
-            }
+        foreach ($this->getTabConfig($config) as $current => $settings) {
+            list($searchClassId) = explode(':', $current);
             $this->adjustQueryForSettings($settings);
-            $currentOptions = $options->get($current);
+            $currentOptions = $options->get($searchClassId);
             $supportsCartOptions[] = $currentOptions->supportsCart();
             if ($currentOptions->supportsCart()) {
                 $supportsCart = true;
@@ -163,13 +162,19 @@ class CombinedController extends AbstractSearch
             list($controller, $action)
                 = explode('-', $currentOptions->getSearchAction());
             $combinedResults[$current] = $settings;
+
+            // Calculate a unique DOM id for this section of the search results;
+            // $searchClassId may contain colons, which must be converted.
+            $combinedResults[$current]['domId']
+                = 'combined_' . str_replace(':', '____', $searchClassId);
+
             $combinedResults[$current]['view']
                 = (!isset($settings['ajax']) || !$settings['ajax'])
                 ? $this->forwardTo($controller, $action)
                 : $this->createViewModel(['results' => $results]);
 
             // Special case: include appropriate "powered by" message:
-            if (strtolower($current) == 'summon') {
+            if (strtolower($searchClassId) == 'summon') {
                 $this->layout()->poweredBy = 'Powered by Summon™ from Serials '
                     . 'Solutions, a division of ProQuest.';
             }
@@ -256,6 +261,10 @@ class CombinedController extends AbstractSearch
         $query = $this->getRequest()->getQuery();
         $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
 
+        // Apply filters, if any:
+        $query->filter = isset($settings['filter'])
+            ? (array)$settings['filter'] : null;
+
         // Reset override to avoid bleed-over from one section to the next!
         $query->recommendOverride = false;
 
@@ -273,5 +282,21 @@ class CombinedController extends AbstractSearch
         } else {
             $query->noRecommend = 'top,side';
         }
+    }
+
+    /**
+     * Get tab configuration based on the full combined results configuration.
+     *
+     * @param array $config Combined results configuration
+     *
+     * @return array
+     */
+    protected function getTabConfig($config)
+    {
+        // Strip out non-tab sections of the configuration:
+        unset($config['Layout']);
+        unset($config['RecommendationModules']);
+
+        return $config;
     }
 }
