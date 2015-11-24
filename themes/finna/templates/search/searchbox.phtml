@@ -38,7 +38,7 @@
     // Set up Finna Main Tabs:
     if (!$browse) {
       if (($module === 'search' && $action === 'results' && $this->searchType != 'advanced')
-         || ($module === 'metalib' && $action === 'search' && $this->searchType != 'advanced') 
+         || ($module === 'metalib' && $action === 'search' && $this->searchType != 'advanced')
          || ($module === 'primo' && $action === 'search' && $this->searchType != 'advanced')
          || ($module == 'combined' && $action == 'results')
       ) {
@@ -66,9 +66,9 @@
           }
         }
       ?>
-      <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($value)?>" />
+      <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($value)?>" class="searchForm_type" />
       <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span><?=$this->transEsc($label)?></span> <i class="fa fa-arrow-down"></i></a>
-      <ul class="searchForm_type dropdown-menu" id="searchForm_type" data-native-menu="false">
+      <ul class="dropdown-menu" data-native-menu="false">
         <? foreach ($handlers as $handler): ?>
           <li class="select-type">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($handler['value'])?>" />
@@ -78,7 +78,7 @@
       </ul>
     </div>
     <? elseif ($handlerCount == 1): ?>
-      <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>" />
+      <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>" class="searchForm_type" />
     <? endif; ?>
     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> <span class="sr-only"><?=$this->transEsc("Find")?></span></button>
 
@@ -137,7 +137,7 @@
       if ($metalibSet) {
         echo '<input class="hidden applied-filter" type="checkbox"' . $defaultFilterState . ' name="set" value="' . $this->escapeHtmlAttr($metalibSet) . '" />';
       }
-    
+
     ?>
   </form>
   <? if ($advSearch): ?>
