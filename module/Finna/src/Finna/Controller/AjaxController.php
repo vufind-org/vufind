@@ -312,7 +312,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
             );
         }
 
-        $type = $this->getRequest()->getPost()->get('type');
+        $type = $this->params()->fromPost('type');
         $id = $this->params()->fromPost('id');
         $table = $this->getTable('Comments');
         if ($commentId = $this->params()->fromPost('commentId')) {
