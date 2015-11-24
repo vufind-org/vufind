@@ -374,6 +374,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         // Clear out the cached user object and session entry.
         $this->currentUser = false;
         unset($this->session->userId);
+        unset($this->session->userDetails);
         $this->cookieManager->set('loggedOut', 1);
 
         // Destroy the session for good measure, if requested.
@@ -408,11 +409,22 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     {
         // If user object is not in cache, but user ID is in session,
         // load the object from the database:
-        if (!$this->currentUser && isset($this->session->userId)) {
-            $results = $this->userTable
-                ->select(['id' => $this->session->userId]);
-            $this->currentUser = count($results) < 1
-                ? false : $results->current();
+        if (!$this->currentUser) {
+            if (isset($this->session->userId)) {
+                // normal mode
+                $results = $this->userTable
+                    ->select(['id' => $this->session->userId]);
+                $this->currentUser = count($results) < 1
+                    ? false : $results->current();
+            } else if (isset($this->session->userDetails)) {
+                // privacy mode
+                $results = $this->userTable->createRow();
+                $results->exchangeArray($this->session->userDetails);
+                $this->currentUser = $results;
+            } else {
+                // unexpected state
+                $this->currentUser = false;
+            }
         }
         return $this->currentUser;
     }
@@ -442,6 +454,17 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     }
 
     /**
+     * Are we in privacy mode?
+     *
+     * @return bool
+     */
+    public function inPrivacyMode()
+    {
+        return isset($this->config->Authentication->privacy)
+            && $this->config->Authentication->privacy;
+    }
+
+    /**
      * Updates the user information in the session.
      *
      * @param UserRow $user User object to store in the session
@@ -451,7 +474,11 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function updateSession($user)
     {
         $this->currentUser = $user;
-        $this->session->userId = $user->id;
+        if ($this->inPrivacyMode()) {
+            $this->session->userDetails = $user->toArray();
+        } else {
+            $this->session->userId = $user->id;
+        }
         $this->cookieManager->clear('loggedOut');
     }
 

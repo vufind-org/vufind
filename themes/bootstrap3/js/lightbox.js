@@ -1,4 +1,4 @@
-/*global path, vufindString */
+/*global VuFind */
 
 /**
  * This is where you add click events to open the lightbox.
@@ -23,7 +23,7 @@ $(document).ready(function() {
     if (lightboxRefreshOnClose) {
       window.location.reload();
     } else {
-      $('#modal .modal-body').html(vufindString.loading+'...');
+      $('#modal .modal-body').html(VuFind.translate('loading') + '...');
       lightboxShown = false;
     }
   });
@@ -81,7 +81,7 @@ function constrainLink(event) {
     this.href = this.dataset.lightboxHref;
   }
   if('undefined' === typeof this.href) {
-    this.href = path;
+    this.href = VuFind.getPath();
   }
   if('undefined' !== typeof event.target.dataset.lightboxAfterLogin) {
     if('hide' === event.target.dataset.lightboxAfterLogin) {

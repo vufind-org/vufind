@@ -629,9 +629,8 @@ class AbstractBase extends AbstractActionController
      */
     protected function listsEnabled()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-        $tagSetting = isset($config->Social->lists) ? $config->Social->lists : true;
-        return $tagSetting && $tagSetting !== 'disabled';
+        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        return $check->getListSetting() !== 'disabled';
     }
 
     /**
@@ -641,9 +640,8 @@ class AbstractBase extends AbstractActionController
      */
     protected function tagsEnabled()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-        $tagSetting = isset($config->Social->tags) ? $config->Social->tags : true;
-        return $tagSetting && $tagSetting !== 'disabled';
+        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        return $check->getTagSetting() !== 'disabled';
     }
 
     /**
