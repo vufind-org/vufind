@@ -580,8 +580,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                     if ($role
                         && isset($this->mainConfig->Record->presenter_roles)
                         && in_array(
-                            $role, $this->mainConfig->Record->presenter_roles
-                                ->toArray()
+                            $role,
+                            $this->mainConfig->Record->presenter_roles->toArray()
                         )
                     ) {
                         continue;
@@ -671,8 +671,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                     if (!$role
                         || !isset($this->mainConfig->Record->presenter_roles)
                         || !in_array(
-                            $role, $this->mainConfig->Record->presenter_roles
-                                ->toArray()
+                            $role,
+                            $this->mainConfig->Record->presenter_roles->toArray()
                         )
                     ) {
                         continue;

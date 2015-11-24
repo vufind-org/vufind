@@ -1270,7 +1270,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
             $viewParams
                 = array_merge(
-                    $viewParams, [
+                    $viewParams,
+                    [
                         'lookfor' => $lookfor,
                         'overrideSearchHeading' => null,
                         'startRecord' => $view->results->getStartRecord(),
