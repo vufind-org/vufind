@@ -31,7 +31,7 @@
     </li>
   <? endif; ?>
   <? if (count($this->driver->getCitationFormats()) > 0): ?>
-    <li><a class="cite-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="fa fa-asterisk"></i><span class="hidden-xs"> <?=$this->transEsc('Cite this')?></span></a></li>
+    <li><a class="cite-record modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="fa fa-asterisk"></i><span class="hidden-xs"> <?=$this->transEsc('Cite this')?></span></a></li>
   <? endif; ?>
   <li class="hidden-xs hidden-sm"><span><a href="javascript:window.print()"><i class="fa fa-print"></i> <?=$this->transEsc('Print')?></a></span></li>
   <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
