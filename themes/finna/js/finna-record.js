@@ -1,10 +1,10 @@
+/*global VuFind*/
 finna.record = (function() {
-    
     var initDescription = function() {
         var description = $("#description_text");
         if (description.length) {
             var id = description.data('id');
-            var url = path + '/AJAX/JSON?method=getDescription&id=' + id;
+            var url = VuFind.getPath() + '/AJAX/JSON?method=getDescription&id=' + id;
             $.getJSON(url, function(response) {
                 if (response.status === 'OK' && response.data.length > 0) {
                     description.html(response.data);
@@ -43,7 +43,7 @@ finna.record = (function() {
       });
       
     
-      var url = path + '/AJAX/JSON?method=checkRequestsAreValid';
+      var url = VuFind.getPath() + '/AJAX/JSON?method=checkRequestsAreValid';
       $.ajax({
         dataType: 'json',
         data: {id: recordId, requestType: requestType, data: vars},
@@ -105,7 +105,7 @@ finna.record = (function() {
         });
 
         Lightbox.addFormCallback('feedbackRecord', function(html) {
-            Lightbox.confirm(vufindString['feedback_success']);
+            Lightbox.confirm(VuFind.translate('feedback_success'));
         });
     };
       

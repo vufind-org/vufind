@@ -1,12 +1,11 @@
-/* Login and logout helper methods. */
-
+/*global VuFind*/
 finna.common = (function() {
 
     var navibarLogin = function() {
         if ( $('#loginOptions a').hasClass('navibar-login-on') &&
             $('#loginOptions').hasClass('hidden') )
         {
-            window.location = path+'/MyResearch/Home?redirect=0';
+            window.location = VuFind.getPath() + '/MyResearch/Home?redirect=0';
         }
     };
 
@@ -40,7 +39,7 @@ finna.common = (function() {
         $(form).find('div.alert').remove();
         $(form).find('input[type=submit]').after('<i class="fa fa-spinner fa-spin"></i>');
         $.ajax({
-            url: path + '/AJAX/JSON?method=getSalt',
+            url: VuFind.getPath() + '/AJAX/JSON?method=getSalt',
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'OK') {
@@ -69,7 +68,7 @@ finna.common = (function() {
                     // login via ajax
                     $.ajax({
                         type: 'POST',
-                        url: path + '/AJAX/JSON?method=login',
+                        url: VuFind.getPath() + '/AJAX/JSON?method=login',
                         dataType: 'json',
                         data: params,
                         success: function(response) {
@@ -94,7 +93,7 @@ finna.common = (function() {
     
     var initFeedbackForm = function() {
         Lightbox.addFormCallback('finna_feedback', function(html) {
-            Lightbox.confirm(vufindString['feedback_success']);
+            Lightbox.confirm(VuFind.translate('feedback_success'));
         });
     };
     

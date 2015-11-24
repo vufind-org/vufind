@@ -1,7 +1,7 @@
 finna.bx = (function() {
 
     var initBxRecommendations = function() {
-        var url = path + '/AJAX/JSON?method=getbXRecommendations';
+        var url = VuFind.getPath() + '/AJAX/JSON?method=getbXRecommendations';
         var id = $('.hiddenSource')[0].value + '|' + $('.hiddenId')[0].value;
         var jqxhr = $.getJSON(url, {id: id}, function(response) {
             if (response.status == 'OK') {

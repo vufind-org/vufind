@@ -1,11 +1,11 @@
+/*global VuFind*/
 finna.searchTabsRecommendations = (function() {
-
     var initSearchTabsRecommendations = function() {
         var holder = $('#search-tabs-recommendations-holder');
         if (!holder[0]) {
             return;
         }
-        var url = path + '/AJAX/JSON?method=getSearchTabsRecommendations';
+        var url = VuFind.getPath() + '/AJAX/JSON?method=getSearchTabsRecommendations';
         var searchHash = holder.data('search-hash');
         var jqxhr = $.getJSON(url, {searchHash: searchHash}, function(response) {
             if (response.status == 'OK') {

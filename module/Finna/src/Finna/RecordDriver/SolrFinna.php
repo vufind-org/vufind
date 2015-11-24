@@ -416,7 +416,8 @@ trait SolrFinna
     public function ratingAllowed()
     {
         $allowed = ['0/Book/', '0/Journal/', '0/Sound/', '0/Video/'];
-        return !empty(array_intersect($allowed, $this->getFormats()));
+        $list = array_intersect($allowed, $this->getFormats());
+        return !empty($list);
     }
 
     /**
