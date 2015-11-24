@@ -11,15 +11,18 @@
             $sourceOptions = array();
             $orgFacet = false;
             // see if Organisation facet used
-            foreach ($this->filterList as $facet => $value) {
-              if (strstr($facet, 'building')) {
-                $orgFacet = true;
+            if (isset($this->filterList)) {
+              foreach ($this->filterList as $facet => $value) {
+                if (strstr($facet, 'building')) {
+                  $orgFacet = true;
+                  break;
+                }
               }
             }
             foreach ($dedupData as $source => $current) {
               $optionHtml = '<option value="' . $this->escapeHtmlAttr($current['id']) . '" class="dedup-data-id" data-source="' . $this->escapeHtmlAttr($source) . '" role="option">' . $this->transEsc("source_$source", null, $source) . '</option>';
               // see if logged in, no organisations selected and source & the users's organisation match
-              if ($user && !$orgFacet && (strstr($user->cat_username, $source))) {
+              if ($user && !$orgFacet && (strpos($user->cat_username, "$source") === 0)) {
                 array_unshift($sourceOptions, $optionHtml);
               } else {
                 $sourceOptions[] = $optionHtml;
