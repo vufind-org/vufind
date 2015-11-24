@@ -231,7 +231,18 @@ $config = [
                 ],
                 'defaultTab' => null,
             ],
-
+            'Finna\RecordDriver\SolrDefault' => [
+                'tabs' => [
+                    'Holdings' => 'HoldingsILS',
+                    'ComponentParts' => 'ComponentParts',
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
+                    'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
+                    'Details' => 'StaffViewArray',
+                ],
+                'defaultTab' => null,
+            ],
             'Finna\RecordDriver\SolrMarc' => [
                 'tabs' => [
                     'Holdings' => 'HoldingsILS',
