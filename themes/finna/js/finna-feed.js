@@ -1,3 +1,4 @@
+/*global VuFind*/
 finna.feed = (function() {
     var calculateScrollSpeed = function(scrollCnt) {
         return 750 * Math.max(1, (scrollCnt/5));
@@ -70,7 +71,7 @@ finna.feed = (function() {
         holder.append('<i class="fa fa-spin fa-spinner hide"></i>');
         holder.find(".fa-spin").delay(1000).fadeIn();
 
-        var url = path + '/AJAX/JSON?method=getFeed&id=' + id;
+        var url = VuFind.getPath() + '/AJAX/JSON?method=getFeed&id=' + id;
         url += "&touch-device=" + (finna.layout.isTouchDevice() ? 1 : 0);
 
         $.getJSON(url, function(response) {

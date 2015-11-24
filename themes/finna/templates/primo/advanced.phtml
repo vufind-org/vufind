@@ -1,5 +1,7 @@
 <!-- START of: finna - primo/advanced.phtml -->
 <?
+    $this->headScript()->appendFile("finna-primo-adv-search.js");
+
     // Set page title.
     $this->headTitle($this->translate('Advanced Search'));
 
@@ -47,6 +49,7 @@
       <? for ($i = 0; $i < $numGroups; $i++):
               $operator = 'AND';
               if (isset($groups[$i])) {
+                $operator = $groups[$i]->getOperator();
                 $currentGroup = $groups[$i]->getQueries();
                 $numRows = count($currentGroup);
               } else {
@@ -78,6 +81,9 @@
                   </select>
               </div>
             <? endfor; ?>
+              <a href="#" class="primo-add-search">
+                <i class="fa fa-plus-small"></i> Lisää hakukenttä
+              </a>
             </div>
           </div>
         </div>

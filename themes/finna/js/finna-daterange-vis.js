@@ -1,3 +1,4 @@
+/*global VuFind*/
 finna.dateRangeVis = (function() {
     var plotExtra = 2; // Widen plotted interval by +- years
     var loading = true;
@@ -112,7 +113,7 @@ finna.dateRangeVis = (function() {
 
     var loadVis = function(backend, action, params) {
         // Load and display timeline (called at initial open and after timeline navigation)
-        var url = path + '/AJAX/JSON' + params + '&method=dateRangeVisual&backend=' + backend;
+        var url = VuFind.getPath() + '/AJAX/JSON' + params + '&method=dateRangeVisual&backend=' + backend;
 
         // Widen selected date range by configured amount of years
         var regex = new RegExp('filter\\[\\]=' + facetField + '.*\\[(\\d+|\\*)\\+TO\\+(\\d+|\\*)\\]"');

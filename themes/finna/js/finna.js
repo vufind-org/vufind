@@ -18,8 +18,10 @@ var finna = (function() {
                 'myList',
                 'openUrl',
                 'persona',
+                'primoAdvSearch',
                 'record',
-                'searchTabsRecommendations'
+                'searchTabsRecommendations',
+                'userProfile'
             ];
 
             $.each(modules, function(ind, module) {

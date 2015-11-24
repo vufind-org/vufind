@@ -1,4 +1,4 @@
-/*global path */
+/*global VuFind */
 function setUpHoldRequestForm(recordId) {
   $('#requestGroupId').change(function() {
     var $emptyOption = $("#pickUpLocation option[value='']");
@@ -11,13 +11,13 @@ function setUpHoldRequestForm(recordId) {
     var params = {
       method: 'getRequestGroupPickupLocations',
       id: recordId,
-      requestGroupId: $('#requestGroupId').val()              
+      requestGroupId: $('#requestGroupId').val()
     };
     $.ajax({
       data: params,
       dataType: 'json',
       cache: false,
-      url: path + '/AJAX/JSON',
+      url: VuFind.getPath() + '/AJAX/JSON',
       success: function(response) {
         if (response.status == 'OK') {
           var defaultValue = $('#pickUpLocation').data('default');
@@ -36,7 +36,7 @@ function setUpHoldRequestForm(recordId) {
         $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
         $('#pickUpLocation').removeAttr('disabled');
       }
-    });   
+    });
   });
   $('#requestGroupId').change();
 }

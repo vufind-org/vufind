@@ -1,9 +1,10 @@
+/*global VuFind*/
 finna.openUrl = (function() {
 
     var loadResolverLinks = function($target, openUrl, searchClassId) {
         $target.addClass('ajax_availability');
 
-        var url = path + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl,searchClassId:searchClassId});
+        var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl,searchClassId:searchClassId});
         $.ajax({
             dataType: 'json',
             url: url,

@@ -1,11 +1,11 @@
+/*global VuFind*/
 /* Finna Mozilla Persona login. */
-
 finna.persona = (function(finna) {
 
     var getDestinationUrl = function(loggingOut) {
         // After logout always move to the front page.
         if (loggingOut) {
-            return path;
+            return VuFind.getPath();
         }
         var url = window.location.href;
         // Check if we have changed tab
@@ -27,7 +27,7 @@ finna.persona = (function(finna) {
         $.ajax({
             type: "GET",
             dataType: "json",
-            url: path + "/AJAX/JSON?method=personaLogout",
+            url: VuFind.getPath() + "/AJAX/JSON?method=personaLogout",
             success: function(response, status, xhr) {
                 // No reload to avoid POST request problems
                 window.location = getDestinationUrl(true);
@@ -69,7 +69,7 @@ finna.persona = (function(finna) {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: path + "/AJAX/JSON?method=personaLogin",
+                    url: VuFind.getPath() + "/AJAX/JSON?method=personaLogin",
                     data: {
                         assertion: assertion
                     },

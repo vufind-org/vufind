@@ -1,3 +1,4 @@
+/*global VuFind*/
 finna.comments = (function() {
 
     var initCommentList = function(allowCommenting, allowRating, commentCount) {
@@ -22,14 +23,21 @@ finna.comments = (function() {
         };
 
         deleteRecordComment = function(element, recordId, recordSource, commentId) {
-            var url = path + '/AJAX/JSON?'
+            var url = VuFind.getPath() + '/AJAX/JSON?'
                 + $.param({method:'deleteRecordComment', id:commentId});
             $.ajax({
                 dataType: 'json',
                 url: url,
+                data: {recordId: recordId},
                 success: function(response) {
                     if (response.status == 'OK') {
                         requestRefreshComments();
+                        if ('rating' in response.data) {
+                            updateAverageRating(
+                                response.data.rating.average,
+                                response.data.rating.count
+                            );
+                        }
                     }
                 }
             });
@@ -71,7 +79,7 @@ finna.comments = (function() {
             $(this).find('input.cancel').toggleClass('hide', true);
             $(this).find('input[type="submit"]').attr('disabled', true).button('loading');
 
-            var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+            var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'commentRecord'});
             $.ajax({
                 type: 'POST',
                 url:  url,
@@ -80,6 +88,12 @@ finna.comments = (function() {
                 success: function(response) {
                     if (response.status == 'OK') {
                         requestRefreshComments();
+                        if ('rating' in response.data) {
+                            updateAverageRating(
+                                response.data.rating.average,
+                                response.data.rating.count
+                            );
+                        }
                         $(form).find('textarea[name="comment"]').val('');
                     } else {
                         Lightbox.displayError(response.data);
@@ -92,6 +106,11 @@ finna.comments = (function() {
 
     var initRating = function() {
         $('#usercomments-tab .rating').rating();
+    };
+
+    var updateAverageRating = function(rating, count) {
+        $('.rating-average .rating').rating('rate', rating);
+        $('.rating-average .count>span').text(count);
     };
 
     var initInappropriateComment = function() {
@@ -119,7 +138,7 @@ finna.comments = (function() {
             var comment = form.find('input[type=hidden][name=comment]').val();
             var reason = form.find('input[name=reason]:checked').val();
 
-            var url = path + '/AJAX/JSON?method=inappropriateComment&comment';
+            var url = VuFind.getPath() + '/AJAX/JSON?method=inappropriateComment&comment';
             $.ajax({
                 dataType: 'json',
                 data: {comment: comment, reason: reason},

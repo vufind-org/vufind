@@ -1,10 +1,8 @@
-/*global path*/
-
+/*global VuFind*/
 finna.itemStatus = (function() {
 
   var checkItemStatus = function (id) {
-    var safeId = jqEscape(id);
-    var item = $('.hiddenId[value="' + safeId + '"]').closest('.record-container');
+    var item = $('.hiddenId[value="' + id + '"]').closest('.record-container');
     item.find(".ajax-availability").removeClass('hidden');
     item.find(".availability-load-indicator").removeClass('hidden');
 
@@ -21,14 +19,14 @@ finna.itemStatus = (function() {
     }
     var xhr = $.ajax({
       dataType: 'json',
-      url: path + '/AJAX/JSON?method=getItemStatuses',
+      url: VuFind.getPath() + '/AJAX/JSON?method=getItemStatuses',
       data: {id:[id]},
       success: function(response) {
         if(response.status == 'OK') {
           $.each(response.data, function(i, result) {
             item.find('.status').empty().append(result.availability_message);
             item.find('.dedup-select').removeAttr('selected').
-              find('option[value="' + jqEscape(result.record_number) + '"]').attr('selected', '1');
+              find('option[value="' + result.record_number + '"]').attr('selected', '1');
 
             if (typeof(result.full_status) != 'undefined'
               && result.full_status.length > 0
@@ -59,7 +57,7 @@ finna.itemStatus = (function() {
                 }
                 if (result.locationList[x].callnumbers) {
                   locationListHTML += '<span class="groupCallnumber">';
-                  locationListHTML += '('+vufindString.shelf_location+': '+ result.locationList[x].callnumbers + ')';
+                  locationListHTML += '(' + VuFind.translate('shelf_location') + ': ' + result.locationList[x].callnumbers + ')';
                   locationListHTML += '</span>';
                 }
                 locationListHTML += '</div>';

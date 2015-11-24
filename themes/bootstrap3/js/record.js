@@ -1,23 +1,14 @@
-/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, userIsLoggedIn, vufindString */
+/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, syn_get_widget, userIsLoggedIn, VuFind */
 
 /**
  * Functions and event handlers specific to record pages.
  */
-function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
-  var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
-  var vars = {}, hash;
-  var hashes = requestURL.slice(requestURL.indexOf('?') + 1).split('&');
-
-  for(var i = 0; i < hashes.length; i++)
-  {
-    hash = hashes[i].split('=');
-    var x = hash[0];
-    var y = hash[1];
-    vars[x] = y;
-  }
+function checkRequestIsValid(element, requestType, blockedClass) {
+  var recordId = element.href.match(/\/Record\/([^\/]+)\//)[1];
+  var vars = deparam(element.href);
   vars['id'] = recordId;
 
-  var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
+  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
   $.ajax({
     dataType: 'json',
     cache: false,
@@ -40,26 +31,18 @@ function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
 
 function setUpCheckRequest() {
   $('.checkRequest').each(function(i) {
-    if ($(this).hasClass('checkRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'Hold', 'holdBlocked');
-    }
+    checkRequestIsValid(this, 'Hold', 'holdBlocked');
   });
   $('.checkStorageRetrievalRequest').each(function(i) {
-    if ($(this).hasClass('checkStorageRetrievalRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
-          'StorageRetrievalRequestBlocked');
-    }
+    checkRequestIsValid(this, 'StorageRetrievalRequest', 'StorageRetrievalRequestBlocked');
   });
   $('.checkILLRequest').each(function(i) {
-    if ($(this).hasClass('checkILLRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'ILLRequest',
-          'ILLRequestBlocked');
-    }
+    checkRequestIsValid(this, 'ILLRequest', 'ILLRequestBlocked');
   });
 }
 
 function deleteRecordComment(element, recordId, recordSource, commentId) {
-  var url = path + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
+  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
   $.ajax({
     dataType: 'json',
     url: url,
@@ -72,7 +55,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
 }
 
 function refreshCommentList($target, recordId, recordSource) {
-  var url = path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
+  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
   $.ajax({
     dataType: 'json',
     url: url,
@@ -99,7 +82,7 @@ function registerAjaxCommentRecord() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
-    var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+    var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'commentRecord'});
     var data = {
       comment:form.comment.value,
       id:id,
@@ -156,7 +139,8 @@ function ajaxLoadTab($newTab, tabid, setHash) {
   // Parse out the base URL for the current record:
   var urlParts = document.URL.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
-  if (path == '') {
+  var path = VuFind.getPath();
+  if (path === '') {
     // special case -- VuFind installed at site root:
     var chunks = urlWithoutFragment.split('/');
     var urlroot = '/' + chunks[3] + '/' + chunks[4];
@@ -197,7 +181,7 @@ function refreshTagList(target, loggedin) {
   var $tagList = $(target).find('.tagList');
   if ($tagList.length > 0) {
     $tagList.empty();
-    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
     $.ajax({
       dataType: 'json',
       url: url,
@@ -226,7 +210,7 @@ function ajaxTagUpdate(link, tag, remove) {
   var recordId = $target.find('.hiddenId').val();
   var recordSource = $target.find('.hiddenSource').val();
   $.ajax({
-    url:path+'/AJAX/JSON?method=tagRecord',
+    url:VuFind.getPath() + '/AJAX/JSON?method=tagRecord',
     method:'POST',
     data:{
       tag:'"'+tag.replace(/\+/g, ' ')+'"',
@@ -289,7 +273,6 @@ function setupRecordToolbar(target) {
 }
 
 function recordDocReady() {
-  var id = $('.hiddenId')[0].value;
   registerTabEvents();
 
   $('.record-tabs .nav-tabs a').click(function (e) {
@@ -309,7 +292,7 @@ function recordDocReady() {
       if ($(this.parentNode).hasClass('noajax')) {
         return true;
       }
-      var newTab = $('<div class="tab-pane active '+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+vufindString['loading']+'...</div>');
+      var newTab = $('<div class="tab-pane active '+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+VuFind.translate('loading')+'...</div>');
       $top.find('.tab-content').append(newTab);
       return ajaxLoadTab(newTab, tabid);
     }
@@ -320,7 +303,7 @@ function recordDocReady() {
   setupRecordToolbar();
   // Form handlers
   Lightbox.addFormCallback('emailRecord', function(){
-    Lightbox.confirm(vufindString['bulk_email_success']);
+    Lightbox.confirm(VuFind.translate('bulk_email_success'));
   });
   Lightbox.addFormCallback('placeHold', function(html) {
     Lightbox.checkForError(html, function(html) {
@@ -331,22 +314,22 @@ function recordDocReady() {
     });
   });
   Lightbox.addFormCallback('placeILLRequest', function() {
-    document.location.href = path+'/MyResearch/ILLRequests';
+    document.location.href = VuFind.getPath() + '/MyResearch/ILLRequests';
   });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
-    document.location.href = path+'/MyResearch/StorageRetrievalRequests';
+    document.location.href = VuFind.getPath() + '/MyResearch/StorageRetrievalRequests';
   });
   Lightbox.addFormCallback('saveRecord', function() {
     checkSaveStatuses();
     refreshTagList();
-    Lightbox.confirm(vufindString['bulk_save_success']);
+    Lightbox.confirm(VuFind.translate('bulk_save_success'));
   });
   Lightbox.addFormCallback('smsRecord', function() {
-    Lightbox.confirm(vufindString['sms_success']);
+    Lightbox.confirm(VuFind.translate('sms_success'));
   });
   // Tag lightbox
   Lightbox.addFormCallback('tagRecord', function(html) {
     refreshTagList(true);
-    Lightbox.confirm(vufindString['add_tag_success']);
+    Lightbox.confirm(VuFind.translate('add_tag_success'));
   });
 }
