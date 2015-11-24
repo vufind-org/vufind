@@ -1,0 +1,46 @@
+<?
+  // Set up page title:
+  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1><i class="fa fa-sign-in"></i> ' . $this->translate('Login') . '</h1></div>';
+
+  $this->headTitle($this->translate('Login'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Login') . '</li>';
+
+  // Convenience variables:
+  $account = $this->auth()->getManager();
+  $hideLogin = !(is_object($account) && $account->loginEnabled());
+  $offlineMode = $this->ils()->getOfflineMode();
+?>
+
+<? if ($offlineMode == "ils-offline"): ?>
+  <div class="alert alert-warning">
+    <h2><?=$this->transEsc('ils_offline_title')?></h2>
+    <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+    <p><?=$this->transEsc('ils_offline_login_message')?></p>
+    <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+    <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+  </div>
+<? endif; ?>
+
+<h2 class="lightbox-header"><?=$this->transEsc('Login')?></h2>
+<?=$this->flashmessages()?>
+<? if ($template = $this->content()->findTemplateForLng("content/Additions/login-pre")): ?>
+<div class="row">
+  <div class="col-xs-12">
+    <?=$this->render($template)?>
+  </div>
+</div>
+<? endif; ?>
+<? if ($hideLogin): ?>
+  <div class="alert alert-danger"><?=$this->transEsc('login_disabled')?></div>
+<? else: ?>
+  <?=$this->auth()->getLogin()?>
+<? endif; ?>
+ <? if ($template = $this->content()->findTemplateForLng("content/Additions/login-post")): ?>
+  <div class="row">
+    <div class="col-xs-12">
+      <?=$this->render($template)?>
+    </div>
+  </div>
+<? endif; ?>
