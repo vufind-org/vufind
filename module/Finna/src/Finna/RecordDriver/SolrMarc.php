@@ -276,6 +276,18 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Get the title of the item that contains this record (i.e. MARC 773s of a
+     * journal).
+     *
+     * @return string
+     */
+    public function getContainerTitle()
+    {
+        $result = parent::getContainerTitle();
+        return $this->stripTrailingPunctuation($result, '\.-');
+    }
+
+    /**
      * Return an external URL where a displayable description text
      * can be retrieved from, if available; false otherwise.
      *

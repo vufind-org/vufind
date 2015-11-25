@@ -493,44 +493,45 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
 }
 
-/* --- Auto Complete Dropdown --- */ 
-.tt-dropdown-menu {
-    width: percentage((2.1 - @finna-search-input-width));
-    .list-group;
-    margin-top: 10px;
-    .box-shadow(0px 5px 16px 2px @gray);
-    border-radius: 10px;
-    &.checkbox-active {
-        margin-top: 40px !important;   
-    }
-}
-
 /* --- Autocomplete --- */
 .form-control.search-query {
     padding-right: 20px;
 }
 .autocomplete-results {
-  margin-top: 2px;
-  border: 1px solid @list-group-border;
-  background-color: #fff;
-  border-radius: 4px;
-  overflow: ellipsis;
-
-  .item {
-    display: block;
-    padding-top: .75rem;
-    padding-right: 1rem;
-    padding-bottom: .75rem;
-    padding-left: 1.25rem;
-    border-bottom: 1px solid @list-group-border;
-    cursor: pointer;
-
-    &:last-child {border: 0;}
-    &:hover, &.selected {
-      background-color: @brand-primary;
-      color: #fff;
+    .box-shadow(0px 5px 16px -2px @gray);
+    margin-top: 4px;
+    border: 1px solid @list-group-border;
+    background-color: #fff;
+    border-radius: 10px;
+    @media (max-width: @screen-sm-max) {
+        max-width: 85% !important;
     }
-  }
+    &.checkbox-active {
+        margin-top: 40px !important;   
+    }
+    .item {
+        display: block;
+        padding: 10px;
+        border-bottom: 1px solid @list-group-border;
+        cursor: pointer;
+        &:first-child {border-top-left-radius: 10px; border-top-right-radius: 10px;}
+        &:last-child {border: 0; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;}
+        &:not(.loading):hover, &.selected {
+            background-color: @brand-primary;
+            color: #fff;
+        }
+        &.loading {
+            font-style: normal;
+            &:before {
+                  font-family:'Fontawesome';
+                  content: "\f110";
+                  color: @gray-light;
+                  font-size: 1.2em;
+                  margin-right: 5px;
+                  .fa-spin();
+            }
+        }
+    }
 }
 
 /* --- Badges - blend the links in --- */

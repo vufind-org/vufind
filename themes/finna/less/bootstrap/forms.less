@@ -261,32 +261,21 @@ input[type="checkbox"],
     margin-right:0px !important;
     margin-left:0px !important;
     & .form-control.search-query {
-        margin-top: -2px;
         width: percentage(@finna-search-input-width);
         @media (max-width: @screen-xs-max) {
             width: percentage((@finna-search-input-width - 0.06));  
         }
-        border:none;
+        border: none;
         box-shadow: none;
-        background:transparent;
-        display:inline-block !important;
+        background: transparent;
+        display: inline-block !important;
         font-size: @font-size-large;
         color: @gray;
         margin-left: 10px;
         height: 39px;
     }
     /* --- Autocomplete and form adjust accordingly --- */
-    .twitter-typeahead {
-      background: transparent;
-      height: 39px;
-      margin-left: 10px;
-      width: percentage(@finna-search-input-width);
-      @media (max-width: @screen-xs-max) {
-            width: percentage((@finna-search-input-width - 0.06));  
-      }
-      .tt-hint {}
-    }
-    &.input-field-only .form-control.search-query, &.input-field-only .twitter-typeahead {
+    &.input-field-only .form-control.search-query {
         width: 85%;
         @media (max-width: @screen-xs-max) {
             width: 80%;
@@ -294,13 +283,6 @@ input[type="checkbox"],
     }
 }
 
-// prevent appearance of smaller input field when twitter-typeahead.js is loaded
-
-.navbar-form .twitter-typeahead .form-control.search-query {
-    margin-top: 0px;
-    margin-left: 0px; // Reset margin if we wrap this element inside typeahead
-    width: 100%;   
-}
 .search-controls .pagination {
     margin-top: 0px;   
 }
