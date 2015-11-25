@@ -48,9 +48,11 @@ class CoverController extends \VuFind\Controller\CoverController
     {
         $width = $this->params()->fromQuery('w');
         $height = $this->params()->fromQuery('h');
+        // Use full-resolution image?
+        $fullRes = $this->params()->fromQuery('fullres');
 
         $loader = $this->getLoader();
-        $loader->setParams($width, $height);
+        $loader->setParams($width, $height, $fullRes);
 
         if ($id = $this->params()->fromQuery('id')) {
             $driver = $this->getRecordLoader()->load($id, 'Solr');

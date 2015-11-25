@@ -325,7 +325,11 @@ trait SolrFinna
                 }
             }
             if (!is_array($url)) {
-                return ['id' => $this->getUniqueId(), 'url' => $url];
+                $params = ['id' => $this->getUniqueId(), 'url' => $url];
+                if ($size == 'large') {
+                    $params['fullres'] = 1;
+                }
+                return $params;
             }
         }
         $params = parent::getThumbnail($size);
