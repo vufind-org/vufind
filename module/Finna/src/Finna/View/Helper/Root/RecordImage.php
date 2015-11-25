@@ -140,11 +140,14 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
             if (is_array($params)) {
                 unset($params['url']);
                 unset($params['size']);
-                $view->__set(
-                    $viewParam,
-                    $urlHelper('cover-show') . '?' .
-                    http_build_query(array_merge($params, $this->params[$imageType]))
-                );
+                
+                $view->{$viewParam} 
+                    = $urlHelper('cover-show') . '?' .
+                    http_build_query(
+                        array_merge(
+                            $params, $this->params[$imageType]
+                        )
+                    );
 
                 if ($numOfImages > 1) {
                     for ($i = 0; $i < $numOfImages; $i++) {
@@ -160,7 +163,7 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
                     }
                 }
             } else {
-                $view->__set($viewParam, $params);
+                $view->{$viewParam} = $params;
             }
         }
         $view->allImages = $images;
