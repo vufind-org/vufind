@@ -18,7 +18,7 @@
   if ($authors) {
     $authNames = [];
     foreach ($authors as $author) {
-      $authNames[] = $this->escapeHtml($author['name']);
+      $authNames[] = $this->escapeHtml(is_array($author) ? $author['name'] : $author);
     }
     $this->headMeta()->setProperty('article:author', implode('; ', $authNames));
   }
