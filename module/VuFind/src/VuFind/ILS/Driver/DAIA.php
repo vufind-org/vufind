@@ -508,12 +508,12 @@ class DAIA extends AbstractBase implements
 
         if (count($docs)) {
             // check for error messages and write those to log
-            if (array_key_exists('message', $docs)) {
+            if (isset($docs['message'])) {
                 $this->logMessages($docs['message'], 'document');
             }
 
             // do DAIA documents exist?
-            if (array_key_exists('document', $docs) && $this->multiQuery) {
+            if (isset($docs['document']) && $this->multiQuery) {
                 // now loop through the found DAIA documents
                 foreach ($docs['document'] as $doc) {
                     // DAIA documents should use URIs as value for id
@@ -527,7 +527,7 @@ class DAIA extends AbstractBase implements
                         }
                     }
                 }
-            } elseif (array_key_exists('document', $docs)) {
+            } elseif (isset($docs['document'])) {
                 // since a document exists but multiQuery is disabled, the first
                 // document is returned if it contains an item
                 $doc = array_shift($docs['document']);
@@ -638,19 +638,19 @@ class DAIA extends AbstractBase implements
     {
         $doc_id = null;
         $doc_href = null;
-        if (array_key_exists('id', $daiaArray)) {
+        if (isset($daiaArray['id'])) {
             $doc_id = $daiaArray['id'];
         }
-        if (array_key_exists('href', $daiaArray)) {
+        if (isset($daiaArray['href'])) {
             // url of the document (not needed for VuFind)
             $doc_href = $daiaArray['href'];
         }
-        if (array_key_exists('message', $daiaArray)) {
+        if (isset($daiaArray['message'])) {
             // log messages for debugging
             $this->logMessages($daiaArray['message'], 'document');
         }
         // if one or more items exist, iterate and build result-item
-        if (array_key_exists('item', $daiaArray)) {
+        if (isset($daiaArray['item']) && is_array($daiaArray['item'])) {
             $number = 0;
             foreach ($daiaArray['item'] as $item) {
                 $result_item = [];
@@ -694,47 +694,54 @@ class DAIA extends AbstractBase implements
         $availability = false;
         $status = ''; // status cannot be null as this will crash the translator
         $duedate = null;
+        $notes = [];
         $availableLink = '';
         $queue = '';
-        if (array_key_exists('available', $item)) {
-            if (count($item['available']) === 1) {
-                $availability = true;
-            } else {
-                // check if item is loanable or presentation
-                foreach ($item['available'] as $available) {
-                    // attribute service can be set once or not
-                    if (isset($available['service'])
-                        && in_array(
-                            $available['service'],
-                            ['loan', 'presentation', 'openaccess']
-                        )
+        $services = [];
+
+        if (isset($item['available'])) {
+            // check if item is loanable or presentation
+            foreach ($item['available'] as $available) {
+                if (isset($available['service'])) {
+                    $services['available'][] = $available['service'];
+                }
+                // attribute service can be set once or not
+                if (isset($available['service'])
+                    && in_array(
+                        $available['service'],
+                        ['loan', 'presentation', 'openaccess']
+                    )
+                ) {
+                    // set item available if service is loan, presentation or
+                    // openaccess
+                    $availability = true;
+                    if ($available['service'] == 'loan'
+                        && isset($available['service']['href'])
                     ) {
-                        // set item available if service is loan, presentation or
-                        // openaccess
-                        $availability = true;
-                        if ($available['service'] == 'loan'
-                            && isset($available['service']['href'])
-                        ) {
-                            // save the link to the ils if we have a href for loan
-                            // service
-                            $availableLink = $available['service']['href'];
-                        }
+                        // save the link to the ils if we have a href for loan
+                        // service
+                        $availableLink = $available['service']['href'];
                     }
+                }
 
-                    // use limitation element for status string
-                    if (isset($available['limitation'])) {
-                        $status = $this->getItemLimitation($available['limitation']);
-                    }
+                // use limitation element for status string
+                if (isset($available['limitation'])) {
+                    //$status = $this->getItemLimitation($available['limitation']);
+                    $notes[] = $this->getItemLimitation($available['limitation']);
+                }
 
-                    // log messages for debugging
-                    if (isset($available['message'])) {
-                        $this->logMessages($available['message'], 'item->available');
-                    }
+                // log messages for debugging
+                if (isset($available['message'])) {
+                    $this->logMessages($available['message'], 'item->available');
                 }
             }
         }
-        if (array_key_exists('unavailable', $item)) {
+
+        if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
+                if (isset($available['service'])) {
+                    $services['unavailable'][] = $unavailable['service'];
+                }
                 // attribute service can be set once or not
                 if (isset($unavailable['service'])
                     && in_array(
@@ -750,7 +757,9 @@ class DAIA extends AbstractBase implements
 
                     // use limitation element for status string
                     if (isset($unavailable['limitation'])) {
-                        $status = $this
+                        /*$status = $this
+                            ->getItemLimitation($unavailable['limitation']);*/
+                        $notes[] = $this
                             ->getItemLimitation($unavailable['limitation']);
                     }
                 }
@@ -790,10 +799,12 @@ class DAIA extends AbstractBase implements
             $return['ilslink'] = $availableLink;
         }
 
+        $return['notes']           = $notes;
         $return['status']          = $status;
         $return['availability']    = $availability;
         $return['duedate']         = $duedate;
         $return['requests_placed'] = $queue;
+        $return['services']        = $services;
 
         return $return;
     }
@@ -844,7 +855,7 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemCallnumber($item)
     {
-        return array_key_exists('label', $item) && !empty($item['label'])
+        return isset($item['label']) && !empty($item['label'])
             ? $item['label']
             : 'Unknown';
     }
@@ -858,16 +869,25 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemLocation($item)
     {
-        if (isset($item['storage'])
-            && array_key_exists('content', $item['storage'])
+        $location = '';
+
+        if (isset($item['department'])
+            && isset($item['department']['content'])
         ) {
-            return $item['storage']['content'];
-        } elseif (isset($item['department'])
-            && array_key_exists('content', $item['department'])
-        ) {
-            return $item['department']['content'];
+            $location .= (empty($location)
+                ? $item['department']['content']
+                : ' - ' . $item['department']['content']);
         }
-        return 'Unknown';
+
+        if (isset($item['storage'])
+            && isset($item['storage']['content'])
+        ) {
+            $location .= (empty($location)
+                ? $item['storage']['content']
+                : ' - ' . $item['storage']['content']);
+        }
+
+        return (empty($location) ? 'Unknown' : $location);
     }
 
     /**
@@ -899,7 +919,6 @@ class DAIA extends AbstractBase implements
             }
         }
         return '';
-
     }
 
     /**

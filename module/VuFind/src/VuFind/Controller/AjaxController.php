@@ -219,6 +219,8 @@ class AjaxController extends AbstractBase
             ? $config->Item_Status->multiple_call_nos : 'msg';
         $locationSetting = isset($config->Item_Status->multiple_locations)
             ? $config->Item_Status->multiple_locations : 'msg';
+        $servicePriority = isset($config->Item_Status->service_priority)
+            ? $config->Item_Status->service_priority : 'none';
         $showFullStatus = isset($config->Item_Status->show_full_status)
             ? $config->Item_Status->show_full_status : false;
 
@@ -236,7 +238,8 @@ class AjaxController extends AbstractBase
                     );
                 } else {
                     $current = $this->getItemStatus(
-                        $record, $messages, $locationSetting, $callnumberSetting
+                        $record, $messages, $locationSetting, $callnumberSetting,
+                        $servicePriority
                     );
                 }
                 // If a full status display has been requested, append the HTML:
@@ -337,11 +340,13 @@ class AjaxController extends AbstractBase
      * @return array                    Summarized availability information
      */
     protected function getItemStatus($record, $messages, $locationSetting,
-        $callnumberSetting
+        $callnumberSetting, $servicePriority
     ) {
         // Summarize call number, location and availability info across all items:
         $callNumbers = $locations = [];
         $use_unknown_status = $available = false;
+        $services = [];
+
         foreach ($record as $info) {
             // Find an available copy
             if ($info['availability']) {
@@ -356,6 +361,14 @@ class AjaxController extends AbstractBase
             // Store call number/location info:
             $callNumbers[] = $info['callnumber'];
             $locations[] = $info['location'];
+            // Find more specific availability info
+            if (isset($info['services']['available'])) {
+                foreach ($info['services']['available'] as $service) {
+                    if (!in_array($service, $info['services']['unavailable'])) {
+                        array_push($services, $service);
+                    }
+                }
+            }
         }
 
         // Determine call number string based on findings:
@@ -368,9 +381,21 @@ class AjaxController extends AbstractBase
             $locations, $locationSetting, 'Multiple Locations', 'location_'
         );
 
-        $availability_message = $use_unknown_status
-            ? $messages['unknown']
-            : $messages[$available ? 'available' : 'unavailable'];
+        $services = array_unique($services);
+
+        if ($servicePriority != 'none') {
+            $priorities = explode(',', $servicePriority);
+            $services = array_intersect($priorities, $services);
+        }
+
+        if (!empty($services)) {
+            $availability_message = $this->getViewRenderer()
+                ->render('ajax/status-available-services.phtml', ['services'=>$services]);
+        } else {
+            $availability_message = $use_unknown_status
+                ? $messages['unknown']
+                : $messages[$available ? 'available' : 'unavailable'];
+        }
 
         // Send back the collected details:
         return [
