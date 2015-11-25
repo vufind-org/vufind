@@ -140,8 +140,8 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
             if (is_array($params)) {
                 unset($params['url']);
                 unset($params['size']);
-                
-                $view->{$viewParam} 
+
+                $view->{$viewParam}
                     = $urlHelper('cover-show') . '?' .
                     http_build_query(
                         array_merge(
