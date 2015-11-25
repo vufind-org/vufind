@@ -345,7 +345,7 @@ finna.layout = (function() {
 
     var initSearchboxFunctions = function() {
       if ($('.navbar-form .checkbox')[0]) {
-        $('.tt-dropdown-menu').addClass('checkbox-active');
+        $('.autocomplete-results').addClass('checkbox-active');
       }
       $('.searchForm_lookfor').on('input', function() {
         var form = $(this).closest('.searchForm');
@@ -359,11 +359,10 @@ finna.layout = (function() {
       $('.clear-button').click(function() {
         var form = $(this).closest('.searchForm');
         form.find('.searchForm_lookfor').val('');
-        form.find('.autocomplete').typeahead('val', '');
         form.find('.clear-button').addClass('hidden');
         form.find('.searchForm_lookfor').focus();
       });
-      $('.autocomplete').on('typeahead:selected', function () {
+      $('.autocomplete-results').click(function() {
         $('.navbar-form').submit();
       });
 
