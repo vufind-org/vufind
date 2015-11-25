@@ -148,7 +148,7 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                 $description = implode("<br>", $d_arr);
                 $res['documents'][$i]['description'] = $description;
 
-                $fieldList = [
+                $highlightFields = [
                     'title' => 'title',
                     'creator' => 'author',
                     'description' => 'description'
@@ -158,37 +158,38 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                 $end = '</span>';
 
                 $hilited = [];
-                foreach ($fieldList as $field => $hiliteField) {
-                    if (!isset($res['documents'][$i][$field])) {
-                        continue;
-                    }
-                    $val = $res['documents'][$i][$field];
-                    $values = is_array($val) ? $val : [$val];
-                    $valuesHilited = [];
-                    foreach ($values as $val) {
-                        if (stripos($val, $start) !== false
-                            && stripos($val, $end) !== false
-                        ) {
-                            // Replace Primo hilite-tags
-                            $hilitedVal = $val;
-                            $hilitedVal = str_replace(
-                                $start, '{{{{START_HILITE}}}}', $hilitedVal
-                            );
-                            $hilitedVal = str_replace(
-                                $end, '{{{{END_HILITE}}}}', $hilitedVal
-                            );
-                            $valuesHilited[] = $hilitedVal;
 
-                            // Strip Primo hilite-tags from record fields
-                            $val = str_replace($start, '', $val);
-                            $val = str_replace($end, '', $val);
-                            $res['documents'][$i][$field]
-                                = is_array($res['documents'][$i][$field])
-                                ? [$val] : $val;
+                foreach ($res['documents'][$i] as $fieldName => $fieldData) {
+                    $values = is_array($fieldData) ? $fieldData : [$fieldData];
+                    if (isset($highlightFields[$fieldName])) {
+                        $valuesHilited = [];
+                        foreach ($values as $val) {
+                            if (stripos($val, $start) !== false
+                                && stripos($val, $end) !== false
+                            ) {
+                                // Replace Primo hilite-tags
+                                $hilitedVal = $val;
+                                $hilitedVal = str_replace(
+                                    $start, '{{{{START_HILITE}}}}', $hilitedVal
+                                );
+                                $hilitedVal = str_replace(
+                                    $end, '{{{{END_HILITE}}}}', $hilitedVal
+                                );
+                                $valuesHilited[] = $hilitedVal;
+                            }
+                        }
+                        if (!empty($valuesHilited)) {
+                            $hilited[$highlightFields[$fieldName]] = $valuesHilited;
                         }
                     }
-                    if (!empty($valuesHilited)) {
-                        $hilited[$hiliteField] = $valuesHilited;
+
+                    foreach ($values as $val) {
+                        // Strip Primo hilite-tags from record fields
+                        $val = str_replace($start, '', $val);
+                        $val = str_replace($end, '', $val);
+                        $res['documents'][$i][$fieldName]
+                            = is_array($fieldData)
+                            ? [$val] : $val;
                     }
                 }
                 $res['documents'][$i]['highlightDetails'] = $hilited;
@@ -225,20 +226,20 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
     {
         if (!empty($sear->LINKS->openurl)) {
             if (($url = $sear->LINKS->openurl) !== '') {
-                return $url;
+                return (string)$url;
             }
         }
 
         $attr = $sear->GETIT->attributes();
         if (!empty($attr->GetIt2)) {
             if (($url = (string)$attr->GetIt2) !== '') {
-                return $url;
+                return (string)$url;
             }
         }
 
         if (!empty($attr->GetIt1)) {
             if (($url = (string)$attr->GetIt1) !== '') {
-                return $url;
+                return (string)$url;
             }
         }
 

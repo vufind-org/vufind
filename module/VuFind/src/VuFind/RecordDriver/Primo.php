@@ -130,8 +130,12 @@ class Primo extends SolrDefault
      */
     public function getContainerReference()
     {
-        $parts = explode(',', $this->getIsPartOf(), 2);
-        return isset($parts[1]) ? trim($parts[1]) : '';
+        $partOf = $this->getIsPartOf();
+        $containerTitle = $this->getContainerTitle();
+        // Try to take the part after the title. Account for any 'The' etc. in the
+        // beginning.
+        $parts = explode($containerTitle, $partOf);
+        return isset($parts[1]) ? trim($parts[1], " \t\n\r,") : $partOf;
     }
 
     /**
