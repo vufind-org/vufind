@@ -82,12 +82,14 @@ EOT;
 </div>
 <div class="container">
 <div class="row record-row">
+  <div class="col-xs-12">
+      <?=$this->record($this->driver)->getToolbar()?>
+  </div>
   <div class="col-sm-9">
     <div class="record source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
-      <?=$this->record($this->driver)->getToolbar()?>
       <?=$this->record($this->driver)->getMetaTags();?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
     </div>
@@ -131,7 +133,7 @@ EOT;
   </div>
 
   <div class="col-sm-3 sidebar">
-    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind'): ?>
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind' && $this->driver->getRecordType() != 'lido' && $this->driver->getRecordType() != 'ead'): ?>
       <?=$this->render('record/record-organisation-menu.phtml') ?>
     <? endif; ?>
     <? foreach ($this->related()->getList($this->driver) as $current): ?>
