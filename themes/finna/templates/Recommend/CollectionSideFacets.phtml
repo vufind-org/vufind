@@ -1,6 +1,6 @@
 <!-- START of: finna - Recommend/CollectionSideFacets.phtml -->
 <?
-    $this->overrideSideFacetCaption = 'In This Collection';
+    $this->overrideSideFacetCaption = 'Filter Collection';
 ?>
 <? if ($this->recommend->keywordFilterEnabled()): ?>
   <?
@@ -19,13 +19,11 @@
     }
   ?>
   <? ob_start() ?>
-  <div class="panel panel-default">
-    <div class="panel-heading">
+  <div class="list-group filters">
+    <div class="list-group-item">
       <h5>
-        <?=$this->transEsc('Keyword Filter')?>
+        <?=$this->transEsc('Search from collection')?>
       </h5>
-    </div>
-    <div class="panel-body">
       <form class="form-inline" role="form" method="get" name="keywordFilterForm" id="keywordFilterForm">
         <input id="keywordFilter_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($keywordFilter)?>" class="form-control"/>
         <? foreach ($this->recommend->getResults()->getParams()->getFilterList(true) as $field => $filters): ?>
@@ -33,7 +31,7 @@
             <input type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($filter['field'])?>:&quot;<?=$this->escapeHtmlAttr($filter['value'])?>&quot;" />
           <? endforeach; ?>
         <? endforeach; ?>
-        <input class="btn btn-primary btn-default" type="submit" name="submit" value="<?=$this->transEsc('Set')?>"/>
+        <button class="btn btn-primary btn-default" type="submit" name="submit"><span class="sr-only"><?=$this->transEsc('Search')?></span><i class="fa fa-search"></i></button>
       </form>
     </div>
   </div>
