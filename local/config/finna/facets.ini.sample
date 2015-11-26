@@ -172,9 +172,9 @@ facet_translation_prefix = "facet_"
 ; These facets will be displayed on the Home Page.  If this section is omitted,
 ; the [Advanced] section will be used instead.
 [HomePage]
-callnumber-first = "Call Number"
-language         = Language
-format           = Format
+;callnumber-first = "Call Number"
+;language         = Language
+;format           = Format
 ;hierarchy_top_title   = Collections
 
 ; These settings affect the way the [HomePage] facets are displayed
