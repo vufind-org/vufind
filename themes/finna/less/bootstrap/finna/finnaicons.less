@@ -78,17 +78,19 @@ table .iconlabel {
             &:before {
                 padding-right: 3px;
                 position: absolute;
-                top: 26%;
-                left: 36%;
                 font-size: 39px;
                 color: @gray-lighter;
                 z-index: 0;
-                @media (min-width:@screen-md-min) and (max-width:@screen-md-max) {
-                    top: 20%;
-                    left: 35%;
-                }
-                @media (max-width:@screen-sm-max) {
+                top: 50%;
+                left: 50%;
+                margin-left: -18px;
+                margin-top: -27px;
+                @media (min-width:@screen-xs-min) and (max-width:@screen-sm-max) {
                     font-size: 26px;
+                    top: 50%;
+                    left: 50%;
+                    margin-left: -12.5px;
+                    margin-top: -18.5px;
                 }
             }
         }
@@ -97,16 +99,12 @@ table .iconlabel {
             box-shadow: none;
             width: auto;
         }
-        & .iconlabel:before {
-              top: 0px;
-              display: none;
-        }
     }
 }
- & .grid-image .image-popup-trigger {
+.grid-image .image-popup-trigger {
     & .iconlabel:before {
-        top: 32%;
-        left: 43%;
+        margin-top: -36px;
+        margin-left: -18px;
     }
     @media (max-width:@screen-xs-max) {
         display: block;
@@ -114,10 +112,9 @@ table .iconlabel {
             box-shadow: 0px 0px 0px 4px @gray-lighter inset;
         }
     }
-    @media (min-width:@screen-md-min) and (max-width: @screen-md-max) {
+    @media (max-width: @screen-sm-max) {
         & .iconlabel:before {
-            top: 27%;
-            left: 40%;
+            font-size: 39px;
         }
     }
 }
