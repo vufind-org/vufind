@@ -127,50 +127,43 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
             $numOfImages = min(1, $numOfImages);
         }
 
-        $params = $this->record->getRecordImage('small');
-        if (is_array($params)) {
-            unset($params['url']);
-            unset($params['size']);
-            $view->smallImage = $urlHelper('cover-show') . '?' .
-                http_build_query(array_merge($params, $this->params['small']));
-        } else {
-            $view->smallImage = $params;
-        }
-
-        $params = $this->record->getRecordImage('large');
-        if (is_array($params)) {
-            unset($params['url']);
-            unset($params['size']);
-
-            $view->mediumImage = $urlHelper('cover-show') . '?' .
-                http_build_query(array_merge($params, $this->params['medium']));
-
-            $view->largeImage = $urlHelper('cover-show') . '?' .
-                http_build_query(array_merge($params, $this->params['large']));
-        } else {
-            $view->mediumImage = $view->largeImage = $params;
-        }
+        $imageTypes = [
+            'small' => 'smallImage',
+            'medium' => 'mediumImage',
+            'large' => 'largeImage'
+        ];
 
         $images = [];
-        if ($numOfImages > 1) {
-            for ($i = 0; $i < $numOfImages; $i++) {
-                $params['index'] = $i;
-                $images[] = [
-                    'small' => $urlHelper('cover-show') . '?' .
-                        http_build_query(
-                            array_merge($params, $this->params['small'])
-                        ),
+        foreach ($imageTypes as $imageType => $viewParam) {
+            $params = $this->record->getRecordImage($imageType);
 
-                    'medium' => $urlHelper('cover-show') . '?' .
-                        http_build_query(
-                            array_merge($params, $this->params['medium'])
-                        ),
+            if (is_array($params)) {
+                unset($params['url']);
+                unset($params['size']);
 
-                    'large' => $urlHelper('cover-show') . '?' .
-                        http_build_query(
-                            array_merge($params, $this->params['large'])
+                $view->{$viewParam}
+                    = $urlHelper('cover-show') . '?' .
+                    http_build_query(
+                        array_merge(
+                            $params, $this->params[$imageType]
                         )
-                ];
+                    );
+
+                if ($numOfImages > 1) {
+                    for ($i = 0; $i < $numOfImages; $i++) {
+                        if (!isset($images[$i])) {
+                            $images[$i] = [];
+                        }
+                        $params['index'] = $i;
+                        $images[$i][$imageType]
+                            = $urlHelper('cover-show') . '?' .
+                            http_build_query(
+                                array_merge($params, $this->params[$imageType])
+                            );
+                    }
+                }
+            } else {
+                $view->{$viewParam} = $params;
             }
         }
         $view->allImages = $images;

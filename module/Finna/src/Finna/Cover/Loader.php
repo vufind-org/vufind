@@ -76,17 +76,26 @@ class Loader extends \VuFind\Cover\Loader
     protected $height;
 
     /**
+     * Use full-resolution image?
+     *
+     * @var boolean
+     */
+    protected $fullRes;
+
+    /**
      * Set image parameters.
      *
-     * @param int $width  Image width
-     * @param int $height Image height
+     * @param int     $width   Image width
+     * @param int     $height  Image height
+     * @param boolean $fullRes Use full-resolution image?
      *
      * @return void
      */
-    public function setParams($width, $height)
+    public function setParams($width, $height, $fullRes = false)
     {
         $this->width = $width;
         $this->height = $height;
+        $this->fullRes = $fullRes;
     }
 
     /**
@@ -142,7 +151,9 @@ class Loader extends \VuFind\Cover\Loader
     ) {
         $this->index = $index;
 
-        $params = $driver->getRecordImage('large', $index);
+        $params = $driver->getRecordImage(
+            $this->fullRes ? 'large' : 'medium', $index
+        );
 
         if (isset($params['url'])) {
             $this->id = $params['id'];
@@ -192,9 +203,7 @@ class Loader extends \VuFind\Cover\Loader
 
         $keys = array_merge(
             $keys,
-            [
-                  $this->index, $this->width, $this->height
-            ]
+            [$this->index, $this->width, $this->height, $this->fullRes ? '1' : '0']
         );
 
         $file = implode('-', $keys);

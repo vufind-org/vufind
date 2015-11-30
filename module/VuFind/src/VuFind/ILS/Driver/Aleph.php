@@ -443,7 +443,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $url = $this->appendQueryString($url, $params);
         if ($auth) {
             $url = $this->appendQueryString(
-                $url, [
+                $url,
+                [
                     'user_name' => $this->wwwuser,
                     'user_password' => $this->wwwpasswd
                 ]
