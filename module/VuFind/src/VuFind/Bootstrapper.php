@@ -203,7 +203,8 @@ class Bootstrapper
         // the config file if this doesn't work -- different systems may vary in
         // their behavior here.
         setlocale(
-            LC_ALL, [
+            LC_ALL,
+            [
                 "{$this->config->Site->locale}.UTF8",
                 "{$this->config->Site->locale}.UTF-8",
                 $this->config->Site->locale
