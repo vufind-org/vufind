@@ -162,6 +162,7 @@ abstract class Results implements ServiceLocatorAwareInterface
         if (is_object($this->params)) {
             $this->params = clone($this->params);
         }
+        $this->helpers = [];
     }
 
     /**
