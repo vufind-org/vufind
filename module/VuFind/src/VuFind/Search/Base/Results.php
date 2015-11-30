@@ -148,7 +148,6 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function __construct(Params $params)
     {
-        // Save the parameters, then perform the search:
         $this->setParams($params);
     }
 
