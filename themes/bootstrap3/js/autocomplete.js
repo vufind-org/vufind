@@ -1,5 +1,5 @@
 ﻿/**
- * vufind.typeahead.js 0.2
+ * vufind.typeahead.js 0.3
  * ~ @crhallberg
  */
 (function ( $ ) {
@@ -29,14 +29,18 @@
         if (typeof data[i] === 'string') {
           data[i] = {val: data[i]};
         }
+        var content = data[i].val;
+        if (options.highlight) {
+          var regex = new RegExp('('+input.val()+')', 'ig');
+          content = content.replace(regex, '<b>$1</b>');
+        }
         var item = typeof data[i].href === 'undefined'
-          ? $('<div/>').attr('data-value', data[i].val)
-                      .html(data[i].val)
-                      .addClass('item')
+          ? $('<div/>').addClass('item')
+                       .attr('data-value', data[i].val)
+                       .html(content)
           : $('<a/>').attr('href', data[i].href)
-                    .attr('data-value', data[i].val)
-                    .html(data[i].val)
-                    .addClass('item')
+                     .attr('data-value', data[i].val)
+                     .html(content)
         if (typeof data[i].description !== 'undefined') {
           item.append($('<small/>').text(data[i].description));
         }
