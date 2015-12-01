@@ -1,6 +1,11 @@
 <?
     // Set page title.
     $this->headTitle($this->translate('Search History'));
+
+    $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
+    if (!$saveSupported) {
+        $this->saved = [];
+    }
 ?>
 <div data-role="page" id="Search-history">
   <?=$this->mobileMenu()->header()?>
