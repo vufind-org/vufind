@@ -47,6 +47,8 @@ class Favorites extends AbstractPlugin
      *
      * @param array $params Array of parameters (we only care about 'list').
      * @param User  $user   User object.
+     *
+     * @return \VuFind\Db\Row\UserList
      */
     protected function getList($params, User $user)
     {
