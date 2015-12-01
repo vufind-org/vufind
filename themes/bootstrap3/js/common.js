@@ -304,7 +304,6 @@ function setupAutocomplete() {
       maxResults: 10,
       loadingString: VuFind.translate('loading')+'...',
       handler: function(query, cb) {
-        // cb('1,2,3,4,5,6,7,8,9,10'.split(','));
         var searcher = extractClassParams(op);
         $.fn.autocomplete.ajax({
           url: VuFind.getPath() + '/AJAX/JSON',
@@ -327,9 +326,6 @@ function setupAutocomplete() {
             }
           }
         });
-      },
-      onselection: function(value, input) {
-        $(input).closest('form').submit();
       }
     });
   });

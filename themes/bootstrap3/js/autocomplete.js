@@ -1,5 +1,5 @@
 ﻿/**
- * vufind.typeahead.js 0.3
+ * vufind.typeahead.js 0.5
  * ~ @crhallberg
  */
 (function ( $ ) {
@@ -25,28 +25,38 @@
 
     function createList(data, input) {
       var shell = $('<div/>');
-      for (var i=0, len=Math.min(options.maxResults, data.length); i<len; i++) {
+      var length = Math.min(options.maxResults, data.length);
+      input.data('length', length);
+      for (var i=0; i<length; i++) {
         if (typeof data[i] === 'string') {
           data[i] = {val: data[i]};
         }
         var content = data[i].val;
         if (options.highlight) {
-          var regex = new RegExp('('+input.val()+')', 'ig');
+          // escape term for regex
+          // https://github.com/sindresorhus/escape-string-regexp/blob/master/index.js
+          var escapedTerm = input.val().replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+          var regex = new RegExp('('+escapedTerm+')', 'ig');
           content = content.replace(regex, '<b>$1</b>');
         }
         var item = typeof data[i].href === 'undefined'
-          ? $('<div/>').addClass('item')
-                       .attr('data-value', data[i].val)
-                       .html(content)
-          : $('<a/>').attr('href', data[i].href)
-                     .attr('data-value', data[i].val)
-                     .html(content)
+          ? $('<div/>')
+          : $('<a/>').attr('href', data[i].href);
+        item.attr('data-index', i+0)
+            .attr('data-value', data[i].val)
+            .addClass('item')
+            .html(content)
+            .mouseover(function() {
+              $.fn.autocomplete.element.find('.item.selected').removeClass('selected');
+              $(this).addClass('selected');
+              input.data('selected', this.dataset.index);
+            });
         if (typeof data[i].description !== 'undefined') {
           item.append($('<small/>').text(data[i].description));
         }
         shell.append(item);
       }
-      $.fn.autocomplete.element.html(shell.html());
+      $.fn.autocomplete.element.html(shell);
       $.fn.autocomplete.element.find('.item').mousedown(function() {
         populate($(this).attr('data-value'), input, {mouse: true})
       });
@@ -61,7 +71,7 @@
         show();
         align(input, $.fn.autocomplete.element);
         var term = input.val();
-        var cid = parseInt(input.data('cache-id'));
+        var cid = input.data('cache-id');
         if (options.cache && typeof $.fn.autocomplete.cache[cid][term] !== "undefined") {
           if ($.fn.autocomplete.cache[cid][term].length === 0) {
             hide();
@@ -108,6 +118,7 @@
       }
 
       input.data('selected', -1);
+      input.data('length', 0);
 
       if (options.cache) {
         var cid = Math.floor(Math.random()*1000);
@@ -129,34 +140,37 @@
         search(input, element);
       });
       input.keyup(function(event) {
+        // Ignore navigation keys
+        // - Ignore control functions
         if (event.ctrlKey) {
           return;
         }
+        // - Function keys (F1 - F15)
+        if (112 <= event.which && event.which <= 126) {
+          return;
+        }
         switch (event.which) {
-          case 37:
+          case 9:    // tab
+          case 13:   // enter
+          case 16:   // shift
+          case 20:   // caps lock
+          case 27:   // esc
+          case 33:   // page up
+          case 34:   // page down
+          case 35:   // end
+          case 36:   // home
+          case 37:   // arrows
           case 38:
           case 39:
-          case 9:
-          case 13: {
+          case 40:
+          case 45:   // insert
+          case 144:  // num lock
+          case 145:  // scroll lock
+          case 19: { // pause/break
             return;
           }
-          case 40: {
-            if ($(this).data('selected') === -1) {
-              search(input, element)
-              return;
-            }
-          }
           default: {
-            if (
-              event.which === 8  ||   // backspace
-              event.which === 46 ||   // delete
-              (event.which >= 48 &&   // letters
-               event.which <= 90) ||
-              (event.which >= 96 &&   // numpad
-               event.which <= 111)
-            ) {
-              search(input, element);
-            }
+            search(input, element);
           }
         }
       });
@@ -178,9 +192,10 @@
             break;
           }
           case 40: {
-            show();
             event.preventDefault();
-            if (position < options.maxResults) {
+            if ($.fn.autocomplete.element.hasClass(options.hidingClass)) {
+              search(input, element);
+            } else if (position < input.data('length')-1) {
               position++;
               element.find('.item.selected').removeClass('selected');
               element.find('.item:eq('+position+')').addClass('selected');
@@ -199,13 +214,14 @@
               } else {
                 populate(selected.attr('data-value'), $(this), element, {key: true});
                 element.find('.item.selected').removeClass('selected');
+                $(this).data('selected', -1);
               }
             }
             break;
           }
           // hide on escape
           case 27: {
-            hide(element);
+            hide();
             $(this).data('selected', -1);
             break;
           }
@@ -260,8 +276,7 @@
     highlight: true,
     loadingString: 'Loading...',
     maxResults: 20,
-    minLength: 3,
-    minResults: 1
+    minLength: 3
   };
 
   var xhr = false;
