@@ -148,7 +148,6 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function __construct(Params $params)
     {
-        // Save the parameters, then perform the search:
         $this->setParams($params);
     }
 
@@ -162,6 +161,7 @@ abstract class Results implements ServiceLocatorAwareInterface
         if (is_object($this->params)) {
             $this->params = clone($this->params);
         }
+        $this->helpers = [];
     }
 
     /**
