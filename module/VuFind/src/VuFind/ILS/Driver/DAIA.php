@@ -694,7 +694,6 @@ class DAIA extends AbstractBase implements
         $availability = false;
         $status = ''; // status cannot be null as this will crash the translator
         $duedate = null;
-        $notes = [];
         $availableLink = '';
         $queue = '';
         $services = [];
@@ -726,8 +725,7 @@ class DAIA extends AbstractBase implements
 
                 // use limitation element for status string
                 if (isset($available['limitation'])) {
-                    //$status = $this->getItemLimitation($available['limitation']);
-                    $notes[] = $this->getItemLimitation($available['limitation']);
+                        $status = $this->getItemLimitation($available['limitation']);
                 }
 
                 // log messages for debugging
@@ -757,9 +755,7 @@ class DAIA extends AbstractBase implements
 
                     // use limitation element for status string
                     if (isset($unavailable['limitation'])) {
-                        /*$status = $this
-                            ->getItemLimitation($unavailable['limitation']);*/
-                        $notes[] = $this
+                        $status = $this
                             ->getItemLimitation($unavailable['limitation']);
                     }
                 }
@@ -799,7 +795,6 @@ class DAIA extends AbstractBase implements
             $return['ilslink'] = $availableLink;
         }
 
-        $return['notes']           = $notes;
         $return['status']          = $status;
         $return['availability']    = $availability;
         $return['duedate']         = $duedate;

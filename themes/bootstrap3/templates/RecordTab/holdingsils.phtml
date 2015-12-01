@@ -89,9 +89,6 @@
       <tr vocab="http://schema.org/" typeof="Offer">
         <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
         <td>
-          <? foreach ($row['notes'] as $note): ?>
-            <span class="text-muted"><?=$note?></span>
-          <? endforeach; ?>
           <? if ($row['reserve'] == "Y"): ?>
             <link property="availability" href="http://schema.org/InStoreOnly" />
             <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
