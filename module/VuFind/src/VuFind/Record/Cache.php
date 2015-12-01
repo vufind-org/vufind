@@ -155,13 +155,10 @@ class Cache implements \Zend\Log\LoggerAwareInterface
             $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
         }
 
-        $foundIds = [];
-        array_walk(
-            $vufindRecords,
-            function ($record) use (&$foundIds) {
-                $foundIds[] = $record->getUniqueID();
-            }
-        );
+        $extractIdCallback = function ($record) {
+            return $record->getUniqueID();
+        };
+        $foundIds = array_map($extractIdCallback, $vufindRecords);
         $this->debug(
             "Cache: cached records for $source "
             . ($foundIds ? 'found: ' . implode(', ', $foundIds) : 'not found')
