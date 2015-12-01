@@ -1,76 +1,84 @@
 ﻿/**
- * vufind.typeahead.js 0.1
+ * vufind.typeahead.js 0.2
  * ~ @crhallberg
  */
 (function ( $ ) {
 
-  $.fn.autocomplete = function(settings, ops) {
+  $.fn.autocomplete = function(settings) {
 
     var options = $.extend( {}, $.fn.autocomplete.options, settings );
-    function show(element) { element.removeClass(options.hidingClass); }
-    function hide(element) {
-      element.addClass(options.hidingClass);
-      cache = [];
+
+    function show() {
+      $.fn.autocomplete.element.removeClass(options.hidingClass);
+    }
+    function hide() {
+      $.fn.autocomplete.element.addClass(options.hidingClass);
     }
 
-    function populate(value, input, element) {
+    function populate(value, input, eventType) {
       input.val(value);
-      hide(element);
-    }
-
-    function createList(data, input, element) {
-      if (data.length === 0) {
-        hide(element);
-        return;
-      } else {
-        var op = $('<div/>');
-        for (var i=0, len=Math.min(options.maxResults, data.length); i<len; i++) {
-          if (typeof data[i] === 'string') {
-            data[i] = {val: data[i]};
-          }
-          if (typeof data[i].href === "undefined") {
-            op.append(
-              $('<div/>')
-                .attr('value', data[i].val)
-                .html(data[i].val)
-                .addClass('item')
-            );
-          } else {
-            op.append(
-              $('<a/>')
-                .attr('href', data[i].href)
-                .attr('value', data[i].val)
-                .html(data[i].val)
-                .addClass('item')
-            );
-          }
-        }
-        element.html(op.html());
-        element.find('.item').click(function() {
-          populate($(this).attr('value'), input, element)
-        });
-        show(element);
+      hide();
+      if (typeof options.onselection !== 'undefined') {
+        options.onselection(value, input, eventType);
       }
     }
 
-    var cache = [];
+    function createList(data, input) {
+      var shell = $('<div/>');
+      for (var i=0, len=Math.min(options.maxResults, data.length); i<len; i++) {
+        if (typeof data[i] === 'string') {
+          data[i] = {val: data[i]};
+        }
+        var item = typeof data[i].href === 'undefined'
+          ? $('<div/>').attr('data-value', data[i].val)
+                      .html(data[i].val)
+                      .addClass('item')
+          : $('<a/>').attr('href', data[i].href)
+                    .attr('data-value', data[i].val)
+                    .html(data[i].val)
+                    .addClass('item')
+        if (typeof data[i].description !== 'undefined') {
+          item.append($('<small/>').text(data[i].description));
+        }
+        shell.append(item);
+      }
+      $.fn.autocomplete.element.html(shell.html());
+      $.fn.autocomplete.element.find('.item').mousedown(function() {
+        populate($(this).attr('data-value'), input, {mouse: true})
+      });
+      align(input, $.fn.autocomplete.element);
+    }
+
+    $.fn.autocomplete.cache = {};
     function search(input, element) {
       if (xhr) xhr.abort();
       if (input.val().length >= options.minLength) {
         element.html('<i class="item loading">'+options.loadingString+'</i>');
+        show();
+        align(input, $.fn.autocomplete.element);
         var term = input.val();
-        if (options.cache && typeof cache[term] !== "undefined") {
-          createList(cache[term], input, element);
+        var cid = parseInt(input.data('cache-id'));
+        if (options.cache && typeof $.fn.autocomplete.cache[cid][term] !== "undefined") {
+          if ($.fn.autocomplete.cache[cid][term].length === 0) {
+            hide();
+          } else {
+            createList($.fn.autocomplete.cache[cid][term], input, element);
+          }
         } else if (typeof options.handler !== "undefined") {
           options.handler(input.val(), function(data) {
-            cache[term] = data;
-            createList(data, input, element);
+            $.fn.autocomplete.cache[cid][term] = data;
+            if (data.length === 0) {
+              hide();
+            } else {
+              createList(data, input, element);
+            }
           });
+        } else {
+          console.error('handler function not provided for autocomplete');
         }
         input.data('selected', -1);
-        show(element);
       } else {
-        hide(element);
+        hide();
       }
     }
 
@@ -86,30 +94,35 @@
       });
     }
 
-    function setup(input) {
-      var element = $('<div/>')
-        .addClass('autocomplete-results hidden')
-        .text('<i class="item loading">'+options.loadingString+'</i>');
+    function setup(input, element) {
+      if (typeof element === 'undefined') {
+        element = $('<div/>')
+          .addClass('autocomplete-results hidden')
+          .text('<i class="item loading">'+options.loadingString+'</i>');
+        align(input, element);
+        $('body').append(element);
+      }
 
-      align(input, element);
-      input.closest('body').append(element);
-      input.data('element', element);
       input.data('selected', -1);
 
-      input.blur(function() {
-        setTimeout(function() { hide(input.data('element')); }, 100);
+      if (options.cache) {
+        var cid = Math.floor(Math.random()*1000);
+        input.data('cache-id', cid);
+        $.fn.autocomplete.cache[cid] = {};
+      }
+
+      input.blur(function(e) {
+        if (e.target.acitem) {
+          setTimeout(hide, 10);
+        } else {
+          hide();
+        }
       });
       input.click(function() {
-        align(input, element);
-        if (element.hasClass(options.hidingClass)) {
-          search(input, element);
-        }
+        search(input, element);
       });
       input.focus(function() {
-        align(input, element);
-        if (element.hasClass(options.hidingClass)) {
-          search(input, element);
-        }
+        search(input, element);
       });
       input.keyup(function(event) {
         if (event.ctrlKey) {
@@ -144,7 +157,7 @@
         }
       });
       input.keydown(function(event) {
-        var element = $(this).data('element');
+        var element = $.fn.autocomplete.element;
         var position = $(this).data('selected');
         switch (event.which) {
           // arrow keys through items
@@ -161,7 +174,7 @@
             break;
           }
           case 40: {
-            show(element);
+            show();
             event.preventDefault();
             if (position < options.maxResults) {
               position++;
@@ -180,10 +193,16 @@
               if (event.which === 13 && selected.attr('href')) {
                 location.assign(selected.attr('href'));
               } else {
-                populate(selected.attr('value'), $(this), element);
+                populate(selected.attr('data-value'), $(this), element, {key: true});
                 element.find('.item.selected').removeClass('selected');
               }
             }
+            break;
+          }
+          // hide on escape
+          case 27: {
+            hide(element);
+            $(this).data('selected', -1);
             break;
           }
         }
@@ -198,25 +217,30 @@
         return input;
       }
 
-
       return element;
     }
 
     return this.each(function() {
 
       var input = $(this);
-      var element = input.data('element');
-      if (!element) {
-        element = setup(input);
-      }
 
       if (typeof settings === "string") {
         if (settings === "show") {
-          show(element);
+          show();
+          align(input, $.fn.autocomplete.element);
         } else if (settings === "hide") {
-          hide(element);
+          hide();
+        } else if (settings === "clear cache" && options.cache) {
+          var cid = parseInt(input.data('cache-id'));
+          $.fn.autocomplete.cache[cid] = {};
         }
         return input;
+      } else {
+        if (!$.fn.autocomplete.element) {
+          $.fn.autocomplete.element = setup(input);
+        } else {
+          setup(input, $.fn.autocomplete.element);
+        }
       }
 
       return input;
@@ -224,6 +248,7 @@
     });
   };
 
+  $.fn.autocomplete.element = false;
   $.fn.autocomplete.options = {
     ajaxDelay: 200,
     cache: true,
