@@ -66,6 +66,7 @@
         <?=$this->escapeHtml($callNo)?><br />
       <? endforeach; ?>
     </td>
+    <td></td>
   </tr>
   <? endif; ?>
   <? foreach ($this->ils()->getHoldingsTextFieldNames() as $textField): ?>
@@ -78,6 +79,7 @@
             <?=$this->escapeHtml($current)?><br/>
           <? endforeach; ?>
         </td>
+        <td></td>
       </tr>
     <? endif; ?>
   <? endforeach; ?>
@@ -137,6 +139,13 @@
             <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut" />
             <link property="itemOffered" href="#record" />
         </td>
+        <td>
+        <? if (isset($row['itemnotes'])): ?>
+            <? foreach ($row['itemnotes'] as $itemnote): ?>
+                <span><?=$this->transEsc($itemnote)?></span>
+            <? endforeach; ?>
+        <? endif; ?>
+        </td>
       </tr>
     <? endif; ?>
   <? endforeach; ?>
@@ -148,6 +157,7 @@
           <?=$this->escapeHtml($current['issue'])?><br/>
         <? endforeach; ?>
       </td>
+      <td></td>
     </tr>
   <? endif; ?>
 </table>
