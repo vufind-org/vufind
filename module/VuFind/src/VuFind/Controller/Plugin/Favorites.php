@@ -28,7 +28,7 @@
 namespace VuFind\Controller\Plugin;
 use VuFind\Exception\LoginRequired as LoginRequiredException,
     Zend\Mvc\Controller\Plugin\AbstractPlugin,
-    VuFind\Record\Cache;
+    VuFind\Db\Row\User, VuFind\Record\Cache;
 
 /**
  * Zend action helper to perform favorites-related actions
@@ -42,26 +42,14 @@ use VuFind\Exception\LoginRequired as LoginRequiredException,
 class Favorites extends AbstractPlugin
 {
     /**
-     * Save a group of records to the user's favorites.
+     * Support method for saveBulk() -- get list to save records into. Either
+     * retrieves existing list or creates a new one.
      *
-     * @param array               $params Array with some or all of these keys:
-     *  <ul>
-     *    <li>ids - Array of IDs in source|id format</li>
-     *    <li>mytags - Unparsed tag string to associate with record (optional)</li>
-     *    <li>list - ID of list to save record into (omit to create new list)</li>
-     *  </ul>
-     * @param \VuFind\Db\Row\User $user   The user saving the record
-     *
-     * @return void
+     * @param array $params Array of parameters (we only care about 'list').
+     * @param User  $user   User object.
      */
-    public function saveBulk($params, $user)
+    protected function getList($params, User $user)
     {
-        // Validate incoming parameters:
-        if (!$user) {
-            throw new LoginRequiredException('You must be logged in first');
-        }
-
-        // Get or create a list object as needed:
         $listId = isset($params['list']) ? $params['list'] : '';
         $table = $this->getController()->getTable('UserList');
         if (empty($listId) || $listId == 'NEW') {
@@ -72,10 +60,64 @@ class Favorites extends AbstractPlugin
             $list = $table->getExisting($listId);
             $list->rememberLastUsed(); // handled by save() in other case
         }
+        return $list;
+    }
 
-        // Loop through all the IDs and save them:
+    /**
+     * Support method for saveBulk() -- save a batch of records to the cache.
+     *
+     * @param Cache $recordCache    Cache service
+     * @param array $cacheRecordIds Array of IDs in source|id format
+     *
+     * @return void
+     */
+    protected function cacheBatch(Cache $recordCache, array $cacheRecordIds)
+    {
+        if ($cacheRecordIds) {
+            $recordLoader = $this->getController()->getServiceLocator()
+                ->get('VuFind\RecordLoader');
+            // Disable the cache so that we fetch latest versions, not cached ones:
+            $recordLoader->setCacheContext(Cache::CONTEXT_DISABLED);
+            $records = $recordLoader->loadBatch($cacheRecordIds);
+            // Re-enable the cache so that we actually save the records:
+            $recordLoader->setCacheContext(Cache::CONTEXT_FAVORITE);
+            foreach ($records as $record) {
+                $recordCache->createOrUpdate(
+                    $record->getUniqueID(), $record->getResourceSource(),
+                    $record->getRawData()
+                );
+            }
+        }
+    }
+
+    /**
+     * Save a group of records to the user's favorites.
+     *
+     * @param array $params Array with some or all of these keys:
+     *  <ul>
+     *    <li>ids - Array of IDs in source|id format</li>
+     *    <li>mytags - Unparsed tag string to associate with record (optional)</li>
+     *    <li>list - ID of list to save record into (omit to create new list)</li>
+     *  </ul>
+     * @param User  $user   The user saving the record
+     *
+     * @return void
+     */
+    public function saveBulk($params, $user)
+    {
+        // Validate incoming parameters:
+        if (!$user) {
+            throw new LoginRequiredException('You must be logged in first');
+        }
+
+        // Load helper objects needed for the saving process:
+        $list = $this->getList($params, $user);
         $tagParser = $this->getController()->getServiceLocator()->get('VuFind\Tags');
-        $cacheRecordIds = [];
+        $recordCache = $this->getController()->getServiceLocator()
+            ->get('VuFind\RecordCache');
+        $recordCache->setContext(Cache::CONTEXT_FAVORITE);
+
+        $cacheRecordIds = [];   // list of record IDs to save to cache
         foreach ($params['ids'] as $current) {
             // Break apart components of ID:
             list($source, $id) = explode('|', $current, 2);
@@ -89,40 +131,22 @@ class Favorites extends AbstractPlugin
                 ? $tagParser->parse($params['mytags']) : [];
             $user->saveResource($resource, $list, $tags, '', false);
 
-            // Get and configure the record cache for the Favorite context
-            $recordCache = $this->getController()->getServiceLocator()
-                ->get('VuFind\RecordCache');
-            $recordCache->setContext(Cache::CONTEXT_FAVORITE);
-
             // Collect record IDs for caching
             if ($recordCache->isCachable($resource->source)) {
                 $cacheRecordIds[] = $current;
             }
         }
 
-        if ($cacheRecordIds) {
-            // Add records to cache
-            $recordLoader = $this->getController()->getServiceLocator()
-                ->get('VuFind\RecordLoader');
-            $recordLoader->setCacheContext(Cache::CONTEXT_DISABLED);
-            $records = $recordLoader->loadBatch($cacheRecordIds);
-            $recordLoader->setCacheContext(Cache::CONTEXT_FAVORITE);
-            foreach ($records as $record) {
-                $recordCache->createOrUpdate(
-                    $record->getUniqueID(), $record->getResourceSource(),
-                    $record->getRawData()
-                );
-            }
-        }
+        $this->cacheBatch($recordCache, $cacheRecordIds);
     }
 
     /**
      * Delete a group of favorites.
      *
-     * @param array               $ids    Array of IDs in source|id format.
-     * @param mixed               $listID ID of list to delete from (null for all
+     * @param array $ids    Array of IDs in source|id format.
+     * @param mixed $listID ID of list to delete from (null for all
      * lists)
-     * @param \VuFind\Db\Row\User $user   Logged in user
+     * @param User  $user   Logged in user
      *
      * @return void
      */
