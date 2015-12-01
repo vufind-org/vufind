@@ -151,6 +151,10 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     var urlroot = '/' + chunks[0] + '/' + chunks[1];
   }
 
+  $('#record-tabs .tab-pane.active').removeClass('active');
+  $('.'+tabid+'-tab').addClass('active');
+  $('.'+tabid).tab('show');
+
   // Request the tab via AJAX:
   $.ajax({
     url: path + urlroot + '/AjaxTab',
@@ -297,6 +301,7 @@ function recordDocReady() {
       return ajaxLoadTab(newTab, tabid);
     }
   });
+  $('.initiallyActive a').click();
   applyRecordTabHash();
 
   /* --- LIGHTBOX --- */
