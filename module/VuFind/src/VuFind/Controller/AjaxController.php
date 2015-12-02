@@ -336,6 +336,8 @@ class AjaxController extends AbstractBase
      *                                  pickValue()
      * @param string $callnumberSetting The callnumber mode setting used for
      *                                  pickValue()
+     * @param string $servicePriority   String of services to be displayed instead of
+     *                                  general availability
      *
      * @return array                    Summarized availability information
      */
@@ -390,7 +392,10 @@ class AjaxController extends AbstractBase
 
         if (!empty($services)) {
             $availability_message = $this->getViewRenderer()
-                ->render('ajax/status-available-services.phtml', ['services' => $services]);
+                ->render(
+                    'ajax/status-available-services.phtml',
+                    ['services' => $services]
+                );
         } else {
             $availability_message = $use_unknown_status
                 ? $messages['unknown']
