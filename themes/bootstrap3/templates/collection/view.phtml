@@ -78,10 +78,12 @@
     <? endif; ?>
 
 
-    <div class="collectionDetails<?=$tree ? 'Tree' : ''?> tab-content" id="record-tabs">
-      <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
-        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-      </div>
+    <div class="tab-content record-tabs collectionDetails<?=$tree ? 'Tree' : ''?>">
+      <? if (!$this->ajaxTabs || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+        <div class="tab-pane active <?=$this->activeTab ?>-tab">
+          <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+        </div>
+      <? endif ?>
     </div>
 
     <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenURL()).'"></span>':''?>

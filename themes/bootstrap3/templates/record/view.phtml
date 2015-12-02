@@ -74,9 +74,9 @@
         <? endforeach; ?>
         </ul>
 
-        <div class="tab-content" id="record-tabs">
+        <div class="tab-content record-tabs">
           <? if (!$this->ajaxTabs || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
+            <div class="tab-pane active <?=$this->activeTab ?>-tab">
               <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
             </div>
           <? endif; ?>

@@ -151,18 +151,13 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     var urlroot = '/' + chunks[0] + '/' + chunks[1];
   }
 
-  $('#record-tabs .tab-pane.active').removeClass('active');
-  $('.'+tabid+'-tab').addClass('active');
-  $('.'+tabid).tab('show');
-
   // Request the tab via AJAX:
   $.ajax({
     url: path + urlroot + '/AjaxTab',
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
-      $newTab.html(data).addClass('active');
-      $newTab.closest('.record-tabs').find('.'+tabid).tab('show');
+      $newTab.html(data);
       registerTabEvents();
       if(typeof syn_get_widget === "function") {
         syn_get_widget();
@@ -238,7 +233,7 @@ function applyRecordTabHash() {
   if (newTab.length == 0 || newTab == '#tabnav') {
     $initiallyActiveTab.click();
   } else if (newTab.length > 0 && '#' + activeTab != newTab) {
-    $(newTab).click();
+    $('.'+newTab.substr(1)).click();
   }
 }
 
@@ -286,9 +281,9 @@ function recordDocReady() {
     var tabid = this.className;
     var $top = $(this).closest('.record-tabs');
     $top.find('.tab-pane.active').removeClass('active');
+    $(this).tab('show');
     if ($top.find('.'+tabid+'-tab').length > 0) {
       $top.find('.'+tabid+'-tab').addClass('active');
-      $(this).tab('show');
       window.location.hash = tabid;
       return false;
     } else {
@@ -298,10 +293,9 @@ function recordDocReady() {
       }
       var newTab = $('<div class="tab-pane active '+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+VuFind.translate('loading')+'...</div>');
       $top.find('.tab-content').append(newTab);
-      return ajaxLoadTab(newTab, tabid);
+      return ajaxLoadTab(newTab, tabid, !$(this).parent().hasClass('initiallyActive'));
     }
   });
-  $('.initiallyActive a').click();
   applyRecordTabHash();
 
   /* --- LIGHTBOX --- */
