@@ -526,8 +526,8 @@ $(document).ready(function() {
     return Lightbox.get('Search','Email',{url:document.URL});
   });
   // Save record links
-  $('.save-record').click(function() {
+  $('.result .save-record').click(function() {
     var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('data-id')});
   });
 });
