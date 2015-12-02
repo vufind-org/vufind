@@ -390,7 +390,7 @@ class AjaxController extends AbstractBase
 
         if (!empty($services)) {
             $availability_message = $this->getViewRenderer()
-                ->render('ajax/status-available-services.phtml', ['services'=>$services]);
+                ->render('ajax/status-available-services.phtml', ['services' => $services]);
         } else {
             $availability_message = $use_unknown_status
                 ? $messages['unknown']
