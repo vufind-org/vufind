@@ -58,7 +58,7 @@
       }
       $.fn.autocomplete.element.html(shell);
       $.fn.autocomplete.element.find('.item').mousedown(function() {
-        populate($(this).attr('data-value'), input, {mouse: true})
+        populate($(this).attr('data-value'), input, {mouse: true});
       });
       align(input, $.fn.autocomplete.element);
     }
