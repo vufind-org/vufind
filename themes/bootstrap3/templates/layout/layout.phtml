@@ -95,12 +95,12 @@
       }
     ?>
     <?=$this->headScript()?>
-    <script>
-      var VuFind = new VuFindNamespace(
-        '<?=rtrim($this->url('home'), '/') ?>',
-        <?=$this->jsTranslations()->getJSON() ?>
-      );
-    </script>
+    <?
+      $root = rtrim($this->url('home'), '/');
+      $translations = $this->jsTranslations()->getJSON();
+      $setupJS = "var VuFind = new VuFindNamespace('{$root}', {$translations});";
+    ?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $setupJS, 'SET'); ?>
   </head>
   <body class="<?=$this->layoutClass('offcanvas-row')?><? if ($this->layout()->rtl): ?> rtl<? endif; ?>">
     <? // Set up the search box -- there are three possible cases:

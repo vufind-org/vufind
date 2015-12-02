@@ -4,14 +4,14 @@ function VuFindNamespace(p, s) {
   var path = p;
   var strings = s;
 
-  var getPath = function() { return path; }
-  var translate = function(op) { return strings[op]; }
+  var getPath = function() { return path; };
+  var translate = function(op) { return strings[op]; };
 
   return {
     getPath: getPath,
     translate: translate
   };
-};
+}
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value) {
@@ -184,7 +184,7 @@ function newAccountHandler(html) {
     Lightbox.getByUrl(Lightbox.openingURL);
     Lightbox.openingURL = false;
   }
-  return valid == true;
+  return false;
 }
 
 // This is a full handler for the login form
@@ -346,7 +346,7 @@ function keyboardShortcuts() {
     if ($('.pager').length > 0) {
         $(window).keydown(function(e) {
           if (!$searchform.is(':focus')) {
-            $target = null;
+            var $target = null;
             switch (e.keyCode) {
               case 37: // left arrow key
                 $target = $('.pager').find('a.previous');

@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, Recaptcha, VuFind */
+/*global ajaxLogin, checkSaveStatuses, console, deparam, newAccountHandler, Recaptcha, refreshPageForLogin, registerLightboxEvents, VuFind */
 
 var Lightbox = {
   /**

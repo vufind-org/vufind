@@ -140,15 +140,16 @@ function ajaxLoadTab($newTab, tabid, setHash) {
   var urlParts = document.URL.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
   var path = VuFind.getPath();
+  var urlroot = null;
   if (path === '') {
     // special case -- VuFind installed at site root:
     var chunks = urlWithoutFragment.split('/');
-    var urlroot = '/' + chunks[3] + '/' + chunks[4];
+    urlroot = '/' + chunks[3] + '/' + chunks[4];
   } else {
     // standard case -- VuFind has its own path under site:
     var pathInUrl = urlWithoutFragment.indexOf(path);
-    var chunks = urlWithoutFragment.substring(pathInUrl + path.length + 1).split('/');
-    var urlroot = '/' + chunks[0] + '/' + chunks[1];
+    var parts = urlWithoutFragment.substring(pathInUrl + path.length + 1).split('/');
+    urlroot = '/' + parts[0] + '/' + parts[1];
   }
 
   // Request the tab via AJAX:
