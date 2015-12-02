@@ -701,7 +701,8 @@ class DAIA extends AbstractBase implements
         if (isset($item['available'])) {
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
-                if (isset($available['service'])) {
+                if (isset($available['service'])
+                    && in_array($available['service'], ['loan', 'presentation'])) {
                     $services['available'][] = $available['service'];
                 }
                 // attribute service can be set once or not
@@ -737,7 +738,8 @@ class DAIA extends AbstractBase implements
 
         if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
-                if (isset($available['service'])) {
+                if (isset($unavailable['service'])
+                    && in_array($unavailable['service'], ['loan', 'presentation'])) {
                     $services['unavailable'][] = $unavailable['service'];
                 }
                 // attribute service can be set once or not
