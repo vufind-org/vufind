@@ -94,13 +94,13 @@
           $this->headScript()->appendFile("keep_alive.js");
       }
     ?>
-    <?=$this->headScript()?>
     <?
       $root = rtrim($this->url('home'), '/');
       $translations = $this->jsTranslations()->getJSON();
       $setupJS = "var VuFind = new VuFindNamespace('{$root}', {$translations});";
+      $this->headScript()->appendScript($setupJS);
     ?>
-    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $setupJS, 'SET'); ?>
+    <?=$this->headScript()?>
   </head>
   <body class="<?=$this->layoutClass('offcanvas-row')?><? if ($this->layout()->rtl): ?> rtl<? endif; ?>">
     <? // Set up the search box -- there are three possible cases:
