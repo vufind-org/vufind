@@ -251,26 +251,26 @@ function setupRecordToolbar(target) {
   // Cite lightbox
   var $elem = $(target);
   var id = $elem.find('.hiddenId').val();
-  $elem.find('.cite-record').unbind('click').click(function() {
+  $elem.find('.cite-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Cite', {id:id});
   });
   // Mail lightbox
-  $elem.find('.mail-record').unbind('click').click(function() {
+  $elem.find('.mail-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Email', {id:id});
   });
   // Save lightbox
-  $elem.find('.save-record').unbind('click').click(function() {
+  $elem.find('.save-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Save', {id:id});
   });
   // SMS lightbox
-  $elem.find('.sms-record').unbind('click').click(function() {
+  $elem.find('.sms-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'SMS', {id:id});
   });
-  $elem.find('.tag-record').unbind('click').click(function() {
+  $elem.find('.tag-record').click(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
