@@ -405,6 +405,20 @@ var Lightbox = {
   }
 };
 
+function setupModalLinkTitles($target) {
+  if (typeof $target === 'undefined') {
+    $target = $(document);
+  }
+  $target.find('.modal-link,.help-link').click(function() {
+    var title = $(this).attr('title');
+    if(typeof title === "undefined") {
+      title = $(this).html();
+    }
+    $('#modal .modal-title').html(title);
+    Lightbox.titleSet = true;
+  });
+}
+
 /**
  * This is where you add click events to open the lightbox.
  * We do it here so that non-JS users still have a good time.
@@ -422,14 +436,7 @@ $(document).ready(function() {
    * If a link with the class .modal-link triggers the lightbox,
    * look for a title attribute to use as our lightbox title.
    */
-  $('.modal-link,.help-link').click(function() {
-    var title = $(this).attr('title');
-    if(typeof title === "undefined") {
-      title = $(this).html();
-    }
-    $('#modal .modal-title').html(title);
-    Lightbox.titleSet = true;
-  });
+  setupModalLinkTitles();
 
   /******************************
    * LIGHTBOX DEFAULT BEHAVIOUR *

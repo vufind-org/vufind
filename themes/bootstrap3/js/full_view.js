@@ -72,6 +72,7 @@ $(document).ready(function() {
               ajaxFLLoadTab($(longNode).find('.recordTabs li.active a').attr('id'));
               // Add events to record toolbar
               setupRecordToolbar(longNode, div_id);
+              setupModalLinkTitles(longNode);
               // Lightbox handler for tagRecord
               Lightbox.addFormCallback('tagRecord', function() {
                 refreshTagList(true, longNode);
