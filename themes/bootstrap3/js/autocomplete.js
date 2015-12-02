@@ -1,4 +1,4 @@
-﻿/**
+/**
  * vufind.typeahead.js 0.6
  * ~ @crhallberg
  */
