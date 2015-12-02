@@ -277,7 +277,6 @@ class Horizon extends AbstractBase
         $duedate     = $row['DUEDATE'];
         $item_status = $row['STATUS_CODE']; //get the item status code
 
-
         $statusValues = $this->parseStatus($item_status);
 
         if (isset($statusValues['duedate'])) {

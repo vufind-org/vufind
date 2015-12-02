@@ -147,27 +147,30 @@ h3 {
 }
 
 /* --- Autocomplete --- */
-.twitter-typeahead {
-  vertical-align: top;
+.autocomplete-results {
+  margin-top: 2px;
+  border: 1px solid @list-group-border;
   background-color: #fff;
   border-radius: @border-radius-base;
-  @media (max-width: 767px) {width: 100%;}
-}
-.twitter-typeahead .tt-hint {display: none;}
-.tt-dropdown-menu {&:extend(.list-group);}
-.tt-suggestion {
-  &:extend(.list-group-item);
-  cursor: pointer;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  &.active {white-space: inherit;}
-  &.tt-cursor {
-    background-color: @brand-primary;
-    color: #fff;
-  }
+  overflow: hidden;
 
-  p {margin: 0;}
+  .item {
+    display: block;
+    padding-top: .75rem;
+    padding-right: 1rem;
+    padding-bottom: .75rem;
+    padding-left: 1.25rem;
+    border-bottom: 1px solid @list-group-border;
+    cursor: pointer;
+
+    &:last-child {border: 0;}
+    &.selected {
+      background-color: @brand-primary;
+      color: #fff;
+    }
+  }
 }
+
 
 /* --- Badges - blend the links in --- */
 .badge a {color: #fff;}
@@ -290,8 +293,8 @@ h3 {
     .button-size(@padding-base-vertical; @padding-base-vertical; @font-size-base; @line-height-base; @border-radius-base);
     .badge .fa {width: 12px;}
   }
+  button {border: 0;}
   .tag-form {display: inline;}
-  .tag-form button {border: 0;}
 }
 .tagList.loggedin .tag:not(.selected) .badge:hover {background-color: @brand-success;}
 
