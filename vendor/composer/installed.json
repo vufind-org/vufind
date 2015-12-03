@@ -101,6 +101,43 @@
         ]
     },
     {
+        "name": "cap60552/php-sip2",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/cap60552/php-sip2.git",
+            "reference": "9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/cap60552/php-sip2/zipball/9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1",
+            "reference": "9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1",
+            "shasum": ""
+        },
+        "time": "2015-11-03 04:42:39",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-3.0"
+        ],
+        "authors": [
+            {
+                "name": "John Wohlers",
+                "email": "john@wohlershome.net",
+                "role": "Maintainer"
+            }
+        ],
+        "description": "PHP class library to facilitate communication with Integrated Library System (ILS) servers via 3M's SIP2.",
+        "homepage": "https://github.com/cap60552/php-sip2"
+    },
+    {
         "name": "zendframework/zendxml",
         "version": "1.0.1",
         "version_normalized": "1.0.1.0",
@@ -1022,6 +1059,121 @@
         ]
     },
     {
+        "name": "instaclick/php-webdriver",
+        "version": "1.4.3",
+        "version_normalized": "1.4.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/instaclick/php-webdriver.git",
+            "reference": "0c20707dcf30a32728fd6bdeeab996c887fdb2fb"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/instaclick/php-webdriver/zipball/0c20707dcf30a32728fd6bdeeab996c887fdb2fb",
+            "reference": "0c20707dcf30a32728fd6bdeeab996c887fdb2fb",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.3.2"
+        },
+        "require-dev": {
+            "satooshi/php-coveralls": "dev-master"
+        },
+        "time": "2015-06-15 20:19:33",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.4.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "WebDriver": "lib/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Justin Bishop",
+                "email": "jubishop@gmail.com",
+                "role": "Developer"
+            },
+            {
+                "name": "Anthon Pang",
+                "email": "apang@softwaredevelopment.ca",
+                "role": "Fork Maintainer"
+            }
+        ],
+        "description": "PHP WebDriver for Selenium 2",
+        "homepage": "http://instaclick.com/",
+        "keywords": [
+            "browser",
+            "selenium",
+            "webdriver",
+            "webtest"
+        ]
+    },
+    {
+        "name": "symfony/css-selector",
+        "version": "v2.8.0",
+        "version_normalized": "2.8.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/css-selector.git",
+            "reference": "b600fec37c0efca08046d481d79e7eabc07108ff"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/css-selector/zipball/b600fec37c0efca08046d481d79e7eabc07108ff",
+            "reference": "b600fec37c0efca08046d481d79e7eabc07108ff",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.9"
+        },
+        "time": "2015-10-30 20:15:42",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.8-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Component\\CssSelector\\": ""
+            },
+            "exclude-from-classmap": [
+                "/Tests/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jean-François Simon",
+                "email": "jeanfrancois.simon@sensiolabs.com"
+            },
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony CssSelector Component",
+        "homepage": "https://symfony.com"
+    },
+    {
         "name": "behat/mink",
         "version": "v1.7.0",
         "version_normalized": "1.7.0.0",
@@ -1080,6 +1232,120 @@
             "testing",
             "web"
         ]
+    },
+    {
+        "name": "behat/mink-selenium2-driver",
+        "version": "v1.3.0",
+        "version_normalized": "1.3.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/minkphp/MinkSelenium2Driver.git",
+            "reference": "bedbf1999c7ba1bc6921b30ee2eadf383e7ff5c9"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/minkphp/MinkSelenium2Driver/zipball/bedbf1999c7ba1bc6921b30ee2eadf383e7ff5c9",
+            "reference": "bedbf1999c7ba1bc6921b30ee2eadf383e7ff5c9",
+            "shasum": ""
+        },
+        "require": {
+            "behat/mink": "~1.7@dev",
+            "instaclick/php-webdriver": "~1.1",
+            "php": ">=5.3.1"
+        },
+        "require-dev": {
+            "symfony/phpunit-bridge": "~2.7"
+        },
+        "time": "2015-09-21 21:02:54",
+        "type": "mink-driver",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.3.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Behat\\Mink\\Driver\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Konstantin Kudryashov",
+                "email": "ever.zet@gmail.com",
+                "homepage": "http://everzet.com"
+            },
+            {
+                "name": "Pete Otaqui",
+                "email": "pete@otaqui.com",
+                "homepage": "https://github.com/pete-otaqui"
+            }
+        ],
+        "description": "Selenium2 (WebDriver) driver for Mink framework",
+        "homepage": "http://mink.behat.org/",
+        "keywords": [
+            "ajax",
+            "browser",
+            "javascript",
+            "selenium",
+            "testing",
+            "webdriver"
+        ]
+    },
+    {
+        "name": "symfony/process",
+        "version": "v2.8.0",
+        "version_normalized": "2.8.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/process.git",
+            "reference": "1b988a88e3551102f3c2d9e1d47a18c3a78d6312"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/process/zipball/1b988a88e3551102f3c2d9e1d47a18c3a78d6312",
+            "reference": "1b988a88e3551102f3c2d9e1d47a18c3a78d6312",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.9"
+        },
+        "time": "2015-11-30 12:35:10",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.8-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Component\\Process\\": ""
+            },
+            "exclude-from-classmap": [
+                "/Tests/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony Process Component",
+        "homepage": "https://symfony.com"
     },
     {
         "name": "behat/mink-zombie-driver",
@@ -1144,6 +1410,65 @@
             "testing",
             "zombie"
         ]
+    },
+    {
+        "name": "ahand/mobileesp",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ahand/mobileesp.git",
+            "reference": "098bc79938fceec7bbb298456ed1aba6271a0bac"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/ahand/mobileesp/zipball/098bc79938fceec7bbb298456ed1aba6271a0bac",
+            "reference": "098bc79938fceec7bbb298456ed1aba6271a0bac",
+            "shasum": ""
+        },
+        "time": "2015-12-03 05:20:25",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "classmap": [
+                "PHP"
+            ]
+        },
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Anthony Hand",
+                "email": "anthony.hand@gmail.com",
+                "role": "Maintainer"
+            }
+        ],
+        "description": "Since 2008, MobileESP provides web site developers an easy-to-use and lightweight API for detecting whether visitors are using a mobile device, and if so, what kind. The APIs provide simple boolean results ('true' or 'false') for identifying individual device categories (such as iPhone, BlackBerry, Android, and Windows Mobile), device capabilities (e.g., J2ME), and broad classes of devices, such as 'iPhone Tier' (iPhone/Android/Tizen) or 'Tablet Tier.' APIs are available in PHP, JavaScript, Java, C#, Ruby Python, and more.",
+        "homepage": "http://www.mobileesp.org",
+        "keywords": [
+            "browser",
+            "detect android",
+            "detect ipad",
+            "detect iphone",
+            "detect tablet",
+            "mobile",
+            "mobile detect",
+            "mobile detector",
+            "mobile device",
+            "mobile esp",
+            "mobile redirect",
+            "mobile view managing",
+            "mobile-detect",
+            "mobiledetect",
+            "responsive web",
+            "user agent",
+            "useragent"
+        ],
+        "support": {
+            "issues": "https://github.com/ahand/mobileesp/issues",
+            "source": "https://github.com/ahand/mobileesp/"
+        }
     },
     {
         "name": "zendframework/zendrest",
@@ -1246,330 +1571,5 @@
             "sqs",
             "zf2"
         ]
-    },
-    {
-        "name": "cap60552/php-sip2",
-        "version": "v1.0.0",
-        "version_normalized": "1.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/cap60552/php-sip2.git",
-            "reference": "9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/cap60552/php-sip2/zipball/9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1",
-            "reference": "9904f94e857b7d4d4fd494f2d6634dcaf0d6e2c1",
-            "shasum": ""
-        },
-        "time": "2015-11-03 04:42:39",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "/"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-3.0"
-        ],
-        "authors": [
-            {
-                "name": "John Wohlers",
-                "email": "john@wohlershome.net",
-                "role": "Maintainer"
-            }
-        ],
-        "description": "PHP class library to facilitate communication with Integrated Library System (ILS) servers via 3M's SIP2.",
-        "homepage": "https://github.com/cap60552/php-sip2"
-    },
-    {
-        "name": "instaclick/php-webdriver",
-        "version": "1.4.3",
-        "version_normalized": "1.4.3.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/instaclick/php-webdriver.git",
-            "reference": "0c20707dcf30a32728fd6bdeeab996c887fdb2fb"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/instaclick/php-webdriver/zipball/0c20707dcf30a32728fd6bdeeab996c887fdb2fb",
-            "reference": "0c20707dcf30a32728fd6bdeeab996c887fdb2fb",
-            "shasum": ""
-        },
-        "require": {
-            "ext-curl": "*",
-            "php": ">=5.3.2"
-        },
-        "require-dev": {
-            "satooshi/php-coveralls": "dev-master"
-        },
-        "time": "2015-06-15 20:19:33",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.4.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "WebDriver": "lib/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "Apache-2.0"
-        ],
-        "authors": [
-            {
-                "name": "Justin Bishop",
-                "email": "jubishop@gmail.com",
-                "role": "Developer"
-            },
-            {
-                "name": "Anthon Pang",
-                "email": "apang@softwaredevelopment.ca",
-                "role": "Fork Maintainer"
-            }
-        ],
-        "description": "PHP WebDriver for Selenium 2",
-        "homepage": "http://instaclick.com/",
-        "keywords": [
-            "browser",
-            "selenium",
-            "webdriver",
-            "webtest"
-        ]
-    },
-    {
-        "name": "behat/mink-selenium2-driver",
-        "version": "v1.3.0",
-        "version_normalized": "1.3.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/minkphp/MinkSelenium2Driver.git",
-            "reference": "bedbf1999c7ba1bc6921b30ee2eadf383e7ff5c9"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/minkphp/MinkSelenium2Driver/zipball/bedbf1999c7ba1bc6921b30ee2eadf383e7ff5c9",
-            "reference": "bedbf1999c7ba1bc6921b30ee2eadf383e7ff5c9",
-            "shasum": ""
-        },
-        "require": {
-            "behat/mink": "~1.7@dev",
-            "instaclick/php-webdriver": "~1.1",
-            "php": ">=5.3.1"
-        },
-        "require-dev": {
-            "symfony/phpunit-bridge": "~2.7"
-        },
-        "time": "2015-09-21 21:02:54",
-        "type": "mink-driver",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.3.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Behat\\Mink\\Driver\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Konstantin Kudryashov",
-                "email": "ever.zet@gmail.com",
-                "homepage": "http://everzet.com"
-            },
-            {
-                "name": "Pete Otaqui",
-                "email": "pete@otaqui.com",
-                "homepage": "https://github.com/pete-otaqui"
-            }
-        ],
-        "description": "Selenium2 (WebDriver) driver for Mink framework",
-        "homepage": "http://mink.behat.org/",
-        "keywords": [
-            "ajax",
-            "browser",
-            "javascript",
-            "selenium",
-            "testing",
-            "webdriver"
-        ]
-    },
-    {
-        "name": "symfony/css-selector",
-        "version": "v2.8.0",
-        "version_normalized": "2.8.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/css-selector.git",
-            "reference": "b600fec37c0efca08046d481d79e7eabc07108ff"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/css-selector/zipball/b600fec37c0efca08046d481d79e7eabc07108ff",
-            "reference": "b600fec37c0efca08046d481d79e7eabc07108ff",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.9"
-        },
-        "time": "2015-10-30 20:15:42",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.8-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Symfony\\Component\\CssSelector\\": ""
-            },
-            "exclude-from-classmap": [
-                "/Tests/"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Jean-François Simon",
-                "email": "jeanfrancois.simon@sensiolabs.com"
-            },
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            },
-            {
-                "name": "Symfony Community",
-                "homepage": "https://symfony.com/contributors"
-            }
-        ],
-        "description": "Symfony CssSelector Component",
-        "homepage": "https://symfony.com"
-    },
-    {
-        "name": "symfony/process",
-        "version": "v2.8.0",
-        "version_normalized": "2.8.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/process.git",
-            "reference": "1b988a88e3551102f3c2d9e1d47a18c3a78d6312"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/process/zipball/1b988a88e3551102f3c2d9e1d47a18c3a78d6312",
-            "reference": "1b988a88e3551102f3c2d9e1d47a18c3a78d6312",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.9"
-        },
-        "time": "2015-11-30 12:35:10",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.8-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Symfony\\Component\\Process\\": ""
-            },
-            "exclude-from-classmap": [
-                "/Tests/"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            },
-            {
-                "name": "Symfony Community",
-                "homepage": "https://symfony.com/contributors"
-            }
-        ],
-        "description": "Symfony Process Component",
-        "homepage": "https://symfony.com"
-    },
-    {
-        "name": "ahand/mobileesp",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/ahand/mobileesp.git",
-            "reference": "098bc79938fceec7bbb298456ed1aba6271a0bac"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/ahand/mobileesp/zipball/098bc79938fceec7bbb298456ed1aba6271a0bac",
-            "reference": "098bc79938fceec7bbb298456ed1aba6271a0bac",
-            "shasum": ""
-        },
-        "time": "2015-12-03 05:20:25",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "classmap": [
-                "PHP"
-            ]
-        },
-        "license": [
-            "Apache-2.0"
-        ],
-        "authors": [
-            {
-                "name": "Anthony Hand",
-                "email": "anthony.hand@gmail.com",
-                "role": "Maintainer"
-            }
-        ],
-        "description": "Since 2008, MobileESP provides web site developers an easy-to-use and lightweight API for detecting whether visitors are using a mobile device, and if so, what kind. The APIs provide simple boolean results ('true' or 'false') for identifying individual device categories (such as iPhone, BlackBerry, Android, and Windows Mobile), device capabilities (e.g., J2ME), and broad classes of devices, such as 'iPhone Tier' (iPhone/Android/Tizen) or 'Tablet Tier.' APIs are available in PHP, JavaScript, Java, C#, Ruby Python, and more.",
-        "homepage": "http://www.mobileesp.org",
-        "keywords": [
-            "browser",
-            "detect android",
-            "detect ipad",
-            "detect iphone",
-            "detect tablet",
-            "mobile",
-            "mobile detect",
-            "mobile detector",
-            "mobile device",
-            "mobile esp",
-            "mobile redirect",
-            "mobile view managing",
-            "mobile-detect",
-            "mobiledetect",
-            "responsive web",
-            "user agent",
-            "useragent"
-        ],
-        "support": {
-            "issues": "https://github.com/ahand/mobileesp/issues",
-            "source": "https://github.com/ahand/mobileesp/"
-        }
     }
 ]
