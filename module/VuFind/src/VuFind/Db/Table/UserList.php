@@ -97,8 +97,8 @@ class UserList extends Gateway
      *
      * @return array
      */
-    public function getListsContainingResource($resourceId, $source = 'VuFind',
-        $userId = null
+    public function getListsContainingResource($resourceId,
+        $source = DEFAULT_SEARCH_BACKEND, $userId = null
     ) {
         // Set up base query:
         $callback = function ($select) use ($resourceId, $source, $userId) {

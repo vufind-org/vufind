@@ -26,6 +26,9 @@ defined('APPLICATION_ENV')
         (getenv('VUFIND_ENV') ? getenv('VUFIND_ENV') : 'production')
     );
 
+// Define default search backend identifier
+defined('DEFAULT_SEARCH_BACKEND') || define('DEFAULT_SEARCH_BACKEND', 'VuFind');
+
 // Define path to local override directory
 defined('LOCAL_OVERRIDE_DIR')
     || define(
