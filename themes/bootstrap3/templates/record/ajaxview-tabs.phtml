@@ -27,9 +27,21 @@
       </a>
     </li>
     <? foreach ($this->tabs as $tab => $obj): ?>
-      <? $desc = $obj->getDescription(); ?>
-      <li<? if($this->defaultTab === strtolower($tab)): ?> class="active"<? endif; ?>>
-        <a id="<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toggle="tab" data-target="#<?=strtolower($tab)?>-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>"><?=$this->transEsc($desc)?></a>
+      <? // add current tab to breadcrumbs if applicable:
+        $desc = $obj->getDescription();
+        $tab_classes = array();
+        if ($this->defaultTab === strtolower($tab)) {
+          if (!$this->ajaxTabs || !$obj->supportsAjax()) {
+            $tab_classes[] = 'active';
+          }
+          $tab_classes[] = 'initiallyActive';
+          $activeTabObj = $obj;
+        }
+        if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
+        if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+      ?>
+      <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+        <a id="<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>"><?=$this->transEsc($desc)?></a>
       </li>
     <? endforeach; ?>
     <li<? if($this->defaultTab === 'tools'): ?> class="active"<? endif; ?>>

@@ -11,6 +11,10 @@ function ajaxFLLoadTab(tabid, reload) {
   if(typeof reload === "undefined") {
     reload = false;
   }
+  if($('#'+tabid).parent().hasClass('noajax')) {
+    window.location.href = $('#'+tabid).attr('href');
+    return true;
+  }
   var id = $('#'+tabid).closest('.record').find(".hiddenId")[0].value;
   var source = $('#'+tabid).closest('.record').find(".hiddenSource")[0].value;
   var urlroot;
@@ -21,7 +25,9 @@ function ajaxFLLoadTab(tabid, reload) {
   }
   var tab = tabid.split('_');
   tab = tab[0];
-  if(!$('#'+tabid).hasClass('noajax') && (reload || $('#'+tabid+'-tab').is(':empty'))) {
+  if(reload || $('#'+tabid+'-tab').is(':empty')) {
+    showhideTabs(tabid);
+    $('#'+tabid+'-tab').html('<i class="fa fa-spinner fa-spin"></i> '+VuFind.translate('loading')+'...');
     $.ajax({
       url: VuFind.getPath() + '/' + urlroot + '/' + id + '/AjaxTab',
       type: 'POST',
@@ -29,7 +35,6 @@ function ajaxFLLoadTab(tabid, reload) {
       success: function(data) {
         if (data.length > 0) {
           $('#'+tabid+'-tab').html(data);
-          showhideTabs(tabid);
           registerTabEvents();
         }
         if(typeof syn_get_widget === "function") {
@@ -78,7 +83,7 @@ $(document).ready(function() {
                 refreshTagList(true, longNode);
                 Lightbox.confirm(VuFind.translate('add_tag_success'));
               });
-              $('.search_tabs .recordTabs a').unbind('click').click(function() {
+              longNode.find('.search_tabs .recordTabs a').click(function() {
                 return ajaxFLLoadTab($(this).attr('id'));
               });
               longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(function() {
