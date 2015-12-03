@@ -36,7 +36,8 @@ defined('LOCAL_CACHE_DIR')
     || define(
         'LOCAL_CACHE_DIR',
         (getenv('VUFIND_CACHE_DIR')
-            ? getenv('VUFIND_CACHE_DIR') : LOCAL_OVERRIDE_DIR . '/cache')
+            ? getenv('VUFIND_CACHE_DIR')
+            : (strlen(LOCAL_OVERRIDE_DIR) > 0 ? LOCAL_OVERRIDE_DIR . '/cache' : ''))
     );
 
 chdir(APPLICATION_PATH);
