@@ -306,6 +306,7 @@ $config = [
                 'factories' => [
                     'amazon' => 'VuFind\Content\Covers\Factory::getAmazon',
                     'booksite' => 'VuFind\Content\Covers\Factory::getBooksite',
+                    'buchhandel' => 'VuFind\Content\Covers\Factory::getBuchhandel',
                     'contentcafe' => 'VuFind\Content\Covers\Factory::getContentCafe',
                     'syndetics' => 'VuFind\Content\Covers\Factory::getSyndetics',
                 ],
