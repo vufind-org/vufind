@@ -77,6 +77,25 @@ class Factory
     }
 
     /**
+     * Create Buchhandel.de loader
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return mixed
+     */
+    public static function getBuchhandel(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $url = isset($config->Buchhandel->url)
+            ? trim($config->Buchhandel->url, '/') . '/'
+            : 'https://api.vlb.de/api/v1/cover/';
+        if (!isset($config->Buchhandel->token)) {
+            throw new \Exception("Buchhandel.de 'token' not set in VuFind config");
+        }
+        return new Buchhandel($url, $config->Buchhandel->token);
+    }
+
+    /**
      * Create a ContentCafe loader
      *
      * @param ServiceManager $sm Service manager

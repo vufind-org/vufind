@@ -1,5 +1,5 @@
-﻿/**
- * vufind.typeahead.js 0.5
+/**
+ * vufind.typeahead.js 0.6
  * ~ @crhallberg
  */
 (function ( $ ) {
@@ -63,7 +63,6 @@
       align(input, $.fn.autocomplete.element);
     }
 
-    $.fn.autocomplete.cache = {};
     function search(input, element) {
       if (xhr) xhr.abort();
       if (input.val().length >= options.minLength) {
@@ -268,26 +267,28 @@
     });
   };
 
-  $.fn.autocomplete.element = false;
-  $.fn.autocomplete.options = {
-    ajaxDelay: 200,
-    cache: true,
-    hidingClass: 'hidden',
-    highlight: true,
-    loadingString: 'Loading...',
-    maxResults: 20,
-    minLength: 3
-  };
-
   var xhr = false;
   var timer = false;
-  $.fn.autocomplete.ajax = function(ops) {
-    if (timer) clearTimeout(timer);
-    if (xhr) xhr.abort();
-    timer = setTimeout(
-      function() { xhr = $.ajax(ops); },
-      $.fn.autocomplete.options.ajaxDelay
-    );
+  if (typeof $.fn.autocomplete.cache === 'undefined') {
+    $.fn.autocomplete.cache = {};
+    $.fn.autocomplete.element = false;
+    $.fn.autocomplete.options = {
+      ajaxDelay: 200,
+      cache: true,
+      hidingClass: 'hidden',
+      highlight: true,
+      loadingString: 'Loading...',
+      maxResults: 20,
+      minLength: 3
+    };
+    $.fn.autocomplete.ajax = function(ops) {
+      if (timer) clearTimeout(timer);
+      if (xhr) xhr.abort();
+      timer = setTimeout(
+        function() { xhr = $.ajax(ops); },
+        $.fn.autocomplete.options.ajaxDelay
+      );
+    }
   }
 
 }( jQuery ));
