@@ -11,37 +11,45 @@
 
 namespace Symfony\Component\CssSelector\Tests;
 
-use Symfony\Component\CssSelector\CssSelector;
+use Symfony\Component\CssSelector\CssSelectorConverter;
 
-/**
- * @group legacy
- */
-class CssSelectorTest extends \PHPUnit_Framework_TestCase
+class CssSelectorConverterTest extends \PHPUnit_Framework_TestCase
 {
     public function testCssToXPath()
     {
-        $this->assertEquals('descendant-or-self::*', CssSelector::toXPath(''));
-        $this->assertEquals('descendant-or-self::h1', CssSelector::toXPath('h1'));
-        $this->assertEquals("descendant-or-self::h1[@id = 'foo']", CssSelector::toXPath('h1#foo'));
-        $this->assertEquals("descendant-or-self::h1[@class and contains(concat(' ', normalize-space(@class), ' '), ' foo ')]", CssSelector::toXPath('h1.foo'));
-        $this->assertEquals('descendant-or-self::foo:h1', CssSelector::toXPath('foo|h1'));
+        $converter = new CssSelectorConverter();
+
+        $this->assertEquals('descendant-or-self::*', $converter->toXPath(''));
+        $this->assertEquals('descendant-or-self::h1', $converter->toXPath('h1'));
+        $this->assertEquals("descendant-or-self::h1[@id = 'foo']", $converter->toXPath('h1#foo'));
+        $this->assertEquals("descendant-or-self::h1[@class and contains(concat(' ', normalize-space(@class), ' '), ' foo ')]", $converter->toXPath('h1.foo'));
+        $this->assertEquals('descendant-or-self::foo:h1', $converter->toXPath('foo|h1'));
+        $this->assertEquals('descendant-or-self::h1', $converter->toXPath('H1'));
+    }
+
+    public function testCssToXPathXml()
+    {
+        $converter = new CssSelectorConverter(false);
+
+        $this->assertEquals('descendant-or-self::H1', $converter->toXPath('H1'));
+    }
+
+    /**
+     * @expectedException \Symfony\Component\CssSelector\Exception\ParseException
+     * @expectedExceptionMessage Expected identifier, but <eof at 3> found.
+     */
+    public function testParseExceptions()
+    {
+        $converter = new CssSelectorConverter();
+        $converter->toXPath('h1:');
     }
 
     /** @dataProvider getCssToXPathWithoutPrefixTestData */
     public function testCssToXPathWithoutPrefix($css, $xpath)
     {
-        $this->assertEquals($xpath, CssSelector::toXPath($css, ''), '->parse() parses an input string and returns a node');
-    }
+        $converter = new CssSelectorConverter();
 
-    public function testParseExceptions()
-    {
-        try {
-            CssSelector::toXPath('h1:');
-            $this->fail('->parse() throws an Exception if the css selector is not valid');
-        } catch (\Exception $e) {
-            $this->assertInstanceOf('\Symfony\Component\CssSelector\Exception\ParseException', $e, '->parse() throws an Exception if the css selector is not valid');
-            $this->assertEquals('Expected identifier, but <eof at 3> found.', $e->getMessage(), '->parse() throws an Exception if the css selector is not valid');
-        }
+        $this->assertEquals($xpath, $converter->toXPath($css, ''), '->parse() parses an input string and returns a node');
     }
 
     public function getCssToXPathWithoutPrefixTestData()
