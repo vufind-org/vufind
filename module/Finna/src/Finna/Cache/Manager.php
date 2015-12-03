@@ -49,10 +49,11 @@ class Manager extends \VuFind\Cache\Manager
      */
     public function __construct(Config $config, Config $searchConfig)
     {
+        parent::__construct($config, $searchConfig);
+
         $cacheBase = $this->getCacheDir();
         foreach (['feed', 'description'] as $cache) {
             $this->createFileCache($cache, $cacheBase . $cache . 's');
         }
-        return parent::__construct($config, $searchConfig);
     }
 }
