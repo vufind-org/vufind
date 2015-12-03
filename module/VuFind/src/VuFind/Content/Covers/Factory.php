@@ -87,7 +87,7 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $url = isset($config->Buchhandel->url)
-            ? $config->Buchhandel->url  : 'https://api.vlb.de/api/v1/cover/';
+            ? trim($config->Buchhandel->url, '/').'/'  : 'https://api.vlb.de/api/v1/cover/';
         if (!isset($config->Buchhandel->token)) {
             throw new \Exception("Buchhandel.de 'token' not set in VuFind config");
         }
