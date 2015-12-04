@@ -1139,11 +1139,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $barcode = (string) $z30->{'z30-barcode'};
             $checkout = (string) $z31->{'z31-date'};
             $id = $this->barcodeToID($barcode);
-            if ($transactiontype == "Debit") {
-                $mult = -100;
-            } elseif ($transactiontype == "Credit") {
-                $mult = 100;
-            }
+            $mult = ($transactiontype == "Credit") ? 100 : -100;
+            
             $amount
                 = (float)(preg_replace("/[\(\)]/", "", (string) $z31->{'z31-sum'}))
                 * $mult;
