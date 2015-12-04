@@ -18,18 +18,8 @@
             "url": "http://pear.php.net"
         },
         {
-            "type": "package",
-            "package": {
-                "name": "mobileesp/mdetect",
-                "version": "dev-master",
-                "dist": {
-                    "url": "https://raw.githubusercontent.com/ahand/mobileesp/master/PHP/mdetect.php",
-                    "type": "file"
-                },
-                "autoload": {
-                    "classmap": ["/"]
-                }
-            }
+            "type": "vcs",
+            "url": "https://github.com/ahand/mobileesp"
         }
     ],
     "require": {
@@ -37,7 +27,7 @@
         "jasig/phpcas": "1.3.3",
         "cap60552/php-sip2": "1.0.0",
         "los/losrecaptcha": "1.0.0",
-        "mobileesp/mdetect": "dev-master",
+        "ahand/mobileesp": "dev-master",
         "ocramius/proxy-manager": "1.0.2",
         "oyejorge/less.php": "1.7.0.9",
         "pear-pear.php.net/file_marc": "1.1.2",

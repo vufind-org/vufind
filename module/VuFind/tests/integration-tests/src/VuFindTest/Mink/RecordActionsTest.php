@@ -247,6 +247,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord();
         // Click email record without logging in
         $this->findCss($page, '.mail-record')->click();
+        $this->snooze();
         $this->findCss($page, '.modal.in [name="username"]');
         // Login in Lightbox
         $this->fillInLoginForm($page, 'username1', 'test');
