@@ -143,6 +143,20 @@ abstract class Options implements TranslatorAwareInterface
     protected $viewOptions = [];
 
     /**
+     * Delimeter used for delimited facets
+     *
+     * @var string
+     */
+    protected $delimiter;
+
+    /**
+     * Facet settings
+     *
+     * @var array
+     */
+    protected $delimitedFacets = [];
+
+    /**
      * Facet settings
      *
      * @var array
@@ -461,6 +475,50 @@ abstract class Options implements TranslatorAwareInterface
     public function getViewOptions()
     {
         return $this->viewOptions;
+    }
+
+    /**
+    * Returns the delimeter value.
+    *
+    * @return string
+    */
+    public function getDelimeter()
+    {
+        return $this->delimiter;
+    }
+
+    /**
+    * Set the delimiter value.
+    *
+    * @param string $delimiter A delimiter to be used with delimited facets
+    *
+    * @return void
+    */
+    public function setDelimiter($delimiter)
+    {
+        $this->delimiter = $delimiter;
+    }
+
+    /**
+    * Get a list of delimited facets
+    *
+    * @return array
+    */
+    public function getDelimitedFacets()
+    {
+        return $this->delimitedFacets;
+    }
+
+    /**
+    * Set the delimitedFacets value.
+    *
+    * @param array $delimitedFacets An array of delimited facet names
+    *
+    * @return void
+    */
+    public function setDelimitedFacets($delimitedFacets)
+    {
+        $this->delimitedFacets = $delimitedFacets;
     }
 
     /**

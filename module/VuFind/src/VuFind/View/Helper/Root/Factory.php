@@ -57,6 +57,20 @@ class Factory
     }
 
     /**
+     * Construct the AccountCapabilities helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return AccountCapabilities
+     */
+    public static function getAccountCapabilities(ServiceManager $sm)
+    {
+        return new AccountCapabilities(
+            $sm->getServiceLocator()->get('VuFind\AccountCapabilities')
+        );
+    }
+
+    /**
      * Construct the AlphaBrowse helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -514,17 +528,8 @@ class Factory
      */
     public static function getUserList(ServiceManager $sm)
     {
-        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $setting = isset($cfg->Social->lists)
-            ? trim(strtolower($cfg->Social->lists)) : 'enabled';
-        if (!$setting) {
-            $setting = 'disabled';
-        }
-        $whitelist = ['enabled', 'disabled', 'public_only', 'private_only'];
-        if (!in_array($setting, $whitelist)) {
-            $setting = 'enabled';
-        }
-        return new UserList($setting);
+        $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
+        return new UserList($capabilities->getListSetting());
     }
 
     /**
@@ -536,10 +541,7 @@ class Factory
      */
     public static function getUserTags(ServiceManager $sm)
     {
-        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $mode = !isset($cfg->Social->tags)
-            || ($cfg->Social->tags && $cfg->Social->tags !== 'disabled')
-            ? 'enabled' : 'disabled';
-        return new UserTags($mode);
+        $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
+        return new UserTags($capabilities->getTagSetting());
     }
 }
