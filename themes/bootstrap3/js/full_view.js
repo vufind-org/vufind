@@ -33,9 +33,12 @@ function ajaxFLLoadTab(tabid, reload) {
       type: 'POST',
       data: {tab: tab},
       success: function(data) {
+        data = data.trim();
         if (data.length > 0) {
           $('#'+tabid+'-tab').html(data);
           registerTabEvents();
+        } else {
+          $('#'+tabid+'-tab').html(VuFind.translate('collection_empty'));
         }
         if(typeof syn_get_widget === "function") {
           syn_get_widget();
