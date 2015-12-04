@@ -5,7 +5,7 @@ function VuFindNamespace(p, s) {
   var strings = s;
 
   var getPath = function() { return path; };
-  var translate = function(op) { return strings[op]; };
+  var translate = function(op) { return strings[op] || op; };
 
   return {
     getPath: getPath,
