@@ -442,8 +442,10 @@ $(document).ready(function() {
     location.reload();
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
+    var listID = $('<div>'+html+'</div>').find('[name="listID"]');
+    var listUrl = VuFind.getPath() + '/MyResearch/MyList/'+listID.val();
     Lightbox.addCloseAction(refreshPageForLogin);
-    Lightbox.success(VuFind.translate('bulk_save_success'));
+    Lightbox.success(VuFind.translate('bulk_save_success') + '. <a href="'+listUrl+'">' + VuFind.translate('go_to_list') + '</a>.');
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
