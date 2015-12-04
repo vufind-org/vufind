@@ -1143,6 +1143,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 $mult = -100;
             } elseif ($transactiontype == "Credit") {
                 $mult = 100;
+            } else {
+                $mult = -100;
             }
             $amount
                 = (float)(preg_replace("/[\(\)]/", "", (string) $z31->{'z31-sum'}))
