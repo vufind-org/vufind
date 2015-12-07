@@ -675,6 +675,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $maxAge = isset($cacheConfig->Content->feedcachetime)
             ? $cacheConfig->Content->feedcachetime : false;
 
+        $httpService = $this->getServiceLocator()->get('\VuFind\Http');
+        Reader::setHttpClient($httpService->createClient());
+
         if ($maxAge) {
             $cacheEnabled = true;
             if (is_readable($localFile)

@@ -338,12 +338,12 @@ class Record extends AbstractHelper
         // Figure out controller using naming convention based on resource
         // source:
         $source = $this->driver->getResourceSource();
-        if ($source == 'VuFind') {
-            // "VuFind" is special case -- it refers to Solr, which uses
-            // the basic record controller.
+        if ($source == DEFAULT_SEARCH_BACKEND) {
+            // Default source is special case -- it uses the basic record
+            // controller.
             return 'Record';
         }
-        // All non-Solr controllers will correspond with the record source:
+        // All other controllers will correspond with the record source:
         return ucwords(strtolower($source)) . 'record';
     }
 

@@ -151,5 +151,5 @@ return array(
     'lessc' => $vendorDir . '/oyejorge/less.php/lessc.inc.php',
     'phpCAS' => $vendorDir . '/jasig/phpcas/source/CAS.php',
     'sip2' => $vendorDir . '/cap60552/php-sip2/sip2.class.php',
-    'uagent_info' => $vendorDir . '/mobileesp/mdetect/mdetect.php',
+    'uagent_info' => $vendorDir . '/ahand/mobileesp/PHP/mdetect.php',
 );
