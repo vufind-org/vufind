@@ -205,11 +205,6 @@
       </div>
     </section>
     <section role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?><?= $this->browse ? ' browse' : ''?>">
-      <? if ($logoutText = $this->logoutMessage()): ?>
-        <div class="container-fluid alert-info">
-          <div class="logout-msg text-center"><h3><?=$this->transEsc($logoutText) ?></h3></div>
-        </div>
-      <? endif; ?>
       <? if (!empty($this->layout()->finnaMainHeader)): ?>
       <div class="container-fluid finna-main-header">
         <div class="container">

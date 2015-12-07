@@ -14,7 +14,6 @@ return array(
             'imageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',
             'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
             'layoutclass' => 'Finna\View\Helper\Root\Factory::getLayoutClass',
-            'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
             'metalib' => 'Finna\View\Helper\Root\Factory::getMetaLib',
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
             'onlinePayment' => 'Finna\View\Helper\Root\Factory::getOnlinePayment',
