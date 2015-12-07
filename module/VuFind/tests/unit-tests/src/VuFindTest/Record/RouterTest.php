@@ -99,7 +99,7 @@ class RouterTest extends TestCase
         $router = $this->getRouter($driver, ['Collections' => ['collections' => true]]);
         $this->assertEquals(
             ['params' => ['id' => 'test', 'tab' => 'foo'], 'route' => 'collection'],
-            $router->getTabRouteDetails('VuFind|test', 'foo')
+            $router->getTabRouteDetails('Solr|test', 'foo')
         );
     }
 
