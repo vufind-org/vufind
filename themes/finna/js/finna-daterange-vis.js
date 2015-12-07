@@ -330,6 +330,21 @@ finna.dateRangeVis = (function() {
         });
     };
 
+    var updateFieldLimits = function(evt) {
+        var params = evt.data;
+        params['from'].attr('max', params['to'].val());
+        params['to'].attr('min', params['from'].val());
+        
+        var within = params['form'].find('input[type=radio][name=type]:checked').val() == 'within';
+        if (within && (params['from'].val() !== '' || params['to'].val() !== '')) {
+            params['from'].attr('required', 'required');
+            params['to'].attr('required', 'required');
+        } else {
+            params['from'].removeAttr('required');
+            params['to'].removeAttr('required');
+        }
+    };
+    
     var initForm = function(form, backend, facetField) {
         form.find('a.submit').on('click',
            function() {
@@ -337,14 +352,36 @@ finna.dateRangeVis = (function() {
                return false;
            }
         );
+        
+        
+        var fromElement = form.find('.year-from');
+        var toElement = form.find('.year-to');
+        
+        var type = null;
+        var isSolr = backend == 'solr';
+        if (isSolr) {
+            var typeElement = form.find('input[type=radio][name=type]:checked');
+            if (typeElement.length) {
+                type = typeElement.val();
+            }
+        }
 
+        var params = {
+           form: form,
+           from: fromElement,
+           to: toElement
+        }
+        var typeElements = form.find('input[type=radio][name=type]');
+        fromElement.change(params, updateFieldLimits);
+        toElement.change(params, updateFieldLimits);
+        typeElements.change(params, updateFieldLimits);
+        updateFieldLimits({data: params});
+        
         form.submit(function(e) {
             e.preventDefault();
 
             // Get dates, build query
-            var fromElement = $(this).find('.year-from');
             var from = fromElement.val();
-            var toElement = $(this).find('.year-to');
             var to = toElement.val();
             var action = $(this).attr('action');
             if (action.indexOf('?') < 0) {
@@ -354,17 +391,7 @@ finna.dateRangeVis = (function() {
             }
 
             var query = action;
-            var isSolr = backend == 'solr';
 
-
-            var type = null;
-            if (isSolr) {
-                type = $(this).find('input[type=radio][name=type]:checked');
-                if (type.length) {
-                    type = type.val();
-                    query += facetField + '_type=' + type + '&';
-                }
-            }
             fromElement.removeClass('error');
             toElement.removeClass('error');
             query += 'filter[]=' + facetField + ':';

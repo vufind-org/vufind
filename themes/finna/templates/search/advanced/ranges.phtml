@@ -5,11 +5,11 @@
     <? $extraInputAttribs = ($current['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
     <fieldset>
       <div class="row">
-        <div class="col-md-1">
+        <div class="col-md-2">
           <label class="form-inline"><?=$this->transEsc($params->getFacetLabel($current['field']))?>:</label>
         </div>
         <? if ($current['type'] == 'date'): ?>
-        <div class="col-md-11">
+        <div class="col-md-10">
           <div class="slider-container">
             <input type="text" id="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider">
           </div>
@@ -19,9 +19,9 @@
             <? if (isset($current['rangeType'])): ?>
                <input type="hidden" name="<?= $current['field'] ?>_type" value="<?= $current['rangeType'] ?>"/>
             <? endif ?>
-            <input type="text" name="<?=$escField?>from" id="<?=$escField?>from" value="<?=isset($current['values'][0])?$this->escapeHtmlAttr($current['values'][0]):''?>" size="4" class="form-control form-inline" <?=$extraInputAttribs?>/>
+            <input type="number" class="form-control form-inline input-year" pattern="-?\d{0,4}" name="<?=$escField?>from" id="<?=$escField?>from" value="<?=isset($current['values'][0])?$this->escapeHtmlAttr($current['values'][0]):''?>" size="5" class="form-control form-inline" <?=$extraInputAttribs?>/>
             <span class="divider"> - </span>
-            <input type="text" name="<?=$escField?>to" id="<?=$escField?>to" value="<?=isset($current['values'][1])?$this->escapeHtmlAttr($current['values'][1]):''?>" size="4" class="form-control form-inline" <?=$extraInputAttribs?>/>
+            <input type="number" class="form-control form-inline input-year" pattern="-?\d{0,4}" name="<?=$escField?>to" id="<?=$escField?>to" value="<?=isset($current['values'][1])?$this->escapeHtmlAttr($current['values'][1]):''?>" size="5" class="form-control form-inline" <?=$extraInputAttribs?>/>
           </div>
         </div>
         <? if ($current['type'] == 'date'): ?>
