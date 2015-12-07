@@ -318,9 +318,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                         $facetKey, $item['value'], $item['operator'], $paramArray
                     );
                     $item['href'] = $href;
-                    $exclude = $urlHelper->addFacet(
-                        $facetKey, $item['value'], 'NOT', $paramArray
-                    );
                     if ($facetKey === 'online_boolean') {
                         $item['displayText']
                             = $translate->translate('Available Online');
