@@ -13,6 +13,7 @@ before_script:
   - pear install phing/phing
   - composer global require fabpot/php-cs-fixer
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - phpenv config-rm xdebug.ini
   - phpenv rehash
 
 script:
