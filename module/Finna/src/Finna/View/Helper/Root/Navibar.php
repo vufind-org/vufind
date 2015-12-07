@@ -140,7 +140,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getMenuItemUrl(Array $data)
+    public function getMenuItemUrl(array $data)
     {
         if (!$data['route']) {
             return $data['url'];
