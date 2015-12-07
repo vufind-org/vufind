@@ -67,6 +67,13 @@ class Editions implements RelatedInterface
     protected $maxLimit;
 
     /**
+     * Search backend to retrieve results from.
+     *
+     * @var string
+     */
+    protected $backend = 'Solr';
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results  Results plugin manager
@@ -96,7 +103,7 @@ class Editions implements RelatedInterface
         $parts = $this->getQueryParts($driver);
         if (!empty($parts)) {
             // Limit the number of parts based on the boolean clause limit:
-            $result = $this->resultsManager->get('Solr');
+            $result = $this->resultsManager->get($this->backend);
             $params = $result->getParams();
             $params->getOptions()->spellcheckEnabled(false);
             $limit = $params->getQueryIDLimit();
@@ -110,7 +117,7 @@ class Editions implements RelatedInterface
             // Assemble the query parts and filter out current record if it comes
             // from the Solr index.:
             $query = '(' . implode(' OR ', $parts) . ')';
-            if ($driver->getResourceSource() == 'VuFind') {
+            if ($driver->getResourceSource() == $this->backend) {
                 $query .= ' NOT id:"' . addcslashes($driver->getUniqueID(), '"')
                     . '"';
             }

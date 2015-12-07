@@ -187,7 +187,7 @@ class CartTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('vufind_cart'), $this->equalTo('Aa'));
         $manager->expects($this->at(1))
             ->method('set')
-            ->with($this->equalTo('vufind_cart_src'), $this->equalTo('VuFind'));
+            ->with($this->equalTo('vufind_cart_src'), $this->equalTo('Solr'));
         $cart = $this->getCart(100, true, $manager);
         $cart->addItem('VuFind|a');
     }

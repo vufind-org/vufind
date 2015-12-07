@@ -316,13 +316,12 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * Get the source value used to identify resources of this type in the database.
      *
      * @return string
+     *
+     * @deprecated Obsolete as of VuFind 3.0; use getSourceIdentifier() instead.
      */
     public function getResourceSource()
     {
-        // Normally resource source is the same as source identifier, but for legacy
-        // reasons we need to call Solr 'VuFind' instead.  TODO: clean this up.
-        $id = $this->getSourceIdentifier();
-        return $id == 'Solr' ? 'VuFind' : $id;
+        return $this->getSourceIdentifier();
     }
 
     /**
@@ -334,8 +333,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function setSourceIdentifier($identifier)
     {
-        // Normalize "VuFind" identifier to "Solr" (see above).  TODO: clean this up.
-        $this->sourceIdentifier = $identifier == 'VuFind' ? 'Solr' : $identifier;
+        $this->sourceIdentifier = $identifier;
     }
 
     /**

@@ -172,7 +172,7 @@ class RouterTest extends TestCase
      *
      * @return RecordDriver
      */
-    protected function getDriver($id = 'test', $source = 'VuFind')
+    protected function getDriver($id = 'test', $source = 'Solr')
     {
         $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
         $driver->expects($this->any())->method('getUniqueId')
