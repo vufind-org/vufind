@@ -44,15 +44,6 @@
           <? endif; ?>
 
           <li><span class="hidden-xs hidden-sm"><a href="javascript:window.print()"><i class="fa fa-print"></i> <?=$this->transEsc('Print')?></a></span></li>
-
-          <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
-          <? if($QRCode): ?>
-          <li class="dropdown dropup">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-qr-code"></i> <span class="sr-only"><?=$this->transEsc('QR Code')?></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></li>
-            </ul>
-          <? endif; ?>
     </ul>
     <ul class="nav nav-pills hidden-print mobile-sharing">
       <li class="dropdown dropup">

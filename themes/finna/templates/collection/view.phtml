@@ -75,8 +75,10 @@
 <div class="container">
 <? endif; ?>
 <div class="row record-row">
-  <div class="col-sm-9">
+  <div class="col-xs-12">
     <?=$this->record($this->driver)->getToolbar()?>
+  </div>
+  <div class="col-sm-9">
     <div class="record">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />

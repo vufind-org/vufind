@@ -1,7 +1,7 @@
 <!-- START of: finna - RecordDriver/SolrEad/core.phtml -->
 <? $this->headScript()->appendFile("finna-record.js"); ?>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-  <div class="col-sm-2">
+  <div class="col-sm-4 col-md-3">
     <div class="row">
       <div class="col-xs-12">
         <div class="cover-wrapper">
@@ -30,6 +30,11 @@
       </div>
     </div>
 
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind'): ?>
+      <?=$this->render('record/record-organisation-menu.phtml') ?>
+    <? endif; ?>
+
+
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
     <div class="row">
       <div class="col-xs-12">
@@ -42,7 +47,7 @@
 
   </div>
 
-  <div class="col-sm-10">
+  <div class="col-sm-8 col-md-9">
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
 
       <? if ($institutions = $this->driver->getInstitutions()): ?>

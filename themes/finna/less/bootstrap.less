@@ -501,6 +501,18 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     & .collection-title {
         margin-top: 0;   
     }
+    & .list-group.filters {
+        & input {
+            max-width: 100%;
+            @media (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            @media (max-width: @screen-xs-max) {
+                display: inline-block;
+            }
+        }
+    }
 }
 
 /* --- Autocomplete --- */

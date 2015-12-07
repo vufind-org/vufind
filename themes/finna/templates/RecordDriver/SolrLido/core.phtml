@@ -9,24 +9,6 @@
           <? $img = $this->recordImage($this->record($this->driver))?>
           <?= $img->render('record', array('small' => array('w' => 50, 'h' => 50), 'medium' => array('w' => 1200, 'h' => 1200))) ?>
           <? /* Display qrcode if appropriate: */ ?>
-          <? $rights = $this->driver->getImageRights($this->layout()->userLang); ?>
-          <div class="access-rights">
-            <div class="image-rights">
-              <? $hasLink = isset($rights['link']); ?>
-              <strong><?= $this->translate("Image Rights") ?>:</strong> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
-            </div>
-            <div class="copyright truncate-field">
-              <? if (isset($rights['description'])): ?>
-                <? foreach ($rights['description'] as $item): ?>
-                <p><?= $this->transEsc($item) ?></p>
-                <? endforeach ?>
-              <? endif ?>
-              <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
-                <p><?= $this->translate('Image Rights Default') ?>
-                <p><a href="<?= $this->url('content-page', array('page' => 'terms_conditions')) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
-              <? endif; ?>
-            </div>
-          </div>
           <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
           <? if($QRCode): ?>
             <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
@@ -39,6 +21,32 @@
         <?=$this->record($this->driver)->getPreviews()?>
       </div>
     </div>
+    <div class="row">
+      <div class="col-xs-12">
+      <? $rights = $this->driver->getImageRights($this->layout()->userLang); ?>
+        <div class="access-rights">
+          <div class="image-rights">
+            <? $hasLink = isset($rights['link']); ?>
+            <strong><?= $this->translate("Image Rights") ?>:</strong> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
+          </div>
+          <div class="copyright truncate-field">
+            <? if (isset($rights['description'])): ?>
+              <? foreach ($rights['description'] as $item): ?>
+              <p><?= $this->transEsc($item) ?></p>
+              <? endforeach ?>
+            <? endif ?>
+            <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+              <p><?= $this->translate('Image Rights Default') ?>
+              <p><a href="<?= $this->url('content-page', array('page' => 'terms_conditions')) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
+            <? endif; ?>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind'): ?>
+      <?=$this->render('record/record-organisation-menu.phtml') ?>
+    <? endif; ?>
 
     <div class="row">
       <div class="col-xs-12 rating-stars">
