@@ -262,6 +262,15 @@ class MyResearchController extends AbstractBase
                 '/([?&])auth_method=[^&]*&?/', '$1', $logoutTarget
             );
             $logoutTarget = rtrim($logoutTarget, '?');
+
+            // Another special case: if logging out will send the user back to
+            // the MyResearch home action, instead send them all the way to
+            // VuFind home. Otherwise, they might get logged back in again,
+            // which is confusing. Even in the best scenario, they'll just end
+            // up on a login screen, which is not helpful.
+            if ($logoutTarget == $this->getServerUrl('myresearch-home')) {
+                $logoutTarget = $this->getServerUrl('home');
+            }
         }
 
         return $this->redirect()
@@ -275,6 +284,12 @@ class MyResearchController extends AbstractBase
      */
     public function savesearchAction()
     {
+        // Fail if saved searches are disabled.
+        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        if ($check->getSavedSearchSetting() === 'disabled') {
+            throw new \Exception('Saved searches disabled.');
+        }
+
         $user = $this->getUser();
         if ($user == false) {
             return $this->forceLogin();
@@ -520,7 +535,7 @@ class MyResearchController extends AbstractBase
         // Get current record (and, if applicable, selected list ID) for convenience:
         $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
         $source = $this->params()->fromPost(
-            'source', $this->params()->fromQuery('source', 'VuFind')
+            'source', $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
         );
         $driver = $this->getRecordLoader()->load($id, $source, true);
         $listID = $this->params()->fromPost(
@@ -614,7 +629,8 @@ class MyResearchController extends AbstractBase
         );
         if ($deleteId) {
             $deleteSource = $this->params()->fromPost(
-                'source', $this->params()->fromQuery('source', 'VuFind')
+                'source',
+                $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
             );
             // If the user already confirmed the operation, perform the delete now;
             // otherwise prompt for confirmation:
@@ -684,7 +700,8 @@ class MyResearchController extends AbstractBase
             // to the save screen; otherwise, send them back to the list they
             // just edited.
             $recordId = $this->params()->fromQuery('recordId');
-            $recordSource = $this->params()->fromQuery('recordSource', 'VuFind');
+            $recordSource
+                = $this->params()->fromQuery('recordSource', DEFAULT_SEARCH_BACKEND);
             if (!empty($recordId)) {
                 $details = $this->getRecordRouter()->getActionRouteDetails(
                     $recordSource . '|' . $recordId, 'Save'
@@ -830,7 +847,8 @@ class MyResearchController extends AbstractBase
     protected function getDriverForILSRecord($current)
     {
         $id = isset($current['id']) ? $current['id'] : null;
-        $source = isset($current['source']) ? $current['source'] : 'VuFind';
+        $source = isset($current['source'])
+            ? $current['source'] : DEFAULT_SEARCH_BACKEND;
         $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
             ->load($id, $source, true);
         $record->setExtraDetail('ils_details', $current);
@@ -1120,7 +1138,8 @@ class MyResearchController extends AbstractBase
                 if (!isset($row['id']) || empty($row['id'])) {
                     throw new \Exception();
                 }
-                $source = isset($row['source']) ? $row['source'] : 'VuFind';
+                $source = isset($row['source'])
+                    ? $row['source'] : DEFAULT_SEARCH_BACKEND;
                 $row['driver'] = $this->getServiceLocator()
                     ->get('VuFind\RecordLoader')->load($row['id'], $source);
                 $row['title'] = $row['driver']->getShortTitle();

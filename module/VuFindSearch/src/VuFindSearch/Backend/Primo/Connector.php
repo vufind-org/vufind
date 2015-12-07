@@ -595,20 +595,59 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $recordId  The document to retrieve from the Primo API
      * @param string $inst_code Institution code (optional)
+     * @param bool   $onCampus  Whether the user is on campus
      *
      * @throws \Exception
      * @return string    The requested resource
      */
-    public function getRecord($recordId, $inst_code = null)
+    public function getRecord($recordId, $inst_code = null, $onCampus = false)
     {
         // Query String Parameters
         if (isset($recordId)) {
             $qs   = [];
-            $qs[] = "query=any,contains,\"$recordId\"";
+            $qs[] = 'query=rid,exact,"' . urlencode(addcslashes($recordId, '"'))
+                . '"';
             $qs[] = "institution=$inst_code";
-            $qs[] = "onCampus=true";
+            $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
             $qs[] = "indx=1";
             $qs[] = "bulkSize=1";
+            $qs[] = "loc=adaptor,primo_central_multiple_fe";
+
+            // Send Request
+            $result = $this->call(implode('&', $qs));
+        } else {
+            throw new \Exception('Primo API does not accept a null query');
+        }
+
+        return $result;
+    }
+
+    /**
+     * Retrieves multiple documents specified by the ID.
+     *
+     * @param array  $recordIds The documents to retrieve from the Primo API
+     * @param string $inst_code Institution code (optional)
+     * @param bool   $onCampus  Whether the user is on campus
+     *
+     * @throws \Exception
+     * @return string    The requested resource
+     */
+    public function getRecords($recordIds, $inst_code = null, $onCampus = false)
+    {
+        // Callback function for formatting IDs:
+        $formatIds = function ($i) {
+            return '"' . addcslashes($i, '"') . '"';
+        };
+
+        // Query String Parameters
+        if ($recordIds) {
+            $qs   = [];
+            $recordIds = array_map($formatIds, $recordIds);
+            $qs[] = 'query=rid,contains,' . urlencode(implode(' OR ', $recordIds));
+            $qs[] = "institution=$inst_code";
+            $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
+            $qs[] = "indx=1";
+            $qs[] = "bulkSize=" . count($recordIds);
             $qs[] = "loc=adaptor,primo_central_multiple_fe";
 
             // Send Request

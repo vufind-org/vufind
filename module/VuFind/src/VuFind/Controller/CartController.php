@@ -385,10 +385,17 @@ class CartController extends AbstractBase
         if ($this->formWasSubmitted('submit')) {
             $this->favorites()
                 ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
-            $this->flashMessenger()->addMessage('bulk_save_success', 'success');
             $list = $this->params()->fromPost('list');
+            $listUrl = $this->url()->fromRoute('userList', ['id' => $list]);
+            $message = [
+                'html' => true,
+                'msg' => $this->translate('bulk_save_success') . '. '
+                . '<a href="' . $listUrl . '">'
+                . $this->translate('go_to_list') . '</a>.'
+            ];
+            $this->flashMessenger()->addMessage($message, 'success');
             if (!empty($list)) {
-                return $this->redirect()->toRoute('userList', ['id' => $list]);
+                return $listUrl;
             } else {
                 return $this->redirectToSource();
             }

@@ -339,17 +339,19 @@ class DeduplicationListener
     {
         $result = [];
         foreach ($params->get('fq') as $fq) {
-            if (preg_match(
-                '/\bbuilding:"([^"]+)"/', //'/\bbuilding:"?\d+\/([^\/]+?)\//',
+            if (preg_match_all(
+                '/\bbuilding:"([^"]+)"/',
                 $fq,
                 $matches
             )) {
-                $value = $matches[1];
-                if (preg_match('/^\d+\/([^\/]+?)\//', $value, $matches)) {
-                    // Hierarchical facets; take only first level:
-                    $result[] = $matches[1];
-                } else {
-                    $result[] = $value;
+                $values = $matches[1];
+                foreach ($values as $value) {
+                    if (preg_match('/^\d+\/([^\/]+?)\//', $value, $matches)) {
+                        // Hierarchical facets; take only first level:
+                        $result[] = $matches[1];
+                    } else {
+                        $result[] = $value;
+                    }
                 }
             }
         }
