@@ -273,7 +273,7 @@ class CartTest extends \PHPUnit_Framework_TestCase
     {
         $cookies = [
             'vufind_cart' => "Aa\tBb\tCc",
-            'vufind_cart_src' => "VuFind\tSummon\tWorldCat"
+            'vufind_cart_src' => "Solr\tSummon\tWorldCat"
         ];
         $cart = $this->getCart(100, true, $cookies);
         $this->assertEquals(3, count($cart->getItems()));
