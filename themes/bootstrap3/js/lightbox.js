@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, Recaptcha, VuFind */
+/*global ajaxLogin, checkSaveStatuses, console, deparam, newAccountHandler, Recaptcha, refreshPageForLogin, registerLightboxEvents, VuFind */
 
 var Lightbox = {
   /**
@@ -442,8 +442,10 @@ $(document).ready(function() {
     location.reload();
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
+    var listID = $('<div>'+html+'</div>').find('[name="listID"]');
+    var listUrl = VuFind.getPath() + '/MyResearch/MyList/'+listID.val();
     Lightbox.addCloseAction(refreshPageForLogin);
-    Lightbox.success(VuFind.translate('bulk_save_success'));
+    Lightbox.success(VuFind.translate('bulk_save_success') + '. <a href="'+listUrl+'">' + VuFind.translate('go_to_list') + '</a>.');
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
@@ -526,8 +528,8 @@ $(document).ready(function() {
     return Lightbox.get('Search','Email',{url:document.URL});
   });
   // Save record links
-  $('.save-record').click(function() {
+  $('.result .save-record').click(function() {
     var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('data-id')});
   });
 });

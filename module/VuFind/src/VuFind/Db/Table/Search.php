@@ -151,6 +151,7 @@ class Search extends Gateway
         $newSearch, $sessionId, $searchHistory = []
     ) {
         // Duplicate elimination
+        $newUrl = $newSearch->getUrlQuery()->getParams();
         foreach ($searchHistory as $oldSearch) {
             // Deminify the old search (note that if we have a resource, we need
             // to grab the contents -- this is necessary for PostgreSQL compatibility
@@ -159,7 +160,6 @@ class Search extends Gateway
             $dupSearch = $minSO->deminify($manager);
             // See if the classes and urls match
             $oldUrl = $dupSearch->getUrlQuery()->getParams();
-            $newUrl = $newSearch->getUrlQuery()->getParams();
             if (get_class($dupSearch) == get_class($newSearch)
                 && $oldUrl == $newUrl
             ) {
