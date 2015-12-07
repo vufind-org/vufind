@@ -41,11 +41,11 @@ set JAVA="%JAVA_HOME%\bin\java"
 :javaset
 
 cd %VUFIND_HOME%\import
-SET CLASSPATH="browse-indexing.jar;..\solr\vufind\jars\*;..\solr\vendor\contrib\analysis-extras\lib\*;..\solr\vendor\server\solr-webapp\webapp\WEB-INF\lib\*"
+SET CLASSPATH="browse-indexing.jar;%SOLR_HOME%\vufind\jars\*;%SOLR_HOME%\vendor\contrib\analysis-extras\lib\*;%SOLR_HOME%\vendor\server\solr-webapp\webapp\WEB-INF\lib\*"
 
-SET bib_index=..\solr\vufind\biblio\index
-SET auth_index=..\solr\vufind\authority\index
-SET index_dir=..\solr\vufind\alphabetical_browse
+SET bib_index=%SOLR_HOME%\vufind\biblio\index
+SET auth_index=%SOLR_HOME%\vufind\authority\index
+SET index_dir=%SOLR_HOME%\vufind\alphabetical_browse
 
 rem #####################################################
 rem If we're being called for the build_browse function, jump there now:
