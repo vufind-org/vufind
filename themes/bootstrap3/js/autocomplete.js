@@ -18,9 +18,7 @@
     function populate(value, input, eventType) {
       input.val(value);
       hide();
-      if (typeof options.onselection !== 'undefined') {
-        options.onselection(value, input, eventType);
-      }
+      input.trigger('autocomplete:select', {value: value, eventType: eventType});
     }
 
     function createList(data, input) {
@@ -96,13 +94,13 @@
     }
 
     function align(input, element) {
-      var offset = input[0].getBoundingClientRect();
+      var position = input.position();
       element.css({
         position: 'absolute',
-        top: offset.top + offset.height,
-        left: offset.left,
-        maxWidth: offset.width * 2,
-        minWidth: offset.width,
+        top: position.top + input.outerHeight(), 
+        left: position.left,
+        minWidth: input.width() / 2,
+        maxWidth: Math.max(input.width(), input.closest('form').width()),  
         zIndex: 50
       });
     }
@@ -111,9 +109,12 @@
       if (typeof element === 'undefined') {
         element = $('<div/>')
           .addClass('autocomplete-results hidden')
-          .text('<i class="item loading">'+options.loadingString+'</i>');
+          .html('<i class="item loading">'+options.loadingString+'</i>');
         align(input, element);
-        $('body').append(element);
+        input.closest('form').append(element);
+        $(window).resize(function() {
+          align(input, element);
+        });
       }
 
       input.data('selected', -1);
