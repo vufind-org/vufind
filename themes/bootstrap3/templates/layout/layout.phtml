@@ -100,7 +100,8 @@
     <?
       $root = rtrim($this->url('home'), '/');
       $translations = $this->jsTranslations()->getJSON();
-      $setupJS = "var VuFind = new VuFindNamespace('{$root}', {$translations});";
+      $dsb = DEFAULT_SEARCH_BACKEND;
+      $setupJS = "var VuFind = new VuFindNamespace('{$root}', {$translations}, '{$dsb}');";
       $this->headScript()->appendScript($setupJS);
     ?>
     <?=$this->headScript()?>
