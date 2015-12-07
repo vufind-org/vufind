@@ -52,7 +52,7 @@ class LoaderTest extends TestCase
      * @return void
      *
      * @expectedException        VuFind\Exception\RecordMissing
-     * @expectedExceptionMessage Record VuFind:test does not exist.
+     * @expectedExceptionMessage Record Solr:test does not exist.
      */
     public function testMissingRecord()
     {
