@@ -204,14 +204,15 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
      *
      * @param string $recordId  The document to retrieve from the Primo API
      * @param string $inst_code Institution code (optional)
+     * @param bool   $onCampus  Whether the user is on campus
      *
      * @throws \Exception
      * @return string    The requested resource
      */
-    public function getRecord($recordId, $inst_code = null)
+    public function getRecord($recordId, $inst_code = null, $onCampus = false)
     {
         list(,$recordId) = explode('.', $recordId, 2);
-        return parent::getRecord($recordId, $inst_code);
+        return parent::getRecord($recordId, $inst_code, $onCampus);
     }
 
     /**
