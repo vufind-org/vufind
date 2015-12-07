@@ -177,7 +177,7 @@ class RouterTest extends TestCase
         $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
         $driver->expects($this->any())->method('getUniqueId')
             ->will($this->returnValue($id));
-        $driver->expects($this->any())->method('getResourceSource')
+        $driver->expects($this->any())->method('getSourceIdentifier')
             ->will($this->returnValue($source));
         return $driver;
     }

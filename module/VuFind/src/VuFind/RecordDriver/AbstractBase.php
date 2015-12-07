@@ -147,7 +147,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $table = $this->getDbTable('Comments');
         return $table->getForResource(
-            $this->getUniqueId(), $this->getResourceSource()
+            $this->getUniqueId(), $this->getSourceIdentifier()
         );
     }
 
@@ -181,7 +181,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         $tags = $this->getDbTable('Tags');
         return $tags->getForResource(
             $this->getUniqueId(),
-            $this->getResourceSource(),
+            $this->getSourceIdentifier(),
             0, $list_id, $user_id, $sort, $ownerId
         );
     }
@@ -198,7 +198,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $resources = $this->getDbTable('Resource');
         $resource = $resources->findResource(
-            $this->getUniqueId(), $this->getResourceSource()
+            $this->getUniqueId(), $this->getSourceIdentifier()
         );
         foreach ($tags as $tag) {
             $resource->addTag($tag, $user);
@@ -217,7 +217,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $resources = $this->getDbTable('Resource');
         $resource = $resources->findResource(
-            $this->getUniqueId(), $this->getResourceSource()
+            $this->getUniqueId(), $this->getSourceIdentifier()
         );
         foreach ($tags as $tag) {
             $resource->deleteTag($tag, $user);
@@ -263,7 +263,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         // Get or create a resource object as needed:
         $resourceTable = $this->getDbTable('Resource');
         $resource = $resourceTable->findResource(
-            $this->getUniqueId(), $this->getResourceSource(), true, $this
+            $this->getUniqueId(), $this->getSourceIdentifier(), true, $this
         );
 
         // Add the information to the user's account:
@@ -286,7 +286,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $db = $this->getDbTable('UserResource');
         $data = $db->getSavedData(
-            $this->getUniqueId(), $this->getResourceSource(), $list_id, $user_id
+            $this->getUniqueId(), $this->getSourceIdentifier(), $list_id, $user_id
         );
         $notes = [];
         foreach ($data as $current) {
@@ -308,7 +308,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $table = $this->getDbTable('UserList');
         return $table->getListsContainingResource(
-            $this->getUniqueId(), $this->getResourceSource(), $user_id
+            $this->getUniqueId(), $this->getSourceIdentifier(), $user_id
         );
     }
 

@@ -117,7 +117,7 @@ class Editions implements RelatedInterface
             // Assemble the query parts and filter out current record if it comes
             // from the Solr index.:
             $query = '(' . implode(' OR ', $parts) . ')';
-            if ($driver->getResourceSource() == $this->backend) {
+            if ($driver->getSourceIdentifier() == $this->backend) {
                 $query .= ' NOT id:"' . addcslashes($driver->getUniqueID(), '"')
                     . '"';
             }

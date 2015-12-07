@@ -54,7 +54,7 @@ class WorldCatEditions extends Editions
             // Assemble the query parts and filter out current record if it comes
             // from the Solr index.:
             $query = '(' . implode(' or ', $parts) . ')';
-            if ($driver->getResourceSource() == 'WorldCat') {
+            if ($driver->getSourceIdentifier() == 'WorldCat') {
                 $query .= ' not srw.no all ' . $driver->getUniqueID();
             }
 
