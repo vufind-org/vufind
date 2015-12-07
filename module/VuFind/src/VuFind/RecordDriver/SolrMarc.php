@@ -617,7 +617,7 @@ class SolrMarc extends SolrDefault
                 // and merge them into return array:
                 $toc = array_merge(
                     $toc,
-                    array_filter(explode('--', $subfield->getData()),'trim')
+                    array_filter(explode('--', $subfield->getData()), 'trim')
                 );
             }
         }
