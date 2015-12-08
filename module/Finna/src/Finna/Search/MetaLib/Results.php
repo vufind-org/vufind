@@ -41,6 +41,13 @@ class Results extends \VuFind\Search\Base\Results
     use \Finna\Search\Results\SearchResultsTrait;
 
     /**
+     * Search backend identifiers.
+     *
+     * @var string
+     */
+    protected $backendId = 'MetaLib';
+
+    /**
      * Failed databases.
      *
      * @var array

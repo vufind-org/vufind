@@ -39,4 +39,11 @@ namespace Finna\Search\Primo;
 class Results extends \VuFind\Search\Primo\Results
 {
     use \Finna\Search\Results\SearchResultsTrait;
+
+    /**
+     * Search backend identifiers.
+     *
+     * @var string
+     */
+    protected $backendId = 'Primo';
 }
