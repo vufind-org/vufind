@@ -1026,7 +1026,8 @@ class MultiBackend extends AbstractBase
      * Place ILL Request
      *
      * Attempts to place an ILL request on a particular item and returns
-     * an array with result details or a PEAR error on failure of support classes
+     * an array with result details (or throws an exception on failure of support
+     * classes)
      *
      * @param array $details An array of item and patron data
      *
