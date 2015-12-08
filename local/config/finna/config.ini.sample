@@ -1135,7 +1135,7 @@ count = 2
 url = https://piwik.finna.fi/
 ;site_id = 1
 ;token_auth = ...
-;custom_variables = 1
+custom_variables = 1
 
 
 [bX]
