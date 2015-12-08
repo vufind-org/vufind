@@ -267,9 +267,24 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         }
 
         $requestedFacets = isset($request['facet']) ? $request['facet'] : [];
+        $facetFilters = [];
+        if (isset($request['facetFilter'])) {
+            foreach ($request['facetFilter'] as $filter) {
+                list($facetField, $regex) = explode(':', $filter, 2);
+                $regex = trim($regex);
+                if (substr($regex, 0, 1)  == '"') {
+                    $regex = substr($regex, 1);
+                }
+                if (substr($regex, -1, 1) == '"') {
+                    $regex = substr($regex, 0, -1);
+                }
+                $facetFilters[$facetField][] = $regex;
+            }
+        }
 
         $facets = [];
         if ($results->getResultTotal() > 0 && $requestedFacets) {
+            $translate = $this->getViewRenderer()->plugin('translate');
             $facets = $results->getFacetList();
 
             // Get requested hierarchical facets
@@ -284,13 +299,39 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                     $facets[$facet]['list'] = $data;
                 }
             }
-            $facets = $this->buildResultFacets($facets);
+
+            // Add missing fields to non-hierarchical facets
+            $urlHelper = $results->getUrlQuery();
+            $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
+            foreach ($facets as $facetKey => &$facetItems) {
+                if (in_array($facetKey, $requestedHierarchicalFacets)) {
+                    continue;
+                }
+
+                foreach ($facetItems['list'] as &$item) {
+                    if (in_array($item['value'], ['true', 'false'])) {
+                        $item['value'] = $item['value'] === 'true' ? '1' : '0';
+                    }
+                    $href = $urlHelper->addFacet(
+                        $facetKey, $item['value'], $item['operator'], $paramArray
+                    );
+                    $item['href'] = $href;
+                    if ($facetKey === 'online_boolean') {
+                        $item['displayText']
+                            = $translate->translate('Available Online');
+                    }
+                }
+            }
+            $facets = $this->buildResultFacets($facets, $facetFilters);
         }
+        $this->filterArrayValues($facets);
 
         $records = [];
         foreach ($results->getResults() as $result) {
             $records[] = $this->getFields($result, $requestedFields);
         }
+
+        $this->filterArrayValues($records);
 
         $response = [
             'resultCount' => $results->getResultTotal(),
@@ -306,49 +347,51 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     }
 
     /**
-     * Check if an array is practically empty
-     *
-     * @param array $array Array to check
-     *
-     * @return bool
-     */
-    protected function arrayEmpty($array)
-    {
-        $result = true;
-
-        array_walk_recursive(
-            $array,
-            function ($value) use (&$result) {
-                if (!empty($value)) {
-                    $result = false;
-                }
-            }
-        );
-
-        return $result;
-    }
-
-    /**
      * Recursive function to create a facet value list for a single facet
      *
-     * @param array $list Facet items
+     * @param array $list    Facet items
+     * @param array $filters Facet filters
      *
      * @return array
      */
-    protected function buildFacetValues($list)
+    protected function buildFacetValues($list, $filters = false)
     {
         $result = [];
+        $fields = [
+            'value', 'displayText', 'count',
+            'children', 'href', 'isApplied'
+        ];
         foreach ($list as $value) {
             $resultValue = [];
+            if (!empty($value['value']) && !empty($filters)) {
+                $accept = empty($filters);
+                foreach ($filters as $filter) {
+                    $pattern = '/' . addcslashes($filter, '/') . '/';
+                    if (preg_match($pattern, $value['value']) === 1) {
+                        $accept = true;
+                        break;
+                    }
+                }
+                if (!$accept) {
+                    continue;
+                }
+            }
+
             foreach ($value as $key => $item) {
-                if (!in_array($key, ['value', 'displayText', 'count', 'children'])) {
+                if (!in_array($key, $fields)) {
                     continue;
                 }
                 if ($key == 'children') {
                     if (!empty($item)) {
-                        $resultValue[$key] = $this->buildFacetValues($item);
+                        $resultValue[$key]
+                            = $this->buildFacetValues(
+                                $item, $filters
+                            );
                     }
                 } else {
+                    if ($key == 'displayText') {
+                        $key = 'translated';
+                    }
                     $resultValue[$key] = $item;
                 }
             }
@@ -361,17 +404,40 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      * Create the result facet list
      *
      * @param array $facetList All the facet data
+     * @param array $filters   Facet filters
      *
      * @return array
      */
-    protected function buildResultFacets($facetList)
+    protected function buildResultFacets($facetList, $filters = false)
     {
         $result = [];
 
         foreach ($facetList as $facetName => $facetData) {
-            $result[$facetName] = $this->buildFacetValues($facetData['list']);
+            $result[$facetName]
+                = $this->buildFacetValues(
+                    $facetData['list'],
+                    !empty($filters[$facetName]) ? $filters[$facetName] : false
+                );
         }
         return $result;
+    }
+
+    /**
+     * Recursive function to filter out empty array fields.
+     *
+     * @param array $array Array to check
+     *
+     * @return void
+     */
+    protected function filterArrayValues(&$array)
+    {
+        foreach ($array as $key => &$value) {
+            if (is_array($value) && !empty($value)) {
+                $this->filterArrayValues($value);
+            } else if (empty($value) && $value !== 0 && $value !== '0') {
+                unset($array[$key]);
+            }
+        }
     }
 
     /**
@@ -451,11 +517,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             } else {
                 $value = $record->tryMethod($this->recordFields[$field]);
             }
-            if ((!empty($value) || $value === 0 || $value === '0')
-                && (!is_array($value) || !$this->arrayEmpty($value))
-            ) {
-                $result[$field] = $value;
-            }
+            $result[$field] = $value;
         }
         // Convert any translation aware string classes to strings
         $translate = $this->getViewRenderer()->plugin('translate');
