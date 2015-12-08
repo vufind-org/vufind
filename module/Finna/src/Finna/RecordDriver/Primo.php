@@ -80,16 +80,6 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
-     * Get full record.
-     *
-     * @return array string
-     */
-    public function getFullRecord()
-    {
-        return $this->fields['fullrecord'];
-    }
-
-    /**
      * Get an array of strings representing citation formats supported
      * by this record's data (empty if none).  For possible legal values,
      * see /application/themes/root/helpers/Citation.php, getCitation()
@@ -100,6 +90,18 @@ class Primo extends \VuFind\RecordDriver\Primo
     protected function getSupportedCitationFormats()
     {
         return ['APA', 'Chicago', 'MLA'];
+    }
+
+    /**
+     * Get unprocessed record format from fullrecord.
+     *
+     * @return array string
+     */
+    public function getType()
+    {
+        $fullrecord = simplexml_load_string($this->fields['fullrecord']);
+        return isset($fullrecord->display->type)
+            ? $fullrecord->display->type : null;
     }
 
     /**
