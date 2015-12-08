@@ -362,9 +362,7 @@ finna.layout = (function() {
         form.find('.clear-button').addClass('hidden');
         form.find('.searchForm_lookfor').focus();
       });
-      $('.autocomplete-results').click(function() {
-        $('.navbar-form').submit();
-      });
+      $('.searchForm_lookfor').bind('autocomplete:select', function() { $('.navbar-form').submit() });
 
       $('.select-type').click(function() {
         $('input[name=type]:hidden').val($(this).children().val());
