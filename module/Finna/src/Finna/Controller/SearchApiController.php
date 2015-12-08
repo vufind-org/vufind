@@ -27,8 +27,6 @@
  */
 namespace Finna\Controller;
 
-use RecursiveIteratorIterator, RecursiveArrayIterator;
-
 use VuFind\I18n\TranslatableString;
 use Finna\RecordDriver\SolrQdc;
 
