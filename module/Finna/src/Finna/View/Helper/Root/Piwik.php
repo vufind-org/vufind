@@ -121,8 +121,10 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
 
             $fullRecord = $recordDriver->getFullRecord();
             if ($fullRecord = simplexml_load_string($fullRecord)) {
-                $vars['RecordFormat']
-                    = (string)$fullRecord->display->type;
+                if (isset($fullRecord->display->type)) {
+                    $vars['RecordFormat']
+                        = (string)$fullRecord->display->type;
+                }
             }
             foreach (['RecordFormat', 'RecordData', 'RecordSource'] as $var) {
                 if (isset($vars[$var])) {
