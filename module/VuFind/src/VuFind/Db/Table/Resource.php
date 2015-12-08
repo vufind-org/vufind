@@ -72,8 +72,8 @@ class Resource extends Gateway
      * @return \VuFind\Db\Row\Resource|null Matching row if found or created, null
      * otherwise.
      */
-    public function findResource($id, $source = 'VuFind', $create = true,
-        $driver = null
+    public function findResource($id, $source = DEFAULT_SEARCH_BACKEND,
+        $create = true, $driver = null
     ) {
         if (empty($id)) {
             throw new \Exception('Resource ID cannot be empty');
@@ -110,7 +110,7 @@ class Resource extends Gateway
      *
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
-    public function findResources($ids, $source = 'VuFind')
+    public function findResources($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
         $callback = function ($select) use ($ids, $source) {
             $select->where->in('record_id', $ids);
