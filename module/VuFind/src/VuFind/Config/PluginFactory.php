@@ -113,6 +113,11 @@ class PluginFactory implements AbstractFactoryInterface
                 )
                 : [];
             foreach ($child as $section => $contents) {
+                // Ignore Parent_Config since it could cause trouble e.g. in
+                // permissions handling where each section is iterated.
+                if ($section === 'Parent_Config') {
+                    continue;
+                }
                 if (in_array($section, $overrideSections)
                     || !isset($config->$section)
                 ) {
