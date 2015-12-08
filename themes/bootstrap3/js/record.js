@@ -319,10 +319,12 @@ function recordDocReady() {
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
     document.location.href = VuFind.getPath() + '/MyResearch/StorageRetrievalRequests';
   });
-  Lightbox.addFormCallback('saveRecord', function() {
+  Lightbox.addFormCallback('saveRecord', function(html) {
     checkSaveStatuses();
     refreshTagList();
-    Lightbox.confirm(VuFind.translate('bulk_save_success'));
+    // go to list link
+    var msg = getListUrlFromHTML(html);
+    Lightbox.success(msg);
   });
   Lightbox.addFormCallback('smsRecord', function() {
     Lightbox.confirm(VuFind.translate('sms_success'));
