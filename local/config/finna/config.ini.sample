@@ -1113,7 +1113,7 @@ tags = disabled
 ; basic search (first result page only).
 [SearchTabsRecommendations]
 ; Show Primo recommendations for the Solr tab
-recommendations[Solr] = 'Primo'
+;recommendations[Solr] = 'Primo'
 ; Position of the recommendations block in the result list relative to normal
 ; results. Use position = 0 to put the recommendations to the end of the page
 ; regardless of number of records shown on page.
