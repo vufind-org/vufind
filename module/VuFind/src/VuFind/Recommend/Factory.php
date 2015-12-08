@@ -174,8 +174,11 @@ class Factory
      */
     public static function getFavoriteFacets(ServiceManager $sm)
     {
+        $parentSm = $sm->getServiceLocator();
         return new FavoriteFacets(
-            $sm->getServiceLocator()->get('VuFind\Config')
+            $parentSm->get('VuFind\Config'),
+            null,
+            $parentSm->get('VuFind\AccountCapabilities')->getTagSetting()
         );
     }
 

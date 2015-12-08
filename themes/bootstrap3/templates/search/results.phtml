@@ -111,7 +111,7 @@
         <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell"></i> <?=$this->transEsc('Get RSS Feed')?></a>
         &mdash;
         <a href="<?=$this->url('search-email')?>" class="mailSearch modal-link" id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><i class="fa fa-envelope"></i> <?=$this->transEsc('Email this Search')?></a>
-        <? if (($account = $this->auth()->getManager()) && $account->loginEnabled()): // hide save option if login disabled ?>
+        <? if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
           &mdash;
           <? if (is_numeric($this->results->getSearchId())): ?>
             <? if ($this->results->isSavedSearch()): ?>

@@ -28,6 +28,7 @@
  */
 namespace VuFindTest\Unit;
 use Behat\Mink\Driver\ZombieDriver, Behat\Mink\Session,
+    Behat\Mink\Element\Element,
     VuFind\Config\Locator as ConfigLocator,
     VuFind\Config\Writer as ConfigWriter;
 
@@ -43,18 +44,18 @@ use Behat\Mink\Driver\ZombieDriver, Behat\Mink\Session,
 abstract class MinkTestCase extends DbTestCase
 {
     /**
-     * Mink driver
-     *
-     * @var ZombieDriver
-     */
-    protected static $driver = false;
-
-    /**
      * Modified configurations
      *
      * @var array
      */
     protected $modifiedConfigs;
+
+    /**
+     * Mink session
+     *
+     * @var Session
+     */
+    protected $session;
 
     /**
      * Reconfigure VuFind for the current test.
@@ -104,18 +105,74 @@ abstract class MinkTestCase extends DbTestCase
     }
 
     /**
+     * Are we using the Zombie.js driver?
+     *
+     * @return bool
+     */
+    protected function isZombieDriver()
+    {
+        return getenv('VUFIND_MINK_DRIVER') !== 'selenium';
+    }
+
+    /**
+     * Assert an HTTP status code (if supported).
+     *
+     * @param int $code Expected status code.
+     *
+     * @return void
+     */
+    protected function assertHttpStatus($code)
+    {
+        // This assertion is not supported by Selenium.
+        if ($this->isZombieDriver()) {
+            $this->assertEquals(200, $this->getMinkSession()->getStatusCode());
+        }
+    }
+
+    /**
+     * Sleep if necessary.
+     *
+     * @param int $secs Seconds to sleep
+     *
+     * @return void
+     */
+    protected function snooze($secs = 1)
+    {
+        // Sleep is not necessary for Zombie.js.
+        if (!$this->isZombieDriver()) {
+            $snoozeMultiplier = intval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
+            if ($snoozeMultiplier < 1) {
+                $snoozeMultiplier = 1;
+            }
+            sleep($secs * $snoozeMultiplier);
+        }
+    }
+
+    /**
+     * Test an element for visibility.
+     *
+     * @param Element $element Element to test
+     *
+     * @return bool
+     */
+    protected function checkVisibility(Element $element)
+    {
+        // Zombie.js does not support visibility checks; just assume true.
+        return $this->isZombieDriver() ? true : $element->isVisible();
+    }
+
+    /**
      * Get the Mink driver, initializing it if necessary.
      *
      * @return ZombieDriver
      */
     protected function getMinkDriver()
     {
-        if (self::$driver === false) {
-            self::$driver = new ZombieDriver(
+        return !$this->isZombieDriver()
+            ? new \Behat\Mink\Driver\Selenium2Driver('firefox')
+            : new ZombieDriver(
                 new \Behat\Mink\Driver\NodeJS\Server\ZombieServer()
             );
-        }
-        return self::$driver;
     }
 
     /**
@@ -125,7 +182,24 @@ abstract class MinkTestCase extends DbTestCase
      */
     protected function getMinkSession()
     {
-        return new Session($this->getMinkDriver());
+        if (empty($this->session)) {
+            $this->session = new Session($this->getMinkDriver());
+            $this->session->start();
+        }
+        return $this->session;
+    }
+
+    /**
+     * Shut down the Mink session.
+     *
+     * @return void
+     */
+    protected function stopMinkSession()
+    {
+        if (!empty($this->session)) {
+            $this->session->stop();
+            $this->session = null;
+        }
     }
 
     /**
@@ -167,6 +241,24 @@ abstract class MinkTestCase extends DbTestCase
     }
 
     /**
+     * Wait for an element to exist, then retrieve it.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout (in ms)
+     *
+     * @return mixed
+     */
+    protected function findCss(Element $page, $selector, $timeout = 1000)
+    {
+        $session = $this->getMinkSession();
+        $session->wait($timeout, "$('$selector').length > 0");
+        $result = $page->find('css', $selector);
+        $this->assertTrue(is_object($result));
+        return $result;
+    }
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -192,6 +284,7 @@ abstract class MinkTestCase extends DbTestCase
      */
     public function tearDown()
     {
+        $this->stopMinkSession();
         $this->restoreConfigs();
     }
 
@@ -202,9 +295,6 @@ abstract class MinkTestCase extends DbTestCase
      */
     public static function tearDownAfterClass()
     {
-        // Stop the Mink driver!
-        if (self::$driver !== false) {
-            self::$driver->stop();
-        }
+        // No teardown actions at this time.
     }
 }

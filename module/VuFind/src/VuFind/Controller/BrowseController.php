@@ -538,40 +538,40 @@ class BrowseController extends AbstractBase
             return ['', $this->getAlphabetList()];
         case 'dewey':
             return [
-                'dewey-tens', $this->quoteValues(
-                    $this->getFacetList('dewey-hundreds', $category, 'index')
-                )
-            ];
+                    'dewey-tens', $this->quoteValues(
+                        $this->getFacetList('dewey-hundreds', $category, 'index')
+                    )
+                ];
         case 'lcc':
             return [
-                'callnumber-first', $this->quoteValues(
-                    $this->getFacetList('callnumber-first', $category, 'index')
-                )
-            ];
+                    'callnumber-first', $this->quoteValues(
+                        $this->getFacetList('callnumber-first', $category, 'index')
+                    )
+                ];
         case 'topic':
             return [
-                'topic_facet', $this->quoteValues(
-                    $this->getFacetList('topic_facet', $category)
-                )
-            ];
+                    'topic_facet', $this->quoteValues(
+                        $this->getFacetList('topic_facet', $category)
+                    )
+                ];
         case 'genre':
             return [
-                'genre_facet', $this->quoteValues(
-                    $this->getFacetList('genre_facet', $category)
-                )
-            ];
+                    'genre_facet', $this->quoteValues(
+                        $this->getFacetList('genre_facet', $category)
+                    )
+                ];
         case 'region':
             return [
-                'geographic_facet', $this->quoteValues(
-                    $this->getFacetList('geographic_facet', $category)
-                )
-            ];
+                    'geographic_facet', $this->quoteValues(
+                        $this->getFacetList('geographic_facet', $category)
+                    )
+                ];
         case 'era':
             return [
-                'era_facet', $this->quoteValues(
-                    $this->getFacetList('era_facet', $category)
-                )
-            ];
+                    'era_facet', $this->quoteValues(
+                        $this->getFacetList('era_facet', $category)
+                    )
+                ];
         }
     }
 

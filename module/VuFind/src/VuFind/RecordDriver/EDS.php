@@ -431,7 +431,6 @@ class EDS extends SolrDefault
         // Map xml tags to the HTML tags
         // This is just a small list, the total number of xml tags is far greater
 
-
         // Any group can be added here, but we only use Au (Author)
         // Other groups, not present here, won't be transformed to HTML links
         $allowed_searchlink_groups = ['au','su'];

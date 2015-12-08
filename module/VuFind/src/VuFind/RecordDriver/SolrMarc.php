@@ -598,9 +598,12 @@ class SolrMarc extends SolrDefault
         foreach ($fields as $field) {
             $subfields = $field->getSubfields();
             foreach ($subfields as $subfield) {
-                // Break the string into appropriate chunks,  and merge them into
-                // return array:
-                $toc = array_merge($toc, explode('--', $subfield->getData()));
+                // Break the string into appropriate chunks, filtering empty strings,
+                // and merge them into return array:
+                $toc = array_merge(
+                    $toc,
+                    array_filter(explode('--', $subfield->getData()), 'trim')
+                );
             }
         }
         return $toc;

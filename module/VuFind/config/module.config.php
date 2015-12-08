@@ -129,6 +129,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
+            'VuFind\AccountCapabilities' => 'VuFind\Service\Factory::getAccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Factory::getManager',
             'VuFind\AuthPluginManager' => 'VuFind\Service\Factory::getAuthPluginManager',
             'VuFind\AutocompletePluginManager' => 'VuFind\Service\Factory::getAutocompletePluginManager',
@@ -305,6 +306,7 @@ $config = [
                 'factories' => [
                     'amazon' => 'VuFind\Content\Covers\Factory::getAmazon',
                     'booksite' => 'VuFind\Content\Covers\Factory::getBooksite',
+                    'buchhandel' => 'VuFind\Content\Covers\Factory::getBuchhandel',
                     'contentcafe' => 'VuFind\Content\Covers\Factory::getContentCafe',
                     'syndetics' => 'VuFind\Content\Covers\Factory::getSyndetics',
                 ],
@@ -431,6 +433,7 @@ $config = [
                     'alphabrowselink' => 'VuFind\Recommend\AlphaBrowseLink',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
+                    'libraryh3lp' => 'VuFind\Recommend\Libraryh3lp',
                     'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
@@ -736,7 +739,7 @@ $staticRoutes = [
     'Error/Unavailable', 'Feedback/Email', 'Feedback/Home', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
-    'Install/FixSecurity', 'Install/FixSolr', 'Install/Home',
+    'Install/FixSecurity', 'Install/FixSolr', 'Install/FixSSLCerts', 'Install/Home',
     'Install/PerformSecurityFix', 'Install/ShowSQL',
     'LibGuides/Home', 'LibGuides/Results',
     'LibraryCards/Home', 'LibraryCards/SelectCard',
