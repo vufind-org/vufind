@@ -90,6 +90,7 @@ $config = [
         ],
         'invokables' => [
             'ajax' => 'Finna\Controller\AjaxController',
+            'cron' => 'Finna\Controller\CronController',
             'searchapi' => 'Finna\Controller\SearchApiController',
             'combined' => 'Finna\Controller\CombinedController',
             'comments' => 'Finna\Controller\CommentsController',
