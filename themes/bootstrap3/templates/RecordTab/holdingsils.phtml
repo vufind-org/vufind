@@ -132,6 +132,14 @@
                 <a class="<?=$check ? 'checkRequest' : ''?> modal-link inlineblock placehold" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
               <? endif; ?>
             <? endif; ?>
+            <? if (isset($row['item_notes'])): ?>
+              <ul class="list-group">
+                <li class="list-group-item"><?=$this->transEsc("Item Notes")?>:</li>
+                <? foreach ($row['item_notes'] as $item_note): ?>
+                <li class="list-group-item"><?=$item_note?></li>
+                <? endforeach; ?>
+              </ul>
+            <? endif; ?>
           <? endif; ?>
           <? /* Embed item structured data: library, barcode, call number */ ?>
           <? if ($row['location']): ?>
