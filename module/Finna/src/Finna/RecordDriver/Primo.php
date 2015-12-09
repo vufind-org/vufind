@@ -101,7 +101,7 @@ class Primo extends \VuFind\RecordDriver\Primo
     {
         $fullrecord = simplexml_load_string($this->fields['fullrecord']);
         return isset($fullrecord->display->type)
-            ? $fullrecord->display->type : null;
+            ? (string)$fullrecord->display->type : null;
     }
 
     /**
