@@ -160,7 +160,8 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                 $hilited = [];
 
                 foreach ($res['documents'][$i] as $fieldName => $fieldData) {
-                    $values = is_array($fieldData) ? $fieldData : [$fieldData];
+                    $isArr = is_array($fieldData);
+                    $values = $isArr ? $fieldData : [$fieldData];
                     if (isset($highlightFields[$fieldName])) {
                         $valuesHilited = [];
                         foreach ($values as $val) {
@@ -183,14 +184,13 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                         }
                     }
 
-                    foreach ($values as $val) {
+                    foreach ($values as &$val) {
                         // Strip Primo hilite-tags from record fields
                         $val = str_replace($start, '', $val);
                         $val = str_replace($end, '', $val);
-                        $res['documents'][$i][$fieldName]
-                            = is_array($fieldData)
-                            ? [$val] : $val;
                     }
+                    $res['documents'][$i][$fieldName]
+                        = $isArr ? $values : $values[0];
                 }
                 $res['documents'][$i]['highlightDetails'] = $hilited;
             }

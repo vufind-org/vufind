@@ -93,6 +93,18 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
+     * Get unprocessed record format from fullrecord.
+     *
+     * @return array string
+     */
+    public function getType()
+    {
+        $fullrecord = simplexml_load_string($this->fields['fullrecord']);
+        return isset($fullrecord->display->type)
+            ? (string)$fullrecord->display->type : null;
+    }
+
+    /**
      * Return an array of associative URL arrays with one or more of the following
      * keys:
      *

@@ -66,4 +66,14 @@ trait SearchResultsTrait
     {
         return $this->searchHash = $hash;
     }
+
+    /**
+     * Get backend ID
+     *
+     * @return string
+     */
+    public function getBackendId()
+    {
+        return $this->backendId;
+    }
 }

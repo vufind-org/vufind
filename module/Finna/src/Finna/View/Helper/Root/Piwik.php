@@ -48,6 +48,28 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
     protected $results = null;
 
     /**
+     * Translator
+     *
+     * @var \VuFind\Translator
+     */
+    protected $translator;
+
+    /**
+     * Constructor
+     *
+     * @param string|bool        $url        Piwik address (false if disabled)
+     * @param int                $siteId     Piwik site ID
+     * @param bool               $customVars Whether to track additional information
+     * in custom variables
+     * @param \VuFind\Translator $translator Translator
+     */
+    public function __construct($url, $siteId, $customVars, $translator)
+    {
+        parent::__construct($url, $siteId, $customVars);
+        $this->translator = $translator;
+    }
+
+    /**
      * Returns Piwik code (if active) or empty string if not.
      *
      * @param \Finna\Search\MetaLib\Results $results MetaLib search results
@@ -69,6 +91,141 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
         }
 
         return parent::__invoke();
+    }
+
+    /**
+     * Get Custom Variables for a Record Page
+     *
+     * @param VuFind\RecordDriver\AbstractBase $recordDriver Record driver
+     *
+     * @return array Associative array of custom variables
+     */
+    protected function getRecordPageCustomVars($recordDriver)
+    {
+        if (!$this->customVars) {
+            return [];
+        }
+
+        $vars = parent::getRecordPageCustomVars($recordDriver);
+
+        $source = $recordDriver->getSourceIdentifier();
+        $sourceMap
+            = ['Solr' => 'Local', 'Primo' => 'PCI', 'MetaLib' => 'MetaLib'];
+
+        $vars['RecordIndex']
+            = isset($sourceMap[$source]) ? $sourceMap[$source] : $source;
+
+        if ($source == 'Primo') {
+            $vars['PCIRecordSource'] = $recordDriver->getSource();
+            unset($vars['RecordInstitution']);
+
+            if ($type = $recordDriver->getType()) {
+                $vars['RecordFormat'] = $type;
+            }
+            foreach (['RecordFormat', 'RecordData', 'RecordSource'] as $var) {
+                if (isset($vars[$var])) {
+                    $vars["PCI{$var}"] = $vars[$var];
+                    unset($vars[$var]);
+                }
+            }
+        } else if ($source == 'MetaLib') {
+            $vars['MetaLibRecordSource'] = $recordDriver->getSource();
+            $vars['MetaLibRecordData'] = $vars['RecordData'];
+            unset($vars['RecordFormat']);
+            unset($vars['RecordData']);
+            unset($vars['RecordInstitution']);
+        } else {
+            $format = $formats = $recordDriver->tryMethod('getFormats');
+            if (is_array($formats)) {
+                $format = isset($formats[1]) ? $formats[1] : $formats[0];
+            }
+            $format = urldecode($format);
+            $format = rtrim($format, '/');
+            $format = preg_replace('/^\d\//', '', $format);
+            $vars['RecordFormat'] = $format;
+        }
+
+        return $vars;
+    }
+
+    /**
+     * Get Custom Variables for Search Results
+     *
+     * @param VuFind\Search\Base\Results $results Search results
+     *
+     * @return array Associative array of custom variables
+     */
+    protected function getSearchCustomVars($results)
+    {
+        if (!$this->customVars) {
+            return [];
+        }
+
+        $vars = parent::getSearchCustomVars($results);
+
+        $facetType = null;
+        $facets = [];
+        $facetTypes = [];
+        $params = $results->getParams();
+
+        if ($params->getSearchType() == 'basic') {
+            $vars['SearchHandler'] = $results->getParams()->getQuery()->getHandler();
+        }
+
+        $currentType = $vars['SearchType'];
+        $backendId = $results->getBackendId();
+
+        if ($backendId === 'MetaLib') {
+            unset($vars['Facets']);
+            unset($vars['FacetTypes']);
+            unset($vars['View']);
+            unset($vars['Limit']);
+            unset($vars['Sort']);
+
+            $vars['SearchType'] = 'MetaLib';
+            if ($currentType == 'advanced') {
+                $vars['SearchType'] = 'MetaLibAdvanced';
+            }
+
+            return $vars;
+        } else if ($backendId == 'Primo') {
+            unset($vars['View']);
+            $vars['SearchType'] = 'PCI';
+            if ($currentType == 'advanced') {
+                $vars['SearchType'] = 'PCIAdvanced';
+            }
+        }
+
+        foreach ($params->getFilterList() as $filterType => $filters) {
+            $facetType = null;
+            foreach ($filters as $filter) {
+                if (!$facetType) {
+                    $facetTypes[] = $filter['field'];
+                }
+                $parts = $filter['value'];
+                if ($backendId === 'Solr') {
+                    $parts = explode('/', $parts);
+                    $parts = array_slice($parts, 1, -1);
+
+                    $facetLevels = [];
+                    for ($i = 0; $i < count($parts); $i++) {
+                        $facetLevel = "$i/";
+                        for ($j = 0; $j <= $i; $j++) {
+                            $facetLevel .= $parts[$j] . '/';
+                        }
+                        $facetLevels[] = $this->translator->translate($facetLevel);
+                    }
+                    $facetStr = implode(' > ', $facetLevels);
+                } else {
+                    $facetStr = $parts;
+                }
+                $facets[] = $filter['field'] . '|' . $facetStr;
+            }
+        }
+        $vars['Facets'] = implode("\t", $facets);
+        $vars['FacetTypes'] = implode("\t", $facetTypes);
+
+        return $vars;
     }
 
     /**

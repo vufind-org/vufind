@@ -320,7 +320,8 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         $customVars = isset($config->Piwik->custom_variables)
             ? $config->Piwik->custom_variables
             : false;
-        return new Piwik($url, $siteId, $customVars);
+        $translator = $sm->getServiceLocator()->get('VuFind\Translator');
+        return new Piwik($url, $siteId, $customVars, $translator);
     }
 
     /**
