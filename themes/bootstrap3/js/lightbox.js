@@ -406,7 +406,7 @@ var Lightbox = {
 };
 
 function getListUrlFromHTML(html) {
-  var fakePage = $('<div>'+html+'</div>')
+  var fakePage = $('<div>'+html+'</div>');
   var listUrl = fakePage.find('a.gotolist').attr('href');
   if (typeof listUrl === 'undefined') {
     var listID = fakePage.find('[name="listID"]');

@@ -170,9 +170,8 @@
           case 145:  // scroll lock
           case 19:   // pause/break
             return;
-          default: {
+          default:
             search(input, element);
-          }
         }
       });
       input.keydown(function(event) {
