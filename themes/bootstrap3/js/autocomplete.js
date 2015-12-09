@@ -12,9 +12,12 @@
 
     function align(input, element) {
       var offset = input[0].getBoundingClientRect();
+      var scrollTop = document.documentElement
+        ? document.documentElement.scrollTop
+        : document.body.scrollTop;
       element.css({
         position: 'absolute',
-        top: offset.top + offset.height + document.body.scrollTop,
+        top: offset.top + offset.height + scrollTop,
         left: offset.left,
         minWidth: offset.width,
         maxWidth: input.closest('form').width(),
@@ -61,7 +64,7 @@
             .mouseover(function() {
               $.fn.autocomplete.element.find('.item.selected').removeClass('selected');
               $(this).addClass('selected');
-              input.data('selected', this.dataset.index);
+              input.data('selected', $(this).data('index'));
             });
         if (typeof data[i].description !== 'undefined') {
           item.append($('<small/>').text(data[i].description));
