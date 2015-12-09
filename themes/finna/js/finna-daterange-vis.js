@@ -357,15 +357,6 @@ finna.dateRangeVis = (function() {
         var fromElement = form.find('.year-from');
         var toElement = form.find('.year-to');
         
-        var type = null;
-        var isSolr = backend == 'solr';
-        if (isSolr) {
-            var typeElement = form.find('input[type=radio][name=type]:checked');
-            if (typeElement.length) {
-                type = typeElement.val();
-            }
-        }
-
         var params = {
            form: form,
            from: fromElement,
@@ -380,6 +371,22 @@ finna.dateRangeVis = (function() {
         form.submit(function(e) {
             e.preventDefault();
 
+            if (typeof form[0].checkValidity == 'function') {
+                // This is for Safari, which doesn't validate forms on submit
+                if (!form[0].checkValidity()) {
+                    return;
+                }
+            }
+            
+            var isSolr = backend == 'solr';
+            var type = null;
+            if (isSolr) {
+                var typeElement = form.find('input[type=radio][name=type]:checked');
+                if (typeElement.length) {
+                    type = typeElement.val();
+                }
+            }
+            
             // Get dates, build query
             var from = fromElement.val();
             var to = toElement.val();
@@ -392,8 +399,8 @@ finna.dateRangeVis = (function() {
 
             var query = action;
 
-            fromElement.removeClass('error');
-            toElement.removeClass('error');
+            fromElement.removeClass('invalid');
+            toElement.removeClass('invalid');
             query += 'filter[]=' + facetField + ':';
 
             // Require numerical values
@@ -402,7 +409,7 @@ finna.dateRangeVis = (function() {
                     query = action;
                 } else if (from == '') { // only end date set
                     if (type == 'within') {
-                        fromElement.addClass('error');
+                        fromElement.addClass('invalid');
                         return false;
                     }
                     to = parseInt(to, 10);
@@ -411,7 +418,7 @@ finna.dateRangeVis = (function() {
                     query += '+TO+' + padZeros(to) + ']"';
                 } else if (to == '')  { // only start date set
                     if (type == 'within') {
-                        toElement.addClass('error');
+                        toElement.addClass('invalid');
                         return false;
                     }
                     from = parseInt(from, 10);
@@ -419,8 +426,8 @@ finna.dateRangeVis = (function() {
                     query += isSolr ? '*' : (from <= 2100 ? 2100 : from+100);
                     query += ']"';
                 } else if (parseInt(from, 10) > parseInt(to, 10)) {
-                    fromElement.addClass('error');
-                    toElement.addClass('error');
+                    fromElement.addClass('invalid');
+                    toElement.addClass('invalid');
                     return false;
                 } else { // both dates set
                     query += '"['+padZeros(from)+' TO '+padZeros(to)+']"';

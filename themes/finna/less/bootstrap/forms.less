@@ -150,6 +150,10 @@ output {
   &:invalid {
     box-shadow: 0 0 2px 1px rgba(255, 0, 0, 0.9);
   }
+  // This is for IE. Keep separate from :invalid so that IE does not drop it
+  &.invalid {
+    box-shadow: 0 0 2px 1px rgba(255, 0, 0, 0.9);
+  }
 }
 
 

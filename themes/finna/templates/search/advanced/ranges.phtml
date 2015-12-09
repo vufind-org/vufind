@@ -2,7 +2,6 @@
 <? if (isset($this->ranges) && !empty($this->ranges)): ?>
   <? $params = $this->searchParams($this->searchClassId); $params->activateAllFacets(); ?>
   <? foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
-    <? $extraInputAttribs = ($current['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
     <fieldset>
       <div class="row">
         <div class="col-md-2">
@@ -19,9 +18,9 @@
             <? if (isset($current['rangeType'])): ?>
                <input type="hidden" name="<?= $current['field'] ?>_type" value="<?= $current['rangeType'] ?>"/>
             <? endif ?>
-            <input type="number" class="form-control form-inline input-year" pattern="-?\d{0,4}" name="<?=$escField?>from" id="<?=$escField?>from" value="<?=isset($current['values'][0])?$this->escapeHtmlAttr($current['values'][0]):''?>" size="5" class="form-control form-inline" <?=$extraInputAttribs?>/>
+            <input type="number" class="form-control form-inline input-year" id="<?=$escField?>from" value="<?=isset($current['values'][0])?$this->escapeHtmlAttr($current['values'][0]):''?>" size="5"/>
             <span class="divider"> - </span>
-            <input type="number" class="form-control form-inline input-year" pattern="-?\d{0,4}" name="<?=$escField?>to" id="<?=$escField?>to" value="<?=isset($current['values'][1])?$this->escapeHtmlAttr($current['values'][1]):''?>" size="5" class="form-control form-inline" <?=$extraInputAttribs?>/>
+            <input type="number" class="form-control form-inline input-year" id="<?=$escField?>to" value="<?=isset($current['values'][1])?$this->escapeHtmlAttr($current['values'][1]):''?>" size="5"/>
           </div>
         </div>
         <? if ($current['type'] == 'date'): ?>
@@ -41,8 +40,8 @@
 $(document).ready(function() {
   var fillTexts = function() {
     var v = {$escField}dateSlider.getValue();
-    $('#${escField}from').val(v[0]);
-    $('#${escField}to').val(v[1]);
+    $('#${escField}from').val(v[0]).change();
+    $('#${escField}to').val(v[1]).change();
   };
   var {$escField}dateSlider = $('#{$escField}dateSlider')
     .slider({
@@ -54,7 +53,7 @@ $(document).ready(function() {
 		     return value[0]+' - '+value[1];
 	     },
     })
-    .on('slide', fillTexts)
+    .change(fillTexts)
     .data('slider');
   {$init}
 });
