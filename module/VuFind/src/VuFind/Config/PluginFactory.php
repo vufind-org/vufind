@@ -113,6 +113,13 @@ class PluginFactory implements AbstractFactoryInterface
                 )
                 : [];
             foreach ($child as $section => $contents) {
+                // Omit Parent_Config from the returned configuration; it is only
+                // needed during loading, and its presence will cause problems in
+                // config files that iterate through all of the sections (e.g.
+                // combined.ini, permissions.ini).
+                if ($section === 'Parent_Config') {
+                    continue;
+                }
                 if (in_array($section, $overrideSections)
                     || !isset($config->$section)
                 ) {

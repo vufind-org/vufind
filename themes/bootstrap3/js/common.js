@@ -1,13 +1,16 @@
 /*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape, VuFind */
 
-function VuFindNamespace(p, s) {
+function VuFindNamespace(p, s, dsb) {
+  var defaultSearchBackend = dsb;
   var path = p;
   var strings = s;
 
+  var getDefaultSearchBackend = function() { return defaultSearchBackend; };
   var getPath = function() { return path; };
   var translate = function(op) { return strings[op] || op; };
 
   return {
+    getDefaultSearchBackend: getDefaultSearchBackend,
     getPath: getPath,
     translate: translate
   };
