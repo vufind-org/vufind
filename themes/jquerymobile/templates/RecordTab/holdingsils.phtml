@@ -67,6 +67,16 @@
           <? endforeach; ?>
         </td>
       </tr>
+    <? elseif ($textField == 'holdings_notes' && isset($holding['notes'])): ?>
+      <? // Display content of deprecated notes as holdings_notes is empty ?>
+      <tr>
+        <th><?=$this->transEsc(ucfirst($textField))?>:</th>
+        <td>
+          <? foreach ($holding['notes'] as $current): ?>
+            <?=$this->escapeHtml($current)?><br/>
+          <? endforeach; ?>
+        </td>
+      </tr>
     <? endif; ?>
   <? endforeach; ?>
   <? foreach ($holding['items'] as $row): ?>
