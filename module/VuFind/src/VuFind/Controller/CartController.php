@@ -395,7 +395,7 @@ class CartController extends AbstractBase
             ];
             $this->flashMessenger()->addMessage($message, 'success');
             if (!empty($list)) {
-                return $listUrl;
+                return $this->redirect()->toUrl($listUrl);
             } else {
                 return $this->redirectToSource();
             }
