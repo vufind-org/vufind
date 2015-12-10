@@ -129,16 +129,29 @@ class Holds
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
                 foreach ($textFieldNames as $fieldName) {
+                    if (in_array($fieldName, ['notes', 'holdings_notes'])) {
+                        if (empty($item[$fieldName])) {
+                            // begin aliasing
+                            if ($fieldName == 'notes' && !empty($item['holdings_notes'])) {
+                                // using notes as alias for holdings_notes
+                                $item[$fieldName] = $item['holdings_notes'];
+                            } elseif ($fieldName == 'holdings_notes' && !empty($item['notes'])) {
+                                // using holdings_notes as alias for notes
+                                $item[$fieldName] = $item['notes'];
+                            }
+                        }
+                    }
+
                     if (!empty($item[$fieldName])) {
                         $fields = is_array($item[$fieldName])
                             ? $item[$fieldName]
                             : [$item[$fieldName]];
 
                         foreach ($fields as $field) {
-                            if (empty($retVal[$groupKey][$fieldName])
-                                || !in_array($field, $retVal[$groupKey][$fieldName])
+                            if (empty($retVal[$groupKey]['textfields'][$fieldName])
+                                || !in_array($field, $retVal[$groupKey]['textfields'][$fieldName])
                             ) {
-                                $retVal[$groupKey][$fieldName][] = $field;
+                                $retVal[$groupKey]['textfields'][$fieldName][] = $field;
                             }
                         }
                     }

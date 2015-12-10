@@ -68,29 +68,17 @@
     </td>
   </tr>
   <? endif; ?>
-  <? foreach ($this->ils()->getHoldingsTextFieldNames() as $textField): ?>
-    <? if (!empty($holding[$textField])): ?>
-      <tr>
-        <? // Translation for summary is a special case for backwards-compatibility ?>
-        <th><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>:</th>
-        <td>
-          <? foreach ($holding[$textField] as $current): ?>
-            <?=$this->escapeHtml($current)?><br/>
-          <? endforeach; ?>
-        </td>
-      </tr>
-    <? elseif ($textField == 'holdings_notes' && isset($holding['notes'])): ?>
-      <? // Display content of deprecated notes as holdings_notes is empty ?>
-      <tr>
-        <th><?=$this->transEsc(ucfirst($textField))?>:</th>
-        <td>
-          <? foreach ($holding['notes'] as $current): ?>
-            <?=$this->escapeHtml($current)?><br/>
-          <? endforeach; ?>
-        </td>
-      </tr>
-    <? endif; ?>
-  <? endforeach; ?>
+  <? if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+    <tr>
+      <? // Translation for summary is a special case for backwards-compatibility ?>
+      <th><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
+      <td>
+        <? foreach ($textFields as $current): ?>
+          <?=$this->escapeHtml($current)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endforeach; endif; ?>
   <? foreach ($holding['items'] as $row): ?>
     <? $check = (isset($row['check']) && $row['check']); ?>
     <? $checkStorageRetrievalRequest = (isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest']); ?>
