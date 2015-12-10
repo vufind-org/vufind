@@ -363,8 +363,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         ];
         foreach ($list as $value) {
             $resultValue = [];
-            if (!empty($value['value']) && !empty($filters)) {
-            }
             if ($filters && $this->discardFacetItem($value, $filters)) {
                 continue;
             }
