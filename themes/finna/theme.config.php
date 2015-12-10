@@ -8,6 +8,7 @@ return array(
             'combined' => 'Finna\View\Helper\Root\Factory::getCombined',
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
+            'fileSrc' => 'Finna\View\Helper\Root\Factory::getFileSrc',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
             'headTitle' => 'Finna\View\Helper\Root\Factory::getHeadTitle',
             'holdingsDetailsMode' => 'Finna\View\Helper\Root\Factory::getHoldingsDetailsMode',

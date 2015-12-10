@@ -339,6 +339,20 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the FileSrc helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ImageSrc
+     */
+    public static function getFileSrc(ServiceManager $sm)
+    {
+        return new FileSrc(
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+        );
+    }
+
+    /**
      * Construct the Organisations list view helper.
      *
      * @param ServiceManager $sm Service manager.
