@@ -1039,7 +1039,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             $sqlStmt = $this->db->prepare($sql['string']);
             $sqlStmt->execute($sql['bind']);
         } catch (PDOException $e) {
-            return new PEAR_Error($e->getMessage());
+            throw new ILSException($e->getMessage());
         }
 
         $groups = [];

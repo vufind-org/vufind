@@ -1,12 +1,29 @@
+/*global console*/
 /**
  * vufind.typeahead.js 0.8
  * ~ @crhallberg
  */
 (function ( $ ) {
+  var xhr = false;
 
   $.fn.autocomplete = function(settings) {
 
     var options = $.extend( {}, $.fn.autocomplete.options, settings );
+
+    function align(input, element) {
+      var offset = input[0].getBoundingClientRect();
+      var scrollTop = document.documentElement
+        ? document.documentElement.scrollTop
+        : document.body.scrollTop;
+      element.css({
+        position: 'absolute',
+        top: offset.top + offset.height + scrollTop,
+        left: offset.left,
+        minWidth: offset.width,
+        maxWidth: input.closest('form').width(),
+        zIndex: 50
+      });
+    }
 
     function show() {
       $.fn.autocomplete.element.removeClass(options.hidingClass);
@@ -47,7 +64,7 @@
             .mouseover(function() {
               $.fn.autocomplete.element.find('.item.selected').removeClass('selected');
               $(this).addClass('selected');
-              input.data('selected', this.dataset.index);
+              input.data('selected', $(this).data('index'));
             });
         if (typeof data[i].description !== 'undefined') {
           item.append($('<small/>').text(data[i].description));
@@ -62,7 +79,7 @@
     }
 
     function search(input, element) {
-      if (xhr) xhr.abort();
+      if (xhr) { xhr.abort(); }
       if (input.val().length >= options.minLength) {
         element.html('<i class="item loading">'+options.loadingString+'</i>');
         show();
@@ -91,18 +108,6 @@
       } else {
         hide();
       }
-    }
-
-    function align(input, element) {
-      var offset = input[0].getBoundingClientRect();
-      element.css({
-        position: 'absolute',
-        top: offset.top + offset.height + document.body.scrollTop,
-        left: offset.left,
-        minWidth: offset.width,
-        maxWidth: input.closest('form').width(),
-        zIndex: 50
-      });
     }
 
     function setup(input, element) {
@@ -166,12 +171,10 @@
           case 45:   // insert
           case 144:  // num lock
           case 145:  // scroll lock
-          case 19: { // pause/break
+          case 19:   // pause/break
             return;
-          }
-          default: {
+          default:
             search(input, element);
-          }
         }
       });
       input.keydown(function(event) {
@@ -268,7 +271,6 @@
     });
   };
 
-  var xhr = false;
   var timer = false;
   if (typeof $.fn.autocomplete.cache === 'undefined') {
     $.fn.autocomplete.cache = {};
@@ -284,7 +286,7 @@
     };
     $.fn.autocomplete.ajax = function(ops) {
       if (timer) clearTimeout(timer);
-      if (xhr) xhr.abort();
+      if (xhr) { xhr.abort(); }
       timer = setTimeout(
         function() { xhr = $.ajax(ops); },
         $.fn.autocomplete.options.ajaxDelay
