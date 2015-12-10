@@ -15,6 +15,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import java.net.URI;
+import java.net.URL;
+
 
 // define the base level indexer so that its methods can be called from the script.
 // note that the SolrIndexer code will set this value before the script methods are called.
@@ -251,10 +254,24 @@ public String harvestWithTika(url, scraperPath) {
  * @return String The full-text
  */
 public String harvestWithParser(url, settings) {
+    url = urlEncode(url);
     if (settings[0].equals("aperture")) {
         return harvestWithAperture(url, settings[1]);
     } else if (settings[0].equals("tika")) {
         return harvestWithTika(url, settings[1]);
     }
     return null;
+}
+
+/**
+ * Ensure the url is correctly encoded
+ *
+ * @param String The url extracted from the MARC tag.
+ * @return String The correctly encoded url
+ */
+public String urlEncode(url) {
+    String decodedUrl = URLDecoder.decode(url, "UTF-8");
+    URL url= new URL(decodedUrl);
+    URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+    return uri.toASCIIString();
 }
