@@ -1,12 +1,26 @@
+/*global console*/
 /**
- * vufind.typeahead.js 0.6
+ * vufind.typeahead.js 0.10
  * ~ @crhallberg
  */
 (function ( $ ) {
+  var xhr = false;
 
   $.fn.autocomplete = function(settings) {
 
     var options = $.extend( {}, $.fn.autocomplete.options, settings );
+
+    function align(input, element) {
+      var position = input.position();
+      element.css({
+        position: 'absolute',
+        top: position.top + input.outerHeight(),
+        left: position.left,
+        minWidth: input.width(),
+        maxWidth: Math.max(input.width(), input.closest('form').width()),
+        zIndex: 50
+      });
+    }
 
     function show() {
       $.fn.autocomplete.element.removeClass(options.hidingClass);
@@ -47,7 +61,7 @@
             .mouseover(function() {
               $.fn.autocomplete.element.find('.item.selected').removeClass('selected');
               $(this).addClass('selected');
-              input.data('selected', this.dataset.index);
+              input.data('selected', $(this).data('index'));
             });
         if (typeof data[i].description !== 'undefined') {
           item.append($('<small/>').text(data[i].description));
@@ -56,13 +70,13 @@
       }
       $.fn.autocomplete.element.html(shell);
       $.fn.autocomplete.element.find('.item').mousedown(function() {
-        populate($(this).attr('data-value'), input, {mouse: true})
+        populate($(this).attr('data-value'), input, {mouse: true});
       });
       align(input, $.fn.autocomplete.element);
     }
 
     function search(input, element) {
-      if (xhr) xhr.abort();
+      if (xhr) { xhr.abort(); }
       if (input.val().length >= options.minLength) {
         element.html('<i class="item loading">'+options.loadingString+'</i>');
         show();
@@ -91,18 +105,6 @@
       } else {
         hide();
       }
-    }
-
-    function align(input, element) {
-      var position = input.position();
-      element.css({
-        position: 'absolute',
-        top: position.top + input.outerHeight(), 
-        left: position.left,
-        minWidth: input.width() / 2,
-        maxWidth: Math.max(input.width(), input.closest('form').width()),  
-        zIndex: 50
-      });
     }
 
     function setup(input, element) {
@@ -166,12 +168,10 @@
           case 45:   // insert
           case 144:  // num lock
           case 145:  // scroll lock
-          case 19: { // pause/break
+          case 19:   // pause/break
             return;
-          }
-          default: {
+          default:
             search(input, element);
-          }
         }
       });
       input.keydown(function(event) {
@@ -268,7 +268,6 @@
     });
   };
 
-  var xhr = false;
   var timer = false;
   if (typeof $.fn.autocomplete.cache === 'undefined') {
     $.fn.autocomplete.cache = {};
@@ -284,7 +283,7 @@
     };
     $.fn.autocomplete.ajax = function(ops) {
       if (timer) clearTimeout(timer);
-      if (xhr) xhr.abort();
+      if (xhr) { xhr.abort(); }
       timer = setTimeout(
         function() { xhr = $.ajax(ops); },
         $.fn.autocomplete.options.ajaxDelay
