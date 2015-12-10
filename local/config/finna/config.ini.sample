@@ -211,6 +211,17 @@ title_level_holds_mode = "driver"
 ; - location_name (Use location name)
 holdings_grouping = holdings_id
 
+; Text fields such as notes gathered from items to be displayed in each
+; holdings group in the display order.
+; The default list is 'notes', 'summary', 'supplements' and 'indexes'.
+; Note that displayed information depends on what the ILS driver returns.
+;holdings_text_fields[] = 'notes'
+;holdings_text_fields[] = 'summary'
+
+; Whether support for multiple library cards is enabled. Default is false.
+library_cards = true
+
+
 ; This section allows you to determine how the users will authenticate.
 ; You can use an LDAP directory, the local ILS, the VuFind database (Database),
 ; Shibboleth, SIP2, CAS or some combination of these (via the MultiAuth option).
