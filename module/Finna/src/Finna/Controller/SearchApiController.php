@@ -364,17 +364,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         foreach ($list as $value) {
             $resultValue = [];
             if (!empty($value['value']) && !empty($filters)) {
-                $accept = empty($filters);
-                foreach ($filters as $filter) {
-                    $pattern = '/' . addcslashes($filter, '/') . '/';
-                    if (preg_match($pattern, $value['value']) === 1) {
-                        $accept = true;
-                        break;
-                    }
-                }
-                if (!$accept) {
-                    continue;
-                }
+            }
+            if ($filters && $this->discardFacetItem($value, $filters)) {
+                continue;
             }
 
             foreach ($value as $key => $item) {
@@ -438,6 +430,34 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 unset($array[$key]);
             }
         }
+    }
+
+    /**
+     * Check if facet item should be discarded from the output.
+     *
+     * @param array $facet   Facet
+     * @param array $filters Facet filters
+     *
+     * @return boolean true
+     */
+    protected function discardFacetItem($facet, $filters)
+    {
+        $discard = true;
+        array_walk_recursive(
+            $facet,
+            function ($item, $key) use (&$discard, $filters) {
+                if ($discard && $key == 'value') {
+                    foreach ($filters as $filter) {
+                        $pattern = '/' . addcslashes($filter, '/') . '/';
+                        if (preg_match($pattern, $item) === 1) {
+                            $discard = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        );
+        return $discard;
     }
 
     /**
