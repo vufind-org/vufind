@@ -147,16 +147,10 @@ class Holds
                     }
 
                     if (!empty($item[$fieldName])) {
-                        $fields = is_array($item[$fieldName])
-                            ? $item[$fieldName]
-                            : [$item[$fieldName]];
-
-                        foreach ($fields as $field) {
-                            if (empty($retVal[$groupKey]['textfields'][$fieldName])
-                                || !in_array($field, $retVal[$groupKey]['textfields'][$fieldName])
-                            ) {
-                                $retVal[$groupKey]['textfields'][$fieldName][]
-                                    = $field;
+                        $targetRef = & $retVal[$groupKey]['textfields'][$fieldName];
+                        foreach ((array)$item[$fieldName] as $field) {
+                            if (empty($targetRef) || !in_array($field, $targetRef)) {
+                                $targetRef[] = $field;
                             }
                         }
                     }
