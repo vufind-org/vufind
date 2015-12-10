@@ -803,7 +803,7 @@ class DAIA extends AbstractBase implements
         $return['availability']    = $availability;
         $return['duedate']         = $duedate;
         $return['requests_placed'] = $queue;
-        $return['services']        = $services;
+        $return['services']        = $this->getAvailableItemServices($services);
 
         return $return;
     }
@@ -918,6 +918,29 @@ class DAIA extends AbstractBase implements
             }
         }
         return '';
+    }
+
+    /**
+     * Returns the available services of the given set of available and unavailable
+     * services
+     *
+     * @param array $services Array with DAIA services available/unavailable
+     *
+     * @return array
+     */
+    protected function getAvailableItemServices($services)
+    {
+        $availableServices = [];
+        if (isset($services['available'])) {
+            foreach ($services['available'] as $service) {
+                if (!isset($services['unavailable'])
+                    || !in_array($service, $services['unavailable'])
+                ) {
+                    array_push($availableServices, $service);
+                }
+            }
+        }
+        return $availableServices;
     }
 
     /**

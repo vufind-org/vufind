@@ -61,7 +61,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'callnumber' => "ABC 12",
                 'location' => "Example Library for DAIA Tests - Abteilung III",
                 'locationhref' => false,
-                'services' => ['available' => ['presentation', 'loan']]
+                'services' => ['presentation', 'loan']
             ],
         1 =>
             [
@@ -78,7 +78,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'callnumber' => "DEF 34",
                 'location' => "Example Library for DAIA Tests - Abteilung III",
                 'locationhref' => false,
-                'services' => ['available' => ['presentation', 'loan']]
+                'services' => ['presentation', 'loan']
             ],
         2 =>
             [
@@ -95,7 +95,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'callnumber' => "GHI 56",
                 'location' => "Example Library for DAIA Tests - Abteilung III",
                 'locationhref' => false,
-                'services' => ['unavailable' => ['presentation', 'loan']]
+                'services' => []
             ],
     ];
 
