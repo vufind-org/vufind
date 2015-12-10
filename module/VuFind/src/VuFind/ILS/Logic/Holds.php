@@ -132,10 +132,14 @@ class Holds
                     if (in_array($fieldName, ['notes', 'holdings_notes'])) {
                         if (empty($item[$fieldName])) {
                             // begin aliasing
-                            if ($fieldName == 'notes' && !empty($item['holdings_notes'])) {
+                            if ($fieldName == 'notes'
+                                && !empty($item['holdings_notes'])
+                            ) {
                                 // using notes as alias for holdings_notes
                                 $item[$fieldName] = $item['holdings_notes'];
-                            } elseif ($fieldName == 'holdings_notes' && !empty($item['notes'])) {
+                            } elseif ($fieldName == 'holdings_notes'
+                                && !empty($item['notes'])
+                            ) {
                                 // using holdings_notes as alias for notes
                                 $item[$fieldName] = $item['notes'];
                             }
@@ -151,7 +155,8 @@ class Holds
                             if (empty($retVal[$groupKey]['textfields'][$fieldName])
                                 || !in_array($field, $retVal[$groupKey]['textfields'][$fieldName])
                             ) {
-                                $retVal[$groupKey]['textfields'][$fieldName][] = $field;
+                                $retVal[$groupKey]['textfields'][$fieldName][]
+                                    = $field;
                             }
                         }
                     }
