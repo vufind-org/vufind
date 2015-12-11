@@ -16,6 +16,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+
 // define the base level indexer so that its methods can be called from the script.
 // note that the SolrIndexer code will set this value before the script methods are called.
 org.solrmarc.index.SolrIndexer indexer = null;
@@ -86,7 +87,7 @@ public String getFulltext(Record record, String fieldSpec, String extension) {
     if (fields != null) {
         while(fieldsIter.hasNext()) {
             // Get the current string to work on:
-            String current = fieldsIter.next();
+            String current = fieldsIter.next().replaceAll(" ", "%20");
             // Filter by file extension
             if (extension == null || current.endsWith(extension)) {
                 // Load the parser output for each tag into a string
