@@ -309,9 +309,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 }
 
                 foreach ($facetItems['list'] as &$item) {
-                    if (in_array($item['value'], ['true', 'false'])) {
-                        $item['value'] = $item['value'] === 'true' ? '1' : '0';
-                    }
                     $href = $urlHelper->addFacet(
                         $facetKey, $item['value'], $item['operator'], $paramArray
                     );
@@ -423,7 +420,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     }
 
     /**
-     * Recursive function to filter out empty array fields.
+     * Recursive function to filter out empty array fields
+     * and convert boolean values to 0/1.
      *
      * @param array $array Array to check
      *
@@ -436,6 +434,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 $this->filterArrayValues($value);
             } else if (empty($value) && $value !== 0 && $value !== '0') {
                 unset($array[$key]);
+            } else if (is_bool($value) || $value === 'true' || $value === 'false') {
+                $array[$key] = $value === true || $value === 'true' ? 1 : 0;
             }
         }
     }
