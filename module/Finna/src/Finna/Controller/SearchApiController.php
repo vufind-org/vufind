@@ -199,6 +199,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             $records[] = $this->getFields($result, $requestedFields);
         }
 
+        $this->filterArrayValues($records);
+
         $response = [
             'resultCount' => count($results)
         ];
@@ -432,7 +434,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         foreach ($array as $key => &$value) {
             if (is_array($value) && !empty($value)) {
                 $this->filterArrayValues($value);
-            } else if (empty($value) && $value !== 0 && $value !== '0') {
+            } else if ((is_array($value) && empty($value))
+                || (is_numeric($value) && (int)$value !== 0)
+                || (is_bool($value) && !$value)
+                || $value === null || $value === ''
+            ) {
                 unset($array[$key]);
             } else if (is_bool($value) || $value === 'true' || $value === 'false') {
                 $array[$key] = $value === true || $value === 'true' ? 1 : 0;
