@@ -422,8 +422,10 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     }
 
     /**
-     * Recursive function to filter out empty array fields
-     * and convert boolean values to 0/1.
+     * Recursive function to filter array fields:
+     * - remove empty values
+     * - convert boolean values to 0/1
+     * - force numerically indexed (non-associative) arrays to have numeric keys.
      *
      * @param array $array Array to check
      *
@@ -433,6 +435,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     {
         foreach ($array as $key => &$value) {
             if (is_array($value) && !empty($value)) {
+                $isNumeric
+                    = !(bool)count(array_filter(array_keys($value), 'is_string'));
+                if ($isNumeric) {
+                    $value = array_values($value);
+                }
                 $this->filterArrayValues($value);
             } else if ((is_array($value) && empty($value))
                 || (is_numeric($value) && (int)$value !== 0)
