@@ -241,7 +241,6 @@ class Results extends \VuFind\Search\Base\Results
         // Loop through every field returned by the result set
         $fieldFacets = $this->responseFacets->getFieldFacets();
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
-        $delimitedFacets = $this->getOptions()->getDelimitedFacets();
         foreach (array_keys($filter) as $field) {
             $data = isset($fieldFacets[$field]) ? $fieldFacets[$field] : [];
             // Skip empty arrays:
@@ -263,13 +262,11 @@ class Results extends \VuFind\Search\Base\Results
             foreach ($data as $value => $count) {
                 // Initialize the array of data about the current facet:
                 $currentSettings = [];
-                $currentSettings['value'] = $displayText = $value;
-                if (in_array($field, $delimitedFacets)) {
-                    $displayText
-                        = $this->getParams()->getDisplayTextFromDelimitedFacet(
-                            $displayText
-                        );
-                }
+                $currentSettings['value'] = $value;
+
+                $displayText = $this->getParams()
+                    ->checkForDelimitedFacetDisplayText($field, $value);
+
                 $currentSettings['displayText'] = $translate
                     ? $this->translate("$translateTextDomain::$displayText")
                     : $displayText;

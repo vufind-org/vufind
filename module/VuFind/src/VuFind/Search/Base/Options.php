@@ -143,11 +143,11 @@ abstract class Options implements TranslatorAwareInterface
     protected $viewOptions = [];
 
     /**
-     * Delimeter used for delimited facets
+     * Default delimiter used for delimited facets
      *
      * @var string
      */
-    protected $delimiter;
+    protected $defaultFacetDelimiter;
 
     /**
      * Facet settings
@@ -478,25 +478,26 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-    * Returns the delimeter value.
+    * Returns the defaultFacetDelimiter value.
     *
     * @return string
     */
-    public function getDelimeter()
+    public function getDefaultFacetDelimiter()
     {
-        return $this->delimiter;
+        return $this->defaultFacetDelimiter;
     }
 
     /**
-    * Set the delimiter value.
+    * Set the defaultFacetDelimiter value.
     *
-    * @param string $delimiter A delimiter to be used with delimited facets
+    * @param string $defaultFacetDelimiter A default delimiter to be used with
+    * delimited facets
     *
     * @return void
     */
-    public function setDelimiter($delimiter)
+    public function setDefaultFacetDelimiter($defaultFacetDelimiter)
     {
-        $this->delimiter = $delimiter;
+        $this->defaultFacetDelimiter = $defaultFacetDelimiter;
     }
 
     /**

@@ -938,17 +938,43 @@ class Params implements ServiceLocatorAwareInterface
     /**
      * Get Display Text from Delimited Facet
      *
-     * @param string $facet The delimited facet value
+     * @param string $facet     The delimited facet value
+     * @param string $delimiter The delimiter to use
      *
      * @return string
      */
-    public function getDisplayTextFromDelimitedFacet($facet)
+    public function getDisplayTextFromDelimitedFacet($facet, $delimiter)
     {
-        $delimiter = $this->getOptions()->getDelimeter();
         if (false !== strstr($facet, $delimiter)) {
             return current(explode($delimiter, $facet, 2));
         }
         return $facet;
+    }
+
+    /**
+     * Check for delimited facets
+     *
+     * @param string $field
+     * @param string $displayText
+     *
+     * @return string
+     */
+    protected function checkForDelimitedFacetDisplayText($field, $displayText)
+    {
+        $delimitedFacetValues = $this->getOptions()->getDelimitedFacets();
+        foreach ($delimitedFacetValues as $delimitedFacetValue) {
+            if (false !== strstr($delimitedFacetValue, $field)) {
+
+                $delimiter = false !== ststr($delimitedFacetValue, "|")
+                    ? end(explode("|", $delimitedFacetValue))
+                    : $this->getDefaultFacetDelimiter();
+
+                $displayText = $this->getDisplayTextFromDelimitedFacet(
+                    $displayText, $delimiter
+                );
+            }
+        }
+        return $displayText;
     }
 
     /**
@@ -963,13 +989,8 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
-        $displayText = $value;
-        $delimitedFacets = $this->getOptions()->getDelimitedFacets();
-        if (in_array($field, $delimitedFacets)) {
-            $displayText = $this->getDisplayTextFromDelimitedFacet(
-                $displayText
-            );
-        }
+        $displayText = $checkForDelimitedFacetDisplayText($field, $value);
+
         if ($translate) {
             $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
             $displayText = $this->translate("$domain::$displayText");

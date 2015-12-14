@@ -160,7 +160,9 @@ class Options extends \VuFind\Search\Base\Options
             );
         }
         if (isset($facetSettings->Advanced_Settings->delimiter)) {
-            $this->setDelimiter($facetSettings->Advanced_Settings->delimiter);
+            $this->setDefaultFacetDelimiter(
+                $facetSettings->Advanced_Settings->delimiter
+            );
         }
         if (isset($facetSettings->Advanced_Settings->delimited_facets)
             && count($facetSettings->Advanced_Settings->delimited_facets) > 0
