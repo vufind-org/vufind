@@ -62,7 +62,7 @@ class SystemMessages extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke()
     {
-        return !empty($this->config->Site->system_messages)
-            ? $this->config->Site->system_messages : [];
+        return !empty($this->config->Site->systemMessages)
+            ? $this->config->Site->systemMessages : [];
     }
 }
