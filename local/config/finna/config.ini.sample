@@ -100,6 +100,10 @@ indexBasedNewItems = true
 ; Any system messages that need to be displayed on the top of every page. May be translation entries or
 ; strings and may contain html markup.
 ;system_messages[] = development_disclaimer
+; Whether to hide due date reminder settings. Default is false
+;hideDueDateReminder = true
+; Whether to hide email address in patron profile. Default is false
+;hideProfileEmailAddress = true
 
 ; This section allows you to configure the mechanism used for storing user
 ; sessions.  Available types: File, Memcache, Database.

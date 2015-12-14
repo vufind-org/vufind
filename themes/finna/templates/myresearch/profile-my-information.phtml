@@ -1,45 +1,52 @@
 <!-- START of: finna - myresearch/profile-my-information.phtml -->
 <? if ($user): ?>
+<? $needSaveButton = false; ?>
 <div class="row">
   <div class="col-xs-12 myresearch-profile-list">
     <div class="col-xs-12">
       <h2><?=$this->transEsc('my_profile')?></h2>
     </div>
     <form name="my_profile_form" class="inline" method="post">
-      <div class="col-sm-4 ">
-        <label for="email"><?=$this->transEsc("Email") ?>:</label>
-      </div>
-      <div class="col-sm-4">
-        <input id="email" type="email" class="form-control" name="email" value="<?=$user->email?>"/>
-      </div>
-      <div class="clearfix visible-xs"></div>
-      <div class="col-sm-4">
-        <i class="fa fa-info-big"></i>  <?=$this->transEsc("email_info") ?>
-      </div>
-      <div class="clearfix visible-xs"><br/></div>
-      <? if (!empty($user->cat_username)): ?>
-      <div class="col-sm-4">
-         <label for="due_date_reminder"><?=$this->transEsc("due_date_reminder") ?>:</label>
-      </div>
-      <div class="col-sm-4">
-          <select id="due-date-reminder" name="due_date_reminder" class="form-control">
-            <option value="0" <?= $user->finna_due_date_reminder == 0 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_none") ?></option>
-            <option value="1" <?= $user->finna_due_date_reminder == 1 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_one_day") ?></option>
-            <option value="2" <?= $user->finna_due_date_reminder == 2 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_two_days") ?></option>
-            <option value="3" <?= $user->finna_due_date_reminder == 3 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_three_days") ?></option>
-          </select>
-       </div>
-       <div class="clearfix visible-xs"></div>
-       <div class="col-sm-4">
-          <? if ($cards->count() > 1): ?>
-            <i class="fa fa-info-big"></i> <?=$this->transEsc("due_date_email_info") ?>
-          <? endif; ?>
-        </div>
-        <div class="clearfix visible-xs"><br/></div>
+      <? if (!$this->hideProfileEmailAddress): ?>
+          <? $needSaveButton = true; ?>
+          <div class="col-sm-4 ">
+            <label for="email"><?=$this->transEsc("Email") ?>:</label>
+          </div>
+          <div class="col-sm-4">
+            <input id="email" type="email" class="form-control" name="email" value="<?=$user->email?>"/>
+          </div>
+          <div class="clearfix visible-xs"></div>
+          <div class="col-sm-4">
+            <i class="fa fa-info-big"></i>  <?=$this->transEsc("email_info") ?>
+          </div>
+          <div class="clearfix visible-xs"><br/></div>
       <? endif; ?>
-        <div class="col-xs-12">
-            <input id="save-user-profile" name="saveUserProfile" type="submit" value="<?=$this->transEsc("Save") ?>" class="btn btn-primary" />
-        </div>
+      <? if (!empty($user->cat_username) && !$this->hideDueDateReminder): ?>
+          <? $needSaveButton = true; ?>
+          <div class="col-sm-4">
+             <label for="due_date_reminder"><?=$this->transEsc("due_date_reminder") ?>:</label>
+          </div>
+          <div class="col-sm-4">
+              <select id="due-date-reminder" name="due_date_reminder" class="form-control">
+                <option value="0" <?= $user->finna_due_date_reminder == 0 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_none") ?></option>
+                <option value="1" <?= $user->finna_due_date_reminder == 1 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_one_day") ?></option>
+                <option value="2" <?= $user->finna_due_date_reminder == 2 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_two_days") ?></option>
+                <option value="3" <?= $user->finna_due_date_reminder == 3 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_three_days") ?></option>
+              </select>
+          </div>
+          <div class="clearfix visible-xs"></div>
+          <div class="col-sm-4">
+              <? if ($cards->count() > 1): ?>
+                <i class="fa fa-info-big"></i> <?=$this->transEsc("due_date_email_info") ?>
+              <? endif; ?>
+          </div>
+          <div class="clearfix visible-xs"><br/></div>
+      <? endif; ?>
+      <? if ($needSaveButton): ?>
+          <div class="col-xs-12">
+              <input id="save-user-profile" name="saveUserProfile" type="submit" value="<?=$this->transEsc("Save") ?>" class="btn btn-primary" />
+          </div>
+      <? endif; ?>
     </form>
   </div>
 </div>

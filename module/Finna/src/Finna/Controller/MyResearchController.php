@@ -168,6 +168,17 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $compoundView;
         }
 
+        // Check if due date reminder settings should be displayed
+        $config = $this->getConfig();
+        $view->hideDueDateReminder = $user->finna_due_date_reminder == 0
+            && isset($config->Site->hideDueDateReminder)
+            && $config->Site->hideDueDateReminder;
+
+        // Check whether to hide email address in profile
+        $view->hideProfileEmailAddress
+            = isset($config->Site->hideProfileEmailAddress)
+            && $config->Site->hideProfileEmailAddress;
+
         return $view;
     }
 

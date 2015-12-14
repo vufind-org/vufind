@@ -30,7 +30,7 @@
     <? if (!$this->translationEmpty('profile_instructions')): ?><p class="no-content-message"><?=$this->transEsc('profile_instructions')?></p><? endif; ?>
     <?=$this->flashmessages();?>
     <?=$this->partial('myresearch/borrowing-block.phtml', ['profile' => $this->profile]); ?>
-    <?= $this->partial('myresearch/profile-my-information.phtml', ['user' => $user, 'cards' => $cards]); ?>
+    <?= $this->partial('myresearch/profile-my-information.phtml', ['user' => $user, 'cards' => $cards, 'hideDueDateReminder' => $this->hideDueDateReminder, 'hideProfileEmailAddress' => $this->hideProfileEmailAddress]); ?>
     <? if (isset($this->profile)): ?>
     <div class="myresearch-profile-header"><?=$this->transEsc('Library Card Settings');?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
     <div class="col-xs-12 myresearch-profile-list library-profile">
