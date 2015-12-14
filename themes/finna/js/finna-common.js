@@ -1,23 +1,24 @@
 /*global VuFind*/
 finna.common = (function() {
 
-    var navibarLogin = function() {
-        // Check that the login attempt comes from the normal login dialog
+    var redirectAfterLogin = function() {
+        // Check if the login attempt comes from the normal login dialog
         if (Lightbox.lastURL) {
             var params = deparam(Lightbox.lastURL);
             if (typeof params['redirect'] !== 'undefined' && params['redirect']) {
                 window.location = VuFind.getPath() + '/MyResearch/Home?redirect=0';
+                return;
             }
-        }
+        } 
+        
+        // No reload since any post params would cause a prompt
+        window.location.href = window.location.href;
     };
 
-    var loginSetup = function() {        
-        Lightbox.addFormHandler('loginForm', function(evt) {
-            ajaxLogin(evt.target);
-            Lightbox.addCloseAction(navibarLogin);
-            return false;
-        });
-
+    var loginSetup = function() {
+        // Override the bootstrap3 theme function in common.js
+        refreshPageForLogin = redirectAfterLogin;
+        
         // Modal window focus set to username input field.
         $('#modal').on('shown.bs.modal', function(e) {
             setTimeout(function() { $('#login_MultiILS_username').focus(); }, 0);
