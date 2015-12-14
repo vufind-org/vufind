@@ -94,6 +94,13 @@
                         <xsl:value-of select="php:function('VuFind::stripArticles', string(//dc:title[normalize-space()]))"/>
                     </field>
                 </xsl:if>
+                
+                <!-- DESCRIPTION -->
+                <xsl:if test="//dc:description">
+                    <field name="description">
+                        <xsl:value-of select="//dc:description" />
+                    </field>
+                </xsl:if>
 
                 <!-- PUBLISHER -->
                 <xsl:if test="//dc:publisher[normalize-space()]">
