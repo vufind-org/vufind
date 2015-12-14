@@ -157,6 +157,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $delimitedFacets = [];
 
     /**
+     * Convenient field => delimiter lookup array derived from $delimitedFacets.
+     *
+     * @var array
+     */
+    protected $processedDelimitedFacets = null;
+
+    /**
      * Facet settings
      *
      * @var array
@@ -498,16 +505,35 @@ abstract class Options implements TranslatorAwareInterface
     public function setDefaultFacetDelimiter($defaultFacetDelimiter)
     {
         $this->defaultFacetDelimiter = $defaultFacetDelimiter;
+        $this->processedDelimitedFacets = null; // clear processed value cache
     }
 
     /**
-    * Get a list of delimited facets
-    *
-    * @return array
-    */
-    public function getDelimitedFacets()
+     * Get a list of delimited facets
+     *
+     * @param bool $processed False = return raw values; true = process values into
+     * field => delimiter associative array.
+     *
+     * @return array
+     */
+    public function getDelimitedFacets($processed = false)
     {
-        return $this->delimitedFacets;
+        if (!$processed) {
+            return $this->delimitedFacets;
+        }
+        if (null === $this->processedDelimitedFacets) {
+            $this->processedDelimitedFacets = [];
+            $defaultDelimiter = $this->getDefaultFacetDelimiter();
+            foreach ($this->delimitedFacets as $current) {
+                $parts = explode('|', $current, 2);
+                if (count($parts) == 2) {
+                    $this->processedDelimitedFacets[$parts[0]] = $parts[1];
+                } else {
+                    $this->processedDelimitedFacets[$parts[0]] = $defaultDelimiter;
+               }
+            }
+        }
+        return $this->processedDelimitedFacets;
     }
 
     /**
@@ -520,6 +546,7 @@ abstract class Options implements TranslatorAwareInterface
     public function setDelimitedFacets($delimitedFacets)
     {
         $this->delimitedFacets = $delimitedFacets;
+        $this->processedDelimitedFacets = null; // clear processed value cache
     }
 
     /**

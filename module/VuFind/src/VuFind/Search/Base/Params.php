@@ -936,22 +936,6 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Get Display Text from Delimited Facet
-     *
-     * @param string $facet     The delimited facet value
-     * @param string $delimiter The delimiter to use
-     *
-     * @return string
-     */
-    public function getDisplayTextFromDelimitedFacet($facet, $delimiter)
-    {
-        if (false !== strstr($facet, $delimiter)) {
-            return current(explode($delimiter, $facet, 2));
-        }
-        return $facet;
-    }
-
-    /**
      * Check for delimited facets
      *
      * @param string $field       The facet
@@ -961,22 +945,10 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function checkForDelimitedFacetDisplayText($field, $displayText)
     {
-        $delimitedFacetValues = $this->getOptions()->getDelimitedFacets();
-        $delimiter            = $this->getOptions()->getDefaultFacetDelimiter();
-        foreach ($delimitedFacetValues as $delimitedFacetValue) {
-            if (false !== strstr($delimitedFacetValue, $field)) {
-
-                if (false !== strstr($delimitedFacetValue, "|")) {
-                    $facetDetails = explode("|", $delimitedFacetValue, 2);
-                    $delimiter = end($facetDetails);
-                }
-
-                $displayText = $this->getDisplayTextFromDelimitedFacet(
-                    $displayText, $delimiter
-                );
-            }
-        }
-        return $displayText;
+        $delimitedFacetFields = $this->getOptions()->getDelimitedFacets(true);
+        return isset($delimitedFacetFields[$field])
+            ? current(explode($delimitedFacetFields[$field], $displayText, 2))
+            : $displayText;
     }
 
     /**
