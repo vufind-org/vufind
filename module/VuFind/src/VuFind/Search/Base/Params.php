@@ -954,20 +954,22 @@ class Params implements ServiceLocatorAwareInterface
     /**
      * Check for delimited facets
      *
-     * @param string $field
-     * @param string $displayText
+     * @param string $field       The facet
+     * @param string $displayText The facet value
      *
      * @return string
      */
-    protected function checkForDelimitedFacetDisplayText($field, $displayText)
+    public function checkForDelimitedFacetDisplayText($field, $displayText)
     {
         $delimitedFacetValues = $this->getOptions()->getDelimitedFacets();
+        $delimiter            = $this->getOptions()->getDefaultFacetDelimiter();
         foreach ($delimitedFacetValues as $delimitedFacetValue) {
             if (false !== strstr($delimitedFacetValue, $field)) {
 
-                $delimiter = false !== ststr($delimitedFacetValue, "|")
-                    ? end(explode("|", $delimitedFacetValue))
-                    : $this->getDefaultFacetDelimiter();
+                if (false !== strstr($delimitedFacetValue, "|")) {
+                    $facetDetails = explode("|", $delimitedFacetValue, 2);
+                    $delimiter = end($facetDetails);
+                }
 
                 $displayText = $this->getDisplayTextFromDelimitedFacet(
                     $displayText, $delimiter
@@ -989,7 +991,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
-        $displayText = $checkForDelimitedFacetDisplayText($field, $value);
+        $displayText = $this->checkForDelimitedFacetDisplayText($field, $value);
 
         if ($translate) {
             $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
