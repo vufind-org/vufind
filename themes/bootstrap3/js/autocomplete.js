@@ -1,6 +1,6 @@
 /*global console*/
 /**
- * vufind.typeahead.js 0.8
+ * vufind.typeahead.js 0.10
  * ~ @crhallberg
  */
 (function ( $ ) {
@@ -11,16 +11,13 @@
     var options = $.extend( {}, $.fn.autocomplete.options, settings );
 
     function align(input, element) {
-      var offset = input[0].getBoundingClientRect();
-      var scrollTop = document.documentElement
-        ? document.documentElement.scrollTop
-        : document.body.scrollTop;
+      var position = input.position();
       element.css({
         position: 'absolute',
-        top: offset.top + offset.height + scrollTop,
-        left: offset.left,
-        minWidth: offset.width,
-        maxWidth: input.closest('form').width(),
+        top: position.top + input.outerHeight(),
+        left: position.left,
+        minWidth: input.width(),
+        maxWidth: Math.max(input.width(), input.closest('form').width()),
         zIndex: 50
       });
     }
@@ -116,7 +113,7 @@
           .addClass('autocomplete-results hidden')
           .html('<i class="item loading">'+options.loadingString+'</i>');
         align(input, element);
-        $('body').append(element);
+        input.closest('form').append(element);
         $(window).resize(function() {
           align(input, element);
         });
