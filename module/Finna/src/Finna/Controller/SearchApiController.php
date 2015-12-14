@@ -223,7 +223,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             + $this->getRequest()->getPost()->toArray();
 
         if (isset($request['limit'])
-            && ($request['limit'] < 0 || $request['limit'] > 100)
+            && (!ctype_digit($request['limit'])
+            || $request['limit'] < 0 || $request['limit'] > 100)
         ) {
             return $this->output([], self::STATUS_ERROR, 400, 'Invalid limit');
         }
