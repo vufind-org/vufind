@@ -48,7 +48,7 @@ class Feed extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Zend\Config\Config $config Menu configuration
+     * @param Zend\Config\Config $config Feed configuration
      * custom variables
      */
     public function __construct(\Zend\Config\Config $config)
