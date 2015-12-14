@@ -97,6 +97,9 @@ quickAddToFavorites = true
 institution =
 ; Whether index is used for new items search instead of backend driver
 indexBasedNewItems = true
+; Any system messages that need to be displayed on the top of every page. May be translation entries or
+; strings and may contain html markup.
+;system_messages[] = development_disclaimer
 
 ; This section allows you to configure the mechanism used for storing user
 ; sessions.  Available types: File, Memcache, Database.
@@ -210,6 +213,17 @@ title_level_holds_mode = "driver"
 ; - holdings_id (Use holdings record id if available, location name otherwise - Default)
 ; - location_name (Use location name)
 holdings_grouping = holdings_id
+
+; Text fields such as notes gathered from items to be displayed in each
+; holdings group in the display order.
+; The default list is 'notes', 'summary', 'supplements' and 'indexes'.
+; Note that displayed information depends on what the ILS driver returns.
+;holdings_text_fields[] = 'notes'
+;holdings_text_fields[] = 'summary'
+
+; Whether support for multiple library cards is enabled. Default is false.
+library_cards = true
+
 
 ; This section allows you to determine how the users will authenticate.
 ; You can use an LDAP directory, the local ILS, the VuFind database (Database),

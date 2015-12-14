@@ -8,6 +8,7 @@ return array(
             'combined' => 'Finna\View\Helper\Root\Factory::getCombined',
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
+            'fileSrc' => 'Finna\View\Helper\Root\Factory::getFileSrc',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
             'headTitle' => 'Finna\View\Helper\Root\Factory::getHeadTitle',
             'holdingsDetailsMode' => 'Finna\View\Helper\Root\Factory::getHoldingsDetailsMode',
@@ -30,6 +31,7 @@ return array(
             'searchbox' => 'Finna\View\Helper\Root\Factory::getSearchBox',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
             'searchTabsRecommendations' => 'Finna\View\Helper\Root\Factory::getSearchTabsRecommendations',
+            'systemMessages' => 'Finna\View\Helper\Root\Factory::getSystemMessages',
             'proxyurl' => 'Finna\View\Helper\Root\Factory::getProxyUrl',
         ),
         'invokables' => array(

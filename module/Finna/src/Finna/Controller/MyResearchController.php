@@ -298,35 +298,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Logout Action
-     *
-     * @return mixed
-     */
-    public function logoutAction()
-    {
-        $config = $this->getConfig();
-        if (isset($config->Site->logOutRoute)) {
-            $logoutTarget = $this->getServerUrl($config->Site->logOutRoute);
-        } else {
-            $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
-            if (empty($logoutTarget)) {
-                $logoutTarget = $this->getServerUrl('home');
-            }
-
-            // If there is an auth_method parameter in the query, we should strip
-            // it out. Otherwise, the user may get stuck in an infinite loop of
-            // logging out and getting logged back in when using environment-based
-            // authentication methods like Shibboleth.
-            $logoutTarget = preg_replace(
-                '/([?&])auth_method=[^&]*&?/', '$1', $logoutTarget
-            );
-        }
-
-        return $this->redirect()
-            ->toUrl($this->getAuthManager()->logout($logoutTarget));
-    }
-
-    /**
      * Save alert schedule for a saved search into DB
      *
      * @return mixed

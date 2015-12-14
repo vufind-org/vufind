@@ -1,8 +1,9 @@
 # Configuration for theme-specific resources:
 AliasMatch ^/vufind2/themes/([0-9a-zA-Z-_]*)/css/(.*)$ /path-to/NDL-VuFind2/themes/$1/css/$2
+AliasMatch ^/vufind2/themes/([0-9a-zA-Z-_]*)/files/(.*)$ /path-to/NDL-VuFind2/themes/$1/files/$2
 AliasMatch ^/vufind2/themes/([0-9a-zA-Z-_]*)/images/(.*)$ /path-to/NDL-VuFind2/themes/$1/images/$2
 AliasMatch ^/vufind2/themes/([0-9a-zA-Z-_]*)/js/(.*)$ /path-to/NDL-VuFind2/themes/$1/js/$2
-<Directory ~ "^/path-to/NDL-VuFind2/themes/([0-9a-zA-Z-_]*)/(css|images|js)/">
+<Directory ~ "^/path-to/NDL-VuFind2/themes/([0-9a-zA-Z-_]*)/(css|files|images|js)/">
   <IfModule !mod_authz_core.c>
     Order allow,deny
     Allow from all
@@ -36,6 +37,12 @@ Alias /vufind2 /path-to/NDL-VuFind2/public
   # server and port, and make sure that Apache mod_proxy and mod_proxy_http are
   # enabled.
   #RewriteRule ^files/(.*)/(.*) http://your-fedora-server/fedora/objects/$1/datastreams/$2/content [P]
+
+  # Get rid of cookies (e.g. session) when using API functions
+  RewriteRule (^api/|/api/) - [E=VUFIND_API_CALL:1]
+  RequestHeader unset Cookie env=VUFIND_API_CALL
+  Header unset Set-Cookie env=VUFIND_API_CALL
+  Header unset Set-Cookie env=REDIRECT_VUFIND_API_CALL
 
   RewriteCond %{REQUEST_FILENAME} -s [OR]
   RewriteCond %{REQUEST_FILENAME} -l [OR]

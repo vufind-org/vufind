@@ -197,6 +197,22 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $sm->get('url')
         );
     }
+
+    /**
+     * Construct the SystemMessages view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\View\Helper\Root\SystemMessage
+     */
+    public static function getSystemMessages(ServiceManager $sm)
+    {
+        $locator = $sm->getServiceLocator();
+        $config = $locator->get('VuFind\Config')->get('config');
+
+        return new SystemMessages($config);
+    }
+
     /**
      * Construct Headtitle helper
      *
@@ -335,6 +351,20 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     {
         return new Feed(
             $sm->getServiceLocator()->get('VuFind\Config')->get('rss')
+        );
+    }
+
+    /**
+     * Construct the FileSrc helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ImageSrc
+     */
+    public static function getFileSrc(ServiceManager $sm)
+    {
+        return new FileSrc(
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
         );
     }
 
