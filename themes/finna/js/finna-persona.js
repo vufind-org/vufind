@@ -75,17 +75,21 @@ finna.persona = (function(finna) {
                     },
                     success: function(response, status, xhr) {
                         if (response.status === "OK") {
-                            Lightbox.addCloseAction(refreshPageForLogin);
-                            // and we update the modal
-                            var params = deparam(Lightbox.lastURL);
-                            if (params['subaction'] == 'UserLogin') {
-                                Lightbox.close();
+                            if (Lightbox.shown) {
+                                Lightbox.addCloseAction(refreshPageForLogin);
+                                // and we update the modal
+                                var params = deparam(Lightbox.lastURL);
+                                if (params['subaction'] == 'UserLogin') {
+                                    Lightbox.close();
+                                } else {
+                                    Lightbox.getByUrl(
+                                        Lightbox.lastURL,
+                                        Lightbox.lastPOST,
+                                        Lightbox.changeContent
+                                    );
+                                }
                             } else {
-                                Lightbox.getByUrl(
-                                    Lightbox.lastURL,
-                                    Lightbox.lastPOST,
-                                    Lightbox.changeContent
-                                );
+                                window.location.href = window.location.href;
                             }
                         } else {
                             $('.persona-login i').removeClass('fa-spinner fa-spin');
