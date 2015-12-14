@@ -2,20 +2,14 @@
 finna.common = (function() {
 
     var navibarLogin = function() {
-        if ( $('#loginOptions a').hasClass('navibar-login-on') &&
-            $('#loginOptions').hasClass('hidden') )
-        {
+        // Check that the login attempt comes from the normal login dialog
+        var params = deparam(Lightbox.lastURL);
+        if (params['redirect']) {
             window.location = VuFind.getPath() + '/MyResearch/Home?redirect=0';
         }
     };
 
-    var loginSetup = function() {
-        // Login link
-        $('#loginOptions a.modal-link').click(function() {
-            $('#loginOptions a.modal-link').addClass('navibar-login-on');
-            Lightbox.addCloseAction(function() {$('#loginOptions a.modal-link').removeClass('navibar-login-on');});
-        });
-
+    var loginSetup = function() {        
         Lightbox.addFormHandler('loginForm', function(evt) {
             ajaxLogin(evt.target);
             Lightbox.addCloseAction(navibarLogin);
@@ -24,13 +18,25 @@ finna.common = (function() {
 
         // Modal window focus set to username input field.
         $('#modal').on('shown.bs.modal', function(e) {
-            $('#login_username').focus();
+            setTimeout(function() { $('#login_MultiILS_username').focus(); }, 0);
         });
 
         // Standalone login form
         $('#loginForm').submit(function(evt) { 
             evt.preventDefault();
             standaloneAjaxLogin(evt.target);
+        });
+        
+        // Login link
+        $('#loginOptions a.modal-link').unbind('click').click(function() {
+            // Since we unbind the original handler, we need to handle the title here
+            var title = $(this).attr('title');
+            if(typeof title === "undefined") {
+              title = $(this).html();
+            }
+            $('#modal .modal-title').html(title);
+            Lightbox.titleSet = true;
+            return Lightbox.get('MyResearch', 'UserLogin', { redirect: 1 });
         });
     };
     

@@ -26,18 +26,18 @@
 <h2 class="lightbox-header"><?=$this->transEsc('Login')?></h2>
 <?=$this->flashmessages()?>
 <? if ($template = $this->content()->findTemplateForLng("content/Additions/login-pre")): ?>
-<div class="row">
-  <div class="col-xs-12">
-    <?=$this->render($template)?>
+  <div class="row">
+    <div class="col-xs-12">
+      <?=$this->render($template)?>
+    </div>
   </div>
-</div>
 <? endif; ?>
 <? if ($hideLogin): ?>
   <div class="alert alert-danger"><?=$this->transEsc('login_disabled')?></div>
 <? else: ?>
   <?=$this->auth()->getLogin()?>
 <? endif; ?>
- <? if ($template = $this->content()->findTemplateForLng("content/Additions/login-post")): ?>
+<? if ($template = $this->content()->findTemplateForLng("content/Additions/login-post")): ?>
   <div class="row">
     <div class="col-xs-12">
       <?=$this->render($template)?>
