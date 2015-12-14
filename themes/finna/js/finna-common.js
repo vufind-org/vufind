@@ -3,9 +3,11 @@ finna.common = (function() {
 
     var navibarLogin = function() {
         // Check that the login attempt comes from the normal login dialog
-        var params = deparam(Lightbox.lastURL);
-        if (params['redirect']) {
-            window.location = VuFind.getPath() + '/MyResearch/Home?redirect=0';
+        if (Lightbox.lastURL) {
+            var params = deparam(Lightbox.lastURL);
+            if (typeof params['redirect'] !== 'undefined' && params['redirect']) {
+                window.location = VuFind.getPath() + '/MyResearch/Home?redirect=0';
+            }
         }
     };
 
