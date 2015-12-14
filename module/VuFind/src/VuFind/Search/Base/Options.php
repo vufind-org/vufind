@@ -530,7 +530,7 @@ abstract class Options implements TranslatorAwareInterface
                     $this->processedDelimitedFacets[$parts[0]] = $parts[1];
                 } else {
                     $this->processedDelimitedFacets[$parts[0]] = $defaultDelimiter;
-               }
+                }
             }
         }
         return $this->processedDelimitedFacets;
