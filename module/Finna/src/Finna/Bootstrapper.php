@@ -173,7 +173,7 @@ class Bootstrapper
     protected function isApiRoute($event)
     {
         $routeMatch = $event->getRouteMatch();
-        $routeName = $routeMatch->getMatchedRouteName();
+        $routeName = $routeMatch !== null ? $routeMatch->getMatchedRouteName() : '';
         return substr($routeName, -3) === 'Api';
     }
 }
