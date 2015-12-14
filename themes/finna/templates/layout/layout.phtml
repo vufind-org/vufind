@@ -145,6 +145,17 @@
       }
     ?>
     <header role="banner" class="hidden-print">
+      <? if ($messages = $this->systemMessages()): ?>
+      <div class="container-fluid system-messages">
+        <? foreach ($messages as $message): ?>
+        <div class="row">
+          <div class="col-xs-12">
+            <?=$this->translate($message) // intentionally not escaped so that markup can be used ?>
+          </div>
+        </div>
+        <? endforeach; ?>
+      </div>
+      <? endif; ?>
       <div class="container-fluid navbar">
         <div class="row">
           <div class="col-xs-12">

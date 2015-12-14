@@ -197,6 +197,22 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $sm->get('url')
         );
     }
+
+    /**
+     * Construct the SystemMessages view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\View\Helper\Root\SystemMessage
+     */
+    public static function getSystemMessages(ServiceManager $sm)
+    {
+        $locator = $sm->getServiceLocator();
+        $config = $locator->get('VuFind\Config')->get('config');
+
+        return new SystemMessages($config);
+    }
+
     /**
      * Construct Headtitle helper
      *

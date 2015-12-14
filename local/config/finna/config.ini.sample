@@ -97,6 +97,9 @@ quickAddToFavorites = true
 institution =
 ; Whether index is used for new items search instead of backend driver
 indexBasedNewItems = true
+; Any system messages that need to be displayed on the top of every page. May be translation entries or
+; strings and may contain html markup.
+;system_messages[] = development_disclaimer
 
 ; This section allows you to configure the mechanism used for storing user
 ; sessions.  Available types: File, Memcache, Database.
