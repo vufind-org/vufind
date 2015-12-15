@@ -77,7 +77,10 @@ $(document).ready(function() {
               // Hide loading
               loadingNode.addClass("hidden");
               // Load first tab
-              ajaxFLLoadTab($(longNode).find('.recordTabs li.active a').attr('id'));
+              var $firstTab = $(longNode).find('.recordTabs li.active a');
+              if ($firstTab.length > 0) {
+                ajaxFLLoadTab($firstTab.attr('id'));
+              }
               // Add events to record toolbar
               setupRecordToolbar(longNode, div_id);
               setupModalLinkTitles(longNode);
@@ -88,6 +91,9 @@ $(document).ready(function() {
               });
               longNode.find('.search_tabs .recordTabs a').click(function() {
                 return ajaxFLLoadTab($(this).attr('id'));
+              });
+              longNode.find('.panel.noajax .accordion-toggle').click(function() {
+                window.location.href = $(this).attr('data-href');
               });
               longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(function() {
                 return registerAjaxCommentRecord(

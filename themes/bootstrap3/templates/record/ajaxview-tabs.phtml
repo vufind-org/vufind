@@ -38,7 +38,6 @@
           if (!$this->ajaxTabs || !$obj->supportsAjax()) {
             $tab_classes[] = 'active';
           }
-          $activeTabObj = $obj;
         }
         if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
         if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
