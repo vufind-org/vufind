@@ -1,0 +1,54 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Login'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Login') . '</li>';
+
+    // Convenience variable:
+    $offlineMode = $this->ils()->getOfflineMode();
+?>
+<? if ($offlineMode == "ils-offline"): ?>
+  <div class="alert alert-warning">
+    <h2><?=$this->transEsc('ils_offline_title')?></h2>
+    <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+    <p><?=$this->transEsc('ils_offline_login_message')?></p>
+    <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+    <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+  </div>
+<? elseif ($this->targets === null || !empty($this->targets)): ?>
+  <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+  <?=$this->flashmessages()?>
+  <p><?=$this->transEsc('cat_establish_account')?></p>
+  <form method="post" class="form-horizontal">
+    <? if ($this->targets !== null): ?>
+    <div class="form-group">
+      <label class="col-sm-2 control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
+      <div class="col-sm-10">
+        <select id="login_target" name="target" class="form-control">
+        <? foreach ($this->targets as $target): ?>
+          <option value="<?=$this->escapeHtmlAttr($target)?>"><?=$this->transEsc("source_$target", null, $target)?></option>
+        <? endforeach; ?>
+        </select>
+      </div>
+    </div>
+    <? endif; ?>
+    <div class="form-group">
+      <label class="col-sm-2 control-label" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
+      <div class="col-sm-10">
+        <input id="profile_cat_username" type="text" name="cat_username" value="" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
+      <div class="col-sm-10">
+        <input id="profile_cat_username" type="password" name="cat_password" value="" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
+      </div>
+    </div>
+  </form>
+<? endif; ?>

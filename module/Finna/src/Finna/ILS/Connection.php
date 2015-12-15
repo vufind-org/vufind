@@ -118,6 +118,17 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
+     * Check if catalog login is availale
+     *
+     * @return bool true if the login is available
+     */
+    public function loginAvailable()
+    {
+        return !$this->supportsMethod('getLoginDrivers', [])
+            || !empty($this->getLoginDrivers());
+    }
+
+    /**
      * Check if online payment is supported.
      *
      * @param array $functionConfig Function configuration values

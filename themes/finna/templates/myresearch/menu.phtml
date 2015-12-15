@@ -9,6 +9,8 @@
         $this->layout()->finnaMainHeader .= '<a class="btn btn-primary pull-right modal-link' . $logoutClass . '" href="' . $this->url('myresearch-logout') . '" title="'.$this->transEsc('Log Out') . '"><i class="fa fa-sign-out"></i> ' . $this->transEsc('Log Out') . '</a>';
     }
     $this->layout()->finnaMainHeader .= '</div>';
+
+    $showLibraryTabs = $this->ils()->loginAvailable();
 ?>
 
 <div class="col-xs-12">
@@ -43,6 +45,7 @@
             <?=$this->transEsc('Profile')?>
             </a></li>
           <? endif; ?>
+          <? if ($showLibraryTabs): ?>
             <li><a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item<?=$this->active == 'checkedout' ? ' active' : ''?>">
             <?=$this->transEsc('Checked Out Items')?>
             </a></li>
@@ -58,10 +61,11 @@
             <li><a href="<?=$this->url('myresearch-fines')?>" class="list-group-item<?=$this->active == 'fines' ? ' active' : ''?>">
             <?=$this->transEsc('Fines')?>
             </a></li>
-          <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
-            <li><a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
-            <?=$this->transEsc('Library Cards')?>
-            </a></li>
+            <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
+              <li><a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
+              <?=$this->transEsc('Library Cards')?>
+              </a></li>
+            <? endif; ?>
           <? endif; ?>
         <? endif; ?>
         <? if ($this->userlist()->getMode() !== 'disabled'): ?>
@@ -82,6 +86,7 @@
         <?=$this->transEsc('Profile')?>
         </a></li>
       <? endif; ?>
+      <? if ($showLibraryTabs): ?>
        <li><a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item<?=$this->active == 'checkedout' ? ' active' : ''?>">
          <?=$this->transEsc('Checked Out Items')?>
         </a></li>
@@ -97,10 +102,11 @@
         <li><a href="<?=$this->url('myresearch-fines')?>" class="list-group-item<?=$this->active == 'fines' ? ' active' : ''?>">
         <?=$this->transEsc('Fines')?>
         </a></li>
-      <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
-        <li><a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
-        <?=$this->transEsc('Library Cards')?>
-        </a></li>
+        <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
+          <li><a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
+          <?=$this->transEsc('Library Cards')?>
+          </a></li>
+        <? endif; ?>
       <? endif; ?>
     <? endif; ?>
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
