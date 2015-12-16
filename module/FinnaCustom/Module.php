@@ -45,7 +45,8 @@ class Module
      */
     public function getConfig()
     {
-        return include APPLICATION_PATH . '/module/FinnaCustom/config/module.config.php';
+        return include APPLICATION_PATH
+            . '/module/FinnaCustom/config/module.config.php';
     }
 
     /**
@@ -58,7 +59,8 @@ class Module
         return [
             'Zend\Loader\StandardAutoloader' => [
                 'namespaces' => [
-                    __NAMESPACE__ => APPLICATION_PATH . '/module/FinnaCustom/src/' . __NAMESPACE__,
+                    __NAMESPACE__ => APPLICATION_PATH . '/module/FinnaCustom/src/'
+                        . __NAMESPACE__,
                 ],
             ],
         ];
