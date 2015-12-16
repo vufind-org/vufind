@@ -90,7 +90,8 @@ class SolrDefaultBackendFactory
         $solrExtensions = new SolrExtensionsListener(
             $backend,
             $this->serviceLocator,
-            $this->searchConfig
+            $this->searchConfig,
+            $this->facetConfig
         );
         $solrExtensions->attach($events);
     }

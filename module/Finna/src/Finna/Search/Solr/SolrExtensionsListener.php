@@ -74,11 +74,19 @@ class SolrExtensionsListener
     protected $dataSourceConfig;
 
     /**
+     * Facet configuration file identifier.
+     *
+     * @var string
+     */
+    protected $facetConfig;
+
+    /**
      * Constructor.
      *
      * @param BackendInterface        $backend          Search backend
      * @param ServiceLocatorInterface $serviceLocator   Service locator
      * @param string                  $searchConfig     Search config file id
+     * @param string                  $facetConfig      Facet config file id
      * @param string                  $dataSourceConfig Data source file id
      *
      * @return void
@@ -86,11 +94,12 @@ class SolrExtensionsListener
     public function __construct(
         BackendInterface $backend,
         ServiceLocatorInterface $serviceLocator,
-        $searchConfig, $dataSourceConfig = 'datasources'
+        $searchConfig, $facetConfig, $dataSourceConfig = 'datasources'
     ) {
         $this->backend = $backend;
         $this->serviceLocator = $serviceLocator;
         $this->searchConfig = $searchConfig;
+        $this->facetConfig = $facetConfig;
         $this->dataSourceConfig = $dataSourceConfig;
     }
 
@@ -120,6 +129,9 @@ class SolrExtensionsListener
         $backend = $event->getTarget();
         if ($backend === $this->backend) {
             $this->addDataSourceFilter($event);
+            if ($event->getParam('context') == 'search') {
+                $this->limitHierarchicalFacets($event);
+            }
         }
         return $event;
     }
@@ -163,6 +175,38 @@ class SolrExtensionsListener
                     'source_str_mv:(' . implode(' OR ', $sources) . ')'
                 );
             }
+        }
+    }
+
+    /**
+     * Since we don't support non-JS hierarchical facets, limit them to one entry
+     * that's needed for checking whether there's something to display.
+     *
+     * @param EventInterface $event Event
+     *
+     * @return void
+     */
+    protected function limitHierarchicalFacets(EventInterface $event)
+    {
+        $config = $this->serviceLocator->get('VuFind\Config');
+        $facetConfig = $config->get($this->facetConfig);
+        if (empty($facetConfig->SpecialFacets->hierarchical)) {
+            return;
+        }
+        $params = $event->getParam('params');
+        // Check if facets are requested at all
+        $fields = $params->get('facet.field');
+        if ($fields === null) {
+            return;
+        }
+        // Check if we're retrieving the complete list
+        $limit = $params->get('facet.limit');
+        if ($limit === null || $limit[0] == -1) {
+            return;
+        }
+        $hierarchical = $facetConfig->SpecialFacets->hierarchical->toArray();
+        foreach ($hierarchical as $facet) {
+            $params->set("f.$facet.facet.limit", 1);
         }
     }
 }
