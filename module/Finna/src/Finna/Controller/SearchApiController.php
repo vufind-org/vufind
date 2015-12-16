@@ -426,14 +426,15 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     {
         foreach ($array as $key => &$value) {
             if (is_array($value) && !empty($value)) {
+                $this->filterArrayValues($value);
                 $isNumeric
                     = !(bool)count(array_filter(array_keys($value), 'is_string'));
                 if ($isNumeric) {
                     $value = array_values($value);
                 }
-                $this->filterArrayValues($value);
-            } else if ((is_array($value) && empty($value))
-                || (is_numeric($value) && (int)$value !== 0)
+            }
+
+            if ((is_array($value) && empty($value))
                 || (is_bool($value) && !$value)
                 || $value === null || $value === ''
             ) {
