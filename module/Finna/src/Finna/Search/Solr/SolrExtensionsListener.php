@@ -114,7 +114,6 @@ class SolrExtensionsListener
         SharedEventManagerInterface $manager
     ) {
         $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
-        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
     }
 
     /**
@@ -133,18 +132,6 @@ class SolrExtensionsListener
                 $this->limitHierarchicalFacets($event);
             }
         }
-        return $event;
-    }
-
-    /**
-     * Post-search operations
-     *
-     * @param EventInterface $event Event
-     *
-     * @return EventInterface
-     */
-    public function onSearchPost(EventInterface $event)
-    {
         return $event;
     }
 
@@ -188,15 +175,15 @@ class SolrExtensionsListener
      */
     protected function limitHierarchicalFacets(EventInterface $event)
     {
-        $config = $this->serviceLocator->get('VuFind\Config');
-        $facetConfig = $config->get($this->facetConfig);
-        if (empty($facetConfig->SpecialFacets->hierarchical)) {
-            return;
-        }
         $params = $event->getParam('params');
         // Check if facets are requested at all
         $fields = $params->get('facet.field');
         if ($fields === null) {
+            return;
+        }
+        $config = $this->serviceLocator->get('VuFind\Config');
+        $facetConfig = $config->get($this->facetConfig);
+        if (empty($facetConfig->SpecialFacets->hierarchical)) {
             return;
         }
         // Check if we're retrieving the complete list
