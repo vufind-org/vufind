@@ -1466,14 +1466,17 @@ class AjaxController extends \VuFind\Controller\AjaxController
         ) {
             $facetHelper = $this->getServiceLocator()
                 ->get('VuFind\HierarchicalFacetHelper');
+            $filters = !empty($facetConfig->FacetFilters->$facet)
+                ? $facetConfig->FacetFilters->$facet->toArray()
+                : [];
+            $excludeFilters = !empty($facetConfig->ExcludeFilters->$facet)
+                ? $facetConfig->ExcludeFilters->$facet->toArray()
+                : [];
+
             $resultContent['data'] = $facetHelper->filterFacets(
                 $resultContent['data'],
-                !empty($facetConfig->FacetFilters->$facet)
-                    ? $facetConfig->FacetFilters->$facet->toArray()
-                    : [],
-                !empty($facetConfig->ExcludeFilters->$facet)
-                    ? $facetConfig->ExcludeFilters->$facet->toArray()
-                    : []
+                $filters,
+                $excludeFilters
             );
         }
 
