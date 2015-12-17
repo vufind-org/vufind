@@ -605,8 +605,13 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         // Query String Parameters
         if (isset($recordId)) {
             $qs   = [];
-            $qs[] = 'query=rid,exact,"' . urlencode(addcslashes($recordId, '"'))
-                . '"';
+            // There is currently (at 2015-12-17) a problem with Primo fetching
+            // records that have colons in the id (e.g.
+            // doaj_xmloai:doaj.org/article:94935655971c4917aab4fcaeafeb67b9).
+            // According to Ex Libris support we must use contains search without
+            // quotes for the time being.
+            $qs[] = 'query=rid,contains,'
+                . urlencode(addcslashes($recordId, '":-()'));
             $qs[] = "institution=$inst_code";
             $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
             $qs[] = "indx=1";
