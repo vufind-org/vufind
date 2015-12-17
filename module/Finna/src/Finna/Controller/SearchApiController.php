@@ -427,11 +427,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         foreach ($array as $key => &$value) {
             if (is_array($value) && !empty($value)) {
                 $this->filterArrayValues($value);
-                $isNumeric
-                    = !(bool)count(array_filter(array_keys($value), 'is_string'));
-                if ($isNumeric) {
-                    $value = array_values($value);
-                }
+                $this->resetArrayIndices($value);
             }
 
             if ((is_array($value) && empty($value))
@@ -442,6 +438,23 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             } else if (is_bool($value) || $value === 'true' || $value === 'false') {
                 $array[$key] = $value === true || $value === 'true' ? 1 : 0;
             }
+        }
+        $this->resetArrayIndices($array);
+    }
+
+    /**
+     * Reset numerical array indices.
+     *
+     * @param array $array Array
+     *
+     * @return void
+     */
+    protected function resetArrayIndices(&$array)
+    {
+        $isNumeric
+            = !(bool)count(array_filter(array_keys($array), 'is_string'));
+        if ($isNumeric) {
+            $array = array_values($array);
         }
     }
 
