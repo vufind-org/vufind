@@ -70,7 +70,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'containerTitle' => 'getContainerTitle',
         'containerVolume' => 'getContainerVolume',
         'corporateAuthor' => 'getCorporateAuthor',
-        'dateSpan' => 'getCleanDateSpan',
         'dedupIds' => ['method' => 'getRecordDedupIds'],
         'dissertationNote' => 'getDissertationNote',
         'edition' => 'getEdition',
@@ -141,7 +140,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'uniformTitles' => 'getUniformTitles',
         'unitId' => 'getUnitID',
         'upc' => 'getUPC',
-        'urls' => ['method' => 'getRecordURLs']
+        'urls' => ['method' => 'getRecordURLs'],
+        'year' => 'getYear'
     ];
 
     /**
