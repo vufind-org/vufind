@@ -1452,7 +1452,33 @@ class AjaxController extends \VuFind\Controller\AjaxController
             $query->set('browseHandler', $query->get('type'));
             $query->set('hiddenFilters', $config['filter']->toArray());
         }
-        return parent::getFacetDataAjax();
+
+        $result = parent::getFacetDataAjax();
+
+        // Filter facet array. Need to decode the JSON response, which is not quite
+        // optimal..
+        $resultContent = json_decode($result->getContent(), true);
+
+        $facet = $this->params()->fromQuery('facetName');
+        $facetConfig = $this->getConfig('facets');
+        if (!empty($facetConfig->FacetFilters->$facet)
+            || !empty($facetConfig->ExcludeFilters->$facet)
+        ) {
+            $facetHelper = $this->getServiceLocator()
+                ->get('VuFind\HierarchicalFacetHelper');
+            $resultContent['data'] = $facetHelper->filterFacets(
+                $resultContent['data'],
+                !empty($facetConfig->FacetFilters->$facet)
+                    ? $facetConfig->FacetFilters->$facet->toArray()
+                    : [],
+                !empty($facetConfig->ExcludeFilters->$facet)
+                    ? $facetConfig->ExcludeFilters->$facet->toArray()
+                    : []
+            );
+        }
+
+        $result->setContent(json_encode($resultContent));
+        return $result;
     }
 
     /**
