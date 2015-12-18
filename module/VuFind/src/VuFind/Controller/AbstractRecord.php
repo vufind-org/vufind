@@ -666,10 +666,14 @@ class AbstractRecord extends AbstractBase
             return $patron;
         }
 
+        $config = $this->getConfig();
+
         $view = $this->createViewModel();
         $view->tabs = $this->getAllTabs();
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
+        $view->ajaxTabs = isset($config->Site->ajaxTabs)
+            ? $config->Site->ajaxTabs : false;
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {
