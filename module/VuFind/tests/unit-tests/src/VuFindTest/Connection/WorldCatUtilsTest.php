@@ -112,21 +112,6 @@ class WorldCatUtilsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test related terminology
-     *
-     * @return void
-     */
-    public function testGetRelatedTerms()
-    {
-        $client = $this->getClient('terms');
-        $terms = $client->getRelatedTerms('hogs');
-        $this->assertEquals(4, count($terms['exact']));
-        $this->assertEquals(7, count($terms['broader']));
-        $this->assertEquals(4, count($terms['narrower']));
-        $this->assertTrue(in_array('Construction workers', $terms['broader']));
-    }
-
-    /**
      * Load WorldCatUtils client w/ fixture
      *
      * @param string $fixture Fixture name

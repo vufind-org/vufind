@@ -427,7 +427,6 @@ $config = [
                     'visualfacets' => 'VuFind\Recommend\Factory::getVisualFacets',
                     'webresults' => 'VuFind\Recommend\Factory::getWebResults',
                     'worldcatidentities' => 'VuFind\Recommend\Factory::getWorldCatIdentities',
-                    'worldcatterms' => 'VuFind\Recommend\Factory::getWorldCatTerms',
                 ],
                 'invokables' => [
                     'alphabrowselink' => 'VuFind\Recommend\AlphaBrowseLink',
@@ -443,6 +442,7 @@ $config = [
                     'summondatabasesdeferred' => 'VuFind\Recommend\SummonDatabasesDeferred',
                     'summonresultsdeferred' => 'VuFind\Recommend\SummonResultsDeferred',
                     'switchtype' => 'VuFind\Recommend\SwitchType',
+                    'worldcatterms' => 'VuFind\Recommend\Deprecated',
                 ],
             ],
             'recorddriver' => [
