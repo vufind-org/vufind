@@ -1,64 +1,67 @@
 <!-- cart - CART.phtml -->
 <?
-  // Set page title.
-  $this->headTitle($this->translate('Book Bag'));
+// Set page title.
+$this->headTitle($this->translate('Book Bag'));
 
-  // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+// Set up breadcrumbs:
+$this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
     . '<li class="active">' . $this->transEsc('Book Bag') . '</li>';
 ?>
 <?=$this->flashmessages()?>
-<form action="<?=$this->url('cart-home')?>" method="post"  name="cartForm">
+<form action="<?=$this->url('cart-home')?>" method="post" name="cartForm">
   <? if (!$this->cart()->isEmpty()): ?>
     <div class="cart-controls clearfix hide-for-print">
       <div class="checkbox left select-all">
-      <label>
-        <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
-        <?=$this->transEsc('select_page')?>
-      </label>
-    </div>
-    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-     <button type="submit" class="button secondary small" role="button" aria-label="submit form" name="saveCart"  title="<?=$this->transEsc('bookbag_save')?>" value="1">
-      <i class="fa fa-save"></i>
-      <?=$this->transEsc('Save')?>
+        <label>
+          <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+          <?=$this->transEsc('select_page')?>
+        </label>
+      </div>
+      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <button type="submit" class="button secondary small" aria-label="submit form" name="saveCart" title="<?=$this->transEsc('bookbag_save')?>" value="1">
+          <i class="fa fa-save"></i>
+          <?=$this->transEsc('Save')?>
+        </button>
+      <? endif; ?>
+      <button type="submit" class="button secondary small" aria-label="submit form" name="email" title="<?=$this->transEsc('bookbag_email')?>" value="1">
+        <i class="fa fa-envelope-o"></i>
+        <?=$this->transEsc('Email')?>
       </button>
-    <? endif; ?>
-    <button type="submit" class="button secondary small" role="button" aria-label="submit form" name="email" title="<?=$this->transEsc('bookbag_email')?>" value="1">
-      <i class="fa fa-envelope-o"></i>
-      <?=$this->transEsc('Email')?>
-    </button>
-    <? $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
-      <button type="submit" class="button secondary small" role="button" aria-label="submit form" name="export" title="<?=$this->transEsc('bookbag_export')?>" value="1">
-        <i class="fa fa-list-alt"></i>
+      <? $exportOptions = $this->export()->getActiveFormats('bulk');
+      if (count($exportOptions) > 0): ?>
+        <button type="submit" class="button secondary small" aria-label="submit form" name="export" title="<?=$this->transEsc('bookbag_export')?>" value="1">
+          <i class="fa fa-list-alt"></i>
           <?=$this->transEsc('Export')?>
+        </button>
+      <? endif; ?>
+      <button type="submit" class="button secondary small" aria-label="submit form" name="print" title="<?=$this->transEsc('print_selected')?>" value="1">
+        <i class="fa fa-print"></i>
+        <?=$this->transEsc('Print')?>
       </button>
-    <? endif; ?>
-    <button type="submit" class="button secondary small" role="button" aria-label="submit form" name="print" title="<?=$this->transEsc('print_selected')?>" value="1">
-      <i class="fa fa-print"></i>
-      <?=$this->transEsc('Print')?>
-    </button>
-    <button type="submit" name="delete" class="button secondary small" data-dropdown="cart-delete-label-dd" role="button" aria-controls="cart-delete-label-dd" aria-expanded="false" id="cart-delete-label" value="1">
+      <? /* We dont need another div here, CK */ ?>
+      <button type="submit" class="button secondary small" aria-label="submit form" name="delete" id="cart-delete-label" value="1">
         <i class="fa fa-trash"></i>
         <?=$this->transEsc('Delete')?>
       </button>
       <ul id="cart-delete-label-dd" class="f-dropdown" data-dropdown-content role="menu" aria-labelledby="cart-delete-label" aria-hidden="true" tabindex="-1">
-        <li><a  id="cart-confirm-delete" onClick="submitFormWithIds(this, {'delete':'delete'})" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a id="cart-confirm-delete" onClick="submitFormWithIds(this, {'delete':'delete'})" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
         <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>
-     <button type="submit" class="button secondary small" name="empty" data-dropdown="cart-empty-label-dd" id="cart-empty-label" value="1" role="button" aria-controls="cart-empty-label-dd" aria-expanded="false">
-     <i class="fa fa-close"></i>
-     <?=$this->transEsc('Empty Book Bag')?>
-     </button>
+      <? /* We dont need another div here, CK */ ?>
+      <button type="submit" class="button secondary small" name="empty" id="cart-empty-label" value="1">
+        <i class="fa fa-close"></i>
+        <?=$this->transEsc('Empty Book Bag')?>
+      </button>
       <ul id="cart-empty-label-dd" class="f-dropdown" data-dropdown-content role="menu" aria-labelledby="cart-empty-label" aria-hidden="true" tabindex="-1">
         <li><a id="cart-confirm-empty" onClick="submitCartForm(this, {'empty':'empty'})" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
         <li><a onClick="$('.fa.fa-spinner').remove()"><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>
- </div>
+    </div>
   <? endif; ?>
   <?=$this->render('cart/contents.phtml')?>
 </form>
 <?
-  $script = <<<JS
+$script = <<<JS
   function determineCallback(elem) {
     var modal = $(elem).parents('.modal');
     if(modal.length > 0) {
@@ -69,7 +72,7 @@
     }
   }
   function submitCartForm(elem, data) {
-    var url = path+'/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Home';
+    var url = VuFind.getPath() + '/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Home';
     $.post(url, data, determineCallback(elem));
   }
   function submitFormWithIds(elem, data) {
@@ -99,11 +102,11 @@
     var form = $(this).closest('form')[0];
     var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
     if(checkboxes.length == 0) {
-      Lightbox.displayError(vufindString['bulk_noitems_advice']);
+      Lightbox.displayError(VuFind.translate('bulk_noitems_advice'));
       return false;
     }
   });
 JS;
 ?>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET')?>
 <!-- cart - CART.phtml end -->

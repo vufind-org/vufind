@@ -1,4 +1,4 @@
-/*global path*/
+/*global VuFind */
 
 function checkItemStatuses() {
   var id = $.map($('.ajaxItem'), function(i) {
@@ -11,7 +11,7 @@ function checkItemStatuses() {
   $(".ajax-availability").removeClass('hide');
   $.ajax({
     dataType: 'json',
-    url: path + '/AJAX/JSON?method=getItemStatuses',
+    url: VuFind.getPath() + '/AJAX/JSON?method=getItemStatuses',
     data: {id:id},
     success: function(response) {
       if(response.status == 'OK') {

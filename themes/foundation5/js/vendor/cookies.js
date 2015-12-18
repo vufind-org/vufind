@@ -1,6 +1,31 @@
-/* --- COOKIE LIBRARY --- https://developer.mozilla.org/en-US/docs/Web/API/document.cookie ---*/
+// https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie/Simple_document.cookie_framework
+/*\
+|*|
+|*|  :: cookies.js ::
+|*|
+|*|  A complete cookies reader/writer framework with full unicode support.
+|*|
+|*|  Revision #1 - September 4, 2014
+|*|
+|*|  https://developer.mozilla.org/en-US/docs/Web/API/document.cookie
+|*|  https://developer.mozilla.org/User:fusionchess
+|*|
+|*|  This framework is released under the GNU Public License, version 3 or later.
+|*|  http://www.gnu.org/licenses/gpl-3.0-standalone.html
+|*|
+|*|  Syntaxes:
+|*|
+|*|  * Cookies.setItem(name, value[, end[, path[, domain[, secure]]]])
+|*|  * Cookies.getItem(name)
+|*|  * Cookies.removeItem(name[, path[, domain]])
+|*|  * Cookies.hasItem(name)
+|*|  * Cookies.keys()
+|*|
+\*/
+
 var Cookies = {
   getItem: function (sKey) {
+    if (!sKey) { return null; }
     return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
   },
   setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
@@ -24,16 +49,17 @@ var Cookies = {
   },  
   
   removeItem: function (sKey, sPath, sDomain) {
-    if (!sKey || !this.hasItem(sKey)) { return false; }
+    if (!this.hasItem(sKey)) { return false; }
     document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + ( sDomain ? "; domain=" + sDomain : "") + ( sPath ? "; path=" + sPath : "");
     return true;
   },
   hasItem: function (sKey) {
+    if (!sKey) { return false; }
     return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
   },
-  keys: /* optional method: you can safely remove it! */ function () {
+  keys: function () {
     var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
-    for (var nIdx = 0; nIdx < aKeys.length; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
+    for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
     return aKeys;
   }
 };

@@ -1,14 +1,33 @@
-
-/*global hierarchySettings, html_entity_decode, jqEscape, path, vufindString*/
-
+/*global hierarchySettings, VuFind */
 
 var hierarchyID, recordID, htmlID, hierarchyContext;
 var baseTreeSearchFullURL;
 
+/* Utility functions */
+function htmlEncodeId(id) {
+  return id.replace(/\W/g, "-"); // Also change Hierarchy/TreeRenderer/JSTree.php
+}
+function html_entity_decode(string, quote_style) {
+  var hash_map = {
+    '&': '&amp;',
+    '>': '&gt;',
+    '<': '&lt;'
+  };
+  var tmp_str = string.toString();
+
+  for (var symbol in hash_map) {
+    var entity = hash_map[symbol];
+    tmp_str = tmp_str.split(entity).join(symbol);
+  }
+  tmp_str = tmp_str.split('&#039;').join("'");
+
+  return tmp_str;
+}
+
 function getRecord(recordID)
 {
   $.ajax({
-    url: path + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
+    url: VuFind.getPath() + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
     dataType: 'html',
     success: function(response) {
       if (response) {
@@ -42,11 +61,6 @@ function changeLimitReachedLabel(display)
   }
 }
 
-function htmlEncodeId(id)
-{
-  return id.replace(/\W/g, "-"); // Also change Hierarchy/TreeRenderer/JSTree.php
-}
-
 var searchAjax = false;
 function doTreeSearch()
 {
@@ -64,7 +78,7 @@ function doTreeSearch()
       searchAjax.abort();
     }
     searchAjax = $.ajax({
-      "url" : path + '/Hierarchy/SearchTree?' + $.param({
+      "url" : VuFind.getPath() + '/Hierarchy/SearchTree?' + $.param({
         'lookfor': keyword,
         'hierarchyID': hierarchyID,
         'type': $("#treeSearchType").val()
@@ -118,7 +132,7 @@ function buildJSONNodes(xml)
 }
 function buildTreeWithXml(cb)
 {
-  $.ajax({'url': path + '/Hierarchy/GetTree',
+  $.ajax({'url': VuFind.getPath() + '/Hierarchy/GetTree',
     'data': {
       'hierarchyID': hierarchyID,
       'id': recordID,
@@ -181,7 +195,7 @@ $(document).ready(function()
       'core' : {
         'data' : function (obj, cb) {
           $.ajax({
-            'url': path + '/Hierarchy/GetTreeJSON',
+            'url': VuFind.getPath() + '/Hierarchy/GetTreeJSON',
             'data': {
               'hierarchyID': hierarchyID,
               'id': recordID

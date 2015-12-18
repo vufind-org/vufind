@@ -38,7 +38,7 @@
       <li>
         <a href="<?= $this->url('myresearch-illrequests') ?>" class="<?= $this->active == 'ILLRequests' ? ' active' : '' ?>">
           <?= $this->transEsc('Interlibrary Loan Requests') ?>
-          <span class="pull-right"><i class="fa fa-fw fa-exchange"></i></span>
+          <span class="pull-right"><i class="fa fa-fw fa-comment"></i></span>
         </a>
       </li>
     <? endif; ?>
@@ -67,12 +67,14 @@
       </li>
     <? endif; ?>
   <? endif; ?>
-  <li>
-    <a href="<?= $this->url('search-history') ?>?require_login" class="<?= $this->active == 'history' ? ' active' : '' ?>">
+  <? if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
+    <li>
+      <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item<?=$this->active == 'history' ? ' active' : ''?>">
       <?= $this->transEsc('history_saved_searches') ?>
       <span class="pull-right"><i class="fa fa-fw fa-search"></i></span>
-    </a>
-  </li>
+      </a>
+    </li>
+  <? endif; ?>
   <? if ($user = $this->auth()->isLoggedIn()): ?>
     <li>
       <a href="<?= $this->url('myresearch-logout') ?>">

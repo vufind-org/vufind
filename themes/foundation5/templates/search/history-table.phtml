@@ -1,11 +1,12 @@
 <!-- search - HISTORY-TABLE.phtml -->
+<? $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled'; ?>
 <table class="table">
   <tr>
     <th width="20%"><?=$this->transEsc("history_time")?></th>
     <th><?=$this->transEsc("history_search")?></th>
     <th><?=$this->transEsc("history_limits")?></th>
     <th><?=$this->transEsc("history_results")?></th>
-    <th width="12%"><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th>
+    <? if ($saveSupported): ?><th width="12%"><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th><? endif; ?>
   </tr>
   <? foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
     <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
@@ -26,6 +27,7 @@
         <? endforeach; ?>
       </td>
       <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
+      <? if ($saveSupported): ?>
       <td>
         <? if ($this->showSaved): ?>
           <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-remove"></i> <?=$this->transEsc("history_delete_link")?></a>
@@ -33,6 +35,7 @@
           <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-save"></i> <?=$this->transEsc("history_save_link")?></a>
         <? endif; ?>
       </td>
+      <? endif; ?>
     </tr>
   <? endforeach; ?>
 </table>

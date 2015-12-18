@@ -22,7 +22,7 @@
   <div id="dateVisColorSettings"><!-- do not delete! used for passing CSS to Javascript --></div>
   <?
     $js = "loadVis('" . $this->recommend->getFacetFields() . "', '"
-        . $this->recommend->getSearchParams() . "', path, "
+        . $this->recommend->getSearchParams() . "', VuFind.getPath(), "
         . $this->recommend->getZooming() . ");";
     echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $js, 'SET');
   ?>

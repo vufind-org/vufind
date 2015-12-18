@@ -46,23 +46,6 @@
           </a>
         </span><br />
       <? endif; ?>
-      <? if (!empty($customLinks)): ?>
-        <span>
-          <div class="custom-links">
-            <? foreach ($customLinks as $customLink): ?>
-          <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
-              $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
-              $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
-              $name = isset($customLink['Name']) ? $customLink['Name'] : '';?>
-          <span>
-            <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$mot?>" class="custom-link">
-              <? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?>
-            </a>
-          </span><br />
-            <? endforeach; ?>
-          </div>
-        </span>
-      <? endif; ?>
     </div>
   </div>
   <div class="medium-9 columns">
@@ -105,6 +88,24 @@
         </tr>
       <? endif; ?>
     </table>
+
+    <div class="resultItemLine4 custom-links">
+
+    <? $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
+    if (!empty($customLinks)): ?>
+      <? foreach ($customLinks as $customLink): ?>
+      <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
+          $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
+          $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
+          $name = isset($customLink['Text']) ? $customLink['Text'] : '';
+      ?>
+      <span>
+        <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
+          <? if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>" /> <? endif; ?><?=$this->escapeHtml($name)?>
+        </a>
+      </span>
+      <? endforeach; ?>
+    <? endif; ?>
   </div>
 </div>
 <!-- redordDriver - eds - CORE.phtml end -->

@@ -1,8 +1,8 @@
-/*global extractClassParams, path*/
+/*global extractClassParams, VuFind */
 
 function loadResolverLinks($target, openUrl) {
     $target.addClass('ajax_availability');
-    var url = path + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl});
+  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl});
     $.ajax({
         dataType: 'json',
         url: url,

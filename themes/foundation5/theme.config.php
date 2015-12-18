@@ -12,11 +12,11 @@ return array(
     'vendor/jquery.min.js',
     'vendor/modernizr.js', // html5 for older browsers
     'vendor/fastclick.js',  // improves experience for mobile users
-    'vendor/rc4.js',
     'foundation.min.js', // This includes all components
     //	'foundation/foundation.js', // Activate this plus individual FNDTN component scripts below, if desired
     //	'foundation/foundation.topbar.js',
-    'vendor/typeahead.js',
+    'autocomplete.js',
+    'vendor/rc4.js',
     'common.js',
     'lightbox.js',
   ),

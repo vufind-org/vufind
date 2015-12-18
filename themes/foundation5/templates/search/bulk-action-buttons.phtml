@@ -21,7 +21,7 @@
         <? endif; ?>
       <? endif; ?>
       <? if (isset($this->showCartControls) && $this->showCartControls): ?>
-       <input id="<?= $this->idPrefix ?>updateCart" class="button secondary small" role="button" type="submit" name="add" value="<?= $this->transEsc('Add to Book Bag') ?>" data-dropdown="<?= $this->idPrefix ?>bookbg-dd" data-options="is_hover:true; hover_timeout:5000" aria-controls="bookbg-dd" aria-haspopup="true" />
+       <input id="<?= $this->idPrefix ?>updateCart" class="button secondary small" role="button" type="submit" name="add" value="<?= $this->transEsc('Add to Book Bag') ?>" data-dropdown="<?= $this->idPrefix ?>bookbg-dd" data-options="is_hover:true;" aria-controls="bookbg-dd" aria-haspopup="true" />
         <ul id="<?= $this->idPrefix ?>bookbg-dd" class="f-dropdown" data-dropdown-content aria-hidden="true" aria-autoclose="true" tabindex="-1">
           <li class="bookbg-msg"><?= $this->transEsc('Add to Book Bag') ?></li>
         </ul>

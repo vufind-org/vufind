@@ -67,7 +67,6 @@ if (isset($searchDetails) && is_object($searchDetails)) {
       <input type="hidden" name="sort" value="relevance">
       <div class="clearfix">
         <h2 class="left"><?= $this->transEsc('Advanced Search') ?></h2>
-
         <div id="groupJoin" class="right hide">
           <label for="groupJoinOptions"><?= $this->transEsc("search_match") ?>:</label>
           <select id="groupJoinOptions" name="join" class="auto"><? /* leave class=auto - was form-control and used in advanced_search.js - CK */ ?>
@@ -109,7 +108,7 @@ if (isset($searchDetails) && is_object($searchDetails)) {
                             <input name="lookfor<?= $group ?>[]" id="search_lookfor<?= $group . '_' . $search ?>" class="input_slot" type="text"<? if (isset($setQueries[$group][$search])): ?> value="<?= $this->escapeHtml($setQueries[$group][$search]->getString()) ?>"<? endif; ?>><? /* Leave input_slot  in - used in advancedsearch.js */ ?>
                           </div>
                           <div class="small-10 medium-4 columns">
-                            <select class="type" name="type<?= $group ?>[]">
+                            <select class="type auto" name="type<?= $group ?>[]">
                               <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                                 <option
                                     value="<?= $this->escapeHtml($searchVal) ?>"<? if (isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()): ?> selected<? endif; ?>><?= $this->transEsc($searchDesc) ?></option>
@@ -117,13 +116,17 @@ if (isset($searchDetails) && is_object($searchDetails)) {
                             </select>
                           </div>
                           <div class="small-2 medium-1 columns close hide">
-                            <a class="help-block small-text-right medium-text-center" title="<?= $this->transEsc("Delete") ?>" href="#"><span class="show-for-medium-up alert">&times;</span> <span class="show-for-small-only alert">&times; <small class="sr-only"><?= $this->transEsc("Delete") ?></small></span></a>
+                            <a class="help-block small-text-right medium-text-center" title="<?= $this->transEsc("Delete") ?>" href="#">
+                              <span class="show-for-medium-up alert">&times;</span>
+                              <span class="show-for-small-only alert">&times; <small class="sr-only"><?= $this->transEsc("Delete") ?></small></span>
+                            </a>
                           </div>
                         </div>
                       </div>
                       <? if ($group == 0 && $search == 0): ?>
                         </div>
-                        <i class="fa fa-plus search_place_holder hide"></i> <a href="#" class="add_search_link hide"><?= $this->transEsc("add_search") ?></a>
+                        <i class="fa fa-plus search_place_holder hide"></i>
+                        <a href="#" class="add_search_link hide"><?= $this->transEsc("add_search") ?></a>
                       <? endif; ?>
                     <? endfor; ?>
                   </div>
@@ -131,7 +134,7 @@ if (isset($searchDetails) && is_object($searchDetails)) {
               </div>
               <div class="medium-3 columns match">
                 <label class="search_bool"><?= $this->transEsc("search_match") ?>:&nbsp;</label>
-                <select name="bool<?= $group ?>[]" id="search_bool<?= $group ?>">
+                <select name="bool<?= $group ?>[]" id="search_bool<?= $group ?>" class="auto">
                   <option value="AND"<? if (isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]): ?> selected<? endif; ?>><?= $this->transEsc("search_AND") ?></option>
                   <option value="OR"<? if (isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]): ?> selected<? endif; ?>><?= $this->transEsc("search_OR") ?></option>
                   <option value="NOT"<? if (isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]): ?> selected<? endif; ?>><?= $this->transEsc("search_NOT") ?></option>

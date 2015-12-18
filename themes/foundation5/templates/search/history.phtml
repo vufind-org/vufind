@@ -6,11 +6,13 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
     . '<li class="active">' . $this->transEsc('History') . '</li>';
+
+  $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
 ?>
 
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
-    <? if (!empty($this->saved)): ?>
+    <? if ($saveSupported && !empty($this->saved)): ?>
       <h2><?=$this->transEsc("history_saved_searches")?></h2>
       <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => true));?>
     <? endif; ?>
@@ -24,6 +26,7 @@
     <? endif; ?>
   </div>
 
+  <? if ($saveSupported): ?>
   <div class="<?=$this->layoutClass('sidebar')?>">
     <?=$this->context($this)->renderInContext(
         "myresearch/menu.phtml",
@@ -32,5 +35,6 @@
       );
     ?>
   </div>
+  <? endif; ?>
 </div>
 <!-- search - HISTORY.phtml end -->

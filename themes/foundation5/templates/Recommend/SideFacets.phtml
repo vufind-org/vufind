@@ -182,8 +182,8 @@ JS;
                     </li>
                   <? endif; ?>
                   <? if ($thisFacet['isApplied']): ?>
-                    <li class="list-group-item active<? if ($i >= $facets_before_more): ?><?= $moreClass ?>"<? endif ?>>
-                      <a class="active <? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?= $this->currentPath() . $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>">
+                    <li class="<? if ($i >= $facets_before_more): ?> <?= $moreClass ?> <? endif ?>" >
+                      <a class="active <? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?= $this->currentPath() . $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>" >
                         <? if ($thisFacet['operator'] == 'OR'): ?>
                           <i class="fa fa-check-square-o"></i>
                         <? else: ?>

@@ -4,10 +4,10 @@
   $this->headTitle($this->translate('Comments') . ': ' . $this->driver->getBreadcrumb());
 ?>
 
-<div id="commentList">
+<div class="comment-list">
   <?=$this->render('record/comments-list.phtml')?>
 </div>
-<form class="comment row" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post">
+<form class="comment-form row" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post">
   <div class="medium-3 columns name">
     <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
     <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>"/>
@@ -16,10 +16,10 @@
   <div class="medium-9 columns">
     <? $user = $this->auth()->isLoggedIn() ?>
     <? if($user): ?>
-      <textarea id="comment" name="comment" class="auto" rows="3" required></textarea><br/>
+      <textarea name="comment" class="auto" rows="3" required></textarea><br/>
       <input class="button small" data-loading-text="<?=$this->transEsc('Submitting') ?>&nbsp;..." type="submit" role="button" value="<?=$this->transEsc("Add your comment")?>"/>
     <? else: ?>
-      <textarea id="comment" name="comment" class="auto" rows="3" disabled></textarea><br/>
+      <textarea name="comment" class="auto" rows="3" disabled></textarea><br/>
 		<input onClick="Lightbox.get('MyResearch', 'UserLogin'); return false;" class="button small" type="submit" role="button" value="<?=$this->transEsc("You must be logged in first")?>"/>
     <? endif; ?>
   </div>

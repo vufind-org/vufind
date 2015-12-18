@@ -46,13 +46,13 @@ if($loggedin = $this->auth()->isLoggedIn()) {
       <p><?=$this->truncate($summary, 300)?></p>
 
       <? if(strlen($summary) > 300): ?>
-        <p><a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>'><?=$this->transEsc('Full description')?></a></p>
+        <p><a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a></p>
       <? endif; ?>
     <? endif; ?>
 
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Display the lists that this record is saved to */ ?>
-      <div class="savedLists hide alert-box info" id="savedLists" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
+      <div class="savedLists hide alert-box info" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
         <strong><?=$this->transEsc("Saved in")?>:</strong>
       </div>
     <? endif; ?>
@@ -259,7 +259,7 @@ if($loggedin = $this->auth()->isLoggedIn()) {
           <th><?=$this->transEsc('Tags')?>: </th>
           <td>
             <span class="right hide-for-print">
-              <a id="tagRecord" class="modal-link" href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" title="<?=$this->transEsc('Add Tag')?>"><i class="fa fa-plus"></i><?=$this->transEsc('Add Tag')?></a>
+              <a class="tagRecord modal-link right" href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" title="<?=$this->transEsc('Add Tag')?>"><i class="fa fa-plus"></i> <?=$this->transEsc('Add Tag')?></a>
             </span>
             <?=$this->context($this)->renderInContext('record/taglist', array('tagList'=>$tagList, 'loggedin'=>$loggedin)) ?>
           </td>

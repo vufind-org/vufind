@@ -19,34 +19,25 @@ $lastSort = $options->getLastSort();
 $lastLimit = $options->getLastLimit();
 ?>
 <? if ($this->searchType == 'advanced'): ?>
-  <div id="searchForm">
+  <div class="searchForm">
     <? $tabs = $this->render('search/searchTabs'); ?>
-    <? if (!empty($tabs)): ?><?= $tabs ?>
-    <div class="tabs-content clearfix"><? endif; ?>
+    <? if (!empty($tabs)): ?><?= $tabs ?><div class="tabs-content clearfix"><? endif; ?>
       <p class="adv_search_terms"><?= $this->transEsc("Your search terms") ?> : "<strong><?= $this->escapeHtml($this->lookfor) ?></strong>"</p>
-      <ul class="adv_search_links"><!-- this ul-li is better than the original p-a-list - stick to it - CK -->
-        <li>
-          <a href="<?= $this->url($advSearch) ?>?edit=<?= $this->escapeHtmlAttr($this->searchId) ?>"><?= $this->transEsc("Edit this Advanced Search") ?></a>
-        </li>
-        <li>
-          <a href="<?= $this->url($advSearch) ?>"><?= $this->transEsc("Start a new Advanced Search") ?></a>
-        </li>
-        <li>
-          <a href="<?= $this->url($searchHome) ?>"><?= $this->transEsc("Start a new Basic Search") ?></a>
-        </li>
+      <ul class="adv_search_links">
+        <li><a href="<?= $this->url($advSearch) ?>?edit=<?= $this->escapeHtmlAttr($this->searchId) ?>"><?= $this->transEsc("Edit this Advanced Search") ?></a></li>
+        <li><a href="<?= $this->url($advSearch) ?>"><?= $this->transEsc("Start a new Advanced Search") ?></a></li>
+        <li><a href="<?= $this->url($searchHome) ?>"><?= $this->transEsc("Start a new Basic Search") ?></a></li>
       </ul>
       <? if (!empty($tabs)): ?></div><? endif; ?>
   </div>
 <? else: ?>
-<form role="search" method="get" action="<?= $this->url($basicSearch) ?>" name="searchForm" id="searchForm" autocomplete="off" class="inline">
+<form  class="searchForm inline" role="search" method="get" action="<?= $this->url($basicSearch) ?>" name="searchForm" autocomplete="off">
   <?= $this->render('search/searchTabs'); ?>
   <ul class="left list-unstyled">
-    <li class="has-form">
-      <input class="search-query<? if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" id="searchForm_lookfor" type="text" name="lookfor" value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"/>
-    </li>
+    <li class="has-form"><input class="searchForm_lookfor form-control search-query<? if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"/></li>
     <? if ($handlerCount > 1): ?>
       <li class="has-form">
-        <select id="searchForm_type" name="type" data-native-menu="false">
+        <select class="searchForm_type form-control" name="type" data-native-menu="false">
           <? foreach ($handlers as $handler): ?>
             <option value="<?= $this->escapeHtmlAttr($handler['value']) ?>"<?= $handler['selected'] ? ' selected="selected"' : '' ?>><?= $handler['indent'] ? '-- ' : '' ?><?= $this->transEsc($handler['label']) ?></option>
           <? endforeach; ?>
@@ -60,7 +51,7 @@ $lastLimit = $options->getLastLimit();
     </li>
     <? if ($advSearch): ?>
       <li class="has-form">
-        <a href="<?= $this->url($advSearch) ?>" class="button secondary postfix" role="button" rel="nofollow"><?= $this->transEsc("Advanced") ?></a>
+        <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : '') ?>" class="button secondary postfix" role="button" rel="nofollow"><?= $this->transEsc("Advanced") ?></a>
       </li>
     <? endif; ?>
   </ul>
@@ -87,8 +78,8 @@ $lastLimit = $options->getLastLimit();
   <? if ((isset($hasDefaultsApplied) && $hasDefaultsApplied) || !empty($filterDetails)): ?>
     <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
     <div class="checkbox" id="keepfilters">
-        <input onChange="$('.applied-filter').click()" type="checkbox"<?= $defaultFilterState ?> id="searchFormKeepFilters"/>
-      <label for="searchFormKeepFilters"><?= $this->transEsc("basic_search_keep_filters") ?></label>
+        <input onChange="$('.applied-filter').click()" type="checkbox"<?= $defaultFilterState ?> class="searchFormKeepFilters"/>
+      <label><?= $this->transEsc("basic_search_keep_filters") ?></label>
     </div>
     <div class="hide">
       <? foreach ($filterDetails as $current): ?>
@@ -116,6 +107,6 @@ $lastLimit = $options->getLastLimit();
   }
   ?>
 </form>
-<script type="text/javascript">$("#searchForm_lookfor").focus()</script>
+  <script type="text/javascript">$(".searchForm_lookfor:visible").focus()</script>
 <? endif; ?>
 <!-- search - searchbox.PHTML end -->

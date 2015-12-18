@@ -4,7 +4,7 @@
   $accessLevel = $this->driver->getAccessLevel();
   $restrictedView = empty($accessLevel) ? false : true;
 ?>
-<div class="source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?> small-11 columns">
+<div class="small-11 columns source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
   <div class="row">
     <div class="small-3 medium-2 columns left">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
@@ -14,7 +14,7 @@
           </a>
       <? else: ?>
           <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
-          <div><?=$this->transEsc($this->driver->getPubType())?></div>
+        <div><?=$this->driver->getPubType()?></div>
       <? endif; ?>
     </div>
     <div class="small-6 medium-7 columns middle">
@@ -46,32 +46,34 @@
             </p>
           </div>
         <? endif; ?>
-      <? $customLinks = $this->driver->getCustomLinks();
+
+  <div class="resultItemLine4 custom-links">
+    <? $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
       if (!empty($customLinks)): ?>
-      <div class="resultItemLine4 custom-links">
         <? foreach ($customLinks as $customLink): ?>
         <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
             $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
             $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
-            $name = isset($customLink['Name']) ? $customLink['Name'] : '';?>
+          $name = isset($customLink['Text']) ? $customLink['Text'] : '';
+      ?>
         <span>
-          <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$mot?>" class="custom-link">
-            <? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?>
+        <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
+          <? if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>" /> <? endif; ?><?=$this->escapeHtml($name)?>
           </a>
         </span>
         <? endforeach; ?>
+    <? endif; ?>
       </div>
-      <? endif; ?>
 
       <? if ($this->driver->hasHTMLFullTextAvailable()): ?>
-        <a href="<?= $this->recordLink()->getUrl($this->driver, 'fulltext') ?>#html" class="icon html fulltext _record_link">
+      <a href="<?= $this->recordLink()->getUrl($this->driver, 'fulltext') ?>#html" class="icon html fulltext _record_link" target="_blank">
           <?=$this->transEsc('HTML Full Text')?>
         </a>
         &nbsp; &nbsp;
       <? endif; ?>
 
       <? if ($this->driver->hasPdfAvailable()): ?>
-        <a href="<?= $this->recordLink()->getUrl($this->driver).'/PDF'; ?>" class="icon pdf fulltext">
+      <a href="<?= $this->recordLink()->getUrl($this->driver).'/PDF'; ?>" class="icon pdf fulltext" target="_blank">
           <?=$this->transEsc('PDF Full Text')?>
         </a>
       <? endif; ?>
@@ -98,7 +100,7 @@
         <i class="fa fa-fw fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
 
         <? /* Saved lists */ ?>
-        <div class="savedLists hide alert-box info" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
+        <div class="savedLists alert-box info hide" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
           <strong><?=$this->transEsc("Saved in")?>:</strong>
         </div>
       <? endif; ?>
@@ -109,7 +111,7 @@
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
             <i class="fa fa-fw fa-sitemap"></i>
-            <a class="hierarchyTreeLinkText modal-link" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>" title="<?=$this->transEsc('hierarchy_tree')?>">
+          <a class="hierarchyTreeLinkText modal-link" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
               <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
             </a>
           </div>
@@ -117,5 +119,3 @@
       <? endif; ?>
     </div>
   </div>
-</div>
-<!-- recordDriver - eds - RESULT-LIST.phtml end -->

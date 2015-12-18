@@ -1,9 +1,13 @@
-/*global path */
+/*global VuFind */
 function setUpILLRequestForm(recordId) {
     $("#ILLRequestForm #pickupLibrary").change(function() {
         $("#ILLRequestForm #pickupLibraryLocation option").remove();
         $("#ILLRequestForm #pickupLibraryLocationLabel i").addClass("fa fa-spinner icon-spin");
-        var url = path + '/AJAX/JSON?' + $.param({method:'getLibraryPickupLocations', id: recordId, pickupLib: $("#ILLRequestForm #pickupLibrary").val() });
+    var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({
+      id: recordId,
+      method:'getLibraryPickupLocations',
+      pickupLib: $("#ILLRequestForm #pickupLibrary").val()
+    });
         $.ajax({
             dataType: 'json',
             cache: false,

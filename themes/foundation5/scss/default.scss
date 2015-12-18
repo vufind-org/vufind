@@ -273,7 +273,8 @@ ul {
 }
 
 ul.date-range-slider {
-  margin: .25rem 1rem 0 1rem
+  margin: .25rem 1rem 0 1rem;
+  list-style: none;
 }
 
 .slider-container {
@@ -486,9 +487,9 @@ ul.date-range-slider {
 }
 
 // Search form general - top-bar searchForm above
-#searchForm_lookfor, #searchForm_type {margin-top: 1px;} // search term and all fields fields
+.searchForm_lookfor, .searchForm_type {margin-top: 1px;} // search term and all fields fields
 
-#searchForm {
+.searchForm {
 
   ul {
     margin-bottom: 0;
@@ -521,7 +522,7 @@ ul.date-range-slider {
 .top-bar + .nav.searchbox {
   background-color: $topbar-bg-color;
 
-  // stacked full width lis on small devices
+  // stacked full width <li>s on small devices
   ul {
     width: 100%;
 
@@ -678,6 +679,33 @@ ul.date-range-slider {
   }
 
   // Advanced Search: search term insert - END
+
+// Autocomplete
+.autocomplete-results {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 2px;
+  overflow: hidden
+}
+.autocomplete-results .item {
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  display: block;
+  padding-bottom: .75rem;
+  padding-left: 1.25rem;
+  padding-right: 1rem;
+  padding-top: .75rem;
+}
+.autocomplete-results .item:last-child {
+  border: 0
+}
+.autocomplete-results .item.selected {
+  background-color: $primary-color;
+  color: $input-font-color;
+}
+// Autocomplete - END
+
 
 // Searchbox - END
 
@@ -1035,6 +1063,8 @@ button,
     padding: .5rem 1rem;
   }
 }
+.tabs-content table {width: 100%}
+
 header #searchForm .tabs {
   border: 0;
 
