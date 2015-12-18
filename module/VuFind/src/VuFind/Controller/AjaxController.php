@@ -376,14 +376,12 @@ class AjaxController extends AbstractBase
             $locations, $locationSetting, 'Multiple Locations', 'location_'
         );
 
-        // Dedup available services
-        $services = array_unique($services);
-
         if (!empty($services)) {
+            // Dedup available services
             $availability_message = $this->getViewRenderer()
                 ->render(
                     'ajax/status-available-services.phtml',
-                    ['services' => $services]
+                    ['services' => array_unique($services)]
                 );
         } else {
             $availability_message = $use_unknown_status
