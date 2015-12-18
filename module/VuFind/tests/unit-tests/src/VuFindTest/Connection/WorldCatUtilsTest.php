@@ -45,48 +45,6 @@ use Zend\Http\Client as HttpClient;
 class WorldCatUtilsTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Test XISBN processing.
-     *
-     * @return void
-     */
-    public function testXISBN()
-    {
-        $client = $this->getClient('xisbn');
-        $result = $client->getXISBN('0140435123');
-        $this->assertEquals(82, count($result));
-        $this->assertTrue(in_array('0140435123', $result));
-        $this->assertTrue(in_array('1848378912', $result));
-    }
-
-    /**
-     * Test XISSN processing.
-     *
-     * @return void
-     */
-    public function testXISSN()
-    {
-        $client = $this->getClient('xissn');
-        $result = $client->getXISSN('0362-4331');
-        $this->assertEquals(4, count($result));
-        $this->assertTrue(in_array('0362-4331', $result));
-        $this->assertTrue(in_array('1542-667X', $result));
-    }
-
-    /**
-     * Test XOCLCNUM processing.
-     *
-     * @return void
-     */
-    public function testXOCLCNUM()
-    {
-        $client = $this->getClient('xoclcnum');
-        $result = $client->getXOCLCNUM('42371494');
-        $this->assertEquals(568, count($result));
-        $this->assertTrue(in_array('42371494', $result));
-        $this->assertTrue(in_array('1710732', $result));
-    }
-
-    /**
      * Test related identities
      *
      * @return void

@@ -494,10 +494,12 @@ $config = [
             'related' => [
                 'abstract_factories' => ['VuFind\Related\PluginFactory'],
                 'factories' => [
-                    'editions' => 'VuFind\Related\Factory::getEditions',
                     'similar' => 'VuFind\Related\Factory::getSimilar',
-                    'worldcateditions' => 'VuFind\Related\Factory::getWorldCatEditions',
                     'worldcatsimilar' => 'VuFind\Related\Factory::getWorldCatSimilar',
+                ],
+                'invokables' => [
+                    'editions' => 'VuFind\Related\Deprecated',
+                    'worldcateditions' => 'VuFind\Related\Deprecated',
                 ],
             ],
             'resolver_driver' => [

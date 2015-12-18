@@ -90,22 +90,34 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         // Prior to 2.4, we expect exactly one warning about using a deprecated
         // theme:
         if ((float)$version < 1.3) {
-            $this->assertEquals(1, count($warnings));
+            $this->assertEquals(2, count($warnings));
+            $this->assertEquals(
+                'The Editions related record module is no longer '
+                . 'supported due to OCLC\'s xID API shutdown.'
+                . ' It has been removed from your settings.',
+                $warnings[0]
+            );
             $this->assertEquals(
                 "WARNING: This version of VuFind does not support "
                 . "the default theme.  Your config.ini [Site] theme setting "
                 . "has been reset to the default: bootprint3.  You may need to "
                 . "reimplement your custom theme.",
-                $warnings[0]
+                $warnings[1]
             );
         } else if ((float)$version < 2.4) {
-            $this->assertEquals(1, count($warnings));
+            $this->assertEquals(2, count($warnings));
+            $this->assertEquals(
+                'The Editions related record module is no longer '
+                . 'supported due to OCLC\'s xID API shutdown.'
+                . ' It has been removed from your settings.',
+                $warnings[0]
+            );
             $this->assertEquals(
                 "WARNING: This version of VuFind does not support "
                 . "the blueprint theme.  Your config.ini [Site] theme setting "
                 . "has been reset to the default: bootprint3.  You may need to "
                 . "reimplement your custom theme.",
-                $warnings[0]
+                $warnings[1]
             );
         } else {
             $this->assertEquals(0, count($warnings));
@@ -267,6 +279,35 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             'noview,full', $results['config.ini']['Content']['GoogleOptions']['link']
         );
+    }
+
+    /**
+     * Test removal of xID settings
+     *
+     * @return void
+     */
+    public function testXidDeprecation()
+    {
+        $upgrader = $this->getUpgrader('xid');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            ['Similar'], $results['config.ini']['Record']['related']
+        );
+        $this->assertEquals(
+            ['WorldCatSimilar'], $results['WorldCat.ini']['Record']['related']
+        );
+        $this->assertEquals(['apiKey' => 'foo'], $results['config.ini']['WorldCat']);
+        $expectedWarnings = [
+            'The [WorldCat] id setting is no longer used and has been removed.',
+            'The [WorldCat] xISBN_token setting is no longer used and has been removed.',
+            'The [WorldCat] xISBN_secret setting is no longer used and has been removed.',
+            'The [WorldCat] xISSN_token setting is no longer used and has been removed.',
+            'The [WorldCat] xISSN_secret setting is no longer used and has been removed.',
+            'The Editions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
+            'The WorldCatEditions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
+        ];
+        $this->assertEquals($expectedWarnings, $upgrader->getWarnings());
     }
 
     /**
