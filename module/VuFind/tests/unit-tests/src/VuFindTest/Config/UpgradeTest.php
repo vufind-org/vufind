@@ -89,39 +89,19 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
 
         // Prior to 2.4, we expect exactly one warning about using a deprecated
         // theme:
+        $expectedWarnings = [];
         if ((float)$version < 1.3) {
-            $this->assertEquals(2, count($warnings));
-            $this->assertEquals(
-                'The Editions related record module is no longer '
-                . 'supported due to OCLC\'s xID API shutdown.'
-                . ' It has been removed from your settings.',
-                $warnings[0]
-            );
-            $this->assertEquals(
-                "WARNING: This version of VuFind does not support "
+            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
                 . "the default theme.  Your config.ini [Site] theme setting "
                 . "has been reset to the default: bootprint3.  You may need to "
-                . "reimplement your custom theme.",
-                $warnings[1]
-            );
+                . "reimplement your custom theme.";
         } else if ((float)$version < 2.4) {
-            $this->assertEquals(2, count($warnings));
-            $this->assertEquals(
-                'The Editions related record module is no longer '
-                . 'supported due to OCLC\'s xID API shutdown.'
-                . ' It has been removed from your settings.',
-                $warnings[0]
-            );
-            $this->assertEquals(
-                "WARNING: This version of VuFind does not support "
+            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
                 . "the blueprint theme.  Your config.ini [Site] theme setting "
                 . "has been reset to the default: bootprint3.  You may need to "
-                . "reimplement your custom theme.",
-                $warnings[1]
-            );
-        } else {
-            $this->assertEquals(0, count($warnings));
+                . "reimplement your custom theme.";
         }
+        $this->assertEquals($expectedWarnings, $warnings);
 
         // Summon should always have the checkboxes setting turned on after
         // upgrade:
