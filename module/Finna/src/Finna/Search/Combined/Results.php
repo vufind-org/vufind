@@ -39,4 +39,12 @@ namespace Finna\Search\Combined;
 class Results extends \VuFind\Search\Combined\Results
 {
     use \Finna\Search\Results\SearchResultsTrait;
+
+    /**
+     * Search backend identifiers.
+     *
+     * @var string
+     */
+    protected $backendId = 'Combined';
+
 }
