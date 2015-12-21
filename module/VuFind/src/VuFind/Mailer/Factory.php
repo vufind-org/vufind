@@ -64,6 +64,17 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
                 'username' => $config->Mail->username,
                 'password' => $config->Mail->password
             ];
+            if (isset($config->Mail->secure)) {
+                // always set user defined secure connection
+                $settings['connection_config']['ssl'] = $config->Mail->secure;
+            } else {
+                // set default secure connection based on configured port
+                if ($settings['port'] == '587') {
+                    $settings['connection_config']['ssl'] = 'tls';
+                } elseif ($settings['port'] == '487') {
+                    $settings['connection_config']['ssl'] = 'ssl';
+                }
+            }
         }
         $transport = new Smtp();
         $transport->setOptions(new SmtpOptions($settings));
