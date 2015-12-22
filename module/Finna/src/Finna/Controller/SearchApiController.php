@@ -835,7 +835,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 if (isset($url['desc'])
                     && !$translationEmpty('link_' . $url['desc'])
                 ) {
-                    $url['desc'] = $this->translate('link_' . $url['desc']);
+                    $url['translated'] = $this->translate('link_' . $url['desc']);
+                    unset($url['desc']);
                 }
             }
         }
@@ -843,8 +844,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         if ($serviceUrls) {
             $source = $record->getDataSource();
             foreach ($serviceUrls as &$url) {
-                if (isset($url['desc'])) {
-                    $url['desc'] = $this->translate($source . '_' . $url['desc']);
+                if (isset($url['desc'])
+                    && !$translationEmpty($source . '_' . $url['desc'])
+                ) {
+                    $url['translated']
+                        = $this->translate($source . '_' . $url['desc']);
+                    unset($url['desc']);
                 }
             }
             $urls += $serviceUrls;
