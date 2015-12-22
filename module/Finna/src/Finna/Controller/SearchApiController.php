@@ -600,6 +600,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Get record identifier
      *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
      * @return mixed
      */
     public function getIdentifier($record)
