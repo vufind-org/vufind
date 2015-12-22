@@ -70,7 +70,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'containerTitle' => 'getContainerTitle',
         'containerVolume' => 'getContainerVolume',
         'corporateAuthor' => 'getCorporateAuthor',
-        'dateSpan' => 'getCleanDateSpan',
         'dedupIds' => ['method' => 'getRecordDedupIds'],
         'dissertationNote' => 'getDissertationNote',
         'edition' => 'getEdition',
@@ -88,7 +87,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'hierarchyTopTitle' => 'getHierarchyTopTitle',
         'humanReadablePublicationDates' => 'getHumanReadablePublicationDates',
         'id' => 'getUniqueID',
-        'identifierString' => 'getIdentifier',
+        'identifierString' => ['method' => 'getIdentifier'],
         'imageRights' => ['method' => 'getRecordImageRights'],
         'images' => ['method' => 'getRecordImages'],
         'institutions' => ['method' => 'getRecordInstitutions'],
@@ -104,7 +103,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'newerTitles' => 'getNewerTitles',
         'nonPresenterAuthors' => 'getNonPresenterAuthors',
         'oclc' => 'getOCLC',
-        'onlineUrls' => 'getOnlineUrls',
+        'onlineUrls' => ['method' => 'getRecordOnlineURLs'],
         'openUrl' => 'getOpenUrl',
         'originalLanguages' => 'getOriginalLanguages',
         'otherLinks' => 'getOtherLinks',
@@ -141,7 +140,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'uniformTitles' => 'getUniformTitles',
         'unitId' => 'getUnitID',
         'upc' => 'getUPC',
-        'urls' => ['method' => 'getRecordURLs']
+        'urls' => ['method' => 'getRecordURLs'],
+        'year' => 'getYear'
     ];
 
     /**
@@ -188,10 +188,17 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $requestedFields = $this->getFieldList($request);
 
         $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
-        if (is_array($request['id'])) {
-            $results = $loader->loadBatchForSource($request['id']);
-        } else {
-            $results[] = $loader->load($request['id']);
+        try {
+            if (is_array($request['id'])) {
+                $results = $loader->loadBatchForSource($request['id']);
+            } else {
+                $results[] = $loader->load($request['id']);
+            }
+        } catch (\Exception $e) {
+            return $this->output(
+                [], self::STATUS_ERROR, 400,
+                'Error loading record'
+            );
         }
 
         $records = [];
@@ -239,27 +246,31 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             : [];
 
         $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
-        $results = $runner->run(
-            $request,
-            $this->searchClassId,
-            function ($runner, $params, $searchId) use (
-                $hierarchicalFacets, $request, $requestedFields
-            ) {
-                foreach (isset($request['facet']) ? $request['facet'] : []
-                    as $facet
+        try {
+            $results = $runner->run(
+                $request,
+                $this->searchClassId,
+                function ($runner, $params, $searchId) use (
+                    $hierarchicalFacets, $request, $requestedFields
                 ) {
-                    if (!isset($hierarchicalFacets[$facet])) {
-                        $params->addFacet($facet);
+                    foreach (isset($request['facet']) ? $request['facet'] : []
+                       as $facet
+                    ) {
+                        if (!isset($hierarchicalFacets[$facet])) {
+                            $params->addFacet($facet);
+                        }
+                    }
+                    if ($requestedFields) {
+                        $limit = isset($request['limit']) ? $request['limit'] : 20;
+                        $params->setLimit($limit);
+                    } else {
+                        $params->setLimit(0);
                     }
                 }
-                if ($requestedFields) {
-                    $limit = isset($request['limit']) ? $request['limit'] : 20;
-                    $params->setLimit($limit);
-                } else {
-                    $params->setLimit(0);
-                }
-            }
-        );
+            );
+        } catch (\Exception $e) {
+            return $this->output([], self::STATUS_ERROR, 400, $e->getMessage());
+        }
 
         // If we received an EmptySet back, that indicates that the real search
         // failed due to some kind of syntax error, and we should display a
@@ -426,14 +437,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     {
         foreach ($array as $key => &$value) {
             if (is_array($value) && !empty($value)) {
-                $isNumeric
-                    = !(bool)count(array_filter(array_keys($value), 'is_string'));
-                if ($isNumeric) {
-                    $value = array_values($value);
-                }
                 $this->filterArrayValues($value);
-            } else if ((is_array($value) && empty($value))
-                || (is_numeric($value) && (int)$value !== 0)
+                $this->resetArrayIndices($value);
+            }
+
+            if ((is_array($value) && empty($value))
                 || (is_bool($value) && !$value)
                 || $value === null || $value === ''
             ) {
@@ -441,6 +449,23 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             } else if (is_bool($value) || $value === 'true' || $value === 'false') {
                 $array[$key] = $value === true || $value === 'true' ? 1 : 0;
             }
+        }
+        $this->resetArrayIndices($array);
+    }
+
+    /**
+     * Reset numerical array indices.
+     *
+     * @param array $array Array
+     *
+     * @return void
+     */
+    protected function resetArrayIndices(&$array)
+    {
+        $isNumeric
+            = count(array_filter(array_keys($array), 'is_string')) === 0;
+        if ($isNumeric) {
+            $array = array_values($array);
         }
     }
 
@@ -570,6 +595,24 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         );
 
         return $result;
+    }
+
+    /**
+     * Get record identifier
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return mixed
+     */
+    public function getIdentifier($record)
+    {
+        if ($id = $record->tryMethod('getIdentifier')) {
+            if (is_array($id) && count($id) === 1) {
+                $id = reset($id);
+            }
+            return $id;
+        }
+        return null;
     }
 
     /**
@@ -763,6 +806,18 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     {
         $urls = $record->getURLs();
         $serviceUrls = $record->tryMethod('getServiceUrls');
+
+        $translationEmpty = $this->getViewRenderer()->plugin('translationEmpty');
+        if ($urls) {
+            foreach ($urls as &$url) {
+                if (isset($url['desc'])
+                    && !$translationEmpty('link_' . $url['desc'])
+                ) {
+                    $url['desc'] = $this->translate('link_' . $url['desc']);
+                }
+            }
+        }
+
         if ($serviceUrls) {
             $source = $record->getDataSource();
             foreach ($serviceUrls as &$url) {
@@ -773,5 +828,31 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             $urls += $serviceUrls;
         }
         return $urls ? $urls : null;
+    }
+
+    /**
+     * Get online URLs for a record as an array
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getRecordOnlineURLs($record)
+    {
+        $urls = $record->getOnlineURLs();
+
+        if ($urls) {
+            $translate = $this->getViewRenderer()->plugin('translate');
+            foreach ($urls as &$url) {
+                if (isset($url['source'])) {
+                    $url['source'] = [
+                        'value' => $url['source'],
+                        'translated'
+                           => $translate->translate('source_' . $url['source'])
+                    ];
+                }
+            }
+        }
+        return $urls;
     }
 }

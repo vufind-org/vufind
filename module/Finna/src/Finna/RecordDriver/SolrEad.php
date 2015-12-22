@@ -166,9 +166,10 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     public function getIdentifier()
     {
         $record = $this->getSimpleXML();
-        return isset($record->did->unitid->attributes()->{'identifier'})
+        $id = isset($record->did->unitid->attributes()->{'identifier'})
             ? (string)$record->did->unitid->attributes()->{'identifier'}
             : (string)$record->did->unitid;
+        return [$id];
     }
 
     /**
@@ -478,7 +479,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
                 '{nonPrefixedOriginationId}'
             ],
             [
-                urlencode($this->getIdentifier()),
+                urlencode(reset($this->getIdentifier())),
                 urlencode($originationId),
                 urlencode($nonPrefixedOriginationId),
             ],
