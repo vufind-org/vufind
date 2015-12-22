@@ -130,8 +130,8 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Create information representing a selected tab.
      *
-     * @param string $class   Search class ID
-     * @param string $label   Display text for tab
+     * @param string $class Search class ID
+     * @param string $label Display text for tab
      *
      * @return array
      */

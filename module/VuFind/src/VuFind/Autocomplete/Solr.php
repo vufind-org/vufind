@@ -141,7 +141,7 @@ class Solr implements AutocompleteInterface
     /**
      * Add filters (in addition to the configured ones)
      *
-     * @param array $filters
+     * @param array $filters Filters to add
      *
      * @return void
      */
