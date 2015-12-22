@@ -103,7 +103,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'newerTitles' => 'getNewerTitles',
         'nonPresenterAuthors' => 'getNonPresenterAuthors',
         'oclc' => 'getOCLC',
-        'onlineUrls' => 'getOnlineUrls',
+        'onlineUrls' => ['method' => 'getRecordOnlineURLs'],
         'openUrl' => 'getOpenUrl',
         'originalLanguages' => 'getOriginalLanguages',
         'otherLinks' => 'getOtherLinks',
@@ -781,7 +781,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $translationEmpty = $this->getViewRenderer()->plugin('translationEmpty');
         if ($urls) {
             foreach ($urls as &$url) {
-                if (isset($url['desc']) && !$translationEmpty('link_' . $url['desc'])) {
+                if (isset($url['desc']) 
+                    && !$translationEmpty('link_' . $url['desc'])
+                ) {
                     $url['desc'] = $this->translate('link_' . $url['desc']);
                 }
             }
@@ -797,5 +799,31 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             $urls += $serviceUrls;
         }
         return $urls ? $urls : null;
+    }
+
+    /**
+     * Get online URLs for a record as an array
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getRecordOnlineURLs($record)
+    {
+        $urls = $record->getOnlineURLs();
+
+        if ($urls) {
+            $translate = $this->getViewRenderer()->plugin('translate');
+            foreach ($urls as &$url) {
+                if (isset($url['source'])) {
+                    $url['source'] = [
+                        'value' => $url['source'],
+                        'translated'
+                           => $translate->translate('source_' . $url['source'])
+                    ];
+                }
+            }
+        }
+        return $urls;
     }
 }
