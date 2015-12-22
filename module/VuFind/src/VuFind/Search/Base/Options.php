@@ -775,7 +775,6 @@ abstract class Options implements TranslatorAwareInterface
             ? $session->lastHiddenFilters : [];
     }
 
-
     /**
      * Should filter settings be retained across searches by default?
      *
