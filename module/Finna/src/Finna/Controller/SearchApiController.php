@@ -777,6 +777,16 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     {
         $urls = $record->getURLs();
         $serviceUrls = $record->tryMethod('getServiceUrls');
+
+        $translationEmpty = $this->getViewRenderer()->plugin('translationEmpty');
+        if ($urls) {
+            foreach ($urls as &$url) {
+                if (isset($url['desc']) && !$translationEmpty('link_' . $url['desc'])) {
+                    $url['desc'] = $this->translate('link_' . $url['desc']);
+                }
+            }
+        }
+
         if ($serviceUrls) {
             $source = $record->getDataSource();
             foreach ($serviceUrls as &$url) {
