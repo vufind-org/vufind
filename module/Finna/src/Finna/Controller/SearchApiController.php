@@ -60,10 +60,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'cleanIsbn' => 'getCleanISBN',
         'cleanIssn' => 'getCleanISSN',
         'cleanOclcNumber' => 'getCleanOCLCNum',
-        'cleanUpc' => 'getCleanUPC',
         'collections' => 'getCollections',
         'comments' => ['method' => 'getRecordComments'],
-        'containerEndPage' => 'getContainerEndPage',
         'containerIssue' => 'getContainerIssue',
         'containerReference' => 'getContainerReference',
         'containerStartPage' => 'getContainerStartPage',
@@ -107,7 +105,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'openUrl' => 'getOpenUrl',
         'originalLanguages' => 'getOriginalLanguages',
         'otherLinks' => 'getOtherLinks',
-        'physicalDescription' => 'getPhysicalDescription',
+        'physicalDescriptions' => 'getPhysicalDescriptions',
         'physicalLocations' => 'getPhysicalLocations',
         'placesOfPublication' => 'getPlacesOfPublication',
         'playingTimes' => 'getPlayingTimes',
@@ -139,7 +137,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'toc' => 'getTOC',
         'uniformTitles' => 'getUniformTitles',
         'unitId' => 'getUnitID',
-        'upc' => 'getUPC',
         'urls' => ['method' => 'getRecordURLs'],
         'year' => 'getYear'
     ];
