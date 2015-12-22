@@ -808,7 +808,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $translationEmpty = $this->getViewRenderer()->plugin('translationEmpty');
         if ($urls) {
             foreach ($urls as &$url) {
-                if (isset($url['desc']) 
+                if (isset($url['desc'])
                     && !$translationEmpty('link_' . $url['desc'])
                 ) {
                     $url['desc'] = $this->translate('link_' . $url['desc']);
