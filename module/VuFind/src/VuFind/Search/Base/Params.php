@@ -238,12 +238,14 @@ class Params implements ServiceLocatorAwareInterface
         $this->initSearch($request);
         $this->initSort($request);
         $this->initFilters($request);
+        $this->initHiddenFilters($request);
 
         // Remember the user's settings for future reference (we only want to do
         // this in initFromRequest, since other code may call the set methods from
         // other contexts!):
         $this->getOptions()->rememberLastLimit($this->getLimit());
         $this->getOptions()->rememberLastSort($this->getSort());
+        $this->getOptions()->rememberLastHiddenFilters($this->getHiddenFilters());
     }
 
     /**
@@ -1322,6 +1324,39 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Add hidden filters to the object based on values found in the request object.
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    public function initHiddenFilters($request)
+    {
+        $hiddenFilters = $request->get('hiddenFilters');
+        if (!empty($hiddenFilters) && is_array($hiddenFilters)) {
+            foreach ($hiddenFilters as $current) {
+                $this->getOptions()->addHiddenFilter($current);
+            }
+        }
+    }
+
+    /**
+     * Get hidden filters grouped by field like normal filters.
+     *
+     * @return array
+     */
+    public function getHiddenFilters()
+    {
+        $filters = [];
+        foreach ($this->getOptions()->getHiddenFilters() as $filter) {
+            list($field, $value) = $this->parseFilter($filter);
+            $filters[$field][] = $value;
+        }
+        return $filters;
+    }
+
+    /**
      * Return a query string for the current search with a search term replaced.
      *
      * @param string $oldTerm The old term to replace
@@ -1410,8 +1445,8 @@ class Params implements ServiceLocatorAwareInterface
     public function deminify($minified)
     {
         // Some values will transfer without changes
-        $this->filterList   = $minified->f;
-        $this->searchType   = $minified->ty;
+        $this->filterList = $minified->f;
+        $this->searchType = $minified->ty;
 
         // Deminified searches will always have defaults already applied;
         // we don't want to accidentally manipulate them further.
@@ -1602,6 +1637,7 @@ class Params implements ServiceLocatorAwareInterface
                 || in_array($key, $orFields);
             $this->addFacet($key, $value, $useOr);
         }
+
         return true;
     }
 

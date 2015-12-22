@@ -54,6 +54,13 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     protected $config;
 
     /**
+     * Tab filter configuration
+     *
+     * @var array
+     */
+    protected $filters;
+
+    /**
      * URL helper
      *
      * @var Url
@@ -65,12 +72,15 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      *
      * @param PluginManager $results Search results plugin manager
      * @param array         $config  Tab configuration
+     * @param array         $filters Tab filter configuration
      * @param Url           $url     URL helper
      */
-    public function __construct(PluginManager $results, array $config, Url $url)
-    {
+    public function __construct(PluginManager $results, array $config,
+        array $filters, Url $url
+    ) {
         $this->results = $results;
         $this->config = $config;
+        $this->filters = $filters;
         $this->url = $url;
     }
 
@@ -81,27 +91,37 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      * @param string $query             The current search query
      * @param string $handler           The current search handler
      * @param string $type              The current search type (basic/advanced)
+     * @param array  $hiddenFilters     The current hidden filters
      *
      * @return array
      */
-    public function __invoke($activeSearchClass, $query, $handler, $type = 'basic')
-    {
+    public function __invoke($activeSearchClass, $query, $handler, $type = 'basic',
+        $hiddenFilters = []
+    ) {
         $retVal = [];
-        foreach ($this->config as $class => $label) {
-            if ($class == $activeSearchClass) {
+        $first = true;
+        foreach ($this->config as $key => $label) {
+            $class = $this->extractClassName($key);
+            $filters = isset($this->filters[$key]) ? $this->filters[$key] : [];
+            if ($class == $activeSearchClass
+                && (($first && empty($hiddenFilters))
+                || $this->filtersMatch($class, $hiddenFilters, $filters))
+            ) {
+                $first = false;
                 $retVal[] = $this->createSelectedTab($class, $label);
             } else if ($type == 'basic') {
                 if (!isset($activeOptions)) {
                     $activeOptions
                         = $this->results->get($activeSearchClass)->getOptions();
                 }
-                $newUrl = $this
-                    ->remapBasicSearch($activeOptions, $class, $query, $handler);
+                $newUrl = $this->remapBasicSearch(
+                    $activeOptions, $class, $query, $handler, $filters
+                );
                 $retVal[] = $this->createBasicTab($class, $label, $newUrl);
             } else if ($type == 'advanced') {
-                $retVal[] = $this->createAdvancedTab($class, $label);
+                $retVal[] = $this->createAdvancedTab($class, $label, $filters);
             } else {
-                $retVal[] = $this->createHomeTab($class, $label);
+                $retVal[] = $this->createHomeTab($class, $label, $filters);
             }
         }
         return $retVal;
@@ -110,8 +130,8 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Create information representing a selected tab.
      *
-     * @param string $class Search class ID
-     * @param string $label Display text for tab
+     * @param string $class   Search class ID
+     * @param string $label   Display text for tab
      *
      * @return array
      */
@@ -131,15 +151,19 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      * @param string                      $targetClass   Search class ID for target
      * @param string                      $query         Search query to map
      * @param string                      $handler       Search handler to map
+     * @param array                       $filters       Tab filters
      *
      * @return string
      */
     protected function remapBasicSearch($activeOptions, $targetClass, $query,
-        $handler
+        $handler, $filters
     ) {
         // Set up results object for URL building:
         $results = $this->results->get($targetClass);
         $options = $results->getOptions();
+        foreach ($filters as $filter) {
+            $options->addHiddenFilter($filter);
+        }
 
         // Find matching handler for new query (and use default if no match):
         $targetHandler = $options->getHandlerForLabel(
@@ -174,17 +198,27 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Create information representing a tab linking to "search home."
      *
-     * @param string $class Search class ID
-     * @param string $label Display text for tab
+     * @param string $class   Search class ID
+     * @param string $label   Display text for tab
+     * @param array  $filters Tab filters
      *
      * @return array
      */
-    protected function createHomeTab($class, $label)
+    protected function createHomeTab($class, $label, $filters)
     {
+        // Set up results object for URL building:
+        $results = $this->results->get($class);
+        $options = $results->getOptions();
+        foreach ($filters as $filter) {
+            $options->addHiddenFilter($filter);
+        }
+
         // If an advanced search is available, link there; otherwise, just go
         // to the search home:
         $options = $this->results->get($class)->getOptions();
-        $url = $this->url->__invoke($options->getSearchHomeAction());
+        $urlParams = $results->getUrlQuery()->getParams(false);
+        $url = $this->url->__invoke($options->getSearchHomeAction())
+            . ($urlParams !== '?' ? $urlParams : '');
         return [
             'class' => $class,
             'label' => $label,
@@ -215,5 +249,39 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
             'selected' => false,
             'url' => $url
         ];
+    }
+
+    /**
+     * Extract search class name from a tab id
+     *
+     * @param string $tabId Tab id as defined in config.ini
+     *
+     * @return string
+     */
+    protected function extractClassName($tabId)
+    {
+        list($class) = explode(':', $tabId, 2);
+        return $class;
+    }
+
+    /**
+     * Check if given hidden filters match with the hidden filters from configuration
+     *
+     * @param string $class         Search class ID
+     * @param string $hiddenFilters Hidden filters
+     * @param string $configFilters Filters from filter configuration
+     *
+     * @return boolean
+     */
+    protected function filtersMatch($class, $hiddenFilters, $configFilters)
+    {
+        $results = $this->results->get($class);
+        $params = $results->getParams();
+        $filters = [];
+        foreach ($configFilters as $filter) {
+            list($field, $value) = $params->parseFilter($filter);
+            $filters[$field][] = $value;
+        }
+        return $hiddenFilters == $filters;
     }
 }

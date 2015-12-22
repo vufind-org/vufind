@@ -115,6 +115,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $defaultFilters = [];
 
     /**
+     * Pre-assigned filters
+     *
+     * @var array
+     */
+    protected $hiddenFilters = [];
+
+    /**
      * Default limit option
      *
      * @var int
@@ -720,6 +727,56 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Add a hidden (i.e. not visible in facet controls) filter query to the object.
+     *
+     * @param string $fq Filter query
+     *
+     * @return void
+     */
+    public function addHiddenFilter($fq)
+    {
+        $this->hiddenFilters[] = $fq;
+    }
+
+    /**
+     * Get an array of hidden filters.
+     *
+     * @return array
+     */
+    public function getHiddenFilters()
+    {
+        return $this->hiddenFilters;
+    }
+
+    /**
+     * Remember the last hidden filters used.
+     *
+     * @param string $last Option to remember.
+     *
+     * @return void
+     */
+    public function rememberLastHiddenFilters($last)
+    {
+        $session = $this->getSession();
+        if (!$session->getManager()->getStorage()->isImmutable()) {
+            $session->lastHiddenFilters = $last;
+        }
+    }
+
+    /**
+     * Retrieve the last hidden filters used.
+     *
+     * @return array
+     */
+    public function getLastHiddenFilters()
+    {
+        $session = $this->getSession();
+        return isset($session->lastHiddenFilters)
+            ? $session->lastHiddenFilters : [];
+    }
+
+
+    /**
      * Should filter settings be retained across searches by default?
      *
      * @return bool
@@ -834,6 +891,19 @@ abstract class Options implements TranslatorAwareInterface
         }
 
         return $recommend;
+    }
+
+    /**
+     * Restore settings from a minified object found in the database.
+     *
+     * @param \VuFind\Search\Minified $minified Minified Search Object
+     *
+     * @return void
+     */
+    public function deminify($minified)
+    {
+        // Some values will transfer without changes
+        $this->hiddenFilters = isset($minified->hf) ? $minified->hf : [];
     }
 
     /**
