@@ -120,7 +120,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'publishers' => 'getPublishers',
         'rating' => 'getAverageRating',
         'rawData' => ['method' => 'getRecordRawData'],
-        'recordLinks' => 'getAllRecordLinks',
+        'recordLinks' => ['method' => 'getRecordLinks'],
         'relationshipNotes' => 'getRelationshipNotes',
         'series' => 'getSeries',
         'sfxObjectId' => 'getSfxObjectId',
@@ -790,6 +790,31 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             return $result;
         }
         return null;
+    }
+
+    /**
+     * Get record links for a record as an array
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getRecordLinks($record)
+    {
+        $links = $record->tryMethod('getAllRecordLinks');
+        if ($links) {
+            $translate = $this->getViewRenderer()->plugin('translate');
+            $translationEmpty = $this->getViewRenderer()->plugin('translationEmpty');
+            foreach ($links as &$link) {
+                if (isset($link['title'])
+                    && !$translationEmpty($link['title'])
+                ) {
+                    $link['translated'] = $this->translate($link['title']);
+                    unset($link['title']);
+                }
+            }
+        }
+        return $links;
     }
 
     /**
