@@ -87,7 +87,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'hierarchyTopTitle' => 'getHierarchyTopTitle',
         'humanReadablePublicationDates' => 'getHumanReadablePublicationDates',
         'id' => 'getUniqueID',
-        'identifierString' => 'getIdentifier',
+        'identifierString' => ['method' => 'getIdentifier'],
         'imageRights' => ['method' => 'getRecordImageRights'],
         'images' => ['method' => 'getRecordImages'],
         'institutions' => ['method' => 'getRecordInstitutions'],
@@ -584,6 +584,22 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         );
 
         return $result;
+    }
+
+    /**
+     * Get record identifier
+     *
+     * @return mixed
+     */
+    public function getIdentifier($record)
+    {
+        if ($id = $record->tryMethod('getIdentifier')) {
+            if (is_array($id) && count($id) === 1) {
+                $id = reset($id);
+            }
+            return $id;
+        }
+        return null;
     }
 
     /**
