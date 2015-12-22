@@ -463,7 +463,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     protected function resetArrayIndices(&$array)
     {
         $isNumeric
-            = !(bool)count(array_filter(array_keys($array), 'is_string'));
+            = count(array_filter(array_keys($array), 'is_string')) === 0;
         if ($isNumeric) {
             $array = array_values($array);
         }
