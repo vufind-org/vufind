@@ -246,27 +246,31 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             : [];
 
         $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
-        $results = $runner->run(
-            $request,
-            $this->searchClassId,
-            function ($runner, $params, $searchId) use (
-                $hierarchicalFacets, $request, $requestedFields
-            ) {
-                foreach (isset($request['facet']) ? $request['facet'] : []
-                    as $facet
+        try {
+            $results = $runner->run(
+                $request,
+                $this->searchClassId,
+                function ($runner, $params, $searchId) use (
+                    $hierarchicalFacets, $request, $requestedFields
                 ) {
-                    if (!isset($hierarchicalFacets[$facet])) {
-                        $params->addFacet($facet);
+                    foreach (isset($request['facet']) ? $request['facet'] : []
+                       as $facet
+                    ) {
+                        if (!isset($hierarchicalFacets[$facet])) {
+                            $params->addFacet($facet);
+                        }
+                    }
+                    if ($requestedFields) {
+                        $limit = isset($request['limit']) ? $request['limit'] : 20;
+                        $params->setLimit($limit);
+                    } else {
+                        $params->setLimit(0);
                     }
                 }
-                if ($requestedFields) {
-                    $limit = isset($request['limit']) ? $request['limit'] : 20;
-                    $params->setLimit($limit);
-                } else {
-                    $params->setLimit(0);
-                }
-            }
-        );
+            );
+        } catch (\Exception $e) {
+            return $this->output([], self::STATUS_ERROR, 400, $e->getMessage());
+        }
 
         // If we received an EmptySet back, that indicates that the real search
         // failed due to some kind of syntax error, and we should display a
