@@ -150,6 +150,13 @@ class Backend extends AbstractBackend
 >>>>>>> refs/remotes/vufind-org/master
 
     /**
+     * Is the current user a guest?
+     *
+     * @var bool
+     */
+    protected $isGuest;
+
+    /**
      * Constructor.
      *
      * @param ApiClient                        $client  EdsApi client to use
@@ -189,6 +196,8 @@ class Backend extends AbstractBackend
         if (isset($config->EBSCO_Account->local_ip_addresses)) {
             $this->localIps = $config->EBSCO_Account->local_ip_addresses;
         }
+
+        $this->isGuest = $isGuest;
 
         // Save default profile value, since profile property may be overriden:
         $this->defaultProfile = $this->profile;
@@ -520,6 +529,7 @@ class Backend extends AbstractBackend
     }
 
     /**
+<<<<<<< HEAD
      * Is the current user a guest? If so, return 'y' else 'n'.
      *
 <<<<<<< HEAD
@@ -559,6 +569,8 @@ class Backend extends AbstractBackend
     }
 
     /**
+=======
+>>>>>>> origin/master
      * Is the current user a guest? If so, return 'y' else 'n'.
      *
 =======
@@ -567,6 +579,7 @@ class Backend extends AbstractBackend
      */
     protected function isGuest()
     {
+<<<<<<< HEAD
 <<<<<<< HEAD
         // If the user is not logged in, then treat them as a guest. Unless they are
         // using IP Authentication.
@@ -586,6 +599,9 @@ class Backend extends AbstractBackend
 =======
         return $this->isGuest ? 'y' : 'n';
 >>>>>>> refs/remotes/vufind-org/master
+=======
+        return $this->isGuest ? 'y' : 'n';
+>>>>>>> origin/master
     }
 
     /**

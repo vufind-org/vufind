@@ -156,17 +156,6 @@ class EDS extends SolrDefault
     }
 
     /**
-     * Get the full text custom links of the record.
-     *
-     * @return array
-     */
-    public function getFTCustomLinks()
-    {
-        return isset($this->fields['FullText']['CustomLinks']) ?
-        $this->fields['FullText']['CustomLinks'] : [];
-    }
-
-    /**
      * Get the database label of the record.
      *
      * @return string
@@ -266,10 +255,6 @@ class EDS extends SolrDefault
                 ) {
                     return true;
                 }
-                // 2015-05-10 RF - added support for pdf
-                if (isset($link['Type']) && 'ebook-pdf' == $link['Type']) {
-                    return true;
-                }
             }
         }
         return false;
@@ -285,17 +270,23 @@ class EDS extends SolrDefault
         if (isset($this->fields['FullText']['Links'])) {
             foreach ($this->fields['FullText']['Links'] as $link) {
 <<<<<<< HEAD
+<<<<<<< HEAD
                 if (isset($link['Type']) && 'pdflink' == $link['Type']) {
                     return $link["Url"]; // return PDF link
                 }
                 if (isset($link['Type']) && 'ebook-pdf' == $link['Type']) {
                     return $link["Url"]; // return PDF link
 =======
+=======
+>>>>>>> origin/master
                 if (isset($link['Type'])
                     && in_array($link['Type'], $this->pdfTypes)
                 ) {
                     return $link['Url']; // return PDF link
+<<<<<<< HEAD
 >>>>>>> refs/remotes/vufind-org/master
+=======
+>>>>>>> origin/master
                 }
             }
         }

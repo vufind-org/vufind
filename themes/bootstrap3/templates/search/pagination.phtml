@@ -1,9 +1,7 @@
-<?php
-    $isEDS=stripos(get_class($this->results),"eds")>=0?true:false;
-?>
 <? if ($this->pageCount): ?>
   <ul class="pagination">
     <? if (isset($this->previous)): ?>
+<<<<<<< HEAD
 <<<<<<< HEAD
       <?php if (!$isEDS): ?>
         <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a></li>
@@ -13,6 +11,11 @@
         <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a></li>
       <? endif; ?>
 >>>>>>> refs/remotes/vufind-org/master
+=======
+      <? if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
+        <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a></li>
+      <? endif; ?>
+>>>>>>> origin/master
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
     <? endif; ?>
 
@@ -29,6 +32,7 @@
     <? if (isset($this->next)): ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a></li>
 <<<<<<< HEAD
+<<<<<<< HEAD
       <?php if (!$isEDS): ?>
         <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a></li>
       <?php endif;?>
@@ -37,6 +41,11 @@
         <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a></li>
       <? endif; ?>
 >>>>>>> refs/remotes/vufind-org/master
+=======
+      <? if (!isset($this->options['disableLast']) || !$this->options['disableLast']): ?>
+        <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a></li>
+      <? endif; ?>
+>>>>>>> origin/master
     <? endif; ?>
   </ul>
 <? endif; ?>
