@@ -383,15 +383,20 @@ class CartController extends AbstractBase
 
         // Process submission if necessary:
         if ($this->formWasSubmitted('submit')) {
-            $this->favorites()
+            $results = $this->favorites()
                 ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
-            $this->flashMessenger()->addMessage('bulk_save_success', 'success');
-            $list = $this->params()->fromPost('list');
-            if (!empty($list)) {
-                return $this->redirect()->toRoute('userList', ['id' => $list]);
-            } else {
-                return $this->redirectToSource();
-            }
+            $listUrl = $this->url()->fromRoute(
+                'userList',
+                ['id' => $results['listId']]
+            );
+            $message = [
+                'html' => true,
+                'msg' => $this->translate('bulk_save_success') . '. '
+                . '<a href="' . $listUrl . '" class="gotolist">'
+                . $this->translate('go_to_list') . '</a>.'
+            ];
+            $this->flashMessenger()->addMessage($message, 'success');
+            return $this->redirect()->toUrl($listUrl);
         }
 
         // Pass record and list information to view:

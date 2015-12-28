@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, syn_get_widget, userIsLoggedIn, VuFind */
+/*global checkSaveStatuses, deparam, extractClassParams, getListUrlFromHTML, htmlEncode, Lightbox, syn_get_widget, userIsLoggedIn, VuFind */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -140,15 +140,16 @@ function ajaxLoadTab($newTab, tabid, setHash) {
   var urlParts = document.URL.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
   var path = VuFind.getPath();
+  var urlroot = null;
   if (path === '') {
     // special case -- VuFind installed at site root:
     var chunks = urlWithoutFragment.split('/');
-    var urlroot = '/' + chunks[3] + '/' + chunks[4];
+    urlroot = '/' + chunks[3] + '/' + chunks[4];
   } else {
     // standard case -- VuFind has its own path under site:
     var pathInUrl = urlWithoutFragment.indexOf(path);
-    var chunks = urlWithoutFragment.substring(pathInUrl + path.length + 1).split('/');
-    var urlroot = '/' + chunks[0] + '/' + chunks[1];
+    var parts = urlWithoutFragment.substring(pathInUrl + path.length + 1).split('/');
+    urlroot = '/' + parts[0] + '/' + parts[1];
   }
 
   // Request the tab via AJAX:
@@ -157,8 +158,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
-      $newTab.html(data).addClass('active');
-      $newTab.closest('.record-tabs').find('.'+tabid).tab('show');
+      $newTab.html(data);
       registerTabEvents();
       if(typeof syn_get_widget === "function") {
         syn_get_widget();
@@ -234,7 +234,7 @@ function applyRecordTabHash() {
   if (newTab.length == 0 || newTab == '#tabnav') {
     $initiallyActiveTab.click();
   } else if (newTab.length > 0 && '#' + activeTab != newTab) {
-    $(newTab).click();
+    $('.'+newTab.substr(1)).click();
   }
 }
 
@@ -247,26 +247,26 @@ function setupRecordToolbar(target) {
   // Cite lightbox
   var $elem = $(target);
   var id = $elem.find('.hiddenId').val();
-  $elem.find('.cite-record').unbind('click').click(function() {
+  $elem.find('.cite-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Cite', {id:id});
   });
   // Mail lightbox
-  $elem.find('.mail-record').unbind('click').click(function() {
+  $elem.find('.mail-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Email', {id:id});
   });
   // Save lightbox
-  $elem.find('.save-record').unbind('click').click(function() {
+  $elem.find('.save-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Save', {id:id});
   });
   // SMS lightbox
-  $elem.find('.sms-record').unbind('click').click(function() {
+  $elem.find('.sms-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'SMS', {id:id});
   });
-  $elem.find('.tag-record').unbind('click').click(function() {
+  $elem.find('.tag-record').click(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
@@ -282,9 +282,9 @@ function recordDocReady() {
     var tabid = this.className;
     var $top = $(this).closest('.record-tabs');
     $top.find('.tab-pane.active').removeClass('active');
+    $(this).tab('show');
     if ($top.find('.'+tabid+'-tab').length > 0) {
       $top.find('.'+tabid+'-tab').addClass('active');
-      $(this).tab('show');
       window.location.hash = tabid;
       return false;
     } else {
@@ -294,7 +294,7 @@ function recordDocReady() {
       }
       var newTab = $('<div class="tab-pane active '+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+VuFind.translate('loading')+'...</div>');
       $top.find('.tab-content').append(newTab);
-      return ajaxLoadTab(newTab, tabid);
+      return ajaxLoadTab(newTab, tabid, !$(this).parent().hasClass('initiallyActive'));
     }
   });
   applyRecordTabHash();
@@ -307,10 +307,10 @@ function recordDocReady() {
   });
   Lightbox.addFormCallback('placeHold', function(html) {
     Lightbox.checkForError(html, function(html) {
-      var divPattern = '<div class="alert alert-info">';
+      var divPattern = '<div class="alert alert-success">';
       var fi = html.indexOf(divPattern);
       var li = html.indexOf('</div>', fi+divPattern.length);
-      Lightbox.confirm(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
+      Lightbox.success(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
     });
   });
   Lightbox.addFormCallback('placeILLRequest', function() {
@@ -319,10 +319,12 @@ function recordDocReady() {
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
     document.location.href = VuFind.getPath() + '/MyResearch/StorageRetrievalRequests';
   });
-  Lightbox.addFormCallback('saveRecord', function() {
+  Lightbox.addFormCallback('saveRecord', function(html) {
     checkSaveStatuses();
     refreshTagList();
-    Lightbox.confirm(VuFind.translate('bulk_save_success'));
+    // go to list link
+    var msg = getListUrlFromHTML(html);
+    Lightbox.success(msg);
   });
   Lightbox.addFormCallback('smsRecord', function() {
     Lightbox.confirm(VuFind.translate('sms_success'));

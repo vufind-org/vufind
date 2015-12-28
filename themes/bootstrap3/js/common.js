@@ -1,20 +1,23 @@
 /*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape, VuFind */
 
-function VuFindNamespace(p, s) {
+function VuFindNamespace(p, s, dsb) {
+  var defaultSearchBackend = dsb;
   var path = p;
   var strings = s;
 
-  var getPath = function() { return path; }
-  var translate = function(op) { return strings[op]; }
+  var getDefaultSearchBackend = function() { return defaultSearchBackend; };
+  var getPath = function() { return path; };
+  var translate = function(op) { return strings[op] || op; };
 
   return {
+    getDefaultSearchBackend: getDefaultSearchBackend,
     getPath: getPath,
     translate: translate
   };
-};
+}
 
 /* --- GLOBAL FUNCTIONS --- */
-function htmlEncode(value){
+function htmlEncode(value) {
   if (value) {
     return jQuery('<div />').text(value).html();
   } else {
@@ -184,7 +187,7 @@ function newAccountHandler(html) {
     Lightbox.getByUrl(Lightbox.openingURL);
     Lightbox.openingURL = false;
   }
-  return valid == true;
+  return false;
 }
 
 // This is a full handler for the login form
@@ -332,8 +335,51 @@ function setupAutocomplete() {
   // Update autocomplete on type change
   $('.searchForm_type').change(function() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
+    $lookfor.autocomplete('clear cache');
     $lookfor.focus();
   });
+}
+
+/**
+ * Handle arrow keys to jump to next record
+ * @returns {undefined}
+ */
+function keyboardShortcuts() {
+    var $searchform = $('#searchForm_lookfor');
+    if ($('.pager').length > 0) {
+        $(window).keydown(function(e) {
+          if (!$searchform.is(':focus')) {
+            var $target = null;
+            switch (e.keyCode) {
+              case 37: // left arrow key
+                $target = $('.pager').find('a.previous');
+                if ($target.length > 0) {
+                    $target[0].click();
+                    return;
+                }
+                break;
+              case 38: // up arrow key
+                if (e.ctrlKey) {
+                    $target = $('.pager').find('a.backtosearch');
+                    if ($target.length > 0) {
+                        $target[0].click();
+                        return;
+                    }
+                }
+                break;
+              case 39: //right arrow key
+                $target = $('.pager').find('a.next');
+                if ($target.length > 0) {
+                    $target[0].click();
+                    return;
+                }
+                break;
+              case 40: // down arrow key
+                break;
+            }
+          }
+        });
+    }
 }
 
 $(document).ready(function() {
@@ -343,6 +389,8 @@ $(document).ready(function() {
   setupBacklinks() ;
   // Off canvas
   setupOffcanvas();
+  // Keyboard shortcuts in detail view
+  keyboardShortcuts();
 
   // support "jump menu" dropdown boxes
   $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });

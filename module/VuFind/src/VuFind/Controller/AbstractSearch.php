@@ -392,7 +392,9 @@ class AbstractSearch extends AbstractBase
         // Fail if user has no permission to view this search:
         $user = $this->getUser();
         $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
-        if ($search->session_id != $sessId && $search->user_id != $user->id) {
+        if ($search->session_id != $sessId
+            && ($user === false || $search->user_id != $user->id)
+        ) {
             $this->flashMessenger()->addMessage('advSearchError_noRights', 'error');
             return false;
         }

@@ -278,10 +278,17 @@ class AbstractRecord extends AbstractBase
         $post = $this->getRequest()->getPost()->toArray();
         $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
         $post['mytags'] = $tagParser->parse($post['mytags']);
-        $driver->saveToFavorites($post, $user);
+        $results = $driver->saveToFavorites($post, $user);
 
         // Display a success status message:
-        $this->flashMessenger()->addMessage('bulk_save_success', 'success');
+        $listUrl = $this->url()->fromRoute('userList', ['id' => $results['listId']]);
+        $message = [
+            'html' => true,
+            'msg' => $this->translate('bulk_save_success') . '. '
+            . '<a href="' . $listUrl . '" class="gotolist">'
+            . $this->translate('go_to_list') . '</a>.'
+        ];
+        $this->flashMessenger()->addMessage($message, 'success');
 
         // redirect to followup url saved in saveAction
         if ($url = $this->getFollowupUrl()) {
@@ -666,10 +673,14 @@ class AbstractRecord extends AbstractBase
             return $patron;
         }
 
+        $config = $this->getConfig();
+
         $view = $this->createViewModel();
         $view->tabs = $this->getAllTabs();
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
+        $view->ajaxTabs = isset($config->Site->ajaxTabs)
+            ? $config->Site->ajaxTabs : false;
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {
