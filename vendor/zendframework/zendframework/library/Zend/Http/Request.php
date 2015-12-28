@@ -43,6 +43,11 @@ class Request extends AbstractMessage implements RequestInterface
     protected $method = self::METHOD_GET;
 
     /**
+     * @var bool
+     */
+    protected $allowCustomMethods = true;
+
+    /**
      * @var string|HttpUri
      */
     protected $uri = null;
@@ -66,22 +71,36 @@ class Request extends AbstractMessage implements RequestInterface
      * A factory that produces a Request object from a well-formed Http Request string
      *
      * @param  string $string
-     * @return Request
+     * @param  bool $allowCustomMethods
      * @throws Exception\InvalidArgumentException
+     * @return Request
      */
-    public static function fromString($string)
+    public static function fromString($string, $allowCustomMethods = true)
     {
         $request = new static();
+        $request->setAllowCustomMethods($allowCustomMethods);
 
         $lines = explode("\r\n", $string);
 
         // first line must be Method/Uri/Version string
-        $matches = null;
-        $methods = implode('|', array(
-            self::METHOD_OPTIONS, self::METHOD_GET, self::METHOD_HEAD, self::METHOD_POST,
-            self::METHOD_PUT, self::METHOD_DELETE, self::METHOD_TRACE, self::METHOD_CONNECT,
-            self::METHOD_PATCH
-        ));
+        $matches   = null;
+        $methods   = $allowCustomMethods
+            ? '[\w-]+'
+            : implode(
+                '|',
+                array(
+                    self::METHOD_OPTIONS,
+                    self::METHOD_GET,
+                    self::METHOD_HEAD,
+                    self::METHOD_POST,
+                    self::METHOD_PUT,
+                    self::METHOD_DELETE,
+                    self::METHOD_TRACE,
+                    self::METHOD_CONNECT,
+                    self::METHOD_PATCH
+                )
+            );
+
         $regex     = '#^(?P<method>' . $methods . ')\s(?P<uri>[^ ]*)(?:\sHTTP\/(?P<version>\d+\.\d+)){0,1}#';
         $firstLine = array_shift($lines);
         if (!preg_match($regex, $firstLine, $matches)) {
@@ -116,11 +135,23 @@ class Request extends AbstractMessage implements RequestInterface
                 $isHeader = false;
                 continue;
             }
+
             if ($isHeader) {
+                if (preg_match("/[\r\n]/", $nextLine)) {
+                    throw new Exception\RuntimeException('CRLF injection detected');
+                }
                 $headers[] = $nextLine;
-            } else {
-                $rawBody[] = $nextLine;
+                continue;
             }
+
+
+            if (empty($rawBody)
+                && preg_match('/^[a-z0-9!#$%&\'*+.^_`|~-]+:$/i', $nextLine)
+            ) {
+                throw new Exception\RuntimeException('CRLF injection detected');
+            }
+
+            $rawBody[] = $nextLine;
         }
 
         if ($headers) {
@@ -144,7 +175,7 @@ class Request extends AbstractMessage implements RequestInterface
     public function setMethod($method)
     {
         $method = strtoupper($method);
-        if (!defined('static::METHOD_' . $method)) {
+        if (!defined('static::METHOD_' . $method) && ! $this->getAllowCustomMethods()) {
             throw new Exception\InvalidArgumentException('Invalid HTTP method passed');
         }
         $this->method = $method;
@@ -509,5 +540,21 @@ class Request extends AbstractMessage implements RequestInterface
         $str .= "\r\n";
         $str .= $this->getContent();
         return $str;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getAllowCustomMethods()
+    {
+        return $this->allowCustomMethods;
+    }
+
+    /**
+     * @param boolean $strictMethods
+     */
+    public function setAllowCustomMethods($strictMethods)
+    {
+        $this->allowCustomMethods = (bool) $strictMethods;
     }
 }

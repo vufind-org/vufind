@@ -284,7 +284,7 @@ class Uri implements UriInterface
         // Capture scheme
         if (($scheme = self::parseScheme($uri)) !== null) {
             $this->setScheme($scheme);
-            $uri = substr($uri, strlen($scheme) + 1);
+            $uri = substr($uri, strlen($scheme) + 1) ?: '';
         }
 
         // Capture authority part
@@ -506,7 +506,6 @@ class Uri implements UriInterface
         $this->setScheme($baseUri->getScheme());
         return $this;
     }
-
 
     /**
      * Convert the link to a relative link by substracting a base URI
@@ -1073,7 +1072,7 @@ class Uri implements UriInterface
             return $match[1];
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -1102,11 +1101,19 @@ class Uri implements UriInterface
                     break;
                 case ($path == '/..'):
                     $path   = '/';
-                    $output = substr($output, 0, strrpos($output, '/', -1));
+                    $lastSlashPos = strrpos($output, '/', -1);
+                    if (false === $lastSlashPos) {
+                        break;
+                    }
+                    $output = substr($output, 0, $lastSlashPos);
                     break;
                 case (substr($path, 0, 4) == '/../'):
                     $path   = '/' . substr($path, 4);
-                    $output = substr($output, 0, strrpos($output, '/', -1));
+                    $lastSlashPos = strrpos($output, '/', -1);
+                    if (false === $lastSlashPos) {
+                        break;
+                    }
+                    $output = substr($output, 0, $lastSlashPos);
                     break;
                 case (substr($path, 0, 3) == '/./'):
                     $path = substr($path, 2);
@@ -1265,7 +1272,7 @@ class Uri implements UriInterface
             && isset(static::$defaultPorts[$scheme])
             && ($port == static::$defaultPorts[$scheme])
         ) {
-            return null;
+            return;
         }
 
         return $port;

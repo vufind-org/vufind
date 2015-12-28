@@ -385,7 +385,7 @@ class AbstractBase extends AbstractActionController
             $this->followup()->store($extras, $url);
         }
         if (!empty($msg)) {
-            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            $this->flashMessenger()->addMessage($msg, 'error');
         }
 
         // Set a flag indicating that we are forcing login:
@@ -426,8 +426,7 @@ class AbstractBase extends AbstractActionController
 
             // If login failed, store a warning message:
             if (!$patron) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('Invalid Patron Login');
+                $this->flashMessenger()->addMessage('Invalid Patron Login', 'error');
             }
         } else {
             // If no credentials were provided, try the stored values:
@@ -625,9 +624,8 @@ class AbstractBase extends AbstractActionController
      */
     protected function listsEnabled()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-        $tagSetting = isset($config->Social->lists) ? $config->Social->lists : true;
-        return $tagSetting && $tagSetting !== 'disabled';
+        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        return $check->getListSetting() !== 'disabled';
     }
 
     /**
@@ -637,9 +635,8 @@ class AbstractBase extends AbstractActionController
      */
     protected function tagsEnabled()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-        $tagSetting = isset($config->Social->tags) ? $config->Social->tags : true;
-        return $tagSetting && $tagSetting !== 'disabled';
+        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        return $check->getTagSetting() !== 'disabled';
     }
 
     /**

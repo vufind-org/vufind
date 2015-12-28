@@ -152,7 +152,7 @@ class FileGenerator extends AbstractGenerator
     }
 
     /**
-     * @param  DocBlockGenerator|string $docBlock
+     * @param  DocBlockGenerator|array|string $docBlock
      * @throws Exception\InvalidArgumentException
      * @return FileGenerator
      */
@@ -302,7 +302,7 @@ class FileGenerator extends AbstractGenerator
      */
     public function getClass($name = null)
     {
-        if ($name == null) {
+        if ($name === null) {
             reset($this->classes);
 
             return current($this->classes);

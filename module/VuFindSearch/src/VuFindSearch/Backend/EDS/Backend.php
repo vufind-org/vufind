@@ -135,11 +135,19 @@ class Backend extends AbstractBackend
     protected $session;
 
     /**
+<<<<<<< HEAD
      * Comma-separated list of local IP addresses
      *
      * @var string
      */
     protected $localIps = '';
+=======
+     * Is the current user a guest?
+     *
+     * @var bool
+     */
+    protected $isGuest;
+>>>>>>> refs/remotes/vufind-org/master
 
     /**
      * Constructor.
@@ -149,16 +157,18 @@ class Backend extends AbstractBackend
      * @param CacheAdapter                     $cache   Object cache
      * @param SessionContainer                 $session Session container
      * @param Config                           $config  Object representing EDS.ini
+     * @param bool                             $isGuest Is the current user a guest?
      */
     public function __construct(ApiClient $client,
         RecordCollectionFactoryInterface $factory, CacheAdapter $cache,
-        SessionContainer $session, Config $config = null
+        SessionContainer $session, Config $config = null, $isGuest = true
     ) {
-        // Save dependencies:
+        // Save dependencies/incoming parameters:
         $this->client = $client;
         $this->setRecordCollectionFactory($factory);
         $this->cache = $cache;
         $this->session = $session;
+        $this->isGuest = $isGuest;
 
         // Extract key values from configuration:
         if (isset($config->EBSCO_Account->user_name)) {
@@ -309,7 +319,7 @@ class Backend extends AbstractBackend
                         $sessionToken = $this->getSessionToken(true);
                     }
                     $response = $this->client->retrieve(
-                        $an, $dbId,  $authenticationToken, $sessionToken, $hlTerms
+                        $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
                     );
                 } catch(Exception $e) {
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
@@ -510,9 +520,9 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Determines whether or not the current user session is identifed as a guest
-     * session
+     * Is the current user a guest? If so, return 'y' else 'n'.
      *
+<<<<<<< HEAD
      * @param string $listIPs Comma-separated list of IP patterns to match
      *
      * @return bool
@@ -551,10 +561,13 @@ class Backend extends AbstractBackend
     /**
      * Is the current user a guest? If so, return 'y' else 'n'.
      *
+=======
+>>>>>>> refs/remotes/vufind-org/master
      * @return string
      */
     protected function isGuest()
     {
+<<<<<<< HEAD
         // If the user is not logged in, then treat them as a guest. Unless they are
         // using IP Authentication.
         // If IP Authentication is used, then don't treat them as a guest.
@@ -570,6 +583,9 @@ class Backend extends AbstractBackend
             return 'n';
         }
         return 'y';
+=======
+        return $this->isGuest ? 'y' : 'n';
+>>>>>>> refs/remotes/vufind-org/master
     }
 
     /**
@@ -586,7 +602,7 @@ class Backend extends AbstractBackend
     {
         try {
             $authToken = $this->getAuthenticationToken();
-            $results = $this->client->createSession($profile,  $isGuest, $authToken);
+            $results = $this->client->createSession($profile, $isGuest, $authToken);
         } catch(\EbscoEdsApiException $e) {
             $errorCode = $e->getApiErrorCode();
             $desc = $e->getApiErrorDescription();
@@ -598,7 +614,7 @@ class Backend extends AbstractBackend
                 try {
                     $authToken = $this->getAuthenticationToken(true);
                     $results = $this->client
-                        ->createSession($this->profile,  $isGuest, $authToken);
+                        ->createSession($this->profile, $isGuest, $authToken);
                 } catch(Exception $e) {
                     throw new BackendException(
                         $e->getMessage(),

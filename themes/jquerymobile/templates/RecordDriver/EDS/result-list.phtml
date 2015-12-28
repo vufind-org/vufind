@@ -10,7 +10,11 @@
 
     $titlePrinted=false;
     if ($this->driver->getTitle()!="") {
+<<<<<<< HEAD
       echo '<b><a href="'.$this->recordLink()->getUrl($this->driver).'" class="title _record_link" >'.$this->driver->getTitle().'</a></b>';
+=======
+      echo '<h3 class="ui-li-heading">'.$this->escapeHtml($this->driver->getTitle()).'</h3>';
+>>>>>>> refs/remotes/vufind-org/master
       $titlePrinted=true;
     }
 
@@ -18,9 +22,15 @@
       foreach ($items as $item):
         if (!empty($item)): ?>
           <? if( ('Ti' == $item['Group']) && ($titlePrinted==false) ): ?>
+<<<<<<< HEAD
             <h3 class="ui-li-heading"><?=$item['Data']?></h3>
           <? else: ?>
             <p class="ui-li-desc"><strong><?=$this->transEsc($item['Label'])?></strong>: <?=$item['Data']?></p>
+=======
+            <h3 class="ui-li-heading"><?=strip_tags($item['Data'])?></h3>
+          <? elseif ('Ti' != $item['Group']): ?>
+            <p class="ui-li-desc"><strong><?=$this->transEsc($item['Label'])?></strong>: <?=strip_tags($item['Data'])?></p>
+>>>>>>> refs/remotes/vufind-org/master
           <? endif; ?>
         <? endif;
       endforeach;
@@ -29,6 +39,7 @@
         <strong><?=$this->transEsc('Login for full access')?></strong>
       </a><br/>
     <? endif; ?>
+<<<<<<< HEAD
     <div style="padding-left:1em">
     <? $customFTLinks = $this->driver->getFTCustomLinks();
     if (!empty($customFTLinks)): ?>
@@ -74,5 +85,7 @@
         </p>
       <? endif; ?>
     </div>
+=======
+>>>>>>> refs/remotes/vufind-org/master
   </div>
 </a>

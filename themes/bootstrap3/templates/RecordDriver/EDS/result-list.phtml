@@ -16,6 +16,7 @@
     <? endif; ?>
   </div>
   <div class="col-sm-7 middle">
+<<<<<<< HEAD
     <div class="resultItemLine1">
     <?
       $titlePrinted=false;
@@ -27,11 +28,14 @@
     </div>
   </div>
   <div class="col-sm-7 middle">
+=======
+>>>>>>> refs/remotes/vufind-org/master
     <?  $items  =  $this->driver->getItems();
       if (isset($items) && !empty($items)) :
         foreach ($items as $item):
           if (!empty($item)): ?>
             <div class="resultItemLine1">
+<<<<<<< HEAD
               <?if( ('Ti' == $item['Group']) && ($titlePrinted==false) ): ?>
                 <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title _record_link" >
                 <?=$item['Data']?> </a>
@@ -43,6 +47,16 @@
                   }
                 ?>
               </p>
+=======
+              <?if('Ti' == $item['Group']): ?>
+                <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title _record_link" >
+                <?=$item['Data']?> </a>
+              <?else:?>
+                <p>
+                  <b><?=$this->transEsc($item['Label'])?>:</b>
+                  <?=$item['Data']?>
+                </p>
+>>>>>>> refs/remotes/vufind-org/master
               <?endif;?>
             </div>
           <? endif;
@@ -58,6 +72,7 @@
           </p>
         </div>
       <? endif; ?>
+<<<<<<< HEAD
 
   <div class="resultItemLine4 custom-links">
     <? $customFTLinks = $this->driver->getFTCustomLinks();
@@ -77,6 +92,11 @@
     <? endif; ?>
 
     <? $customLinks = $this->driver->getCustomLinks();
+=======
+
+  <div class="resultItemLine4 custom-links">
+    <? $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
+>>>>>>> refs/remotes/vufind-org/master
     if (!empty($customLinks)): ?>
       <? foreach ($customLinks as $customLink): ?>
       <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
@@ -85,8 +105,13 @@
           $name = isset($customLink['Text']) ? $customLink['Text'] : '';
       ?>
       <span>
+<<<<<<< HEAD
         <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$mot?>" class="custom-link">
           <? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?>
+=======
+        <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
+          <? if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>" /> <? endif; ?><?=$this->escapeHtml($name)?>
+>>>>>>> refs/remotes/vufind-org/master
         </a>
       </span>
       <? endforeach; ?>

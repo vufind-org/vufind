@@ -178,6 +178,26 @@ class ClassReflection extends ReflectionClass implements ReflectionInterface
     }
 
     /**
+     * Returns an array of reflection classes of traits used by this class.
+     *
+     * @return array|null
+     */
+    public function getTraits()
+    {
+        $vals = array();
+        $traits = parent::getTraits();
+        if ($traits === null) {
+            return;
+        }
+
+        foreach ($traits as $trait) {
+            $vals[] = new ClassReflection($trait->getName());
+        }
+
+        return $vals;
+    }
+
+    /**
      * Get parent reflection class of reflected class
      *
      * @return ClassReflection|bool
@@ -230,11 +250,17 @@ class ClassReflection extends ReflectionClass implements ReflectionInterface
         return $zendReflections;
     }
 
+    /**
+     * @return string
+     */
     public function toString()
     {
         return parent::__toString();
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return parent::__toString();

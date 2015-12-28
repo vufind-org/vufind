@@ -34,6 +34,7 @@
         </a>
     <? endif; ?>
 
+<<<<<<< HEAD
     <? $customFTLinks = $this->driver->getFTCustomLinks();
     if (!empty($customFTLinks)): ?>
       <? foreach ($customFTLinks as $customLink): ?>
@@ -50,6 +51,9 @@
       <? endforeach; ?>
     <? endif; ?>
     <? $customLinks = $this->driver->getCustomLinks();
+=======
+    <? $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
+>>>>>>> refs/remotes/vufind-org/master
     if (!empty($customLinks)): ?>
       <? foreach ($customLinks as $customLink): ?>
       <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
@@ -57,9 +61,15 @@
           $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
           $name = isset($customLink['Text']) ? $customLink['Text'] : '';
       ?>
+<<<<<<< HEAD
       <span>
         <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$mot?>" class="custom-link">
           <? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?>
+=======
+      <br /><span>
+        <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
+          <? if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>" /> <? endif; ?><?=$this->escapeHtml($name)?>
+>>>>>>> refs/remotes/vufind-org/master
         </a>
       </span>
       <? endforeach; ?>

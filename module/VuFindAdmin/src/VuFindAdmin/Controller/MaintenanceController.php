@@ -66,8 +66,7 @@ class MaintenanceController extends AbstractAdmin
         // If cache is unset, we didn't go through the loop above, so no message
         // needs to be displayed.
         if (isset($cache)) {
-            $this->flashMessenger()->setNamespace('success')
-                ->addMessage('Cache(s) cleared.');
+            $this->flashMessenger()->addMessage('Cache(s) cleared.', 'success');
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
     }
@@ -120,13 +119,12 @@ class MaintenanceController extends AbstractAdmin
     {
         $daysOld = intval($this->params()->fromQuery('daysOld', $minAge));
         if ($daysOld < $minAge) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage(
-                    str_replace(
-                        '%%age%%', $minAge,
-                        'Expiration age must be at least %%age%% days.'
-                    )
-                );
+            $this->flashMessenger()->addMessage(
+                str_replace(
+                    '%%age%%', $minAge,
+                    'Expiration age must be at least %%age%% days.'
+                ), 'error'
+            );
         } else {
             $search = $this->getTable($table);
             if (!method_exists($search, 'getExpiredQuery')) {
@@ -139,7 +137,7 @@ class MaintenanceController extends AbstractAdmin
                 $search->delete($query);
                 $msg = str_replace('%%count%%', $count, $successString);
             }
-            $this->flashMessenger()->setNamespace('success')->addMessage($msg);
+            $this->flashMessenger()->addMessage($msg, 'success');
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
     }

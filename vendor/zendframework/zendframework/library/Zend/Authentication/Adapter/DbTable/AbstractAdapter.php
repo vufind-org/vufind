@@ -148,7 +148,7 @@ abstract class AbstractAdapter extends BaseAdapter
     public function setAmbiguityIdentity($flag)
     {
         if (is_int($flag)) {
-            $this->ambiguityIdentity = (1 === $flag ? true : false);
+            $this->ambiguityIdentity = (1 === $flag);
         } elseif (is_bool($flag)) {
             $this->ambiguityIdentity = $flag;
         }
@@ -173,7 +173,7 @@ abstract class AbstractAdapter extends BaseAdapter
      */
     public function getDbSelect()
     {
-        if ($this->dbSelect == null) {
+        if ($this->dbSelect === null) {
             $this->dbSelect = new Sql\Select();
         }
         return $this->dbSelect;

@@ -23,9 +23,8 @@ body {
     font-size:85%;
     margin-top:1px;
   }
-  .label {
-    padding-top:.3em;
-  }
+  .label { padding-top:.3em; }
+  .modal-dialog { width: 650px; }
 }
 .btn {
   padding:3px 5px 2px;
@@ -124,9 +123,12 @@ header {
   .navbar {
     border-radius:5px 5px 0 0;
     padding:0 10px;
-    #searchForm {display:none !important}
+    .searchForm {display:none !important}
     .navbar-brand {
       background-image:url('../../images/vufind_logo.png');
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
       color:transparent;
       height:65px;
       margin-top:5px;
@@ -135,6 +137,7 @@ header {
         color:transparent;
       }
     }
+    .navbar-brand.lang-ar {background-image:url('../../images/vufind_logo_ar.png');}
     .navbar-nav > li > a {
       padding:12px 6px;
       @media (max-width: 767px) {
@@ -162,7 +165,7 @@ header {
     #header-collapse .navbar-right li {
       text-align:right;
     }
-    #searchForm_type {
+    .searchForm_type {
       margin-top:2px;
       margin-bottom:2px;
     }
@@ -176,7 +179,7 @@ header {
     padding:7px 20px 5px;
   }
 }
-#searchForm_lookfor,#searchForm_type {
+.searchForm_lookfor,.searchForm_type {
   border-color:@brand-primary;
 }
 [name=searchForm] {
@@ -237,8 +240,17 @@ footer {
 }
 
 /* --- Offcanvas --- */
-.offcanvas.active .sidebar {color: #FFF;}
-.offcanvas .sidebar .list-group {color: #000;}
+body.offcanvas .sidebar .list-group {color: #000;}
+body.offcanvas .sidebar .list-group {color: #000;}
+body.offcanvas .offcanvas-toggle {
+  padding-bottom: 18px;
+  font-size: 16px;
+  background: #fff;
+  box-shadow: 0 0 2px #000;
+  color: @brand-primary;
+}
+body.offcanvas.active .sidebar {color: #FFF;}
+body.offcanvas.active .offcanvas-toggle {box-shadow: none;}
 
 /* --- PubDateVis --- */
 #dateVisColorSettings {
