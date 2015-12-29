@@ -81,21 +81,27 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * Sets up the Primo API Client
      *
-     * @param string     $apiId  Primo API ID
+     * @param string     $url    Primo API URL (either a host name and port or a full
+     * path to the brief search including a trailing question mark)
      * @param string     $inst   Institution code
      * @param HttpClient $client HTTP client
-     * @param int        $port   API connection port
      */
-    public function __construct($apiId, $inst, $client, $port = 1701)
+    public function __construct($url, $inst, $client)
     {
-        $this->host = "http://$apiId.hosted.exlibrisgroup.com:{$port}/"
-            . "PrimoWebServices/xservice/search/brief?";
+        $parts = parse_url($url);
+        if (empty($parts['path']) || $parts['path'] == '/') {
+            $parts['path'] = '/PrimoWebServices/xservice/search/brief';
+        }
+        $this->host = $parts['scheme'] . '://' . $parts['host']
+            . (!empty($parts['port']) ? ':' . $parts['port'] : '')
+            . $parts['path'] . '?';
+
         $this->inst = $inst;
         $this->client = $client;
     }
 
     /**
-     * Execute a search.  adds all the querystring parameters into
+     * Execute a search. Adds all the querystring parameters into
      * $this->client and returns the parsed response
      *
      * @param string $institution Institution
@@ -111,7 +117,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *     limit       string: number of records to return (default 20)
      *     sort        string: value to be used by for sorting (default null)
      *     returnErr   bool:   false to fail on error; true to return empty
-     *                         empty result set with an error field (def true)
+     *                         empty result set with an error field (def false)
      *     Anything in $params not listed here will be ignored.
      *
      * Note: some input parameters accepted by Primo are not implemented here:
@@ -138,7 +144,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             "pageNumber" => 1,
             "limit" => 20,
             "sort" => null,
-            "returnErr" => true,
+            "returnErr" => false,
         ];
         if (isset($params)) {
             $args = array_merge($args, $params);
@@ -149,7 +155,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $result = $this->performSearch($institution, $terms, $args);
         } catch (\Exception $e) {
             if ($args["returnErr"]) {
-                $this->debug($e->getMessage());
+                $this->error('Search failed: ' . $e->getMessage());
                 return [
                     'recordCount' => 0,
                     'documents' => [],

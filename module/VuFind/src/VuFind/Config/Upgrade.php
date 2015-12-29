@@ -1016,6 +1016,9 @@ class Upgrade
         // update permission settings
         $this->upgradePrimoPermissions();
 
+        // update server settings
+        $this->upgradePrimoServerSettings();
+
         // save the file
         $this->saveModifiedConfig('Primo.ini');
     }
@@ -1069,6 +1072,33 @@ class Upgrade
             // Remove any old settings remaining in Primo.ini:
             unset($config['Institutions']['code']);
             unset($config['Institutions']['regex']);
+        }
+    }
+
+    /**
+     * Translate obsolete server settings.
+     *
+     * @return void
+     */
+    protected function upgradePrimoServerSettings()
+    {
+        $config = & $this->newConfigs['Primo.ini'];
+        $permissions = & $this->newConfigs['permissions.ini'];
+        // Convert apiId to url
+        if (isset($config['General']['apiId'])) {
+            $url = 'http://' . $config['General']['apiId']
+                . '.hosted.exlibrisgroup.com';
+            if (isset($config['General']['port'])) {
+                $url .= ':' . $config['General']['port'];
+            } else {
+                $url .= ':1701';
+            }
+
+            $config['General']['url'] = $url;
+
+            // Remove any old settings remaining in Primo.ini:
+            unset($config['General']['apiId']);
+            unset($config['General']['port']);
         }
     }
 
