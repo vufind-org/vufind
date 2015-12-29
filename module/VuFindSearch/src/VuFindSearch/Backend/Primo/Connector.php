@@ -26,6 +26,7 @@
  * @author   Anna Headley <aheadle1@swarthmore.edu>
  * @author   Chelsea Lobdell <clobdel1@swarthmore.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
@@ -41,6 +42,7 @@ use Zend\Http\Client as HttpClient;
  * @author   Anna Headley <aheadle1@swarthmore.edu>
  * @author   Chelsea Lobdell <clobdel1@swarthmore.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
@@ -68,6 +70,18 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      * @var string
      */
     protected $host;
+
+    /**
+     * Response for an empty search
+     *
+     * @var array
+     */
+    protected static $emptyQueryResponse = [
+        'recordCount' => 0,
+        'documents' => [],
+        'facets' => [],
+        'error' => 'Primo does not accept an empty query'
+    ];
 
     /**
      * Debug status
@@ -116,8 +130,6 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *     pageNumber  string: index of first record (default 1)
      *     limit       string: number of records to return (default 20)
      *     sort        string: value to be used by for sorting (default null)
-     *     returnErr   bool:   false to fail on error; true to return empty
-     *                         empty result set with an error field (def false)
      *     Anything in $params not listed here will be ignored.
      *
      * Note: some input parameters accepted by Primo are not implemented here:
@@ -143,29 +155,13 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             "pcAvailability" => false,
             "pageNumber" => 1,
             "limit" => 20,
-            "sort" => null,
-            "returnErr" => false,
+            "sort" => null
         ];
         if (isset($params)) {
             $args = array_merge($args, $params);
         }
 
-        // run search, deal with exceptions
-        try {
-            $result = $this->performSearch($institution, $terms, $args);
-        } catch (\Exception $e) {
-            if ($args["returnErr"]) {
-                $this->error('Search failed: ' . $e->getMessage());
-                return [
-                    'recordCount' => 0,
-                    'documents' => [],
-                    'facets' => [],
-                    'error' => $e->getMessage()
-                ];
-            } else {
-                throw $e;
-            }
-        }
+        $result = $this->performSearch($institution, $terms, $args);
         return $result;
     }
 
@@ -336,8 +332,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             // Send Request
             $result = $this->call(implode('&', $qs));
         } else {
-            throw new \Exception('Primo API does not accept a null query');
+            return self::$emptyQueryResponse;
         }
+
         return $result;
     }
 
@@ -627,7 +624,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             // Send Request
             $result = $this->call(implode('&', $qs));
         } else {
-            throw new \Exception('Primo API does not accept a null query');
+            return self::$emptyQueryResponse;
         }
 
         return $result;
@@ -664,7 +661,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             // Send Request
             $result = $this->call(implode('&', $qs));
         } else {
-            throw new \Exception('Primo API does not accept a null query');
+            return self::$emptyQueryResponse;
         }
 
         return $result;
