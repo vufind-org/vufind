@@ -51,6 +51,13 @@ finna.itemStatus = (function() {
                 if (result.locationList[x].availability) {
                   locationListHTML += '<i class="fa fa-ok text-success"></i> <span class="text-success">'
                     + result.locationList[x].location + '</span> ';
+                } else if (typeof(result.locationList[x].status_unknown) !== 'undefined'
+                  && result.locationList[x].status_unknown
+                ) {
+                  if (result.locationList[x].location) {
+                    locationListHTML += '<i class="fa fa-ok text-warning"></i> <span class="text-warning">' 
+                      + result.locationList[x].location + '</span> ';
+                  }
                 } else {
                   locationListHTML += '<i class="fa fa-remove text-error"></i> <span class="text-error"">'
                     + result.locationList[x].location + '</span> ';
