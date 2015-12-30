@@ -225,12 +225,13 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     ) {
         // Set up results object for URL building:
         $results = $this->results->get($targetClass);
-        $options = $results->getOptions();
+        $params = $results->getParams();
         foreach ($filters as $filter) {
-            $options->addHiddenFilter($filter);
+            $params->addHiddenFilter($filter);
         }
 
         // Find matching handler for new query (and use default if no match):
+        $options = $results->getOptions();
         $targetHandler = $options->getHandlerForLabel(
             $activeOptions->getLabelForBasicHandler($handler)
         );
@@ -273,16 +274,15 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     {
         // Set up results object for URL building:
         $results = $this->results->get($class);
-        $options = $results->getOptions();
+        $params = $results->getParams();
         foreach ($filters as $filter) {
-            $options->addHiddenFilter($filter);
+            $params->addHiddenFilter($filter);
         }
 
         // If an advanced search is available, link there; otherwise, just go
         // to the search home:
-        $options = $this->results->get($class)->getOptions();
         $urlParams = $results->getUrlQuery()->getParams(false);
-        $url = $this->url->__invoke($options->getSearchHomeAction())
+        $url = $this->url->__invoke($results->getOptions()->getSearchHomeAction())
             . ($urlParams !== '?' ? $urlParams : '');
         return [
             'class' => $class,

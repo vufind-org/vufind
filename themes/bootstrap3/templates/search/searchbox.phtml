@@ -18,7 +18,7 @@
     $hiddenFilters = $this->searchtabs()->getCurrentHiddenFilters($this->searchClassId);
     if (empty($hiddenFilters)) {
         if ($this->layout()->templateName != 'home' || !in_array($this->layout()->templateDir, ['pazpar2', 'primo', 'search', 'summon', 'vudl', 'worldcat'])) {
-            $hiddenFilters = $options->getLastHiddenFilters();
+            $hiddenFilters = $this->searchParams($this->searchClassId)->getLastHiddenFilters();
         } else {
             $hiddenFilters = $this->searchtabs()->getDefaultTabHiddenFilters($this->searchClassId);
         }

@@ -103,7 +103,7 @@ class Minified
         // It would be nice to shorten filter fields too, but
         //      it would be a nightmare to maintain.
         $this->f = $searchObject->getParams()->getFilters();
-        $this->hf = $searchObject->getOptions()->getHiddenFilters();
+        $this->hf = $searchObject->getParams()->getHiddenFilters();
     }
 
     /**
@@ -121,7 +121,6 @@ class Minified
         // Deminify everything:
         $results = $manager->get($this->cl);
         $results->getParams()->deminify($this);
-        $results->getOptions()->deminify($this);
         $results->deminify($this);
 
         return $results;

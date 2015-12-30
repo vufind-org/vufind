@@ -542,10 +542,9 @@ class SearchController extends AbstractSearch
             $results = $this->getResultsManager()->get('Solr');
             $params = $results->getParams();
             $params->$initMethod();
-            $options = $results->getOptions();
             foreach ($hiddenFilters as $key => $filters) {
                 foreach ($filters as $filter) {
-                    $options->addHiddenFilter("$key:$filter");
+                    $params->addHiddenFilter("$key:$filter");
                 }
             }
 
