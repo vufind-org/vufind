@@ -12,15 +12,21 @@
     );
     $handlerCount = count($handlers);
     $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
-    $searchHome = $options->getSearchHomeAction();
     $advSearch = $options->getAdvancedSearchAction();
     $lastSort = $options->getLastSort();
     $lastLimit = $options->getLastLimit();
-    $hiddenFilters = isset($this->results) ? $this->results->getParams()->getHiddenFilters() : $options->getLastHiddenFilters();
+    $hiddenFilters = $this->searchtabs()->getCurrentHiddenFilters($this->searchClassId);
+    if (empty($hiddenFilters)) {
+        if ($this->layout()->templateName != 'home' || !in_array($this->layout()->templateDir, ['pazpar2', 'primo', 'search', 'summon', 'vudl', 'worldcat'])) {
+            $hiddenFilters = $options->getLastHiddenFilters();
+        } else {
+            $hiddenFilters = $this->searchtabs()->getDefaultTabHiddenFilters($this->searchClassId);
+        }
+    }
 ?>
 <? if ($this->searchType == 'advanced'): ?>
   <div class="searchForm navbar-form navbar-left flip">
-    <? $tabs = $this->render('search/searchTabs'); ?>
+    <? $tabs = $this->render('search/searchTabs', ['searchClassId' => $this->searchClassId, 'lookfor' => $this->lookfor, 'searchIndex' => $this->searchIndex, 'searchType' => $this->searchType, 'hiddenFilters' => $hiddenFilters]); ?>
     <? if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><? endif; ?>
       <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
       <p class="adv_search_links">
@@ -32,7 +38,7 @@
   </div>
 <? else: ?>
   <form class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
-    <?= $this->render('search/searchTabs'); ?>
+    <?= $this->render('search/searchTabs', ['searchClassId' => $this->searchClassId, 'lookfor' => $this->lookfor, 'searchIndex' => $this->searchIndex, 'searchType' => $this->searchType, 'hiddenFilters' => $hiddenFilters]); ?>
     <input class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
     <? if ($handlerCount > 1): ?>
       <select class="searchForm_type form-control" name="type" data-native-menu="false">

@@ -487,7 +487,8 @@ class Factory
             ? $config->SearchTabsFilters->toArray() : [];
         return new SearchTabs(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-            $tabConfig, $filterConfig, $sm->get('url')
+            $tabConfig, $filterConfig, $sm->get('url'),
+            $sm->getServiceLocator()->get('Application')->getRequest()
         );
     }
 

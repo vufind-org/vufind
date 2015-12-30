@@ -1,5 +1,4 @@
-<? $options = $this->searchOptions($this->searchClassId); ?>
-<? $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, isset($this->results) ? $this->results->getParams()->getHiddenFilters() : $options->getLastHiddenFilters()); ?>
+<? $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $this->hiddenFilters); ?>
 <? if (count($searchTabs) > 0): ?>
   <ul class="nav nav-tabs">
     <? foreach ($searchTabs as $tab): ?>
