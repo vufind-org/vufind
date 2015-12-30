@@ -266,8 +266,8 @@ class CombinedController extends AbstractSearch
             ? (array)$settings['filter'] : null;
 
         // Apply hidden filters, if any:
-        $query->hiddenFilters = isset($settings['hiddenfilter'])
-            ? (array)$settings['hiddenfilter'] : null;
+        $query->hiddenFilters = isset($settings['hiddenFilter'])
+            ? (array)$settings['hiddenFilter'] : null;
 
         // Apply shards, if any:
         $query->shard = isset($settings['shard'])
