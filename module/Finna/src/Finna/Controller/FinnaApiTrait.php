@@ -89,10 +89,6 @@ trait FinnaApiTrait
      */
     protected function output($data, $status, $httpCode = null, $message = '')
     {
-        // Expire the session
-        $sessionManager = $this->getServiceLocator()->get('VuFind\SessionManager');
-        $sessionManager->destroy();
-
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');

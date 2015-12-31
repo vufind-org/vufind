@@ -176,6 +176,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      */
     public function recordAction()
     {
+        $this->writeSession();
         $this->determineOutputMode();
 
         $request = $this->getRequest()->getQuery()->toArray()
@@ -225,6 +226,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      */
     public function searchAction()
     {
+        $this->writeSession();
         $this->determineOutputMode();
 
         // Send both GET and POST variables to search class:
