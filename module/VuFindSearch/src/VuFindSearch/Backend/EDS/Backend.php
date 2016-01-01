@@ -135,22 +135,13 @@ class Backend extends AbstractBackend
     protected $session;
 
     /**
-<<<<<<< HEAD
      * Comma-separated list of local IP addresses
      *
      * @var string
      */
     protected $localIps = '';
-=======
-     * Is the current user a guest?
-     *
-     * @var bool
-     */
-    protected $isGuest;
->>>>>>> refs/remotes/vufind-org/master
-
-    /**
-     * Is the current user a guest?
+	 /*
+	 * Is the current user a guest?
      *
      * @var bool
      */
@@ -569,18 +560,12 @@ class Backend extends AbstractBackend
     }
 
     /**
-=======
->>>>>>> origin/master
      * Is the current user a guest? If so, return 'y' else 'n'.
      *
-=======
->>>>>>> refs/remotes/vufind-org/master
      * @return string
      */
     protected function isGuest()
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
         // If the user is not logged in, then treat them as a guest. Unless they are
         // using IP Authentication.
         // If IP Authentication is used, then don't treat them as a guest.
@@ -595,13 +580,7 @@ class Backend extends AbstractBackend
         ) {
             return 'n';
         }
-        return 'y';
-=======
         return $this->isGuest ? 'y' : 'n';
->>>>>>> refs/remotes/vufind-org/master
-=======
-        return $this->isGuest ? 'y' : 'n';
->>>>>>> origin/master
     }
 
     /**
