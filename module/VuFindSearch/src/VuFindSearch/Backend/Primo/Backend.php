@@ -133,9 +133,13 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      */
     public function retrieve($id, ParamBag $params = null)
     {
+        $onCampus = (null !== $params) ? $params->get('onCampus') : [false];
+        $onCampus = $onCampus ? $onCampus[0] : false;
         try {
             $response   = $this->connector
-                ->getRecord($id, $this->connector->getInstitutionCode());
+                ->getRecord(
+                    $id, $this->connector->getInstitutionCode(), $onCampus
+                );
         } catch (\Exception $e) {
             throw new BackendException(
                 $e->getMessage(),
@@ -158,6 +162,9 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      */
     public function retrieveBatch($ids, ParamBag $params = null)
     {
+        $onCampus = (null !== $params) ? $params->get('onCampus') : [false];
+        $onCampus = $onCampus ? $onCampus[0] : false;
+
         // Load 100 records at a time; this is a good number to avoid memory
         // problems while still covering a lot of ground.
         $pageSize = 100;
@@ -169,7 +176,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
 
             try {
                 $response = $this->connector->getRecords(
-                    $currentPage, $this->connector->getInstitutionCode()
+                    $currentPage, $this->connector->getInstitutionCode(), $onCampus
                 );
             } catch (\Exception $e) {
                 throw new BackendException(

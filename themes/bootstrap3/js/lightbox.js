@@ -8,7 +8,7 @@ function Lightbox() {
   this.closeTimeout = false;
   // Elements
   this.modal = $('#modal');
-  this.modalBody = this.modal.find('#modal');
+  this.modalBody = this.modal.find('.modal-body');
   // Utilities
   this.find = function(sel) { return this.modal.find(sel); }
   this.html = function(html) { this.modalBody.html(html); }
@@ -30,7 +30,7 @@ function Lightbox() {
     }
     this.html(html);
     if(this.shown) { VuFind.modal('handleUpdate'); }
-    if(doConstrainLinks) { this.modalBody.find('a').click(constrainLink); }
+    if(doConstrainLinks) { this.modalBody.find('a').click(VuFind.lightbox.constrainLink); }
     if("undefined" !== typeof link && null !== link
     && "undefined" !== typeof link.dataset
     && "undefined" !== typeof link.dataset.lightboxClose) {

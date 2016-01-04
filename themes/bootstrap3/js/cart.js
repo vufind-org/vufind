@@ -40,7 +40,7 @@ function getFullCartItems() {
 
 function addItemToCart(id,source) {
   if(!source) {
-    source = 'VuFind';
+    source = VuFind.getDefaultSearchBackend();
   }
   var cartItems = getCartItems();
   var cartSources = getCartSources();

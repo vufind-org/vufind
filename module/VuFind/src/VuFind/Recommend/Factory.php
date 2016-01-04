@@ -335,18 +335,4 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
         );
     }
-
-    /**
-     * Factory for WorldCatTerms module.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return WorldCatTerms
-     */
-    public static function getWorldCatTerms(ServiceManager $sm)
-    {
-        return new WorldCatTerms(
-            $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
-        );
-    }
 }
