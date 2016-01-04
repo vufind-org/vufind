@@ -237,7 +237,8 @@ class Upgrade
     protected function loadOldBaseConfig()
     {
         // Load the base settings:
-        $mainArray = parse_ini_file($this->oldDir . '/config.ini', true);
+        $oldIni = $this->oldDir . '/config.ini';
+        $mainArray = file_exists($oldIni) ? parse_ini_file($oldIni, true) : [];
 
         // Merge in local overrides as needed.  VuFind 2 structures configurations
         // differently, so people who used this mechanism will need to refactor
