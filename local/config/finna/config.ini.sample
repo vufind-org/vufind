@@ -117,7 +117,7 @@ lifetime                    = 600 ; Session lasts for 10 minutes (without keepal
 ; alive with a JavaScript call as long as a VuFind page is open in the browser.
 ; Default is 0 (disabled). When keep-alive is enabled, session lifetime above can be
 ; reduced to e.g. 600.
-keepAlive = 60
+keepAlive = 300
 ;file_save_path              = /tmp/vufind_sessions
 ;memcache_host               = localhost
 ;memcache_port               = 11211

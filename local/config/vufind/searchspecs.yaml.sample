@@ -538,40 +538,11 @@ CallNumber:
       - [callnumber_fuzzy, ~]
 
 Classification:
-  # We use two similar munges here -- one for exact matches, which will get
-  # a very high boost factor, and one for left-anchored wildcard searches,
-  # which will return a larger number of hits at a lower boost.
   DismaxFields:
-    - classification_str_mv
-  CustomMunge:
-    classification_exact:
-      - [lowercase]
-      # Strip quotes:
-      - [preg_replace, '/["]/', ""]
-      # Escape colons (unescape first to avoid double-escapes):
-      - [preg_replace, '/(\\\:)/', ':']
-      - [preg_replace, '/:/', '\:']
-      # Strip pre-existing trailing asterisks:
-      - [preg_replace, "/\*+$/", ""]
-      # Escape spaces
-      - [preg_replace, '/ /', '\ ']
-    classification_fuzzy:
-      - [lowercase]
-      # Strip quotes:
-      - [preg_replace, '/["]/', ""]
-      # Escape colons (unescape first to avoid double-escapes):
-      - [preg_replace, '/(\\\:)/', ':']
-      - [preg_replace, '/:/', '\:']
-      # Strip pre-existing trailing asterisks:
-      - [preg_replace, "/\*+$/", ""]
-      # Escape spaces
-      - [preg_replace, '/ /', '\ ']
-      # Append asterisk
-      - [preg_replace, '/^(.*)$/', '\\1*']
+    - classification_txt_mv
   QueryFields:
-    - classification_str_mv:
-      - [classification_exact, 1000]
-      - [classification_fuzzy, ~]
+    - classification_txt_mv:
+      - [onephrase, ~]
       
 publisher:
   DismaxFields:
