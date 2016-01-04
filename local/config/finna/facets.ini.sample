@@ -102,9 +102,7 @@ top_cols = 3
 ; to false or omit to disable ORed facets.
 orFacets = *
 ; Do we want any facets to be collapsed by default?
-collapsedFacets = sector_str_mv, building, author2Str, language, original_lng_str_mv, subtitle_lng_str_mv, main_date_str, search_daterange_mv, genre_facet, era_facet, geographic_facet, topic_facet, hierarchy_parent_title, first_indexed, category_str_mv
-; Any fields listed below will be treated as hierarchical rather than plain facets:
-hierarchicalFacets = building,format,sector_str_mv,category_str_mv
+collapsedFacets = sector_str_mv,building,author2Str,language,original_lng_str_mv,subtitle_lng_str_mv,main_date_str,search_daterange_mv,genre_facet,era_facet,geographic_facet,topic_facet,hierarchy_parent_title,first_indexed,category_str_mv
 
 ; This can be used to sort specific facet fields alphabetically by index value
 ; (which normally results in alphabetical order).
