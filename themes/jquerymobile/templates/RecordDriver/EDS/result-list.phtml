@@ -10,7 +10,11 @@
 
     $titlePrinted=false;
     if ($this->driver->getTitle()!="") {
+<<<<<<< HEAD
+      echo '<b><a href="'.$this->recordLink()->getUrl($this->driver).'" class="title _record_link" >'.$this->driver->getTitle().'</a></b>';
+=======
       echo '<h3 class="ui-li-heading">'.$this->escapeHtml($this->driver->getTitle()).'</h3>';
+>>>>>>> refs/remotes/vufind-org/master
       $titlePrinted=true;
     }
 
@@ -18,9 +22,15 @@
       foreach ($items as $item):
         if (!empty($item)): ?>
           <? if( ('Ti' == $item['Group']) && ($titlePrinted==false) ): ?>
+<<<<<<< HEAD
+            <h3 class="ui-li-heading"><?=$item['Data']?></h3>
+          <? else: ?>
+            <p class="ui-li-desc"><strong><?=$this->transEsc($item['Label'])?></strong>: <?=$item['Data']?></p>
+=======
             <h3 class="ui-li-heading"><?=strip_tags($item['Data'])?></h3>
           <? elseif ('Ti' != $item['Group']): ?>
             <p class="ui-li-desc"><strong><?=$this->transEsc($item['Label'])?></strong>: <?=strip_tags($item['Data'])?></p>
+>>>>>>> refs/remotes/vufind-org/master
           <? endif; ?>
         <? endif;
       endforeach;
@@ -29,5 +39,53 @@
         <strong><?=$this->transEsc('Login for full access')?></strong>
       </a><br/>
     <? endif; ?>
+<<<<<<< HEAD
+    <div style="padding-left:1em">
+    <? $customFTLinks = $this->driver->getFTCustomLinks();
+    if (!empty($customFTLinks)): ?>
+      <? foreach ($customFTLinks as $customLink): ?>
+      <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
+          $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
+          $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
+          $name = isset($customLink['Text']) ? $customLink['Text'] : '';
+      ?>
+      <p  class="ui-li-desc">
+        <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$mot?>" class="custom-link">
+          <? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?>
+        </a>
+      </p>
+      <? endforeach; ?>
+    <? endif; ?>
+
+      <? $customLinks = $this->driver->getCustomLinks();
+      if (!empty($customLinks)): ?>
+        <? foreach ($customLinks as $customLink): ?>
+          <? $url  = isset($customLink['Url'])  ? $customLink['Url']  : '';
+             $mot  = isset($customLink['MouseOverText']) ? $customLink['MouseOverText'] : '';
+             $icon = isset($customLink['Icon']) ? $customLink['Icon'] : '';
+             $name = isset($customLink['Name']) ? $customLink['Name'] : '';?>
+            <p class="ui-li-desc"><? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?></p>
+        <? endforeach; ?>
+      <? endif; ?>
+
+      <? if ($this->driver->hasHTMLFullTextAvailable()): ?>
+        <p class="ui-li-desc">
+          <a href="<?= $this->recordLink()->getUrl($this->driver, 'fulltext') ?>#html" class="icon html fulltext _record_link" target="_blank">
+            <?=$this->transEsc('HTML Full Text')?>
+          </a>
+        </p>
+        &nbsp; &nbsp;
+      <? endif; ?>
+
+      <? if ($this->driver->hasPdfAvailable()): ?>
+        <p class="ui-li-desc">
+          <a href="<?= $this->recordLink()->getUrl($this->driver).'/PDF'; ?>" class="icon pdf fulltext" target="_blank">
+            <?=$this->transEsc('PDF Full Text')?>
+          </a>
+        </p>
+      <? endif; ?>
+    </div>
+=======
+>>>>>>> refs/remotes/vufind-org/master
   </div>
 </a>

@@ -135,7 +135,13 @@ class Backend extends AbstractBackend
     protected $session;
 
     /**
-     * Is the current user a guest?
+     * Comma-separated list of local IP addresses
+     *
+     * @var string
+     */
+    protected $localIps = '';
+	 /*
+	 * Is the current user a guest?
      *
      * @var bool
      */
@@ -178,6 +184,11 @@ class Backend extends AbstractBackend
         if (isset($config->EBSCO_Account->organization_id)) {
             $this->orgId = $config->EBSCO_Account->organization_id;
         }
+        if (isset($config->EBSCO_Account->local_ip_addresses)) {
+            $this->localIps = $config->EBSCO_Account->local_ip_addresses;
+        }
+
+        $this->isGuest = $isGuest;
 
         // Save default profile value, since profile property may be overriden:
         $this->defaultProfile = $this->profile;
@@ -509,12 +520,66 @@ class Backend extends AbstractBackend
     }
 
     /**
+<<<<<<< HEAD
+     * Is the current user a guest? If so, return 'y' else 'n'.
+     *
+<<<<<<< HEAD
+     * @param string $listIPs Comma-separated list of IP patterns to match
+     *
+     * @return bool
+     */
+    protected function validAuthIP($listIPs)
+    {
+        try {
+            if ($listIPs == '') {
+                return false;
+            }
+
+            $m = explode(',', $listIPs);
+            if (count($m) == 0) {
+                return false;
+            }
+
+            // get the ip address of the request
+            $ip_address = $_SERVER['REMOTE_ADDR'];
+            foreach ($m as $ip) {
+                $v = trim($ip);
+                if (!empty($v)
+                    && strcmp(substr($ip_address, 0, strlen($v)), $v) == 0
+                ) {
+                    // inside of ip address range of customer
+                    return true;
+                }
+            }
+            // if not found, return false, not authenticated by IP address
+            return false;
+        } catch (Exception $e) {
+            $this->debugPrint("validAuthIP ex: " . $e);
+            return false;
+        }
+    }
+
+    /**
      * Is the current user a guest? If so, return 'y' else 'n'.
      *
      * @return string
      */
     protected function isGuest()
     {
+        // If the user is not logged in, then treat them as a guest. Unless they are
+        // using IP Authentication.
+        // If IP Authentication is used, then don't treat them as a guest.
+
+        //RF : 2015/05/01 - deactivated
+        //if ($this->ipAuth) {
+        //    return 'n';
+        //}
+
+        if ($this->validAuthIP($this->localIps)
+            || (isset($this->authManager) && $this->authManager->isLoggedIn())
+        ) {
+            return 'n';
+        }
         return $this->isGuest ? 'y' : 'n';
     }
 
