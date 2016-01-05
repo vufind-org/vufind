@@ -130,11 +130,24 @@ class Factory extends \VuFind\Service\Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \VuFind\Search\Results\PluginManager
+     * @return \Finna\Search\Results\PluginManager
      */
     public static function getSearchResultsPluginManager(ServiceManager $sm)
     {
         return static::getGenericPluginManager($sm, 'Search\Results');
     }
 
+    /**
+     * Construct the search specs reader.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\Config\SearchSpecsReader
+     */
+    public static function getSearchSpecsReader(ServiceManager $sm)
+    {
+        return new \Finna\Config\SearchSpecsReader(
+            $sm->get('VuFind\CacheManager')
+        );
+    }
 }
