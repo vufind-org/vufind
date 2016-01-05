@@ -260,6 +260,14 @@ input[type=number].input-year::-webkit-outer-spin-button {
     margin: 0;
 }
 /* Results */
+.template-name-results , .template-name-search {
+    @media (max-width: @screen-xs-max) {
+        & .finna-main-header {
+            display: none;   
+        }
+    }
+}
+
 .resultListLabeling {
     display: none;   
 }
