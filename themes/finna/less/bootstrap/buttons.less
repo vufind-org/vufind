@@ -447,6 +447,20 @@ button.multiselect {
             }
         }
     }
+    @media (max-width: 399px) {
+        & .view-button, & .sort-button {
+            &  .dropdown > a span {
+                padding-right: 20px;
+                max-width: 72px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+                display: inline-block;
+                height: 17px;
+                margin-bottom: -3px;
+            }
+        }
+    }
 }
 .dropdown.form-control.type-dropdown {
     border: none;
