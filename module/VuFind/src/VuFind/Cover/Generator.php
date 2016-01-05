@@ -96,9 +96,11 @@ class Generator
      */
     public function generate($title, $author, $callnumber = null)
     {
-        if ($this->settings->mode == 'solid') {
+        switch (strtolower($this->settings->mode)) {
+        case 'solid':
             return $this->generateSolid($title, $author, $callnumber);
-        } else {
+        case 'grid':
+        default:
             return $this->generateGrid($title, $author, $callnumber);
         }
     }
@@ -111,12 +113,11 @@ class Generator
      * @param string $callnumber Callnumber of the book
      *
      * @return string contents of image file
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function generateSolid($title, $author, $callnumber)
     {
         $half = $this->settings->size / 2;
+        $box  = $this->settings->size / 8;
         // Create image
         if (!($im = imagecreate($this->settings->size, $this->settings->size))) {
             throw new \Exception("Cannot Initialize new GD image stream");
@@ -135,7 +136,6 @@ class Generator
             $this->settings->saturation,
             $this->settings->lightness
         );
-
         // Fill solid color
         imagefilledrectangle(
             $im,
@@ -146,17 +146,8 @@ class Generator
             $color
         );
 
-        $this->drawText(
-            $im,
-            strtoupper($title[0]),
-            $half,
-            $half + 28,
-            $this->settings->titleFont,
-            60,
-            $this->white,
-            false,
-            'center'
-        );
+        $this->drawTitle($im, $title, $box);
+        $this->drawAuthor($im, $author);
 
         // Output png CHECK THE PARAM
         ob_start();
@@ -300,7 +291,7 @@ class Generator
         while ($i < count($words) && $lineCount < $this->settings->maxLines - 1) {
             $pline = $line;
             // Format
-            $text = strtoupper($words[$i]);
+            $text = $words[$i];
             $line .= $text . ' ';
             $textWidth = $this->textWidth(
                 $line,
