@@ -178,6 +178,7 @@ $config = [
             'VuFind\SearchRunner' => 'VuFind\Service\Factory::getSearchRunner',
             'VuFind\SearchSpecsReader' => 'VuFind\Service\Factory::getSearchSpecsReader',
             'VuFind\SearchStats' => 'VuFind\Service\Factory::getSearchStats',
+            'VuFind\SearchTabsHelper' => 'VuFind\Service\Factory::getSearchTabsHelper',
             'VuFind\SessionManager' => 'VuFind\Service\Factory::getSessionManager',
             'VuFind\SessionPluginManager' => 'VuFind\Service\Factory::getSessionPluginManager',
             'VuFind\SMS' => 'VuFind\SMS\Factory',

@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,11 +23,15 @@
  * @category VuFind2
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Search\Results\PluginManager, Zend\View\Helper\Url, Zend\Http\Request;
+use VuFind\Search\Results\PluginManager,
+    VuFind\Search\SearchTabsHelper,
+    Zend\View\Helper\Url,
+    Zend\Http\Request;
 
 /**
  * "Search tabs" view helper
@@ -34,6 +39,7 @@ use VuFind\Search\Results\PluginManager, Zend\View\Helper\Url, Zend\Http\Request
  * @category VuFind2
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -61,13 +67,6 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     protected $filters;
 
     /**
-     * URL helper
-     *
-     * @var Url
-     */
-    protected $url;
-
-    /**
      * Request
      *
      * @var Request
@@ -75,22 +74,36 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     protected $request;
 
     /**
+     * Url
+     *
+     * @var Url
+     */
+    protected $url;
+
+    /**
+     * Search tab helper
+     *
+     * @var SearchTabHelper
+     */
+    protected $searchTabsHelper;
+
+    /**
      * Constructor
      *
-     * @param PluginManager $results Search results plugin manager
-     * @param array         $config  Tab configuration
-     * @param array         $filters Tab filter configuration
-     * @param Url           $url     URL helper
-     * @param Request       $request Request
+     * @param PluginManager    $results Search results plugin manager
+     * @param array            $config  Tab configuration
+     * @param array            $filters Tab filter configuration
+     * @param Url              $url     URL helper
+     * @param SearchTabsHelper $helper Search tabs helper
      */
     public function __construct(PluginManager $results, array $config,
-        array $filters, Url $url, Request $request
-    ) {
+        array $filters, Url $url, SearchTabsHelper $helper)
+    {
         $this->results = $results;
         $this->config = $config;
         $this->filters = $filters;
         $this->url = $url;
-        $this->request = $request;
+        $this->searchTabsHelper = $helper;
     }
 
     /**
@@ -110,11 +123,12 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         $retVal = [];
         $matchFound = false;
         foreach ($this->config as $key => $label) {
-            $class = $this->extractClassName($key);
+            $class = $this->searchTabsHelper->extractClassName($key);
             $filters = isset($this->filters[$key])
                 ? (array)$this->filters[$key] : [];
             if ($class == $activeSearchClass
-                && $this->filtersMatch($class, $hiddenFilters, $filters)
+                && $this->searchTabsHelper
+                    ->filtersMatch($class, $hiddenFilters, $filters)
             ) {
                 $matchFound = true;
                 $retVal[] = $this->createSelectedTab($class, $label);
@@ -155,9 +169,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      */
     public function getCurrentHiddenFilters($searchClassId)
     {
-        $filters = $this->request->getQuery('hiddenFilters');
-        return null === $filters
-            ? [] : $this->parseFilters($searchClassId, $filters);
+        return $this->searchTabsHelper->getCurrentHiddenFilters($searchClassId);
     }
 
     /**
@@ -169,27 +181,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      */
     public function getDefaultTabHiddenFilters($searchClassId)
     {
-        if (empty($this->config)) {
-            return [];
-        }
-
-        $firstTab = null;
-        foreach ($this->config as $key => $label) {
-            $class = $this->extractClassName($key);
-            if ($class == $searchClassId) {
-                if (null === $firstTab) {
-                    $firstTab = $key;
-                }
-                if (empty($this->filters[$key])) {
-                    return [];
-                }
-            }
-        }
-        if (null === $firstTab || empty($this->filters[$firstTab])) {
-            return [];
-        }
-
-        return $this->parseFilters($searchClassId, (array)$this->filters[$firstTab]);
+        return $this->searchTabsHelper->getDefaultTabHiddenFilters($searchClassId);
     }
 
     /**
@@ -316,51 +308,4 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         ];
     }
 
-    /**
-     * Extract search class name from a tab id
-     *
-     * @param string $tabId Tab id as defined in config.ini
-     *
-     * @return string
-     */
-    protected function extractClassName($tabId)
-    {
-        list($class) = explode(':', $tabId, 2);
-        return $class;
-    }
-
-    /**
-     * Check if given hidden filters match with the hidden filters from configuration
-     *
-     * @param string $class         Search class ID
-     * @param string $hiddenFilters Hidden filters
-     * @param string $configFilters Filters from filter configuration
-     *
-     * @return boolean
-     */
-    protected function filtersMatch($class, $hiddenFilters, $configFilters)
-    {
-        $compare = $this->parseFilters($class, $configFilters);
-        return $hiddenFilters == $this->parseFilters($class, $configFilters);
-    }
-
-    /**
-     * Parse a simple filter array to a keyed array
-     *
-     * @param string $class   Search class ID
-     * @param array  $filters Filters to parse
-     *
-     * @return array
-     */
-    protected function parseFilters($class, $filters)
-    {
-        $results = $this->results->get($class);
-        $params = $results->getParams();
-        $result = [];
-        foreach ($filters as $filter) {
-            list($field, $value) = $params->parseFilter($filter);
-            $result[$field][] = $value;
-        }
-        return $result;
-    }
 }
