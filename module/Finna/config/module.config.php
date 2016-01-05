@@ -117,6 +117,7 @@ $config = [
             'VuFind\DbTablePluginManager' => 'Finna\Service\Factory::getDbTablePluginManager',
             'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',
             'VuFind\SearchResultsPluginManager' => 'Finna\Service\Factory::getSearchResultsPluginManager',
+            'VuFind\SearchSpecsReader' => 'Finna\Service\Factory::getSearchSpecsReader',
         ],
         'invokables' => [
             'VuFind\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',
