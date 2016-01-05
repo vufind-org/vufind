@@ -8,12 +8,6 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
 <? $recordType = $this->driver->getRecordType(); ?>
 <div class="imagepopup-holder <?=$this->escapeHtmlAttr($recordType) ?>" data-type="<?=$this->escapeHtmlAttr($recordType) ?>" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID()) ?>">
   <div class="imagepopup-container">
-    <div class="image-info">
-        <? if ($numOfImages > 1): ?>
-          <div class="image-index"><?= $this->translate('Image') . " $currentImage / $numOfImages" ?></div>
-        <? endif; ?>
-        <div class="record-index"><span class="index"></span> / <span class="total"></span></div>
-    </div>
     <div class="image iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>">
       <img src="<?= $largeImage ?>" />
     </div>
@@ -66,7 +60,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
       <? endif; ?>
       <div class="record-link"><a href="<?= $this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('To the record') ?></a></div>
       <? $rights = $this->driver->getImageRights($this->layout()->userLang) ?>
-      <div class="open-link"><a target="_blank" href="<?= $originalImage ?>"><i class="fa fa-new-window"></i> <?= $this->translate('Show image in new window') ?></a> <span class="image-dimensions"></span></div>
+      <div class="open-link"><a target="_blank" href="<?= $originalImage ?>"><i class="fa fa-download"></i> <?= $this->translate('Show image in new window') ?></a> <span class="image-dimensions"></span></div>
       <div class="image-rights">
         <div class="rights">
           <? $hasLink = isset($rights['link']); ?>
@@ -89,6 +83,12 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
 
       </div>
       <div style="clear: both;"></div>
+    </div>
+    <div class="image-info">
+        <? if ($numOfImages > 1): ?>
+        <div class="image-index"><?= $this->translate('Image') . " $currentImage / $numOfImages" ?></div>
+        <? endif; ?>
+        <div class="record-index"><span class="index"></span> / <span class="total"></span></div>
     </div>
     <div style="clear: both;"></div>
   </div>

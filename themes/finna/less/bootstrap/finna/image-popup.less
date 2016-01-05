@@ -41,7 +41,7 @@
 	box-shadow: 0px 10px 40px rgba(1,1,1,0.8);
 	@media (min-width: @screen-sm-min) {
 	    max-height: 100%;
-	    overflow-y: scroll;
+	    overflow-y: auto;
 	}
 }
 .mfp-close-btn-in .mfp-close {
@@ -81,14 +81,12 @@
         text-align: right;
         width: 100%;
         padding-bottom: 10px;
-        position: absolute;
-        bottom: 0px;
-        right: 0px;
         color: #ABABAB;
-        font-size: 12px;
+        font-size: 1em;
         letter-spacing: 0.5px;
 	    font-weight: normal;
-	    
+	    margin-top: -55px;
+	    height: 55px;
     }
     & .image-index, .record-index {
         display: block;
@@ -99,7 +97,8 @@
     }
     @media (max-width:@screen-xs-max) {
         & .image-info {
-            text-align: center;   
+            text-align: center;
+            margin-top: 0;
         }
         & .image-index, .record-index {
             margin: 0 0 0 0px;  
@@ -131,7 +130,7 @@
             }
     }
     & .content {
-	    padding: 10px 40px 0 25px;
+	    padding: 10px 40px 0 20px;
         text-align: left;
         vertical-align: top;
         background-color: @body-bg;
@@ -258,6 +257,8 @@
 
     & .record-link, .open-link {
         text-align: left;
+        margin-top: 5px;
+        font-size: 1.1em;
         & a {
             display: inline-block;    
         }
@@ -276,7 +277,7 @@
 
     & .image-rights {
 	    text-align: left;
-	    padding: 10px 0px 40px;
+	    padding: 10px 0px 50px;
 	    margin-top: 10px;
 	    border-top: 1px solid  @gray-lighter;
 	    color:#666;
@@ -381,7 +382,7 @@
         & .content { 
             width: 100%;
 		    text-align: center;
-		    padding: 10px 0px 20px;
+		    padding: 10px 0px 0px;
 		    max-width: 800px;
         }
 
