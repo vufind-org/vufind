@@ -526,12 +526,7 @@ class SearchController extends AbstractSearch
             ->getCache('object');
         $searchTabsHelper = $this->getServiceLocator()
             ->get('VuFind\SearchTabsHelper');
-        $hiddenFilters = $searchTabsHelper
-            ->getCurrentHiddenFilters($this->searchClassId);
-        if (empty($hiddenFilters)) {
-            $hiddenFilters = $searchTabsHelper
-                ->getDefaultTabHiddenFilters($this->searchClassId);
-        }
+        $hiddenFilters = $searchTabsHelper->getHiddenFilters($this->searchClassId);
         $hiddenFiltersHash = md5(json_encode($hiddenFilters));
         $cacheName .= "-$hiddenFiltersHash";
         if (!($results = $cache->getItem($cacheName))) {

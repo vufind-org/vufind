@@ -83,9 +83,9 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Search tab helper
      *
-     * @var SearchTabHelper
+     * @var SearchTabsHelper
      */
-    protected $searchTabsHelper;
+    protected $helper;
 
     /**
      * Constructor
@@ -94,16 +94,16 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      * @param array            $config  Tab configuration
      * @param array            $filters Tab filter configuration
      * @param Url              $url     URL helper
-     * @param SearchTabsHelper $helper Search tabs helper
+     * @param SearchTabsHelper $helper  Search tabs helper
      */
     public function __construct(PluginManager $results, array $config,
-        array $filters, Url $url, SearchTabsHelper $helper)
-    {
+        array $filters, Url $url, SearchTabsHelper $helper
+    ) {
         $this->results = $results;
         $this->config = $config;
         $this->filters = $filters;
         $this->url = $url;
-        $this->searchTabsHelper = $helper;
+        $this->helper = $helper;
     }
 
     /**
@@ -123,12 +123,11 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         $retVal = [];
         $matchFound = false;
         foreach ($this->config as $key => $label) {
-            $class = $this->searchTabsHelper->extractClassName($key);
+            $class = $this->helper->extractClassName($key);
             $filters = isset($this->filters[$key])
                 ? (array)$this->filters[$key] : [];
             if ($class == $activeSearchClass
-                && $this->searchTabsHelper
-                    ->filtersMatch($class, $hiddenFilters, $filters)
+                && $this->helper->filtersMatch($class, $hiddenFilters, $filters)
             ) {
                 $matchFound = true;
                 $retVal[] = $this->createSelectedTab($class, $label);
@@ -161,27 +160,18 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Get an array of currently active hidden filters
+     * Get an array of hidden filters
      *
-     * @param string $searchClassId Active search class
-     *
-     * @return array
-     */
-    public function getCurrentHiddenFilters($searchClassId)
-    {
-        return $this->searchTabsHelper->getCurrentHiddenFilters($searchClassId);
-    }
-
-    /**
-     * Get an array of hidden filters for the default tab of the given search class
-     *
-     * @param string $searchClassId Search class
+     * @param string $searchClassId         Active search class
+     * @param bool   $returnDefaultsIfEmpty Whether to return default tab filters if
+     * no filters are currently active
      *
      * @return array
      */
-    public function getDefaultTabHiddenFilters($searchClassId)
+    public function getHiddenFilters($searchClassId, $returnDefaultsIfEmpty = true)
     {
-        return $this->searchTabsHelper->getDefaultTabHiddenFilters($searchClassId);
+        return $this->helper
+            ->getHiddenFilters($searchClassId, $returnDefaultsIfEmpty);
     }
 
     /**

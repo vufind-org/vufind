@@ -88,49 +88,22 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Get an array of currently active hidden filters
+     * Get an array of hidden filters
      *
-     * @param string $searchClassId Active search class
+     * @param string $searchClassId         Active search class
+     * @param bool   $returnDefaultsIfEmpty Whether to return default tab filters if
+     * no filters are currently active
      *
      * @return array
      */
-    public function getCurrentHiddenFilters($searchClassId)
+    public function getHiddenFilters($searchClassId, $returnDefaultsIfEmpty = true)
     {
         $filters = $this->request->getQuery('hiddenFilters');
+        if (null === $filters && $returnDefaultsIfEmpty) {
+            $filters = $this->getDefaultTabHiddenFilters($searchClassId);
+        }
         return null === $filters
             ? [] : $this->parseFilters($searchClassId, $filters);
-    }
-
-    /**
-     * Get an array of hidden filters for the default tab of the given search class
-     *
-     * @param string $searchClassId Search class
-     *
-     * @return array
-     */
-    public function getDefaultTabHiddenFilters($searchClassId)
-    {
-        if (empty($this->config)) {
-            return [];
-        }
-
-        $firstTab = null;
-        foreach ($this->config as $key => $label) {
-            $class = $this->extractClassName($key);
-            if ($class == $searchClassId) {
-                if (null === $firstTab) {
-                    $firstTab = $key;
-                }
-                if (empty($this->filters[$key])) {
-                    return [];
-                }
-            }
-        }
-        if (null === $firstTab || empty($this->filters[$firstTab])) {
-            return [];
-        }
-
-        return $this->parseFilters($searchClassId, (array)$this->filters[$firstTab]);
     }
 
     /**
@@ -159,6 +132,38 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
     {
         $compare = $this->parseFilters($class, $configFilters);
         return $hiddenFilters == $this->parseFilters($class, $configFilters);
+    }
+
+    /**
+     * Get an array of hidden filters for the default tab of the given search class
+     *
+     * @param string $searchClassId Search class
+     *
+     * @return null|array
+     */
+    protected function getDefaultTabHiddenFilters($searchClassId)
+    {
+        if (empty($this->config)) {
+            return null;
+        }
+
+        $firstTab = null;
+        foreach ($this->config as $key => $label) {
+            $class = $this->extractClassName($key);
+            if ($class == $searchClassId) {
+                if (null === $firstTab) {
+                    $firstTab = $key;
+                }
+                if (empty($this->filters[$key])) {
+                    return null;
+                }
+            }
+        }
+        if (null === $firstTab || empty($this->filters[$firstTab])) {
+            return null;
+        }
+
+        return (array)$this->filters[$firstTab];
     }
 
     /**
