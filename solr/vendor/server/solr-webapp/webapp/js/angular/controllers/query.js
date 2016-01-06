@@ -16,8 +16,8 @@
 */
 
 solrAdminApp.controller('QueryController',
-  function($scope, $routeParams, $location, Query){
-    $scope.resetMenu("query");
+  function($scope, $routeParams, $location, Query, Constants){
+    $scope.resetMenu("query", Constants.IS_COLLECTION_PAGE);
 
     // @todo read URL parameters into scope
     $scope.query = {wt: 'json', q:'*:*', indent:'on'};
@@ -59,7 +59,9 @@ solrAdminApp.controller('QueryController',
       if ($scope.isSpellcheck) copy(params, $scope.spellcheck);
 
       if ($scope.rawParams) {
-        for (var param in $scope.rawParams.split(/[&\n]/)) {
+        var rawParams = $scope.rawParams.split(/[&\n]/);
+        for (var i in rawParams) {
+            var param = rawParams[i];
             var parts = param.split("=");
             set(parts[0], parts[1]);
         }
@@ -71,10 +73,9 @@ solrAdminApp.controller('QueryController',
         copy(params, $scope.filters[filter]);
       }
 
-      params.doNotIntercept=true;
       params.core = $routeParams.core;
       params.handler = qt;
-      var url = "/solr/" + $routeParams.core + qt + "?" + Query.url(params);
+      var url = Query.url(params);
       Query.query(params, function(data) {
         $scope.lang = $scope.query.wt;
         $scope.response = data;
@@ -83,6 +84,11 @@ solrAdminApp.controller('QueryController',
                      $location.port() + url;
       });
     };
+
+    if ($location.search().q) {
+      $scope.query.q = $location.search()["q"];
+      $scope.doQuery();
+    }
 
     $scope.removeFilter = function(index) {
       if ($scope.filters.length === 1) {

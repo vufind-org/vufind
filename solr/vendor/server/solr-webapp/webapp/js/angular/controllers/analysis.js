@@ -16,8 +16,8 @@
 */
 
 solrAdminApp.controller('AnalysisController',
-  function($scope, $location, $routeParams, Luke, Analysis) {
-      $scope.resetMenu("analysis");
+  function($scope, $location, $routeParams, Luke, Analysis, Constants) {
+      $scope.resetMenu("analysis", Constants.IS_COLLECTION_PAGE);
 
       $scope.refresh = function() {
         Luke.schema({core: $routeParams.core}, function(data) {
@@ -119,9 +119,13 @@ solrAdminApp.controller('AnalysisController',
 
         if ($scope.indexText) {
             $location.search("analysis.fieldvalue", $scope.indexText);
+        } else if ($location.search()["analysis.fieldvalue"]) {
+            $location.search("analysis.fieldvalue", null);
         }
         if ($scope.queryText) {
           $location.search("analysis.query", $scope.queryText);
+        } else if ($location.search()["analysis.query"]) {
+            $location.search("analysis.query", null);
         }
 
         if (fieldOrType == "fieldname") {
@@ -164,7 +168,7 @@ solrAdminApp.controller('AnalysisController',
             var parts = $scope.fieldOrType.split("=");
             var fieldOrType = parts[0] == "fieldname" ? "field_names" : "field_types";
 
-              Analysis.field(params, function(data) {
+            Analysis.field(params, function(data) {
               $scope.result = processAnalysisData(data.analysis, fieldOrType);
             });
           }
@@ -181,7 +185,7 @@ solrAdminApp.controller('AnalysisController',
 
       $scope.toggleVerbose = function() {
         $scope.verbose = !$scope.verbose;
-        $location.search("verbose_output", $scope.verbose ? "1" : "0");
+        $scope.updateQueryString();
       };
 
       $scope.refresh();

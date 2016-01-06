@@ -16,6 +16,7 @@ org.apache.solr.logging
 org.apache.solr.logging.jul
 org.apache.solr.logging.log4j
 org.apache.solr.parser
+org.apache.solr.query
 org.apache.solr.request
 org.apache.solr.request.json
 org.apache.solr.request.macro

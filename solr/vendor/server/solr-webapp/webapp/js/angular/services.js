@@ -21,6 +21,23 @@ solrAdminServices.factory('System',
   ['$resource', function($resource) {
     return $resource('/solr/admin/info/system', {"wt":"json", "_":Date.now()});
   }])
+.factory('Collections',
+  ['$resource', function($resource) {
+    return $resource('/solr/admin/collections',
+    {'wt':'json', '_':Date.now()}, {
+    "list": {params:{action: "LIST"}},
+    "status": {params:{action: "CLUSTERSTATUS"}},
+    "add": {params:{action: "CREATE"}},
+    "delete": {params:{action: "DELETE"}},
+    "rename": {params:{action: "RENAME"}},
+    "createAlias": {params:{action: "CREATEALIAS"}},
+    "deleteAlias": {params:{action: "DELETEALIAS"}},
+    "deleteReplica": {params:{action: "DELETEREPLICA"}},
+    "addReplica": {params:{action: "ADDREPLICA"}},
+    "reload": {method: "GET", params:{action:"RELOAD", core: "@core"}},
+    "optimize": {params:{}}
+    });
+  }])
 .factory('Cores',
   ['$resource', function($resource) {
     return $resource('/solr/admin/cores',
@@ -31,7 +48,7 @@ solrAdminServices.factory('System',
     "unload": {params:{action: "UNLOAD", core: "@core"}},
     "rename": {params:{action: "RENAME"}},
     "swap": {params:{}},
-    "reload": {method: "GET", params:{action:"RELOAD", core: "@core"}},
+    "reload": {method: "GET", params:{action:"RELOAD", core: "@core"}, headers:{doNotIntercept: "true"}},
     "optimize": {params:{}}
     });
   }])
@@ -45,12 +62,21 @@ solrAdminServices.factory('System',
   }])
 .factory('Zookeeper',
   ['$resource', function($resource) {
-    return $resource('/solr/zookeeper', {wt:'json', _:Date.now()}, {
+    return $resource('/solr/admin/zookeeper', {wt:'json', _:Date.now()}, {
       "simple": {},
       "dump": {params: {dump: "true"}},
       "liveNodes": {params: {path: '/live_nodes'}},
       "clusterState": {params: {detail: "true", path: "/clusterstate.json"}},
-      "detail": {params: {detail: "true", path: "@path"}}
+      "detail": {params: {detail: "true", path: "@path"}},
+      "configs": {params: {detail:false, path: "/configs/"}},
+      "aliases": {params: {detail: "true", path: "/aliases.json"}, transformResponse:function(data) {
+        var znode = $.parseJSON(data).znode;
+        if (znode.data) {
+          return {aliases: $.parseJSON(znode.data).collection};
+        } else {
+          return {aliases: {}};
+        }
+      }}
     });
   }])
 .factory('Properties',
@@ -110,7 +136,8 @@ solrAdminServices.factory('System',
 .factory('Luke',
   ['$resource', function($resource) {
     return $resource('/solr/:core/admin/luke', {core: '@core', wt:'json', _:Date.now()}, {
-      "index":  {params: {numTerms: 0}},
+      "index":  {params: {numTerms: 0, show: 'index'}},
+      "raw": {params: {numTerms: 0}},
       "schema": {params: {show:'schema'}},
       "field": {},
       "fields": {params: {show:'schema'}, interceptor: {
@@ -136,12 +163,12 @@ solrAdminServices.factory('System',
 .factory('DataImport',
   ['$resource', function($resource) {
     return $resource('/solr/:core/dataimport', {core: '@core', indent:'on', wt:'json', _:Date.now()}, {
-      "config": {params: {command: "show-config", doNotIntercept: "true"},
+      "config": {params: {command: "show-config"}, headers: {doNotIntercept: "true"},
                  transformResponse: function(data) {
                     return {config: data};
                  }
                 },
-      "status": {params: {command: "status", doNotIntercept: "true"}},
+      "status": {params: {command: "status"}, headers: {doNotIntercept: "true"}},
       "reload": {params: {command: "reload-config"}},
       "post": {method: "POST",
                 headers: {'Content-type': 'application/x-www-form-urlencoded'},
@@ -152,8 +179,8 @@ solrAdminServices.factory('System',
   ['$resource', function($resource) {
     return $resource('/solr/:core/admin/ping', {wt:'json', core: '@core', ts:Date.now(), _:Date.now()}, {
      "ping": {},
-     "status": {params:{action:"status"}}
-    });
+     "status": {params:{action:"status"}, headers: {doNotIntercept: "true"}
+    }});
   }])
 .factory('Mbeans',
   ['$resource', function($resource) {
@@ -185,30 +212,45 @@ solrAdminServices.factory('System',
   }])
 .factory('Query',
     ['$resource', function($resource) {
-       var resource = $resource('/solr/:core:handler', {core: '@core', handler: '@handler'}, {
+       var resource = $resource('/solr/:core:handler', {core: '@core', handler: '@handler', '_':Date.now()}, {
            "query": {
-               method: "GET", transformResponse: function (data) {
-                   return {data: data}
-               }
+             method: "GET",
+             transformResponse: function (data) {
+               return {data: data}
+             },
+             headers: {doNotIntercept: "true"}
            }
        });
        resource.url = function(params) {
            var qs = [];
            for (key in params) {
-               if (key != "core" && key != "handler" && key != "doNotIntercept") {
+               if (key != "core" && key != "handler") {
                    for (var i in params[key]) {
                        qs.push(key + "=" + params[key][i]);
                    }
                }
            }
-           return "/solr/" + params.core + params.handler + "?" + qs.join("&");
+           return "/solr/" + params.core + params.handler + "?" + qs.sort().join("&");
        }
        return resource;
-    }])
+}])
 .factory('Segments',
    ['$resource', function($resource) {
        return $resource('/solr/:core/admin/segments', {'wt':'json', core: '@core', _:Date.now()}, {
            get: {}
        });
-   }
-]);
+}])
+.factory('Schema',
+   ['$resource', function($resource) {
+     return $resource('/solr/:core/schema', {wt: 'json', core: '@core', _:Date.now()}, {
+       get: {method: "GET"},
+       check: {method: "GET", headers: {doNotIntercept: "true"}},
+       post: {method: "POST"}
+     });
+}])
+.factory('Config',
+   ['$resource', function($resource) {
+     return $resource('/solr/:core/config', {wt: 'json', core: '@core', _:Date.now()}, {
+       get: {method: "GET"}
+     })
+}]);

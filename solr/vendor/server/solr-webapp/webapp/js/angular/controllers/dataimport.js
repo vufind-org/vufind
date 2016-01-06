@@ -18,8 +18,8 @@
 var dataimport_timeout = 2000;
 
 solrAdminApp.controller('DataImportController',
-    function($scope, $rootScope, $routeParams, $location, $timeout, $interval, $cookies, Mbeans, DataImport) {
-        $scope.resetMenu("dataimport");
+    function($scope, $rootScope, $routeParams, $location, $timeout, $interval, $cookies, Mbeans, DataImport, Constants) {
+        $scope.resetMenu("dataimport", Constants.IS_COLLECTION_PAGE);
 
         $scope.refresh = function () {
             Mbeans.info({core: $routeParams.core, cat: 'QUERYHANDLER'}, function (data) {
@@ -192,6 +192,11 @@ solrAdminApp.controller('DataImportController',
             $cookies.dataimport_autorefresh = $scope.autorefresh ? true : null;
             if ($scope.autorefresh) {
                 $scope.refreshTimeout = $interval($scope.refreshStatus, dataimport_timeout);
+                var onRouteChangeOff = $scope.$on('$routeChangeStart', function() {
+                    $interval.cancel($scope.refreshTimeout);
+                    onRouteChangeOff();
+                });
+
             } else if ($scope.refreshTimeout) {
                 $interval.cancel($scope.refreshTimeout);
             }

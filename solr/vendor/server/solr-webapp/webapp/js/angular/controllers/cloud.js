@@ -16,7 +16,7 @@
 */
 
 solrAdminApp.controller('CloudController',
-    function($scope, $location, Zookeeper) {
+    function($scope, $location, Zookeeper, Constants) {
 
         $scope.showDebug = false;
 
@@ -30,13 +30,13 @@ solrAdminApp.controller('CloudController',
 
         var view = $location.search().view ? $location.search().view : "graph";
         if (view == "tree") {
-            $scope.resetMenu("cloud-tree", true);
+            $scope.resetMenu("cloud-tree", Constants.IS_ROOT_PAGE);
             treeSubController($scope, Zookeeper);
         } else if (view == "rgraph") {
-            $scope.resetMenu("cloud-rgraph", true);
+            $scope.resetMenu("cloud-rgraph", Constants.IS_ROOT_PAGE);
             graphSubController($scope, Zookeeper, true);
         } else if (view == "graph") {
-            $scope.resetMenu("cloud-graph", true);
+            $scope.resetMenu("cloud-graph", Constants.IS_ROOT_PAGE);
             graphSubController($scope, Zookeeper, false);
         }
     }
@@ -241,7 +241,7 @@ var graphSubController = function ($scope, Zookeeper, isRadial) {
     $scope.initGraph();
 };
 
-solrAdminApp.directive('graph', function() {
+solrAdminApp.directive('graph', function(Constants) {
     return {
         restrict: 'EA',
         scope: {
@@ -360,11 +360,11 @@ solrAdminApp.directive('graph', function() {
                         return 0 === d.depth ? 'end' : 'start';
                     })
                     .attr('data-href', function (d) {
-                        return d.name;
+                        return d.name + Constants.ROOT_URL + "#/~cloud";
                     })
                     .text(helper_node_text)
                     .on('click', function(d,i) {
-                        location.href = d.name;
+                        location.href = d.name+Constants.ROOT_URL+"#/~cloud";
                     });
             };
 
@@ -422,7 +422,7 @@ solrAdminApp.directive('graph', function() {
                     })
                     .text(helper_node_text)
                     .on('click', function(d,i) {
-                        location.href = d.name;
+                        location.href = d.name+Constants.ROOT_URL+"#/~cloud";
                     });
             }
         }

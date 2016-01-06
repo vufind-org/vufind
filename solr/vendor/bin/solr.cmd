@@ -94,10 +94,15 @@ IF [%1]==[] goto usage
 
 IF "%1"=="-help" goto usage
 IF "%1"=="-usage" goto usage
+IF "%1"=="-h" goto usage
+IF "%1"=="--help" goto usage
 IF "%1"=="/?" goto usage
 IF "%1"=="-i" goto get_info
 IF "%1"=="-info" goto get_info
 IF "%1"=="status" goto get_info
+IF "%1"=="version" goto get_version
+IF "%1"=="-v" goto get_version
+IF "%1"=="-version" goto get_version
 
 REM Only allow the command to be the first argument, assume start if not supplied
 IF "%1"=="start" goto set_script_cmd
@@ -136,6 +141,8 @@ IF NOT "%SCRIPT_ERROR%"=="" ECHO %SCRIPT_ERROR%
 IF [%FIRST_ARG%]==[] goto script_usage
 IF "%FIRST_ARG%"=="-help" goto script_usage
 IF "%FIRST_ARG%"=="-usage" goto script_usage
+IF "%FIRST_ARG%"=="-h" goto script_usage
+IF "%FIRST_ARG%"=="--help" goto script_usage
 IF "%FIRST_ARG%"=="/?" goto script_usage
 IF "%SCRIPT_CMD%"=="start" goto start_usage
 IF "%SCRIPT_CMD%"=="restart" goto start_usage
@@ -150,7 +157,7 @@ goto done
 :script_usage
 @echo.
 @echo Usage: solr COMMAND OPTIONS
-@echo        where COMMAND is one of: start, stop, restart, healthcheck, create, create_core, create_collection, delete
+@echo        where COMMAND is one of: start, stop, restart, healthcheck, create, create_core, create_collection, delete, version
 @echo.
 @echo   Standalone server example (start Solr running in the background on port 8984):
 @echo.
@@ -602,11 +609,11 @@ IF NOT "%EXAMPLE%"=="" goto run_example
 
 :start_solr
 IF "%SOLR_HOME%"=="" set "SOLR_HOME=%SOLR_SERVER_DIR%\solr"
+IF EXIST "%cd%\%SOLR_HOME%" set "SOLR_HOME=%cd%\%SOLR_HOME%"
+
 IF NOT EXIST "%SOLR_HOME%\" (
   IF EXIST "%SOLR_SERVER_DIR%\%SOLR_HOME%" (
     set "SOLR_HOME=%SOLR_SERVER_DIR%\%SOLR_HOME%"
-  ) ELSE IF EXIST "%cd%\%SOLR_HOME%" (
-    set "SOLR_HOME=%cd%\%SOLR_HOME%"
   ) ELSE (
     set "SCRIPT_ERROR=Solr home directory %SOLR_HOME% not found!"
     goto err
@@ -884,10 +891,10 @@ IF "%FG%"=="1" (
   REM run solr in the foreground
   title "Solr-%SOLR_PORT%"
   echo %SOLR_PORT%>"%SOLR_TIP%"\bin\solr-%SOLR_PORT%.port
-  "%JAVA%" %SERVEROPT% -Xss256k %SOLR_JAVA_MEM% %START_OPTS% %GCLOG_OPT%:"!SOLR_LOGS_DIR!"/solr_gc.log -Dlog4j.configuration="%LOG4J_CONFIG%" -DSTOP.PORT=!STOP_PORT! -DSTOP.KEY=%STOP_KEY% ^
+  "%JAVA%" %SERVEROPT% %SOLR_JAVA_MEM% %START_OPTS% %GCLOG_OPT%:"!SOLR_LOGS_DIR!"/solr_gc.log -Dlog4j.configuration="%LOG4J_CONFIG%" -DSTOP.PORT=!STOP_PORT! -DSTOP.KEY=%STOP_KEY% ^
     -Djetty.port=%SOLR_PORT% -Dsolr.solr.home="%SOLR_HOME%" -Dsolr.install.dir="%SOLR_TIP%" -Djetty.home="%SOLR_SERVER_DIR%" -Djava.io.tmpdir="%SOLR_SERVER_DIR%\tmp" -jar start.jar "%SOLR_JETTY_CONFIG%"
 ) ELSE (
-  START /B "Solr-%SOLR_PORT%" /D "%SOLR_SERVER_DIR%" "%JAVA%" %SERVEROPT% -Xss256k %SOLR_JAVA_MEM% %START_OPTS% %GCLOG_OPT%:"!SOLR_LOGS_DIR!"/solr_gc.log -Dlog4j.configuration="%LOG4J_CONFIG%" -DSTOP.PORT=!STOP_PORT! -DSTOP.KEY=%STOP_KEY% ^
+  START /B "Solr-%SOLR_PORT%" /D "%SOLR_SERVER_DIR%" "%JAVA%" %SERVEROPT% %SOLR_JAVA_MEM% %START_OPTS% %GCLOG_OPT%:"!SOLR_LOGS_DIR!"/solr_gc.log -Dlog4j.configuration="%LOG4J_CONFIG%" -DSTOP.PORT=!STOP_PORT! -DSTOP.KEY=%STOP_KEY% ^
     -Djetty.port=%SOLR_PORT% -Dsolr.solr.home="%SOLR_HOME%" -Dsolr.install.dir="%SOLR_TIP%" -Djetty.home="%SOLR_SERVER_DIR%" -Djava.io.tmpdir="%SOLR_SERVER_DIR%\tmp" -jar start.jar "%SOLR_JETTY_CONFIG%" > "!SOLR_LOGS_DIR!\solr-%SOLR_PORT%-console.log"
   echo %SOLR_PORT%>"%SOLR_TIP%"\bin\solr-%SOLR_PORT%.port
 
@@ -966,6 +973,12 @@ IF NOT DEFINED HEALTHCHECK_ZK_HOST set "HEALTHCHECK_ZK_HOST=localhost:9983"
 "%JAVA%" %SOLR_SSL_OPTS% -Dsolr.install.dir="%SOLR_TIP%" -Dlog4j.configuration="file:%DEFAULT_SERVER_DIR%\scripts\cloud-scripts\log4j.properties" ^
   -classpath "%DEFAULT_SERVER_DIR%\solr-webapp\webapp\WEB-INF\lib\*;%DEFAULT_SERVER_DIR%\lib\ext\*" ^
   org.apache.solr.util.SolrCLI healthcheck -collection !HEALTHCHECK_COLLECTION! -zkHost !HEALTHCHECK_ZK_HOST!
+goto done
+
+:get_version
+"%JAVA%" %SOLR_SSL_OPTS% -Dsolr.install.dir="%SOLR_TIP%" -Dlog4j.configuration="file:%DEFAULT_SERVER_DIR%\scripts\cloud-scripts\log4j.properties" ^
+  -classpath "%DEFAULT_SERVER_DIR%\solr-webapp\webapp\WEB-INF\lib\*;%DEFAULT_SERVER_DIR%\lib\ext\*" ^
+  org.apache.solr.util.SolrCLI version
 goto done
 
 :parse_create_args

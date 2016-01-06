@@ -19,8 +19,8 @@ var contentTypeMap = { xml : 'text/xml', html : 'text/html', js : 'text/javascri
 var languages = {js: "javascript", xml:"xml", xsl:"xml", vm: "xml", html: "xml", json: "text", css: "css"};
 
 solrAdminApp.controller('FilesController',
-    function($scope, $rootScope, $routeParams, $location, Files) {
-        $scope.resetMenu("files");
+    function($scope, $rootScope, $routeParams, $location, Files, Constants) {
+        $scope.resetMenu("files", Constants.IS_COLLECTION_PAGE);
 
         $scope.file = $location.search().file;
         $scope.content = null;
@@ -38,7 +38,10 @@ solrAdminApp.controller('FilesController',
                 }
 
                 Files.list(params, function (data) {
-                    for (var file in data.files) {
+                    var filenames = Object.keys(data.files);
+                    filenames.sort();
+                    for (var i in filenames) {
+                        var file = filenames[i];
                         var filedata = data.files[file];
                         var state = undefined;
                         var children = undefined;
