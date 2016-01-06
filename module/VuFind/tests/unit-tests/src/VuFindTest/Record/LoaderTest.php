@@ -52,14 +52,14 @@ class LoaderTest extends TestCase
      * @return void
      *
      * @expectedException        VuFind\Exception\RecordMissing
-     * @expectedExceptionMessage Record VuFind:test does not exist.
+     * @expectedExceptionMessage Record Solr:test does not exist.
      */
     public function testMissingRecord()
     {
         $collection = $this->getCollection([]);
         $service = $this->getMock('VuFindSearch\Service');
         $service->expects($this->once())->method('retrieve')
-            ->with($this->equalTo('VuFind'), $this->equalTo('test'))
+            ->with($this->equalTo('Solr'), $this->equalTo('test'))
             ->will($this->returnValue($collection));
         $loader = $this->getLoader($service);
         $loader->load('test');
@@ -75,7 +75,7 @@ class LoaderTest extends TestCase
         $collection = $this->getCollection([]);
         $service = $this->getMock('VuFindSearch\Service');
         $service->expects($this->once())->method('retrieve')
-            ->with($this->equalTo('VuFind'), $this->equalTo('test'))
+            ->with($this->equalTo('Solr'), $this->equalTo('test'))
             ->will($this->returnValue($collection));
         $missing = $this->getDriver('missing', 'Missing');
         $factory = $this->getMock('VuFind\RecordDriver\PluginManager');
@@ -83,7 +83,7 @@ class LoaderTest extends TestCase
             ->with($this->equalTo('Missing'))
             ->will($this->returnValue($missing));
         $loader = $this->getLoader($service, $factory);
-        $record = $loader->load('test', 'VuFind', true);
+        $record = $loader->load('test', 'Solr', true);
         $this->assertEquals($missing, $record);
     }
 
@@ -98,7 +98,7 @@ class LoaderTest extends TestCase
         $collection = $this->getCollection([$driver]);
         $service = $this->getMock('VuFindSearch\Service');
         $service->expects($this->once())->method('retrieve')
-            ->with($this->equalTo('VuFind'), $this->equalTo('test'))
+            ->with($this->equalTo('Solr'), $this->equalTo('test'))
             ->will($this->returnValue($collection));
         $loader = $this->getLoader($service);
         $this->assertEquals($driver, $loader->load('test'));
@@ -111,8 +111,8 @@ class LoaderTest extends TestCase
      */
     public function testBatchLoad()
     {
-        $driver1 = $this->getDriver('test1', 'VuFind');
-        $driver2 = $this->getDriver('test2', 'VuFind');
+        $driver1 = $this->getDriver('test1', 'Solr');
+        $driver2 = $this->getDriver('test2', 'Solr');
         $driver3 = $this->getDriver('test3', 'Summon');
         $missing = $this->getDriver('missing', 'Missing');
 
@@ -127,7 +127,7 @@ class LoaderTest extends TestCase
 
         $service = $this->getMock('VuFindSearch\Service');
         $service->expects($this->at(0))->method('retrieveBatch')
-            ->with($this->equalTo('VuFind'), $this->equalTo(['test1', 'test2']))
+            ->with($this->equalTo('Solr'), $this->equalTo(['test1', 'test2']))
             ->will($this->returnValue($collection1));
         $service->expects($this->at(1))->method('retrieveBatch')
             ->with($this->equalTo('Summon'), $this->equalTo(['test3']))
@@ -138,8 +138,8 @@ class LoaderTest extends TestCase
 
         $loader = $this->getLoader($service, $factory);
         $input = [
-            ['source' => 'VuFind', 'id' => 'test1'],
-            'VuFind|test2', 'Summon|test3', 'WorldCat|test4'
+            ['source' => 'Solr', 'id' => 'test1'],
+            'Solr|test2', 'Summon|test3', 'WorldCat|test4'
         ];
         $this->assertEquals([$driver1, $driver2, $driver3, $missing], $loader->loadBatch($input));
     }
@@ -152,12 +152,12 @@ class LoaderTest extends TestCase
      *
      * @return RecordDriver
      */
-    protected function getDriver($id = 'test', $source = 'VuFind')
+    protected function getDriver($id = 'test', $source = 'Solr')
     {
         $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
         $driver->expects($this->any())->method('getUniqueId')
             ->will($this->returnValue($id));
-        $driver->expects($this->any())->method('getResourceSource')
+        $driver->expects($this->any())->method('getSourceIdentifier')
             ->will($this->returnValue($source));
         return $driver;
     }

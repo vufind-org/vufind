@@ -44,7 +44,7 @@
     <? endif; ?>
     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> <?=$this->transEsc("Find")?></button>
     <? if ($advSearch): ?>
-      <a href="<?=$this->url($advSearch)?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
+      <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : '') ?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
     <? endif; ?>
 
     <? $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>

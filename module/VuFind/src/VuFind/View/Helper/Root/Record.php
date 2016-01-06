@@ -337,13 +337,13 @@ class Record extends AbstractHelper
     {
         // Figure out controller using naming convention based on resource
         // source:
-        $source = $this->driver->getResourceSource();
-        if ($source == 'VuFind') {
-            // "VuFind" is special case -- it refers to Solr, which uses
-            // the basic record controller.
+        $source = $this->driver->getSourceIdentifier();
+        if ($source == DEFAULT_SEARCH_BACKEND) {
+            // Default source is special case -- it uses the basic record
+            // controller.
             return 'Record';
         }
-        // All non-Solr controllers will correspond with the record source:
+        // All other controllers will correspond with the record source:
         return ucwords(strtolower($source)) . 'record';
     }
 
@@ -412,7 +412,7 @@ class Record extends AbstractHelper
     public function getCheckbox($idPrefix = '')
     {
         static $checkboxCount = 0;
-        $id = $this->driver->getResourceSource() . '|'
+        $id = $this->driver->getSourceIdentifier() . '|'
             . $this->driver->getUniqueId();
         $context
             = ['id' => $id, 'count' => $checkboxCount++, 'prefix' => $idPrefix];

@@ -103,7 +103,7 @@ class Favorites extends AbstractPlugin
      *  </ul>
      * @param User  $user   The user saving the record
      *
-     * @return void
+     * @return array list information
      */
     public function saveBulk($params, $user)
     {
@@ -140,6 +140,7 @@ class Favorites extends AbstractPlugin
         }
 
         $this->cacheBatch($recordCache, $cacheRecordIds);
+        return ['listId' => $list->id];
     }
 
     /**

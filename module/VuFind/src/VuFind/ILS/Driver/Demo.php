@@ -213,7 +213,7 @@ class Demo extends AbstractBase
     protected function getRecordSource()
     {
         return isset($this->config['Records']['source'])
-            ? $this->config['Records']['source'] : 'VuFind';
+            ? $this->config['Records']['source'] : DEFAULT_SEARCH_BACKEND;
     }
 
     /**

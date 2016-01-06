@@ -416,6 +416,7 @@ class AjaxController extends AbstractBase
                 && $info['use_unknown_message'] == true
             ) {
                 $use_unknown_status = true;
+                $locations[$info['location']]['status_unknown'] = true;
             }
             // Store call number/location info:
             $locations[$info['location']]['callnumbers'][] = $info['callnumber'];
@@ -437,7 +438,9 @@ class AjaxController extends AbstractBase
                     ENT_COMPAT, 'UTF-8'
                 ),
                 'callnumbers' =>
-                    htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8')
+                    htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
+                'status_unknown' => isset($details['status_unknown'])
+                    ? $details['status_unknown'] : false
             ];
             $locationList[] = $locationInfo;
         }
@@ -490,7 +493,7 @@ class AjaxController extends AbstractBase
             );
         }
         foreach ($ids as $i => $id) {
-            $source = isset($sources[$i]) ? $sources[$i] : 'VuFind';
+            $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
             $data = $user->getSavedData($id, null, $source);
             if ($data) {
                 // if this item was saved, add it to the list of saved items.
@@ -634,7 +637,7 @@ class AjaxController extends AbstractBase
         try {
             $driver = $this->getRecordLoader()->load(
                 $this->params()->fromPost('id'),
-                $this->params()->fromPost('source', 'VuFind')
+                $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)
             );
             $tag = $this->params()->fromPost('tag', '');
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
@@ -668,7 +671,7 @@ class AjaxController extends AbstractBase
         $tagTable = $this->getTable('Tags');
         $tags = $tagTable->getForResource(
             $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', 'VuFind'),
+            $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND),
             0, null, null, 'count', $is_me_id
         );
 
@@ -977,7 +980,7 @@ class AjaxController extends AbstractBase
 
         $table = $this->getTable('Resource');
         $resource = $table->findResource(
-            $id, $this->params()->fromPost('source', 'VuFind')
+            $id, $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)
         );
         $id = $resource->addComment($comment, $user);
 
@@ -1019,7 +1022,7 @@ class AjaxController extends AbstractBase
     {
         $driver = $this->getRecordLoader()->load(
             $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', 'VuFind')
+            $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
         );
         $html = $this->getViewRenderer()
             ->render('record/comments-list.phtml', ['driver' => $driver]);

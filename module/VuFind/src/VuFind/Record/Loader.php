@@ -92,8 +92,9 @@ class Loader
      * @throws \Exception
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    public function load($id, $source = 'VuFind', $tolerateMissing = false)
-    {
+    public function load($id, $source = DEFAULT_SEARCH_BACKEND,
+        $tolerateMissing = false
+    ) {
         $results = [];
         if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
             $results = $this->recordCache->lookup($id, $source);
@@ -131,7 +132,7 @@ class Loader
      * @throws \Exception
      * @return array
      */
-    public function loadBatchForSource($ids, $source = 'VuFind')
+    public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
         $cachedRecords = [];
         if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {

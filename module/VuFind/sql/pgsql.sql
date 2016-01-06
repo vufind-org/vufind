@@ -28,7 +28,7 @@ record_id varchar(120) NOT NULL DEFAULT '',
 title varchar(200) NOT NULL DEFAULT '',
 author varchar(200) DEFAULT NULL,
 year int DEFAULT NULL,
-source varchar(50) NOT NULL DEFAULT 'VuFind',
+source varchar(50) NOT NULL DEFAULT 'Solr',
 PRIMARY KEY (id)
 );
 CREATE INDEX resource_record_id_idx ON resource (record_id);

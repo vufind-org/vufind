@@ -308,6 +308,7 @@ $config = [
                 'factories' => [
                     'amazon' => 'VuFind\Content\Covers\Factory::getAmazon',
                     'booksite' => 'VuFind\Content\Covers\Factory::getBooksite',
+                    'buchhandel' => 'VuFind\Content\Covers\Factory::getBuchhandel',
                     'contentcafe' => 'VuFind\Content\Covers\Factory::getContentCafe',
                     'syndetics' => 'VuFind\Content\Covers\Factory::getSyndetics',
                 ],
@@ -429,7 +430,6 @@ $config = [
                     'visualfacets' => 'VuFind\Recommend\Factory::getVisualFacets',
                     'webresults' => 'VuFind\Recommend\Factory::getWebResults',
                     'worldcatidentities' => 'VuFind\Recommend\Factory::getWorldCatIdentities',
-                    'worldcatterms' => 'VuFind\Recommend\Factory::getWorldCatTerms',
                 ],
                 'invokables' => [
                     'alphabrowselink' => 'VuFind\Recommend\AlphaBrowseLink',
@@ -445,6 +445,7 @@ $config = [
                     'summondatabasesdeferred' => 'VuFind\Recommend\SummonDatabasesDeferred',
                     'summonresultsdeferred' => 'VuFind\Recommend\SummonResultsDeferred',
                     'switchtype' => 'VuFind\Recommend\SwitchType',
+                    'worldcatterms' => 'VuFind\Recommend\Deprecated',
                 ],
             ],
             'recorddriver' => [
@@ -496,10 +497,12 @@ $config = [
             'related' => [
                 'abstract_factories' => ['VuFind\Related\PluginFactory'],
                 'factories' => [
-                    'editions' => 'VuFind\Related\Factory::getEditions',
                     'similar' => 'VuFind\Related\Factory::getSimilar',
-                    'worldcateditions' => 'VuFind\Related\Factory::getWorldCatEditions',
                     'worldcatsimilar' => 'VuFind\Related\Factory::getWorldCatSimilar',
+                ],
+                'invokables' => [
+                    'editions' => 'VuFind\Related\Deprecated',
+                    'worldcateditions' => 'VuFind\Related\Deprecated',
                 ],
             ],
             'resolver_driver' => [
@@ -717,7 +720,10 @@ $recordRoutes = [
     'primorecord' => 'PrimoRecord',
     'solrauthrecord' => 'Authority',
     'summonrecord' => 'SummonRecord',
-    'worldcatrecord' => 'WorldcatRecord'
+    'worldcatrecord' => 'WorldcatRecord',
+
+    // For legacy (1.x/2.x) compatibility:
+    'vufindrecord' => 'Record',
 ];
 
 // Define dynamic routes -- controller => [route name => action]
