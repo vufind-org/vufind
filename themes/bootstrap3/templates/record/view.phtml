@@ -42,9 +42,9 @@
 
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
-    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>">
+    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
     </div>

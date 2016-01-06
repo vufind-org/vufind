@@ -10,7 +10,7 @@
 <?=$this->flashmessages()?>
 <form class="form-horizontal" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
   <? foreach ($this->records as $current): ?>
-    <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+    <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>" />
   <? endforeach; ?>
   <div class="form-group">
     <label class="col-sm-3 control-label"><?=$this->transEsc('Title')?></label>
