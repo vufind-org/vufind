@@ -495,6 +495,9 @@ class Voyager extends AbstractBase
                     = $this->pickStatus($availability['otherStatuses']);
             }
             $current['availability'] = $availability['available'];
+            $current['use_unknown_message']
+                = in_array('No information available', $current['status_array']);
+
             $status[] = $current;
         }
 
