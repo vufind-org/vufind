@@ -1,10 +1,11 @@
 <?php
 /**
- * WorldCatTerms Recommendations Module
+ * Deprecated Recommendations Module - used to replace legacy modules that no
+ * longer function due to, for example, external APIs that have been shut down.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,13 +27,10 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Connection\WorldCatUtils;
-use VuFindSearch\Query\Query;
 
 /**
- * WorldCatTerms Recommendations Module
- *
- * This class provides recommendations by using the WorldCat Terminologies API.
+ * Deprecated Recommendations Module - used to replace legacy modules that no
+ * longer function due to, for example, external APIs that have been shut down.
  *
  * @category VuFind2
  * @package  Recommendations
@@ -40,39 +38,8 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
-class WorldCatTerms implements RecommendInterface
+class Deprecated implements RecommendInterface
 {
-    /**
-     * Search results object
-     *
-     * @var \VuFind\Search\Base\Results
-     */
-    protected $searchObject;
-
-    /**
-     * Vocabulary to use.
-     *
-     * @var string
-     */
-    protected $vocab = 'lcsh';
-
-    /**
-     * WorldCat utilities wrapper object.
-     *
-     * @var WorldCatUtils
-     */
-    protected $worldCatUtils;
-
-    /**
-     * Constructor
-     *
-     * @param WorldCatUtils $wcu WorldCat utilities object
-     */
-    public function __construct(WorldCatUtils $wcu)
-    {
-        $this->worldCatUtils = $wcu;
-    }
-
     /**
      * Store the configuration of the recommendation module.
      *
@@ -82,9 +49,6 @@ class WorldCatTerms implements RecommendInterface
      */
     public function setConfig($settings)
     {
-        // Pick a vocabulary (either user-specified, or LCSH by default):
-        $params = trim($settings);
-        $this->vocab = empty($params) ? 'lcsh' : $params;
     }
 
     /**
@@ -101,7 +65,6 @@ class WorldCatTerms implements RecommendInterface
      */
     public function init($params, $request)
     {
-        // No action needed.
     }
 
     /**
@@ -115,34 +78,5 @@ class WorldCatTerms implements RecommendInterface
      */
     public function process($results)
     {
-        $this->searchObject = $results;
-    }
-
-    /**
-     * Get terms related to the query.
-     *
-     * @return array
-     */
-    public function getTerms()
-    {
-        // Extract the first search term from the search object:
-        $search = $this->searchObject->getParams()->getQuery();
-        $lookfor = ($search instanceof Query) ? $search->getString() : '';
-
-        // Get terminology information:
-        $terms = $this->worldCatUtils->getRelatedTerms($lookfor, $this->vocab);
-
-        // Wipe out any empty or unexpected sections of the related terms array;
-        // this will make it easier to only display content in the template if
-        // we have something worth displaying.
-        if (is_array($terms)) {
-            $desiredKeys = ['exact', 'broader', 'narrower'];
-            foreach ($terms as $key => $value) {
-                if (empty($value) || !in_array($key, $desiredKeys)) {
-                    unset($terms[$key]);
-                }
-            }
-        }
-        return $terms;
     }
 }

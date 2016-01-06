@@ -237,7 +237,8 @@ class Upgrade
     protected function loadOldBaseConfig()
     {
         // Load the base settings:
-        $mainArray = parse_ini_file($this->oldDir . '/config.ini', true);
+        $oldIni = $this->oldDir . '/config.ini';
+        $mainArray = file_exists($oldIni) ? parse_ini_file($oldIni, true) : [];
 
         // Merge in local overrides as needed.  VuFind 2 structures configurations
         // differently, so people who used this mechanism will need to refactor
@@ -565,12 +566,35 @@ class Upgrade
             }
         }
 
-        // Warn the user about deprecated WorldCat setting:
+        // Warn the user about deprecated WorldCat settings:
         if (isset($newConfig['WorldCat']['LimitCodes'])) {
             unset($newConfig['WorldCat']['LimitCodes']);
             $this->addWarning(
                 'The [WorldCat] LimitCodes setting never had any effect and has been'
                 . ' removed.'
+            );
+        }
+        $badKeys
+            = ['id', 'xISBN_token', 'xISBN_secret', 'xISSN_token', 'xISSN_secret'];
+        foreach ($badKeys as $key) {
+            if (isset($newConfig['WorldCat'][$key])) {
+                unset($newConfig['WorldCat'][$key]);
+                $this->addWarning(
+                    'The [WorldCat] ' . $key . ' setting is no longer used and'
+                    . ' has been removed.'
+                );
+            }
+        }
+        if (isset($newConfig['Record']['related'])
+            && in_array('Editions', $newConfig['Record']['related'])
+        ) {
+            $newConfig['Record']['related'] = array_diff(
+                $newConfig['Record']['related'], ['Editions']
+            );
+            $this->addWarning(
+                'The Editions related record module is no longer '
+                . 'supported due to OCLC\'s xID API shutdown.'
+                . ' It has been removed from your settings.'
             );
         }
 
@@ -1048,6 +1072,9 @@ class Upgrade
         // update permission settings
         $this->upgradePrimoPermissions();
 
+        // update server settings
+        $this->upgradePrimoServerSettings();
+
         // save the file
         $this->saveModifiedConfig('Primo.ini');
     }
@@ -1105,6 +1132,33 @@ class Upgrade
     }
 
     /**
+     * Translate obsolete server settings.
+     *
+     * @return void
+     */
+    protected function upgradePrimoServerSettings()
+    {
+        $config = & $this->newConfigs['Primo.ini'];
+        $permissions = & $this->newConfigs['permissions.ini'];
+        // Convert apiId to url
+        if (isset($config['General']['apiId'])) {
+            $url = 'http://' . $config['General']['apiId']
+                . '.hosted.exlibrisgroup.com';
+            if (isset($config['General']['port'])) {
+                $url .= ':' . $config['General']['port'];
+            } else {
+                $url .= ':1701';
+            }
+
+            $config['General']['url'] = $url;
+
+            // Remove any old settings remaining in Primo.ini:
+            unset($config['General']['apiId']);
+            unset($config['General']['port']);
+        }
+    }
+
+    /**
      * Upgrade WorldCat.ini.
      *
      * @throws FileAccessException
@@ -1134,6 +1188,21 @@ class Upgrade
                 $new[$k] = $v;
             }
             $this->newConfigs['WorldCat.ini'][$section] = $new;
+        }
+
+        // Deal with deprecated related record module.
+        $newConfig = & $this->newConfigs['WorldCat.ini'];
+        if (isset($newConfig['Record']['related'])
+            && in_array('WorldCatEditions', $newConfig['Record']['related'])
+        ) {
+            $newConfig['Record']['related'] = array_diff(
+                $newConfig['Record']['related'], ['WorldCatEditions']
+            );
+            $this->addWarning(
+                'The WorldCatEditions related record module is no longer '
+                . 'supported due to OCLC\'s xID API shutdown.'
+                . ' It has been removed from your settings.'
+            );
         }
 
         // save the file
