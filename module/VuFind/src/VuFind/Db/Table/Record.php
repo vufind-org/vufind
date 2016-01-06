@@ -64,11 +64,6 @@ class Record extends Gateway
      */
     public function findRecord($id, $source)
     {
-        // Special case -- due to legacy database design, 'Solr' records are
-        // often referred to as 'VuFind' records.
-        if ($source === 'VuFind') {
-            $source = 'Solr';
-        }
         $records = $this->select(['record_id' => $id, 'source' => $source]);
         return $records->count() > 0 ? $records->current() : false;
     }
@@ -86,12 +81,6 @@ class Record extends Gateway
     {
         if (empty($ids)) {
             return [];
-        }
-
-        // Special case -- due to legacy database design, 'Solr' records are
-        // often referred to as 'VuFind' records.
-        if ($source === 'VuFind') {
-            $source = 'Solr';
         }
 
         $where = new Where();
@@ -116,12 +105,6 @@ class Record extends Gateway
      */
     public function updateRecord($id, $source, $rawData)
     {
-        // Special case -- due to legacy database design, 'Solr' records are
-        // often referred to as 'VuFind' records.
-        if ($source === 'VuFind') {
-            $source = 'Solr';
-        }
-
         $records = $this->select(['record_id' => $id, 'source' => $source]);
         if ($records->count() == 0) {
             $record = $this->createRow();

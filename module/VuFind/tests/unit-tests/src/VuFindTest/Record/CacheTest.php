@@ -328,7 +328,7 @@ class CacheTest extends TestCase
             ->method('getUniqueId')
             ->will($this->returnValue($id));
         $driver->expects($this->any())
-            ->method('getResourceSource')
+            ->method('getSourceIdentifier')
             ->will($this->returnValue($source));
         return $driver;
     }

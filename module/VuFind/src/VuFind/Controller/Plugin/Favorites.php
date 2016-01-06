@@ -85,7 +85,7 @@ class Favorites extends AbstractPlugin
             $recordLoader->setCacheContext(Cache::CONTEXT_FAVORITE);
             foreach ($records as $record) {
                 $recordCache->createOrUpdate(
-                    $record->getUniqueID(), $record->getResourceSource(),
+                    $record->getUniqueID(), $record->getSourceIdentifier(),
                     $record->getRawData()
                 );
             }

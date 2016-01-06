@@ -202,12 +202,6 @@ class Cache implements \Zend\Log\LoggerAwareInterface
                 $cachableSource['operatingMode'] = 'disabled';
             }
         }
-
-        // Due to legacy reasons add 'VuFind' to cachable sources if
-        // records from source 'Solr' are cachable.
-        if (isset($this->cachableSources['Solr'])) {
-            $this->cachableSources['VuFind'] = $this->cachableSources['Solr'];
-        }
     }
 
     /**
