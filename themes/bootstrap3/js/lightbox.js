@@ -406,11 +406,13 @@ var Lightbox = {
 };
 
 function getListUrlFromHTML(html) {
-  var fakePage = $('<div>'+html+'</div>')
+  var fakePage = $('<div>'+html+'</div>');
   var listUrl = fakePage.find('a.gotolist').attr('href');
   if (typeof listUrl === 'undefined') {
     var listID = fakePage.find('[name="listID"]');
-    listUrl = VuFind.getPath() + '/MyResearch/MyList/'+listID.val();
+    if(listID.length > 0) {
+      listUrl = VuFind.getPath() + '/MyResearch/MyList/'+listID.val();
+    }
   }
   var message = VuFind.translate('bulk_save_success');
   if (listUrl) {
@@ -455,7 +457,6 @@ $(document).ready(function() {
     location.reload();
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
-    Lightbox.addCloseAction(refreshPageForLogin);
     // go to list link
     var msg = getListUrlFromHTML(html);
     Lightbox.success(msg);

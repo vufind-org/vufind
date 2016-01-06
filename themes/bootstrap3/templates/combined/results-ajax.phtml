@@ -13,7 +13,7 @@
     $lookforEncoded = urlencode($lookfor);
     $loadJs = <<<JS
 $(document).ready(function(){
-    var url = path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
+    var url = VuFind.getPath() + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
     $('$targetIdHtmlEscaped').load(url, '', function(responseText) {
         if (responseText.length == 0) {
             $('$targetIdHtmlEscaped').hide();
