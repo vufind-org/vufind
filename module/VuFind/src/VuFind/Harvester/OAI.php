@@ -495,7 +495,7 @@ class OAI
                     sleep($delay);
                 }
             } else if (!$result->isSuccess()) {
-                throw new \Exception('HTTP Error');
+                throw new \Exception('HTTP Error ' . $result->getStatusCode());
             } else {
                 // If we didn't get an error, we can leave the retry loop:
                 break;
@@ -558,8 +558,10 @@ class OAI
             $xml = $this->sanitizeXML($xml);
         }
 
-        // Parse the XML:
-        $result = simplexml_load_string($xml);
+        // Parse the XML (newer versions of LibXML require a special flag for
+        // large documents, and responses may be quite large):
+        $flags = LIBXML_VERSION >= 20900 ? LIBXML_PARSEHUGE : 0;
+        $result = simplexml_load_string($xml, null, $flags);
         if (!$result) {
             throw new \Exception("Problem loading XML: {$xml}");
         }

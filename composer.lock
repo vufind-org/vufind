@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "70752de0b828ea3005b2308508a5ec38",
-    "content-hash": "0bfc46ce6a8b8acd28e89a131f59c002",
+    "hash": "ac874706ba7da3f51062a054853c301e",
+    "content-hash": "3d77e76f8f3547f1a6fef22fd9795f7f",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -379,248 +379,225 @@
             "time": "2015-09-28 01:11:47"
         },
         {
-            "name": "pear-pear.php.net/Archive_Tar",
-            "version": "1.4.0",
+            "name": "pear/file_marc",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pear/File_MARC.git",
+                "reference": "2797b06da94391798d3878a7c939577924ca6848"
+            },
             "dist": {
-                "type": "file",
-                "url": "http://pear.php.net/get/Archive_Tar-1.4.0.tgz",
-                "reference": null,
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/pear/File_MARC/zipball/2797b06da94391798d3878a7c939577924ca6848",
+                "reference": "2797b06da94391798d3878a7c939577924ca6848",
+                "shasum": ""
             },
             "require": {
-                "php": ">=5.2.0.0"
+                "pear/pear_exception": "1.*"
             },
-            "replace": {
-                "pear-pear/archive_tar": "== 1.4.0.0"
+            "require-dev": {
+                "phpunit/phpunit": "*"
             },
-            "type": "pear-library",
+            "suggest": {
+                "pear/validate_ispn": "Install optionally via your project's composer.json"
+            },
+            "type": "library",
             "autoload": {
-                "classmap": [
-                    ""
-                ]
+                "psr-0": {
+                    "File": "./"
+                }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "include-path": [
-                "/"
+                "./"
             ],
             "license": [
-                "New BSD License"
+                "LGPL-2.1"
             ],
-            "description": "This class provides handling of tar files in PHP.\nIt supports creating, listing, extracting and adding to tar files.\nGzip support is available if PHP has the zlib extension built-in or\nloaded. Bz2 compression is also supported with the bz2 extension loaded."
+            "authors": [
+                {
+                    "name": "Dan Scott",
+                    "email": "dbs@php.net",
+                    "homepage": "https://coffeecode.net",
+                    "role": "Lead"
+                }
+            ],
+            "description": "Supports the MAchine Readable Cataloging (MARC) file format documented at http://loc.gov/marc/",
+            "time": "2015-09-01 14:56:47"
         },
         {
-            "name": "pear-pear.php.net/Console_Getopt",
-            "version": "1.4.1",
+            "name": "pear/pear_exception",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pear/PEAR_Exception.git",
+                "reference": "8c18719fdae000b690e3912be401c76e406dd13b"
+            },
             "dist": {
-                "type": "file",
-                "url": "http://pear.php.net/get/Console_Getopt-1.4.1.tgz",
-                "reference": null,
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/pear/PEAR_Exception/zipball/8c18719fdae000b690e3912be401c76e406dd13b",
+                "reference": "8c18719fdae000b690e3912be401c76e406dd13b",
+                "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0.0"
+                "php": ">=4.4.0"
             },
-            "replace": {
-                "pear-pear/console_getopt": "== 1.4.1.0"
+            "require-dev": {
+                "phpunit/phpunit": "*"
             },
-            "type": "pear-library",
+            "type": "class",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
             "autoload": {
-                "classmap": [
-                    ""
-                ]
+                "psr-0": {
+                    "PEAR": ""
+                }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "include-path": [
-                "/"
+                "."
             ],
             "license": [
                 "BSD-2-Clause"
             ],
-            "description": "This is a PHP implementation of \"getopt\" supporting both\nshort and long options."
+            "authors": [
+                {
+                    "name": "Helgi Thormar",
+                    "email": "dufuz@php.net"
+                },
+                {
+                    "name": "Greg Beaver",
+                    "email": "cellog@php.net"
+                }
+            ],
+            "description": "The PEAR Exception base class.",
+            "homepage": "https://github.com/pear/PEAR_Exception",
+            "keywords": [
+                "exception"
+            ],
+            "time": "2015-02-10 20:07:52"
         },
         {
-            "name": "pear-pear.php.net/File_MARC",
-            "version": "1.1.2",
+            "name": "pear/validate",
+            "version": "v0.8.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pear/Validate.git",
+                "reference": "d055541ee2d7165329d5e5b8e91907d7fae1cff2"
+            },
             "dist": {
-                "type": "file",
-                "url": "http://pear.php.net/get/File_MARC-1.1.2.tgz",
-                "reference": null,
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/pear/Validate/zipball/d055541ee2d7165329d5e5b8e91907d7fae1cff2",
+                "reference": "d055541ee2d7165329d5e5b8e91907d7fae1cff2",
+                "shasum": ""
             },
-            "require": {
-                "php": ">=5.3.0.0"
+            "suggest": {
+                "pear/date": "Install optionally via your project's composer.json"
             },
-            "replace": {
-                "pear-pear/file_marc": "== 1.1.2.0"
-            },
-            "type": "pear-library",
+            "type": "library",
             "autoload": {
-                "classmap": [
-                    ""
-                ]
+                "psr-0": {
+                    "Validate": "./"
+                }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "include-path": [
-                "/"
-            ],
-            "license": [
-                "GNU Lesser General Public License"
-            ],
-            "description": "The standard for machine-readable cataloging (MARC) records is documented at http://loc.gov/marc/. This package enables you to read existing MARC records from a file, string, or (using the YAZ extension), from a Z39.50 source. You can also use this package to create new MARC records.\n\nThis package is based on the PHP MARC package, originally called \"php-marc\", that is part of the Emilda Project (http://www.emilda.org).  Christoffer Landtman generously agreed to make the \"php-marc\" code available under the GNU LGPL so it could be used as the basis of this PEAR package."
-        },
-        {
-            "name": "pear-pear.php.net/PEAR",
-            "version": "1.10.1",
-            "dist": {
-                "type": "file",
-                "url": "http://pear.php.net/get/PEAR-1.10.1.tgz",
-                "reference": null,
-                "shasum": null
-            },
-            "require": {
-                "ext-pcre": "*",
-                "ext-xml": "*",
-                "pear-pear.php.net/archive_tar": ">=1.4.0.0",
-                "pear-pear.php.net/console_getopt": ">=1.4.1.0",
-                "pear-pear.php.net/structures_graph": ">=1.1.0.0",
-                "pear-pear.php.net/xml_util": ">=1.3.0.0",
-                "php": ">=5.4.0.0"
-            },
-            "conflict": {
-                "pear-pear.php.net/pear_frontend_gtk": "<0.4.0.0",
-                "pear-pear.php.net/pear_frontend_web": "<=0.4.0.0"
-            },
-            "replace": {
-                "pear-pear/pear": "== 1.10.1.0"
-            },
-            "type": "pear-library",
-            "autoload": {
-                "classmap": [
-                    ""
-                ]
-            },
-            "include-path": [
-                "/"
-            ],
-            "license": [
-                "New BSD License"
-            ],
-            "description": "The PEAR package contains:\n * the PEAR installer, for creating, distributing\n   and installing packages\n * the PEAR_Exception PHP5 error handling mechanism\n * the PEAR_ErrorStack advanced error handling mechanism\n * the PEAR_Error error handling mechanism\n * the OS_Guess class for retrieving info about the OS\n   where PHP is running on\n * the System class for quick handling of common operations\n   with files and directories\n * the PEAR base class\n  Features in a nutshell:\n  * full support for channels\n  * pre-download dependency validation\n  * new package.xml 2.0 format allows tremendous flexibility while maintaining BC\n  * support for optional dependency groups and limited support for sub-packaging\n  * robust dependency support\n  * full dependency validation on uninstall\n  * remote install for hosts with only ftp access - no more problems with\n    restricted host installation\n  * full support for mirroring\n  * support for bundling several packages into a single tarball\n  * support for static dependencies on a url-based package\n  * support for custom file roles and installation tasks"
-        },
-        {
-            "name": "pear-pear.php.net/Structures_Graph",
-            "version": "1.1.1",
-            "dist": {
-                "type": "file",
-                "url": "http://pear.php.net/get/Structures_Graph-1.1.1.tgz",
-                "reference": null,
-                "shasum": null
-            },
-            "require": {
-                "php": ">=5.3.0.0"
-            },
-            "replace": {
-                "pear-pear/structures_graph": "== 1.1.1.0"
-            },
-            "type": "pear-library",
-            "autoload": {
-                "classmap": [
-                    ""
-                ]
-            },
-            "include-path": [
-                "/"
-            ],
-            "license": [
-                "LGPL-3.0+"
-            ],
-            "description": "Structures_Graph is a package for creating and manipulating graph datastructures. It allows building of directed\nand undirected graphs, with data and metadata stored in nodes. The library provides functions for graph traversing\nas well as for characteristic extraction from the graph topology."
-        },
-        {
-            "name": "pear-pear.php.net/Validate",
-            "version": "0.8.5",
-            "dist": {
-                "type": "file",
-                "url": "http://pear.php.net/get/Validate-0.8.5.tgz",
-                "reference": null,
-                "shasum": null
-            },
-            "require": {
-                "php": ">=4.2.0.0"
-            },
-            "replace": {
-                "pear-pear/validate": "== 0.8.5.0"
-            },
-            "type": "pear-library",
-            "autoload": {
-                "classmap": [
-                    ""
-                ]
-            },
-            "include-path": [
-                "/"
+                "./"
             ],
             "license": [
                 "New BSD"
             ],
-            "description": "Package to validate various datas. It includes :\n    - numbers (min/max, decimal or not)\n    - email (syntax, domain check, rfc822)\n    - string (predifined type alpha upper and/or lowercase, numeric,...)\n    - date (min, max, rfc822 compliant)\n    - uri (RFC2396)\n    - possibility valid multiple data with a single method call (::multiple)"
+            "authors": [
+                {
+                    "name": "Pierre-Alain Joye",
+                    "email": "pierre.php@gmail.com",
+                    "role": "Lead"
+                },
+                {
+                    "name": "Thomas V.V.Cox",
+                    "email": "cox@php.net",
+                    "role": "Lead"
+                },
+                {
+                    "name": "Helgi Þormar Þorbjörnsson",
+                    "email": "dufuz@php.net",
+                    "role": "Lead"
+                },
+                {
+                    "name": "Amir Mohammad Saied",
+                    "email": "amirsaied@gmail.com",
+                    "role": "Lead"
+                },
+                {
+                    "name": "David Coallier",
+                    "email": "david@echolibre.com",
+                    "role": "Lead"
+                },
+                {
+                    "name": "bertrand Gugger",
+                    "email": "bertrand@toggg.com",
+                    "role": "Lead"
+                },
+                {
+                    "name": "Stefan Neufeind",
+                    "email": "pear.neufeind@speedpartner.de",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Validate numbers, email, strings, dates, URIs and more",
+            "homepage": "http://pear.php.net/package/Validate",
+            "time": "2015-02-20 09:16:13"
         },
         {
-            "name": "pear-pear.php.net/Validate_ISPN",
-            "version": "0.6.1",
+            "name": "pear/validate_ispn",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pear/Validate_ISPN.git",
+                "reference": "9ea9312a0841b5d745742c737772aeffa6d06e96"
+            },
             "dist": {
-                "type": "file",
-                "url": "http://pear.php.net/get/Validate_ISPN-0.6.1.tgz",
-                "reference": null,
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/pear/Validate_ISPN/zipball/9ea9312a0841b5d745742c737772aeffa6d06e96",
+                "reference": "9ea9312a0841b5d745742c737772aeffa6d06e96",
+                "shasum": ""
             },
             "require": {
-                "pear-pear.php.net/validate": ">=0.5.0.0",
-                "php": ">=4.1.0.0"
+                "pear/validate": "*"
             },
-            "replace": {
-                "pear-pear/validate_ispn": "== 0.6.1.0"
+            "require-dev": {
+                "phpunit/phpunit": "*"
             },
-            "type": "pear-library",
+            "type": "library",
             "autoload": {
-                "classmap": [
-                    ""
-                ]
+                "psr-0": {
+                    "Validate": "./"
+                }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "include-path": [
-                "/"
+                "./"
             ],
             "license": [
-                "New BSD"
+                "BSD-2-Clause"
             ],
-            "description": "Package containes ISPN (International Standard Product Numbers) validations such as:\n * ISSN\n * ISBN\n * ISMN\n * ISRC (International Standard Recording Code)\n * EAN8\n * EAN13\n * EAN14\n * UCC12\n * SSCC"
-        },
-        {
-            "name": "pear-pear.php.net/XML_Util",
-            "version": "1.3.0",
-            "dist": {
-                "type": "file",
-                "url": "http://pear.php.net/get/XML_Util-1.3.0.tgz",
-                "reference": null,
-                "shasum": null
-            },
-            "require": {
-                "ext-pcre": "*",
-                "php": ">=5.3.0.0"
-            },
-            "replace": {
-                "pear-pear/xml_util": "== 1.3.0.0"
-            },
-            "type": "pear-library",
-            "autoload": {
-                "classmap": [
-                    ""
-                ]
-            },
-            "include-path": [
-                "/"
+            "authors": [
+                {
+                    "name": "Helgi Þormar",
+                    "email": "dufuz@php.net",
+                    "role": "Lead"
+                },
+                {
+                    "name": "Piotr Klaban",
+                    "email": "makler@man.torun.pl",
+                    "role": "Lead"
+                }
             ],
-            "license": [
-                "BSD License"
-            ],
-            "description": "Selection of methods that are often needed when working with XML documents.  Functionality includes creating of attribute lists from arrays, creation of tags, validation of XML names and more."
+            "description": "More info available on: http://pear.php.net/package/Validate_ISPN",
+            "time": "2015-04-14 04:17:31"
         },
         {
             "name": "serialssolutions/summon",
@@ -1524,7 +1501,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ahand/mobileesp": 20
+        "ahand/mobileesp": 20,
+        "pear/validate_ispn": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

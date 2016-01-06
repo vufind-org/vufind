@@ -235,7 +235,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *  </ul>
      * @param \VuFind\Db\Row\User $user   The user saving the record
      *
-     * @return void
+     * @return array list information
      */
     public function saveToFavorites($params, $user)
     {
@@ -272,6 +272,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             isset($params['mytags']) ? $params['mytags'] : [],
             isset($params['notes']) ? $params['notes'] : ''
         );
+        return ['listId' => $list->id];
     }
 
     /**

@@ -333,6 +333,12 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.', $result->getText()
         );
+        // Make sure the link in the success message contains a valid list ID:
+        $result = $this->findCss($page, '.modal-body .alert-success a');
+        $this->assertRegExp(
+            '|href="[^"]*/MyResearch/MyList/[0-9]+"|',
+            $result->getOuterHtml()
+        );
 
         // Click the close button.
         $submit = $this->findCss($page, '.modal-body .btn');
