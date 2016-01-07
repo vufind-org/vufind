@@ -471,6 +471,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     protected function replaceURLPlaceholders($url)
     {
         $originationId = $this->getOriginationId();
+        list($id) = $this->getIdentifier();
         list(, $nonPrefixedOriginationId) = explode('-', $originationId, 2);
         $url = str_replace(
             [
@@ -479,7 +480,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
                 '{nonPrefixedOriginationId}'
             ],
             [
-                urlencode(reset($this->getIdentifier())),
+                urlencode($id),
                 urlencode($originationId),
                 urlencode($nonPrefixedOriginationId),
             ],
