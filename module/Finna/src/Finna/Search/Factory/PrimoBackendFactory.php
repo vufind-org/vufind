@@ -52,11 +52,10 @@ class PrimoBackendFactory
         // Get the PermissionHandler
         $permHandler = $this->getPermissionHandler();
 
-        // Load credentials and port number:
-        $id = isset($this->primoConfig->General->apiId)
-            ? $this->primoConfig->General->apiId : null;
-        $port = isset($this->primoConfig->General->port)
-            ? $this->primoConfig->General->port : 1701;
+        // Load url and credentials:
+        if (!isset($this->primoConfig->General->url)) {
+            throw new \Exception('Missing url in Primo.ini');
+        }
         $instCode = isset($permHandler)
             ? $permHandler->getInstCode()
             : null;
@@ -67,7 +66,9 @@ class PrimoBackendFactory
             ? $this->primoConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);
 
-        $connector = new Connector($id, $instCode, $client, $port);
+        $connector = new Connector(
+            $this->primoConfig->General->url, $instCode, $client
+        );
         $connector->setLogger($this->logger);
 
         if (isset($this->primoConfig->General->highlighting)
