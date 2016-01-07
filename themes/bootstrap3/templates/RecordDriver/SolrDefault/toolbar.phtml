@@ -8,7 +8,7 @@
   $id = $this->driver->getUniqueId();
   $controllerClass = 'controller:' . $this->record($this->driver)->getController();
   $cart = $this->cart();
-  $cartId = $this->driver->getResourceSource() . '|' . $id;
+  $cartId = $this->driver->getSourceIdentifier() . '|' . $id;
 ?>
 <ul class="nav nav-pills hidden-print">
   <? if (count($this->driver->getCitationFormats()) > 0): ?>

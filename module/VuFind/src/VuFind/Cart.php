@@ -244,9 +244,9 @@ class Cart
 
             if (!isset($cookies[self::CART_COOKIE_SOURCES])) {
                 // Backward compatibility with VuFind 1.x -- if no source cookie, all
-                // items come from the VuFind source:
+                // items come from the default source:
                 for ($i = 0; $i < count($items); $i++) {
-                    $items[$i] = 'VuFind|' . $items[$i];
+                    $items[$i] = DEFAULT_SEARCH_BACKEND . '|' . $items[$i];
                 }
             } else {
                 // Default case for VuFind 2.x carts -- decompress source data:
