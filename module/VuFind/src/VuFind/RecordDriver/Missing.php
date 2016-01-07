@@ -66,7 +66,7 @@ class Missing extends SolrDefault
         if ($id) {
             $table = $this->getDbTable('Resource');
             $resource = $table
-                ->findResource($id, $this->getResourceSource(), false);
+                ->findResource($id, $this->getSourceIdentifier(), false);
             if (!empty($resource) && !empty($resource->title)) {
                 return $resource->title;
             }

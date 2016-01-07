@@ -12,10 +12,6 @@
         {
             "type": "composer",
             "url": "https://packages.zendframework.com/"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/ahand/mobileesp"
         }
     ],
     "require": {

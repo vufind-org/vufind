@@ -128,7 +128,7 @@ class AbstractRecord extends AbstractBase
         if (!empty($comment)) {
             $table = $this->getTable('Resource');
             $resource = $table->findResource(
-                $driver->getUniqueId(), $driver->getResourceSource(), true, $driver
+                $driver->getUniqueId(), $driver->getSourceIdentifier(), true, $driver
             );
             $resource->addComment($comment, $user);
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
@@ -344,7 +344,7 @@ class AbstractRecord extends AbstractBase
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = [];
         $resources = $user->getSavedData(
-            $driver->getUniqueId(), null, $driver->getResourceSource()
+            $driver->getUniqueId(), null, $driver->getSourceIdentifier()
         );
         foreach ($resources as $userResource) {
             $listIds[] = $userResource->list_id;
