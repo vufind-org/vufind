@@ -1,0 +1,19 @@
+{
+    "name": "vufind-org/vufindcode",
+    "description": "Class for representing ISBNs (a VuFind support library)",
+    "authors": [
+        {
+            "name": "Demian Katz",
+            "email": "demian.katz@villanova.edu"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "VuFindCode\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "license": "GPL-2.0"
+}

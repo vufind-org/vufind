@@ -1,0 +1,52 @@
+{
+    "name": "zendframework/zendservice-amazon",
+    "description": "OOP wrapper for the Amazon web service",
+    "type": "library",
+    "keywords": [
+        "zf2",
+        "amazon",
+        "ec2",
+        "s3",
+        "simpledb",
+        "sqs"
+    ],
+    "homepage": "http://packages.zendframework.com/",
+    "license": "BSD-3-Clause",
+    "autoload": {
+        "psr-0": {
+            "ZendService\\Amazon\\": "library/"
+        }
+    },
+    "autoload-dev": {
+        "psr-0": {
+            "ZendServiceTest\\Amazon\\": "tests/ZendServiceTest/Amazon/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://packages.zendframework.com/"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zend-http": "~2.0",
+        "zendframework/zendrest": "~2.0",
+        "zendframework/zend-crypt": "~2.0",
+        "zendframework/zend-json": "~2.0",
+        "zendframework/zendxml": "~1.0-dev"
+    },
+    "require-dev": {
+        "fabpot/php-cs-fixer": "~1.7.0",
+        "phpunit/phpunit": "~4.0",
+        "zendframework/zend-i18n": "~2.0"
+    },
+    "suggest": {
+        "zendframework/zend-uri": "Zend\\Uri component"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
+    }
+}

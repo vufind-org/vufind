@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<ItemLookupErrorResponse xmlns="http://ecs.amazonaws.com/doc/2011-08-01/"><Error><Code>RequestThrottled</Code><Message>Request from xxxxxxAWAQO7OR is throttled.</Message></Error><RequestId>xxxxxxxx-xxxx-4d19-a95f-cd36ffe22581</RequestId></ItemLookupErrorResponse>

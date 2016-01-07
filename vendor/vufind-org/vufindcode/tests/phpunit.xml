@@ -1,0 +1,13 @@
+<phpunit backupGlobals="false">
+  <testsuites>
+    <testsuite name="AllUnitTests">
+      <directory>.</directory>
+    </testsuite>
+  </testsuites>
+
+  <filter>
+    <whitelist addUncoveredFilesFromWhitelist="true">
+      <directory suffix=".php">../src/VuFindCode</directory>
+    </whitelist>
+  </filter>
+</phpunit>
