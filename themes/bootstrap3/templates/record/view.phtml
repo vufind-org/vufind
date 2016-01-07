@@ -42,9 +42,9 @@
 
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
-    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>">
+    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
     </div>
@@ -54,28 +54,32 @@
       <div class="record-tabs">
         <ul class="nav nav-tabs">
           <? foreach ($this->tabs as $tab => $obj): ?>
-          <? // add current tab to breadcrumbs if applicable:
-            $desc = $obj->getDescription();
-            $tab_classes = array();
-            if (0 === strcasecmp($this->activeTab, $tab)) {
-              $tab_classes[] = 'active';
-              $tab_classes[] = 'initiallyActive';
-              $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
-              $activeTabObj = $obj;
-            }
-            if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
-            if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
-          ?>
-          <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-            <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
-          </li>
+            <? // add current tab to breadcrumbs if applicable:
+              $desc = $obj->getDescription();
+              $tab_classes = array();
+              if (0 === strcasecmp($this->activeTab, $tab)) {
+                if (!$this->ajaxTabs || !$obj->supportsAjax()) {
+                  $tab_classes[] = 'active';
+                }
+                $tab_classes[] = 'initiallyActive';
+                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+                $activeTabObj = $obj;
+              }
+              if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
+              if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+            ?>
+            <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+              <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+            </li>
           <? endforeach; ?>
         </ul>
 
         <div class="tab-content">
-          <div class="tab-pane active <?=$this->activeTab ?>-tab">
-            <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-          </div>
+          <? if (!$this->ajaxTabs || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+            <div class="tab-pane active <?=$this->activeTab ?>-tab">
+              <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+            </div>
+          <? endif; ?>
         </div>
       </div>
     <? endif; ?>

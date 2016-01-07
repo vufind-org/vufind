@@ -26,6 +26,9 @@ defined('APPLICATION_ENV')
         (getenv('VUFIND_ENV') ? getenv('VUFIND_ENV') : 'production')
     );
 
+// Define default search backend identifier
+defined('DEFAULT_SEARCH_BACKEND') || define('DEFAULT_SEARCH_BACKEND', 'Solr');
+
 // Define path to local override directory
 defined('LOCAL_OVERRIDE_DIR')
     || define(
@@ -38,7 +41,8 @@ defined('LOCAL_CACHE_DIR')
     || define(
         'LOCAL_CACHE_DIR',
         (getenv('VUFIND_CACHE_DIR')
-            ? getenv('VUFIND_CACHE_DIR') : LOCAL_OVERRIDE_DIR . '/cache')
+            ? getenv('VUFIND_CACHE_DIR')
+            : (strlen(LOCAL_OVERRIDE_DIR) > 0 ? LOCAL_OVERRIDE_DIR . '/cache' : ''))
     );
 
 // Save original working directory in case we need to remember our context, then

@@ -73,7 +73,7 @@ CREATE TABLE `resource` (
   `title` varchar(200) NOT NULL DEFAULT '',
   `author` varchar(200) DEFAULT NULL,
   `year` mediumint(6) DEFAULT NULL,
-  `source` varchar(50) NOT NULL DEFAULT 'VuFind',
+  `source` varchar(50) NOT NULL DEFAULT 'Solr',
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

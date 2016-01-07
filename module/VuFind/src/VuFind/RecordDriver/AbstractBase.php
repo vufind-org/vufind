@@ -147,7 +147,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $table = $this->getDbTable('Comments');
         return $table->getForResource(
-            $this->getUniqueId(), $this->getResourceSource()
+            $this->getUniqueId(), $this->getSourceIdentifier()
         );
     }
 
@@ -181,7 +181,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         $tags = $this->getDbTable('Tags');
         return $tags->getForResource(
             $this->getUniqueId(),
-            $this->getResourceSource(),
+            $this->getSourceIdentifier(),
             0, $list_id, $user_id, $sort, $ownerId
         );
     }
@@ -198,7 +198,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $resources = $this->getDbTable('Resource');
         $resource = $resources->findResource(
-            $this->getUniqueId(), $this->getResourceSource()
+            $this->getUniqueId(), $this->getSourceIdentifier()
         );
         foreach ($tags as $tag) {
             $resource->addTag($tag, $user);
@@ -217,7 +217,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $resources = $this->getDbTable('Resource');
         $resource = $resources->findResource(
-            $this->getUniqueId(), $this->getResourceSource()
+            $this->getUniqueId(), $this->getSourceIdentifier()
         );
         foreach ($tags as $tag) {
             $resource->deleteTag($tag, $user);
@@ -235,7 +235,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *  </ul>
      * @param \VuFind\Db\Row\User $user   The user saving the record
      *
-     * @return void
+     * @return array list information
      */
     public function saveToFavorites($params, $user)
     {
@@ -263,7 +263,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         // Get or create a resource object as needed:
         $resourceTable = $this->getDbTable('Resource');
         $resource = $resourceTable->findResource(
-            $this->getUniqueId(), $this->getResourceSource(), true, $this
+            $this->getUniqueId(), $this->getSourceIdentifier(), true, $this
         );
 
         // Add the information to the user's account:
@@ -272,6 +272,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             isset($params['mytags']) ? $params['mytags'] : [],
             isset($params['notes']) ? $params['notes'] : ''
         );
+        return ['listId' => $list->id];
     }
 
     /**
@@ -286,7 +287,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $db = $this->getDbTable('UserResource');
         $data = $db->getSavedData(
-            $this->getUniqueId(), $this->getResourceSource(), $list_id, $user_id
+            $this->getUniqueId(), $this->getSourceIdentifier(), $list_id, $user_id
         );
         $notes = [];
         foreach ($data as $current) {
@@ -308,7 +309,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $table = $this->getDbTable('UserList');
         return $table->getListsContainingResource(
-            $this->getUniqueId(), $this->getResourceSource(), $user_id
+            $this->getUniqueId(), $this->getSourceIdentifier(), $user_id
         );
     }
 
@@ -316,13 +317,12 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * Get the source value used to identify resources of this type in the database.
      *
      * @return string
+     *
+     * @deprecated Obsolete as of VuFind 3.0; use getSourceIdentifier() instead.
      */
     public function getResourceSource()
     {
-        // Normally resource source is the same as source identifier, but for legacy
-        // reasons we need to call Solr 'VuFind' instead.  TODO: clean this up.
-        $id = $this->getSourceIdentifier();
-        return $id == 'Solr' ? 'VuFind' : $id;
+        return $this->getSourceIdentifier();
     }
 
     /**
@@ -334,8 +334,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function setSourceIdentifier($identifier)
     {
-        // Normalize "VuFind" identifier to "Solr" (see above).  TODO: clean this up.
-        $this->sourceIdentifier = $identifier == 'VuFind' ? 'Solr' : $identifier;
+        $this->sourceIdentifier = $identifier;
     }
 
     /**

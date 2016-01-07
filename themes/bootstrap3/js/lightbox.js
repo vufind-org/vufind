@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, Recaptcha, VuFind */
+/*global ajaxLogin, checkSaveStatuses, console, deparam, newAccountHandler, Recaptcha, refreshPageForLogin, registerLightboxEvents, VuFind */
 
 var Lightbox = {
   /**
@@ -405,6 +405,21 @@ var Lightbox = {
   }
 };
 
+function getListUrlFromHTML(html) {
+  var fakePage = $('<div>'+html+'</div>');
+  var listUrl = fakePage.find('a.gotolist').attr('href');
+  if (typeof listUrl === 'undefined') {
+    var listID = fakePage.find('[name="listID"]');
+    if(listID.length > 0) {
+      listUrl = VuFind.getPath() + '/MyResearch/MyList/'+listID.val();
+    }
+  }
+  var message = VuFind.translate('bulk_save_success');
+  if (listUrl) {
+    message += '. <a href="'+listUrl+'" class="gotolist">' + VuFind.translate('go_to_list') + '</a>.';
+  }
+  return message;
+}
 /**
  * This is where you add click events to open the lightbox.
  * We do it here so that non-JS users still have a good time.
@@ -442,8 +457,9 @@ $(document).ready(function() {
     location.reload();
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
-    Lightbox.addCloseAction(refreshPageForLogin);
-    Lightbox.success(VuFind.translate('bulk_save_success'));
+    // go to list link
+    var msg = getListUrlFromHTML(html);
+    Lightbox.success(msg);
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
@@ -526,8 +542,8 @@ $(document).ready(function() {
     return Lightbox.get('Search','Email',{url:document.URL});
   });
   // Save record links
-  $('.save-record').click(function() {
+  $('.result .save-record').click(function() {
     var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('data-id')});
   });
 });
