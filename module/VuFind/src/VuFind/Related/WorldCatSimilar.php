@@ -83,7 +83,7 @@ class WorldCatSimilar extends Similar
         $query = '(' . implode(' or ', $parts) . ')';
 
         // Not current record ID if this is already a WorldCat record:
-        if ($driver->getResourceSource() == 'WorldCat') {
+        if ($driver->getSourceIdentifier() == 'WorldCat') {
             $id = $driver->getUniqueId();
             $query .= " not srw.no all \"$id\"";
         }
