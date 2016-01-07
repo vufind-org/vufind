@@ -45,14 +45,13 @@ class Favorites extends AbstractPlugin
      * Support method for saveBulk() -- get list to save records into. Either
      * retrieves existing list or creates a new one.
      *
-     * @param array $params Array of parameters (we only care about 'list').
+     * @param mixed $listId List ID to load (or empty/'NEW' to create new list)
      * @param User  $user   User object.
      *
      * @return \VuFind\Db\Row\UserList
      */
-    protected function getList($params, User $user)
+    protected function getList($listId, User $user)
     {
-        $listId = isset($params['list']) ? $params['list'] : '';
         $table = $this->getController()->getTable('UserList');
         if (empty($listId) || $listId == 'NEW') {
             $list = $table->getNew($user);
@@ -113,7 +112,7 @@ class Favorites extends AbstractPlugin
         }
 
         // Load helper objects needed for the saving process:
-        $list = $this->getList($params, $user);
+        $list = $this->getList(isset($params['list']) ? $params['list'] : '', $user);
         $tagParser = $this->getController()->getServiceLocator()->get('VuFind\Tags');
         $recordCache = $this->getController()->getServiceLocator()
             ->get('VuFind\RecordCache');
