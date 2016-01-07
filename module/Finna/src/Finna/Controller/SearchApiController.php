@@ -60,10 +60,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'cleanIsbn' => 'getCleanISBN',
         'cleanIssn' => 'getCleanISSN',
         'cleanOclcNumber' => 'getCleanOCLCNum',
-        'cleanUpc' => 'getCleanUPC',
         'collections' => 'getCollections',
         'comments' => ['method' => 'getRecordComments'],
-        'containerEndPage' => 'getContainerEndPage',
         'containerIssue' => 'getContainerIssue',
         'containerReference' => 'getContainerReference',
         'containerStartPage' => 'getContainerStartPage',
@@ -107,7 +105,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'openUrl' => 'getOpenUrl',
         'originalLanguages' => 'getOriginalLanguages',
         'otherLinks' => 'getOtherLinks',
-        'physicalDescription' => 'getPhysicalDescription',
+        'physicalDescriptions' => 'getPhysicalDescriptions',
         'physicalLocations' => 'getPhysicalLocations',
         'placesOfPublication' => 'getPlacesOfPublication',
         'playingTimes' => 'getPlayingTimes',
@@ -122,7 +120,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'publishers' => 'getPublishers',
         'rating' => 'getAverageRating',
         'rawData' => ['method' => 'getRecordRawData'],
-        'recordLinks' => 'getAllRecordLinks',
+        'recordLinks' => ['method' => 'getRecordLinks'],
         'relationshipNotes' => 'getRelationshipNotes',
         'series' => 'getSeries',
         'sfxObjectId' => 'getSfxObjectId',
@@ -139,7 +137,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'toc' => 'getTOC',
         'uniformTitles' => 'getUniformTitles',
         'unitId' => 'getUnitID',
-        'upc' => 'getUPC',
         'urls' => ['method' => 'getRecordURLs'],
         'year' => 'getYear'
     ];
@@ -798,6 +795,31 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     }
 
     /**
+     * Get record links for a record as an array
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getRecordLinks($record)
+    {
+        $links = $record->tryMethod('getAllRecordLinks');
+        if ($links) {
+            $translate = $this->getViewRenderer()->plugin('translate');
+            $translationEmpty = $this->getViewRenderer()->plugin('translationEmpty');
+            foreach ($links as &$link) {
+                if (isset($link['title'])
+                    && !$translationEmpty($link['title'])
+                ) {
+                    $link['translated'] = $this->translate($link['title']);
+                    unset($link['title']);
+                }
+            }
+        }
+        return $links;
+    }
+
+    /**
      * Get URLs for a record as an array
      *
      * @param \VuFind\RecordDriver\SolrDefault $record Record driver
@@ -815,7 +837,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 if (isset($url['desc'])
                     && !$translationEmpty('link_' . $url['desc'])
                 ) {
-                    $url['desc'] = $this->translate('link_' . $url['desc']);
+                    $url['translated'] = $this->translate('link_' . $url['desc']);
+                    unset($url['desc']);
                 }
             }
         }
@@ -823,8 +846,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         if ($serviceUrls) {
             $source = $record->getDataSource();
             foreach ($serviceUrls as &$url) {
-                if (isset($url['desc'])) {
-                    $url['desc'] = $this->translate($source . '_' . $url['desc']);
+                if (isset($url['desc'])
+                    && !$translationEmpty($source . '_' . $url['desc'])
+                ) {
+                    $url['translated']
+                        = $this->translate($source . '_' . $url['desc']);
+                    unset($url['desc']);
                 }
             }
             $urls += $serviceUrls;
