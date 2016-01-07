@@ -8,7 +8,7 @@
      $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
      $this->headLink()->appendStylesheet('vendor/bootstrap-rating.css');
   }
-  if (in_array($this->driver->getResourceSource(), ['MetaLib', 'Primo'])) {
+  if (in_array($this->driver->getSourceIdentifier(), ['MetaLib', 'Primo'])) {
     $this->headScript()->appendFile("finna-bx.js");
   }
   // Activate Syndetics Plus if necessary:
@@ -86,9 +86,9 @@ EOT;
       <?=$this->record($this->driver)->getToolbar()?>
   </div>
   <div class="col-sm-9">
-    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>">
+    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getMetaTags();?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
@@ -133,13 +133,13 @@ EOT;
   </div>
 
   <div class="col-sm-3 sidebar">
-    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind' && $this->driver->getRecordType() != 'lido' && $this->driver->getRecordType() != 'ead'): ?>
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr' && $this->driver->getRecordType() != 'lido' && $this->driver->getRecordType() != 'ead'): ?>
       <?=$this->render('record/record-organisation-menu.phtml') ?>
     <? endif; ?>
     <? foreach ($this->related()->getList($this->driver) as $current): ?>
       <?=$this->related()->render($current)?>
     <? endforeach; ?>
-    <? if (in_array($this->driver->getResourceSource(), ['MetaLib', 'Primo'])): ?>
+    <? if (in_array($this->driver->getSourceIdentifier(), ['MetaLib', 'Primo'])): ?>
       <div id="bx-recommendations-holder">
       </div>
     <? endif; ?>

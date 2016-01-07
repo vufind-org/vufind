@@ -9,7 +9,7 @@
   $id = $this->driver->getUniqueId();
   $controllerClass = 'controller:' . $this->record($this->driver)->getController();
   $cart = $this->cart();
-  $cartId = $this->driver->getResourceSource() . '|' . $id;
+  $cartId = $this->driver->getSourceIdentifier() . '|' . $id;
   $largeThumb = $this->record($this->driver)->getThumbnail('large');
 ?>
 <div class="row hidden-xs">

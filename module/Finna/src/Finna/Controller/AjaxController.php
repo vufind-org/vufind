@@ -191,7 +191,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         list($source, $id) = explode('.', $params['id'], 2);
         $map = ['metalib' => 'MetaLib', 'pci' => 'Primo'];
-        $source = isset($map[$source]) ? $map[$source] : 'VuFind';
+        $source = isset($map[$source]) ? $map[$source] : DEFAULT_SEARCH_BACKEND;
 
         $listId = $params['listId'];
         $notes = $params['notes'];
@@ -488,7 +488,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
         $parts = explode('|', $id, 2);
         if (count($parts) < 2) {
-            $source = 'VuFind';
+            $source = DEFAULT_SEARCH_BACKEND;
             $id = $parts[0];
         } else {
             $source = $parts[0];

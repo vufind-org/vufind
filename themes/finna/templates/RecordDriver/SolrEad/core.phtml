@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind'): ?>
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
       <?=$this->render('record/record-organisation-menu.phtml') ?>
     <? endif; ?>
 
@@ -115,6 +115,7 @@
       <? endif; ?>
 
       <? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats()))): ?>
+        <? $parentSource = $this->driver->getSourceIdentifier(); ?>
         <? if ($this->driver->isPartOfArchiveSeries()): ?>
           <? $topIds = $this->driver->getHierarchyTopId(); $topTitles = $this->driver->getHierarchyTopTitle(); ?>
         <? else: ?>
@@ -123,8 +124,8 @@
         <tr>
           <th><?=$this->transEsc('Archive')?>:</th>
           <td>
-          <? foreach($topIds as $index => $parentId): ?>
-            <?=($index > 0 ? ', ' : '')?><a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
+          <? foreach ($topIds as $index => $parentId): ?>
+            <?=($index > 0 ? ', ' : '')?><a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
           <? endforeach; ?>
           </td>
         </tr>
@@ -136,7 +137,7 @@
           <td>
           <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
           <? foreach ($parentIds as $index => $parentId): ?>
-            <?=($index > 0 ? ', ' : '')?><a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a>
+            <?=($index > 0 ? ', ' : '')?><a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a>
           <? endforeach; ?>
           </td>
         </tr>

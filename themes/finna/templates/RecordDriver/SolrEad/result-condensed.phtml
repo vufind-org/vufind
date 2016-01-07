@@ -56,6 +56,7 @@
             <br/>
           <? endif; ?>
           <? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats()))): ?>
+            <? $parentSource = $this->driver->getSourceIdentifier(); ?>
             <? if ($this->driver->isPartOfArchiveSeries()): ?>
               <? $topIds = $this->driver->getHierarchyTopId(); $topTitles = $this->driver->getHierarchyTopTitle(); ?>
             <? else: ?>
@@ -63,8 +64,8 @@
             <? endif; ?>
             <? if (count($topIds) > 0) : ?>
             <span class="archive-label"><?=$this->transEsc('Archive')?>:</span>
-            <? foreach($topIds as $index => $parentId): ?>
-              <a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
+            <? foreach ($topIds as $index => $parentId): ?>
+              <a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
             <? endforeach; ?>
             <br/>
             <? endif; ?>
@@ -73,7 +74,7 @@
             <span class="archive-label"><?=$this->transEsc('Archive Series')?>:</span>
             <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
             <? foreach ($parentIds as $index => $parentId): ?>
-              <a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
+              <a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
             <? endforeach; ?>
             <br/>
         <? endif; ?>
@@ -120,7 +121,7 @@
     </div>
     <div class="col-xs-3 col-sm-2 col-sm-pull-9 resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
       <? $img = $this->recordImage($this->record($this->driver))?>
       <?= $img->render('list', array('medium' => array('w' => 300, 'h' => 300))) ?>
     </div>
