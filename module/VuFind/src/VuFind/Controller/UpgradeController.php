@@ -261,6 +261,37 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Support method for fixdatabaseAction() -- clean up legacy 'VuFind'
+     * source values in the database.
+     *
+     * @return void
+     */
+    protected function fixVuFindSourceInDatabase()
+    {
+        $resource = $this->getTable('resource');
+        $resourceWhere = ['source' => 'VuFind'];
+        $resourceRows = $resource->select($resourceWhere);
+        if (count($resourceRows) > 0) {
+            $resource->update(['source' => 'Solr'], $resourceWhere);
+            $this->session->warnings->append(
+                'Converted ' . count($resourceRows)
+                . ' legacy "VuFind" source value(s) in resource table'
+            );
+        }
+
+        $userStatsFields = $this->getTable('userstatsfields');
+        $usfWhere = ['field' => 'recordSource', 'value' => 'VuFind'];
+        $usfRows = $userStatsFields->select($usfWhere);
+        if (count($usfRows) > 0) {
+            $userStatsFields->update(['value' => 'Solr'], $usfWhere);
+            $this->session->warnings->append(
+                'Converted ' . count($usfRows)
+                . ' legacy "VuFind" source value(s) in user_stats_fields table'
+            );
+        }
+    }
+
+    /**
      * Upgrade the database.
      *
      * @return mixed
@@ -375,6 +406,9 @@ class UpgradeController extends AbstractBase
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->forwardTo('Upgrade', 'FixDuplicateTags');
             }
+
+            // Clean up the "VuFind" source, if necessary.
+            $this->fixVuFindSourceInDatabase();
         } catch (\Exception $e) {
             $this->flashMessenger()->addMessage(
                 'Database upgrade failed: ' . $e->getMessage(), 'error'

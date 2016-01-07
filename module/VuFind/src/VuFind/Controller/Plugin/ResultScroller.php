@@ -322,7 +322,7 @@ class ResultScroller extends AbstractPlugin
                 = isset($this->data->total) ? $this->data->total : 0;
 
             // build a full ID string using the driver:
-            $id = $driver->getResourceSource() . '|' . $driver->getUniqueId();
+            $id = $driver->getSourceIdentifier() . '|' . $driver->getUniqueId();
 
             // find where this record is in the current result page
             $pos = is_array($this->data->currIds)
@@ -396,7 +396,8 @@ class ResultScroller extends AbstractPlugin
             if (!($record instanceof \VuFind\RecordDriver\AbstractBase)) {
                 return false;
             }
-            $retVal[] = $record->getResourceSource() . '|' . $record->getUniqueId();
+            $retVal[]
+                = $record->getSourceIdentifier() . '|' . $record->getUniqueId();
         }
         return $retVal;
     }
