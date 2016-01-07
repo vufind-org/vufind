@@ -53,20 +53,6 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     protected $results;
 
     /**
-     * Tab configuration
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Tab filter configuration
-     *
-     * @var array
-     */
-    protected $filters;
-
-    /**
      * Request
      *
      * @var Request
@@ -91,17 +77,13 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      * Constructor
      *
      * @param PluginManager    $results Search results plugin manager
-     * @param array            $config  Tab configuration
-     * @param array            $filters Tab filter configuration
      * @param Url              $url     URL helper
      * @param SearchTabsHelper $helper  Search tabs helper
      */
-    public function __construct(PluginManager $results, array $config,
-        array $filters, Url $url, SearchTabsHelper $helper
+    public function __construct(PluginManager $results, Url $url,
+        SearchTabsHelper $helper
     ) {
         $this->results = $results;
-        $this->config = $config;
-        $this->filters = $filters;
         $this->url = $url;
         $this->helper = $helper;
     }
@@ -122,10 +104,10 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     ) {
         $retVal = [];
         $matchFound = false;
-        foreach ($this->config as $key => $label) {
+        $allFilters = $this->helper->getTabFilterConfig();
+        foreach ($this->helper->getTabConfig() as $key => $label) {
             $class = $this->helper->extractClassName($key);
-            $filters = isset($this->filters[$key])
-                ? (array)$this->filters[$key] : [];
+            $filters = isset($allFilters[$key]) ? (array)$allFilters[$key] : [];
             if ($class == $activeSearchClass
                 && $this->helper->filtersMatch($class, $hiddenFilters, $filters)
             ) {

@@ -54,14 +54,14 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
      *
      * @var array
      */
-    protected $config;
+    protected $tabConfig;
 
     /**
      * Tab filter configuration
      *
      * @var array
      */
-    protected $filters;
+    protected $filterConfig;
 
     /**
      * Request
@@ -73,17 +73,17 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param PluginManager $results Search results plugin manager
-     * @param array         $config  Tab configuration
-     * @param array         $filters Tab filter configuration
-     * @param Request       $request Request
+     * @param PluginManager $results      Search results plugin manager
+     * @param array         $tabConfig    Tab configuration
+     * @param array         $filterConfig Tab filter configuration
+     * @param Request       $request      Request
      */
-    public function __construct(PluginManager $results, array $config,
-        array $filters, Request $request
+    public function __construct(PluginManager $results, array $tabConfig,
+        array $filterConfig, Request $request
     ) {
         $this->results = $results;
-        $this->config = $config;
-        $this->filters = $filters;
+        $this->tabConfig = $tabConfig;
+        $this->filterConfig = $filterConfig;
         $this->request = $request;
     }
 
@@ -104,6 +104,26 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
         }
         return null === $filters
             ? [] : $this->parseFilters($searchClassId, $filters);
+    }
+
+    /**
+     * Get the tab configuration
+     *
+     * @return array
+     */
+    public function getTabConfig()
+    {
+        return $this->tabConfig;
+    }
+
+    /**
+     * Get the tab filters
+     *
+     * @return array
+     */
+    public function getTabFilterConfig()
+    {
+        return $this->filterConfig;
     }
 
     /**
@@ -143,27 +163,27 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
      */
     protected function getDefaultTabHiddenFilters($searchClassId)
     {
-        if (empty($this->config)) {
+        if (empty($this->tabConfig)) {
             return null;
         }
 
         $firstTab = null;
-        foreach ($this->config as $key => $label) {
+        foreach ($this->tabConfig as $key => $label) {
             $class = $this->extractClassName($key);
             if ($class == $searchClassId) {
                 if (null === $firstTab) {
                     $firstTab = $key;
                 }
-                if (empty($this->filters[$key])) {
+                if (empty($this->filterConfig[$key])) {
                     return null;
                 }
             }
         }
-        if (null === $firstTab || empty($this->filters[$firstTab])) {
+        if (null === $firstTab || empty($this->filterConfig[$firstTab])) {
             return null;
         }
 
-        return (array)$this->filters[$firstTab];
+        return (array)$this->filterConfig[$firstTab];
     }
 
     /**
