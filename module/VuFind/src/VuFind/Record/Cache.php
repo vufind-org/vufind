@@ -109,7 +109,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     public function createOrUpdate($recordId, $source, $rawData)
     {
         if (isset($this->cachableSources[$source])) {
-            $this->debug("Cache: updating {$source}|{$recordId}");
+            $this->debug("Updating {$source}|{$recordId}");
             $this->recordTable->updateRecord($recordId, $source, $rawData);
         }
     }
@@ -124,10 +124,10 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     public function lookup($id, $source)
     {
-        $this->debug("Cache: checking {$source}|{$id}");
+        $this->debug("Checking {$source}|{$id}");
         $record = $this->recordTable->findRecord($id, $source);
         $this->debug(
-            "Cache: cached record {$source}|{$id} "
+            "Cached record {$source}|{$id} "
             . ($record !== false ? 'found' : 'not found')
         );
         return $record !== false ? [$this->getVuFindRecord($record)] : [];
@@ -148,7 +148,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
             return [];
         }
 
-        $this->debug("Cache: checking $source batch: " . implode(', ', $ids));
+        $this->debug("Checking $source batch: " . implode(', ', $ids));
         $vufindRecords = [];
         $cachedRecords = $this->recordTable->findRecords($ids, $source);
         foreach ($cachedRecords as $cachedRecord) {
@@ -160,7 +160,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
         };
         $foundIds = array_map($extractIdCallback, $vufindRecords);
         $this->debug(
-            "Cache: cached records for $source "
+            "Cached records for $source "
             . ($foundIds ? 'found: ' . implode(', ', $foundIds) : 'not found')
         );
 
@@ -176,7 +176,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     public function setContext($context)
     {
-        $this->debug("Cache: setting context to '$context'");
+        $this->debug("Setting context to '$context'");
         if (empty($context)) {
             $this->cachableSources = [];
             return;
