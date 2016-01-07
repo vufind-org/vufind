@@ -4,7 +4,7 @@
  *
  * PHP Version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -36,8 +36,11 @@ namespace Finna\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class CronController extends \VuFind\Controller\AbstractBase
+class AdminApiController extends \VuFind\Controller\AbstractBase
+    implements FinnaApiInterface
 {
+    use FinnaApiTrait;
+
     /**
      * Clears the view's cache.
      *
@@ -45,17 +48,13 @@ class CronController extends \VuFind\Controller\AbstractBase
      */
     public function clearCacheAction()
     {
-        $response = $this->getResponse();
-        $response->getHeaders()->addHeaderLine(
-            'Content-type', 'text/plain'
-        );
-        $response->setContent('');
+        $this->writeSession();
+        $this->determineOutputMode();
 
         $auth = $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService');
 
         if (!$auth->isGranted('finna.cache')) {
-            $response->setStatusCode(403);
-            return $response;
+            return $this->output([], self::STATUS_ERROR, 403, 'Permission denied');
         }
 
         $manager = $this->getServiceLocator()->get('VuFind\CacheManager');
@@ -69,7 +68,6 @@ class CronController extends \VuFind\Controller\AbstractBase
             $cache->flush();
         }
 
-        $response->setStatusCode(204);
-        return $response;
+        return $this->output([], self::STATUS_OK);
     }
 }
