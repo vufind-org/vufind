@@ -52,6 +52,9 @@
             <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save')?>" name="save_home_library" />
           </div>
         </form>
+      <? elseif (!empty($this->pickup)): ?>
+          <div class="col-sm-4 profile-title"><?=$this->transEsc('preferred_pickup_location')?>:</div>
+          <div class="col-sm-8"><?=$this->escapeHtml($this->pickup[0]['locationDisplay']); ?></div>
       <? endif; ?>
 
       <? if (isset($profile['messagingServices']) && !empty($profile['messagingServices'])): ?>
