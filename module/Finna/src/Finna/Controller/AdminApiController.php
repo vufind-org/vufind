@@ -1,6 +1,6 @@
 <?php
 /**
- * Cron Controller
+ * Admin Api Controller
  *
  * PHP Version 5
  *
@@ -28,7 +28,7 @@
 namespace Finna\Controller;
 
 /**
- * Provides web access to cron tasks
+ * Provides web api for different admin tasks.
  *
  * @category VuFind2
  * @package  Controller
