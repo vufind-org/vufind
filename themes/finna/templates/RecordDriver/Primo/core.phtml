@@ -59,8 +59,11 @@
       ?>
       <? if (!empty($journalTitle)): ?>
         <?=$this->transEsc('Published in')?>:
-          <? $containerID = $this->driver->getContainerRecordID(); ?>
-          <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
+          <?
+            $containerSource = $this->driver->getSourceIdentifier();
+            $containerID = $this->driver->getContainerRecordID();
+          ?>
+          <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
           <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
       <? elseif (!empty($summDate)): ?>
         <?=!empty($summAuthor) ? '' : ' '?>

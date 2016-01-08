@@ -15,12 +15,12 @@ case_sensitive_bools = true
 ; HTTP timeout
 timeout = 30
 
-; Your API id (use "mlplus" if using Metalib Plus instead of Primo Central)
-apiId = my-id
-
-; The port to use when connecting to the API (normally 1701 for Primo Central, 80
-; for Metalib Plus)
-port = 1701
+; URL of the Primo server. For hosted services typically of the form 
+; http://XYZ.hosted.exlibrisgroup.com:1701 where XYZ is the ID of the Primo 
+; instance (e.g. primoapac01). Use http://mlplus.hosted.exlibrisgroup.com for 
+; MetaLib Plus.
+; You may also enter the full URL including a path to the brief search if necessary. 
+url = "http://ndl-pc-fe1.hosted.exlibrisgroup.com:1701"
 
 ; This section controls the result limit options for search results. default_limit
 ; sets the default number of results per page. limit_options is a comma-separated

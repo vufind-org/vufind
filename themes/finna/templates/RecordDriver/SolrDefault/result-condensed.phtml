@@ -56,11 +56,12 @@
               <? if (!empty($journalTitle)): ?>
                 <?=!empty($summAuthor) ? '' : ' '?>
                 <?
+                $parentSource = $this->driver->getSourceIdentifier();
                 $parentId = $this->driver->getHierarchyParentId();
                 $parentLink = false;
                 if ($parentId) {
                   try {
-                    $parentLink = $this->recordLink()->getUrl("VuFind|{$parentId[0]}");
+                    $parentLink = $this->recordLink()->getUrl("$parentSource|{$parentId[0]}");
                   } catch (Exception $e) {
                     // Probably parent record doesn't exist, fall back to linking by title
                   }
@@ -191,7 +192,7 @@
   </div>
   <div class="col-xs-3 col-sm-2 col-sm-pull-9 resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
       <? $img = $this->recordImage($this->record($this->driver))?>
       <?= $img->render('list', array('medium' => array('w' => 250))) ?>
   </div>

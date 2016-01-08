@@ -13,7 +13,7 @@
   <form class="comment-form row" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post"">
     <div>
       <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
-      <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>"/>
+      <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>"/>
       <input type="hidden" name="commentId" />
       <input type="hidden" name="type" value="<?= $ratings ? '1' : '0' ?>" />
     </div>

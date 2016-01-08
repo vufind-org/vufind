@@ -89,6 +89,7 @@ $config = [
             'record' => 'Finna\Controller\Factory::getRecordController',
         ],
         'invokables' => [
+            'adminapi' => 'Finna\Controller\AdminApiController',
             'ajax' => 'Finna\Controller\AjaxController',
             'searchapi' => 'Finna\Controller\SearchApiController',
             'combined' => 'Finna\Controller\CombinedController',
@@ -117,6 +118,7 @@ $config = [
             'VuFind\DbTablePluginManager' => 'Finna\Service\Factory::getDbTablePluginManager',
             'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',
             'VuFind\SearchResultsPluginManager' => 'Finna\Service\Factory::getSearchResultsPluginManager',
+            'VuFind\SearchSpecsReader' => 'Finna\Service\Factory::getSearchSpecsReader',
         ],
         'invokables' => [
             'VuFind\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',

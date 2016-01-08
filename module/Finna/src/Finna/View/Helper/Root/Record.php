@@ -113,7 +113,7 @@ class Record extends \VuFind\View\Helper\Root\Record
     public function getCheckbox($idPrefix = '', $label = false)
     {
         static $checkboxCount = 0;
-        $id = $this->driver->getResourceSource() . '|'
+        $id = $this->driver->getSourceIdentifier() . '|'
             . $this->driver->getUniqueId();
         $context = [
             'id' => $id,

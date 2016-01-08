@@ -81,7 +81,7 @@
   <div class="col-sm-9">
     <div class="record">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <h2 class="collection-title"><?=$this->driver->getTitle();?></h2>
       <div class="truncate-field wide">

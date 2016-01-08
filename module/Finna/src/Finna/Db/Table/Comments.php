@@ -47,7 +47,7 @@ class Comments extends \VuFind\Db\Table\Comments
      *
      * @return array|\Zend\Db\ResultSet\AbstractResultSet
      */
-    public function getForResource($id, $source = 'VuFind')
+    public function getForResource($id, $source = DEFAULT_SEARCH_BACKEND)
     {
         $callback = $this->getResourceCallback($id);
         return $this->select($callback);
@@ -79,8 +79,9 @@ class Comments extends \VuFind\Db\Table\Comments
      *
      * @return array
      */
-    public function getAverageRatingForResource($id, $source = 'VuFind')
-    {
+    public function getAverageRatingForResource(
+        $id, $source = DEFAULT_SEARCH_BACKEND
+    ) {
         $query = 'SELECT AVG(comments.finna_rating) as average, ' .
                'COUNT(comments.id) as count ' .
                'FROM comments ' .

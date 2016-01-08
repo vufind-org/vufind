@@ -49,11 +49,12 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
         <? if (!empty($journalTitle)): ?>
         <?=!empty($summAuthor) ? '' : ' '?>
         <?
+          $parentSource = $this->driver->getSourceIdentifier();
           $parentId = $this->driver->getHierarchyParentId();
           $parentLink = false;
           if ($parentId) {
             try {
-              $parentLink = $this->recordLink()->getUrl("VuFind|{$parentId[0]}");
+              $parentLink = $this->recordLink()->getUrl("$parentSource|{$parentId[0]}");
             } catch (Exception $e) {
               // Probably parent record doesn't exist, fall back to linking by title
             }

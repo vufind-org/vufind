@@ -54,7 +54,7 @@
     </div>
     <div class="col-xs-3 col-sm-2 <?= $combinedView ? 'col-sm-pull-10' : 'col-sm-pull-9' ?> resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
       <? $img = $this->recordImage($this->record($this->driver))?>
       <?= $img->render('list', array('medium' => array('w' => 300, 'h' => 300))) ?>
     </div>

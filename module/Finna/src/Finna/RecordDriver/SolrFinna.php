@@ -90,7 +90,7 @@ trait SolrFinna
     {
         $table = $this->getDbTable('Comments');
         return $table->getAverageRatingForResource(
-            $this->getUniqueId(), $this->getResourceSource()
+            $this->getUniqueId(), $this->getSourceIdentifier()
         );
     }
 

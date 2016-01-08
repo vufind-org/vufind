@@ -108,8 +108,11 @@
             </span>
           <? endif; ?>
           <? if ($containerTitle): ?>
-            <? $containerID = $this->driver->getContainerRecordID(); ?>
-            <?=$this->transEsc('Published in')?> <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('title', $containerTitle))?>"><?=$this->escapeHtml($containerTitle)?></a>
+            <?
+              $containerSource = $this->driver->getSourceIdentifier();
+              $containerID = $this->driver->getContainerRecordID();
+            ?>
+            <?=$this->transEsc('Published in')?> <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('title', $containerTitle))?>"><?=$this->escapeHtml($containerTitle)?></a>
             <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
           <? endif; ?>
         </div>

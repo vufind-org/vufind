@@ -135,7 +135,9 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
                 $this->getLocalId($username), $password, $secondary
             );
             $patron = $this->addIdPrefixes($patron, $source);
-            $patron['source'] = $source;
+            if (is_array($patron)) {
+                $patron['source'] = $source;
+            }
             return $patron;
         }
         throw new ILSException('No suitable backend driver found');
