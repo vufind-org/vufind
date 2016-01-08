@@ -89,6 +89,7 @@ $config = [
             'record' => 'Finna\Controller\Factory::getRecordController',
         ],
         'invokables' => [
+            'adminapi' => 'Finna\Controller\AdminApiController',
             'ajax' => 'Finna\Controller\AjaxController',
             'searchapi' => 'Finna\Controller\SearchApiController',
             'combined' => 'Finna\Controller\CombinedController',
