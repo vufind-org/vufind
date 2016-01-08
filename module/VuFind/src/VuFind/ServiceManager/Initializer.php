@@ -40,6 +40,35 @@ use Zend\ServiceManager\ServiceManager;
 class Initializer
 {
     /**
+     * Check if the record cache is enabled within a service manager.
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return bool
+     */
+    protected static function isCacheEnabled(ServiceManager $sm)
+    {
+        // Use static cache to save time on repeated lookups:
+        static $enabled = null;
+        if (null === $enabled) {
+            // Return true if Record Cache is enabled for any data source
+            $cacheConfig = $sm->get('VuFind\Config')->get('RecordCache');
+            $enabled = false;
+            foreach ($cacheConfig as $section) {
+                foreach ($section as $setting) {
+                    if (isset($setting['operatingMode'])
+                        && $setting['operatingMode'] !== 'disabled'
+                    ) {
+                        $enabled = true;
+                        break 2;    // quit looping -- we know the answer!
+                    }
+                }
+            }
+        }
+        return $enabled;
+    }
+
+    /**
      * Given an instance and a Service Manager, initialize the instance.
      *
      * @param object         $instance Instance to initialize
@@ -60,6 +89,12 @@ class Initializer
         }
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get('VuFind\Http'));
+        }
+        // Only inject cache if configuration enabled (to save resources):
+        if ($instance instanceof \VuFind\Record\Cache\RecordCacheAwareInterface
+            && static::isCacheEnabled($sm)
+        ) {
+            $instance->setRecordCache($sm->get('VuFind\RecordCache'));
         }
         return $instance;
     }

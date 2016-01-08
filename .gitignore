@@ -5,8 +5,9 @@ ChangeLog
 .\#*
 TAGS
 *~
+vendor
+composer.lock
 import/solrmarc.log
-vendor/.git
 
 # OS Created Files
 
@@ -39,3 +40,4 @@ local/import/import.properties
 local/import/import_auth.properties
 *.diff
 vufind.bat
+
