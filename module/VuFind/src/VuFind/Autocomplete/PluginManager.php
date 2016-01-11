@@ -68,6 +68,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $type = $request->get($typeParam, '');
         $query = $request->get($queryParam, '');
         $searcher = $request->get('searcher', 'Solr');
+        $hiddenFilters = $request->get('hiddenFilters', []);
 
         // If we're using a combined search box, we need to override the searcher
         // and type settings.
@@ -101,6 +102,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             list($name, $params) = explode(':', $module, 2);
             $handler = $this->get($name);
             $handler->setConfig($params);
+        }
+
+        if (is_callable([$handler, 'addFilters'])) {
+            $handler->addFilters($hiddenFilters);
         }
 
         return (isset($handler) && is_object($handler))

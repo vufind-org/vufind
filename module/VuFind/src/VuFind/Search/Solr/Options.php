@@ -39,13 +39,6 @@ namespace VuFind\Search\Solr;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Pre-assigned filters
-     *
-     * @var array
-     */
-    protected $hiddenFilters = [];
-
-    /**
      * Hierarchical facets
      *
      * @var array
@@ -226,28 +219,6 @@ class Options extends \VuFind\Search\Base\Options
                     = $searchSettings->ShardPreferences->showCheckboxes;
             }
         }
-    }
-
-    /**
-     * Add a hidden (i.e. not visible in facet controls) filter query to the object.
-     *
-     * @param string $fq Filter query for Solr.
-     *
-     * @return void
-     */
-    public function addHiddenFilter($fq)
-    {
-        $this->hiddenFilters[] = $fq;
-    }
-
-    /**
-     * Get an array of hidden filters.
-     *
-     * @return array
-     */
-    public function getHiddenFilters()
-    {
-        return $this->hiddenFilters;
     }
 
     /**
