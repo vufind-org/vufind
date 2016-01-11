@@ -129,9 +129,13 @@ class Params extends \VuFind\Search\Base\Params
     public function getFilterSettings()
     {
         // Define Filter Query
-        $filterQuery = $this->getOptions()->getHiddenFilters();
+        $filterQuery = [];
         $orFilters = [];
-        foreach ($this->filterList as $field => $filter) {
+        $filterList = array_merge(
+            $this->getHiddenFilters(),
+            $this->filterList
+        );
+        foreach ($filterList as $field => $filter) {
             if ($orFacet = (substr($field, 0, 1) == '~')) {
                 $field = substr($field, 1);
             }
@@ -381,14 +385,6 @@ class Params extends \VuFind\Search\Base\Params
         case 0:
             $this->addFilter('illustrated:"Not Illustrated"');
             break;
-        }
-
-        // Check for hidden filters:
-        $hidden = $request->get('hiddenFilters');
-        if (!empty($hidden) && is_array($hidden)) {
-            foreach ($hidden as $current) {
-                $this->getOptions()->addHiddenFilter($current);
-            }
         }
     }
 

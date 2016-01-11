@@ -213,6 +213,14 @@ class UrlQueryHelper
                 }
             }
         }
+        $hiddenFilters = $this->params->getHiddenFilters();
+        if (!empty($hiddenFilters)) {
+            foreach ($hiddenFilters as $field => $values) {
+                foreach ($values as $current) {
+                    $params['hiddenFilters'][] = $field . ':"' . $current . '"';
+                }
+            }
+        }
         $shards = $this->params->getSelectedShards();
         if (!empty($shards)) {
             sort($shards);

@@ -102,13 +102,6 @@ class Options extends \VuFind\Search\Base\Options
     protected $commonExpanders = [];
 
     /**
-     * Pre-assigned filters
-     *
-     * @var array
-     */
-    protected $hiddenFilters = [];
-
-    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
@@ -647,28 +640,6 @@ class Options extends \VuFind\Search\Base\Options
     {
         $viewArr = explode('|', $this->defaultView);
         return $viewArr[0];
-    }
-
-    /**
-     * Add a hidden (i.e. not visible in facet controls) filter query to the object.
-     *
-     * @param string $fq Filter query for Solr.
-     *
-     * @return void
-     */
-    public function addHiddenFilter($fq)
-    {
-        $this->hiddenFilters[] = $fq;
-    }
-
-    /**
-     * Get an array of hidden filters.
-     *
-     * @return array
-     */
-    public function getHiddenFilters()
-    {
-        return $this->hiddenFilters;
     }
 
     /**
