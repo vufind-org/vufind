@@ -480,12 +480,9 @@ class Factory
      */
     public static function getSearchTabs(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $config = isset($config->SearchTabs)
-            ? $config->SearchTabs->toArray() : [];
         return new SearchTabs(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-            $config, $sm->get('url')
+            $sm->get('url'), $sm->getServiceLocator()->get('VuFind\SearchTabsHelper')
         );
     }
 
