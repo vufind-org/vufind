@@ -18,7 +18,7 @@ function ajaxFLLoadTab(tabid, reload) {
   var id = $('#'+tabid).closest('.record').find(".hiddenId")[0].value;
   var source = $('#'+tabid).closest('.record').find(".hiddenSource")[0].value;
   var urlroot;
-  if (source == 'VuFind') {
+  if (source == VuFind.getDefaultSearchBackend()) {
     urlroot = 'Record';
   } else {
     urlroot = source + 'record';
