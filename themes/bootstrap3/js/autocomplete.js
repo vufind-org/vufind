@@ -113,7 +113,7 @@
           .addClass('autocomplete-results hidden')
           .html('<i class="item loading">'+options.loadingString+'</i>');
         align(input, element);
-        input.closest('form').append(element);
+        $(document.body).append(element);
         $(window).resize(function() {
           align(input, element);
         });
