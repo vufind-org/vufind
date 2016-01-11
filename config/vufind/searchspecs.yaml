@@ -157,6 +157,8 @@ Author:
     - author_fuller^50
     - author2
     - author_additional
+    - author_variant
+    - author2_variant
   QueryFields:
     author:
       - [onephrase, 350]
@@ -171,6 +173,14 @@ Author:
       - [and, 50]
       - [or, ~]
     author_additional:
+      - [onephrase, 100]
+      - [and, 50]
+      - [or, ~]
+    author_variant:
+      - [onephrase, 100]
+      - [and, 50]
+      - [or, ~]
+    author2_variant:
       - [onephrase, 100]
       - [and, 50]
       - [or, ~]
