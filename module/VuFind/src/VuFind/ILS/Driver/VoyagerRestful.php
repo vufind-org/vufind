@@ -432,6 +432,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function isStorageRetrievalRequestAllowed($holdingsRow)
     {
+        $holdingsRow = $holdingsRow['_fullRow'];
         if (!isset($holdingsRow['TEMP_ITEM_TYPE_ID'])
             || !isset($holdingsRow['ITEM_TYPE_ID'])
         ) {
@@ -439,7 +440,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             return false;
         }
 
-        $holdingsRow = $holdingsRow['_fullRow'];
         if (isset($this->config['StorageRetrievalRequests']['valid_item_types'])) {
             $validTypes = explode(
                 ':', $this->config['StorageRetrievalRequests']['valid_item_types']
