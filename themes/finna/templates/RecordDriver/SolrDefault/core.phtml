@@ -369,7 +369,7 @@
               <? $i = 0; foreach ($field as $subfield): ?>
                 <?=($i++ == 0) ? '' : ' &#8594; '?>
                 <? $subject = trim($subject . ' ' . $subfield); ?>
-                <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->escapeHtml($subfield))?></a>
+                <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" rel="nofollow"><?=trim($this->escapeHtml($subfield))?></a>
               <? endforeach; ?>
             </div>
             <? endforeach; ?>
