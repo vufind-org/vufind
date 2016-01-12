@@ -238,9 +238,10 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     {
         // If an advanced search is available, link there; otherwise, just go
         // to the search home:
+        $results = $this->results->get($class);
         $urlParams = $results->getUrlQuery()->getParams(false);
         $url = $this->url->__invoke($results->getOptions()->getSearchHomeAction())
-            . $this->buildUrlHiddenFilters($class, $filters);
+            . $this->buildUrlHiddenFilters($results, $filters);
         return [
             'class' => $class,
             'label' => $label,
@@ -262,11 +263,12 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     {
         // If an advanced search is available, link there; otherwise, just go
         // to the search home:
-        $options = $this->results->get($class)->getOptions();
+        $results = $this->results->get($class);
+        $options = $results->getOptions();
         $advSearch = $options->getAdvancedSearchAction();
         $url = $this->url
             ->__invoke($advSearch ? $advSearch : $options->getSearchHomeAction())
-            . $this->buildUrlHiddenFilters($class, $filters);
+            . $this->buildUrlHiddenFilters($results, $filters);
         return [
             'class' => $class,
             'label' => $label,
@@ -278,15 +280,14 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Build a hidden filter query fragment from the given filters
      *
-     * @param string $class   Search class ID
+     * @param string $results Search results
      * @param array  $filters Filters
      *
      * @return string Query parameters
      */
-    protected function buildUrlHiddenFilters($class, $filters)
+    protected function buildUrlHiddenFilters($results, $filters)
     {
         // Set up results object for URL building:
-        $results = $this->results->get($class);
         $params = $results->getParams();
         foreach ($filters as $filter) {
             $params->addHiddenFilter($filter);
