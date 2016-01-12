@@ -12,6 +12,7 @@
     );
     $handlerCount = count($handlers);
     $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
+    $searchHome = $options->getSearchHomeAction();
     $advSearch = $options->getAdvancedSearchAction();
     $lastSort = $options->getLastSort();
     $lastLimit = $options->getLastLimit();
