@@ -11,7 +11,7 @@
     var options = $.extend( {}, $.fn.autocomplete.options, settings );
 
     function align(input, element) {
-      var position = input.position();
+      var position = input.offset();
       element.css({
         position: 'absolute',
         top: position.top + input.outerHeight(),
@@ -232,6 +232,8 @@
       ) {
         return input;
       }
+
+      window.addEventListener("resize", hide, false);
 
       return element;
     }
