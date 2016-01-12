@@ -587,7 +587,7 @@ finna.layout = (function() {
             VuFind.getPath() + '/AJAX/JSON?method=getSideFacets&' + query,
             function(response) {
                 if (response.status == 'OK') {
-                    $container.html(response.data);
+                    $container.replaceWith(response.data);
                     finna.dateRangeVis.init();
                 } else {
                     $container.find('.facet-load-indicator').addClass('hidden');
