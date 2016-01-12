@@ -87,6 +87,36 @@ class Bootstrapper
         }
     }
 
+    protected function initBotCheck()
+    {
+        $callback = function ($event) {
+            // Check User-Agent
+            $headers = $event->getRequest()->getHeaders();
+            if (!$headers->has('User-Agent')) {
+                return;
+            }
+            $agent = $headers->get('User-Agent')->toString();
+            if (!preg_match('/bot|crawl|slurp|spider/i', $agent)) {
+                return;
+            }
+            // Check if the action should be prevented
+            $routeMatch = $event->getRouteMatch();
+            $controller = $routeMatch->getParam('controller');
+            $action = $routeMatch->getParam('action');
+            if ($controller == 'AJAX'
+                || ($controller == 'Record' && $action == 'AjaxTab')
+            ) {
+                $response = $event->getResponse();
+                $response->setStatusCode(403);
+                $response->setContent('Forbidden');
+                $event->stopPropagation(true);
+                return $response;
+            }
+        };
+        // Attach with a high priority
+        $this->events->attach('dispatch', $callback, 11000);
+    }
+
     /**
      * Set up configuration manager.
      *
