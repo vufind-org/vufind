@@ -91,6 +91,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
      * @param string $handler           The current search handler
      * @param string $type              The current search type (basic/advanced)
      * @param array  $hiddenFilters     The current hidden filters
+     * @param array  $savedSearches     Saved search ids from all search tabs
      *
      * @return array
      */
