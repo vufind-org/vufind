@@ -34,7 +34,6 @@ use VuFindSearch\ParamBag as ParamBag,
     Zend\Feed\Reader\Reader,
     Zend\Http\Request as HttpRequest,
     Zend\Session\Container as SessionContainer;
-use VuFind\Search\SearchRunner;
 use Finna\Search\Solr\Params;
 
 /**
