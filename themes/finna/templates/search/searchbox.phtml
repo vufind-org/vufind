@@ -17,7 +17,6 @@
     );
     $handlerCount = count($handlers);
     $basicSearch = $browse ? "browse-{$browse}" : $options->getSearchAction();
-    $searchHome = $options->getSearchHomeAction();
     $advSearch = $module != 'combined' ? $options->getAdvancedSearchAction() : 'search-advanced';
     $lastSort = $browse ? null : $options->getLastSort();
     $lastLimit = $browse ? null : $options->getLastLimit();
@@ -35,6 +34,12 @@
       ;
     }
 
+    $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
+    $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory);
+    if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
+        $hiddenFilters = $this->searchParams($this->searchClassId)->getLastHiddenFilters();
+    }
+
     // Set up Finna Main Tabs:
     if (!$browse) {
       if (($module === 'search' && $action === 'results' && $this->searchType != 'advanced')
@@ -42,8 +47,8 @@
          || ($module === 'primo' && $action === 'search' && $this->searchType != 'advanced')
          || ($module == 'combined' && $action == 'results')
       ) {
-         $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $this->layout()->savedTabs);
-         $this->layout()->finnaMainTabs = $this->render('search/searchTabs', array('searchTabs' => $searchTabs));
+         $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, $this->layout()->savedTabs);
+         $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs, 'hiddenFilters' => $hiddenFilters]);
          $this->layout()->searchTabs = $searchTabs;
       }
     }

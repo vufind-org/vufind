@@ -214,4 +214,14 @@ trait FinnaParams
             );
         return $filterList;
     }
+
+    /**
+     * Remove all hidden filters.
+     *
+     * @return void
+     */
+    public function removeHiddenFilters()
+    {
+        $this->hiddenFilters = [];
+    }
 }
