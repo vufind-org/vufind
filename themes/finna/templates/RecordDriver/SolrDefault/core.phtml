@@ -23,9 +23,9 @@
     </div>
     <div class="row">
       <div class="col-xs-12 rating-stars">
-        <span onclick="ajaxLoadTab('usercomments');">
+        <div onclick="$('a.usercomments').click();">
           <?=$this->record($this->driver)->getRating()?>
-        </span>
+        </div>
       </div>
     </div>
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
