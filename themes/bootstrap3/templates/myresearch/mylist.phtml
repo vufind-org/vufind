@@ -16,10 +16,6 @@
   if ($this->params->getOptions()->getListViewOption()!="full") {
     $this->headScript()->appendFile("record.js");
     $this->headScript()->appendFile("embedded_record.js");
-    // Activate Syndetics Plus if necessary:
-    if ($this->syndeticsPlus()->isActive()) {
-      $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
-    }
   }
 
   $recordTotal = $this->results->getResultTotal();
