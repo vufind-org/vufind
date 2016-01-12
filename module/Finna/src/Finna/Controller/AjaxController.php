@@ -617,7 +617,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 );
             }
         }
-        return $this->output('', self::STATUS_ERROR);
+        return $this->output('', self::STATUS_OK);
     }
 
     /**
