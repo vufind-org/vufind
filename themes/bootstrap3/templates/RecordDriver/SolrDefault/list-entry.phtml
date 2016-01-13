@@ -11,7 +11,6 @@
   }
 
   $dataView = $this->params->getOptions()->getListViewOption();
-  $cover = $this->record($this->driver)->getCover('list-entry', 'small', $this->recordLink()->getUrl($this->driver));
 ?>
 <div class="row result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
   <? $cover=$this->record($this->driver)->getCover('list-entry', 'small', $this->recordLink()->getUrl($this->driver)); ?>
