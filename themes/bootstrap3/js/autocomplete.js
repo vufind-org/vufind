@@ -9,6 +9,7 @@
   $.fn.autocomplete = function(settings) {
 
     var options = $.extend( {}, $.fn.autocomplete.options, settings );
+    var autocompleteResults = null;
 
     function align(input, element) {
       var position = input.offset();
@@ -23,10 +24,10 @@
     }
 
     function show() {
-      $.fn.autocomplete.element.removeClass(options.hidingClass);
+      autocompleteResults.removeClass(options.hidingClass);
     }
     function hide() {
-      $.fn.autocomplete.element.addClass(options.hidingClass);
+      autocompleteResults.addClass(options.hidingClass);
     }
 
     function populate(value, input, eventType) {
@@ -59,7 +60,7 @@
             .addClass('item')
             .html(content)
             .mouseover(function() {
-              $.fn.autocomplete.element.find('.item.selected').removeClass('selected');
+              autocompleteResults.find('.item.selected').removeClass('selected');
               $(this).addClass('selected');
               input.data('selected', $(this).data('index'));
             });
@@ -68,11 +69,11 @@
         }
         shell.append(item);
       }
-      $.fn.autocomplete.element.html(shell);
-      $.fn.autocomplete.element.find('.item').mousedown(function() {
+      autocompleteResults.html(shell);
+      autocompleteResults.find('.item').mousedown(function() {
         populate($(this).attr('data-value'), input, {mouse: true});
       });
-      align(input, $.fn.autocomplete.element);
+      align(input, autocompleteResults);
     }
 
     function search(input, element) {
@@ -80,7 +81,7 @@
       if (input.val().length >= options.minLength) {
         element.html('<i class="item loading">'+options.loadingString+'</i>');
         show();
-        align(input, $.fn.autocomplete.element);
+        align(input, element);
         var term = input.val();
         var cid = input.data('cache-id');
         if (options.cache && typeof $.fn.autocomplete.cache[cid][term] !== "undefined") {
@@ -113,7 +114,7 @@
           .addClass('autocomplete-results hidden')
           .html('<i class="item loading">'+options.loadingString+'</i>');
         align(input, element);
-        $(document.body).append(element);
+        input.closest('form').append(element);
         $(window).resize(function() {
           align(input, element);
         });
@@ -175,7 +176,7 @@
         }
       });
       input.keydown(function(event) {
-        var element = $.fn.autocomplete.element;
+        var element = autocompleteResults;
         var position = $(this).data('selected');
         switch (event.which) {
           // arrow keys through items
@@ -192,7 +193,7 @@
             break;
           case 40:
             event.preventDefault();
-            if ($.fn.autocomplete.element.hasClass(options.hidingClass)) {
+            if (element.hasClass(options.hidingClass)) {
               search(input, element);
             } else if (position < input.data('length')-1) {
               position++;
@@ -245,7 +246,7 @@
       if (typeof settings === "string") {
         if (settings === "show") {
           show();
-          align(input, $.fn.autocomplete.element);
+          align(input, autocompleteResults);
         } else if (settings === "hide") {
           hide();
         } else if (settings === "clear cache" && options.cache) {
@@ -254,10 +255,10 @@
         }
         return input;
       } else {
-        if (!$.fn.autocomplete.element) {
-          $.fn.autocomplete.element = setup(input);
+        if (!autocompleteResults) {
+          autocompleteResults = setup(input);
         } else {
-          setup(input, $.fn.autocomplete.element);
+          setup(input, autocompleteResults);
         }
       }
 
@@ -269,7 +270,6 @@
   var timer = false;
   if (typeof $.fn.autocomplete.cache === 'undefined') {
     $.fn.autocomplete.cache = {};
-    $.fn.autocomplete.element = false;
     $.fn.autocomplete.options = {
       ajaxDelay: 200,
       cache: true,
