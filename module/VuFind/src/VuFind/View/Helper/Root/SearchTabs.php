@@ -28,7 +28,8 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Search\Results\PluginManager,
+use VuFind\Search\Base\Results,
+    VuFind\Search\Results\PluginManager,
     VuFind\Search\SearchTabsHelper,
     Zend\View\Helper\Url,
     Zend\Http\Request;
@@ -280,12 +281,12 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Build a hidden filter query fragment from the given filters
      *
-     * @param string $results Search results
-     * @param array  $filters Filters
+     * @param Results $results Search results
+     * @param array   $filters Filters
      *
      * @return string Query parameters
      */
-    protected function buildUrlHiddenFilters($results, $filters)
+    protected function buildUrlHiddenFilters(Results $results, $filters)
     {
         // Set up results object for URL building:
         $params = $results->getParams();
