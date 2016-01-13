@@ -85,20 +85,22 @@ input[type="radio"], input[type="checkbox"] {
     width:100%;
   }
 }
-.row {
-  &:not(.top-row) {
-    padding:6px 4px;
-    margin:0 -4px;
+.row > p {padding:0 1em;}
+.result {
+  padding-top: .5rem;
+  padding-bottom: .75rem;
+  &:nth-child(even) {
+    background:@gray-lighter;
   }
-  &.result {
-    &:nth-child(even) {
-      background:@gray-lighter;
-    }
-    &:last-child {
-      margin-bottom:1em;
-    }
+  &:last-child {
+    margin-bottom:1em;
   }
-  & > p {padding:0 1em;}
+  .recordcover {
+    margin-top: -1.8rem;
+    margin-left: 1.5rem;
+  }
+  .title { padding-left: .75rem; }
+  .middle { padding-left: 1.5rem; }
 }
 .search .row {
   padding:2px 0;
