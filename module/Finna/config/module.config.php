@@ -169,6 +169,7 @@ $config = [
                 'factories' => [
                     'collectionsidefacets' => 'Finna\Recommend\Factory::getCollectionSideFacets',
                     'sidefacets' => 'Finna\Recommend\Factory::getSideFacets',
+                    'sidefacetsdeferred' => 'Finna\Recommend\Factory::getSideFacetsDeferred',
                 ],
             ],
             'resolver_driver' => [

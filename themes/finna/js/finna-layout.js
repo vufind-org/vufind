@@ -576,6 +576,27 @@ finna.layout = (function() {
         }).change();
     }
 
+    var initSideFacets = function() {
+        var $container = $('.side-facets-container');
+        if ($container.length === 0) {
+            return;
+        }
+        $container.find('.facet-load-indicator').removeClass('hidden');
+        var query = window.location.href.split('?')[1];
+        $.getJSON(
+            VuFind.getPath() + '/AJAX/JSON?method=getSideFacets&' + query,
+            function(response) {
+                if (response.status == 'OK') {
+                    $container.replaceWith(response.data);
+                    finna.dateRangeVis.init();
+                } else {
+                    $container.find('.facet-load-indicator').addClass('hidden');
+                    $container.find('.facet-load-failed').removeClass('hidden');
+                }
+            }
+        );
+    }
+    
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -611,6 +632,7 @@ finna.layout = (function() {
             initAuthorizationNotification();
             initTouchDeviceGallery();
             initImageCheck();
+            initSideFacets();
         }
     };
 

@@ -23,14 +23,14 @@
   <div class="mobile-toolbar">
     <ul class="nav nav-pills mobile-actions hidden-print">
           <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <li><a class="save-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-plus"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
+          <li><a class="save-record-mobile modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-plus"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
           <? endif; ?>
 
           <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
 
           <? if(count($exportFormats) > 0): ?>
           <li class="dropdown dropup">
-            <a class="export-toggle dropdown-toggle" data-toggle="dropdown" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>"><i class="fa fa-list-alt"></i> <span class="sr-only"><?=$this->transEsc('Export Record') ?></span></a>
+            <a class="export-toggle dropdown-toggle" data-toggle="dropdown" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>" rel="nofollow"><i class="fa fa-list-alt"></i> <span class="sr-only"><?=$this->transEsc('Export Record') ?></span></a>
             <ul class="dropdown-menu" role="menu">
               <? foreach ($exportFormats as $exportFormat): ?>
               <li class="export-list"><a <? if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->transEsc($exportFormat)?></a></li>
@@ -40,14 +40,14 @@
           <? endif; ?>
 
           <? if (count($this->driver->getCitationFormats()) > 0): ?>
-          <li><a class="cite-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="fa fa-asterisk"></i> <span class="sr-only"><?=$this->transEsc('Cite this')?></span></a></li>
+          <li><a class="cite-record-mobile modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><i class="fa fa-asterisk"></i> <span class="sr-only"><?=$this->transEsc('Cite this')?></span></a></li>
           <? endif; ?>
 
-          <li><span class="hidden-xs hidden-sm"><a href="javascript:window.print()"><i class="fa fa-print"></i> <?=$this->transEsc('Print')?></a></span></li>
+          <li><span class="hidden-xs hidden-sm"><a href="javascript:window.print()"><i class="fa fa-print" rel="nofollow"></i> <?=$this->transEsc('Print')?></a></span></li>
     </ul>
     <ul class="nav nav-pills hidden-print mobile-sharing">
       <li class="dropdown dropup">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-bookmark"></i><span class="hidden-xs"> <?=$this->transEsc('Share') ?></span></a>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" rel="nofollow"><i class="fa fa-bookmark"></i><span class="hidden-xs"> <?=$this->transEsc('Share') ?></span></a>
         <ul class="dropdown-menu" role="menu">
           <? if (!empty($addThis)): ?>
           <li class="addthis-share-buttons">
@@ -67,10 +67,10 @@
             -->
           </li>
           <li class="whatsapp">
-            <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=$this->url('record-sms', array('id'=>$id)) ?>" data-action="share/whatsapp/share"><i class="fa fa-phone"></i></a></span>
+            <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=$this->url('record-sms', array('id'=>$id)) ?>" data-action="share/whatsapp/share" rel="nofollow"><i class="fa fa-phone"></i></a></span>
           </li>
           <? endif; ?>
-          <li class="mail-record"><a class="mail-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>"><i class="fa fa-envelope"></i> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
+          <li class="mail-record"><a class="mail-record-mobile modal-link <?=$controllerClass?>" href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope"></i> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
         </ul>
       </li>
     </ul>

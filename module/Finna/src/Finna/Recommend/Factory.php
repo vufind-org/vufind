@@ -73,4 +73,18 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\HierarchicalFacetHelper')
         );
     }
+
+    /**
+     * Factory for SideFacetsDeferred module.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SideFacets
+     */
+    public static function getSideFacetsDeferred(ServiceManager $sm)
+    {
+        return new SideFacetsDeferred(
+            $sm->getServiceLocator()->get('VuFind\Config')
+        );
+    }
 }

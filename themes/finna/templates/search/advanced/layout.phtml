@@ -6,12 +6,6 @@
   // Disable top search box -- this page has a special layout.
   $this->layout()->searchbox = false;
 
-  // Search type and tabs
-  $this->searchType = 'advanced';
-  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">' . $this->translate('Advanced Search') . '</h1></div>';
-  $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, []);
-  $this->layout()->finnaMainTabs = $this->render('search/searchTabs', ['searchTabs' => $searchTabs]);
-
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li>';
   $lastSearchLink = $this->getLastSearchLink($this->transEsc('Search'));
@@ -54,9 +48,17 @@
     // Remove date range filter (search_daterange_mv) so that it does not get included
     // in the  list of active filters
     $searchFilters = $this->saved->getParams()->removeDatarangeFilter($searchFilters);
+    $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
   } else {
     $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
+    $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, true);
   }
+
+  // Search type and tabs
+  $this->searchType = 'advanced';
+  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">' . $this->translate('Advanced Search') . '</h1></div>';
+  $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, []);
+  $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs, 'hiddenFilters' => $hiddenFilters]);
 
   // Step 1: Load the javascript
   $this->headScript()->appendFile(
@@ -94,6 +96,11 @@
 
 <?=$this->flashmessages()?>
 <form role="search" name="searchForm" id="advSearchForm" method="get" action="<?=$this->url($this->options->getSearchAction())?>">
+  <? foreach ($hiddenFilters as $key => $filter): ?>
+    <? foreach ($filter as $value): ?>
+      <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
+    <? endforeach; ?>
+  <? endforeach; ?>
   <div class="row">
     <div class="col-sm-12 col-md-10 col-lg-9">
       <h4><?=$this->transEsc("adv_search_label")?><? if (!$this->translationEmpty('tooltip_local_advanced_html')): ?><span class="tooltip-local-advanced pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title='<?=$this->transesc("tooltip_local_advanced_html") ?>'><i class="fa fa-info-big"></i> <?=$this->transEsc("Help with Advanced Search")?></span><? endif; ?></h4>

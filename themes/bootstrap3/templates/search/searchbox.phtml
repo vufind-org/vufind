@@ -16,10 +16,15 @@
     $advSearch = $options->getAdvancedSearchAction();
     $lastSort = $options->getLastSort();
     $lastLimit = $options->getLastLimit();
+    $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
+    $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory);
+    if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
+        $hiddenFilters = $this->searchParams($this->searchClassId)->getLastHiddenFilters();
+    }
 ?>
 <? if ($this->searchType == 'advanced'): ?>
   <div class="searchForm navbar-form navbar-left flip">
-    <? $tabs = $this->render('search/searchTabs'); ?>
+    <? $tabs = $this->context($this)->renderInContext('search/searchTabs', ['hiddenFilters' => $hiddenFilters]); ?>
     <? if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><? endif; ?>
       <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
       <p class="adv_search_links">
@@ -31,7 +36,7 @@
   </div>
 <? else: ?>
   <form class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
-    <?= $this->render('search/searchTabs'); ?>
+    <?= $this->context($this)->renderInContext('search/searchTabs', ['hiddenFilters' => $hiddenFilters]); ?>
     <input class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
     <? if ($handlerCount > 1): ?>
       <select class="searchForm_type form-control" name="type" data-native-menu="false">
@@ -84,6 +89,11 @@
         <? endif; ?>
       </div>
     <? endif; ?>
+    <? foreach ($hiddenFilters as $key => $filter): ?>
+      <? foreach ($filter as $value): ?>
+        <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
+      <? endforeach; ?>
+    <? endforeach; ?>
     <?
       /* Show hidden field for active search class when in combined handler mode. */
       if ($this->searchbox()->combinedHandlersActive()) {

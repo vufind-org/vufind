@@ -22,10 +22,10 @@ era_facet          = Era
 geographic_facet   = Region
 ;publishDate        = "adv_search_year"  ; share year string w/advanced search page
 topic_facet        = Topic
+usage_rights_str_mv = "Usage Rights"
 hierarchy_parent_title = component_part_is_part_of
 first_indexed      = "New Items in Index"
 category_str_mv    = Category
-license_str_mv     = License
 
 ; Facets that will appear at the top of search results when the TopFacets
 ; recommendations module is used.  See the [TopRecommendations] section of
@@ -102,14 +102,14 @@ top_cols = 3
 ; to false or omit to disable ORed facets.
 orFacets = *
 ; Do we want any facets to be collapsed by default?
-collapsedFacets = sector_str_mv,building,author2Str,language,original_lng_str_mv,subtitle_lng_str_mv,main_date_str,search_daterange_mv,genre_facet,era_facet,geographic_facet,topic_facet,hierarchy_parent_title,first_indexed,category_str_mv,license_str_mv
+collapsedFacets = sector_str_mv,building,author2Str,language,original_lng_str_mv,subtitle_lng_str_mv,main_date_str,search_daterange_mv,genre_facet,era_facet,geographic_facet,topic_facet,hierarchy_parent_title,first_indexed,category_str_mv,usage_rights_str_mv
 
 ; This can be used to sort specific facet fields alphabetically by index value
 ; (which normally results in alphabetical order).
 ; Please note: This sorts natively in the Solr index using untranslated values,
 ; so if you are using facet translation, your values may not always display in
 ; the expected order.
-sorted_by_index[] = license_str_mv
+sorted_by_index[] = usage_rights_str_mv
 
 ; The author home screen has different facets
 [Author]
@@ -170,7 +170,7 @@ translated_facets[] = first_indexed
 translated_facets[] = original_lng_str_mv
 translated_facets[] = subtitle_lng_str_mv
 translated_facets[] = category_str_mv
-translated_facets[] = license_str_mv
+translated_facets[] = usage_rights_str_mv
 
 ; Prefix to be used in facet translation to avoid mixing facet strings with other
 ; translated content

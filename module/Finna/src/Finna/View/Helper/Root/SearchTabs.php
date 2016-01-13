@@ -27,7 +27,10 @@
  */
 namespace Finna\View\Helper\Root;
 use Finna\Search\Solr\Params as SolrParams,
-    Finna\Search\Primo\Params as PrimoParams;
+    Finna\Search\Primo\Params as PrimoParams,
+    Finna\Search\Results\PluginManager;
+use VuFind\Search\SearchTabsHelper;
+use Zend\View\Helper\Url;
 
 /**
  * "Search tabs" view helper
@@ -64,27 +67,20 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     /**
      * Constructor
      *
-     * @param SessionManager $session Session manager
-     * @param PluginManager  $table   Database manager
-     * @param PluginManager  $results Search results plugin manager
-     * @param array          $config  Tab configuration
-     * @param Url            $url     URL helper
+     * @param PluginManager    $results Search results plugin manager
+     * @param Url              $url     URL helper
+     * @param SearchTabsHelper $helper  Search tabs helper
+     * @param SessionManager   $session Session manager
+     * @param PluginManager    $table   Database manager
      */
-    public function __construct(
+    public function __construct(PluginManager $results, Url $url,
+        SearchTabsHelper $helper,
         \Zend\Session\SessionManager $session,
-        \VuFind\Db\Table\PluginManager $table,
-        \VuFind\Search\Results\PluginManager $results,
-        array $config, \Zend\View\Helper\Url $url
+        \VuFind\Db\Table\PluginManager $table
     ) {
+        parent::__construct($results, $url, $helper);
         $this->session = $session;
         $this->table = $table;
-
-        if (isset($config['Combined'])) {
-            // Make sure that combined view is the first tab
-            $config = ['Combined' => $config['Combined']] + $config;
-        }
-
-        parent::__construct($results, $config, $url);
     }
 
     /**
@@ -94,16 +90,19 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
      * @param string $query             The current search query
      * @param string $handler           The current search handler
      * @param string $type              The current search type (basic/advanced)
+     * @param array  $hiddenFilters     The current hidden filters
      * @param array  $savedSearches     Saved search ids from all search tabs
      *
      * @return array
      */
-    public function __invoke(
-        $activeSearchClass, $query, $handler, $type = 'basic', $savedSearches = []
+    public function getTabConfig($activeSearchClass, $query, $handler,
+        $type = 'basic', $hiddenFilters = [], $savedSearches = []
     ) {
         $this->activeSearchClass = $activeSearchClass;
 
-        $tabs = parent::__invoke($activeSearchClass, $query, $handler, $type);
+        $tabs = parent::getTabConfig(
+            $activeSearchClass, $query, $handler, $type, $hiddenFilters
+        );
         if ($type == 'advanced') {
             $tabs = array_filter(
                 $tabs,
@@ -195,37 +194,42 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
      * @param string                      $targetClass   Search class ID for target
      * @param string                      $query         Search query to map
      * @param string                      $handler       Search handler to map
+     * @param array                       $filters       Tab filters
      *
      * @return string
      */
     protected function remapBasicSearch($activeOptions, $targetClass, $query,
-        $handler
+        $handler, $filters
     ) {
         // Set up results object for URL building:
         $results = $this->results->get($targetClass);
-        $options = $results->getOptions();
+        $params = $results->getParams();
+        foreach ($filters as $filter) {
+            $params->addHiddenFilter($filter);
+        }
 
         // Find matching handler for new query (and use default if no match):
+        $options = $results->getOptions();
         $targetHandler = $options->getHandlerForLabel(
             $activeOptions->getLabelForBasicHandler($handler)
         );
 
-        // Clone helper so that we can remove active filters
-        $urlQuery = $this->getView()->results->getUrlQuery();
-        $urlQuery = clone($urlQuery);
+        // Clone the active query so that we can remove active filters
+        $currentResults = clone($this->getView()->results);
+        $urlQuery = $currentResults->getUrlQuery();
 
         // Remove current filters
+        $currentResults->getParams()->removeHiddenFilters();
         if (method_exists($urlQuery, 'removeAllFilters')) {
             $urlQuery->removeAllFilters();
         }
 
-        $params = $this->getView()->results->getParams();
-        $filters = $params->getFilters();
+        $filters = $currentResults->getParams()->getFilters();
         if (!empty($filters)) {
             // Filters active, include current search id in the url
             $searchClass = $this->activeSearchClass;
-            if (method_exists($this->getView()->results, 'getSearchHash')) {
-                $searchId = $this->getView()->results->getSearchHash();
+            if (method_exists($currentResults, 'getSearchHash')) {
+                $searchId = $currentResults->getSearchHash();
                 if (method_exists($urlQuery, 'setSearchId')) {
                     $query = $urlQuery->setSearchId($searchClass, $searchId);
                 }
@@ -235,9 +239,14 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         }
 
         // Build new URL:
+        $hiddenFilterQuery = $results->getUrlQuery()->getParams(false);
         $results->getParams()->setBasicSearch($query, $targetHandler);
-        return $this->url->__invoke($options->getSearchAction())
+        $url = $this->url->__invoke($options->getSearchAction())
             . $query;
+        if ($hiddenFilterQuery !== '?') {
+            $url .= '&' . substr($hiddenFilterQuery, 1);
+        }
+        return $url;
     }
 
     /**

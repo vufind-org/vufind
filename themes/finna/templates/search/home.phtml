@@ -3,9 +3,6 @@
   // Set page title.
   $this->headTitle($this->translate('Search Home'));
 
-  // Disable top search box -- this page has a special layout.
-
-
   // Set default value if necessary:
   if (!isset($this->searchClassId)) {
     $this->searchClassId = 'Solr';
@@ -41,11 +38,11 @@
 <? if ($template = $this->content()->findTemplateForLng("search/home/home-$i")): ?>
 <div class="container-fluid home-<?=$i; ?>">
     <div class="container">
-        <div class="row">          
+        <div class="row">
           <?=$this->render($template)?>
         </div>
     </div>
-</div>   
+</div>
 <? endif; ?>
 <? endfor; ?>
 <!-- reopen container -->

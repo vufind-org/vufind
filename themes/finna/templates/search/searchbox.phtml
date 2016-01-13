@@ -17,7 +17,6 @@
     );
     $handlerCount = count($handlers);
     $basicSearch = $browse ? "browse-{$browse}" : $options->getSearchAction();
-    $searchHome = $options->getSearchHomeAction();
     $advSearch = $module != 'combined' ? $options->getAdvancedSearchAction() : 'search-advanced';
     $lastSort = $browse ? null : $options->getLastSort();
     $lastLimit = $browse ? null : $options->getLastLimit();
@@ -35,6 +34,12 @@
       ;
     }
 
+    $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
+    $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory);
+    if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
+        $hiddenFilters = $this->searchParams($this->searchClassId)->getLastHiddenFilters();
+    }
+
     // Set up Finna Main Tabs:
     if (!$browse) {
       if (($module === 'search' && $action === 'results' && $this->searchType != 'advanced')
@@ -42,8 +47,8 @@
          || ($module === 'primo' && $action === 'search' && $this->searchType != 'advanced')
          || ($module == 'combined' && $action == 'results')
       ) {
-         $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $this->layout()->savedTabs);
-         $this->layout()->finnaMainTabs = $this->render('search/searchTabs', array('searchTabs' => $searchTabs));
+         $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, $this->layout()->savedTabs);
+         $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs, 'hiddenFilters' => $hiddenFilters]);
          $this->layout()->searchTabs = $searchTabs;
       }
     }
@@ -142,7 +147,7 @@
   </form>
   <? if ($advSearch): ?>
   <div class="col-md-4 col-lg-5">
-    <a href="<?=$this->url($advSearch)?>" class="btn btn-link hidden-xs hidden-sm"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Advanced Search")?></a>
+    <a href="<?=$this->url($advSearch)?>" class="btn btn-link hidden-xs hidden-sm" rel="nofollow"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Advanced Search")?></a>
     <? if ($module === 'search' && !$this->translationEmpty('tooltip_local_search_html')) :?><span class="tooltip-search-local pull-right hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_local_search_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?>
     <? if ($module === 'primo' && !$this->translationEmpty('tooltip_pci_search_html')) :?><span class="tooltip-search-pci pull-right hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_pci_search_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?>
     <? if ($module === 'metalib' && !$this->translationEmpty('tooltip_metalib_search_html')) :?><span class="tooltip-search-metalib pull-right hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_metalib_search_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?>
