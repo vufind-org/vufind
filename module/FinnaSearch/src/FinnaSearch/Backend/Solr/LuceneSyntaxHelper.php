@@ -71,6 +71,7 @@ class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
     {
         $searchString = parent::normalizeSearchString($searchString);
         $searchString = $this->normalizeUnicodeForm($searchString);
+      //  $searchString = $this->normalizeISBN($searchString);
 
         return $searchString;
     }

@@ -322,6 +322,7 @@ class Primo extends \VuFind\RecordDriver\Primo
         if ($this->simpleXML !== null) {
             return $this->simpleXML;
         }
+        error_log(print_r($this->fields['fullrecord'], true));
         $this->simpleXML = new \SimpleXmlElement($this->fields['fullrecord']);
 
         return $this->simpleXML;
