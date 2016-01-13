@@ -113,7 +113,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
                 && $this->helper->filtersMatch($class, $hiddenFilters, $filters)
             ) {
                 $matchFound = true;
-                $retVal[] = $this->createSelectedTab($class, $label);
+                $retVal[] = $this->createSelectedTab($key, $class, $label);
             } else if ($type == 'basic') {
                 if (!isset($activeOptions)) {
                     $activeOptions
@@ -122,11 +122,11 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
                 $newUrl = $this->remapBasicSearch(
                     $activeOptions, $class, $query, $handler, $filters
                 );
-                $retVal[] = $this->createBasicTab($class, $label, $newUrl);
+                $retVal[] = $this->createBasicTab($key, $class, $label, $newUrl);
             } else if ($type == 'advanced') {
-                $retVal[] = $this->createAdvancedTab($class, $label, $filters);
+                $retVal[] = $this->createAdvancedTab($key, $class, $label, $filters);
             } else {
-                $retVal[] = $this->createHomeTab($class, $label, $filters);
+                $retVal[] = $this->createHomeTab($key, $class, $label, $filters);
             }
         }
         if (!$matchFound && !empty($retVal)) {
@@ -160,14 +160,16 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Create information representing a selected tab.
      *
+     * @param string $id    Tab ID
      * @param string $class Search class ID
      * @param string $label Display text for tab
      *
      * @return array
      */
-    protected function createSelectedTab($class, $label)
+    protected function createSelectedTab($id, $class, $label)
     {
         return [
+            'id' => $id,
             'class' => $class,
             'label' => $label,
             'selected' => true
@@ -210,15 +212,17 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Create information representing a basic search tab.
      *
+     * @param string $id     Tab ID
      * @param string $class  Search class ID
      * @param string $label  Display text for tab
      * @param string $newUrl Target search URL
      *
      * @return array
      */
-    protected function createBasicTab($class, $label, $newUrl)
+    protected function createBasicTab($id, $class, $label, $newUrl)
     {
         return [
+            'id' => $id,
             'class' => $class,
             'label' => $label,
             'selected' => false,
@@ -229,13 +233,14 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Create information representing a tab linking to "search home."
      *
+     * @param string $id      Tab ID
      * @param string $class   Search class ID
      * @param string $label   Display text for tab
      * @param array  $filters Tab filters
      *
      * @return array
      */
-    protected function createHomeTab($class, $label, $filters)
+    protected function createHomeTab($id, $class, $label, $filters)
     {
         // If an advanced search is available, link there; otherwise, just go
         // to the search home:
@@ -244,6 +249,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         $url = $this->url->__invoke($results->getOptions()->getSearchHomeAction())
             . $this->buildUrlHiddenFilters($results, $filters);
         return [
+            'id' => $id,
             'class' => $class,
             'label' => $label,
             'selected' => false,
@@ -254,13 +260,14 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Create information representing an advanced search tab.
      *
+     * @param string $id      Tab ID
      * @param string $class   Search class ID
      * @param string $label   Display text for tab
      * @param array  $filters Tab filters
      *
      * @return array
      */
-    protected function createAdvancedTab($class, $label, $filters)
+    protected function createAdvancedTab($id, $class, $label, $filters)
     {
         // If an advanced search is available, link there; otherwise, just go
         // to the search home:
@@ -271,6 +278,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
             ->__invoke($advSearch ? $advSearch : $options->getSearchHomeAction())
             . $this->buildUrlHiddenFilters($results, $filters);
         return [
+            'id' => $id,
             'class' => $class,
             'label' => $label,
             'selected' => false,
