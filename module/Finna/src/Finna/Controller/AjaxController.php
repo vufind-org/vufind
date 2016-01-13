@@ -1071,7 +1071,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $view->results = $savedSearch;
         $searchTabsHelper = $this->getViewRenderer()->plugin('searchtabs');
         $searchTabsHelper->setView($view);
-        $tabs = $searchTabsHelper(
+        $tabs = $searchTabsHelper->getTabConfig(
             $searchClass,
             $lookfor,
             $params->getQuery()->getHandler()
