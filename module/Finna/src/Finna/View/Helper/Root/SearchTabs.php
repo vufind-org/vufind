@@ -205,17 +205,26 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         $handler, $filters
     ) {
         // Set up results object for URL building:
-        $results = $this->results->get($targetClass);
-        $params = $results->getParams();
+        $targetResults = $this->results->get($targetClass);
+        $targetParams = $targetResults->getParams();
+        $targetUrlQuery = $targetResults->getUrlQuery();
         foreach ($filters as $filter) {
-            $params->addHiddenFilter($filter);
+            $targetParams->addHiddenFilter($filter);
+        }
+
+        // Remove any remembered search hash for this tab:
+        $targetTabId
+            = $this->getTabId($targetClass, $targetParams->getHiddenFilters());
+        if (method_exists($targetUrlQuery, 'removeSearchId')) {
+            $targetUrlQuery->removeSearchId($targetTabId);
         }
 
         // Find matching handler for new query (and use default if no match):
-        $options = $results->getOptions();
-        $targetHandler = $options->getHandlerForLabel(
+        $targetOptions = $targetResults->getOptions();
+        $targetHandler = $targetOptions->getHandlerForLabel(
             $activeOptions->getLabelForBasicHandler($handler)
         );
+        $targetParams->setBasicSearch($query, $targetHandler);
 
         // Clone the active query so that we can remove active filters
         $currentResults = clone($this->getView()->results);
@@ -247,12 +256,12 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         }
 
         // Build new URL:
-        $hiddenFilterQuery = $results->getUrlQuery()->getParams(false);
-        $results->getParams()->setBasicSearch($query, $targetHandler);
-        $url = $this->url->__invoke($options->getSearchAction())
+        $hiddenFilterQuery
+            = substr($targetResults->getUrlQuery()->getParams(false), 1);
+        $url = $this->url->__invoke($targetOptions->getSearchAction())
             . $queryString;
-        if ($hiddenFilterQuery !== '?') {
-            $url .= '&' . substr($hiddenFilterQuery, 1);
+        if ($hiddenFilterQuery) {
+            $url .= "&$hiddenFilterQuery";
         }
         return $url;
     }

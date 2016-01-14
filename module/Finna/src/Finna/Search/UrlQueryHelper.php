@@ -91,6 +91,29 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
     /**
      * Sets search id in the params.
      *
+     * @param string $class Search class.
+     *
+     * @return void
+     */
+    public function removeSearchId($class)
+    {
+        $params = $this->defaultParams;
+        if (!isset($params['search'])) {
+            return;
+        }
+        $searches = [];
+        foreach ($params['search'] as $search) {
+            list($searchClass, $searchId) = explode(':', $search);
+            if ($searchClass != $class) {
+                $searches[] = $search;
+            }
+        }
+        $this->setDefaultParameter('search', $searches);
+    }
+
+    /**
+     * Sets search id in the params.
+     *
      * @param string  $class  Search class.
      * @param int     $id     Search id or NULL if the current id for this
      *                        search class should be removed.
