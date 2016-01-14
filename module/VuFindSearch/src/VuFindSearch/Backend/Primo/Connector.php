@@ -651,8 +651,8 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     public function getRecords($recordIds, $inst_code = null, $onCampus = false)
     {
         // Callback function for formatting IDs:
-        $formatIds = function ($i) {
-            return '"' . addcslashes($i, '"') . '"';
+        $formatIds = function ($id) {
+            return addcslashes($id, '":-()');
         };
 
         // Query String Parameters
@@ -665,6 +665,12 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $qs[] = "indx=1";
             $qs[] = "bulkSize=" . count($recordIds);
             $qs[] = "loc=adaptor,primo_central_multiple_fe";
+            // pcAvailability=true is needed for records, which
+            // are NOT in the PrimoCentral Holdingsfile.
+            // It won't hurt to have this parameter always set to true.
+            // But it'd hurt to have it not set in case you want to get
+            // a record, which is not in the Holdingsfile.
+            $qs[] = "pcAvailability=true";
 
             // Send Request
             $result = $this->call(implode('&', $qs));
