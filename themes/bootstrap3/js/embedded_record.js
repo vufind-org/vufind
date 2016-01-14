@@ -65,7 +65,7 @@ function toggleDataView() {
     mainNode.find('.data-view')
       .prepend($(this).clone().addClass('toggle').click(toggleDataView))
       .append('<div class="loading hidden">\
-                <i class="fa fa-spin fa-spinner"></i>'+VuFind.translate('loading')+'...\
+                <i class="fa fa-spin fa-spinner"></i> '+VuFind.translate('loading')+'...\
               </div><div class="long-view row hidden"></div>');
     $(this).addClass('setup');
   }

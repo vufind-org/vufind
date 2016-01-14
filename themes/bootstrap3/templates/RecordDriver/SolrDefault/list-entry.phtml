@@ -13,7 +13,7 @@
 <div class="row result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
   <input type="hidden" value="<?=$id ?>" class="hiddenId" />
   <input type="hidden" value="<?=$source ?>" class="hiddenSource" />
-  <div class="col-xs-1 left">
+  <div class="col-xs-1">
     <div class="checkbox">
       <label><?=$this->record($this->driver)->getCheckbox() ?></label>
     </div>
