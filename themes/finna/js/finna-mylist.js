@@ -123,7 +123,8 @@ finna.myList = (function() {
         }
 
         // replace list-select with spinner
-        $('#add-to-list').replaceWith('<i id="add-to-list" class="fa fa-spinner fa-spin"></i>');
+        $('#add-to-list').attr('disabled', 'disabled');
+        $('#add-to-list-spinner').removeClass('hidden');
         $.ajax({
             type: 'POST',
             dataType: 'json',
@@ -131,9 +132,13 @@ finna.myList = (function() {
             data: {params: {'listId': listId, 'source': 'Solr', 'ids': ids}},
             success: function(data, status, jqXHR) {
                 if (status == 'success' && data.status == 'OK') {
-                    location.reload();
+                    // Don't reload to avoid trouble with POST requests
+                    location.href = location.href;
                 } else {
                     toggleErrorMessage(true);
+                    $('#add-to-list-spinner').addClass('hidden');
+                    $('#add-to-list').removeAttr('disabled');
+                    $('#add-to-list').val('');
                 }
             }
         });
@@ -205,7 +210,7 @@ finna.myList = (function() {
         }
 
         // Checkbox select all
-        $('.checkbox-select-all').change(function() {
+        $('.checkbox-select-all').unbind('change').change(function() {
             $('.myresearch-row .checkbox-select-item').prop('checked', $(this).is(':checked'));
         });
 
@@ -244,13 +249,13 @@ finna.myList = (function() {
             target.editable({type: 'textarea', action: 'click', triggers: [target, $('.list-description i')]}, descCallback, settings);
 
             // list visibility
-            $(".list-visibility input[type='radio']").on('change', function() {
+            $(".list-visibility input[type='radio']").unbind('change').change(function() {
                 updateList({}, refreshLists, 'visibility');
             });
 
             // delete list
             var active = $('.mylist-bar').find('a.active');
-            active.find('.remove').on('click', function(e) {
+            active.find('.remove').unbind('click').click(function(e) {
                 var target = $(this);
                 var id = target.data('id');
                 var form = $('.delete-list');
@@ -268,11 +273,11 @@ finna.myList = (function() {
                     });
                 };
 
-                prompt.find('.confirm').unbind('click').on('click', function(e) {
+                prompt.find('.confirm').unbind('click').click(function(e) {
                     form.submit();
                     e.preventDefault();
                 });
-                prompt.find('.cancel').unbind('click').on('click', function(e) {
+                prompt.find('.cancel').unbind('click').click(function(e) {
                     $(window).off('resize', repositionPrompt);
                     prompt.hide();
                     e.preventDefault();
@@ -338,9 +343,9 @@ finna.myList = (function() {
         });
 
         // add resource to list
-        $('.mylist-functions #add-to-list').on('change', function(e) {
+        $('.mylist-functions #add-to-list').unbind('change').change(function(e) {
             var val = $(this).val();
-            if (typeof(val) != 'undefined') {
+            if (val != '') {
                 addResourcesToList(val);
             }
         });
