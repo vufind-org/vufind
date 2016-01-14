@@ -279,10 +279,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     public static function getFavoritesSortList()
     {
         return [
-            'saved' => 'sort_saved',
+            'id' => 'sort_saved',
             'title' => 'sort_title',
             'author' => 'sort_author',
-            'date' => 'sort_year asc',
+            'year' => 'sort_year asc',
             'format' => 'sort_format',
         ];
     }
