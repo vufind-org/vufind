@@ -1,16 +1,32 @@
-<? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
-<? $showCheckboxes = (isset($this->showCartControls) && $this->showCartControls)
-  || (isset($this->showBulkOptions) && $this->showBulkOptions); ?>
-<? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
-  $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
+<?
+  $dataView = $this->params->getOptions()->getListViewOption();
+
+  if (!isset($this->indexStart)) {
+    $this->indexStart = 0;
+  }
+  $showCheckboxes = (isset($this->showCartControls) && $this->showCartControls)
+                || (isset($this->showBulkOptions) && $this->showBulkOptions);
+
+  $i = $this->indexStart;
+  foreach ($this->results->getResults() as $current):
+    $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart;
+?>
   <div id="result<?=$i++ ?>" class="row result clearfix">
-    <div class="col-xs-1 hidden-print<? if ($showCheckboxes): ?> checkbox<? endif; ?>">
-      <label>
-        <? if ($showCheckboxes): ?>
-          <?=$this->record($current)->getCheckbox()?>
-        <? endif; ?>
-        <?=$recordNumber?>
-      </label>
+    <input type="hidden" value="<?=$current->getUniqueId() ?>" class="hiddenId" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($current->getResourceSource())?>" class="hiddenSource" />
+    <div class="row">
+      <div class="col-sm-2 col-xs-3">
+        <div class="checkbox">
+          <label>
+            <?=$this->record($current)->getCheckbox() ?>
+          </label>
+        </div>
+      </div>
+      <div class="col-sm-10 col-xs-9">
+        <a href="<?=$this->recordLink()->getUrl($current)?>" class="title getFull" data-view="<?=$dataView ?>">
+          <?=$this->record($current)->getTitleHtml(85)?>
+        </a>
+      </div>
     </div>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>

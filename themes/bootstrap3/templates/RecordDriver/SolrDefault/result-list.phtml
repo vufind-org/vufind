@@ -1,33 +1,18 @@
 <?
   $dataView = $this->params->getOptions()->getListViewOption();
 ?>
-
-<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
-  <? if('full' != $dataView): ?>
-    <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$dataView ?>">
-      <?=$this->record($this->driver)->getTitleHtml()?>
-    </a>
-    <div class="loading hidden">
-      <i class="fa fa-spin fa-spinner"></i> <?=$this->transEsc("Loading")?>...
-    </div>
-    <div class="short-view<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : '' ?>">
-  <? endif; ?>
-  <div class="row">
-    <div>
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
-    </div>
-    <? if ($cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver))): ?>
-      <div class="col-sm-2 col-xs-3 left"><?=$cover ?></div>
+<div class="short-view row">
+  <? $cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver)); ?>
+    <? if ($cover): ?>
+      <div class="col-sm-2 col-xs-3 left">
+        <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+          <?=$cover ?>
+        </a>
+      </div>
+      <div class="col-sm-7 col-xs-6">
+    <? else: ?>
+      <div class="col-xs-9">
     <? endif ?>
-    <div class="<?=$cover ? 'col-sm-7 col-xs-6' : 'col-sm-9 col-xs-9'?> middle">
-      <? if('full' == $dataView): ?>
-        <div>
-          <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-            <?=$this->record($this->driver)->getTitleHtml()?>
-          </a>
-        </div>
-      <? endif; ?>
       <div>
         <? if($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
@@ -152,51 +137,52 @@
       <? endif; ?>
       <?=$this->record($this->driver)->getPreviews()?>
     </div>
-    <div class="col-xs-3 right hidden-print">
-      <? /* Display qrcode if appropriate: */ ?>
-      <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
-        <?
-          // Add JS Variables for QrCode
-          $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
-        ?>
-        <span class="hidden-xs">
-          <i class="fa fa-fw fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
-          <div class="qrcode hidden">
-            <script type="text/template" class="qrCodeImgTag">
-              <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
-            </script>
-          </div><br/>
-        </span>
-      <? endif; ?>
+  </div>
+  <div class="col-xs-3 right hidden-print">
+    <? /* Display qrcode if appropriate: */ ?>
+    <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+      <?
+        // Add JS Variables for QrCode
+        $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
+      ?>
+      <span class="hidden-xs">
+        <i class="fa fa-fw fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
+        <div class="qrcode hidden">
+          <script type="text/template" class="qrCodeImgTag">
+            <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+          </script>
+        </div><br/>
+      </span>
+    <? endif; ?>
 
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Add to favorites */ ?>
-        <i class="fa fa-fw fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" data-id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <? /* Add to favorites */ ?>
+      <i class="fa fa-fw fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" data-id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
 
-        <? /* Saved lists */ ?>
-        <div class="savedLists alert alert-info hidden">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
+      <? /* Saved lists */ ?>
+      <div class="savedLists alert alert-info hidden">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+    <? endif; ?>
+
+    <? /* Hierarchy tree link */ ?>
+    <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+      <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+        <div class="hierarchyTreeLink">
+          <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
+          <i class="fa fa-fw fa-sitemap"></i>
+          <a class="hierarchyTreeLinkText modal-link" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
+            <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
+          </a>
         </div>
-      <? endif; ?>
+      <? endforeach; ?>
+    <? endif; ?>
 
-      <? /* Hierarchy tree link */ ?>
-      <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
-        <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
-          <div class="hierarchyTreeLink">
-            <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-            <i class="fa fa-fw fa-sitemap"></i>
-            <a class="hierarchyTreeLinkText modal-link" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
-              <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
-            </a>
-          </div>
-        <? endforeach; ?>
-      <? endif; ?>
-
-      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
-    </div>
+    <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
   </div>
   <? if('full' != $dataView): ?>
+    <div class="loading hidden">
+      <i class="fa fa-spin fa-spinner"></i> <?=$this->transEsc("Loading")?>...
     </div>
     <div class="long-view hidden"></div>
   <? endif; ?>
-</div>

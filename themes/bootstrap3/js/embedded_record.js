@@ -51,63 +51,75 @@ function ajaxFLLoadTab(tabid, reload) {
   return false;
 }
 
-$(document).ready(function() {
-  $('.getFull').click(function(type) {
-    var mainNode = $(this).closest('.result');
-    var div_id = mainNode.find(".hiddenId")[0].value;
-    var div_source = mainNode.find(".hiddenSource")[0].value;
-    var div_html_id = div_id.replace(/\W/g, "_");
-    var viewType = $(this).attr("data-view");
-    var shortNode = mainNode.find('.short-view');
-    var loadingNode = mainNode.find('.loading');
-    var longNode = mainNode.find('.long-view');
-    if (!longNode.is(":visible")) {
-      shortNode.addClass("hidden");
-      longNode.removeClass("hidden");
-      if (longNode.is(':empty')) {
-        loadingNode.removeClass("hidden");
-        var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType,source:div_source});
-        $.ajax({
-          dataType: 'json',
-          url: url,
-          success: function(response) {
-            if (response.status == 'OK') {
-              // Insert tabs html
-              longNode.html(response.data);
-              // Hide loading
-              loadingNode.addClass("hidden");
-              // Load first tab
-              var $firstTab = $(longNode).find('.recordTabs li.active a');
-              if ($firstTab.length > 0) {
-                ajaxFLLoadTab($firstTab.attr('id'));
-              }
-              // Add events to record toolbar
-              setupRecordToolbar(longNode, div_id);
-              setupModalLinkTitles(longNode);
-              // Lightbox handler for tagRecord
-              Lightbox.addFormCallback('tagRecord', function() {
-                refreshTagList(true, longNode);
-                Lightbox.confirm(VuFind.translate('add_tag_success'));
-              });
-              longNode.find('.search_tabs .recordTabs a').click(function() {
-                return ajaxFLLoadTab($(this).attr('id'));
-              });
-              longNode.find('.panel.noajax .accordion-toggle').click(function() {
-                window.location.href = $(this).attr('data-href');
-              });
-              longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(function() {
-                return registerAjaxCommentRecord(
-                  longNode.find('[id^=usercomment]').find('input[type=submit]').closest('form')
-                );
-              });
+function toggleDataView() {
+  var mainNode = $(this).closest('.result');
+  var div_id = mainNode.find(".hiddenId")[0].value;
+  var div_source = mainNode.find(".hiddenSource")[0].value;
+  var div_html_id = div_id.replace(/\W/g, "_");
+  var viewType = $(this).attr("data-view");
+  var shortNode = mainNode.find('.short-view');
+  var loadingNode = mainNode.find('.loading');
+  var longNode = mainNode.find('.long-view');
+  var toggle = mainNode.find('.toggle');
+  if (toggle.length == 0) {
+    $(this).clone()
+      .prependTo(mainNode.find('.data-view'))
+      .addClass('toggle')
+      .click(toggleDataView);
+  }
+  if (!longNode.is(":visible")) {
+    shortNode.addClass("hidden");
+    longNode.removeClass("hidden");
+    toggle.removeClass("hidden");
+    if (longNode.is(':empty')) {
+      loadingNode.removeClass("hidden");
+      var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType,source:div_source});
+      $.ajax({
+        dataType: 'json',
+        url: url,
+        success: function(response) {
+          if (response.status == 'OK') {
+            // Insert tabs html
+            longNode.html(response.data);
+            // Hide loading
+            loadingNode.addClass("hidden");
+            // Load first tab
+            var $firstTab = $(longNode).find('.recordTabs li.active a');
+            if ($firstTab.length > 0) {
+              ajaxFLLoadTab($firstTab.attr('id'));
             }
+            // Add events to record toolbar
+            setupRecordToolbar(longNode, div_id);
+            setupModalLinkTitles(longNode);
+            // Lightbox handler for tagRecord
+            Lightbox.addFormCallback('tagRecord', function() {
+              refreshTagList(true, longNode);
+              Lightbox.confirm(VuFind.translate('add_tag_success'));
+            });
+            longNode.find('.search_tabs .recordTabs a').click(function() {
+              return ajaxFLLoadTab($(this).attr('id'));
+            });
+            longNode.find('.panel.noajax .accordion-toggle').click(function() {
+              window.location.href = $(this).attr('data-href');
+            });
+            longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(function() {
+              return registerAjaxCommentRecord(
+                longNode.find('[id^=usercomment]').find('input[type=submit]').closest('form')
+              );
+            });
           }
-        });
-      }
-    } else {
-      longNode.addClass("hidden");
-      shortNode.removeClass("hidden");
+        }
+      });
     }
-    return false;
-  });
+  } else {
+    toggle.addClass("hidden");
+    longNode.addClass("hidden");
+    loadingNode.addClass("hidden");
+    shortNode.removeClass("hidden");
+  }
+  return false;
+}
+
+$(document).ready(function() {
+  $('.getFull').click(toggleDataView);
 });
