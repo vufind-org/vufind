@@ -39,6 +39,13 @@
     if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
         $hiddenFilters = $this->searchParams($this->searchClassId)->getLastHiddenFilters();
     }
+    $hiddenFilterParams = [];
+    foreach ($hiddenFilters as $key => $filter) {
+        foreach ($filter as $value) {
+            $hiddenFilterParams[] = urlencode('hiddenFilters[]') . '=' . urlencode("$key:$value");
+        }
+    }
+    $hiddenFilterParams = empty($hiddenFilterParams) ? '' : '?' . implode('&', $hiddenFilterParams);
 
     // Set up Finna Main Tabs:
     if (!$browse) {
