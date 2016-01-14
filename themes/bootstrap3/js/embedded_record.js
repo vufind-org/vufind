@@ -52,28 +52,43 @@ function ajaxFLLoadTab(tabid, reload) {
 }
 
 function toggleDataView() {
-  var mainNode = $(this).closest('.result');
-  var div_id = mainNode.find(".hiddenId")[0].value;
-  var div_source = mainNode.find(".hiddenSource")[0].value;
-  var div_html_id = div_id.replace(/\W/g, "_");
+  // If full, return true
   var viewType = $(this).attr("data-view");
+  if (viewType == 'full') {
+    return true;
+  }
+  // Insert new elements
+  var mainNode = $(this).closest('.result');
+  if (!$(this).hasClass('toggle') && !$(this).hasClass('setup')) {
+    $(this).closest('.row').addClass('short-view')
+           .parent().addClass('data-view');
+    mainNode.find('.data-view')
+      .prepend($(this).clone().addClass('toggle').click(toggleDataView))
+      .append('<div class="loading hidden">\
+                <i class="fa fa-spin fa-spinner"></i>'+VuFind.translate('loading')+'...\
+              </div><div class="long-view row hidden"></div>');
+    $(this).addClass('setup');
+  }
+  // Gather information
+  var toggle = mainNode.find('.toggle');
+  var div_id = mainNode.find(".hiddenId")[0].value;
   var shortNode = mainNode.find('.short-view');
   var loadingNode = mainNode.find('.loading');
   var longNode = mainNode.find('.long-view');
-  var toggle = mainNode.find('.toggle');
-  if (toggle.length == 0) {
-    $(this).clone()
-      .prependTo(mainNode.find('.data-view'))
-      .addClass('toggle')
-      .click(toggleDataView);
-  }
+  // Toggle visibility
   if (!longNode.is(":visible")) {
     shortNode.addClass("hidden");
     longNode.removeClass("hidden");
     toggle.removeClass("hidden");
+    // AJAX for information
     if (longNode.is(':empty')) {
       loadingNode.removeClass("hidden");
-      var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType,source:div_source});
+      var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({
+        method:'getRecordDetails',
+        id:div_id,
+        type:viewType,
+        source:mainNode.find(".hiddenSource")[0].value
+      });
       $.ajax({
         dataType: 'json',
         url: url,
