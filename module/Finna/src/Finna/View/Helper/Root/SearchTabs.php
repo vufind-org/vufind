@@ -138,13 +138,13 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                 $params = array_diff_key($params, array_flip($dropParams));
 
                 $filterQuery = false;
-                $searchClass = $tab['class'];
 
-                if (isset($savedSearches[$searchClass])) {
+                $tabId = urlencode($tab['id']);
+                if (isset($savedSearches[$tabId])) {
                     $helper = $this->getView()->results->getUrlQuery();
-                    $searchId = $savedSearches[$tab['class']];
+                    $searchId = $savedSearches[$tabId];
                     $searchSettings = $this->getSearchSettings($searchId);
-                    $targetClass = $tab['class'];
+                    $targetClass = $tab['id'];
 
                     // Make sure that tab url does not contain the
                     // search id for the same tab.
@@ -179,7 +179,10 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                     $url .= '?' . http_build_query($params);
                 }
                 if ($filterQuery) {
-                    $url .= (!empty($params) ? '&' : '?') . $filterQuery;
+                    if (strstr($url, '?') === false) {
+                        $url .= '?';
+                    }
+                    $url .= $filterQuery;
                 }
                 $tab['url'] = $url;
             }
@@ -202,49 +205,63 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         $handler, $filters
     ) {
         // Set up results object for URL building:
-        $results = $this->results->get($targetClass);
-        $params = $results->getParams();
+        $targetResults = $this->results->get($targetClass);
+        $targetParams = $targetResults->getParams();
+        $targetUrlQuery = $targetResults->getUrlQuery();
         foreach ($filters as $filter) {
-            $params->addHiddenFilter($filter);
+            $targetParams->addHiddenFilter($filter);
+        }
+
+        // Remove any remembered search hash for this tab:
+        $targetTabId
+            = $this->getTabId($targetClass, $targetParams->getHiddenFilters());
+        if (method_exists($targetUrlQuery, 'removeSearchId')) {
+            $targetUrlQuery->removeSearchId($targetTabId);
         }
 
         // Find matching handler for new query (and use default if no match):
-        $options = $results->getOptions();
-        $targetHandler = $options->getHandlerForLabel(
+        $targetOptions = $targetResults->getOptions();
+        $targetHandler = $targetOptions->getHandlerForLabel(
             $activeOptions->getLabelForBasicHandler($handler)
         );
+        $targetParams->setBasicSearch($query, $targetHandler);
 
         // Clone the active query so that we can remove active filters
         $currentResults = clone($this->getView()->results);
         $urlQuery = $currentResults->getUrlQuery();
 
         // Remove current filters
+        $oldFilters = $currentResults->getParams()->getFilters();
+        $tabId = $this->getTabId(
+            $this->activeSearchClass,
+            $currentResults->getParams()->getHiddenFilters()
+        );
         $currentResults->getParams()->removeHiddenFilters();
         if (method_exists($urlQuery, 'removeAllFilters')) {
             $urlQuery->removeAllFilters();
         }
 
-        $filters = $currentResults->getParams()->getFilters();
-        if (!empty($filters)) {
-            // Filters active, include current search id in the url
-            $searchClass = $this->activeSearchClass;
+        $queryString = null;
+        if (!empty($oldFilters)) {
+            // Filters were active, include current search id in the url
             if (method_exists($currentResults, 'getSearchHash')) {
                 $searchId = $currentResults->getSearchHash();
                 if (method_exists($urlQuery, 'setSearchId')) {
-                    $query = $urlQuery->setSearchId($searchClass, $searchId);
+                    $queryString = $urlQuery->setSearchId($tabId, $searchId);
                 }
             }
-        } else {
-            $query = $urlQuery->getParams(false);
+        }
+        if (null === $queryString) {
+            $queryString = $urlQuery->getParams(false);
         }
 
         // Build new URL:
-        $hiddenFilterQuery = $results->getUrlQuery()->getParams(false);
-        $results->getParams()->setBasicSearch($query, $targetHandler);
-        $url = $this->url->__invoke($options->getSearchAction())
-            . $query;
-        if ($hiddenFilterQuery !== '?') {
-            $url .= '&' . substr($hiddenFilterQuery, 1);
+        $hiddenFilterQuery
+            = substr($targetResults->getUrlQuery()->getParams(false), 1);
+        $url = $this->url->__invoke($targetOptions->getSearchAction())
+            . $queryString;
+        if ($hiddenFilterQuery) {
+            $url .= "&$hiddenFilterQuery";
         }
         return $url;
     }
@@ -297,5 +314,31 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
             return $settings;
         }
         return false;
+    }
+
+    /**
+     * Find out the tab id with search class and hidden filters and return it
+     * url-encoded to avoid it containing e.g. colon
+     *
+     * @param string $searchClass   Search class
+     * @param array  $hiddenFilters Hidden filters
+     *
+     * @return string
+     */
+    protected function getTabId($searchClass, $hiddenFilters)
+    {
+        $tabConfig = $this->helper->getTabConfig();
+        $filterConfig = $this->helper->getTabFilterConfig();
+        foreach ($tabConfig as $key => $label) {
+            $class = $this->helper->extractClassName($key);
+            if ($searchClass == $class) {
+                $filters = isset($filterConfig[$key])
+                    ? (array)$filterConfig[$key] : [];
+                if ($this->helper->filtersMatch($class, $hiddenFilters, $filters)) {
+                    return urlencode($key);
+                }
+            }
+        }
+        return urlencode($searchClass);
     }
 }

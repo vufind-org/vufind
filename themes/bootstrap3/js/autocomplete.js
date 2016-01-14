@@ -114,9 +114,6 @@
           .html('<i class="item loading">'+options.loadingString+'</i>');
         align(input, element);
         $(document.body).append(element);
-        $(window).resize(function() {
-          align(input, element);
-        });
       }
 
       input.data('selected', -1);

@@ -39,6 +39,13 @@
     if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
         $hiddenFilters = $this->searchParams($this->searchClassId)->getLastHiddenFilters();
     }
+    $hiddenFilterParams = [];
+    foreach ($hiddenFilters as $key => $filter) {
+        foreach ($filter as $value) {
+            $hiddenFilterParams[] = urlencode('hiddenFilters[]') . '=' . urlencode("$key:$value");
+        }
+    }
+    $hiddenFilterParams = empty($hiddenFilterParams) ? '' : '?' . implode('&', $hiddenFilterParams);
 
     // Set up Finna Main Tabs:
     if (!$browse) {
@@ -128,6 +135,11 @@
         <input class="applied-filter" id="dfApplied" type="checkbox" name="dfApplied" value="1"<?=$defaultFilterState?> />
       </div>
     <? endif; ?>
+    <? foreach ($hiddenFilters as $key => $filter): ?>
+      <? foreach ($filter as $value): ?>
+        <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
+      <? endforeach; ?>
+    <? endforeach; ?>
     <?
       /* Load hidden limit preference from Session */
       if (!empty($lastLimit)) {
