@@ -95,7 +95,7 @@ class Memcache extends AbstractBase
      * @param string $sess_id The current session ID
      * @param string $data    The session data to write
      *
-     * @return void
+     * @return bool
      */
     public function write($sess_id, $data)
     {
