@@ -228,7 +228,7 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
     public function getRecords($recordIds, $inst_code = null, $onCampus = false)
     {
         $recordIds = array_map(
-            function($recordId) {
+            function ($recordId) {
                 list(,$recordId) = explode('.', $recordId, 2);
                 return $recordId;
             },
