@@ -440,6 +440,7 @@ $config = [
                     'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
+                    'removefilters' => 'VuFind\Recommend\RemoveFilters',
                     'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
                     'spellingsuggestions' => 'VuFind\Recommend\SpellingSuggestions',
                     'summonbestbetsdeferred' => 'VuFind\Recommend\SummonBestBetsDeferred',

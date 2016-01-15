@@ -297,6 +297,20 @@ class UrlQueryHelper
     }
 
     /**
+     * Remove all filters.
+     *
+     * @return string
+     */
+    public function removeAllFilters()
+    {
+        $params = $this->getParamArray();
+        // Clear page:
+        unset($params['filter']);
+
+        return '?' . $this->buildQueryString($params);
+    }
+
+    /**
      * Get the current search parameters as a GET query.
      *
      * @param bool $escape Should we escape the string for use in the view?
