@@ -686,7 +686,7 @@ class AbstractRecord extends AbstractBase
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
         $view->ajaxTabs = isset($config->Site->ajaxTabs)
-            ? $config->Site->ajaxTabs : false;
+            ? (boolean) $config->Site->ajaxTabs : false;
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {

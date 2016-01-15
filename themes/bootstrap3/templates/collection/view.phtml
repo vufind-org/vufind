@@ -72,7 +72,7 @@
                 $activeTabObj = $obj;
               }
               if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
-              if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+              if (!$this->ajaxTabs || !$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
             ?>
             <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
               <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
