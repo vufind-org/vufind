@@ -25,14 +25,15 @@
       <? if ($lists): ?>
       <span class="jump-menu-style controls fa-arrow-down disabled">
         <select id="add-to-list" class="form-control" autocomplete="off" disabled>
-          <option><?= $this->translate('Add to List'); ?>&hellip;</option>
+          <option value=""><?= $this->translate('Add to List'); ?>&hellip;</option>
           <? foreach ($lists as $l): ?>
           <? if ($list && $list->id == $l->id) { continue; } ?>
           <option value="<?= $l->id; ?>"><?= $this->escapeHtml($l->title); ?></option>
           <? endforeach; ?>
         </select>
       </span>
-      <? endif; ?>
+      <i id="add-to-list-spinner" class="fa fa-spinner fa-spin hidden"></i>
+    <? endif; ?>
     <? if ($this->cart()->isActive()): ?>
       <input class="btn btn-default" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
     <? endif; ?>

@@ -216,6 +216,28 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
     }
 
     /**
+     * Retrieves multiple documents specified by the ID.
+     *
+     * @param array  $recordIds The documents to retrieve from the Primo API
+     * @param string $inst_code Institution code (optional)
+     * @param bool   $onCampus  Whether the user is on campus
+     *
+     * @throws \Exception
+     * @return string    The requested resource
+     */
+    public function getRecords($recordIds, $inst_code = null, $onCampus = false)
+    {
+        $recordIds = array_map(
+            function ($recordId) {
+                list(,$recordId) = explode('.', $recordId, 2);
+                return $recordId;
+            },
+            $recordIds
+        );
+        return parent::getRecords($recordIds, $inst_code, $onCampus);
+    }
+
+    /**
      * Helper function for retrieving the OpenURL link from a Primo result.
      *
      * @param SimpleXmlElement $sear XML-element to search
