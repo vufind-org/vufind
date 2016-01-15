@@ -105,7 +105,7 @@ class RemoveFilters implements RecommendInterface
         $moreFilters = $results->getParams()->getFilterList(true);
         if (count($moreFilters) > 0) {
             foreach ($moreFilters as $filters) {
-               foreach ($filters as $filter) {
+                foreach ($filters as $filter) {
                     $this->activeFacetsCount++;
                 }
             }
