@@ -23,7 +23,7 @@
   <div class="mobile-toolbar">
     <ul class="nav nav-pills mobile-actions hidden-print">
           <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <li><a class="save-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-plus"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
+          <li><a class="save-record-mobile modal-link controller:Record" class="modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-plus"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
           <? endif; ?>
 
           <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
@@ -40,7 +40,7 @@
           <? endif; ?>
 
           <? if (count($this->driver->getCitationFormats()) > 0): ?>
-          <li><a class="cite-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="fa fa-asterisk"></i> <span class="sr-only"><?=$this->transEsc('Cite this')?></span></a></li>
+          <li><a class="cite-record-mobile modal-link controller:Record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="fa fa-asterisk"></i> <span class="sr-only"><?=$this->transEsc('Cite this')?></span></a></li>
           <? endif; ?>
 
           <li><span class="hidden-xs hidden-sm"><a href="javascript:window.print()"><i class="fa fa-print"></i> <?=$this->transEsc('Print')?></a></span></li>
@@ -55,22 +55,13 @@
               <a class="addthis_button_facebook"><i class="fa fa-facebook"></i></a>
               <a class="addthis_button_twitter"><i class="fa fa-twitter"></i></a>
               <a class="addthis_button_pinterest_share"><i class="fa fa-pinterest"></i></a>
-              <!-- <a class="addthis_button_google_plusone_share"><i class="fa fa-google-plus"></i></a> -->
             </div>
-            <? // Fetch correct image link and metadata here for Facebook, Twitter and Pinterest ?>
-            <!--
-            <meta property="og:title" content="<?=$this->escapeHtml($this->driver->getShortTitle()); ?>" />
-            <? if ($summary): ?><meta property="og:description" content="<?=$this->truncate($summary[0], 100)?>" /><? endif; ?>
-            <? if ($author): /* TODO */ ?><meta property="article:author" content="" /><? endif; ?>
-            <? if ($publisher): /* TODO */ ?><meta property="article:publisher" content="" /><? endif; ?>
-            <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>" />
-            -->
           </li>
           <li class="whatsapp">
             <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=$this->url('record-sms', array('id'=>$id)) ?>" data-action="share/whatsapp/share"><i class="fa fa-phone"></i></a></span>
           </li>
           <? endif; ?>
-          <li class="mail-record"><a class="mail-record-mobile" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>"><i class="fa fa-envelope"></i> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
+          <li class="mail-record"><a class="mail-record-mobile modal-link controller:Record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>"><i class="fa fa-envelope"></i> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
         </ul>
       </li>
     </ul>
