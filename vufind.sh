@@ -94,13 +94,24 @@ CONFIGS=""
 ##################################################
 findDirectory()
 {
-    OP=$1
+  case "$1" in
+    "-w")
     shift
-    for L in $* ; do
-        [ $OP $L ] || continue
-        echo $L
-        break
+    for PATH in "$@" ; do
+      [ -d $PATH ] && [ -w $PATH ] || continue
+      echo $PATH
+      break
     done
+    ;;
+    "-r")
+    shift
+    for PATH in "$@" ; do
+      [ -d $PATH ] && [ -r $PATH ] || continue
+      echo $PATH
+      break
+    done
+    ;;
+  esac
 }
 
 ##################################################
@@ -367,29 +378,30 @@ then
         done
     done | sort | tail -1 > $TMPJ
     JAVA=`cat $TMPJ | cut -d: -f2`
-    JVERSION=`cat $TMPJ | cut -d: -f1`
+    #JVERSION=`cat $TMPJ | cut -d: -f1`
 
     JAVA_HOME=`dirname $JAVA`
-    while [ ! -z "$JAVA_HOME" -a "$JAVA_HOME" != "/" -a ! -f "$JAVA_HOME/lib/tools.jar" ] ; do
+    while [ ! -z "$JAVA_HOME" ] && [ "$JAVA_HOME" != "/" ] && [ ! -f "$JAVA_HOME/lib/tools.jar" ] ; do
         JAVA_HOME=`dirname $JAVA_HOME`
     done
     [ "$JAVA_HOME" = "" ] && JAVA_HOME=
-
-    echo "Found JAVA=$JAVA in JAVA_HOME=$JAVA_HOME"
+    if [ $ACTION = "start" ]; then
+        echo "Found JAVA=$JAVA in JAVA_HOME=$JAVA_HOME"
+    fi
 fi
 
 ##################################################
 # Determine which JVM of version >1.5
 # Try to use JAVA_HOME
 ##################################################
-if [ "$JAVA" = "" -a "$JAVA_HOME" != "" ]
+if [ "$JAVA" = "" ] && [ "$JAVA_HOME" != "" ]
 then
   if [ ! -z "$JAVACMD" ]
   then
      JAVA="$JAVACMD"
   else
-    [ -x $JAVA_HOME/bin/jre -a ! -d $JAVA_HOME/bin/jre ] && JAVA=$JAVA_HOME/bin/jre
-    [ -x $JAVA_HOME/bin/java -a ! -d $JAVA_HOME/bin/java ] && JAVA=$JAVA_HOME/bin/java
+    [ -x $JAVA_HOME/bin/jre ] && [ ! -d $JAVA_HOME/bin/jre ] && JAVA=$JAVA_HOME/bin/jre
+    [ -x $JAVA_HOME/bin/java ] && [ ! -d $JAVA_HOME/bin/java ] && JAVA=$JAVA_HOME/bin/java
   fi
 fi
 
@@ -399,7 +411,7 @@ then
     exit 1
 fi
 
-JAVA_VERSION=`expr "$($JAVA -version 2>&1 | head -1)" : '.*1\.\([0-9]\)'`
+#JAVA_VERSION=`expr "$($JAVA -version 2>&1 | head -1)" : '.*1\.\([0-9]\)'`
 
 #####################################################
 # See if JETTY_PORT is defined
@@ -438,10 +450,10 @@ fi
 #####################################################
 # Are we running on Windows? Could be, with Cygwin/NT.
 #####################################################
-case "`uname`" in
-CYGWIN*) PATH_SEPARATOR=";";;
-*) PATH_SEPARATOR=":";;
-esac
+#case "`uname`" in
+#CYGWIN*) PATH_SEPARATOR=";";;
+#*) PATH_SEPARATOR=":";;
+#esac
 
 
 #####################################################
@@ -475,7 +487,7 @@ case "$ACTION" in
         echo "$RUN_CMD"
         nohup sh -c "exec $RUN_CMD >>$JETTY_CONSOLE 2>&1" > /dev/null &
         echo $! > $JETTY_PID
-        echo "VuFind running pid="`cat $JETTY_PID`
+        echo "VuFind running pid=$(cat $JETTY_PID)"
         ;;
 
   stop)
@@ -490,13 +502,13 @@ case "$ACTION" in
 
   restart)
         if [ -x "$0" ]; then
-            "$0" stop $*
+            "$0" stop "$@"
             sleep 5
-            "$0" start $*
+            "$0" start "$@"
         else
-            sh "$0" stop $*
+            sh "$0" stop "$@"
             sleep 5
-            sh "$0" start $*
+            sh "$0" start "$@"
         fi
         ;;
 
@@ -540,15 +552,15 @@ case "$ACTION" in
 
         if [ -f $JETTY_PID ]
         then
-            echo "VuFind running pid="`cat $JETTY_PID`
+            echo "VuFind running pid=$(cat $JETTY_PID)"
             exit 0
         fi
         exit 1
         ;;
 
-*)
+  *)
         usage
-	;;
+      	;;
 esac
 
 exit 0
