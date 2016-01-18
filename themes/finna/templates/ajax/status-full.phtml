@@ -1,0 +1,229 @@
+<!-- START of: finna - ajax/status-full.phtml -->
+<?
+$holdings = $this->statusItems;
+$summary = array_pop($holdings);
+if (isset($summary['total'])) {
+  $itemsTotal = $summary['total'];
+  $availableTotal = $summary['available'];
+  $reservationsTotal
+     = isset($summary['reservations']) ? $summary['reservations'] : null;
+  $locations = $summary['locations'];
+} else {
+  $holdings[] = $summary;
+}
+$this->statusItems = $holdings;
+
+$groupBranches = isset($this->statusItems[0]['branch']);
+$journal = isset($this->statusItems[0]['journalInfo']);
+
+if ($groupBranches) {
+  $locations = $availableLocations = $closestDueDateInLocation = [];
+  $illRequestLink = false;
+
+  foreach ($this->statusItems as $item) {
+    if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']) {
+      $illRequestLink = $row['ILLRequestLink'];
+    }
+
+    if (!empty($item['availability'])) {
+      if (empty($availableLocations[$item['location']])) {
+        $availableLocations[$item['location']] = 0;
+      }
+      $availableLocations[$item['location']]++;
+    }
+    if (!empty($item['duedate'])) {
+      $duedate = strtotime($item['duedate']);
+      if (empty($closestDueDateInLocation[$item['location']])
+      || $duedate < $closestDueDateInLocation[$item['location']]
+    ) {
+        $closestDueDateInLocation[$item['location']] = $duedate;
+      }
+    }
+  }
+
+  if (!empty($closestDueDateInLocation)) {
+    $closestDueDate = date('j.n.Y', min(array_values($closestDueDateInLocation)));
+    foreach ($closestDueDateInLocation as &$duedate) {
+      $duedate = date('j.n.Y', $duedate);
+    }
+  }
+
+  $collapseThreshold = $this->holdingsSettings()->getCollapseThreshold();
+  $collapseLocations
+    = isset($collapseThreshold['location'])
+    ? $locations > $collapseThreshold['location']
+    : null
+  ;
+  $collapseBranches
+    = isset($collapseThreshold['branch'])
+    ? count($this->statusItems) > $collapseThreshold['branch']
+    : null
+  ;
+} else {
+  // Group holdings by location
+  $statusItemsFiltered = [];
+  foreach ($this->statusItems as $item) {
+    if (!array_key_exists($item['location'], $statusItemsFiltered)
+      || $item['availability'] > $statusItemsFiltered[$item['location']]['availability']
+    ) {
+      $statusItemsFiltered[$item['location']] = $item;
+    }
+  }
+  $this->statusItems = array_values($statusItemsFiltered);
+}
+?>
+
+
+<? if ($groupBranches): ?>
+<div class="holdings-container root <?=$collapseLocations ? ' collapsible' : ''?>">
+  <div class="header <?= $availableTotal ? 'available' : ''?>">
+    <i class="fa fa-<?= $availableTotal ? 'ok' : 'remove'?>"></i>
+    <span>
+      <? if ($availableTotal): ?>
+        <?=sprintf('%s %d %s', $this->transEsc('axiell_available'), $availableTotal, $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
+      <? elseif ($closestDueDate): ?>
+        <?=sprintf('%s %s %s', $this->transEsc('status_Charged'), $this->transEsc('Due Date'), $closestDueDate);?>
+      <? else: ?>
+        <?=$this->transEsc('status_Charged')?>
+      <? endif; ?>
+    </span>
+    <? if ($collapseLocations): ?><i class="fa fa-arrow-right arrow"></i><? endif; ?>
+    <? if (!empty($reservations) && !$journal): ?>
+    <span class="info"><?=sprintf('%s: %d, %s: %d', $this->transEsc('Requests'), $reservations, $this->transEsc('axiell_items'), $itemsTotal);?></span>
+    <? endif; ?>
+  </div>
+  <div class="holdings<?=$collapseLocations ? ' collapsed' : ''?> root">
+<? else: ?>
+    <? if (isset($availableTotal) && $availableTotal > 0): ?>
+    <div class="available-total"><i class="fa fa-ok"></i><span><?=$availableTotal?> <?=$this->translate('axiell_available')?></span></div>
+    <? endif; ?>
+    <div class="holdings truncate-field" data-rows="5">
+<? endif; ?>
+
+<?
+$currentLocation = $prevLocation = $currentOrganisation = $prevOrganisation = null;
+foreach ($this->statusItems as $item):
+  $newLocation = false;
+  $newOrganisation = false;
+  if ($currentLocation != $item['location']) {
+    $prevLocation = $currentLocation;
+    $currentLocation = $item['location'];
+    $newLocation = true;
+  } else if ($journal && $currentOrganisation != $item['journalInfo']['location']) {
+    $prevOrganisation = $currentOrganisation;
+    $currentOrganisation = $item['journalInfo']['location'];
+    $newOrganisation = true;
+  }
+?>
+
+<? if ($groupBranches && $newLocation && $prevLocation): ?>
+  </div></div>
+<? endif; ?>
+<? if ($groupBranches && $newLocation): ?>
+  <div class="holdings-container<?=$collapseBranches ? ' collapsible' : ''?>">
+    <div class="header">
+        <? if ($collapseBranches): ?><i class="fa fa-arrow-right arrow"></i><? endif; ?>
+        <?=$currentLocation?>
+        <? if ($collapseBranches): ?>
+        <span>
+          <? if (!empty($availableLocations[$item['location']])): ?>
+            <?=sprintf('(%s %d %s)', $this->transEsc('axiell_available'), $availableLocations[$item['location']], $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
+          <? elseif (!empty($closestDueDateInLocation[$item['location']])): ?>
+            (<?= str_replace('%%date%%', $closestDueDateInLocation[$item['location']], $this->transEsc('closest_due_date')); ?>)
+          <? else: ?>
+            (<?=$this->transEsc('status_' . $item['status'])?>)
+          <? endif; ?>
+        </span>
+        <? endif; ?>
+      <span class="info"><?=$this->escapeHtml($item['callnumber'])?></span>
+    </div>
+  <div class="holdings<?=$collapseBranches ? ' collapsible collapsed' : ''?>">
+<? endif; ?>
+    <?
+      $classes = null;
+      if (!empty($item['availability'])) {
+        $classes = ['ok', 'success'];
+      }
+      if (!$classes && !empty($item['status_unknown'])) {
+        $classes = ['ok', 'warning'];
+      }
+      if (!$classes) {
+        $classes = ['remove', 'error'];
+      }
+      $location
+        = $groupBranches
+        ? '<span class="branch">' . ($this->transEsc($item['branch']) . '</span>, <span class="department">' . $this->transEsc($item['department']) . '</span>')
+        : '<span class="branch">' . $this->transEsc($item['location'], [], $item['location']) . '</span>';
+    ?>
+    <div class="groupLocation <?= $prevOrganisation && $newOrganisation ? ' new-organisation' : ''; ?>">
+      <i class="fa fa-<?=$classes[0]?> text-<?=$classes[1]?>"></i> <span class="text-<?=$classes[0]?>"><?=$location?></span>
+      <? if ($groupBranches): ?>
+        <span class="branchInfo">
+        <? if ($item['availability'] && !empty($item['availabilityInfo']['available'])): ?>
+          <?= sprintf('%s: %d', $this->transEsc('Available items'), $item['availabilityInfo']['available']); ?>
+        <? elseif (!empty($item['duedate']) && !$item['availability']): ?>
+          <?= str_replace('%%date%%', $item['duedate'], $this->transEsc('closest_due_date')); ?>
+        <? elseif ($item['availabilityInfo']['ordered'] > 0): ?>
+          <?= sprintf('%s: %d', $this->transEsc('status_Ordered'), $item['availabilityInfo']['ordered']); ?>
+        <? else: ?>
+          <?= $this->transEsc('status_' . $item['availabilityInfo']['displayText']); ?></span>
+        <? endif; ?>
+      <? else: ?>
+        <span class="groupCallnumber">
+          (<span class="shelf"><?=$this->translate('shelf_location')?>: </span><?=$this->escapeHtml($item['callnumber'])?>)
+        </span>
+      <? endif; ?>
+    </div>
+<? endforeach; ?>
+  </div>
+
+<? if ($groupBranches): ?>
+</div>
+<? endif; ?>
+</div>
+
+<div class="actions">
+<?
+$holdingsLink = sprintf('%s%s/Holdings', $this->url('record'), $this->statusItems[0]['id']);
+
+if ($this->holdingsSettings()->showSearchResultsTitleHold()) {
+  $id = $this->statusItems[0]['id'];
+  $driver = $this->record($id)->getDriver();
+
+  if ($driver && $driver->tryMethod('getHoldsAllowed')) {
+    $account = $this->auth()->getManager();
+    $offlineMode = $this->ils()->getOfflineMode();
+    $ilsLoginAvailable = $this->ils()->loginAvailable();
+?>
+    <div class="title-hold">
+<?
+    if ($account->loginEnabled() && $offlineMode != 'ils-offline' && $ilsLoginAvailable) {
+      $logged = $account->isLoggedIn();
+      $link = null;
+      if (!$logged || $journal) {
+        $link = $holdingsLink;
+      } else {
+        $holdingTitleHold = $driver->tryMethod('getRealTimeTitleHold');
+        if (!empty($holdingTitleHold)) {
+          $link = $this->recordLink()->getRequestUrl($holdingTitleHold);
+        }
+      }
+      if ($link) {
+?>
+      <a href="<?=$link?>#tabnav" class="<?=$logged ? 'placehold' : 'login'?> btn btn-primary modal-link hidden-print" title="<?=$this->transEsc('request_place_text')?>"> <?=$this->transEsc("title_hold_place")?></a>
+<?
+      }
+    }
+?>
+    </div>
+<?
+  }
+}
+?>
+<? if ($this->holdingsSettings()->showLinkToRecordPage()): ?>
+  <div class="all-holdings">
+    <a href="<?=$holdingsLink;?>"><?=$this->transEsc('See all holdings')?></a>
+  </div>
+<? endif; ?>
+</div>
+<!-- END of: finna - ajax/status-full.phtml -->
