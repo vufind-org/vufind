@@ -524,8 +524,10 @@ finna.layout = (function() {
     var initImageCheck = function() {
         $(".image-popup-trigger img").each(function() {
             $(this).one("load",function() {
+
                 if (this.naturalWidth && this.naturalWidth == 10 && this.naturalHeight == 10) {
                     $(this).parent().addClass('no-image');
+                    $(this).parents('.grid').addClass('no-image');
                     $('.rating-stars').addClass('hidden-xs');
                 }
             }).each(function() {
