@@ -97,18 +97,6 @@ finna.record = (function() {
         });
     };
 
-    var initRecordFeedbackForm = function() {
-        var id = $('.hiddenId')[0].value;
-        $('#feedback-record').click(function() {
-          var params = extractClassParams(this);
-          return Lightbox.get(params.controller, 'Feedback', {id:id});
-        });
-
-        Lightbox.addFormCallback('feedbackRecord', function(html) {
-            Lightbox.confirm(VuFind.translate('feedback_success'));
-        });
-    };
-      
     var initMobileModals = function() {
       var id = $('.hiddenId')[0].value;
       $('.cite-record-mobile').click(function() {
@@ -131,7 +119,7 @@ finna.record = (function() {
         checkRequestsAreValid: checkRequestsAreValid,
         init: function() {
             initDescription();
-            initRecordFeedbackForm();
+            finna.layout.initRecordFeedbackForm();
             initMobileModals();
         },
         setupHoldingsTab: function() {

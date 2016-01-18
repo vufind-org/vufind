@@ -576,6 +576,18 @@ finna.layout = (function() {
         }).change();
     }
 
+    var initRecordFeedbackForm = function() {
+        var id = $('.hiddenId')[0].value;
+        $('#feedback-record').click(function() {
+          var params = extractClassParams(this);
+          return Lightbox.get(params.controller, 'Feedback', {id:id});
+        });
+
+        Lightbox.addFormCallback('feedbackRecord', function(html) {
+            Lightbox.confirm(VuFind.translate('feedback_success'));
+        });
+    };
+
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -590,6 +602,7 @@ finna.layout = (function() {
         initJumpMenus: initJumpMenus,
         initMobileNarrowSearch: initMobileNarrowSearch,
         initSecondaryLoginField: initSecondaryLoginField,
+        initRecordFeedbackForm: initRecordFeedbackForm,
         init: function() {
             initJumpMenus();
             initAnchorNavigationLinks();

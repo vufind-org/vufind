@@ -41,7 +41,6 @@
 	box-shadow: 0px 10px 40px rgba(1,1,1,0.8);
 	@media (min-width: @screen-sm-min) {
 	    max-height: 100%;
-	    overflow-y: auto;
 	}
 }
 .mfp-close-btn-in .mfp-close {
@@ -85,15 +84,19 @@
         font-size: 1em;
         letter-spacing: 0.5px;
 	    font-weight: normal;
-	    margin-top: -55px;
-	    height: 55px;
     }
     & .image-index, .record-index {
         display: block;
-        margin: 0 20px 0 0;
+        margin: -34px 20px 0 0;
         & span.index {
             font-size: 1.2em;   
         }
+    }
+    & .image-index {
+        margin-top: -50px;   
+    }
+    & .image-index + .record-index {
+        margin-top: 0px; 
     }
     @media (max-width:@screen-xs-max) {
         & .image-info {
@@ -254,17 +257,30 @@
             overflow: hidden;
         }
     }
-
-    & .record-link, .open-link {
+    & .popup-link-buttons {
+        margin-bottom: 20px;   
+    }
+    & .record-link, .open-link, .record-online-link {
         text-align: left;
         margin-top: 5px;
-        font-size: 1.1em;
         & a {
-            display: inline-block;    
+            display: inline-block;
+            padding: 5px 8px 6px;
+            background: @gray-mid-light;
+            color: @body-bg;
+            border-radius: 10px;
+            transition: background .2s linear;
+            &:hover {
+                text-decoration: none;
+                background: darken(@gray-mid-light, 10%);  
+            }
         }
         & i {
             padding-right: 2px;    
         }
+    }
+    & .record-online-link + .record-link {
+        margin-top: 20px;   
     }
     & .image-dimensions {
 	    color: @gray-light;
