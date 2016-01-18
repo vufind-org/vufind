@@ -11,7 +11,7 @@
 <?=$this->flashmessages()?>
 <form method="post" name="smsRecord" class="form-horizontal">
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
-  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
+  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
   <div class="form-group">
     <label class="col-sm-3 control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
     <div class="col-sm-9">

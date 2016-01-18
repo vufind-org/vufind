@@ -5,7 +5,7 @@
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
     <div>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
     </div>
     <div class="col-sm-11">
       <div>

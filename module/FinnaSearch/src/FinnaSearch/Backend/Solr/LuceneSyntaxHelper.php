@@ -27,6 +27,7 @@
  * @link     http://vufind.org
  */
 namespace FinnaSearch\Backend\Solr;
+use VuFindCode\ISBN;
 
 /**
  * Lucene query syntax helper class.
@@ -71,6 +72,7 @@ class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
     {
         $searchString = parent::normalizeSearchString($searchString);
         $searchString = $this->normalizeUnicodeForm($searchString);
+        $searchString = $this->normalizeISBN($searchString);
 
         return $searchString;
     }
@@ -85,6 +87,23 @@ class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
     public function finalizeSearchString($searchString)
     {
         return $this->normalizeUnquotedMinuses($searchString);
+    }
+
+    /**
+     * Check if passed string is an ISBN and convert to ISBN-13
+     *
+     * @param string $searchString The query string
+     *
+     * @return valid ISBN-13 or the original string
+     */
+    protected function normalizeISBN($searchString)
+    {
+        if (!ISBN::isValidISBN10($searchString)) {
+            return $searchString;
+        }
+
+        $isbn = new ISBN($searchString);
+        return $isbn->get13();
     }
 
     /**

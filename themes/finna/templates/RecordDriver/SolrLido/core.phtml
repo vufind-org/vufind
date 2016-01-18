@@ -44,15 +44,15 @@
       </div>
     </div>
 
-    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind'): ?>
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
       <?=$this->render('record/record-organisation-menu.phtml') ?>
     <? endif; ?>
 
     <div class="row">
       <div class="col-xs-12 rating-stars">
-        <span onclick="ajaxLoadTab('usercomments');">
+        <div onclick="$('a.usercomments').click();">
           <?=$this->record($this->driver)->getRating()?>
-        </span>
+        </div>
       </div>
     </div>
 
@@ -111,8 +111,11 @@
       <tr class="recordFormat">
         <th><?=$this->transEsc('Published in')?>:</th>
         <td>
-          <? $containerID = $this->driver->getContainerRecordID(); ?>
-          <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
+          <?
+            $containerSource = $this->driver->getSourceIdentifier();
+            $containerID = $this->driver->getContainerRecordID();
+          ?>
+          <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
           <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
         </td>
       </tr>

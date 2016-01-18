@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace Finna\Search\Results;
+use Finna\Search\UrlQueryHelper;
 
 /**
  * Finna search results trait
@@ -75,5 +76,20 @@ trait SearchResultsTrait
     public function getBackendId()
     {
         return $this->backendId;
+    }
+
+    /**
+     * Get the URL helper for this object.
+     * N.B. Identical to the base class but creates a Finna version!
+     *
+     * @return UrlHelper
+     */
+    public function getUrlQuery()
+    {
+        // Set up URL helper:
+        if (!isset($this->helpers['urlQuery'])) {
+            $this->helpers['urlQuery'] = new UrlQueryHelper($this->getParams());
+        }
+        return $this->helpers['urlQuery'];
     }
 }

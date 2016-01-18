@@ -47,7 +47,7 @@ finna.comments = (function() {
         $('a.login-link').click(function() {
           return Lightbox.get('MyResearch','UserLogin');
         });
-        finna.layout.initLightbox($('#usercomments-tab'));
+        finna.layout.initLightbox($('.usercomments-tab'));
     };
 
     var initCommentForm = function(parentMethod, allowRating) {
@@ -105,7 +105,7 @@ finna.comments = (function() {
     };
 
     var initRating = function() {
-        $('#usercomments-tab .rating').rating();
+        $('.usercomments-tab .rating').rating();
     };
 
     var updateAverageRating = function(rating, count) {
@@ -194,7 +194,7 @@ finna.comments = (function() {
     var requestRefreshComments = function() {
         var record = $('input.hiddenId').val();
         var source = $('input.hiddenSource').val();
-        var tab = $('#usercomments-tab');
+        var tab = $('.usercomments-tab');
         refreshCommentList(tab, record, source);
     };
 

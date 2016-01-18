@@ -125,8 +125,8 @@ finna.record = (function() {
         setupHoldingsTab: function() {
             initHoldingsControls();
             setUpCheckRequest();
-            finna.layout.initJumpMenus($('#holdings-tab'));
-            finna.layout.initLightbox($('#holdings-tab'));
+            finna.layout.initJumpMenus($('.holdings-tab'));
+            finna.layout.initLightbox($('.holdings-tab'));
         }
     };
 

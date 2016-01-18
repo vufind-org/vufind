@@ -173,7 +173,8 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
         }
 
         $currentType = $vars['SearchType'];
-        $backendId = $results->getBackendId();
+        $backendId = method_exists($results, 'getBackendId')
+            ? $results->getBackendId() : '';
 
         if ($backendId === 'MetaLib') {
             unset($vars['Facets']);

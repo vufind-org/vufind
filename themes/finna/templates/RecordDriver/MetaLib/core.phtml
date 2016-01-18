@@ -59,8 +59,11 @@
       ?>
       <? if (!empty($journalTitle)): ?>
         <?=$this->transEsc('Published in')?>:
-          <? $containerID = $this->driver->getContainerRecordID(); ?>
-          <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle, $linkParams))?>"><?=$this->escapeHtml($journalTitle)?></a>
+          <?
+            $containerSource = $this->driver->getSourceIdentifier();
+            $containerID = $this->driver->getContainerRecordID();
+          ?>
+          <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle, $linkParams))?>"><?=$this->escapeHtml($journalTitle)?></a>
           <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
       <? elseif (!empty($summDate)): ?>
         <?=!empty($summAuthor) ? '' : ' '?>
@@ -188,7 +191,7 @@
             <? $i = 0; foreach ($field as $subfield): ?>
               <?=($i++ == 0) ? '' : ' &gt; '?>
               <? $subject = trim($subject . ' ' . $subfield); ?>
-              <a class="" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject, $linkParams)?>"><?=trim($this->escapeHtml($subfield))?> </a>
+              <a class="" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject, $linkParams)?>" rel="nofollow"><?=trim($this->escapeHtml($subfield))?> </a>
             <? endforeach; ?>
           </div>
           <? endforeach; ?>

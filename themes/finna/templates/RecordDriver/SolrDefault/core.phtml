@@ -23,9 +23,9 @@
     </div>
     <div class="row">
       <div class="col-xs-12 rating-stars">
-        <span onclick="ajaxLoadTab('usercomments');">
+        <div onclick="$('a.usercomments').click();">
           <?=$this->record($this->driver)->getRating()?>
-        </span>
+        </div>
       </div>
     </div>
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-toolbar")): ?>
@@ -108,8 +108,11 @@
             </span>
           <? endif; ?>
           <? if ($containerTitle): ?>
-            <? $containerID = $this->driver->getContainerRecordID(); ?>
-            <?=$this->transEsc('Published in')?> <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('title', $containerTitle))?>"><?=$this->escapeHtml($containerTitle)?></a>
+            <?
+              $containerSource = $this->driver->getSourceIdentifier();
+              $containerID = $this->driver->getContainerRecordID();
+            ?>
+            <?=$this->transEsc('Published in')?> <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('title', $containerTitle))?>"><?=$this->escapeHtml($containerTitle)?></a>
             <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
           <? endif; ?>
         </div>
@@ -366,7 +369,7 @@
               <? $i = 0; foreach ($field as $subfield): ?>
                 <?=($i++ == 0) ? '' : ' &#8594; '?>
                 <? $subject = trim($subject . ' ' . $subfield); ?>
-                <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->escapeHtml($subfield))?></a>
+                <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" rel="nofollow"><?=trim($this->escapeHtml($subfield))?></a>
               <? endforeach; ?>
             </div>
             <? endforeach; ?>

@@ -9,6 +9,7 @@ override_full_sections = "SideRecommendations,TopRecommendations,SpecialFacets,F
 ; Whether Primo is enabled. Default is true.
 enabled = 0
 
+; Replace 358FIN??? with the proper institution code
 [Institutions]
 onCampusRule['358FIN???'] = "finna.authorized"
 defaultCode = "358FIN???"

@@ -8,7 +8,7 @@
      $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
      $this->headLink()->appendStylesheet('vendor/bootstrap-rating.css');
   }
-  if (in_array($this->driver->getResourceSource(), ['MetaLib', 'Primo'])) {
+  if (in_array($this->driver->getSourceIdentifier(), ['MetaLib', 'Primo'])) {
     $this->headScript()->appendFile("finna-bx.js");
   }
   // Activate Syndetics Plus if necessary:
@@ -33,14 +33,6 @@
   $dataSource = $this->driver->tryMethod('getDataSource');
   $headText = $this->driver->getBreadcrumb() . (isset($dataSource) ? ' | ' . $this->transEsc('source_'. $dataSource) : '');
   $this->headTitle($headText);
-
-  // Load default tab
-  $script = <<<EOT
-$(document).ready(function() {
-  ajaxLoadTab($('.tab-pane'), '{$this->activeTab}', false);
-});
-EOT;
-  $this->headScript()->appendScript($script);
 ?>
 </div>
 <div class="container-fluid record-view-header">
@@ -61,7 +53,7 @@ EOT;
       <ul class="pager hidden-print" id="view-pager">
       <? if ($this->scrollData['previousRecord']): ?>
         <li class="pager-previous-record">
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>#searchForm" title="<?=$this->transEsc('Previous Record')?>"><i class="fa fa-arrow-left"></i></a>
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>#searchForm" title="<?=$this->transEsc('Previous Record')?>" rel="nofollow"><i class="fa fa-arrow-left"></i></a>
         </li>
         <? else: ?>
         <li class="disabled" title="<?=$this->transEsc('First Record')?>"><a href="#searchform"><i class="fa fa-arrow-left"></i></a></li>
@@ -69,7 +61,7 @@ EOT;
         <li class="pager-text"><?=$this->localizedNumber($this->scrollData['currentPosition']) . ' / ' . $this->localizedNumber($this->scrollData['resultTotal']) ?></li>
       <? if ($this->scrollData['nextRecord']): ?>
         <li class="pager-next-record">
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>#searchForm" title="<?=$this->transEsc('Next Record')?>"><i class="fa fa-arrow-right"></i></a>
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>#searchForm" title="<?=$this->transEsc('Next Record')?>" rel="nofollow"><i class="fa fa-arrow-right"></i></a>
         </li>
       <? else: ?>
         <li class="disabled" title="<?=$this->transEsc('Last Record')?>"><a href="#"><i class="fa fa-arrow-right"></i></a></li>
@@ -86,46 +78,53 @@ EOT;
       <?=$this->record($this->driver)->getToolbar()?>
   </div>
   <div class="col-sm-9">
-    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>">
+    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getMetaTags();?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
     </div>
 
-    <? if (count($this->tabs) > 0): ?>
-      <a name="tabnav"></a>
-      <? if (count($this->tabs) > 3): ?>
-      <div class="tabs-responsive">
+    <? // N.B. The element/class structure here is important for the ajax tabs to work properly ?>
+    <div class="record-tabs">
+      <? if (count($this->tabs) > 0): ?>
+        <a name="tabnav"></a>
+        <? if (count($this->tabs) > 3): ?>
+          <div class="tabs-responsive">
+        <? endif; ?>
+        <ul class="recordTabs nav nav-tabs">
+          <? foreach ($this->tabs as $tab => $obj): ?>
+            <? // add current tab to breadcrumbs if applicable:
+              $desc = $obj->getDescription();
+              $tab_classes = array();
+              if (0 === strcasecmp($this->activeTab, $tab)) {
+                if (!$this->ajaxTabs || !$obj->supportsAjax()) {
+                  $tab_classes[] = 'active';
+                }
+                $tab_classes[] = 'initiallyActive';
+                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+                $activeTabObj = $obj;
+              }
+              if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
+              if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+            ?>
+            <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+            <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?></a>
+          </li>
+          <? endforeach; ?>
+        </ul>
+        <? if (count($this->tabs) > 3): ?>
+          </div>
+        <? endif; ?>
       <? endif; ?>
-      <ul class="recordTabs nav nav-tabs">
-        <? foreach ($this->tabs as $tab => $obj): ?>
-        <? // add current tab to breadcrumbs if applicable:
-          $desc = $obj->getDescription();
-          $isCurrent = (strtolower($this->activeTab) == strtolower($tab));
-          if ($isCurrent) {
-            $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
-            $activeTabObj = $obj;
-          }
-          $tab_classes = array();
-          if ($isCurrent) $tab_classes[] = 'active';
-          if (!$obj->isVisible()) $tab_classes[] = 'hidden';
-          $comments = $this->driver->getComments();
-        ?>
-        <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($comments) ?></span>)<? endif; ?></a>
-        </li>
-        <? endforeach; ?>
-      </ul>
-      <? if (count($this->tabs) > 3): ?>
-      </div>
-      <? endif; ?>
-    <? endif; ?>
 
-    <div class="tab-content">
-      <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
-        <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading') ?>...
+      <div class="tab-content">
+        <? if (!$this->ajaxTabs || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+          <div class="tab-pane active <?=$this->activeTab ?>-tab">
+            <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+          </div>
+        <? endif; ?>
       </div>
     </div>
 
@@ -133,13 +132,13 @@ EOT;
   </div>
 
   <div class="col-sm-3 sidebar">
-    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind' && $this->driver->getRecordType() != 'lido' && $this->driver->getRecordType() != 'ead'): ?>
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr' && $this->driver->getRecordType() != 'lido' && $this->driver->getRecordType() != 'ead'): ?>
       <?=$this->render('record/record-organisation-menu.phtml') ?>
     <? endif; ?>
     <? foreach ($this->related()->getList($this->driver) as $current): ?>
       <?=$this->related()->render($current)?>
     <? endforeach; ?>
-    <? if (in_array($this->driver->getResourceSource(), ['MetaLib', 'Primo'])): ?>
+    <? if (in_array($this->driver->getSourceIdentifier(), ['MetaLib', 'Primo'])): ?>
       <div id="bx-recommendations-holder">
       </div>
     <? endif; ?>

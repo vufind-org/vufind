@@ -14,7 +14,7 @@
 --
 ALTER TABLE comments ADD COLUMN `finna_visible` tinyint(1) DEFAULT '1';
 ALTER TABLE comments ADD COLUMN `finna_rating` float DEFAULT NULL;
-ALTER TABLE comments ADD COLUMN `finna_type` tinyint(1) NOT NULL;
+ALTER TABLE comments ADD COLUMN `finna_type` tinyint(1) DEFAULT '0' NOT NULL;
 ALTER TABLE comments ADD COLUMN `finna_updated` datetime DEFAULT NULL;
 ALTER TABLE comments ADD INDEX `finna_visible` (`finna_visible`);
 ALTER TABLE comments ADD INDEX `finna_rating` (`finna_rating`);
@@ -35,6 +35,10 @@ ALTER TABLE search ADD INDEX `finna_schedule_base_url` (`finna_schedule_base_url
 ALTER TABLE user ADD COLUMN `finna_language` varchar(30) NOT NULL DEFAULT '';
 ALTER TABLE `user` ADD  `finna_due_date_reminder` int(11) NOT NULL DEFAULT '0';
 CREATE INDEX `finna_user_due_date_reminder_key` ON user (`finna_due_date_reminder`);
+--
+-- Additional columns for user_list
+--
+ALTER TABLE user_list ADD COLUMN `finna_updated` datetime DEFAULT NULL;
 
 
 CREATE TABLE `finna_comments_record` (
@@ -47,18 +51,6 @@ CREATE TABLE `finna_comments_record` (
   CONSTRAINT `comments_record_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `finna_comments_inappropriate` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `comment_id` int(11) NOT NULL DEFAULT '0',
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `reason` varchar(1000) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `comment_id` (`comment_id`),
-  CONSTRAINT `comments_inappropriate_ibfk_2` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `finna_user` (
@@ -68,7 +60,7 @@ CREATE TABLE `finna_user` (
   `due_date_notification` int(11) NOT NULL DEFAULT '0',
   `due_date_reminder` int(11) NOT NULL DEFAULT '0',
   `last_login` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `auth_method` varchar(50) DEFAULT NULL,  
+  `auth_method` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `finna_user_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE

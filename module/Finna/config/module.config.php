@@ -89,6 +89,7 @@ $config = [
             'record' => 'Finna\Controller\Factory::getRecordController',
         ],
         'invokables' => [
+            'adminapi' => 'Finna\Controller\AdminApiController',
             'ajax' => 'Finna\Controller\AjaxController',
             'searchapi' => 'Finna\Controller\SearchApiController',
             'combined' => 'Finna\Controller\CombinedController',
@@ -143,7 +144,6 @@ $config = [
             ],
             'db_table' => [
                 'factories' => [
-                    'resource' => 'Finna\Db\Table\Factory::getResource',
                     'user' => 'Finna\Db\Table\Factory::getUser',
                 ],
                 'invokables' => [
@@ -154,6 +154,8 @@ $config = [
                     'metalibSearch' => 'Finna\Db\Table\MetaLibSearch',
                     'search' => 'Finna\Db\Table\Search',
                     'transaction' => 'Finna\Db\Table\Transaction',
+                    'userlist' => 'Finna\Db\Table\UserList',
+                    'userresource' => 'Finna\Db\Table\UserResource',
                 ],
             ],
             'ils_driver' => [
@@ -168,6 +170,7 @@ $config = [
                 'factories' => [
                     'collectionsidefacets' => 'Finna\Recommend\Factory::getCollectionSideFacets',
                     'sidefacets' => 'Finna\Recommend\Factory::getSideFacets',
+                    'sidefacetsdeferred' => 'Finna\Recommend\Factory::getSideFacetsDeferred',
                 ],
             ],
             'resolver_driver' => [
@@ -196,6 +199,7 @@ $config = [
                 'abstract_factories' => ['Finna\Search\Results\PluginFactory'],
                 'factories' => [
                     'combined' => 'Finna\Search\Results\Factory::getCombined',
+                    'favorites' => 'Finna\Search\Results\Factory::getFavorites',
                     'metalib' => 'Finna\Search\Results\Factory::getMetaLib',
                     'solr' => 'Finna\Search\Results\Factory::getSolr',
                     'primo' => 'Finna\Search\Results\Factory::getPrimo',

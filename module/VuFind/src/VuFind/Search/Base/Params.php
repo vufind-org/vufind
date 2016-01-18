@@ -27,7 +27,8 @@
  */
 namespace VuFind\Search\Base;
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+    Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\Session\Container as SessionContainer;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query,
     VuFindSearch\Query\QueryGroup;
 use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
@@ -134,6 +135,13 @@ class Params implements ServiceLocatorAwareInterface
     protected $filterList = [];
 
     /**
+     * Pre-assigned filters
+     *
+     * @var array
+     */
+    protected $hiddenFilters = [];
+
+    /**
      * Facets in "OR" mode
      *
      * @var array
@@ -238,12 +246,14 @@ class Params implements ServiceLocatorAwareInterface
         $this->initSearch($request);
         $this->initSort($request);
         $this->initFilters($request);
+        $this->initHiddenFilters($request);
 
         // Remember the user's settings for future reference (we only want to do
         // this in initFromRequest, since other code may call the set methods from
         // other contexts!):
         $this->getOptions()->rememberLastLimit($this->getLimit());
         $this->getOptions()->rememberLastSort($this->getSort());
+        $this->rememberLastHiddenFilters($this->getHiddenFilters());
     }
 
     /**
@@ -1322,6 +1332,115 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Add hidden filters to the object based on values found in the request object.
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initHiddenFilters($request)
+    {
+        $hiddenFilters = $request->get('hiddenFilters');
+        if (!empty($hiddenFilters) && is_array($hiddenFilters)) {
+            foreach ($hiddenFilters as $current) {
+                $this->addHiddenFilter($current);
+            }
+        }
+    }
+
+    /**
+     * Get hidden filters grouped by field like normal filters.
+     *
+     * @return array
+     */
+    public function getHiddenFilters()
+    {
+        return $this->hiddenFilters;
+    }
+
+    /**
+     * Does the object already contain the specified hidden filter?
+     *
+     * @param string $filter A filter string from url : "field:value"
+     *
+     * @return bool
+     */
+    public function hasHiddenFilter($filter)
+    {
+        // Extract field and value from URL string:
+        list($field, $value) = $this->parseFilter($filter);
+
+        if (isset($this->hiddenFilters[$field])
+            && in_array($value, $this->hiddenFilters[$field])
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Take a filter string and add it into the protected hidden filters
+     *   array checking for duplicates.
+     *
+     * @param string $newFilter A filter string from url : "field:value"
+     *
+     * @return void
+     */
+    public function addHiddenFilter($newFilter)
+    {
+        // Check for duplicates -- if it's not in the array, we can add it
+        if (!$this->hasHiddenFilter($newFilter)) {
+            // Extract field and value from filter string:
+            list($field, $value) = $this->parseFilter($newFilter);
+            if (!empty($field) && !empty($value)) {
+                $this->hiddenFilters[$field][] = $value;
+            }
+        }
+    }
+
+    /**
+     * Remember the last hidden filters used.
+     *
+     * @param string $last Option to remember.
+     *
+     * @return void
+     */
+    protected function rememberLastHiddenFilters($last)
+    {
+        $session = $this->getSession();
+        if (!$session->getManager()->getStorage()->isImmutable()) {
+            $session->lastHiddenFilters = $last;
+        }
+    }
+
+    /**
+     * Retrieve the last hidden filters used.
+     *
+     * @return array
+     */
+    public function getLastHiddenFilters()
+    {
+        $session = $this->getSession();
+        return isset($session->lastHiddenFilters)
+            ? $session->lastHiddenFilters : [];
+    }
+
+    /**
+     * Get a session namespace specific to the current class.
+     *
+     * @return SessionContainer
+     */
+    protected function getSession()
+    {
+        static $session = false;
+        if (!$session) {
+            $session = new SessionContainer(get_class($this));
+        }
+        return $session;
+    }
+
+    /**
      * Return a query string for the current search with a search term replaced.
      *
      * @param string $oldTerm The old term to replace
@@ -1410,8 +1529,9 @@ class Params implements ServiceLocatorAwareInterface
     public function deminify($minified)
     {
         // Some values will transfer without changes
-        $this->filterList   = $minified->f;
-        $this->searchType   = $minified->ty;
+        $this->filterList = $minified->f;
+        $this->hiddenFilters = $minified->hf;
+        $this->searchType = $minified->ty;
 
         // Deminified searches will always have defaults already applied;
         // we don't want to accidentally manipulate them further.
@@ -1602,6 +1722,7 @@ class Params implements ServiceLocatorAwareInterface
                 || in_array($key, $orFields);
             $this->addFacet($key, $value, $useOr);
         }
+
         return true;
     }
 

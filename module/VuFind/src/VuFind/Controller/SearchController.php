@@ -524,6 +524,11 @@ class SearchController extends AbstractSearch
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
             ->getCache('object');
+        $searchTabsHelper = $this->getServiceLocator()
+            ->get('VuFind\SearchTabsHelper');
+        $hiddenFilters = $searchTabsHelper->getHiddenFilters($this->searchClassId);
+        $hiddenFiltersHash = md5(json_encode($hiddenFilters));
+        $cacheName .= "-$hiddenFiltersHash";
         if (!($results = $cache->getItem($cacheName))) {
             // Use advanced facet settings to get summary facets on the front page;
             // we may want to make this more flexible later.  Also keep in mind that
@@ -532,6 +537,11 @@ class SearchController extends AbstractSearch
             $results = $this->getResultsManager()->get('Solr');
             $params = $results->getParams();
             $params->$initMethod();
+            foreach ($hiddenFilters as $key => $filters) {
+                foreach ($filters as $filter) {
+                    $params->addHiddenFilter("$key:$filter");
+                }
+            }
 
             // We only care about facet lists, so don't get any results (this helps
             // prevent problems with serialized File_MARC objects in the cache):

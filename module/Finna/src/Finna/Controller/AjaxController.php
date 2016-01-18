@@ -28,11 +28,13 @@
 namespace Finna\Controller;
 use VuFindSearch\ParamBag as ParamBag,
     VuFindSearch\Query\Query as Query,
+    VuFind\Search\RecommendListener,
     Finna\MetaLib\MetaLibIrdTrait,
     Zend\Cache\StorageFactory,
     Zend\Feed\Reader\Reader,
     Zend\Http\Request as HttpRequest,
     Zend\Session\Container as SessionContainer;
+use Finna\Search\Solr\Params;
 
 /**
  * This controller handles Finna AJAX functionality
@@ -191,7 +193,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         list($source, $id) = explode('.', $params['id'], 2);
         $map = ['metalib' => 'MetaLib', 'pci' => 'Primo'];
-        $source = isset($map[$source]) ? $map[$source] : 'VuFind';
+        $source = isset($map[$source]) ? $map[$source] : DEFAULT_SEARCH_BACKEND;
 
         $listId = $params['listId'];
         $notes = $params['notes'];
@@ -488,7 +490,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
         $parts = explode('|', $id, 2);
         if (count($parts) < 2) {
-            $source = 'VuFind';
+            $source = DEFAULT_SEARCH_BACKEND;
             $id = $parts[0];
         } else {
             $source = $parts[0];
@@ -615,7 +617,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 );
             }
         }
-        return $this->output('', self::STATUS_ERROR);
+        return $this->output('', self::STATUS_OK);
     }
 
     /**
@@ -1069,7 +1071,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $view->results = $savedSearch;
         $searchTabsHelper = $this->getViewRenderer()->plugin('searchtabs');
         $searchTabsHelper->setView($view);
-        $tabs = $searchTabsHelper(
+        $tabs = $searchTabsHelper->getTabConfig(
             $searchClass,
             $lookfor,
             $params->getQuery()->getHandler()
@@ -1125,6 +1127,54 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
          return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
+     * Retrieve side facets
+     *
+     * @return \Zend\Http\Response
+     */
+    public function getSideFacetsAjax()
+    {
+        // Send both GET and POST variables to search class:
+        $request = $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray();
+
+        $rManager = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
+        $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
+            $listener = new RecommendListener($rManager, $searchId);
+            $config = [];
+            $rawConfig = $params->getOptions()
+                ->getRecommendationSettings($params->getSearchHandler());
+            foreach ($rawConfig['side'] as $value) {
+                $settings = explode(':', $value);
+                if ($settings[0] === 'SideFacetsDeferred') {
+                    $settings[0] = 'SideFacets';
+                    $config['side'][] = implode(':', $settings);
+                }
+            }
+            $listener->setConfig($config);
+            $listener->attach($runner->getEventManager()->getSharedManager());
+
+            $params->setLimit(0);
+        };
+
+        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+        $results = $runner->run($request, 'Solr', $setupCallback);
+
+        if ($results instanceof \VuFind\Search\EmptySet\Results) {
+            return $this->output('', self::STATUS_ERROR);
+        }
+
+        $recommend = $results->getRecommendations('side');
+        $recommend = reset($recommend);
+
+        $view = $this->getViewRenderer();
+        $view->recommend = $recommend;
+        $view->params = $results->getParams();
+        $html = $view->partial('Recommend/SideFacets.phtml');
+
+        return $this->output($html, self::STATUS_OK);
     }
 
     /**

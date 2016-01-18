@@ -1,0 +1,108 @@
+<!-- START of: finna - Recommend/SideFacetsDeferred.phtml -->
+<?
+  $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js');
+  $datePickerLang = 'en';
+  switch ($this->layout()->userLang) {
+    case 'en-gb':
+        $this->headScript()->appendFile('vendor/bootstrap-datepicker.en-GB.min.js');
+        $datePickerLang = 'en-GB';
+        break;
+    case 'fi':
+        $this->headScript()->appendFile('vendor/bootstrap-datepicker.fi.min.js');
+        $datePickerLang = 'fi';
+        break;
+    case 'sv':
+        $this->headScript()->appendFile('vendor/bootstrap-datepicker.sv.min.js');
+        $datePickerLang = 'sv';
+        break;
+  }
+  $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+  $this->headScript()->appendFile('facets.js');
+  $this->headScript()->appendFile('vendor/jquery.colorhelpers.js');
+  $this->headScript()->appendFile('vendor/jquery.flot.js');
+  $this->headScript()->appendFile('vendor/jquery.flot.selection.js');
+  $this->headScript()->appendFile('finna-daterange-vis.js');
+?>
+<? $results = $this->recommend->getResults(); ?>
+<? if ($results->getResultTotal() > 0): ?>
+<div class="side-facets-container">
+  <h4><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?><? if (!$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?></h4>
+<? endif; ?>
+<? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
+<?
+  $html = '';
+  $shown = 0;
+  foreach ($checkboxFilters as $current) {
+    $html .= '<div class="checkbox';
+    if ($current['selected']) {
+      $html .= ' checked">';
+    }
+    else {
+      $html .= '">';
+    }
+    $html .= '<label class="';
+    if($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
+      $html .= ' hidden';
+    } else {
+      $shown ++;
+    }
+    $html .= '"><input type="checkbox" name="filter[]" value="'.$this->escapeHtmlAttr($current['filter']).'"
+      '. ($current['selected'] ? 'checked="checked"' : '') .' id="'.$this->escapeHtmlAttr(str_replace(' ', '', $current['desc'])).'"
+      onclick="document.location.href=\''. ($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])).'\';" />'.$this->transEsc($current['desc']).'</label></div>';
+  }
+?>
+  <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$html ?></div>
+<? endif; ?>
+<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
+<? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
+<?
+    $queryHandler = 'AllFields';
+    if ($results->getParams()->getSearchType() == 'basic') {
+        $queryHandler = $results->getParams()->getQuery()->getHandler();
+    }
+    ?>
+<?
+  $customQueryHandler = $queryHandler != 'AllFields';
+  if (isset($browse) && $browse) {
+    $customQueryHandler = $customQueryHandler && $queryHandler != $defaultBrowseHandler;
+  }
+?>
+<? if (!empty($filterList) || $customQueryHandler): ?>
+  <div class="list-group filters">
+
+      <? // Finna query handler (type) remove link ?>
+      <? if ($customQueryHandler): ?>
+        <? $removeLink = $this->currentPath().$results->getUrlQuery()->setHandler('AllFields'); ?>
+        <a class="list-group-item active" href="<?=$removeLink?>">
+          <span class="pull-right"><i class="fa fa-times"></i></span>
+          <?=$this->transEsc('search_in_field'); ?>:
+          <?=$this->transEsc($queryHandler); ?>
+        </a>
+      <? endif; ?>
+    <? foreach ($filterList as $field => $filters): ?>
+      <? foreach ($filters as $i => $filter): ?>
+        <?
+          if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
+            $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($filter['value'], '');
+          } else {
+            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], true, $filter['operator']);
+          }
+          if ($filter['displayText'] == '[* TO *]') {
+            $filter['displayText'] = $this->translate('filter_wildcard');
+          }
+        ?>
+        <a class="list-group-item active" href="<?=$removeLink?>">
+          <span class="pull-right"><i class="fa fa-times"></i></span>
+          <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?>
+        </a>
+      <? endforeach; ?>
+    <? endforeach; ?>
+  </div>
+<? endif; ?>
+<?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
+<? if ($results->getResultTotal() > 0): ?>
+  <span class="facet-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...</span>
+  <span class="facet-load-failed hidden"> <?=$this->transEsc('An error occurred during execution; please try again later.')?></span>
+</div>
+<? endif; ?>
+<!-- END of: finna - Recommend/SideFacetsDeferred.phtml -->

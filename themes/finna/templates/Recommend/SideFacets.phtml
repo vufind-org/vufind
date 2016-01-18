@@ -57,8 +57,8 @@
 <? $module = $this->layout()->templateDir; ?>
 <?
    $daterangeFacetField = null;
-   if (in_array($module, ['search', 'primo'])) {
-     $params = $this->results->getParams();
+   if (null === $module || in_array($module, ['search', 'primo'])) {
+     $params = $results->getParams();
      $daterangeFacetField = $params->getSpatialDateRangeField();
      $plotFrom = null;
    }
@@ -80,7 +80,7 @@
 
       <? // Finna query handler (type) remove link ?>
       <? if ($customQueryHandler): ?>
-        <? $removeLink = $this->currentPath().$results->getUrlQuery()->setHandler('AllFields'); ?>
+        <? $removeLink = $results->getUrlQuery()->setHandler('AllFields'); ?>
         <a class="list-group-item active" href="<?=$removeLink?>">
           <span class="pull-right"><i class="fa fa-times"></i></span>
           <?=$this->transEsc('search_in_field'); ?>:
@@ -95,9 +95,9 @@
               unset($collapsedFacets[$index]); // Open if we have a match
           }
           if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
-            $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($filter['value'], '');
+            $removeLink = $results->getUrlQuery()->replaceTerm($filter['value'], '');
           } else {
-            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], true, $filter['operator']);
+            $removeLink = $results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], true, $filter['operator']);
           }
           if ($filter['displayText'] == '[* TO *]') {
             $filter['displayText'] = $this->translate('filter_wildcard');
@@ -123,7 +123,7 @@
         <?
           if ($daterangeFacet) {
             $fromVal = $toVal = $type = null;
-            $queryHelper = $this->results->getUrlQuery();
+            $queryHelper = $results->getUrlQuery();
             $paramArray = $queryHelper->getParamArray();
             unset($paramArray["{$daterangeFacetField}_type"]);
             $searchParams = $formParams = '?' . $queryHelper->buildQueryString($paramArray, false);
@@ -160,7 +160,7 @@
             ];
           ?>
           <? foreach ($newItemValues as $newItemValue): ?>
-            <? $addURL = $this->currentPath() . $results->getUrlQuery()->replaceFacet($title, "[NOW-$newItemValue/DAY TO *]"); ?>
+            <? $addURL = $results->getUrlQuery()->replaceFacet($title, "[NOW-$newItemValue/DAY TO *]"); ?>
             <a href="<?=$addURL ?>" class="list-group-item facetAND"><?=$this->transEsc('new_items_' . strtolower($newItemValue), null, $newItemValue)?></a>
           <? endforeach; ?>
           <div class="list-group-item">
@@ -204,7 +204,7 @@ EOT
               'facetField' => 'search_sdaterange_mv',
               'filterField' => 'main_date_str',
               'type' => $type,
-              'backend' => $module == 'search' ? 'solr' : $module,
+              'backend' => (null === $module || $module == 'search') ? 'solr' : $module,
               'daterangeFacet' => $daterangeFacetField,
               'plotFrom' => $plotFrom
               ]);
@@ -285,7 +285,7 @@ JS;
           <? endif; ?>
           <div id="facet_<?=$this->escapeHtml($title)?>" class="jstree-facet"
                 data-facet="<?=$this->escapeHtmlAttr($title)?>"
-                data-path="<?=$this->currentPath()?>"
+                data-path=""
                 data-exclude="<?=$allowExclude?>"
                 data-operator="<?=$this->recommend->getFacetOperator($title)?>"
                 data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
@@ -304,7 +304,7 @@ JS;
             <a id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>" class="list-group-item more-narrow-toggle" href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('more')?>...<i class="fa fa-handle-open"></i></a>
           <? endif; ?>
           <? if ($thisFacet['isApplied']): ?>
-            <a class="list-group-item active<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>">
+            <a class="list-group-item active<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>">
               <? if ($thisFacet['operator'] == 'OR'): ?>
                 <i class="fa fa-check-square-o"></i>
               <? else: ?>
@@ -313,7 +313,7 @@ JS;
               <?=$this->escapeHtml($thisFacet['displayText'])?>
             </a>
           <? else: ?>
-            <? $addURL = $this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']); ?>
+            <? $addURL = $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']); ?>
             <? if ($allowExclude): ?>
               <div class="list-group-item facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">
             <? else: ?>
@@ -322,7 +322,7 @@ JS;
             <span class="badge">
               <?=$this->localizedNumber($thisFacet['count'])?>
               <? if ($allowExclude): ?>
-                <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times"></i></a>
+                <a href="<?=$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times"></i></a>
               <? endif; ?>
             </span>
             <? if ($allowExclude): ?>

@@ -2,7 +2,7 @@
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
     <div>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
     </div>
     <div class="col-xs-11">
       <div>
@@ -49,7 +49,7 @@
       </div>
 
       <? if(!$this->driver->isCollection()): ?>
-      
+
         <? if (false && $snippet = $this->driver->getHighlightedSnippet()): ?>
           <? if (!empty($snippet['caption'])): ?>
             <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
@@ -104,7 +104,7 @@
       </div>
       <?=$this->record($this->driver)->getPreviews()?>
       <?
-        
+
         $summary = false;
 /*
       $highlightedSummary = $this->driver->getHighlightedSummary();

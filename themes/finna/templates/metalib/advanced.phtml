@@ -23,13 +23,15 @@
     } else {
         $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
     }
+
+    $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, true);
 ?>
 <form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" class="form-horizontal">
   <input type="hidden" name="join" value="AND" />
       <?
         $this->searchType = 'advanced';
-        $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, []);
-        $this->layout()->finnaMainTabs = $this->render('search/searchTabs', ['searchTabs' => $searchTabs]);
+        $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, []);
+        $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs, 'hiddenFilters' => $hiddenFilters]);
         $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3>' . $this->transEsc('Advanced Nelli Metasearch') . '</h3></div>';
       ?>
       <? if ($groups !== false) {

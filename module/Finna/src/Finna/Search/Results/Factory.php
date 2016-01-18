@@ -44,6 +44,22 @@ use Finna\Search\UrlQueryHelper,
 class Factory extends \VuFind\Search\Results\Factory
 {
     /**
+     * Factory for Favorites results object.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Favorites
+     */
+    public static function getFavorites(ServiceManager $sm)
+    {
+        $factory = new PluginFactory();
+        $obj = $factory->createServiceWithName($sm, 'favorites', 'Favorites');
+        $init = new \ZfcRbac\Initializer\AuthorizationServiceInitializer();
+        $init->initialize($obj, $sm);
+        return $obj;
+    }
+
+    /**
      * Factory for Solr results object.
      *
      * @param ServiceManager $sm Service manager.

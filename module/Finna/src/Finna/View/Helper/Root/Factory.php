@@ -186,15 +186,12 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getSearchTabs(ServiceManager $sm)
     {
         $locator = $sm->getServiceLocator();
-        $config = $locator->get('VuFind\Config')->get('config');
-        $config = isset($config->SearchTabs)
-            ? $config->SearchTabs->toArray() : [];
         return new SearchTabs(
-            $locator->get('VuFind\SessionManager'),
-            $locator->get('VuFind\DbTablePluginManager'),
             $locator->get('VuFind\SearchResultsPluginManager'),
-            $config,
-            $sm->get('url')
+            $sm->get('url'),
+            $locator->get('VuFind\SearchTabsHelper'),
+            $locator->get('VuFind\SessionManager'),
+            $locator->get('VuFind\DbTablePluginManager')
         );
     }
 

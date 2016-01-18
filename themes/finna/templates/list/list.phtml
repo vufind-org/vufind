@@ -25,7 +25,7 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
               <?= $this->transEsc("collection_author"); ?>:
               <span class="public-list-username"><?=$this->escapeHtml(trim($this->userPublicName($this->list_username)))?></span>
             </div>
-            <div><?= $this->transEsc("modified"); ?>: <?= $this->DateTime()->convertToDisplayDate('Y-m-d H:i:s', $list->created); ?></div>
+            <div><?= $this->transEsc("modified"); ?>: <?= $this->DateTime()->convertToDisplayDate('Y-m-d H:i:s', $list->finna_updated ? $list->finna_updated : $list->created); ?></div>
           </div>
         </div>
       </div>
