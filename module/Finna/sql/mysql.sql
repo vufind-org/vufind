@@ -35,6 +35,10 @@ ALTER TABLE search ADD INDEX `finna_schedule_base_url` (`finna_schedule_base_url
 ALTER TABLE user ADD COLUMN `finna_language` varchar(30) NOT NULL DEFAULT '';
 ALTER TABLE `user` ADD  `finna_due_date_reminder` int(11) NOT NULL DEFAULT '0';
 CREATE INDEX `finna_user_due_date_reminder_key` ON user (`finna_due_date_reminder`);
+--
+-- Additional columns for user_list
+--
+ALTER TABLE user_list ADD COLUMN `finna_updated` datetime DEFAULT NULL;
 
 
 CREATE TABLE `finna_comments_record` (

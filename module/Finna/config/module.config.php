@@ -154,6 +154,8 @@ $config = [
                     'metalibSearch' => 'Finna\Db\Table\MetaLibSearch',
                     'search' => 'Finna\Db\Table\Search',
                     'transaction' => 'Finna\Db\Table\Transaction',
+                    'userlist' => 'Finna\Db\Table\UserList',
+                    'userresource' => 'Finna\Db\Table\UserResource',
                 ],
             ],
             'ils_driver' => [
