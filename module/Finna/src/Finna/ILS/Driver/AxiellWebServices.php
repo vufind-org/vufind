@@ -1854,7 +1854,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $b = array_slice($b, 0, $cnt);
 
             $f = function ($str) {
-                return (reset(explode('-', $str)));
+                $data = explode('-', $str);
+                return reset($data);
             };
 
             $a = array_map($f, $a);
