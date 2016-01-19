@@ -347,9 +347,9 @@ class SolrMarc extends SolrDefault
             }
         }
         if (count($pubResults) > 0) {
-            $results = array_merge($results, $pubResults);
+            $results = $pubResults;
         } else if (count($copyResults) > 0) {
-            $results = array_merge($results, $copyResults);
+            $results = $pubResults;
         }
 
         return $results;
