@@ -1,7 +1,7 @@
 <? $account = $this->auth()->getManager(); ?>
 <? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
 <? if (!$sessionInitiator): // display default login form if no login URL provided ?>
-  <form method="post" class="form-horizontal" name="loginForm" id="loginForm" onSubmit="ajaxLogin(this)">
+  <form method="post" class="form-horizontal" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm" onSubmit="ajaxLogin(this)">
     <?=$this->auth()->getLoginFields()?>
     <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
     <div class="form-group">

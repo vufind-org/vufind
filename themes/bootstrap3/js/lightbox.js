@@ -2,7 +2,7 @@
 function Lightbox() {
   // State
   this.originalUrl = false;
-  this.lastUrl = false;
+  this.currentUrl = false;
   // Elements
   this.modal = $('#modal');
   this.modalBody = this.modal.find('.modal-body');
@@ -82,7 +82,7 @@ function Lightbox() {
     if(this.href.length > 1) {
       event.preventDefault();
 
-      VuFind.lightbox.lastUrl = this.href;
+      VuFind.lightbox.currentUrl = this.href;
 
       var parts = this.href.split('#');
       parts[1] = parts.length < 2 ? '' : '#'+parts[1];
@@ -134,9 +134,12 @@ function Lightbox() {
     }
     // Loading
     VuFind.lightbox.modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right"></i>');
+    if (form.action) {
+      VuFind.lightbox.currentUrl = form.action;
+    }
     // Get Lightbox content
     VuFind.lightbox.ajax({
-      url: form.action || VuFind.lightbox.lastUrl,
+      url: form.action || VuFind.lightbox.currentUrl,
       method: form.method || 'GET',
       data: data
     });

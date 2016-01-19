@@ -9,7 +9,7 @@
 ?>
 <div class="record">
   <h2><?=$this->transEsc('Add Tags') ?></h2>
-  <form action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" method="post" name="tagRecord" class="form-horizontal" data-lightbox-onclose="refreshTagList">
+  <form method="post" name="tagRecord" class="form-horizontal" data-lightbox-onclose="refreshTagList">
     <input type="hidden" name="submit" value="1" />
     <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
     <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
