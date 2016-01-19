@@ -552,12 +552,27 @@ class Holds
      */
     protected function getHoldingsGroupKey($copy)
     {
-        // Group by holdings id unless configured otherwise or holdings id not
-        // available
+        // Group by holdings id unless configured otherwise
         $grouping = isset($this->config->Catalog->holdings_grouping)
             ? $this->config->Catalog->holdings_grouping : 'holdings_id';
-        return ($grouping != 'location_name' && isset($copy['holdings_id']))
-            ? $copy['holdings_id'] : $copy['location'];
+
+        $groupKey = "";
+        // Multiple keys may be used here (delimited by comma)
+        foreach (explode(",", $grouping) as $key) {
+            // backwards-compatibility:
+            // The config.ini file originally expected only two possible settings: holdings_id and location_name.
+            // However, when location_name was set, the code actually used the value of 'location' instead.
+            // From now on, we will expect (via config.ini documentation) the value of 'location', but still continue to honor 'location_name'.
+            if ($key == "location_name") $key = "location";
+
+            // backwards-compatibility:
+            // Originally, if holdings_id was set and contained no value, then location was used in its place
+            if ($key == "holdings_id" && ! $copy[$key]) $key = "location";
+
+            $groupKey .= $copy[$key];
+        }
+
+        return $groupKey;
     }
 
     /**
