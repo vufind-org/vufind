@@ -771,22 +771,31 @@ class SolrMarc extends SolrDefault
             $relationshipIndicator = '0';
         }
 
-        // Assign notes based on the relationship type
-        $value = $field->getTag();
-        switch ($value) {
-        case '780':
-            if (in_array($relationshipIndicator, range('0', '7'))) {
-                $value .= '_' . $relationshipIndicator;
-            }
-            break;
-        case '785':
-            if (in_array($relationshipIndicator, range('0', '8'))) {
-                $value .= '_' . $relationshipIndicator;
-            }
-            break;
+        // If set, display relationship information in i subfield
+        if ($value = $field->getSubfield('i')) {
+            $value = $value->getData();
+
+            return $value;
         }
 
-        return 'note_' . $value;
+        // Assign notes based on the relationship type
+        else {
+            $value = $field->getTag();
+            switch ($value) {
+            case '780':
+                if (in_array($relationshipIndicator, range('0', '7'))) {
+                    $value .= '_' . $relationshipIndicator;
+                }
+                break;
+            case '785':
+                if (in_array($relationshipIndicator, range('0', '8'))) {
+                    $value .= '_' . $relationshipIndicator;
+                }
+                break;
+            }
+
+            return 'note_' . $value;
+        }
     }
 
     /**
