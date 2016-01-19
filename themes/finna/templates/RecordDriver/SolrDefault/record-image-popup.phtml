@@ -16,7 +16,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
       <h3 class="title"><?= $this->escapeHtml($this->driver->getTitle()) ?></h3>
       <div class="author-and-dates">
         <p>
-        <? if ($this->driver->getRecordType() != 'lido'): ?>
+        <? if ($recordType != 'lido'): ?>
           <? if ($author = $this->driver->getPrimaryAuthor()): ?>
             <?= $this->escapeHtml($author) ?>
             <? endif; ?>
@@ -100,11 +100,11 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
           <? endif; ?>
           <div class="record-link"><a href="<?= $this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('To the record') ?></a></div>
           <? $rights = $this->driver->getImageRights($this->layout()->userLang) ?>
-          <? if ($this->driver->getRecordType() == 'lido' || $this->driver->getRecordType() == 'ead'): ?>
+
           <div class="open-link"><a target="_blank" href="<?= $originalImage ?>"><i class="fa fa-download"></i> <?= $this->translate('Show image in new window') ?></a> <span class="image-dimensions"></span></div>
-          <? endif; ?>
+
         </div>
-        <? if ($this->driver->getRecordType() == 'lido'): ?>
+        <? if ($recordType == 'lido'): ?>
         <div class="image-rights">
           <div class="rights">
             <? $hasLink = isset($rights['link']); ?>
@@ -123,7 +123,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
             <? endif; ?>
           </div>
           <div class="less-link copyright-link"><a data-mode="0" href=""><?= $this->translate('show_less') ?><i class="fa fa-arrow-up"></i></a></div>
-          <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind' && $this->driver->getRecordType() == 'lido'): ?>
+          <? if ($this->resolver('record/record-organisation-menu.phtml')): ?>
             <?=$this->render('record/record-organisation-menu.phtml') ?>
           <? endif; ?>
         </div>
