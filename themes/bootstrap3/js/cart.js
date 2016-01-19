@@ -109,6 +109,7 @@ function removeItemFromCart(id,source) {
   }
   return false;
 }
+
 var cartNotificationTimeout = false;
 function registerUpdateCart($form) {
   if($form) {
@@ -158,6 +159,19 @@ function registerUpdateCart($form) {
     });
   }
 }
+
+function cartFormHandler(event, data) {
+  var keys = [];
+  for (var i in data) {
+    keys.push(data[i].name);
+  }
+  if (keys.indexOf('ids[]') === -1) {
+    return true;
+  }
+  return keys.indexOf('print') === -1;
+}
+
+document.addEventListener('VuFind.lightbox.closed', updateCartCount, false);
 
 $(document).ready(function() {
   // Record buttons

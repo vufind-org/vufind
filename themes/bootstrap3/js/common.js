@@ -88,31 +88,34 @@ function phoneNumberFormHandler(numID, regionCode) {
     }
     $(phoneInput).siblings('.help-block.with-errors').html(valid);
     $(phoneInput).closest('.form-group').addClass('sms-error');
+    return false;
   } else {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
+    return true;
   }
 }
 
 function refreshPageForLogin() {
-  window.location.reload();
+  document.addEventListener('VuFind.lightbox.closed', function() {
+    window.location.reload();
+  }, false);
+  return true; // continue
 }
 
-function newAccountHandler(html) {
-  Lightbox.addCloseAction(refreshPageForLogin);
-  var params = deparam(Lightbox.openingURL);
-  if (params['subaction'] == 'UserLogin') {
-    Lightbox.close();
+function loginHandler() {
+  if (VuFind.lightbox.originalUrl.indexOf('UserLogin') > -1) {
+    VuFind.modal('hide');
+    window.location.reload();
+    return false;
   } else {
-    Lightbox.getByUrl(Lightbox.openingURL);
-    Lightbox.openingURL = false;
+    refreshPageForLogin();
   }
-  return false;
 }
 
 // This is a full handler for the login form
 function ajaxLogin(form) {
-  Lightbox.ajax({
+  $.ajax({
     url: VuFind.getPath() + '/AJAX/JSON?method=getSalt',
     dataType: 'json',
     success: function(response) {
@@ -143,16 +146,7 @@ function ajaxLogin(form) {
           data: params,
           success: function(response) {
             if (response.status == 'OK') {
-              lightboxRefreshOnClose = true;
-              lightboxAJAX(event, data);
-              if (false !== lightboxLoginCallback) {
-                if (true === lightboxLoginCallback) {
-                  window.location.reload();
-                } else {
-                  lightboxLoginCallback();
-                }
-                lightboxLoginCallback = false;
-              }
+              loginHandler();
             } else {
               $('#modal .modal-body .alert,.fa.fa-spinner').remove();
               $('#modal .modal-body h2:first-child').after($('<div>').html(response.data).addClass('alert alert-danger'));

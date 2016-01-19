@@ -242,7 +242,7 @@ class AbstractBase extends AbstractActionController
      */
     public function inLightbox()
     {
-        return ($this->layout()->getTemplate() == 'layout/lightbox');
+        return false && ($this->layout()->getTemplate() == 'layout/lightbox');
     }
 
     /**

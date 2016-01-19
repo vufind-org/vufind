@@ -8,7 +8,7 @@
     . '<li class="active">' . $this->transEsc('Save') . '</li>';
 ?>
 <h2><?=$this->transEsc("add_favorite_prefix") ?> <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span> <?=$this->transEsc("add_favorite_suffix") ?></h2>
-<form id="edit-save-form" class="form-horizontal" method="post" action="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" name="saveRecord" data-lightbox-success="<?=$this->transEsc('bulk_save_success') ?>">
+<form id="edit-save-form" class="form-horizontal" method="post" action="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" name="saveRecord">
   <input type="hidden" name="submit" value="1" />
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
