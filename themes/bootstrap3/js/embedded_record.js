@@ -60,13 +60,23 @@ function toggleDataView() {
   // Insert new elements
   var mainNode = $(this).closest('.result');
   if (!$(this).hasClass('toggle') && !$(this).hasClass('setup')) {
-    $(this).closest('.row').addClass('short-view')
-           .parent().addClass('data-view');
-    mainNode.find('.data-view')
-      .prepend($(this).clone().addClass('toggle').click(toggleDataView))
-      .append('<div class="loading hidden">\
-                <i class="fa fa-spin fa-spinner"></i> '+VuFind.translate('loading')+'...\
-              </div><div class="long-view row hidden"></div>');
+    // Add classes to view and result container
+    $(this)
+      .closest('.row').addClass('short-view')
+      .parent().addClass('data-view');
+    // Copy the title
+    var dataView = mainNode.find('.data-view');
+    console.log($(this).closest('.middle'));
+    console.log();
+    var pos = $(this).position();
+    var clone = $(this).clone()
+      .addClass('toggle').click(toggleDataView)
+      .css('padding-left', $(this).closest('.middle').position().left);
+    dataView.prepend(clone);
+    // Add loading status
+    dataView.append('<div class="loading hidden">\
+      <i class="fa fa-spin fa-spinner"></i> '+VuFind.translate('loading')+'...\
+    </div><div class="long-view row hidden"></div>');
     $(this).addClass('setup');
   }
   // Gather information

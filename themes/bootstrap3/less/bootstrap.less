@@ -324,6 +324,41 @@ h3 {
     .right {display: none;}
   }
 }
+
+.data-view > .toggle,
+.data-view > .loading,
+.data-view > .long-view { background-color: #fff; }
+
+.data-view > .toggle {
+  width: 100%;
+  padding: .5rem 0;
+  border: 1px solid @list-group-border;
+  border-top-left-radius: @border-radius-base;
+  border-top-right-radius: @border-radius-base;
+  &::before {
+    content: '\25BC';
+    position: absolute;
+    left: 2.5rem;
+    color: @text-color;
+  }
+}
+.data-view .loading {
+  padding: .5rem;
+  border-left: 1px solid @list-group-border;
+  border-right: 1px solid @list-group-border;
+}
+.data-view .long-view {
+  margin: 0;
+  margin-bottom: .5rem;
+  padding: .25rem;
+  padding-top: .5rem;
+  padding-bottom: 0;
+  border: 1px solid @list-group-border;
+  border-top: 0;
+  border-bottom-left-radius: @border-radius-base;
+  border-bottom-right-radius: @border-radius-base;
+}
+
 .search-controls .alert {margin-bottom: 0;}
 .searchtools a {padding: 0 .5em;}
 .title-in-heading {
