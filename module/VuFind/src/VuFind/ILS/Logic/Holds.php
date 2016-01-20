@@ -557,19 +557,32 @@ class Holds
             ? $this->config->Catalog->holdings_grouping : 'holdings_id';
 
         $groupKey = "";
+
         // Multiple keys may be used here (delimited by comma)
-        foreach (explode(",", $grouping) as $key) {
+        foreach (array_map('trim', explode(",", $grouping)) as $key) {
             // backwards-compatibility:
-            // The config.ini file originally expected only two possible settings: holdings_id and location_name.
-            // However, when location_name was set, the code actually used the value of 'location' instead.
-            // From now on, we will expect (via config.ini documentation) the value of 'location', but still continue to honor 'location_name'.
-            if ($key == "location_name") $key = "location";
+            // The config.ini file originally expected only
+            //   two possible settings: holdings_id and location_name.
+            // However, when location_name was set, the code actually
+            //   used the value of 'location' instead.
+            // From now on, we will expect (via config.ini documentation)
+            //   the value of 'location', but still continue to honor
+            //   'location_name'.
+            if ($key == "location_name") {
+                $key = "location";
+            }
 
-            // backwards-compatibility:
-            // Originally, if holdings_id was set and contained no value, then location was used in its place
-            if ($key == "holdings_id" && ! $copy[$key]) $key = "location";
+            if (isset($copy[$key])) {
+                if ($groupKey != "") {
+                    $groupKey .= '|';
+                }
+                $groupKey .= $copy[$key];
+            }
+        }
 
-            $groupKey .= $copy[$key];
+        // default:
+        if ($groupKey == "") {
+            $groupKey = $copy['location'];
         }
 
         return $groupKey;
