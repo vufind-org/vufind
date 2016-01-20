@@ -889,7 +889,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      *
      * @param \VuFind\RecordDriver\SolrDefault $record Record driver
      *
-     * @return array
+     * @return null|array
      */
     protected function getSummary($record)
     {
