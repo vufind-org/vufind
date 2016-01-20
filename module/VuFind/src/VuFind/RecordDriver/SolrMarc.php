@@ -327,8 +327,7 @@ class SolrMarc extends SolrDefault
                         $sfcontent[] = $sf;
                     };
                     $currentVal = implode(', ', $sfcontent);
-                }
-                else {
+                } else {
                     $currentVal = array_values($subfields)[0];
                     $currentVal = is_object($currentVal)
                         ? $currentVal->getData() : null;
@@ -349,7 +348,7 @@ class SolrMarc extends SolrDefault
         if (count($pubResults) > 0) {
             $results = $pubResults;
         } else if (count($copyResults) > 0) {
-            $results = $pubResults;
+            $results = $copyResults;
         }
 
         return $results;
