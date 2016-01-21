@@ -105,7 +105,7 @@
               <ul>
                 <li><?=$this->transEsc("Item Notes")?>:</li>
                 <? foreach ($row['item_notes'] as $item_note): ?>
-                  <li><?=$item_note?></li>
+                  <li><?=$this->escapeHtml($item_note) ?></li>
                 <? endforeach; ?>
               </ul>
             <? endif; ?>
