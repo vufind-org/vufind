@@ -121,18 +121,14 @@
               <? endif; ?>
             <? endif; ?>
             <? if (isset($row['item_notes'])): ?>
-              <table class="item-notes">
-                <tr>
-                  <th><?=$this->transEsc("Item Notes")?>:</th>
-                  <td>
-                    <ul>
-                      <? foreach ($row['item_notes'] as $item_note): ?>
-                        <li><?=$item_note?></li>
-                      <? endforeach; ?>
-                    </ul>
-                  </td>
-                </tr>
-              </table>
+              <div class="item-notes">
+                <b><?=$this->transEsc("Item Notes")?>:</b>
+                <ul>
+                  <? foreach ($row['item_notes'] as $item_note): ?>
+                    <li><?=$this->escapeHtml($item_note) ?></li>
+                  <? endforeach; ?>
+                </ul>
+              </div>
             <? endif; ?>
           <? endif; ?>
           <? /* Embed item structured data: library, barcode, call number */ ?>
