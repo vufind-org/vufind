@@ -1,5 +1,6 @@
 <?=$this->doctype('HTML5')?>
 <!-- START of: finna - layout/layout.phtml -->
+<? $currentTabClass = $this->layout()->currentTabId ? ' tab-' . preg_replace('/[^a-z0-9]/', '', strtolower($this->layout()->currentTabId)) : '' ?>
 <? // Do not use HTML comments before DOCTYPE to avoid quirks-mode in IE ?>
 <html lang="<?=$this->layout()->userLang?>">
   <head>
@@ -165,7 +166,7 @@
         </div>
       </div>
     </header>
-    <section role="search" class="searchLayout" id="content">
+    <section role="search" class="searchLayout<?=$currentTabClass?>" id="content">
       <div class="container">
         <div class="row">
           <div class="logo col-xs-12 clearfix">
@@ -217,7 +218,7 @@
         <? endif; ?>
       </div>
     </section>
-    <section role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?><?= $this->browse ? ' browse' : ''?>">
+    <section role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?><?=$this->browse ? ' browse' : '' ?><?=$currentTabClass?>">
       <? if (!empty($this->layout()->finnaMainHeader)): ?>
       <div class="container-fluid finna-main-header">
         <div class="container">
