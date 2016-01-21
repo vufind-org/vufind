@@ -699,7 +699,9 @@ class MyResearchController extends AbstractBase
                 $details = $this->getRecordRouter()->getActionRouteDetails(
                     $recordSource . '|' . $recordId, 'Save'
                 );
-                return $this->redirect()->toRoute($details['route'], $details['params']);
+                return $this->redirect()->toRoute(
+                    $details['route'], $details['params']
+                );
             }
 
             // Similarly, if the user is in the process of bulk-saving records,
