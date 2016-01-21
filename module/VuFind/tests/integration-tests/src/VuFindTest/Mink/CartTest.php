@@ -331,6 +331,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page);
 
         // Save the favorites.
+        $this->snooze();
         $this->findCss($page, '.modal-body input[name=submit]')->click();
         $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
