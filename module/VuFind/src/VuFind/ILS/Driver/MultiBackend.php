@@ -1429,7 +1429,7 @@ class MultiBackend extends AbstractBase
     protected function addIdPrefixes($data, $source,
         $modifyFields = ['id', 'cat_username']
     ) {
-        if (!isset($data) || empty($data) || !is_array($data)) {
+        if (empty($source) || empty($data) || !is_array($data)) {
             return $data;
         }
 
