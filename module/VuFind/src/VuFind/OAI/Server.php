@@ -659,7 +659,7 @@ class Server
             if (empty($facets) || !isset($facets[$this->setField]['data']['list'])) {
                 $this->unexpectedError('Cannot find sets');
             }
-    
+
             // Extract facet values from the Solr response:
             foreach ($facets[$this->setField]['data']['list'] as $x) {
                 $set = $xml->addChild('set');
@@ -730,7 +730,7 @@ class Server
             if (isset($this->setQueries[$set])) {
                 // use hidden filter here to allow for complex queries;
                 // plain old addFilter expects simple field:value queries.
-                $params->getOptions()->addHiddenFilter($this->setQueries[$set]);
+                $params->addHiddenFilter($this->setQueries[$set]);
             } else if (null !== $this->setField) {
                 $params->addFilter(
                     $this->setField . ':"' . addcslashes($set, '"') . '"'
@@ -776,7 +776,9 @@ class Server
             // Set default date range if not already provided:
             if (empty($params['from'])) {
                 $params['from'] = $this->earliestDatestamp;
-                if (strlen($params['from']) > strlen($params['until'])) {
+                if (!empty($params['until'])
+                    && strlen($params['from']) > strlen($params['until'])
+                ) {
                     $params['from'] = substr($params['from'], 0, 10);
                 }
             }
@@ -793,7 +795,7 @@ class Server
 
         // If no set field is configured and a set parameter comes in, we have a
         // problem:
-        if (is_null($this->setField) && isset($params['set'])
+        if (null === $this->setField && empty($this->setQueries)
             && !empty($params['set'])
         ) {
             throw new \Exception('noSetHierarchy:Sets not supported');
@@ -840,7 +842,7 @@ class Server
         } else if (strpos($until, 'T') && strpos($until, 'Z')) {
             return true;
         }
-        
+
         $from_time = $this->normalizeDate($from);
         $until_time = $this->normalizeDate($until, '23:59:59');
         if ($from_time > $until_time) {

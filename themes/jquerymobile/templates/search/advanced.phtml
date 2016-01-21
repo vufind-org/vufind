@@ -12,6 +12,11 @@
   $searchHome['action'] = 'Home';
   $lastSort = $options->getLastSort();
   $lastLimit = $options->getLastLimit();
+  if (isset($this->saved) && is_object($this->saved)) {
+    $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
+  } else {
+    $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, true);
+  }
 ?>
 <div data-role="page" id="Search-home">
   <?=$this->mobileMenu()->header(array('hideSearchLink' => true))?>
@@ -56,6 +61,11 @@
           echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '" />';
         }
       ?>
+      <? foreach ($hiddenFilters as $key => $filter): ?>
+        <? foreach ($filter as $value): ?>
+          <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
+        <? endforeach; ?>
+      <? endforeach; ?>
     </form>
   </div>
   <?=$this->mobileMenu()->footer()?>

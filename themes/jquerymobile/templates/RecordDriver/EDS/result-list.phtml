@@ -4,7 +4,7 @@
   $restrictedView = empty($accessLevel) ? false : true;
 ?>
 <a rel="external" href="<?=$this->recordLink()->getUrl($this->driver)?>">
-  <div class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+  <div class="result source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
     <? $items =  $this->driver->getItems();
 

@@ -39,13 +39,6 @@ namespace VuFind\RecordDriver;
 class SolrAuth extends SolrMarc
 {
     /**
-     * Used for identifying database records
-     *
-     * @var string
-     */
-    protected $resourceSource = 'SolrAuth';
-
-    /**
      * Get the short (pre-subtitle) title of the record.
      *
      * @return string
