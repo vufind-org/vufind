@@ -444,4 +444,21 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             )
         );
     }
+
+    /**
+     * Test Primo upgrade.
+     *
+     * @return void
+     */
+    public function testPrimoUpgrade()
+    {
+        $upgrader = $this->getUpgrader('primo');
+        $upgrader->run();
+        $this->assertEquals([], $upgrader->getWarnings());
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            'http://my-id.hosted.exlibrisgroup.com:1701',
+            $results['Primo.ini']['General']['url']
+        );
+    }
 }

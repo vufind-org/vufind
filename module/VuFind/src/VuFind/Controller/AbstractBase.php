@@ -344,6 +344,16 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get the record cache
+     *
+     * @return \VuFind\Record\Cache
+     */
+    public function getRecordCache()
+    {
+        return $this->getServiceLocator()->get('VuFind\RecordCache');
+    }
+    
+    /**
      * Get the record router.
      *
      * @return \VuFind\Record\Router

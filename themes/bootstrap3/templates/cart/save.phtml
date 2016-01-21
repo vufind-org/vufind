@@ -13,8 +13,8 @@
 <form class="form-horizontal" method="post" action="<?=$this->url('cart-save')?>" name="bulkSave" data-lightbox-success="<?=$this->transEsc('bulk_save_success') ?>">
   <? $idParams = array(); ?>
   <? foreach ($this->records as $current): ?>
-    <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getResourceSource() . '|' . $current->getUniqueId()) ?>
-    <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+    <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getSourceIdentifier() . '|' . $current->getUniqueId()) ?>
+    <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>" />
   <? endforeach; ?>
   <div class="form-group">
     <label class="col-sm-3 control-label"><?=$this->transEsc('Title')?></label>

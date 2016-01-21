@@ -400,7 +400,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $button->click();
         list(, $params) = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
-            'print=true&id[]=VuFind|testsample1&id[]=VuFind|testsample2',
+            'print=true&id[]=VuFind|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );
     }

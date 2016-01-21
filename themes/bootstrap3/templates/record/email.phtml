@@ -11,6 +11,6 @@
 <form class="form-horizontal" method="post" name="emailRecord">
   <?=$this->flashmessages()?>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
-  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
+  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
   <?=$this->render('Helpers/email-form-fields.phtml')?>
 </form>
