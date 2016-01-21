@@ -33,6 +33,19 @@ function Lightbox() {
       VuFind.lightbox.originalUrl = obj.url;
     }
     obj.success = function(html, status) {
+      if ( // Close the lightbox after deliberate login
+        obj.method                           // is a form
+        && obj.url.match(/MyResearch/)       // that matches login/create account
+        && !html.match(/alert alert-danger/) // skip failed logins
+      ) {
+        if (VuFind.lightbox.originalUrl.match(/UserLogin/)) {
+          console.log('OUT');
+          window.location.reload();
+          return false;
+        } else {
+          refreshPageForLogin();
+        }
+      }
       VuFind.lightbox.update(html);
       VuFind.lightbox.xhr = false;
     },
@@ -65,14 +78,6 @@ function Lightbox() {
       html = alerts[0].outerHTML + '<button class="btn btn-default" data-dismiss="modal">close</button>';
       this.html(html);
       return;
-    }
-    // Close after login
-    if (this.currentUrl.indexOf('UserLogin') > -1
-        && testDiv.find('#loginForm').length == 0
-        && testDiv.find('.alert-danger').length == 0
-    ) {
-      VuFind.modal('hide');
-      return false;
     }
     // Fill HTML
     this.html(html);
@@ -148,13 +153,6 @@ function Lightbox() {
     // Loading
     VuFind.lightbox.modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right"></i>');
     // Get Lightbox content
-    if (form.method) {
-      console.log({
-        url: form.action || VuFind.lightbox.currentUrl,
-        method: form.method || 'GET',
-        data: data
-      });
-    }
     VuFind.lightbox.ajax({
       url: form.action || VuFind.lightbox.currentUrl,
       method: form.method || 'GET',

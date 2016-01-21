@@ -8,7 +8,7 @@
 <h2><?=$this->transEsc('User Account')?></h2>
 <?=$this->flashmessages()?>
 
-<form method="post" name="accountForm" id="accountForm" class="form-horizontal" data-toggle="validator" role="form" data-lightbox-onsubmit="loginHandler">
+<form method="post" name="accountForm" id="accountForm" class="form-horizontal" data-toggle="validator" role="form">
   <?=$this->auth()->getCreateFields()?>
   <? if ($this->useRecaptcha): ?>
     <div class="form-group">

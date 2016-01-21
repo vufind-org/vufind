@@ -332,6 +332,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // Save the favorites.
         $this->findCss($page, '.modal-body input[name=submit]')->click();
+        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.', $result->getText()
@@ -400,7 +401,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $button->click();
         list(, $params) = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
-            'print=true&id[]=VuFind|testsample1&id[]=Solr|testsample2',
+            'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );
     }
