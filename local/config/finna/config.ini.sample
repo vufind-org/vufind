@@ -65,8 +65,9 @@ logOutRoute = home
 defaultRecordTab= Holdings
 ; Hide the holdings tab if no holdings are available from the ILS
 hideHoldingsTabWhenEmpty = true
-; Whether to load all tabs (including default tab) via ajax (default is false):
-ajaxTabs = true
+; Whether to load the default tab through AJAX (which brings some performance
+; gain but breaks compatibility with non-Javascript-enabled browsers; off by default)
+loadInitialTabWithAjax = true
 ; This page will show by default when a user accesses the MyResearch module:
 defaultAccountPage = Favorites
 ; Allow access to the Admin module? (See [AdminAuth] below for more granular ways
