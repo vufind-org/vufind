@@ -100,17 +100,6 @@ function refreshPageForLogin() {
   document.addEventListener('VuFind.lightbox.closed', function() {
     window.location.reload();
   }, false);
-  return true; // continue
-}
-
-function loginHandler() {
-  if (VuFind.lightbox.originalUrl.indexOf('UserLogin') > -1) {
-    VuFind.modal('hide');
-    window.location.reload();
-    return false;
-  } else {
-    refreshPageForLogin();
-  }
 }
 
 // This is a full handler for the login form
@@ -145,7 +134,7 @@ function ajaxLogin(form) {
           dataType: 'json',
           data: params,
           success: function(response) {
-            if (response.status == 'OK') {
+            if (response.status == 'OK' && response.data) {
               loginHandler();
             } else {
               $('#modal .modal-body .alert,.fa.fa-spinner').remove();

@@ -113,9 +113,6 @@ trait ILLRequestsTrait
             if (isset($results['success']) && $results['success'] == true) {
                 $this->flashMessenger()
                     ->addMessage('ill_request_place_success', 'success');
-                if ($this->inLightbox()) {
-                    return false;
-                }
                 return $this->redirect()->toRoute(
                     'myresearch-illrequests'
                 );

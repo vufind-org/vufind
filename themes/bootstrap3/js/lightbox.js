@@ -37,8 +37,16 @@ function Lightbox() {
       VuFind.lightbox.xhr = false;
     },
     obj.error = function(e) {
-      $('body').removeClass('modal-open').html('<div>'+e.responseText+'</div>');
+      $('body').html('<div>'+e.responseText+'</div>');
       VuFind.lightbox.modal.addClass('hidden');
+    }
+    if (!obj.url.match(/layout=lightbox/)) {
+      var parts = obj.url.split('#');
+      obj.url = parts[0].indexOf('?') < 0
+        ? parts[0]+'?'
+        : parts[0]+'&';
+      obj.url += 'layout=lightbox&lbreferer='+encodeURIComponent(this.currentUrl);
+      obj.url += parts.length < 2 ? '' : '#'+parts[1];
     }
     $.ajax(obj);
     return false;
@@ -51,11 +59,24 @@ function Lightbox() {
       html = $('<div>'+html+'</div>').find('.main > .container').html();
     }
     // Isolate successes
-    var alerts = $('<div>'+html+'</div>').find('.alert-success').not('form .alert');
+    var testDiv = $('<div>'+html+'</div>');
+    var alerts = testDiv.find('.alert-success');
     if (alerts.length > 0) {
       html = alerts[0].outerHTML + '<button class="btn btn-default" data-dismiss="modal">close</button>';
+      this.html(html);
+      return;
     }
+    // Close after login
+    if (this.currentUrl.indexOf('UserLogin') > -1
+        && testDiv.find('#loginForm').length == 0
+        && testDiv.find('.alert-danger').length == 0
+    ) {
+      VuFind.modal('hide');
+      return false;
+    }
+    // Fill HTML
     this.html(html);
+    // Attach capturing events
     this.modalBody.find('a').on('click', VuFind.lightbox.constrainLink);
     var forms = this.modalBody.find('form');
     for(var i=0;i<forms.length;i++) {
@@ -82,15 +103,10 @@ function Lightbox() {
     if(this.href.length > 1) {
       event.preventDefault();
 
+      VuFind.lightbox.ajax({url: this.href});
+
       VuFind.lightbox.currentUrl = this.href;
 
-      var parts = this.href.split('#');
-      parts[1] = parts.length < 2 ? '' : '#'+parts[1];
-      VuFind.lightbox.ajax({
-        url: parts[0].indexOf('?') < 0
-          ? parts[0]+'?layout=lightbox'+parts[1]
-          : parts[0]+'&layout=lightbox'+parts[1]
-      });
       VuFind.modal('show');
       return false;
     }
@@ -120,10 +136,7 @@ function Lightbox() {
       }
       // On submit behavior
       if("string" === typeof dataset.lightboxOnsubmit && "function" === typeof window[dataset.lightboxOnsubmit]) {
-        var ret = window[dataset.lightboxOnsubmit]();
-        if (ret === false) {
-          return true;
-        }
+        window[dataset.lightboxOnsubmit]();
       }
       // onclose behavior
       if("string" === typeof dataset.lightboxOnclose && "function" === typeof window[dataset.lightboxOnclose]) {
@@ -134,10 +147,14 @@ function Lightbox() {
     }
     // Loading
     VuFind.lightbox.modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right"></i>');
-    if (form.action) {
-      VuFind.lightbox.currentUrl = form.action;
-    }
     // Get Lightbox content
+    if (form.method) {
+      console.log({
+        url: form.action || VuFind.lightbox.currentUrl,
+        method: form.method || 'GET',
+        data: data
+      });
+    }
     VuFind.lightbox.ajax({
       url: form.action || VuFind.lightbox.currentUrl,
       method: form.method || 'GET',
@@ -154,6 +171,7 @@ function Lightbox() {
     document.dispatchEvent(new Event('VuFind.lightbox.closed'));
     VuFind.lightbox.html(VuFind.translate('loading') + '...');
     VuFind.lightbox.openingUrl = false;
+    VuFind.lightbox.currentUrl = false;
   });
 }
 /**

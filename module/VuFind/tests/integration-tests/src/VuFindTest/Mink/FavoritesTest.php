@@ -99,6 +99,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         // Empty
         // $this->findCss($page, '.modal-body .btn.btn-primary.disabled');
+        $this->snooze();
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
 
         // Invalid email
@@ -129,6 +130,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         // Check list page
         $session = $this->getMinkSession();
         $recordURL = $this->stripHash($session->getCurrentUrl());
+        $this->snooze();
         $this->findCss($page, '.savedLists a')->click();
         $this->snooze();
         $this->findCss($page, '.resultItemLine1 a')->click();
@@ -195,6 +197,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         // Save Record
+        $this->snooze();
         $this->findCss($page, '.save-record')->click();
         $this->snooze();
         $this->findCss($page, '#save_list');
@@ -215,19 +218,22 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.save-record')->click();
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         // Empty
-        $this->findCss($page, '.modal-body .btn.btn-primary.disabled');
+        //$this->findCss($page, '.modal-body .btn.btn-primary.disabled');
+        $this->snooze();
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->fillInAccountForm(
             $page, ['username' => 'username2', 'email' => 'blargasaurus']
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->findCss($page, '#account_email')->setValue('username2@ignore.com');
-        // Test taken
+        // Test taken username
         $this->findCss($page, '#account_username')->setValue('username1');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->findCss($page, '#account_firstname');
-        $this->findCss($page, '#account_username')->setValue('username2');
         // Correct
+        $this->fillInAccountForm(
+            $page, ['username' => 'username2', 'email' => 'username2@ignore.com']
+        );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->findCss($page, '#save_list');
         // Make list
@@ -245,8 +251,9 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         );
         $this->findCss($page, '#add_mytags')->setValue('test1 test2 "test 3"');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
         $this->findCss($page, '.alert.alert-success');
-        $this->findCss($page, '.modal-header .close')->click();
+        $this->findCss($page, '.modal .close')->click();
         // Check list page
         $this->snooze();
         $this->findCss($page, '.result a.title')->click();

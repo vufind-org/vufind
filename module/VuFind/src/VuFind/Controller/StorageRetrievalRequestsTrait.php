@@ -115,9 +115,6 @@ trait StorageRetrievalRequestsTrait
                 $this->flashMessenger()->addMessage(
                     'storage_retrieval_request_place_success', 'success'
                 );
-                if ($this->inLightbox()) {
-                    return false;
-                }
                 return $this->redirect()->toRoute(
                     'myresearch-storageretrievalrequests'
                 );

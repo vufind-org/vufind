@@ -75,7 +75,7 @@ class CartController extends AbstractBase
     {
         // We came in from the cart -- let's remember this we can redirect there
         // when we're done:
-        $this->session->url = $this->getLightboxAwareUrl('cart-home');
+        $this->session->url = $this->url()->fromRoute('cart-home');
 
         // Now forward to the requested action:
         if (strlen($this->params()->fromPost('email', '')) > 0) {
