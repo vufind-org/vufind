@@ -106,7 +106,7 @@ class File extends AbstractBase
      * @param string $sess_id The current session ID
      * @param string $data    The session data to write
      *
-     * @return void
+     * @return bool
      */
     public function write($sess_id, $data)
     {
@@ -115,7 +115,7 @@ class File extends AbstractBase
             $return = fwrite($fp, $data);
             fclose($fp);
             if ($return !== false) {
-                return;
+                return true;
             }
         }
         // If we got this far, something went wrong with the file output...
@@ -123,6 +123,7 @@ class File extends AbstractBase
         // outside of the context of exception handling, so all we can do is
         // echo a message.
         echo 'Cannot write session to ' . $sess_file . "\n";
+        return false;
     }
 
     /**

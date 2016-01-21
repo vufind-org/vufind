@@ -432,6 +432,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function isStorageRetrievalRequestAllowed($holdingsRow)
     {
+        $holdingsRow = $holdingsRow['_fullRow'];
         if (!isset($holdingsRow['TEMP_ITEM_TYPE_ID'])
             || !isset($holdingsRow['ITEM_TYPE_ID'])
         ) {
@@ -439,7 +440,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             return false;
         }
 
-        $holdingsRow = $holdingsRow['_fullRow'];
         if (isset($this->config['StorageRetrievalRequests']['valid_item_types'])) {
             $validTypes = explode(
                 ':', $this->config['StorageRetrievalRequests']['valid_item_types']
@@ -533,21 +533,23 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             $holdType = '';
             $storageRetrieval = '';
 
-            // Hold Type - If we have patron data, we can use it to determine if a
-            // hold link should be shown
-            if ($patron && $this->holdsMode == "driver") {
-                // This limit is set as the api is slow to return results
-                if ($i < $this->holdCheckLimit && $this->holdCheckLimit != "0") {
-                    $holdType = $this->determineHoldType(
-                        $patron['id'], $row['id'], $row['item_id']
-                    );
-                    $addLink = $holdType ? $holdType : false;
+            if ($is_holdable) {
+                // Hold Type - If we have patron data, we can use it to determine if
+                // a hold link should be shown
+                if ($patron && $this->holdsMode == "driver") {
+                    // This limit is set as the api is slow to return results
+                    if ($i < $this->holdCheckLimit && $this->holdCheckLimit != "0") {
+                        $holdType = $this->determineHoldType(
+                            $patron['id'], $row['id'], $row['item_id']
+                        );
+                        $addLink = $holdType ? $holdType : false;
+                    } else {
+                        $holdType = "auto";
+                        $addLink = "check";
+                    }
                 } else {
                     $holdType = "auto";
-                    $addLink = "check";
                 }
-            } else {
-                $holdType = "auto";
             }
 
             if ($isStorageRetrievalRequestAllowed) {

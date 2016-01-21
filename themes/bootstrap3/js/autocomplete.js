@@ -11,7 +11,7 @@
     var options = $.extend( {}, $.fn.autocomplete.options, settings );
 
     function align(input, element) {
-      var position = input.position();
+      var position = input.offset();
       element.css({
         position: 'absolute',
         top: position.top + input.outerHeight(),
@@ -47,7 +47,7 @@
         if (options.highlight) {
           // escape term for regex
           // https://github.com/sindresorhus/escape-string-regexp/blob/master/index.js
-          var escapedTerm = input.val().replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+          var escapedTerm = input.val().replace(/[|\\{}()\[\]\^$+*?.]/g, '\\$&');
           var regex = new RegExp('('+escapedTerm+')', 'ig');
           content = content.replace(regex, '<b>$1</b>');
         }
@@ -114,9 +114,6 @@
           .html('<i class="item loading">'+options.loadingString+'</i>');
         align(input, element);
         $(document.body).append(element);
-        $(window).resize(function() {
-          align(input, element);
-        });
       }
 
       input.data('selected', -1);
@@ -233,6 +230,8 @@
         return input;
       }
 
+      window.addEventListener("resize", hide, false);
+
       return element;
     }
 
@@ -247,7 +246,7 @@
         } else if (settings === "hide") {
           hide();
         } else if (settings === "clear cache" && options.cache) {
-          var cid = parseInt(input.data('cache-id'));
+          var cid = parseInt(input.data('cache-id'), 10);
           $.fn.autocomplete.cache[cid] = {};
         }
         return input;
@@ -278,13 +277,13 @@
       minLength: 3
     };
     $.fn.autocomplete.ajax = function(ops) {
-      if (timer) clearTimeout(timer);
+      if (timer) { clearTimeout(timer); }
       if (xhr) { xhr.abort(); }
       timer = setTimeout(
         function() { xhr = $.ajax(ops); },
         $.fn.autocomplete.options.ajaxDelay
       );
-    }
+    };
   }
 
 }( jQuery ));
