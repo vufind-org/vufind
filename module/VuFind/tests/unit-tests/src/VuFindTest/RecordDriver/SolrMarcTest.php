@@ -59,8 +59,8 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         $fixture = $this->loadRecordFixture('testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $expected = [
-            ['title' => 'note_785_1', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000343528']],
-            ['title' => 'note_785_1', 'value' => 'Bollettino della Unione matematica', 'link' => ['type' => 'bib', 'value' => '000343529']],
+            ['title' => 'A', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000343528']],
+            ['title' => 'B', 'value' => 'Bollettino della Unione matematica', 'link' => ['type' => 'bib', 'value' => '000343529']],
             ['title' => 'note_785_8', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000394898']],
         ];
         $this->assertEquals($expected, $record->getAllRecordLinks());
