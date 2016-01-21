@@ -84,13 +84,12 @@ class Params extends \VuFind\Search\Solr\Params
         }
 
         // We don't spellcheck this screen; it's not for free user input anyway
-        $options = $this->getOptions();
-        $options->spellcheckEnabled(false);
+        $this->getOptions()->spellcheckEnabled(false);
 
         // Prepare the search
         $safeId = addcslashes($this->collectionID, '"');
-        $options->addHiddenFilter($this->collectionField . ':"' . $safeId . '"');
-        $options->addHiddenFilter('!id:"' . $safeId . '"');
+        $this->addHiddenFilter($this->collectionField . ':"' . $safeId . '"');
+        $this->addHiddenFilter('!id:"' . $safeId . '"');
     }
 
     /**

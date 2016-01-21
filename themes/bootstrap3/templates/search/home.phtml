@@ -29,7 +29,7 @@
     </div>
   <? endif; ?>
   <div class="well well-lg clearfix" role="search">
-    <?=$this->render("search/searchbox.phtml")?>
+    <?=$this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => true])?>
   </div>
 </div>
 

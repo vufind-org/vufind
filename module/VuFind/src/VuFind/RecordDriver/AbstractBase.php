@@ -28,6 +28,7 @@
 namespace VuFind\RecordDriver;
 use VuFind\Exception\LoginRequired as LoginRequiredException,
     VuFind\XSLT\Import\VuFind as ArticleStripper;
+use VuFind\Record\Cache;
 
 /**
  * Abstract base record model.
@@ -42,10 +43,12 @@ use VuFind\Exception\LoginRequired as LoginRequiredException,
  */
 abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
-    \VuFindSearch\Response\RecordInterface
+    \VuFindSearch\Response\RecordInterface,
+    \VuFind\Record\Cache\RecordCacheAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\Record\Cache\RecordCacheAwareTrait;
 
     /**
      * Used for identifying search backends
@@ -265,6 +268,15 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         $resource = $resourceTable->findResource(
             $this->getUniqueId(), $this->getSourceIdentifier(), true, $this
         );
+
+        // Persist record in the database for "offline" use
+        if ($recordCache = $this->getRecordCache()) {
+            $recordCache->setContext(Cache::CONTEXT_FAVORITE);
+            $recordCache->createOrUpdate(
+                $resource->record_id, $resource->source,
+                $this->getRawData()
+            );
+        }
 
         // Add the information to the user's account:
         $user->saveResource(
