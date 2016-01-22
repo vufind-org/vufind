@@ -1171,21 +1171,6 @@ custom_variables = 1
 ; Recommender service base url
 ;baseUrl = http://recommender.service.exlibrisgroup.com/service/recommender/openurl
 
-; This section allows configuration of institutional IP addresses that can be used
-; e.g. to determine if the user has access to restricted resources
-; Format is:
-; set_id = "address,address"
-;[IP_Addresses]
-;local = "10.0.0,192.168.1"
-
-; Authorization settings used to determine if the user has access to restricted
-; resources or whether additional resources might be available upon login
-[Authorization]
-; Whether authorization by IP address is enabled
-ip = true
-; Authorization-providing authentication methods defined in Authentication section or MultiAuth
-authentication_methods[] = Shibboleth
-
 ; Normalization preview allows one to display an external record
 ; as it would be displayed in VuFind. This requires a backend,
 ; such as RecordManager, that provides the transformed record
