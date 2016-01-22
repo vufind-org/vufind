@@ -39,7 +39,6 @@ function Lightbox() {
         && !html.match(/alert alert-danger/) // skip failed logins
       ) {
         if (VuFind.lightbox.originalUrl.match(/UserLogin/)) {
-          console.log('OUT');
           window.location.reload();
           return false;
         } else {
@@ -133,10 +132,17 @@ function Lightbox() {
     data.push({'name':'layout', 'value':'lightbox'}); // Return in lightbox, please
     if ('undefined' !== typeof dataset) {
       // Overwritten behavior
-      if("string" === typeof dataset.lightboxHandler && "function" === typeof window[dataset.lightboxHandler]) {
-        var ret = window[dataset.lightboxHandler](event, data);
-        if (ret === false) {
-          return true;
+      if("string" === typeof dataset.lightboxHandler) {
+        var ret = null;
+        if ("function" === typeof window[dataset.lightboxHandler]) {
+          ret = window[dataset.lightboxHandler](event, data);
+        } else {
+          ret = eval('(function(event, data) {' + dataset.lightboxHandler + '}())');
+        }
+        // return true or false to send that to the form
+        // return null or anything else to continue to the ajax
+        if (ret === false || ret === true) {
+          return ret;
         }
       }
       // On submit behavior

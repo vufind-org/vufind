@@ -166,9 +166,11 @@ function cartFormHandler(event, data) {
     keys.push(data[i].name);
   }
   if (keys.indexOf('ids[]') === -1) {
+    return null;
+  }
+  if (keys.indexOf('print') > -1) {
     return true;
   }
-  return keys.indexOf('print') === -1;
 }
 
 document.addEventListener('VuFind.lightbox.closed', updateCartCount, false);
