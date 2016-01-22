@@ -223,7 +223,8 @@ function setupAutocomplete() {
             q:query,
             method:'getACSuggestions',
             searcher:searcher['searcher'],
-            type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val()
+            type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val(),
+            hiddenFilters:hiddenFilters
           },
           dataType:'json',
           success: function(json) {

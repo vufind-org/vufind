@@ -1,5 +1,14 @@
 /* mixins */
 
+input, textarea {
+  &::-webkit-input-placeholder, // Chrome/Safari/Opera
+  &:-ms-input-placeholder,      // IE
+  &::-ms-input-placeholder,     // Edge
+  &::placeholder {
+    color: #888;
+  }
+}
+
 .sr-only
 {
   clip: rect(1px, 1px, 1px, 1px);
