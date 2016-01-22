@@ -76,7 +76,7 @@ trait UserCreationTrait
     protected function assertLightboxWarning(Element $page, $message)
     {
         $warning = $page->find('css', '.modal-body .alert-danger .message');
-        if (!$warning || empty($warning->getText())) {
+        if (!$warning || strlen(trim($warning->getText())) == 0) {
             $warning = $this->findCss($page, '.modal-body .alert-danger');
         }
         $this->assertEquals($message, $warning->getText());
