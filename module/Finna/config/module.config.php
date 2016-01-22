@@ -349,10 +349,30 @@ $config['router']['routes']['searchApi'] = [
         ]
     ]
 ];
+$config['router']['routes']['searchApiv1'] = [
+    'type' => 'Zend\Mvc\Router\Http\Literal',
+    'options' => [
+        'route'    => '/v1/search',
+        'defaults' => [
+            'controller' => 'SearchApi',
+            'action'     => 'search',
+        ]
+    ]
+];
 $config['router']['routes']['searchApiRecord'] = [
     'type' => 'Zend\Mvc\Router\Http\Literal',
     'options' => [
         'route'    => '/api/record',
+        'defaults' => [
+            'controller' => 'SearchApi',
+            'action'     => 'record',
+        ]
+    ]
+];
+$config['router']['routes']['searchApiRecordv1'] = [
+    'type' => 'Zend\Mvc\Router\Http\Literal',
+    'options' => [
+        'route'    => '/v1/record',
         'defaults' => [
             'controller' => 'SearchApi',
             'action'     => 'record',
