@@ -524,8 +524,10 @@ finna.layout = (function() {
     var initImageCheck = function() {
         $(".image-popup-trigger img").each(function() {
             $(this).one("load",function() {
+
                 if (this.naturalWidth && this.naturalWidth == 10 && this.naturalHeight == 10) {
                     $(this).parent().addClass('no-image');
+                    $(this).parents('.grid').addClass('no-image');
                     $('.rating-stars').addClass('hidden-xs');
                 }
             }).each(function() {
@@ -576,6 +578,18 @@ finna.layout = (function() {
         }).change();
     }
 
+    var initRecordFeedbackForm = function() {
+        var id = $('.hiddenId')[0].value;
+        $('#feedback-record').click(function() {
+          var params = extractClassParams(this);
+          return Lightbox.get(params.controller, 'Feedback', {id:id});
+        });
+
+        Lightbox.addFormCallback('feedbackRecord', function(html) {
+            Lightbox.confirm(VuFind.translate('feedback_success'));
+        });
+    };
+
     var initSideFacets = function() {
         var $container = $('.side-facets-container');
         if ($container.length === 0) {
@@ -596,7 +610,7 @@ finna.layout = (function() {
             }
         );
     }
-    
+
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -611,6 +625,7 @@ finna.layout = (function() {
         initJumpMenus: initJumpMenus,
         initMobileNarrowSearch: initMobileNarrowSearch,
         initSecondaryLoginField: initSecondaryLoginField,
+        initRecordFeedbackForm: initRecordFeedbackForm,
         init: function() {
             initJumpMenus();
             initAnchorNavigationLinks();

@@ -174,20 +174,28 @@ finna.imagePopup = (function(finna) {
 
                         // Image copyright information
                         $(".imagepopup-holder .image-rights .copyright-link a").on("click", function() {
-                            var mode = $(this).data("mode") == 1;                                      
-                            
+                            var mode = $(this).data("mode") == 1;
+
                             var moreLink = $(".imagepopup-holder .image-rights .more-link");
                             var lessLink = $(".imagepopup-holder .image-rights .less-link");
-                            
+
                             moreLink.toggle(!mode);
                             lessLink.toggle(mode);
-                            
+
                             $(".imagepopup-holder .image-rights .copyright").toggle(mode);
-                            
-                            return false;                                      
+
+                            return false;
                         });
 
-                        // Load book description                        
+                        // load feedback modal
+                        if ($(".imagepopup-holder #feedback-record")[0]) {
+                          finna.layout.initRecordFeedbackForm();
+                          $(".imagepopup-holder #feedback-record").on("click", function() {
+                            $.magnificPopup.close();
+                          });
+                        }
+
+                        // Load book description
                         var summaryHolder = $(".imagepopup-holder .summary");
                         if (type == 'marc') {
                             var url = VuFind.getPath() + '/AJAX/JSON?method=getDescription&id=' + id;

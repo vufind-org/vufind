@@ -1,5 +1,6 @@
 <!-- START of: finna - RecordDriver/SolrDefault/record-image.phtml -->
-<div class="recordcover-holder">
+<? $formats = $this->driver->tryMethod('getFormats'); ?>
+<div class="recordcover-holder" data-format="<?=$this->transEsc(end($formats))?>" data-noimage="<?=$this->transEsc('no_image')?>">
 <?
 $images = null;
 if (count($allImages)) {
@@ -14,7 +15,6 @@ $imageData = array('images' => $images, 'type' => $type);
 
 <? if ($mediumImage): ?>
 <a class="image-popup-trigger" href="<?= $this->recordLink()->getUrl($this->driver) ?>#image">
-<? $formats = $this->driver->tryMethod('getFormats'); ?>
 <? if (count($allImages) <= 1): ?>
   <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
 <? endif; ?>

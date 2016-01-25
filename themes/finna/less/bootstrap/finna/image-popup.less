@@ -41,7 +41,6 @@
 	box-shadow: 0px 10px 40px rgba(1,1,1,0.8);
 	@media (min-width: @screen-sm-min) {
 	    max-height: 100%;
-	    overflow-y: scroll;
 	}
 }
 .mfp-close-btn-in .mfp-close {
@@ -81,25 +80,28 @@
         text-align: right;
         width: 100%;
         padding-bottom: 10px;
-        position: absolute;
-        bottom: 0px;
-        right: 0px;
         color: #ABABAB;
-        font-size: 12px;
+        font-size: 1em;
         letter-spacing: 0.5px;
 	    font-weight: normal;
-	    
     }
     & .image-index, .record-index {
         display: block;
-        margin: 0 20px 0 0;
+        margin: -34px 20px 0 0;
         & span.index {
             font-size: 1.2em;   
         }
     }
+    & .image-index {
+        margin-top: -50px;   
+    }
+    & .image-index + .record-index {
+        margin-top: 0px; 
+    }
     @media (max-width:@screen-xs-max) {
         & .image-info {
-            text-align: center;   
+            text-align: center;
+            margin-top: 0;
         }
         & .image-index, .record-index {
             margin: 0 0 0 0px;  
@@ -131,7 +133,7 @@
             }
     }
     & .content {
-	    padding: 10px 40px 0 25px;
+	    padding: 10px 40px 0 20px;
         text-align: left;
         vertical-align: top;
         background-color: @body-bg;
@@ -255,15 +257,31 @@
             overflow: hidden;
         }
     }
-
-    & .record-link, .open-link {
+    & .popup-link-buttons {
+        margin-bottom: 20px;   
+    }
+    & .record-link, .open-link, .record-online-link {
         text-align: left;
+        margin-top: 5px;
         & a {
-            display: inline-block;    
+            display: inline-block;
+            padding: 6px 8px 5px;
+            background:  darken(@gray-mid-light, 5%);
+            font-size: .94em;
+            color: @body-bg;
+            border-radius: 10px;
+            transition: background .2s linear;
+            &:hover {
+                text-decoration: none;
+                background: darken(@gray-mid-light, 15%);  
+            }
         }
         & i {
             padding-right: 2px;    
         }
+    }
+    & .record-online-link + .record-link {
+        margin-top: 20px;   
     }
     & .image-dimensions {
 	    color: @gray-light;
@@ -276,7 +294,7 @@
 
     & .image-rights {
 	    text-align: left;
-	    padding: 10px 0px 40px;
+	    padding: 10px 0px 50px;
 	    margin-top: 10px;
 	    border-top: 1px solid  @gray-lighter;
 	    color:#666;
@@ -381,7 +399,7 @@
         & .content { 
             width: 100%;
 		    text-align: center;
-		    padding: 10px 0px 20px;
+		    padding: 10px 0px 0px;
 		    max-width: 800px;
         }
 
