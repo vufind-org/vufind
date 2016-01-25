@@ -754,6 +754,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 $images[] = $url;
             }
         }
+        // Output relative Cover generator urls
+        foreach ($images as &$image) {
+            $parts = parse_url($image);
+            $image = $parts['path'] . '?' . $parts['query'];
+        }
         return $images;
     }
 
