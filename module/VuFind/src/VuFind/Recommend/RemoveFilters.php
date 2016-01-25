@@ -50,7 +50,7 @@ class RemoveFilters implements RecommendInterface
     protected $activeFacetsCount = 0;
 
     /**
-     * Results object
+     * Search results object.
      *
      * @var \VuFind\Search\Base\Results
      */
@@ -94,34 +94,35 @@ class RemoveFilters implements RecommendInterface
      */
     public function process($results)
     {
-        $checkboxFilters = $results->getParams()->getCheckboxFacets();
-        if (count($checkboxFilters) > 0) {
-            foreach ($checkboxFilters as $current) {
-                if ($current['selected'] === true) {
+        $filters = $results->getParams()->getFilterList(false);
+        if (count($filters) > 0) {
+            foreach ($filters as $filter) {
+               foreach ($filter as $f) {
                     $this->activeFacetsCount++;
                 }
             }
         }
-        $moreFilters = $results->getParams()->getFilterList(true);
-        if (count($moreFilters) > 0) {
-            foreach ($moreFilters as $filters) {
-                foreach ($filters as $filter) {
-                    $this->activeFacetsCount++;
-                }
-            }
-        }
-
         $this->results = $results;
     }
 
     /**
-     * Get results stored in the object.
+     * Determines if filters are applied or not.
      *
-     * @return \VuFind\Search\Base\Results
+     * @return bool
      */
-    public function getResults()
+    public function hasFilters()
     {
-        return $this->results;
+        return ($this->activeFacetsCount > 0) ? true : false;
+    }
+
+    /**
+     * Get the URL for this query without filters.
+     *
+     * @return string
+     */
+    public function getFilterlessURL()
+    {
+        return $this->results->getUrlQuery()->removeAllFilters();
     }
 
     /**
