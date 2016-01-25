@@ -120,6 +120,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'rating' => 'getAverageRating',
         'rawData' => ['method' => 'getRecordRawData'],
         'recordLinks' => ['method' => 'getRecordLinks'],
+        'recordPage' => ['method' => 'getRecordPage'],
         'relationshipNotes' => 'getRelationshipNotes',
         'series' => 'getSeries',
         'sfxObjectId' => 'getSfxObjectId',
@@ -688,6 +689,19 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             return $result;
         }
         return null;
+    }
+
+    /**
+     * Get (relative) link to record page
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return string
+     */
+    protected function getRecordPage($record)
+    {
+        $urlHelper = $this->getViewRenderer()->plugin('recordLink');
+        return $urlHelper->getUrl($record);
     }
 
     /**
