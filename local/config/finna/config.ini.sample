@@ -13,6 +13,10 @@ available       = true
 debug           = false
 ; This setting should be set to false after auto-configuration is complete
 autoConfigure = "0"
+; This setting specifies a health check file location. If a health check file exists,
+; the getServerStatus AJAX call will return an error regardless of actual status
+; allowing the server to be disabled from a load-balancer.
+;healthCheckFile = /tmp/disable_vufind
 
 ; This section will need to be customized for your installation
 [Site]
