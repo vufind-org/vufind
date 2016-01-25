@@ -342,6 +342,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $this->callMethod($driver, 'addIdPrefixes', [$data, $source]);
         $this->assertEquals($expected, $result);
 
+        // Empty source must not add prefixes
+        $expected = [
+            'id' => "record1",
+            'cat_username' => "record2"
+        ];
+        $result = $this->callMethod($driver, 'addIdPrefixes', [$data, '']);
+        $this->assertEquals($expected, $result);
+
         $data = [
             'id' => 'record1',
             'cat_username' => [

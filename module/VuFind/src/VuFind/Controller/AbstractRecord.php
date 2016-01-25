@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Mail as MailException,
-    VuFind\RecordDriver\AbstractBase as AbstractRecordDriver,
-    Zend\Session\Container as SessionContainer;
+    VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 
 /**
  * VuFind Record Controller
@@ -685,8 +684,9 @@ class AbstractRecord extends AbstractBase
         $view->tabs = $this->getAllTabs();
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
-        $view->ajaxTabs = isset($config->Site->ajaxTabs)
-            ? $config->Site->ajaxTabs : false;
+        $view->loadInitialTabWithAjax
+            = isset($config->Site->loadInitialTabWithAjax)
+            ? (bool) $config->Site->loadInitialTabWithAjax : false;
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {
