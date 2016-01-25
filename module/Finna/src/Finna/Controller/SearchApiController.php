@@ -120,6 +120,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'rating' => 'getAverageRating',
         'rawData' => ['method' => 'getRecordRawData'],
         'recordLinks' => ['method' => 'getRecordLinks'],
+        'recordPage' => ['method' => 'getRecordPage'],
         'relationshipNotes' => 'getRelationshipNotes',
         'series' => 'getSeries',
         'sfxObjectId' => 'getSfxObjectId',
@@ -691,6 +692,19 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     }
 
     /**
+     * Get (relative) link to record page
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return string
+     */
+    protected function getRecordPage($record)
+    {
+        $urlHelper = $this->getViewRenderer()->plugin('recordLink');
+        return $urlHelper->getUrl($record);
+    }
+
+    /**
      * Get raw data for a record as an array
      *
      * @param \VuFind\RecordDriver\SolrDefault $record Record driver
@@ -753,6 +767,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             if ($url) {
                 $images[] = $url;
             }
+        }
+        // Output relative Cover generator urls
+        foreach ($images as &$image) {
+            $parts = parse_url($image);
+            $image = $parts['path'] . '?' . $parts['query'];
         }
         return $images;
     }
