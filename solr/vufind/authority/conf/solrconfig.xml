@@ -32,7 +32,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>5.4.0</luceneMatchVersion>
+  <luceneMatchVersion>5.4.1</luceneMatchVersion>
 
   <!-- Used to specify an alternate directory to hold all index data
        other than the default ./data under the Solr home.
