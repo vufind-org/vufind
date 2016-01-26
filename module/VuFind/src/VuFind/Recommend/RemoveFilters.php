@@ -120,7 +120,7 @@ class RemoveFilters implements RecommendInterface
      *
      * @return string
      */
-    public function getFilterlessURL()
+    public function getFilterlessUrl()
     {
         return $this->results->getUrlQuery()->removeAllFilters();
     }
