@@ -6395,6 +6395,10 @@ p {
   color: #333344;
   margin: 0;
 }
+.footer iframe {
+  display: block;
+  margin: auto;
+}
 ul.support {
   list-style: none;
   padding-left: 40px;
