@@ -112,7 +112,7 @@ class RemoveFilters implements RecommendInterface
      */
     public function hasFilters()
     {
-        return ($this->activeFacetsCount > 0) ? true : false;
+        return ($this->activeFacetsCount > 0);
     }
 
     /**
@@ -134,5 +134,4 @@ class RemoveFilters implements RecommendInterface
     {
         return $this->activeFacetsCount;
     }
-
 }
