@@ -175,6 +175,9 @@ function Lightbox() {
 
   // Ready actions
   this.bind();
+  this.modal.on('hide.bs.modal', function() {
+    document.dispatchEvent(new Event('VuFind.lightbox.closing'));
+  });
   this.modal.on('hidden.bs.modal', function() {
     document.dispatchEvent(new Event('VuFind.lightbox.closed'));
     VuFind.lightbox.html(VuFind.translate('loading') + '...');

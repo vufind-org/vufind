@@ -96,7 +96,7 @@ function phoneNumberFormHandler(numID, regionCode) {
 }
 
 function refreshPageForLogin() {
-  document.addEventListener('VuFind.lightbox.closed', function() {
+  document.addEventListener('VuFind.lightbox.closing', function() {
     window.location.reload();
   }, false);
 }
