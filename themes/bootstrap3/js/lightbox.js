@@ -106,11 +106,8 @@ function Lightbox() {
     // console.log('constrainLink');
     if(this.href.length > 1) {
       event.preventDefault();
-
       VuFind.lightbox.ajax({url: this.href});
-
       VuFind.lightbox.currentUrl = this.href;
-
       VuFind.modal('show');
       return false;
     }
@@ -125,11 +122,18 @@ function Lightbox() {
     var form = event.target;
     var dataset = form.dataset;
     var data = $(form).serializeArray();
-    var clicked = $(form).find('[type=submit]:focus');
-    if(clicked.length > 0 && clicked.attr('name')) {
-      data.push({'name':clicked.attr('name'), 'value':clicked.attr('value') || 1});
-    }
     data.push({'name':'layout', 'value':'lightbox'}); // Return in lightbox, please
+    // Add submit button information
+    var clicked = $(form).find('[type=submit]:focus');
+    if(clicked.length > 0) {
+      var name = clicked.attr('name') ? clicked.attr('name') : 'submit';
+      data.push({'name':name, 'value':clicked.attr('value') || 1});
+    } else if ($(form).find('[type=submit]').length == 1) {
+      clicked = $(form).find('[type=submit]');
+      var name = clicked.attr('name') ? clicked.attr('name') : 'submit';
+      data.push({'name':name, 'value':$(form).find('[type=submit]').attr('value') || 1});
+    }
+    // Special handlers
     if ('undefined' !== typeof dataset) {
       // Overwritten behavior
       if("string" === typeof dataset.lightboxHandler) {
