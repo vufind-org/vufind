@@ -118,6 +118,54 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
+     * Check Email Update
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports updating
+     * the email address of the ILS.
+     *
+     * @param array $functionConfig The email update configuration values
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values of the configuration values.
+     * on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodupdateEmail($functionConfig, $params)
+    {
+        if ($this->checkCapability('updateEmail', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return false;
+    }
+
+    /**
+     * Check Phone Update
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports updating
+     * the phone number of the ILS.
+     *
+     * @param array $functionConfig The phone update configuration values
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values of the configuration values.
+     * on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodupdatePhone($functionConfig, $params)
+    {
+        if ($this->checkCapability('updatePhone', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return false;
+    }
+
+    /**
      * Check if catalog login is availale
      *
      * @return bool true if the login is available
