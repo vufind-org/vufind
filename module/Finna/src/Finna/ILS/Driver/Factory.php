@@ -100,4 +100,21 @@ class Factory
             $configReader
         );
     }
+
+    /**
+     * Factory for AxiellWebServices driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return AxiellWebServices
+     */
+    public static function getAxiellWebServices(ServiceManager $sm)
+    {
+        $ils = $sm->getServiceLocator()->get('VuFind\ILSHoldSettings');
+        $configReader = $sm->getServiceLocator()->get('Vufind\Config');
+        return new AxiellWebServices(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $configReader
+        );
+    }
 }

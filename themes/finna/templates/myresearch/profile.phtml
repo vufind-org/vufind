@@ -18,9 +18,9 @@
     $user = $this->auth()->isLoggedIn();
     $cards = $user->getLibraryCards();
 
-    $updateAddress = ($config = $this->ils()->checkFunction('UpdateAddress')) && $config['method'] == 'email';
-    $updatePhone = ($config = $this->ils()->checkFunction('UpdatePhone')) && $config['method'] == 'driver';
-    $updateEmail = ($config = $this->ils()->checkFunction('UpdateEmail')) && $config['method'] == 'driver';
+    $updateAddress = ($config = $this->ils()->checkFunction('updateAddress')) && $config['method'] == 'email';
+    $updatePhone = ($config = $this->ils()->checkFunction('updatePhone')) && $config['method'] == 'driver';
+    $updateEmail = ($config = $this->ils()->checkFunction('updateEmail')) && $config['method'] == 'driver';
 
     // Additional translations
     $this->jsTranslations()->addStrings(['new_password_success' => 'new_password_success']);
