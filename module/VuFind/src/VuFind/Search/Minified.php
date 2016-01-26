@@ -67,6 +67,13 @@ class Minified
     public $f = [];
 
     /**
+     * Hidden Filters
+     *
+     * @var array
+     */
+    public $hf = [];
+
+    /**
      * ID, start tIme, query Speed, Result total, search TYpe, search CLass id
      */
     public $id, $i, $s, $r, $ty, $cl;
@@ -96,6 +103,7 @@ class Minified
         // It would be nice to shorten filter fields too, but
         //      it would be a nightmare to maintain.
         $this->f = $searchObject->getParams()->getFilters();
+        $this->hf = $searchObject->getParams()->getHiddenFilters();
     }
 
     /**

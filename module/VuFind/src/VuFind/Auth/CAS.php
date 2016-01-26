@@ -60,13 +60,6 @@ class CAS extends AbstractBase
     protected function validateConfig()
     {
         $cas = $this->config->CAS;
-        // Throw an exception if the required username setting is missing.
-        if (!isset($cas->username) || empty($cas->username)) {
-            throw new AuthException(
-                "CAS username is missing in your configuration file."
-            );
-        }
-
         // Throw an exception if the required server setting is missing.
         if (!isset($cas->server)) {
             throw new AuthException(
@@ -127,7 +120,11 @@ class CAS extends AbstractBase
         $casauth->forceAuthentication();
 
         // Check if username is set.
-        $username = $casauth->getAttribute($cas->username);
+        if (isset($cas->username) && !empty($cas->username)) {
+            $username = $casauth->getAttribute($cas->username);
+        } else {
+            $username = $casauth->getUser();
+        }
         if (empty($username)) {
             throw new AuthException('authentication_error_admin');
         }
@@ -278,7 +275,11 @@ class CAS extends AbstractBase
             $casauth->client(
                 SAML_VERSION_1_1, $cas->server, (int)$cas->port, $cas->context, false
             );
-            $casauth->setCasServerCACert($cas->CACert);
+            if (isset($cas->CACert) && !empty($cas->CACert)) {
+                $casauth->setCasServerCACert($cas->CACert);
+            } else {
+                $casauth->setNoCasServerValidation();
+            }
             $this->phpCASSetup = true;
         }
 

@@ -139,6 +139,18 @@ class Solr implements AutocompleteInterface
     }
 
     /**
+     * Add filters (in addition to the configured ones)
+     *
+     * @param array $filters Filters to add
+     *
+     * @return void
+     */
+    public function addFilters($filters)
+    {
+        $this->filters += $filters;
+    }
+
+    /**
      * Initialize the search object used for finding recommendations.
      *
      * @return void

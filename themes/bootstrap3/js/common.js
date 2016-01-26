@@ -88,9 +88,11 @@ function phoneNumberFormHandler(numID, regionCode) {
     }
     $(phoneInput).siblings('.help-block.with-errors').html(valid);
     $(phoneInput).closest('.form-group').addClass('sms-error');
+    return false;
   } else {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
+    return true;
   }
 }
 
@@ -308,13 +310,18 @@ function setupAutocomplete() {
       loadingString: VuFind.translate('loading')+'...',
       handler: function(query, cb) {
         var searcher = extractClassParams(op);
+        var hiddenFilters = [];
+        $(op).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function() {
+          hiddenFilters.push($(this).val());
+        });
         $.fn.autocomplete.ajax({
           url: VuFind.getPath() + '/AJAX/JSON',
           data: {
             q:query,
             method:'getACSuggestions',
             searcher:searcher['searcher'],
-            type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val()
+            type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val(),
+            hiddenFilters:hiddenFilters
           },
           dataType:'json',
           success: function(json) {
