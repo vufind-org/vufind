@@ -88,7 +88,7 @@
 
     }
 
-    var newerRegex = new RegExp("^(?:v5\\\\.4\\\\.0|v5\\\\.3\\\\.1)");
+    var newerRegex = new RegExp("^(?:v5\\\\.4\\\\.1|v5\\\\.4\\\\.0)");
     function isOlder(listId) {
       return ! newerRegex.test(listId);
     }
@@ -117,8 +117,8 @@
          * the first two releases, or the current URL has a fragment and the
          * fragment refers to the current item or one of its ancestors.
          */
-        if (list.id != 'v5.4.0.list' 
-            && list.id != 'v5.3.1.list'
+        if (list.id != 'v5.4.1.list' 
+            && list.id != 'v5.4.0.list'
             && list.className != 'bulleted-list'
             && (currentAnchor == ''
                 || ! shouldExpand(currentList, currentAnchor, list.id))) {
@@ -141,7 +141,7 @@
       for (var i = 0 ; i < anchors.length; i++) {
         var anchor = anchors[i];
         if (anchor.id != '') {
-          if (anchor.id == 'v5.4.0' || anchor.id == 'v5.3.1') {
+          if (anchor.id == 'v5.4.1' || anchor.id == 'v5.4.0') {
             anchor.title = 'Click to collapse';
           } else {
             anchor.title = 'Click to expand';
@@ -179,9 +179,49 @@ caching, replication, and a web administration interface.
 </p>
       <p>See <a href="http://lucene.apache.org/solr">http://lucene.apache.org/solr</a> for more information.
 </p>
-<h2><a id="v5.4.0" href="javascript:toggleList('v5.4.0')">Release 5.4.0 </a></h2>
+<h2><a id="v5.4.1" href="javascript:toggleList('v5.4.1')">Release 5.4.1 </a></h2>
+<ul id="v5.4.1.list">
+  <li><a id="v5.4.1.bug_fixes" href="javascript:toggleList('v5.4.1.bug_fixes')">Bug Fixes</a>&nbsp;&nbsp;&nbsp;(8)
+    <ol id="v5.4.1.bug_fixes.list">
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8460">SOLR-8460</a>: /analysis/field could throw exceptions for custom attributes.
+<br /><span class="attrib">(David Smiley, Uwe Schindler)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8373">SOLR-8373</a>: KerberosPlugin: Using multiple nodes on same machine leads clients to
+fetch TGT for every request
+<br /><span class="attrib">(Ishan Chattopadhyaya via noble)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8059">SOLR-8059</a>: &amp;debug=results for distributed search when distrib.singlePass (sometimes activated
+automatically) could result in an NPE.
+<br /><span class="attrib">(David Smiley, Markus Jelsma)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8422">SOLR-8422</a>: When authentication enabled, requests fail if sent to a node that doesn't host
+the collection
+<br /><span class="attrib">(noble)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-7462">SOLR-7462</a>: AIOOBE in RecordingJSONParser
+<br /><span class="attrib">(Scott Dawson, noble)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8496">SOLR-8496</a>: SolrIndexSearcher.getDocSet(List&lt;Query&gt;) incorrectly included deleted documents
+when all of the queries were uncached (or there was no filter cache).  This caused
+multi-select faceting (including the JSON Facet API) to include deleted doc counts
+when the remaining non-excluded filters were all uncached.  This bug was first introduced in 5.3.0
+<br /><span class="attrib">(Andreas Müller, Vasiliy Bout, Erick Erickson, Shawn Heisey, Hossman, yonik)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8418">SOLR-8418</a>: Adapt to changes in <a href="http://issues.apache.org/jira/browse/LUCENE-6590">LUCENE-6590</a> for use of boosts with MLTHandler and
+Simple/CloudMLTQParser
+<br /><span class="attrib">(Jens Wille, Ramkumar Aiyengar)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8561">SOLR-8561</a>: Doing a rolling upgrade to 5.4.0 fails because the new nodes cannot find the
+shard leader properties where they expect. This bug was first introduced in 5.4.0 and a
+fallback was added so that the leader properties are searched in both the old location
+and the new one.
+<br /><span class="attrib">(Shai Erera)</span></li>
+    </ol>
+  </li>
+  <li><a id="v5.4.1.new_features" href="javascript:toggleList('v5.4.1.new_features')">New Features</a>&nbsp;&nbsp;&nbsp;(1)
+    <ol id="v5.4.1.new_features.list">
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8470">SOLR-8470</a>: Make TTL of PKIAuthenticationPlugin's tokens configurable through a system property
+(pkiauth.ttl)
+<br /><span class="attrib">(noble)</span></li>
+    </ol>
+  </li>
+</ul>
+<h2><a id="v5.4.0" href="javascript:toggleList('v5.4.0')">Release 5.4.0  [2015-12-14]</a></h2>
 <ul id="v5.4.0.list">
-      <li>Consult the <a href="http://lucene.apache.org/core/5_4_0/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
+      <li>Consult the <a href="http://lucene.apache.org/core/5_4_1/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
 </li>
   </li>
   <li><a id="v5.4.0.versions_of_major_components" href="javascript:toggleList('v5.4.0.versions_of_major_components')">Versions of Major Components</a>&nbsp;&nbsp;&nbsp;(6)
@@ -609,9 +649,53 @@ check and update luceneMatchVersion under solr/example/ configs as well logic.
     </ol>
   </li>
 </ul>
-<h2><a id="v5.3.1" href="javascript:toggleList('v5.3.1')">Release 5.3.1  [2015-09-24]</a></h2>
+<h2><a id="older" href="javascript:toggleList('older')">Older Releases</a></h2>
+<ul id="older.list">
+<h3><a id="v5.3.2" href="javascript:toggleList('v5.3.2')">Release 5.3.2 </a></h3>
+<ul id="v5.3.2.list">
+  <li><a id="v5.3.2.bug_fixes" href="javascript:toggleList('v5.3.2.bug_fixes')">Bug Fixes</a>&nbsp;&nbsp;&nbsp;(11)
+    <ol id="v5.3.2.bug_fixes.list">
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8460">SOLR-8460</a>: /analysis/field could throw exceptions for custom attributes.
+<br /><span class="attrib">(David Smiley, Uwe Schindler)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8373">SOLR-8373</a>: KerberosPlugin: Using multiple nodes on same machine leads clients to
+fetch TGT for every request
+<br /><span class="attrib">(Ishan Chattopadhyaya via noble)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8340">SOLR-8340</a>: Fixed NullPointerException in HighlightComponent.
+<br /><span class="attrib">(zengjie via Christine Poerschke)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8059">SOLR-8059</a>: &amp;debug=results for distributed search when distrib.singlePass (sometimes activated
+automatically) could result in an NPE.
+<br /><span class="attrib">(David Smiley, Markus Jelsma)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8167">SOLR-8167</a>: Authorization framework does not work with POST params
+<br /><span class="attrib">(noble)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8355">SOLR-8355</a>: update permissions were failing node recovery
+<br /><span class="attrib">(noble , Anshum Gupta)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8326">SOLR-8326</a>: If BasicAuth enabled, inter node requests fail after node restart
+<br /><span class="attrib">(noble, Anshum Gupta)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8269">SOLR-8269</a>: Upgrade commons-collections to 3.2.2. This fixes a known serialization vulnerability
+<br /><span class="attrib">(janhoy)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8422">SOLR-8422</a>: When authentication enabled, requests fail if sent to a node that doesn't host
+the collection
+<br /><span class="attrib">(noble)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-7462">SOLR-7462</a>: AIOOBE in RecordingJSONParser
+<br /><span class="attrib">(Scott Dawson, noble)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8496">SOLR-8496</a>: SolrIndexSearcher.getDocSet(List&lt;Query&gt;) incorrectly included deleted documents
+when all of the queries were uncached (or there was no filter cache).  This caused
+multi-select faceting (including the JSON Facet API) to include deleted doc counts
+when the remaining non-excluded filters were all uncached.  This bug was first introduced in 5.3.0
+<br /><span class="attrib">(Andreas Müller, Vasiliy Bout, Erick Erickson, Shawn Heisey, Hossman, yonik)</span></li>
+    </ol>
+  </li>
+  <li><a id="v5.3.2.new_features" href="javascript:toggleList('v5.3.2.new_features')">New Features</a>&nbsp;&nbsp;&nbsp;(1)
+    <ol id="v5.3.2.new_features.list">
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8470">SOLR-8470</a>: Make TTL of PKIAuthenticationPlugin's tokens configurable through a system property
+(pkiauth.ttl)
+<br /><span class="attrib">(noble)</span></li>
+    </ol>
+  </li>
+</ul>
+<h3><a id="v5.3.1" href="javascript:toggleList('v5.3.1')">Release 5.3.1  [2015-09-24]</a></h3>
 <ul id="v5.3.1.list">
-  <li><a id="v5.3.1.bug_fixes" href="javascript:toggleList('v5.3.1.bug_fixes')">Bug Fixes</a>&nbsp;&nbsp;&nbsp;(9)
+  <li><a id="v5.3.1.bug_fixes" href="javascript:toggleList('v5.3.1.bug_fixes')">Bug Fixes</a>&nbsp;&nbsp;&nbsp;(10)
     <ol id="v5.3.1.bug_fixes.list">
       <li><a href="http://issues.apache.org/jira/browse/SOLR-7949">SOLR-7949</a>: Resolve XSS issue in Admin UI stats page
 <br /><span class="attrib">(David Chiu via janhoy)</span></li>
@@ -633,14 +717,15 @@ results to be returned on subsequent requests.
 <br /><span class="attrib">(Erick Erickson, yonik)</span></li>
       <li><a href="http://issues.apache.org/jira/browse/SOLR-8041">SOLR-8041</a>: Fix VelocityResponseWriter's $resource.get(key,baseName,locale) to use specified locale.
 <br /><span class="attrib">(Erik Hatcher)</span></li>
+      <li><a href="http://issues.apache.org/jira/browse/SOLR-8058">SOLR-8058</a>: Fix the exclusion filter so that collections that start with js, css, img, tpl
+can be accessed.
+<br /><span class="attrib">(Upayavira, Steve Rowe, Anshum Gupta)</span></li>
     </ol>
   </li>
 </ul>
-<h2><a id="older" href="javascript:toggleList('older')">Older Releases</a></h2>
-<ul id="older.list">
 <h3><a id="v5.3.0" href="javascript:toggleList('v5.3.0')">Release 5.3.0  [2015-08-25]</a></h3>
 <ul id="v5.3.0.list">
-      <li>Consult the <a href="http://lucene.apache.org/core/5_4_0/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
+      <li>Consult the <a href="http://lucene.apache.org/core/5_4_1/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
 </li>
   </li>
   <li><a id="v5.3.0.versions_of_major_components" href="javascript:toggleList('v5.3.0.versions_of_major_components')">Versions of Major Components</a>&nbsp;&nbsp;&nbsp;(6)
@@ -1008,7 +1093,7 @@ bin/solr and bin\solr.cmd
 </ul>
 <h3><a id="v5.2.1" href="javascript:toggleList('v5.2.1')">Release 5.2.1  [2015-06-15]</a></h3>
 <ul id="v5.2.1.list">
-      <li>Consult the <a href="http://lucene.apache.org/core/5_4_0/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
+      <li>Consult the <a href="http://lucene.apache.org/core/5_4_1/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
 </li>
   </li>
   <li><a id="v5.2.1.versions_of_major_components" href="javascript:toggleList('v5.2.1.versions_of_major_components')">Versions of Major Components</a>&nbsp;&nbsp;&nbsp;(6)
@@ -1067,7 +1152,7 @@ functions in HttpSolrCall.
 </ul>
 <h3><a id="v5.2.0" href="javascript:toggleList('v5.2.0')">Release 5.2.0  [2015-06-07]</a></h3>
 <ul id="v5.2.0.list">
-      <li>Consult the <a href="http://lucene.apache.org/core/5_4_0/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
+      <li>Consult the <a href="http://lucene.apache.org/core/5_4_1/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
 </li>
   </li>
   <li><a id="v5.2.0.versions_of_major_components" href="javascript:toggleList('v5.2.0.versions_of_major_components')">Versions of Major Components</a>&nbsp;&nbsp;&nbsp;(6)
@@ -1491,7 +1576,7 @@ via Anshum Gupta)</span></li>
 </ul>
 <h3><a id="v5.1.0" href="javascript:toggleList('v5.1.0')">Release 5.1.0  [2015-04-14]</a></h3>
 <ul id="v5.1.0.list">
-      <li>Consult the <a href="http://lucene.apache.org/core/5_4_0/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
+      <li>Consult the <a href="http://lucene.apache.org/core/5_4_1/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
 </li>
   </li>
   <li><a id="v5.1.0.versions_of_major_components" href="javascript:toggleList('v5.1.0.versions_of_major_components')">Versions of Major Components</a>&nbsp;&nbsp;&nbsp;(6)
@@ -1882,7 +1967,7 @@ to _text_
 </ul>
 <h3><a id="v5.0.0" href="javascript:toggleList('v5.0.0')">Release 5.0.0  [2015-02-20]</a></h3>
 <ul id="v5.0.0.list">
-      <li>Consult the <a href="http://lucene.apache.org/core/5_4_0/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release.
+      <li>Consult the <a href="http://lucene.apache.org/core/5_4_1/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release.
 </li>
       <li>NOTE: Solr 5.0 only supports creating and removing SolrCloud collections through
       the collections API, unlike previous versions. While not using the
@@ -2891,7 +2976,7 @@ JAR yourself (version 4.2) and add it to contrib/extraction/lib folder:
 </ul>
 <h3><a id="v4.10.0" href="javascript:toggleList('v4.10.0')">Release 4.10.0  [2014-09-04]</a></h3>
 <ul id="v4.10.0.list">
-      <li>Consult the <a href="http://lucene.apache.org/core/5_4_0/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
+      <li>Consult the <a href="http://lucene.apache.org/core/5_4_1/changes/Changes.html">LUCENE_CHANGES.txt</a> file for additional, low level, changes in this release
 </li>
   </li>
   <li><a id="v4.10.0.versions_of_major_components" href="javascript:toggleList('v4.10.0.versions_of_major_components')">Versions of Major Components</a>&nbsp;&nbsp;&nbsp;(5)

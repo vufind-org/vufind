@@ -8,6 +8,43 @@ caching, replication, and a web administration interface.
 
 See http://lucene.apache.org/solr for more information.
 
+==================  5.4.1 ==================
+
+Bug Fixes
+----------------------
+
+* SOLR-8460: /analysis/field could throw exceptions for custom attributes. (David Smiley, Uwe Schindler)
+
+* SOLR-8373: KerberosPlugin: Using multiple nodes on same machine leads clients to
+  fetch TGT for every request (Ishan Chattopadhyaya via noble)
+
+* SOLR-8059: &debug=results for distributed search when distrib.singlePass (sometimes activated
+  automatically) could result in an NPE. (David Smiley, Markus Jelsma)
+
+* SOLR-8422: When authentication enabled, requests fail if sent to a node that doesn't host
+  the collection (noble)
+
+* SOLR-7462: AIOOBE in RecordingJSONParser (Scott Dawson, noble)
+
+* SOLR-8496: SolrIndexSearcher.getDocSet(List<Query>) incorrectly included deleted documents
+  when all of the queries were uncached (or there was no filter cache).  This caused
+  multi-select faceting (including the JSON Facet API) to include deleted doc counts
+  when the remaining non-excluded filters were all uncached.  This bug was first introduced in 5.3.0
+  (Andreas Müller, Vasiliy Bout, Erick Erickson, Shawn Heisey, Hossman, yonik)
+
+* SOLR-8418: Adapt to changes in LUCENE-6590 for use of boosts with MLTHandler and
+  Simple/CloudMLTQParser (Jens Wille, Ramkumar Aiyengar)
+  
+* SOLR-8561: Doing a rolling upgrade to 5.4.0 fails because the new nodes cannot find the 
+  shard leader properties where they expect. This bug was first introduced in 5.4.0 and a
+  fallback was added so that the leader properties are searched in both the old location
+  and the new one. (Shai Erera)
+
+New Features
+----------------------
+
+* SOLR-8470: Make TTL of PKIAuthenticationPlugin's tokens configurable through a system property
+  (pkiauth.ttl) (noble)
 
 ==================  5.4.0 ==================
 
@@ -460,6 +497,47 @@ Other Changes
 * SOLR-8363: Fix check-example-lucene-match-version Ant task and addVersion.py script to
   check and update luceneMatchVersion under solr/example/ configs as well logic. (Varun Thacker)
 
+==================  5.3.2 ==================
+
+Bug Fixes
+----------------------
+
+* SOLR-8460: /analysis/field could throw exceptions for custom attributes. (David Smiley, Uwe Schindler)
+
+* SOLR-8373: KerberosPlugin: Using multiple nodes on same machine leads clients to
+  fetch TGT for every request (Ishan Chattopadhyaya via noble)
+
+* SOLR-8340: Fixed NullPointerException in HighlightComponent. (zengjie via Christine Poerschke)
+
+* SOLR-8059: &debug=results for distributed search when distrib.singlePass (sometimes activated
+  automatically) could result in an NPE. (David Smiley, Markus Jelsma)
+
+* SOLR-8167: Authorization framework does not work with POST params (noble)
+
+* SOLR-8355: update permissions were failing node recovery (noble , Anshum Gupta)
+
+* SOLR-8326: If BasicAuth enabled, inter node requests fail after node restart (noble, Anshum Gupta)
+
+* SOLR-8269: Upgrade commons-collections to 3.2.2. This fixes a known serialization vulnerability (janhoy)
+
+* SOLR-8422: When authentication enabled, requests fail if sent to a node that doesn't host
+  the collection (noble)
+
+* SOLR-7462: AIOOBE in RecordingJSONParser (Scott Dawson, noble)
+
+* SOLR-8496: SolrIndexSearcher.getDocSet(List<Query>) incorrectly included deleted documents
+  when all of the queries were uncached (or there was no filter cache).  This caused
+  multi-select faceting (including the JSON Facet API) to include deleted doc counts
+  when the remaining non-excluded filters were all uncached.  This bug was first introduced in 5.3.0
+  (Andreas Müller, Vasiliy Bout, Erick Erickson, Shawn Heisey, Hossman, yonik)
+
+
+New Features
+----------------------
+
+* SOLR-8470: Make TTL of PKIAuthenticationPlugin's tokens configurable through a system property
+  (pkiauth.ttl) (noble)
+
 ==================  5.3.1 ==================
 
 Bug Fixes
@@ -485,6 +563,9 @@ Bug Fixes
 
 * SOLR-8041: Fix VelocityResponseWriter's $resource.get(key,baseName,locale) to use specified locale.
   (Erik Hatcher)
+
+* SOLR-8058: Fix the exclusion filter so that collections that start with js, css, img, tpl
+  can be accessed. (Upayavira, Steve Rowe, Anshum Gupta)
 
 ==================  5.3.0 ==================
 

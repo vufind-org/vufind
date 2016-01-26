@@ -4,6 +4,42 @@ For more information on past and future Lucene versions, please see:
 http://s.apache.org/luceneversions
 
 
+======================= Lucene 5.4.1 =======================
+
+Bug Fixes
+
+* LUCENE-6918: LRUQueryCache.onDocIdSetEviction is only called when at least
+  one DocIdSet is being evicted. (Adrien Grand)
+
+* LUCENE-6946: SortField.equals now takes the missingValue parameter into
+  account. (Adrien Grand)
+
+* SOLR-7865: BlendedInfixSuggester was returning too many results
+  (Arcadius Ahouansou via Mike McCandless)
+
+* LUCENE-6929: Fix SpanNotQuery rewriting to not drop the pre/post parameters.
+  (Tim Allison via Adrien Grand)
+
+* LUCENE-6910: fix 'if ... > Integer.MAX_VALUE' check in
+  (Binary|Numeric)DocValuesFieldUpdates.merge
+  (https://scan.coverity.com/projects/5620 CID 119973 and CID 120081)
+  (Christine Poerschke, Coverity Scan (via Rishabh Patel))
+
+* LUCENE-6950: Fix FieldInfos handling of UninvertingReader, e.g. do not
+  hide the true docvalues update generation or other properties. 
+  (Ishan Chattopadhyaya via Robert Muir)
+
+* LUCENE-6948: Fix ArrayIndexOutOfBoundsException in PagedBytes$Reader.fill
+  by removing an unnecessary long-to-int cast.
+  (Michael Lawley via Christine Poerschke)
+
+* LUCENE-6970: Fixed off-by-one error in Lucene54DocValuesProducer that could
+  potentially corrupt doc values. (Adrien Grand)
+
+* LUCENE-2229: Fix Highlighter's SimpleSpanFragmenter when multiple adjacent
+  stop words following a span can unduly make the fragment way too long.
+  (Elmer Garduno, Lukhnos Liu via David Smiley)
+
 ======================= Lucene 5.4.0 =======================
 
 New Features
@@ -136,6 +172,10 @@ Optimizations
 * LUCENE-6898: In the default codec, the last stored field value will not
   be fully read from disk if the supplied StoredFieldVisitor doesn't want it.
   So put your largest text field value last to benefit. (David Smiley)
+
+* SOLR-7730: Speed up SlowCompositeReaderWrapper.getSortedSetDocValues() by
+  avoiding merging FieldInfos just to check doc value type.
+  (Paul Vasilyev, Yuriy Pakhomov, Mikhail Khludnev, yonik)
 
 Bug Fixes
 
@@ -744,11 +784,7 @@ Optimizations
 * LUCENE-6621: Removed two unused variables in analysis/stempel/src/java/org/
   egothor/stemmer/Compile.java
   (Rishabh Patel via Christine Poerschke)
-
-* SOLR-7730: Speed up SlowCompositeReaderWrapper.getSortedSetDocValues() by
-  avoiding merging FieldInfos just to check doc value type.
-  (Paul Vasilyev, Yuriy Pakhomov, Mikhail Khludnev, yonik)
-
+    
 Build
 
 * LUCENE-6518: Don't report false thread leaks from IBM J9
