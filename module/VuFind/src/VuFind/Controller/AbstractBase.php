@@ -251,8 +251,19 @@ class AbstractBase extends AbstractActionController
             $msg = 'You must be logged in first';
         }
 
+        // If we're doing off-site login requests,
+        // we don't want to return to the lightbox
+        $serverUrl = $this->getServerUrl();
+        if ($this->getAuthManager()->getSessionInitiator($serverUrl)) {
+            $serverUrl = str_replace(
+                ['?layout=lightbox', '&layout=lightbox'],
+                ['?', '&'],
+                $serverUrl
+            );
+        }
+
         // Store the current URL as a login followup action
-        $this->followup()->store($extras);
+        $this->followup()->store($extras, $serverUrl);
         if (!empty($msg)) {
             $this->flashMessenger()->addMessage($msg, 'error');
         }
@@ -352,7 +363,7 @@ class AbstractBase extends AbstractActionController
     {
         return $this->getServiceLocator()->get('VuFind\RecordCache');
     }
-    
+
     /**
      * Get the record router.
      *
