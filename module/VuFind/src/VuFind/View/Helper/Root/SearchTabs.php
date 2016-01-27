@@ -145,6 +145,8 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Get the tab configuration
      *
+     * @param \VuFind\Search\Base\Params $params Search parameters
+     *
      * @return array
      */
     public function getTabConfigForParams($params)
