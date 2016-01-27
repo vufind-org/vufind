@@ -42,8 +42,11 @@ namespace VuFind\Recommend;
 class SwitchTab implements RecommendInterface
 {
     /**
+     * Helper attribute holding the state of tabs.
+     *
+     * @var array
      */
-    var $tabSelections = null;
+    protected $tabSelections = null;
 
     /**
      * Store the configuration of the recommendation module.
