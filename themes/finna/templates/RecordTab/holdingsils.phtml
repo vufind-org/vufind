@@ -133,14 +133,14 @@
           $firstDueStr = $row['duedate'];
         }
       }
-      $statuses[$row['status']] = 1;
+      $statuses[$this->translate('status_' . $row['status'], null, $row['status'])] = 1;
     }
     if ($available) {
       $holdingSummary = '<span class="text-success"><i class="fa fa-ok"></i> ' . $this->transEsc('available_count', ['%%count%%' => $available]) . '</span>';
     } else if ($firstDueStr) {
       $holdingSummary = '<span class="text-danger"><i class="fa fa-remove"></i> ' . $this->transEsc('closest_due_date', ['%%date%%' => $firstDueStr]) . '</span>';
     } else if ($statuses) {
-      $holdingSummary = '<span class="text-danger"> ' . $this->transEsc(implode(' ', array_flip($statuses))) . '</span>';
+      $holdingSummary = '<span class="text-danger"> ' . $this->escapeHtml(implode(' ', array_flip($statuses))) . '</span>';
     } else {
       $holdingSummary = '<span class="text-success"><i class="fa fa-ok"></i> ' . $this->transEsc('Available') . '</span>';
     }
