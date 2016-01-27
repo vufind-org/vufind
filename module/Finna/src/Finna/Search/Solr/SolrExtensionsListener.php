@@ -130,6 +130,7 @@ class SolrExtensionsListener
             $this->addDataSourceFilter($event);
             if ($event->getParam('context') == 'search') {
                 $this->limitHierarchicalFacets($event);
+                $this->addHiddenComponentPartFilter($event);
             }
         }
         return $event;
@@ -161,6 +162,27 @@ class SolrExtensionsListener
                     'fq',
                     'source_str_mv:(' . implode(' OR ', $sources) . ')'
                 );
+            }
+        }
+    }
+
+    /**
+     * Add hidden component part filter per search config.
+     *
+     * @param EventInterface $event Event
+     *
+     * @return void
+     */
+    protected function addHiddenComponentPartFilter(EventInterface $event)
+    {
+        $config = $this->serviceLocator->get('VuFind\Config');
+        $searchConfig = $config->get($this->searchConfig);
+        if (isset($searchConfig->General->hide_component_parts)
+            && $searchConfig->General->hide_component_parts
+        ) {
+            $params = $event->getParam('params');
+            if ($params) {
+                $params->add('fq', '-hidden_component_boolean:true');
             }
         }
     }
