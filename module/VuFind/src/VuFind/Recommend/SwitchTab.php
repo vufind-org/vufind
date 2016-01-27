@@ -42,7 +42,7 @@ namespace VuFind\Recommend;
 class SwitchTab implements RecommendInterface
 {
     /**
-     * Helper attribute holding the state of tabs.
+     * Current tab settings
      *
      * @var array
      */
@@ -129,7 +129,7 @@ class SwitchTab implements RecommendInterface
      *
      * @param array $tabEnv tabConfig
      *
-     * @return string
+     * @return array
      */
     public function getInactiveTabs($tabEnv)
     {

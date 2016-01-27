@@ -3,7 +3,7 @@
 ?>
 <? if (count($searchTabs) > 0): ?>
   <div class="alert alert-info">
-    <?=$this->transEsc('nohit_change_tab', array('%%activeTab%%' => $this->transEsc($this->recommend->getActiveTab($searchTabs)['label'])))?>
+    <?=$this->transEsc('nohit_change_tab', array('%%activeTab%%' => $this->translate($this->recommend->getActiveTab($searchTabs)['label'])))?>
     <ul>
     <? $inactiveTabs = $this->recommend->getInactiveTabs($searchTabs); ?>
     <? foreach ($inactiveTabs as $tab): ?>
