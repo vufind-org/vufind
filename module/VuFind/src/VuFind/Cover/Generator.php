@@ -357,7 +357,7 @@ class Generator
         do {
             $txtWidth = $this->textWidth(
                 $author,
-                $this->settings->titleFont,
+                $this->settings->authorFont,
                 $fontSize
             );
             $fontSize--;
