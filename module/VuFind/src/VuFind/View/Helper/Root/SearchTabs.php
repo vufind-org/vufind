@@ -149,11 +149,10 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      */
     public function getTabConfigForParams($params)
     {
-        $searchTabs = $this->getTabConfig(
+        return $this->getTabConfig(
             $params->getsearchClassId(), $params->getDisplayQuery(),
             $params->getSearchHandler(), $params->getSearchType()
         );
-        return $searchTabs;
     }
 
     /**
