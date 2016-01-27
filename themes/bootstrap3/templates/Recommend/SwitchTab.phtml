@@ -1,18 +1,17 @@
 <?
-  $searchTabs = $this->searchtabs($this->params->getsearchClassId(), $this->params->getDisplayQuery(), $this->params->getSearchHandler(), $this->params->getSearchType());
+  $searchTabs = $this->searchtabs()->getTabConfigForParams($this->params);
 ?>
 <? if (count($searchTabs) > 0): ?>
   <div class="alert alert-info">
-    <?=$this->transEsc('nohit_change_tab', array('%%activeTab%%' => $this->transEsc($this->recommend->getActiveTab($searchTabs))))?>
+    <?=$this->transEsc('nohit_change_tab', array('%%activeTab%%' => $this->transEsc($this->recommend->getActiveTab($searchTabs)['label'])))?>
     <ul>
-    <? foreach ($searchTabs as $tab): ?>
-        <? if ($tab['selected'] === false): ?>
+    <? $inactiveTabs = $this->recommend->getInactiveTabs($searchTabs); ?>
+    <? foreach ($inactiveTabs as $tab): ?>
         <li>
             <a href="<?=$tab['selected'] ? '' : $this->escapeHtmlAttr($tab['url'])?>">
                 <?=$this->transEsc($tab['label']); ?>
             </a>
         </li>
-        <? endif; ?>
     <? endforeach; ?>
     </ul>
   </div>

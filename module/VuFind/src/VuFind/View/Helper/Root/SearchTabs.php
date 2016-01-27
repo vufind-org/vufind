@@ -143,6 +143,20 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get the tab configuration
+     *
+     * @return array
+     */
+    public function getTabConfigForParams($params)
+    {
+        $searchTabs = $this->getTabConfig(
+            $params->getsearchClassId(), $params->getDisplayQuery(),
+            $params->getSearchHandler(), $params->getSearchType()
+        );
+        return $searchTabs;
+    }
+
+    /**
      * Get an array of hidden filters
      *
      * @param string $searchClassId         Active search class
