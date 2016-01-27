@@ -218,7 +218,7 @@
               </div>
             <? else: ?>
               <? /* Begin Unavailable Items (Recalls) */ ?>
-              <span class="text-danger"><i class="fa fa-remove"></i> <?=$this->transEsc($row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
+              <span class="text-danger"><i class="fa fa-remove"></i> <?=$this->transEsc('status_' . $row['status'], null, $row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
               <? if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
               <? if (isset($row['duedate']) && $row['duedate']): ?>
                 &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>
