@@ -618,98 +618,6 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Get a session namespace specific to the current class.
-     *
-     * @return SessionContainer
-     */
-    public function getSession()
-    {
-        static $session = false;
-        if (!$session) {
-            $session = new SessionContainer(get_class($this));
-        }
-        return $session;
-    }
-
-    /**
-     * Remember the last sort option used.
-     *
-     * @param string $last Option to remember.
-     *
-     * @return void
-     */
-    public function rememberLastSort($last)
-    {
-        $session = $this->getSession();
-        if (!$session->getManager()->getStorage()->isImmutable()) {
-            $session->lastSort = $last;
-        }
-    }
-
-    /**
-     * Retrieve the last sort option used.
-     *
-     * @return string
-     */
-    public function getLastSort()
-    {
-        $session = $this->getSession();
-        return isset($session->lastSort) ? $session->lastSort : null;
-    }
-
-    /**
-     * Remember the last limit option used.
-     *
-     * @param string $last Option to remember.
-     *
-     * @return void
-     */
-    public function rememberLastLimit($last)
-    {
-        $session = $this->getSession();
-        if (!$session->getManager()->getStorage()->isImmutable()) {
-            $session->lastLimit = $last;
-        }
-    }
-
-    /**
-     * Retrieve the last limit option used.
-     *
-     * @return string
-     */
-    public function getLastLimit()
-    {
-        $session = $this->getSession();
-        return isset($session->lastLimit) ? $session->lastLimit : null;
-    }
-
-    /**
-     * Remember the last view option used.
-     *
-     * @param string $last Option to remember.
-     *
-     * @return void
-     */
-    public function rememberLastView($last)
-    {
-        $session = $this->getSession();
-        if (!$session->getManager()->getStorage()->isImmutable()) {
-            $session->lastView = $last;
-        }
-    }
-
-    /**
-     * Retrieve the last view option used.
-     *
-     * @return string
-     */
-    public function getLastView()
-    {
-        $session = $this->getSession();
-        return isset($session->lastView) ? $session->lastView : null;
-    }
-
-    /**
      * Get default filters to apply to an empty search.
      *
      * @return array
@@ -834,6 +742,18 @@ abstract class Options implements TranslatorAwareInterface
         }
 
         return $recommend;
+    }
+
+    /**
+     * Get the identifier used for naming the various search classes in this family.
+     *
+     * @return string
+     */
+    public function getSearchClassId()
+    {
+        // Parse identifier out of class name of format VuFind\Search\[id]\Options:
+        $class = explode('\\', get_class($this));
+        return $class[2];
     }
 
     /**

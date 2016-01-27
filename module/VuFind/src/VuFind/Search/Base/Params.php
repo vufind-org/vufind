@@ -107,6 +107,13 @@ class Params implements ServiceLocatorAwareInterface
     protected $view = null;
 
     /**
+     * Previously-used view (loaded in from session)
+     *
+     * @var string
+     */
+    protected $lastView = null;
+
+    /**
      * Search options
      *
      * @var Options
@@ -220,9 +227,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getSearchClassId()
     {
-        // Parse identifier out of class name of format VuFind\Search\[id]\Params:
-        $class = explode('\\', get_class($this));
-        return $class[2];
+        return $this->getOptions()->getSearchClassId();
     }
 
     /**
@@ -247,13 +252,6 @@ class Params implements ServiceLocatorAwareInterface
         $this->initSort($request);
         $this->initFilters($request);
         $this->initHiddenFilters($request);
-
-        // Remember the user's settings for future reference (we only want to do
-        // this in initFromRequest, since other code may call the set methods from
-        // other contexts!):
-        $this->getOptions()->rememberLastLimit($this->getLimit());
-        $this->getOptions()->rememberLastSort($this->getSort());
-        $this->rememberLastHiddenFilters($this->getHiddenFilters());
     }
 
     /**
@@ -476,6 +474,18 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Set the last value of the view parameter (if available in session).
+     *
+     * @param string $view Last valid view parameter value
+     *
+     * @return void
+     */
+    public function setLastView($view)
+    {
+        $this->lastView = $view;
+    }
+
+    /**
      * Get the value for which results view to use
      *
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
@@ -487,25 +497,17 @@ class Params implements ServiceLocatorAwareInterface
     {
         // Check for a view parameter in the url.
         $view = $request->get('view');
-        $lastView = $this->getOptions()->getLastView();
-        if (!empty($view)) {
-            if ($view == 'rss') {
-                // we don't want to store rss in the Session
-                $this->setView('rss');
-            } else {
-                // store non-rss views in Session for persistence
-                $validViews = $this->getOptions()->getViewOptions();
-                // make sure the url parameter is a valid view
-                if (in_array($view, array_keys($validViews))) {
-                    $this->setView($view);
-                    $this->getOptions()->rememberLastView($view);
-                } else {
-                    $this->setView($this->getOptions()->getDefaultView());
-                }
-            }
-        } else if (!empty($lastView)) {
-            // if there is nothing in the URL, check the Session
-            $this->setView($lastView);
+        $validViews = $this->getOptions()->getViewOptions();
+        if ($view == 'rss') {
+            // RSS is a special case that does not require config validation
+            $this->setView('rss');
+        } else if (!empty($view) && in_array($view, array_keys($validViews))) {
+            // make sure the url parameter is a valid view
+            $this->setView($view);
+        } else if (!empty($this->lastView)) {
+            // if there is nothing in the URL, see if we had a previous value
+            // injected based on session information.
+            $this->setView($this->lastView);
         } else {
             // otherwise load the default
             $this->setView($this->getOptions()->getDefaultView());
@@ -1397,47 +1399,6 @@ class Params implements ServiceLocatorAwareInterface
                 $this->hiddenFilters[$field][] = $value;
             }
         }
-    }
-
-    /**
-     * Remember the last hidden filters used.
-     *
-     * @param string $last Option to remember.
-     *
-     * @return void
-     */
-    protected function rememberLastHiddenFilters($last)
-    {
-        $session = $this->getSession();
-        if (!$session->getManager()->getStorage()->isImmutable()) {
-            $session->lastHiddenFilters = $last;
-        }
-    }
-
-    /**
-     * Retrieve the last hidden filters used.
-     *
-     * @return array
-     */
-    public function getLastHiddenFilters()
-    {
-        $session = $this->getSession();
-        return isset($session->lastHiddenFilters)
-            ? $session->lastHiddenFilters : [];
-    }
-
-    /**
-     * Get a session namespace specific to the current class.
-     *
-     * @return SessionContainer
-     */
-    protected function getSession()
-    {
-        static $session = false;
-        if (!$session) {
-            $session = new SessionContainer(get_class($this));
-        }
-        return $session;
     }
 
     /**
