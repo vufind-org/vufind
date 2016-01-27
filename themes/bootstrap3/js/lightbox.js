@@ -104,7 +104,10 @@ function Lightbox() {
    */
   this.constrainLink = function(event) {
     // console.log('constrainLink');
-    if(this.href.length > 1) {
+    if (typeof this.dataset.lightboxIgnore != 'undefined') {
+      return true;
+    }
+    if (this.href.length > 1) {
       event.preventDefault();
       VuFind.lightbox.ajax({url: this.href});
       VuFind.lightbox.currentUrl = this.href;
