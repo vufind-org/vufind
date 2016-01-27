@@ -1355,8 +1355,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'checkout' => '',
                 'fine' => $debt->debtType . ' - ' . $debt->debtNote,
                 'balance' => str_replace(',', '.', $debt->debtAmountFormatted) * 100,
-                'createdate' => $this->formatDate($debt->debtDate),
-                'duedate' => $debt->debtDate,
+                'createdate' => $debt->debtDate
             ];
             $finesList[] = $fine;
         }
@@ -1364,14 +1363,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         // Sort the Fines
         $date = [];
         foreach ($finesList as $key => $row) {
-            $date[$key] = $row['duedate'];
+            $date[$key] = $row['createdate'];
         }
 
         array_multisort($date, SORT_DESC, $finesList);
 
         // Convert Axiell format to display date format
         foreach ($finesList as &$row) {
-            $row['duedate'] = $this->formatDate($row['duedate']);
+            $row['createdate'] = $this->formatDate($row['createdate']);
         }
 
         return $finesList;
