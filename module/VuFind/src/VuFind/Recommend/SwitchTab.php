@@ -101,8 +101,7 @@ class SwitchTab implements RecommendInterface
         foreach ($tabEnv as $tab) {
             if ($tab['selected'] === true) {
                 $tabs['active'] = $tab;
-            }
-            else {
+            } else {
                 $tabs['inactive'][] = $tab;
             }
         }
