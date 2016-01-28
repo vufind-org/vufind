@@ -6,12 +6,10 @@ function checkItemStatuses() {
     });
     if (id.length) {
         $(".ajax_availability").show();
-        $.ajax({
-            dataType: 'json',
-            method: 'POST',
-            url: path + '/AJAX/JSON?method=getItemStatuses',
-            data: {id:id},
-            success: function(response) {
+        $.post(
+            path + '/AJAX/JSON?method=getItemStatuses',
+            {id:id},
+            function(response) {
                 if (response.status == 'OK') {
                     $.each(response.data, function(i, result) {
                         var item = $($('.ajaxItemId')[result.record_number]);
@@ -42,8 +40,9 @@ function checkItemStatuses() {
                     $(".ajax_availability").empty().append(response.data);
                 }
                 $(".ajax_availability").removeClass('ajax_availability');
-            }
-        });
+            },
+            'json'
+        );
     }
 }
 
