@@ -2,7 +2,7 @@
   $searchTabs = $this->searchtabs()->getTabConfigForParams($this->params);
 ?>
 <? if (count($searchTabs) > 0): ?>
-  <div class="alert alert-info">
+  <div class="info">
     <?=$this->transEsc('nohit_change_tab', array('%%activeTab%%' => $this->translate($this->recommend->getActiveTab($searchTabs)['label'])))?>
     <ul>
     <? $inactiveTabs = $this->recommend->getInactiveTabs($searchTabs); ?>
