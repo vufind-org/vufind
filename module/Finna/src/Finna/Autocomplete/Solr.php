@@ -194,9 +194,8 @@ class Solr extends \VuFind\Autocomplete\Solr
 
             // Hierarchical facets
             $this->initSearchObject();
-            $forbidden = [':', '(', ')', '*', '+', '"'];
             $this->searchObject->getParams()->setBasicSearch(
-                str_replace($forbidden, " ", $query), $this->handler
+                $this->mungeQuery($query), $this->handler
             );
             $this->searchObject->getParams()->setSort($this->sortField);
             foreach ($this->filters as $current) {
@@ -320,5 +319,17 @@ class Solr extends \VuFind\Autocomplete\Solr
             return $data;
         };
         return array_map($fn, $values);
+    }
+
+    /**
+     * Process the user query to make it suitable for a Solr query.
+     *
+     * @param string $query Incoming user query
+     *
+     * @return string       Processed query
+     */
+    protected function mungeQuery($query)
+    {
+        return $query;
     }
 }
