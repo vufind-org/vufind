@@ -422,6 +422,8 @@ enabled = true
 ; This handler will be used for all search types not covered by [Autocomplete_Types]
 ;default_handler = Solr
 default_handler = "Solr::title,author,author2"
+; Maximum number of suggestions
+suggestions = 5
 
 ; In this section, set the key equal to a search handler from searchspecs.yaml and
 ; the value equal to an autocomplete handler in order to customize autocompletion
@@ -436,6 +438,85 @@ ISN = "Solr:ISN:isbn,issn"
 ;tag = "Tag"
 Browse_Database = "Solr:Title:title:title:format:0/Database/"
 Browse_Journal = "Solr:Title:title:title:format:1/Journal/eSerial/"
+
+; The following options control (optional) autocomplete sections
+; that are displayed in the following order after the search suggestions:
+;
+; 1. Filters
+;   Static links to filtered search results using the current search term.
+;   The links are displayed even when no suggestions are found, but only when
+;   Preserve filters -option is not selected (to prevent conflicting
+;   filter settings that return no results).
+;
+;   filters[] = [operator][field]:[value]&[operator][field]:[value]|[label]|[tab1&tab2]
+;
+;   Each filter link consists of the following options delimited by '|':
+;     - [operator][field]:[value] filter items delimited by '&'
+;     - [label] Filter label
+;     - [tab] Search tabs where the filter should be displayed, delimited by '&'.
+;             If none specified, the filter is shown on all tabs.
+;   Example:
+;     filters[] = "building:0/JYU/|autocomplete_coursebooks|Solr"
+;     filters[] = "tlevel:peer_reviewed&tlevel:online_resources|autocomplete_primo_fulltext|Primo"
+;
+; 2. Facets
+;   Facets for the returned search suggestions.
+;
+;   facets[] = [facet]||[filters]|[limit]|[tab1&tab2]
+;
+;   Each facet consists of the following options delimited by '|':
+;     - [facet]   Facet field
+;     - [filters] Optional list of acceptable facet values, delimited by '&'
+;     - [limit]   Optional maximum number of values to be displayed
+;     - [tab]     Search tabs where the facet should be displayed, delimited by '&'.
+;                 If none specified, the facet is shown on all tabs.
+;
+;   Examples:
+;     facets[] = "online_boolean|true"
+;     facets[] = "building|2/JYU/100/3/"
+;     facets[] = "format|0/Book/&0/Sound/"
+;     facets[] = "format||3|Solr"
+;
+;   Facet value translation can be overridden by defining a translation key "autocomplete_[facet]:[value]",
+;   for example "autocomplete_building:2/JYU/100/3/"
+;
+; 3. Phrase search
+;   Search option for performing a phrase earch using the current search term.
+;
+;   phrase = 0|1
+;
+; 4. Search handlers
+;   Search handlers for performing a search using the current search term and selected handler.
+;
+;   handlers[] = "Title|autocomplete_handler_title"
+;
+;   Each handler consists of the following options delimited by '|':
+;     - [handler] Handler
+;     - [label]   Label
+;
+;
+[Autocomplete_Sections]
+; Suggestions
+; filters[] = <operator><field>:<value>&<operator><field><value>|label|tab1&tab2
+; facets[] = facet|label|filters|limit|tab1&tab2
+; phrase = label
+; handlers[] = handler|label|tab1&tab2
+
+;filters[] = "building:0/JYU/|autocomplete_coursebooks|Solr"
+;filters[] = "~format:0/Book/&~format:0/PhysicalObject/|autocomplete_filter|Solr"
+filters[] = "tlevel:peer_reviewed&tlevel:online_resources|autocomplete_primo_fulltext|Primo"
+
+facets[] = "online_boolean|true"
+facets[] = "format||3"
+
+;facets[] = "building|Toimipiste|2/JYU/100/3/"
+;facets[] = "format|Ainestotyyppi|0/Book/&0/Sound/"
+
+phrase = "phrase_search"
+
+handlers[] = "Title|autocomplete_handler_title"
+handlers[] = "Author|autocomplete_handler_author"
+handlers[] = "Subject|autocomplete_handler_subject"
 
 ; When snippets are enabled, this section can be used to display captions based on
 ; the Solr fields from which the snippets were obtained.  Keys are the names of Solr

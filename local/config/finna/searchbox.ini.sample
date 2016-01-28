@@ -9,6 +9,6 @@ combinedHandlers = 1
 ; the top of most pages. 
 [CombinedHandlers]
 AllFields           = "All Fields"
-Title               = Title
-Author              = Author
-Subject             = Subject
+;Title               = Title
+;Author              = Author
+;Subject             = Subject

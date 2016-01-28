@@ -1,5 +1,6 @@
 ; Inherit main configuration
 [Parent_Config]
 relative_path = ../finna/searchbox.ini
+override_full_sections = "CombinedHandlers"
 
 ; Add any overrides below

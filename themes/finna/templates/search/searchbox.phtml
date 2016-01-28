@@ -61,8 +61,36 @@
     }
 ?>
 <? if ($this->searchType != 'advanced'): ?>
+  <?
+     if($this->searchbox()->autocompleteEnabled($this->searchClassId)) {
+      $phrase = $this->autocomplete()->getPhraseSearch();
+      if (!$browse) {
+        $activeTab = null;
+        if (isset($searchTabs)) {
+           foreach ($searchTabs as $tab) {
+              if ($tab['selected']) {
+                 $activeTab = $tab['id'];
+                 break;
+              }
+           }
+        }
+
+        $acFilters = [];
+        foreach ($this->autocomplete()->getFilters($activeTab) as $filter) {
+          $filters = [];
+          foreach ($filter['filters'] as $item) {
+            $filters[] = $item[0] . '#' . $item[1];
+          }
+          $acFilters[$filter['label']] = implode('&', $filters);
+        }
+
+        $acHandlers = $this->autocomplete()->getHandlers($activeTab);
+      }
+     }
+  ?>
+
   <form role="search" class="searchForm navbar-form navbar-left col-xs-12 col-sm-10 col-md-8 col-lg-7  <?=$handlerCount < 2 ? 'input-field-only' :''; ?>" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
-    <label for="searchForm_lookfor" class="sr-only" hidden><?=$this->transEsc("Find")?></label><input class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" placeholder="<?=$this->transEsc("Find")?>..." id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
+    <label for="searchForm_lookfor" class="sr-only" hidden><?=$this->transEsc("Find")?></label><input class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete-finna searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?= !empty($activeTab) ? ' tab:' . $this->escapeHtmlAttr(str_replace(':', '###', $activeTab)) : ''?><?=!empty($browse) || $activeTab == 'Combined' ? ' onlySuggestions:1' : ''?><?= !$browse && in_array($activeTab, ['Combined','MetaLib','Primo']) ? ' suggestions:0' : ''?><?= !empty($acHandlers) ? ' handlers:' . implode('|', array_map(function($h) { return $h['handler']; }, $acHandlers)) : ''?><?= !empty($phrase) ? ' phrase:' . $this->escapeHtmlAttr($phrase) : ''?><?= !empty($acFilters) ? ' filters:' . $this->escapeHtmlAttr(implode('||', array_map(function($k, $v) { return $k . '|' . $v; }, array_keys($acFilters), $acFilters))) : ''?><? endif ?>" placeholder="<?=$this->transEsc("Find")?>..." id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
     <span class="clear-button<?=$this->lookfor ? '' : ' hidden'?>"></span>
     <? if ($handlerCount > 1): ?>
       <span class="hidden sr-only"><?=$this->transEsc("Narrow Search")?></span>
@@ -89,8 +117,6 @@
         <? endforeach; ?>
       </ul>
     </div>
-    <? elseif ($handlerCount == 1): ?>
-      <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>" class="searchForm_type" />
     <? endif; ?>
     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> <span class="sr-only"><?=$this->transEsc("Find")?></span></button>
 
@@ -112,7 +138,7 @@
       );
     ?>
      <? $defaultFilterState = $this->hasDefaultsApplied || $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
-     <? if (!$browse && (!empty($filterDetails) || !empty($this->savedSearches))): ?>
+     <? if (!$browse && (!empty($filterDetails) || !empty($this->savedSearches) || (isset($this->searchIndex) && ($this->searchIndex != 'AllFields' && $handlerCount <= 1)))): ?>
           <div class="checkbox<?=$defaultFilterState?' checked' : ''?>">
         <label>
           <input onChange="$('.applied-filter').click();$('.navbar-form .checkbox').toggleClass('checked'); var sort = $(this).closest('form').find('input[name=sort]'); sort.val($('.navbar-form .checkbox').hasClass('checked') ? sort.data('value') : '');" type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
@@ -129,6 +155,9 @@
             <input class="applied-filter" id="search-<?=$this->escapeHtmlAttr($searchClass)?>" type="checkbox"<?=$defaultFilterState?> name="search[]" value="<?=$this->escapeHtmlAttr($searchClass . ':' . $searchId)?>" />
             <label for="<?=$this->escapeHtmlAttr($searchClass)?>"><?=$this->escapeHtml($searchId)?></label>
           <? endforeach; ?>
+        <? endif; ?>
+        <? if ($handlerCount <= 1 && isset($this->searchIndex)): ?>
+          <input class="applied-filter" id="search-index" type="checkbox"<?=$defaultFilterState?> name="type" value="<?=$this->escapeHtmlAttr($this->searchIndex)?>" />
         <? endif; ?>
         <!-- this is a hidden element that flags whether or not default filters have been applied;
              it is intentionally unlabeled, as users are not meant to manipulate it directly. -->
