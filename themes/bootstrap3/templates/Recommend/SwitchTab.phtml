@@ -8,9 +8,9 @@
     <? $inactiveTabs = $this->recommend->getInactiveTabs($searchTabs); ?>
     <? foreach ($inactiveTabs as $tab): ?>
       <li>
-        <? if ($tab['selected']): ?><a href="<?=$this->escapeHtmlAttr($tab['url'])?>"><? endif; ?>
+        <? if (!$tab['selected']): ?><a href="<?=$this->escapeHtmlAttr($tab['url'])?>"><? endif; ?>
           <?=$this->transEsc($tab['label']); ?>
-        <? if ($tab['selected']): ?></a><? endif; ?>
+        <? if (!$tab['selected']): ?></a><? endif; ?>
       </li>
     <? endforeach; ?>
     </ul>
