@@ -6,7 +6,7 @@
 combinedHandlers = 1
 
 ; This section shows which search types will display in the combined search box at
-; the top of most pages. 
+; the top of most pages.
 [CombinedHandlers]
 AllFields           = "All Fields"
 ;Title               = Title

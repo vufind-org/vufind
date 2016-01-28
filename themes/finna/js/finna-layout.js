@@ -371,14 +371,18 @@ finna.layout = (function() {
 
     };
 
-    var initToolTips = function () {
-      $('[data-toggle="tooltip"]').tooltip({trigger:'click', viewport: '.container'});
+    var initToolTips = function (holder) {
+      if (typeof holder === 'undefined') {
+          holder = $(document);
+      }
+        
+      holder.find('[data-toggle="tooltip"]').tooltip({trigger: 'click', viewport: '.container'});
       // prevent link opening if tooltip is placed inside link element
-      $('[data-toggle="tooltip"] > i').click(function(event) {
+      holder.find('[data-toggle="tooltip"] > i').click(function(event) {
         event.preventDefault();
       });
       // close tooltip if user clicks anything else than tooltip button
-      $('html').on('click', function(e) {
+      $('html').click(function(e) {
         if (typeof $(e.target).parent().data('original-title') == 'undefined' && typeof $(e.target).data('original-title') == 'undefined') {
           $('[data-toggle="tooltip"]').tooltip('hide');
         }
@@ -603,6 +607,7 @@ finna.layout = (function() {
                 if (response.status == 'OK') {
                     $container.replaceWith(response.data);
                     finna.dateRangeVis.init();
+                    initToolTips($('.sidebar'));
                 } else {
                     $container.find('.facet-load-indicator').addClass('hidden');
                     $container.find('.facet-load-failed').removeClass('hidden');
