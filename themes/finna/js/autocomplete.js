@@ -48,14 +48,6 @@
             } else if (type == 'handler') {
                 var handler = item.data('handler');
                 var form = input.closest('form');
-
-                if (!form.find('input[name=type][type=hidden]').length) {
-                    var type = form.find('input[name=type]');
-                    if (type.length) {
-                        type.remove();
-                    }
-                    $('<input/>').attr('type', 'hidden').attr('name', 'type').appendTo(form);
-                }
                 form.find('input[name=type]').val(handler);
             } else {
                 input.val(value);
