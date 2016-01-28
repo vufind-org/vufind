@@ -7,11 +7,11 @@
     <ul>
     <? $inactiveTabs = $this->recommend->getInactiveTabs($searchTabs); ?>
     <? foreach ($inactiveTabs as $tab): ?>
-        <li>
-            <a href="<?=$tab['selected'] ? '' : $this->escapeHtmlAttr($tab['url'])?>">
-                <?=$this->transEsc($tab['label']); ?>
-            </a>
-        </li>
+      <li>
+        <a href="<?=$tab['selected'] ? '' : $this->escapeHtmlAttr($tab['url'])?>">
+          <?=$this->transEsc($tab['label']); ?>
+        </a>
+      </li>
     <? endforeach; ?>
     </ul>
   </div>
