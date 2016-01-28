@@ -143,6 +143,22 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get the tab configuration
+     *
+     * @param \VuFind\Search\Base\Params $params Search parameters
+     *
+     * @return array
+     */
+    public function getTabConfigForParams($params)
+    {
+        return $this->getTabConfig(
+            $params->getsearchClassId(), $params->getDisplayQuery(),
+            $params->getSearchHandler(), $params->getSearchType(),
+            $params->getHiddenFilters()
+        );
+    }
+
+    /**
      * Get an array of hidden filters
      *
      * @param string $searchClassId         Active search class
