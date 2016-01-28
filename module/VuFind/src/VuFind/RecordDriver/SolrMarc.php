@@ -320,16 +320,14 @@ class SolrMarc extends SolrDefault
         $fields = $this->getMarcRecord()->getFields('264');
         if (is_array($fields)) {
             foreach ($fields as $currentField) {
-                $currentVal = $currentField->getSubfield($subfield);
-                $currentVal = is_object($currentVal)
-                    ? $currentVal->getData() : null;
+                $currentVal = $this->getSubfieldArray($currentField, [$subfield]);
                 if (!empty($currentVal)) {
                     switch ($currentField->getIndicator('2')) {
                     case '1':
-                        $pubResults[] = $currentVal;
+                        $pubResults = array_merge($pubResults, $currentVal);
                         break;
                     case '4':
-                        $copyResults[] = $currentVal;
+                        $copyResults = array_merge($copyResults, $currentVal);
                         break;
                     }
                 }
