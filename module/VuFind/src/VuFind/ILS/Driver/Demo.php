@@ -136,6 +136,14 @@ class Demo extends AbstractBase
         // Establish a namespace in the session for persisting fake data (to save
         // on Solr hits):
         $this->session = new SessionContainer('DemoDriver');
+
+        if (isset($this->config['Holdings'])) {
+            foreach ($this->config['Holdings'] as $id => $json) {
+                foreach (json_decode($json, true) as $i => $status) {
+                    $this->setStatus($id, $status, $i > 0);
+                }
+            }
+        }
     }
 
     /**
@@ -384,31 +392,20 @@ class Demo extends AbstractBase
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getSimulatedStatus($id, array $patron = null)
+    protected function getSimulatedStatus($id, array $patron = null)
     {
-        $id = $id . ""; // make it a string for consistency
-        // How many items are there?
-        $records = rand() % 15;
-        $holding = [];
+        $id = (string) $id;
 
-        // NOTE: Ran into an interesting bug when using:
-
-        // 'availability' => rand()%2 ? true : false
-
-        // It seems rand() returns alternating even/odd
-        // patterns on some versions running under windows.
-        // So this method gives better 50/50 results:
-
-        // 'availability' => (rand()%100 > 49) ? true : false
-        if ($this->session->statuses
-            && array_key_exists($id, $this->session->statuses)
-        ) {
+        // Do we have a fake status persisted in the session?
+        if (isset($this->session->statuses[$id])) {
             return $this->session->statuses[$id];
         }
 
-        // Create a fake entry for each one
-        for ($i = 0; $i < $records; $i++) {
-            $holding[] = $this->getRandomHolding($id, $i + 1, $patron);
+        // Create fake entries for a random number of items
+        $holding = [];
+        $records = rand() % 15;
+        for ($i = 1; $i <= $records; $i++) {
+            $holding[] = $this->getRandomHolding($id, $i, $patron);
         }
         return $holding;
     }
@@ -424,16 +421,17 @@ class Demo extends AbstractBase
      *
      * @return array
      */
-    public function setStatus($id, $holding = [], $append = true)
+    protected function setStatus($id, $holding = [], $append = true)
     {
         $id = (string)$id;
-        $i = ($this->session->statuses) ? count($this->session->statuses) + 1 : 1;
+        $i = isset($this->session->statuses[$id])
+            ? count($this->session->statuses[$id]) + 1 : 1;
         $holding = array_merge($this->getRandomHolding($id, $i), $holding);
 
         // if statuses is already stored
         if ($this->session->statuses) {
             // and this id is part of it
-            if ($append && array_key_exists($id, $this->session->statuses)) {
+            if ($append && isset($this->session->statuses[$id])) {
                 // add to the array
                 $this->session->statuses[$id][] = $holding;
             } else {
@@ -445,42 +443,6 @@ class Demo extends AbstractBase
             $this->session->statuses = [$id => [$holding]];
         }
         return $holding;
-    }
-
-    /**
-     * Set Status to return an invalid entry
-     *
-     * @param array $id id for condemned record
-     *
-     * @return void;
-     */
-    public function setInvalidId($id)
-    {
-        $id = (string)$id;
-        // if statuses is already stored
-        if ($this->session->statuses) {
-            $this->session->statuses[$id] = [];
-        } else {
-            // brand new status storage!
-            $this->session->statuses = [$id => []];
-        }
-    }
-
-    /**
-     * Clear status
-     *
-     * @param array $id id for clearing the status
-     *
-     * @return void;
-     */
-    public function clearStatus($id)
-    {
-        $id = (string)$id;
-
-        // if statuses is already stored
-        if ($this->session->statuses) {
-            unset($this->session->statuses[$id]);
-        }
     }
 
     /**
