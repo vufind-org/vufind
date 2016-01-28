@@ -662,7 +662,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $title .= " $addTitle";
         }
         $author = $this->getSingleValue($record, '100a');
-        $addAuthors = $this->getSingleValue($record, '700a');
+        $addAuthors = $this->getMultipleValues($record, '700a');
         $sources = $this->getMultipleValues($record, 'SIDt');
         $year = $this->getSingleValue($record, 'YR a');
         $languages = $this->getMultipleValues($record, '041a');
@@ -773,7 +773,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         return [
             'title' => $title,
             'author' => $author ? $author : null,
-            'author2' => [$addAuthors],
+            'author2' => $addAuthors,
             'source' => $sources[0],
             'publisher' => $sources,
             'main_date_str' => $year ? $year : null,
