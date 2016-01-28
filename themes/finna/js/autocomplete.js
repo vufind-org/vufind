@@ -1,3 +1,5 @@
+// Modified from /themes/bootstrap3/js/autocomplete.js
+
 /*global console*/
 /**
  * vufind.typeahead.js 0.10
@@ -34,7 +36,6 @@
             var type = item.data('type');
             var value = item.text();
             var form = input.closest('form');
-            var preserveFilters = getPreserveFiltersMode(input);
             if (type == 'facet' || type == 'filter') {
                 var filters = item.data('filters').split('&');
                 $.each(filters, function (i, filter) {
@@ -204,20 +205,19 @@
             // Filters
             if (filters) {
                 $.each(filters.split('||'), function (i, filter) {
-                    var filter = filter.split('|');
-                    var label = VuFind.translate(filter[0]);
+                    var f = filter.split('|');
+                    var label = VuFind.translate(f[0]);
                     datums.push({
-                        label: label, filters: filter[1],
-                        type: 'filter', css: 'filter filter-' + filter[0]
+                        label: label, filters: f[1],
+                        type: 'filter', css: 'filter filter-' + f[0]
                     });
                 });
             }
 
             // Facets
             if (data.length > 1) {
-                var facets = [];
                 $.each(data[1], function (facet, data) {
-                    var items = $.map(data, function (item, i) {
+                    $.map(data, function (item, i) {
                         var label = item[0] + ' (' + item[1] + ')';
                         datums.push({
                             label: label,
@@ -234,7 +234,6 @@
 
             // Phrase search
             if (phraseSearch) {
-                var label = query;
                 datums.push({label: '"' + query + '"', type: 'phrase', css: 'phrase'});
             }
 
@@ -442,7 +441,7 @@
                 function() { xhr = $.ajax(ops); },
                 $.fn.autocomplete.options.ajaxDelay
             );
-        }
+        };
     }
 
 }( jQuery ));

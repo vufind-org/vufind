@@ -497,7 +497,9 @@ Browse_Journal = "Solr:Title:title:title:format:1/Journal/eSerial/"
 ;     - [handler] Handler
 ;     - [label]   Label
 ;
-;
+;   Example:
+;     handlers[] = "Title|autocomplete_handler_title"
+
 [Autocomplete_Sections]
 ; Suggestions
 ; filters[] = <operator><field>:<value>&<operator><field><value>|label|tab1&tab2
@@ -515,7 +517,7 @@ facets[] = "format||3"
 ;facets[] = "building|Toimipiste|2/JYU/100/3/"
 ;facets[] = "format|Ainestotyyppi|0/Book/&0/Sound/"
 
-phrase = "phrase_search"
+phrase = 1
 
 handlers[] = "Title|autocomplete_handler_title"
 handlers[] = "Author|autocomplete_handler_author"

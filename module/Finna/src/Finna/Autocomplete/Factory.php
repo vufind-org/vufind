@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library 2015.
+ * Copyright (C) The National Library 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -53,8 +53,7 @@ class Factory extends \VuFind\Autocomplete\Factory
         return new Solr(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
             $sm->getServiceLocator()->get('VuFind\Config')->get('facets'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
-            $sm->getServiceLocator()->get('VuFind\Translator')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
     }
 }

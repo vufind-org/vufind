@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library 2015.
+ * Copyright (C) The National Library 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -39,7 +39,10 @@ namespace Finna\Autocomplete;
  * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
  */
 class Solr extends \VuFind\Autocomplete\Solr
+    implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Autocomplete faceting settings
      *
@@ -55,18 +58,18 @@ class Solr extends \VuFind\Autocomplete\Solr
     protected $facetConfig;
 
     /**
+     * Hierarchical facets
+     *
+     * @var array
+     */
+    protected $hierarchicalFacets;
+
+    /**
      * Search configuration
      *
      * @var \Zend\Config\Config
      */
     protected $searchConfig;
-
-    /**
-     * Translator
-     *
-     * @var \VuFind\Translator
-     */
-    protected $translator;
 
     /**
      * Facet translations
@@ -95,14 +98,17 @@ class Solr extends \VuFind\Autocomplete\Solr
      * @param PluginManager       $results      Results plugin manager
      * @param \Zend\Config\Config $facetConfig  Facet configuration
      * @param \Zend\Config\Config $searchConfig Search configuration
-     * @param \VuFind\Translator  $translator   Translator
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
-        $facetConfig, $searchConfig, $translator
+        $facetConfig, $searchConfig
     ) {
         $settings = [];
         $facets = isset($searchConfig->Autocomplete_Sections->facets)
             ? $searchConfig->Autocomplete_Sections->facets->toArray() : null;
+
+        $this->hierarchicalFacets
+            = isset($facetConfig->SpecialFacets->hierarchical)
+            ? $facetConfig->SpecialFacets->hierarchical->toArray() : [];
 
         foreach ($facets as $data) {
             $data = explode('|', $data);
@@ -111,7 +117,10 @@ class Solr extends \VuFind\Autocomplete\Solr
             $limit = isset($data[2]) && !empty($data[2]) ? $data[2] : null;
             $tabs = isset($data[3]) ? explode('&', $data[3]) : null;
             // Restrict facet values to top-level if no other filters are defined
-            $filters = !empty($filters) ? explode('&', $filters) : ['^0/*.'];
+            $filters = !empty($filters)
+                ? explode('&', $filters)
+                : (in_array($field, $this->hierarchicalFacets) ? ['^0/*.'] : [])
+            ;
             $settings[$field] = [
                'limit' => $limit, 'filters' => $filters, 'tabs' => $tabs
             ];
@@ -126,7 +135,6 @@ class Solr extends \VuFind\Autocomplete\Solr
             $this->facetTranslations[$field] = $val;
         }
 
-        $this->translator = $translator;
         parent::__construct($results);
     }
 
@@ -141,6 +149,7 @@ class Solr extends \VuFind\Autocomplete\Solr
     public function getSuggestions($query)
     {
         $params = $this->searchObject->getParams();
+        $this->searchObject->getOptions()->disableHighlighting();
 
         if (!$this->facetingDisabled) {
             foreach ($this->facetSettings as $key => $facet) {
@@ -154,11 +163,7 @@ class Solr extends \VuFind\Autocomplete\Solr
             $facetLimit = 20;
             $params->setFacetLimit($facetLimit);
             $allFacets = array_keys($this->facetSettings);
-            $hierarchicalFacets
-                = isset($this->facetConfig->SpecialFacets->hierarchical)
-                ? $this->facetConfig->SpecialFacets->hierarchical->toArray() : null;
-
-            $facets = array_diff($allFacets, $hierarchicalFacets);
+            $facets = array_diff($allFacets, $this->hierarchicalFacets);
             foreach ($facets as $facet) {
                 $params->addFacet($facet);
             }
@@ -197,11 +202,11 @@ class Solr extends \VuFind\Autocomplete\Solr
             foreach ($this->filters as $current) {
                 $this->searchObject->getParams()->addFilter($current);
             }
-            foreach ($hierarchicalFacets as $facet) {
+            foreach ($this->hierarchicalFacets as $facet) {
                 $params->addFacet($facet, null, false);
             }
             $hierachicalFacets = $this->searchObject->getFullFieldFacets(
-                array_intersect($hierarchicalFacets, $allFacets),
+                array_intersect($this->hierarchicalFacets, $allFacets),
                 false, -1, 'count'
             );
             foreach ($hierachicalFacets as $field => $data) {
@@ -250,7 +255,7 @@ class Solr extends \VuFind\Autocomplete\Solr
     protected function filterFacetValues($field, $values)
     {
         $result = [];
-        if (isset($this->facetSettings[$field]['filters'])) {
+        if (!empty($this->facetSettings[$field]['filters'])) {
             foreach ($values as $value) {
                 foreach ($this->facetSettings[$field]['filters'] as $filter) {
                     $pattern = '/' . addcslashes($filter, '/') . '/';
