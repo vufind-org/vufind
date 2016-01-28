@@ -6,7 +6,7 @@
   $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
     '<li class="active">' . $this->transEsc('Email this Search') . '</li>';
 ?>
-<h2><?=$this->transEsc('bookbag_email_selected') ?></h2>
+<h2><?=$this->transEsc('Email this Search') ?></h2>
 <?=$this->flashmessages()?>
 <form class="form-horizontal" method="post"  name="emailSearch">
   <input type="hidden" name="url" value="<?=$this->escapeHtmlAttr($this->url)?>" />
