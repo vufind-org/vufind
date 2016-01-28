@@ -251,7 +251,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $options['wait_flag'] = 'Y';
 
         $limit = 20;
-        $start = empty($args['pageNumber']) ?: 1;
+        $start = !empty($args['pageNumber']) ? $args['pageNumber'] : 1;
 
         $queryId
             = md5(implode(',', $irdList) . '_' . $qs . '_' . $start . '_' . $limit);
