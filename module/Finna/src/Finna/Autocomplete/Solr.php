@@ -194,6 +194,7 @@ class Solr extends \VuFind\Autocomplete\Solr
 
             // Hierarchical facets
             $this->initSearchObject();
+            $this->searchObject->getOptions()->disableHighlighting();
             $this->searchObject->getParams()->setBasicSearch(
                 $this->mungeQuery($query), $this->handler
             );
