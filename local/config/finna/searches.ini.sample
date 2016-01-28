@@ -455,12 +455,13 @@ Browse_Journal = "Solr:Title:title:title:format:1/Journal/eSerial/"
 ;
 ;   Each filter link consists of the following options delimited by '|':
 ;     - [operator][field]:[value] filter items delimited by '&'
-;     - [label] Filter label
+;     - [label] Filter label translation key.
+;               Note: the key should not contain special characters (for example whitespace, punctuation, '-').
 ;     - [tab] Search tabs where the filter should be displayed, delimited by '&'.
 ;             If none specified, the filter is shown on all tabs.
 ;   Example:
-;     filters[] = "building:0/JYU/|autocomplete_coursebooks|Solr"
-;     filters[] = "tlevel:peer_reviewed&tlevel:online_resources|autocomplete_primo_fulltext|Primo"
+;     filters[] = "building:2/JYU/100/3/|coursebooks|Solr"
+;     filters[] = "tlevel:peer_reviewed&tlevel:online_resources|primo_fulltext|Primo"
 ;
 ; 2. Facets
 ;   Facets for the returned search suggestions.
@@ -495,7 +496,8 @@ Browse_Journal = "Solr:Title:title:title:format:1/Journal/eSerial/"
 ;
 ;   Each handler consists of the following options delimited by '|':
 ;     - [handler] Handler
-;     - [label]   Label
+;     - [label]   Handler label translation key.
+;                 Note: the key should not contain special characters (for example whitespace, punctuation, '-').
 ;
 ;   Example:
 ;     handlers[] = "Title|autocomplete_handler_title"
@@ -507,15 +509,15 @@ Browse_Journal = "Solr:Title:title:title:format:1/Journal/eSerial/"
 ; phrase = label
 ; handlers[] = handler|label|tab1&tab2
 
-;filters[] = "building:0/JYU/|autocomplete_coursebooks|Solr"
-;filters[] = "~format:0/Book/&~format:0/PhysicalObject/|autocomplete_filter|Solr"
+;filters[] = "building:2/JYU/100/3|coursebooks|Solr"
+;filters[] = "~format:0/Book/&~format:0/PhysicalObject/|physical_objects|Solr"
 filters[] = "tlevel:peer_reviewed&tlevel:online_resources|autocomplete_primo_fulltext|Primo"
 
-facets[] = "online_boolean|true"
+facets[] = "online_boolean"
 facets[] = "format||3"
 
-;facets[] = "building|Toimipiste|2/JYU/100/3/"
-;facets[] = "format|Ainestotyyppi|0/Book/&0/Sound/"
+;facets[] = "building|2/JYU/100/3/"
+;facets[] = "format|0/Book/&0/Sound/"
 
 phrase = 1
 
