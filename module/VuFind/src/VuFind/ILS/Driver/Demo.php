@@ -99,6 +99,13 @@ class Demo extends AbstractBase
     protected $dateConverter;
 
     /**
+     * Failure probability settings
+     *
+     * @var array
+     */
+    protected $failureProbabilities = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -132,7 +139,9 @@ class Demo extends AbstractBase
         if (isset($this->config['Catalog']['ILLRequests'])) {
             $this->ILLRequests = $this->config['Catalog']['ILLRequests'];
         }
-
+        if (isset($this->config['Failure_Probabilities'])) {
+            $this->failureProbabilities = $this->config['Failure_Probabilities'];
+        }
         // Establish a namespace in the session for persisting fake data (to save
         // on Solr hits):
         $this->session = new SessionContainer('DemoDriver');
@@ -144,6 +153,25 @@ class Demo extends AbstractBase
                 }
             }
         }
+    }
+
+    /**
+     * Check for a simulated failure. Returns true for failure, false for
+     * success.
+     *
+     * @param string $method  Name of method that might fail
+     * @param int    $default Default probability (if config is empty)
+     *
+     * @return bool
+     */
+    protected function isFailing($method, $default = 0)
+    {
+        // Method may come in like Class::Method, we just want the Method part
+        $parts = explode('::', $method);
+        $key = array_pop($parts);
+        $probability = isset($this->failureProbabilities[$key])
+            ? $this->failureProbabilities[$key] : $default;
+        return rand(1, 100) <= $probability;
     }
 
     /**
@@ -841,7 +869,7 @@ class Demo extends AbstractBase
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
         // 5 years in the future (but similate intermittent failure):
-        return rand(0, 1) == 1
+        return !$this->isFailing(__METHOD__, 50)
             ? mktime(0, 0, 0, date('m'), date('d'), date('Y') + 5) : null;
     }
 
@@ -1061,8 +1089,7 @@ class Demo extends AbstractBase
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newHolds->append($current);
             } else {
-                // 50% chance of cancel failure for testing purposes
-                if (rand() % 2) {
+                if (!$this->isFailing(__METHOD__, 50)) {
                     $retVal['count']++;
                     $retVal['items'][$current['item_id']] = [
                         'success' => true,
@@ -1124,8 +1151,7 @@ class Demo extends AbstractBase
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newRequests->append($current);
             } else {
-                // 50% chance of cancel failure for testing purposes
-                if (rand() % 2) {
+                if (!$this->isFailing(__METHOD__, 50)) {
                     $retVal['count']++;
                     $retVal['items'][$current['item_id']] = [
                         'success' => true,
@@ -1196,7 +1222,7 @@ class Demo extends AbstractBase
         foreach ($transactions as $i => $current) {
             // Only renew requested items:
             if (in_array($current['item_id'], $renewDetails['details'])) {
-                if (rand() % 2) {
+                if (!$this->isFailing(__METHOD__, 50)) {
                     $old = $transactions[$i]['duedate'];
                     $transactions[$i]['duedate']
                         = date("j-M-y", strtotime($old . " + 7 days"));
@@ -1283,7 +1309,7 @@ class Demo extends AbstractBase
     public function placeHold($holdDetails)
     {
         // Simulate failure:
-        if (rand() % 2) {
+        if ($this->isFailing(__METHOD__, 50)) {
             return [
                 "success" => false,
                 "sysMessage" =>
@@ -1390,7 +1416,7 @@ class Demo extends AbstractBase
             ];
         }
         // Simulate failure:
-        if (rand() % 2) {
+        if ($this->isFailing(__METHOD__, 50)) {
             return [
                 "success" => false,
                 "sysMessage" =>
@@ -1489,7 +1515,7 @@ class Demo extends AbstractBase
             ];
         }
         // Simulate failure:
-        if (rand() % 2) {
+        if ($this->isFailing(__METHOD__, 50)) {
             return [
                 'success' => false,
                 'sysMessage' =>
@@ -1671,8 +1697,7 @@ class Demo extends AbstractBase
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newRequests->append($current);
             } else {
-                // 50% chance of cancel failure for testing purposes
-                if (rand() % 2) {
+                if (!$this->isFailing(__METHOD__, 50)) {
                     $retVal['count']++;
                     $retVal['items'][$current['item_id']] = [
                         'success' => true,
@@ -1725,7 +1750,7 @@ class Demo extends AbstractBase
      */
     public function changePassword($details)
     {
-        if (rand() % 3) {
+        if (!$this->isFailing(__METHOD__, 33)) {
             return ['success' => true, 'status' => 'change_password_ok'];
         }
         return [
