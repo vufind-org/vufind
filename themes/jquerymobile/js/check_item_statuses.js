@@ -8,6 +8,7 @@ function checkItemStatuses() {
         $(".ajax_availability").show();
         $.ajax({
             dataType: 'json',
+            method: 'POST',
             url: path + '/AJAX/JSON?method=getItemStatuses',
             data: {id:id},
             success: function(response) {
