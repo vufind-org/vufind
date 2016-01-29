@@ -63,6 +63,11 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         }
     }
 
+    /**
+     * Move the current page to a record by performing a search.
+     *
+     * @return \Behat\Mink\Element\Element
+     */
     protected function gotoRecord()
     {
         $session = $this->getMinkSession();
