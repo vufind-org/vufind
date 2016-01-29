@@ -1508,8 +1508,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
             } else {
                 $label = $item['label'];
             }
-            $searchPhrases[$label] =
-                !isset($item['nb_actions']) || null === $item['nb_actions']
+            $searchPhrases[$label]
+                = !isset($item['nb_actions']) || null === $item['nb_actions']
                 ? $item['nb_visits']
                 : $item['nb_actions'];
         }
