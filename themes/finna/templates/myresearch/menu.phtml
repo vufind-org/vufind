@@ -41,39 +41,39 @@
       <ul class="dropdown-menu">
         <? if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
           <? if ($this->ils()->checkCapability('getMyProfile')): ?>
-            <li><a href="<?=$this->url('myresearch-profile')?>" class="list-group-item<?=$this->active == 'profile' ? ' active' : ''?>">
+            <li class="menu-profile"><a href="<?=$this->url('myresearch-profile')?>" class="list-group-item<?=$this->active == 'profile' ? ' active' : ''?>">
             <?=$this->transEsc('Profile')?>
             </a></li>
           <? endif; ?>
           <? if ($showLibraryTabs): ?>
-            <li><a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item<?=$this->active == 'checkedout' ? ' active' : ''?>">
+            <li class="menu-loans"><a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item<?=$this->active == 'checkedout' ? ' active' : ''?>">
             <?=$this->transEsc('Checked Out Items')?>
             </a></li>
-            <li><a href="<?=$this->url('myresearch-holds')?>" class="list-group-item<?=$this->active == 'holds' ? ' active' : ''?>">
+            <li class="menu-holds"><a href="<?=$this->url('myresearch-holds')?>" class="list-group-item<?=$this->active == 'holds' ? ' active' : ''?>">
             <?=$this->transEsc('Holds and Recalls')?>
             </a></li>
-            <li><a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item<?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
+            <li class="menu-storage-retrieval-requests"><a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item<?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
             <?=$this->transEsc('Storage Retrieval Requests')?>
             </a></li>
-            <li><a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item<?=$this->active == 'ILLRequests' ? ' active' : ''?>">
+            <li class="menu-ill-requests"><a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item<?=$this->active == 'ILLRequests' ? ' active' : ''?>">
             <?=$this->transEsc('Interlibrary Loan Requests')?>
             </a></li>
-            <li><a href="<?=$this->url('myresearch-fines')?>" class="list-group-item<?=$this->active == 'fines' ? ' active' : ''?>">
+            <li class="menu-fines"><a href="<?=$this->url('myresearch-fines')?>" class="list-group-item<?=$this->active == 'fines' ? ' active' : ''?>">
             <?=$this->transEsc('Fines')?>
             </a></li>
             <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
-              <li><a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
+              <li class="menu-library-cards"><a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
               <?=$this->transEsc('Library Cards')?>
               </a></li>
             <? endif; ?>
           <? endif; ?>
         <? endif; ?>
         <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-           <li><a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' || substr($this->active, 0, 4) == 'list' ? ' active' : ''?>">
+           <li class="menu-favorites"><a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' || substr($this->active, 0, 4) == 'list' ? ' active' : ''?>">
            <?=$this->transEsc('Favorites')?>
            </a></li>
         <? endif; ?>
-        <li><a href="<?=$this->url('search-history')?>?require_login" class="list-group-item<?=$this->active == 'history' ? ' active' : ''?>">
+        <li class="menu-history"><a href="<?=$this->url('search-history')?>?require_login" class="list-group-item<?=$this->active == 'history' ? ' active' : ''?>">
         <?=$this->transEsc('history_saved_searches')?>
         </a></li>
       </ul>
@@ -82,39 +82,39 @@
   <ul class="list-group useraccount-nav hidden-xs">
     <? if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
       <? if ($this->ils()->checkCapability('getMyProfile')): ?>
-        <li><a href="<?=$this->url('myresearch-profile')?>" class="list-group-item<?=$this->active == 'profile' ? ' active' : ''?>">
+        <li class="menu-profile"><a href="<?=$this->url('myresearch-profile')?>" class="list-group-item<?=$this->active == 'profile' ? ' active' : ''?>">
         <?=$this->transEsc('Profile')?>
         </a></li>
       <? endif; ?>
       <? if ($showLibraryTabs): ?>
-       <li><a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item<?=$this->active == 'checkedout' ? ' active' : ''?>">
+       <li class="menu-loans"><a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item<?=$this->active == 'checkedout' ? ' active' : ''?>">
          <?=$this->transEsc('Checked Out Items')?>
         </a></li>
-        <li><a href="<?=$this->url('myresearch-holds')?>" class="list-group-item<?=$this->active == 'holds' ? ' active' : ''?>">
+        <li class="menu-holds"><a href="<?=$this->url('myresearch-holds')?>" class="list-group-item<?=$this->active == 'holds' ? ' active' : ''?>">
         <?=$this->transEsc('Holds and Recalls')?>
         </a></li>
-        <li><a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item<?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
+        <li class="menu-storage-retrieval-requests"><a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item<?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
         <?=$this->transEsc('Storage Retrieval Requests')?>
         </a></li>
-        <li><a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item<?=$this->active == 'ILLRequests' ? ' active' : ''?>">
+        <li class="menu-ill-requests"><a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item<?=$this->active == 'ILLRequests' ? ' active' : ''?>">
         <?=$this->transEsc('Interlibrary Loan Requests')?>
         </a></li>
-        <li><a href="<?=$this->url('myresearch-fines')?>" class="list-group-item<?=$this->active == 'fines' ? ' active' : ''?>">
+        <li class="menu-fines"><a href="<?=$this->url('myresearch-fines')?>" class="list-group-item<?=$this->active == 'fines' ? ' active' : ''?>">
         <?=$this->transEsc('Fines')?>
         </a></li>
         <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
-          <li><a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
+          <li class="menu-library-cards"><a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
           <?=$this->transEsc('Library Cards')?>
           </a></li>
         <? endif; ?>
       <? endif; ?>
     <? endif; ?>
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-      <li><a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' || substr($this->active, 0, 4) == 'list' ? ' active' : ''?>">
+      <li class="menu-favorites"><a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' || substr($this->active, 0, 4) == 'list' ? ' active' : ''?>">
       <?=$this->transEsc('Favorites')?>
       </a></li>
     <? endif; ?>
-    <li><a href="<?=$this->url('search-history')?>?require_login" class="list-group-item<?=$this->active == 'history' ? ' active' : ''?>">
+    <li class="menu-history"><a href="<?=$this->url('search-history')?>?require_login" class="list-group-item<?=$this->active == 'history' ? ' active' : ''?>">
     <?=$this->transEsc('history_saved_searches')?>
     </a></li>
   </ul>

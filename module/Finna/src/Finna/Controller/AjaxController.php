@@ -524,7 +524,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
             . 'openurl';
 
         // Create Proxy Request
-        $httpService = $this->getServiceLocator()->get('\VuFind\Http');
+        $httpService = $this->getServiceLocator()->get('VuFind\Http');
         $client = $httpService->createClient("$baseUrl?$openUrl");
         $result = $client->setMethod('GET')->send();
 
@@ -677,7 +677,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $maxAge = isset($cacheConfig->Content->feedcachetime)
             ? $cacheConfig->Content->feedcachetime : false;
 
-        $httpService = $this->getServiceLocator()->get('\VuFind\Http');
+        $httpService = $this->getServiceLocator()->get('VuFind\Http');
         Reader::setHttpClient($httpService->createClient());
 
         if ($maxAge) {
@@ -1449,6 +1449,77 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $this->processPayment($params);
         // This action does not return anything but a HTTP 200 status.
         exit();
+    }
+
+    /**
+     * Get popular search terms from Piwik
+     *
+     * @return \Zend\Http\Response
+     */
+    public function getPiwikPopularSearchesAjax()
+    {
+        $this->setLogger($this->getServiceLocator()->get('VuFind\Logger'));
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+
+        if (!isset($config->Piwik->url)
+            || !isset($config->Piwik->site_id)
+            || !isset($config->Piwik->token_auth)
+        ) {
+            return $this->output('', self::STATUS_ERROR);
+        }
+
+        $params = [
+            'module'       => 'API',
+            'format'       => 'json',
+            'method'       => 'Actions.getSiteSearchKeywords',
+            'idSite'       => $config->Piwik->site_id,
+            'period'       => 'range',
+            'date'         => date('Y-m-d', strtotime('-30 days')) . ',' .
+                              date('Y-m-d'),
+            'token_auth'   => $config->Piwik->token_auth
+        ];
+        $url = $config->Piwik->url;
+        $httpService = $this->getServiceLocator()->get('VuFind\Http');
+        $client = $httpService->createClient($url);
+        $client->setParameterGet($params);
+        $result = $client->send();
+        if (!$result->isSuccess()) {
+            $this->logError("Piwik request for popular searches failed, url $url");
+            return $this->output('', self::STATUS_ERROR);
+        }
+
+        $response = json_decode($result->getBody(), true);
+        if (isset($response['result']) && $response['result'] == 'error') {
+            $this->logError(
+                "Piwik request for popular searches failed, url $url, message: "
+                . $response['message']
+            );
+            return $this->output('', self::STATUS_ERROR);
+        }
+        $searchPhrases = [];
+        foreach ($response as $item) {
+            if (substr($item['label'], 0, 1) == '(') {
+                // Ignore searches that begin with a parenthesis
+                // because they are likely to be advanced searches
+                continue;
+            } else if ($item['label'] === '-') {
+                // Ignore empty searches
+                continue;
+            } else {
+                $label = $item['label'];
+            }
+            $searchPhrases[$label]
+                = !isset($item['nb_actions']) || null === $item['nb_actions']
+                ? $item['nb_visits']
+                : $item['nb_actions'];
+        }
+        // Order by hits
+        arsort($searchPhrases);
+
+        $html = $this->getViewRenderer()->render(
+            'ajax/piwik-popular-searches.phtml', [searches => $searchPhrases]
+        );
+        return $this->output($html, self::STATUS_OK);
     }
 
     /**

@@ -251,7 +251,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $options['wait_flag'] = 'Y';
 
         $limit = 20;
-        $start = empty($args['pageNumber']) ?: 1;
+        $start = !empty($args['pageNumber']) ? $args['pageNumber'] : 1;
 
         $queryId
             = md5(implode(',', $irdList) . '_' . $qs . '_' . $start . '_' . $limit);
@@ -599,7 +599,14 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             throw new \Exception($result->getBody());
         }
 
-        if ($xml = simplexml_load_string($result->getBody())) {
+        $xml = $result->getBody();
+        // Remove invalid XML fields (these were encountered in record Ppro853_304965
+        // from FIN05707)
+        $xml = preg_replace(
+            '/<controlfield tag="   ">.*?<\/controlfield>/', '', $xml
+        );
+
+        if ($xml = simplexml_load_string($xml)) {
             $errors = $xml->xpath('//local_error | //global_error');
             if (!empty($errors)) {
                 if ($errors[0]->error_code == 6026) {
@@ -662,10 +669,11 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $title .= " $addTitle";
         }
         $author = $this->getSingleValue($record, '100a');
-        $addAuthors = $this->getSingleValue($record, '700a');
+        $addAuthors = $this->getMultipleValues($record, '700a');
         $sources = $this->getMultipleValues($record, 'SIDt');
         $year = $this->getSingleValue($record, 'YR a');
         $languages = $this->getMultipleValues($record, '041a');
+        $publishers = $this->getMultipleValues($record, '260b');
 
         $urls = [];
         $res = $record->xpath("./m:datafield[@tag='856']");
@@ -773,9 +781,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         return [
             'title' => $title,
             'author' => $author ? $author : null,
-            'author2' => [$addAuthors],
+            'author2' => $addAuthors,
             'source' => $sources[0],
-            'publisher' => $sources,
+            'publisher' => $publishers,
             'main_date_str' => $year ? $year : null,
             'publishDate' => $year ? [$year] : null,
             'container_title' => $hostTitle ? $hostTitle[0] : null,

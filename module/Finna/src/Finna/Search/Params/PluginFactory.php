@@ -70,28 +70,34 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
                 $serviceLocator->getServiceLocator()->get('VuFind\Config'),
                 $serviceLocator->getServiceLocator()->get('VuFind\DateConverter')
             );
-        } else if ($name === 'primo') {
+        } elseif ($name === 'primo') {
             // Clone the options instance in case caller modifies it:
             return new \Finna\Search\Primo\Params(
                 clone($options),
                 $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );
-        } else if ($name === 'metalib') {
+        } elseif ($name === 'metalib') {
             // Clone the options instance in case caller modifies it:
             return new \Finna\Search\MetaLib\Params(
                 clone($options),
                 $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );
-        } else if ($name === 'combined') {
+        } elseif ($name === 'combined') {
             // Clone the options instance in case caller modifies it:
             return new \Finna\Search\Combined\Params(
                 clone($options),
                 $serviceLocator->getServiceLocator()->get('VuFind\Config'),
                 $serviceLocator->getServiceLocator()->get('VuFind\DateConverter')
             );
-        } else if ($name === 'mixedlist') {
+        } elseif ($name === 'mixedlist') {
             // Clone the options instance in case caller modifies it:
             return new \Finna\Search\MixedList\Params(
+                clone($options),
+                $serviceLocator->getServiceLocator()->get('VuFind\Config')
+            );
+        } elseif ($name === 'favorites') {
+            // Clone the options instance in case caller modifies it:
+            return new \Finna\Search\Favorites\Params(
                 clone($options),
                 $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );

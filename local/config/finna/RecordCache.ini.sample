@@ -20,7 +20,9 @@
 [Default]
 Solr[operatingMode] = fallback
 Primo[operatingMode] = fallback
+MetaLib[operatingMode] = fallback
 
 [Favorite]
 Solr[operatingMode] = fallback
 Primo[operatingMode] = primary
+MetaLib[operatingMode] = primary

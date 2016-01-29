@@ -1727,3 +1727,31 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     padding-bottom: 0.6em;
     text-align: center;
 }
+
+// Popular searches
+.popular-searches {
+    & ul {
+        margin-bottom: 0;
+    }
+    & li {
+        margin-bottom: 10px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    & .position {
+        color: @btn-primary-color;
+        background: @btn-primary-bg;
+        border-radius: 50%;
+        display: inline-block;
+        height: 30px;
+        line-height: 30px;
+        margin-right: 6px;
+        padding: 0;
+        text-align: center;
+        width: 30px;	
+    }
+    & a {
+        text-decoration: none;
+    }
+}
