@@ -112,6 +112,7 @@ $config = [
         'allow_override' => true,
         'factories' => [
             'Finna\OnlinePayment' => 'Finna\Service\Factory::getOnlinePayment',
+            'VuFind\AutocompletePluginManager' => 'Finna\Service\Factory::getAutocompletePluginManager',
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
             'VuFind\CookieManager' => 'Finna\Service\Factory::getCookieManager',
             'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
@@ -141,6 +142,11 @@ $config = [
                     'mozillapersona' => 'Finna\Auth\MozillaPersona',
                     'shibboleth' => 'Finna\Auth\Shibboleth',
                 ],
+            ],
+            'autocomplete' => [
+                'factories' => [
+                    'solr' => 'Finna\Autocomplete\Factory::getSolr'
+                ]
             ],
             'db_table' => [
                 'factories' => [

@@ -105,6 +105,42 @@
             )
           );
         }
+
+        // Autocomplete strings:
+        if ($this->searchbox()->autocompleteEnabled(isset($this->searchClassId) ? $this->searchClassId : 'Solr')) {
+           if ($phrase = $this->autocomplete()->getPhraseSearch()) {
+             $this->jsTranslations()->addStrings(['autocomplete_phrase' => $this->translate('autocomplete_phrase')]);
+           }
+
+           $browse = isset($browse) ? $browse : false;
+           if (!$browse) {
+             $activeTab = null;
+             if (isset($searchTabs)) {
+               foreach ($searchTabs as $tab) {
+                 if ($tab['selected']) {
+                   $activeTab = $tab['id'];
+                   break;
+                 }
+               }
+             }
+
+             foreach (['suggestion','facet','handler', 'filter', 'phrase'] as $section) {
+               $section = "autocomplete_section_$section";
+               if ($this->translationEmpty($section)) {
+                  continue;
+               }
+               $this->jsTranslations()->addStrings([$section => $this->translate($section)]);
+             }
+             foreach ($this->autocomplete()->getFilters($activeTab) as $filter) {
+               $this->jsTranslations()->addStrings([$filter['label'] => $this->translate($filter['label'])]);
+             }
+             $acHandlers = $this->autocomplete()->getHandlers($activeTab);
+             foreach ($acHandlers as $handler) {
+               $this->jsTranslations()->addStrings([$handler['handler'] => $this->translate($handler['label'])]);
+             }
+           }
+        }
+
         $this->headScript()->appendScript(
            'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
         );

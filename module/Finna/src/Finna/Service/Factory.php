@@ -43,6 +43,18 @@ use Zend\Console\Console,
 class Factory extends \VuFind\Service\Factory
 {
     /**
+     * Construct the Autocomplete Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Autocomplete\PluginManager
+     */
+    public static function getAutocompletePluginManager(ServiceManager $sm)
+    {
+        return static::getGenericPluginManager($sm, 'Autocomplete');
+    }
+
+    /**
      * Construct the cache manager.
      *
      * @param ServiceManager $sm Service manager.
