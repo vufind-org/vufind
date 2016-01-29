@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Mail as MailException,
-    VuFind\RecordDriver\AbstractBase as AbstractRecordDriver,
-    Zend\Session\Container as SessionContainer;
+    VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 
 /**
  * VuFind Record Controller

@@ -16,6 +16,7 @@ function checkSaveStatuses() {
     }
     $.ajax({
       dataType: 'json',
+      method: 'POST',
       url: VuFind.getPath() + '/AJAX/JSON?method=getSaveStatuses',
       data: {id:ids, 'source':srcs},
       success: function(response) {
