@@ -46,7 +46,8 @@
   margin: 15px 0px;
   border-radius: @border-radius-base;
   
-  & > li.pagination-button > a {
+  // paginate_button is used in DataTables
+  & > li.pagination-button > a, & > li.paginate_button.next > a, & > li.paginate_button.previous > a {
     margin-left: 0;
     padding: 0;
     margin-right: 2px;
@@ -136,6 +137,10 @@
       border-color: @pagination-disabled-border;
       cursor: not-allowed;
     }
+  }
+  // paginate_button is used in DataTables
+  & > li.paginate_button.disabled > a {
+      display: none;
   }
 }
 
