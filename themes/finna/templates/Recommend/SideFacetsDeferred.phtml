@@ -26,7 +26,7 @@
 <? $results = $this->recommend->getResults(); ?>
 <? if ($results->getResultTotal() > 0): ?>
 <div class="side-facets-container">
-  <h4><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?><? if (!$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?></h4>
+  <h4><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?><? if (!isset($this->overrideSideFacetCaption) && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?></h4>
 <? endif; ?>
 <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
 <?
