@@ -1037,6 +1037,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $id = $this->params()->fromPost(
             'searchHash', $this->params()->fromQuery('searchHash')
         );
+        $limit = $this->params()->fromPost(
+            'limit', $this->params()->fromQuery('limit', null)
+        );
 
         $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager');
         $search = $table->get('Search')->select(['finna_search_id' => $id])
@@ -1091,7 +1094,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 continue;
             }
             foreach ($tabs as $tab) {
-                if ($tab['class'] == $recommendation) {
+                if ($tab['id'] == $recommendation) {
                     $uri = new \Zend\Uri\Uri($tab['url']);
                     $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
                     $otherResults = $runner->run(
@@ -1113,6 +1116,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
                         continue;
                     }
 
+                    if (null !== $limit) {
+                        $tab['url'] .= '&limit=' . urlencode($limit);
+                    }
                     $html .= $this->getViewRenderer()->partial(
                         'Recommend/SearchTabs.phtml',
                         [
