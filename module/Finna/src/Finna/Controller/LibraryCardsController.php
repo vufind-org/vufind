@@ -48,6 +48,12 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
      */
     public function editCardAction()
     {
+        // Check login here so that we know not to mess with AuthManager
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+
         $view = parent::editCardAction();
 
         if (!($view instanceof \Zend\View\Model\ViewModel)) {
