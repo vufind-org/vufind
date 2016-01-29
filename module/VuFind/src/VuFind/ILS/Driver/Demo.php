@@ -913,7 +913,7 @@ class Demo extends AbstractBase
      */
     public function getDefaultRequestGroup($patron = false, $holdDetails = null)
     {
-        if (rand(0, 1) == 1) {
+        if ($this->isFailing(__METHOD__, 50)) {
             return false;
         }
         $requestGroups = $this->getRequestGroups(0, 0);
