@@ -70,6 +70,12 @@
 
   <div class="col-sm-8 record-information">
     <h3 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
+    <? if ($results = $this->driver->getAlternativeTitles()): ?>
+      <div class="recordAltTitles record-alt-titles">
+        <?=implode('<br>', array_map(array($this, 'escapeHtml'), $results))?>
+      </div>
+    <? endif; ?>
+
     <div class="record-authors">
     <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
           <div class="truncate-field">
