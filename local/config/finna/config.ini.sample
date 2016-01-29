@@ -910,8 +910,8 @@ alphabet_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ"
 RefWorks = "record,bulk"
 EndNote = "record,bulk"
 EndNoteWeb = "record,bulk"
-MARC = true
-MARCXML = true
+MARC = false
+MARCXML = false
 RDF = false
 BibTeX = false
 
