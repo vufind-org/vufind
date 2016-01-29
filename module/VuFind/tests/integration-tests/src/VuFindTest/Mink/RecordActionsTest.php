@@ -40,9 +40,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
     use \VuFindTest\Unit\UserCreationTrait;
 
-    protected static $hash;
-    protected static $hash2;
-
     /**
      * Standard setup method.
      *
