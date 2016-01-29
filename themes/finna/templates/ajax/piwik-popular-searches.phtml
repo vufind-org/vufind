@@ -1,0 +1,20 @@
+<!-- START of: finna - ajax/piwik-popular-searches.phtml -->
+<div class="popular-searches row">
+  <ul class="col-sm-6 col-xs-12">
+  <? $counter = 0; ?>
+  <? foreach ($this->searches as $search => $results): ?>
+    <li>
+      <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($search)?>">
+        <span class="position"><?=$this->escapeHtml(++$counter) ?></span> <span class="title search-term"><?=$this->escapeHtml($search)?></span>
+      </a>
+    </li>
+    <? if ($counter == 10): ?>
+      <? break; ?>
+    <? elseif ($counter == 5): ?>
+  </ul>
+  <ul class="col-sm-6 col-xs-12">
+    <? endif; ?>
+  <? endforeach; ?>
+  </ul>
+</div>
+<!-- END of: finna - ajax/piwik-popular-searches.phtml -->

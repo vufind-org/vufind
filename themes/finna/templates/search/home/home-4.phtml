@@ -1,6 +1,11 @@
 <!-- START of: finna - search/home/home-4.phtml -->
 <div class="col-xs-12">
   <h2>home-4.phtml</h2>
-  <p>Nämä ovat esimerkkejä, lisää tyhjä home-3.phtml custom/search/home -kansioon, jos et käytä tiedostoa</p>
+  <p>Nämä ovat esimerkkejä. Lisää tyhjä home-4.phtml custom/search/home -kansioon, jos et käytä tiedostoa.</p>
+  <h3><?=$this->transEsc('most_popular_searches_heading')?></h3>
+  <div class="piwik-popular-searches col-sm-6">
+    <span class="load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...</span>
+    <span class="load-failed hidden"> <?=$this->transEsc('An error occurred during execution; please try again later.')?></span>
+  </div>
 </div>
 <!-- END of: finna - search/home/home-4.phtml -->

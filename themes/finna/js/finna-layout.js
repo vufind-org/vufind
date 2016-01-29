@@ -616,6 +616,25 @@ finna.layout = (function() {
         );
     }
 
+    var initPiwikPopularSearches = function() {
+        var $container = $('.piwik-popular-searches');
+        if ($container.length === 0) {
+            return;
+        }
+        $container.find('.load-indicator').removeClass('hidden');
+        $.getJSON(
+            VuFind.getPath() + '/AJAX/JSON?method=getPiwikPopularSearches',
+            function(response) {
+                if (response.status == 'OK') {
+                    $container.html(response.data);
+                } else {
+                    $container.find('.load-indicator').addClass('hidden');
+                    $container.find('.load-failed').removeClass('hidden');
+                }
+            }
+        );    
+    }
+    
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -653,6 +672,7 @@ finna.layout = (function() {
             initTouchDeviceGallery();
             initImageCheck();
             initSideFacets();
+            initPiwikPopularSearches();
         }
     };
 
