@@ -3,7 +3,8 @@
 /*global console*/
 /**
  * vufind.typeahead.js 0.10
- * ~ @crhallberg
+ * ~ @crhallberg (original version)
+ * ~ @samuli (modifications)
  */
 (function ( $ ) {
     var xhr = false;

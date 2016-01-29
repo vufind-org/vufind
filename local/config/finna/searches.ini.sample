@@ -492,7 +492,7 @@ Browse_Journal = "Solr:Title:title:title:format:1/Journal/eSerial/"
 ; 4. Search handlers
 ;   Search handlers for performing a search using the current search term and selected handler.
 ;
-;   handlers[] = "Title|autocomplete_handler_title"
+;   handlers[] = "[handler]|[label]"
 ;
 ;   Each handler consists of the following options delimited by '|':
 ;     - [handler] Handler

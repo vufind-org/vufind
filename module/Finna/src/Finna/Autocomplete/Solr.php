@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library 2016.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -116,11 +116,13 @@ class Solr extends \VuFind\Autocomplete\Solr
             $filters = isset($data[1]) ? $data[1] : null;
             $limit = isset($data[2]) && !empty($data[2]) ? $data[2] : null;
             $tabs = isset($data[3]) ? explode('&', $data[3]) : null;
-            // Restrict facet values to top-level if no other filters are defined
-            $filters = !empty($filters)
-                ? explode('&', $filters)
-                : (in_array($field, $this->hierarchicalFacets) ? ['^0/*.'] : [])
-            ;
+            // Restrict hierarchical facet values to top-level if
+            // no other filters are defined
+            if (!empty($filters)) {
+                $filters = explode('&', $filters);
+            } else if (in_array($field, $this->hierarchicalFacets)) {
+                $filters = ['^0/*.'];
+            }
             $settings[$field] = [
                'limit' => $limit, 'filters' => $filters, 'tabs' => $tabs
             ];
