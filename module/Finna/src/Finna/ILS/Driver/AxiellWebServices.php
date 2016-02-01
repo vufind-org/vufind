@@ -539,13 +539,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         try {
             $validFromDate = date('Y-m-d');
 
-            if (!isset($holdDetails['requiredBy'])) {
-                $validToDate = $this->getDefaultRequiredByDate();
-            } else {
-                $validToDate = $this->dateFormat->convertFromDisplayDate(
+            $validToDate = isset($holdDetails['requiredBy'])
+                ? $this->dateFormat->convertFromDisplayDate(
                     'Y-m-d', $holdDetails['requiredBy']
-                );
-            }
+                )
+                : date('Y-m-d', $this->getDefaultRequiredByDate());
         } catch (DateException $e) {
             // Hold Date is invalid
             throw new ILSException('hold_date_invalid');
@@ -817,12 +815,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $result = [];
             foreach ($holdings as $holding) {
                 $year = $holding->value;
-                $holdingsEditions = (array)$holding->compositeHolding;
+                $holdingsEditions = $this->objectToArray($holding->compositeHolding);
                 foreach ($holdingsEditions as $holdingsEdition) {
                     $edition = $holdingsEdition->value;
                     $holdingsOrganisations
-                        = (array)$holdingsEdition->compositeHolding;
-
+                        = $this->objectToArray($holdingsEdition->compositeHolding);
                     $journalInfo = [
                         'year' => $year,
                         'edition' => $edition
@@ -839,14 +836,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         } else {
             $result = $this->parseHoldings($holdings, $id, '', '');
         }
-
+        
         if (!empty($result)) {
             usort($result, [$this, 'holdingsSortFunction']);
 
             $summary = $this->getHoldingsSummary($result);
             $result[] = $summary;
         }
-
+        
         return empty($result) ? false : $result;
     }
 
@@ -872,7 +869,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         foreach ($organisationHoldings as $organisation) {
             $organisationName = $group = $organisation->value;
             $organisationId = $organisation->id;
-            $holdingsBranch = (array)$organisation->compositeHolding;
+
+            $holdingsBranch = $this->objectToArray($organisation->compositeHolding);
             if ($holdingsBranch[0]->type == 'branch') {
                 foreach ($holdingsBranch as $branch) {
                     $branchName = $branch->value;
@@ -880,7 +878,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                     $reservableId = isset($branch->reservable)
                         ? $branch->reservable : '';
                     $holdable = $branch->reservationButtonStatus == 'reservationOk';
-                    $departments = (array)$branch->holdings->holding;
+                    $departments = $this->objectToArray($branch->holdings->holding);
+
                     foreach ($departments as $department) {
                         // Get holding data
                         $dueDate = isset($department->firstLoanDueDate)
@@ -1980,6 +1979,21 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     }
 
     /**
+     * Get default required by date.
+     *
+     * @return int timestamp
+     */
+    protected function getDefaultRequiredByDate()
+    {
+        list($d, $m, $y) = isset($this->config['Holds']['defaultRequiredDate'])
+             ? explode(':', $this->config['Holds']['defaultRequiredDate'])
+             : array(0, 1, 0);
+        return mktime(
+            0, 0, 0, date('m')+$m, date('d')+$d, date('Y')+$y
+        );
+    }
+
+    /**
      * Sort function for sorting pickup locations
      *
      * @param array $a Pickup location
@@ -2032,6 +2046,21 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             return $statuses[$status];
         }
         return $status;
+    }
+
+    /**
+     * Wrap the given object to an array if needed.
+     *
+     * @param mixed $object Object
+     *
+     * @return array
+     */
+    protected function objectToArray($object)
+    {
+        if (is_object($object)) {
+            $object = [$object];
+        }
+        return $object;
     }
 
     /**
