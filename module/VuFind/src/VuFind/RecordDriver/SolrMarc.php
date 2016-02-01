@@ -320,9 +320,19 @@ class SolrMarc extends SolrDefault
         $fields = $this->getMarcRecord()->getFields('264');
         if (is_array($fields)) {
             foreach ($fields as $currentField) {
-                $currentVal = $currentField->getSubfield($subfield);
-                $currentVal = is_object($currentVal)
-                    ? $currentVal->getData() : null;
+                $subfields = $currentField->getSubfields($subfield);
+                if (count($subfields) > 1) {
+                    foreach ($subfields as $sf) {
+                        $sf = is_object($sf) ? $sf->getData() : null;
+                        $sfcontent[] = $sf;
+                    };
+                    $currentVal = implode(', ', $sfcontent);
+                } else {
+                    $currentVal = array_values($subfields)[0];
+                    $currentVal = is_object($currentVal)
+                        ? $currentVal->getData() : null;
+                }
+
                 if (!empty($currentVal)) {
                     switch ($currentField->getIndicator('2')) {
                     case '1':
@@ -336,9 +346,9 @@ class SolrMarc extends SolrDefault
             }
         }
         if (count($pubResults) > 0) {
-            $results = array_merge($results, $pubResults);
+            $results = $pubResults;
         } else if (count($copyResults) > 0) {
-            $results = array_merge($results, $copyResults);
+            $results = $copyResults;
         }
 
         return $results;
