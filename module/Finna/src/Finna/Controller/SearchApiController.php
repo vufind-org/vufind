@@ -148,7 +148,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      */
     protected $defaultFields = [
         'buildings',
-        'comments',
         'formats',
         'id',
         'imageRights',
@@ -612,26 +611,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             return $id;
         }
         return null;
-    }
-
-    /**
-     * Get comments for a record as an array
-     *
-     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
-     *
-     * @return array
-     */
-    protected function getRecordComments($record)
-    {
-        $comments = [];
-        foreach ($record->tryMethod('getComments') as $comment) {
-            $comments[] = [
-                'comment' => $comment->comment,
-                'created' => $comment->created,
-                'rating' => $comment->finna_rating
-            ];
-        }
-        return $comments;
     }
 
     /**
