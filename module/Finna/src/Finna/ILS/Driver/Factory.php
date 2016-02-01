@@ -114,7 +114,6 @@ class Factory
         $configReader = $sm->getServiceLocator()->get('Vufind\Config');
         return new AxiellWebServices(
             $sm->getServiceLocator()->get('VuFind\DateConverter'),
-            $ils->getHoldsMode(), $ils->getTitleHoldsMode(),
             $configReader
         );
     }

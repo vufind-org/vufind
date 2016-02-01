@@ -361,6 +361,16 @@ button.multiselect {
     .button-label {
         margin-left: 10px;
     }
+    @media(max-width:@screen-xs-max) {
+        margin-top: -5px;
+        & > div {
+            text-align: left;
+            & > div:first-child .dropdown > a {
+                border-left: 1px solid @gray-lighter; 
+            }
+        }
+
+    }
     & .view-button, & .sort-button, & .results-per-page-button {
         color: @body-bg;
         display: inline-block;
@@ -410,14 +420,44 @@ button.multiselect {
             }
         }
         @media(max-width:@screen-xs-max) {
-            margin-right: 5px;
+            margin-right: 0;
             margin-bottom: 10px;
+            color: @body-bg;
+            & .dropdown {
+                
+                & > a {
+                background: none;
+                border-radius: 0px;
+                border-right: 1px solid @gray-lighter;
+                padding: 4px 8px;
+                color: @gray;
+                    &:hover, &:focus {
+                       background: none; 
+                    }
+                    
+                }
+                & i {
+                    color: @gray;   
+                }
+            }
         }
         & .dropdown-menu {
             @media(max-width:@screen-sm-max) {
                 font-size: 1.1em;
-                right: 0;
-                left: auto;
+            }
+        }
+    }
+    @media (max-width: 399px) {
+        & .view-button, & .sort-button {
+            &  .dropdown > a span {
+                padding-right: 20px;
+                max-width: 72px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+                display: inline-block;
+                height: 17px;
+                margin-bottom: -3px;
             }
         }
     }

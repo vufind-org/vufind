@@ -112,6 +112,7 @@ $config = [
         'allow_override' => true,
         'factories' => [
             'Finna\OnlinePayment' => 'Finna\Service\Factory::getOnlinePayment',
+            'VuFind\AutocompletePluginManager' => 'Finna\Service\Factory::getAutocompletePluginManager',
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
             'VuFind\CookieManager' => 'Finna\Service\Factory::getCookieManager',
             'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
@@ -142,6 +143,11 @@ $config = [
                     'shibboleth' => 'Finna\Auth\Shibboleth',
                 ],
             ],
+            'autocomplete' => [
+                'factories' => [
+                    'solr' => 'Finna\Autocomplete\Factory::getSolr'
+                ]
+            ],
             'db_table' => [
                 'factories' => [
                     'user' => 'Finna\Db\Table\Factory::getUser',
@@ -165,6 +171,7 @@ $config = [
                     'multibackend' => 'Finna\ILS\Driver\Factory::getMultiBackend',
                     'voyager' => 'Finna\ILS\Driver\Factory::getVoyager',
                     'voyagerrestful' => 'Finna\ILS\Driver\Factory::getVoyagerRestful',
+                    'axiellwebservices' => 'Finna\ILS\Driver\Factory::getAxiellWebServices',
                 ],
             ],
             'recommend' => [
@@ -350,10 +357,30 @@ $config['router']['routes']['searchApi'] = [
         ]
     ]
 ];
+$config['router']['routes']['searchApiv1'] = [
+    'type' => 'Zend\Mvc\Router\Http\Literal',
+    'options' => [
+        'route'    => '/v1/search',
+        'defaults' => [
+            'controller' => 'SearchApi',
+            'action'     => 'search',
+        ]
+    ]
+];
 $config['router']['routes']['searchApiRecord'] = [
     'type' => 'Zend\Mvc\Router\Http\Literal',
     'options' => [
         'route'    => '/api/record',
+        'defaults' => [
+            'controller' => 'SearchApi',
+            'action'     => 'record',
+        ]
+    ]
+];
+$config['router']['routes']['searchApiRecordv1'] = [
+    'type' => 'Zend\Mvc\Router\Http\Literal',
+    'options' => [
+        'route'    => '/v1/record',
         'defaults' => [
             'controller' => 'SearchApi',
             'action'     => 'record',

@@ -5,15 +5,10 @@ $currentImage = $this->index+1;
 $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
 ?>
 <? $formats = $this->driver->tryMethod('getFormats'); ?>
+<? $translatedFormat = $this->transEsc(end($formats)); ?>
 <? $recordType = $this->driver->getRecordType(); ?>
 <div class="imagepopup-holder <?=$this->escapeHtmlAttr($recordType) ?>" data-type="<?=$this->escapeHtmlAttr($recordType) ?>" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID()) ?>">
   <div class="imagepopup-container">
-    <div class="image-info">
-        <? if ($numOfImages > 1): ?>
-          <div class="image-index"><?= $this->translate('Image') . " $currentImage / $numOfImages" ?></div>
-        <? endif; ?>
-        <div class="record-index"><span class="index"></span> / <span class="total"></span></div>
-    </div>
     <div class="image iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>">
       <img src="<?= $largeImage ?>" />
     </div>
@@ -21,15 +16,31 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
       <h3 class="title"><?= $this->escapeHtml($this->driver->getTitle()) ?></h3>
       <div class="author-and-dates">
         <p>
+        <? if ($recordType != 'lido'): ?>
           <? if ($author = $this->driver->getPrimaryAuthor()): ?>
-          <?= $this->escapeHtml($author) ?>
+            <?= $this->escapeHtml($author) ?>
+            <? endif; ?>
+            <? if ($dates = $this->driver->trymethod('getResultDateRange')): ?>
+              <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
+          <? else: ?>
+            <? foreach ($this->driver->getPublicationDates() as $date): ?>
+            <?= $this->escapeHtml($date) ?>
+            <? endforeach ?>
           <? endif; ?>
-          <? if ($dates = $this->driver->trymethod('getResultDateRange')): ?>
-            <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
         <? else: ?>
-          <? foreach ($this->driver->getPublicationDates() as $date): ?>
-          <?= $this->escapeHtml($date) ?>
-          <? endforeach ?>
+            <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
+              <div class="truncate-field">
+              <? foreach($results as $index => $author): ?>
+                <?=($index > 0 ? '; ' : '')?><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?>
+              <? endforeach; ?>
+              <? if ($dates = $this->driver->getResultDateRange()): ?>
+                <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
+              <? endif; ?>
+              <? if ($results = $this->driver->getSubjectDates() && !isset($dates[0])): ?>
+                <?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?>
+              <? endif; ?>
+              </div>
+            <? endif; ?>
         <? endif; ?>
         </p>
       </div>
@@ -64,31 +75,66 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
           </ul>
         </div>
       <? endif; ?>
-      <div class="record-link"><a href="<?= $this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('To the record') ?></a></div>
-      <? $rights = $this->driver->getImageRights($this->layout()->userLang) ?>
-      <div class="open-link"><a target="_blank" href="<?= $originalImage ?>"><i class="fa fa-new-window"></i> <?= $this->translate('Show image in new window') ?></a> <span class="image-dimensions"></span></div>
-      <div class="image-rights">
-        <div class="rights">
-          <? $hasLink = isset($rights['link']); ?>
-          <span><?= $this->translate("Image Rights") ?>:</span> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
-        </div>
-        <div class="more-link copyright-link"><a data-mode="1" href=""><?= $this->translate('show_more') ?><i class="fa fa-arrow-down"></i></a></div>
-        <div class="copyright">
-          <? if (isset($rights['description'])): ?>
-            <? foreach ($rights['description'] as $item): ?>
-            <p><?= $this->transEsc($item) ?></p>
-            <? endforeach ?>
-          <? endif ?>
-          <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
-            <p><?= $this->translate('Image Rights Default') ?>
-            <p><a href="<?= $this->url('content-page', array('page' => 'terms_conditions')) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
+          <div class="popup-link-buttons">
+          <? $urls = $this->driver->getURLs(); $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
+          <? if (!empty($urls) || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
+              <? $index = 0; ?>
+                <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
+                  <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
+                    <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i><? if (count($onlineURLs) == 1 || count($mergedData['urls']) == 1): ?> <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><? else: ?><?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?><? endif; ?></a>
+                    <? if ($url['source']): ?>
+                      <span class="online-source"><?=is_array($url['source']) ? '('.$this->transEsc('Multiple Organisations').')' : '';?></span>
+                    <? endif; ?>
+                    </div>
+                  <? endforeach; ?>
+                <? elseif (!empty($urls)): ?>
+                  <? foreach ($urls as $url): ?>
+                    <? $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
+                    <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <? if (count($urls) == 1): ?>  <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><? else: ?><?=$this->transEsc('link_' . $desc, null, $desc) ?><? endif; ?></a></div>
+                    <? $index++; ?>
+                    <? if ($index > 4): ?>
+                    <div>...</div>
+                    <? break; endif; ?>
+                  <? endforeach; ?>
+                <? endif; ?>
           <? endif; ?>
+          <div class="record-link"><a href="<?= $this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('To the record') ?></a></div>
+          <? $rights = $this->driver->getImageRights($this->layout()->userLang) ?>
+
+          <div class="open-link"><a target="_blank" href="<?= $originalImage ?>"><i class="fa fa-download"></i> <?= $this->translate('Show image in new window') ?></a> <span class="image-dimensions"></span></div>
 
         </div>
-        <div class="less-link copyright-link"><a data-mode="0" href=""><?= $this->translate('show_less') ?><i class="fa fa-arrow-up"></i></a></div>
-
-      </div>
+        <? if ($recordType == 'lido'): ?>
+        <div class="image-rights">
+          <div class="rights">
+            <? $hasLink = isset($rights['link']); ?>
+            <span><?= $this->translate("Image Rights") ?>:</span> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
+          </div>
+          <div class="more-link copyright-link"><a data-mode="1" href=""><?= $this->translate('show_more') ?><i class="fa fa-arrow-down"></i></a></div>
+          <div class="copyright">
+            <? if (isset($rights['description'])): ?>
+              <? foreach ($rights['description'] as $item): ?>
+              <p><?= $this->transEsc($item) ?></p>
+              <? endforeach ?>
+            <? endif ?>
+            <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+              <p><?= $this->translate('Image Rights Default') ?>
+              <p><a href="<?= $this->url('content-page', array('page' => 'terms_conditions')) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
+            <? endif; ?>
+          </div>
+          <div class="less-link copyright-link"><a data-mode="0" href=""><?= $this->translate('show_less') ?><i class="fa fa-arrow-up"></i></a></div>
+          <? if ($this->resolver('record/record-organisation-menu.phtml')): ?>
+            <?=$this->render('record/record-organisation-menu.phtml') ?>
+          <? endif; ?>
+        </div>
+      <? endif; ?>
       <div style="clear: both;"></div>
+    </div>
+    <div class="image-info">
+        <? if ($numOfImages > 1): ?>
+        <div class="image-index"><?= $this->translate('Image') . " $currentImage / $numOfImages" ?></div>
+        <? endif; ?>
+        <div class="record-index"><span class="index"></span> / <span class="total"></span></div>
     </div>
     <div style="clear: both;"></div>
   </div>

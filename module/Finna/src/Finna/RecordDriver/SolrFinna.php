@@ -428,7 +428,7 @@ trait SolrFinna
     public function supportsOpenUrl()
     {
         // OpenURL is supported only if we have an ISSN, ISBN or SFX Object ID.
-        return  $this->getCleanISSN() || $this->getCleanISBN()
+        return $this->getCleanISSN() || $this->getCleanISBN()
             || !$this->getSfxObjectId();
     }
 

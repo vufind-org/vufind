@@ -5,6 +5,7 @@ var finna = (function() {
             // List of modules to be inited
             var modules = [
                 'advSearch',
+                'autocomplete',
                 'bx',
                 'common',
                 'dateRangeVis',

@@ -130,7 +130,7 @@
               <? endif; ?>
             <? endforeach; ?>
           </span>
-        <? endif; ?>
+      <? endif; ?>
 
       <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
           <span class="recordEdition">
@@ -224,11 +224,7 @@
       <? $altTitles = $this->driver->tryMethod('getAlternativeTitles'); if (!empty($altTitles)): ?>
         <tr class="recordAltTitles">
           <th><?=$this->transEsc('Other Titles')?>: </th>
-          <td>
-          <? foreach ($altTitles as $i => $altTitle): ?>
-            <?=$i > 0 ? ';' : '' ?><?=$this->escapeHtml($altTitle) ?>
-          <? endforeach; ?>
-          </td>
+          <td><?=$this->escapeHtml(implode('; ', $altTitles)); ?></td>
         </tr>
       <? endif; ?>
 
@@ -344,9 +340,10 @@
               foreach ($classifications as $class => $field) {
                 $field = array_unique($field);
                 foreach ($field as $j => $subfield) {
-                  $result = $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
+                  $result = $class . ' ' . $subfield;
+                  $classForTranslation = 'classification::' . str_replace('::', ' ', $result);
                   ?>
-                  <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><? if (!$this->translationEmpty('classification::'.$result)): ?><?=$this->transEsc('classification::'.$result).'<span class="classification-detail"> (' . $result . ')</span>' ;?><? else: ?><?= $result; ?><? endif; ?></a></br>
+                  <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><? if (!$this->translationEmpty($classForTranslation)): ?><?=$this->transEsc($classForTranslation).'<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>' ;?><? else: ?><?=$this->escapeHtml($result); ?><? endif; ?></a></br>
                 <?
                 }
               }

@@ -74,19 +74,9 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
         if (!empty($date)) {
             $entry->setDateModified($date);
         }
-        $author = $record->tryMethod('getPrimaryAuthor');
-        if (!empty($author)) {
-            $entry->addAuthor(['name' => $author]);
-        }
-        $authors = $record->tryMethod('getSecondaryAuthors');
-        if (is_array($authors)) {
-            foreach ($authors as $author) {
-                $entry->addAuthor(['name' => $author]);
-            }
-        }
         $formats = $record->tryMethod('getFormats');
         if (is_array($formats)) {
-            // Take only the most specific format and get rid of level indicator 
+            // Take only the most specific format and get rid of level indicator
             // and trailing slash
             $format = end($formats);
             $format = implode('/', array_slice(explode('/', $format), 1, -1));

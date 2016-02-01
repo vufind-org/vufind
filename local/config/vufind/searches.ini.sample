@@ -1,5 +1,21 @@
 [Parent_Config]
 relative_path = "../finna/searches.ini"
-override_full_sections = "Views"
+override_full_sections = "Views,Autocomplete_Sections"
 
 ; Add any overrides below
+;[Autocomplete_Sections]
+;facets[] = "online_boolean|true"
+;facets[] = "format||3"
+
+;facets[] = "building|2/JYU/100/3/"
+;facets[] = "format|0/Book/&0/Sound/"
+
+;filters[] = "building:0/JYU/|autocomplete_coursebooks|Solr"
+;filters[] = "~format:0/Book/&~format:0/PhysicalObject/|autocomplete_filter|Solr"
+;filters[] = "tlevel:peer_reviewed&tlevel:online_resources|autocomplete_primo_fulltext|Primo"
+
+;phrase = "phrase_search"
+
+;handlers[] = "Title|autocomplete_handler_title"
+;handlers[] = "Author|autocomplete_handler_author"
+;handlers[] = "Subject|autocomplete_handler_subject"

@@ -88,6 +88,9 @@ class Options extends \VuFind\Search\Base\Options
                 $this->advancedHandlers[$key] = $value;
             }
         }
+        if (isset($searchSettings->Autocomplete->enabled)) {
+            $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
+        }
     }
 
     /**

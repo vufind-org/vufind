@@ -167,18 +167,14 @@
           $firstDueStr = $row['duedate'];
         }
       }
-      $statuses[$row['status']] = 1;
+      $statuses[$this->translate('status_' . $row['status'], null, $row['status'])] = 1;
     }
     if ($available) {
       $holdingSummary = '<span class="text-success"><i class="fa fa-ok"></i> ' . $this->transEsc('available_count', ['%%count%%' => $available]) . '</span>';
     } else if ($firstDueStr) {
       $holdingSummary = '<span class="text-danger"><i class="fa fa-remove"></i> ' . $this->transEsc('closest_due_date', ['%%date%%' => $firstDueStr]) . '</span>';
     } else if ($statuses) {
-      $statusesTranslated = [];
-      foreach (array_flip($statuses) as $status) {
-        $statusesTranslated[] = $this->transEsc('status_' . $status);
-      }
-      $holdingSummary = '<span class="text-danger"> ' . implode(' ', $statusesTranslated) . '</span>';
+      $holdingSummary = '<span class="text-danger"> ' . $this->escapeHtml(implode(' ', array_flip($statuses))) . '</span>';
     } else {
       $holdingSummary = '<span class="text-success"><i class="fa fa-ok"></i> ' . $this->transEsc('Available') . '</span>';
     }
@@ -219,19 +215,17 @@
     <? endif; ?>
   </tr>
   <? endif; ?>
-  <? foreach ($this->ils()->getHoldingsTextFieldNames() as $textField): ?>
-    <? if (!empty($holding[$textField])): ?>
-      <tr class="copy-details <?=$holdingsDetails?>">
-        <? // Translation for summary is a special case for backwards-compatibility ?>
-        <td class="copy-title" colspan="2"><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>:</td>
-        <td colspan="3">
-          <? foreach ($holding[$textField] as $current): ?>
-            <?=$this->escapeHtml($current)?><br/>
-          <? endforeach; ?>
-        </td>
-      </tr>
-    <? endif; ?>
-  <? endforeach; ?>
+  <? if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+    <tr class="copy-details <?=$holdingsDetails?>">
+      <? // Translation for summary is a special case for backwards-compatibility ?>
+      <td class="copy-title" colspan="2"><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
+      <td colspan="3">
+        <? foreach ($textFields as $current): ?>
+          <?=$this->escapeHtml($current)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endforeach; endif; ?>
   <? foreach ($holding['items'] as $rowNum => $row): ?>
     <? $check = (isset($row['check']) && $row['check'] && $holdsAllowed); ?>
     <? $checkStorageRetrievalRequest = (isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest']); ?>
@@ -275,7 +269,7 @@
               </div>
             <? else: ?>
               <? /* Begin Unavailable Items (Recalls) */ ?>
-              <span class="text-danger"><i class="fa fa-remove"></i> <? $status = $row['status']; if (!$this->translationEmpty("status_$status")): $status = "status_$status"; endif; ?><?=$this->transEsc($status)?><link property="availability" href="http://schema.org/OutOfStock" /></span>
+              <span class="text-danger"><i class="fa fa-remove"></i> <?=$this->transEsc('status_' . $row['status'], null, $row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
               <? if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
               <? if (isset($row['duedate']) && $row['duedate']): ?>
                 &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>

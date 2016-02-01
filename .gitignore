@@ -33,6 +33,7 @@ local/cache/objects/*
 local/cache/searchspecs/*
 local/config/finna/*.ini
 local/config/finna/*.yaml
+local/config/finna/*.json
 local/config/vufind/*.ini
 local/config/vufind/*.yaml
 local/httpd-vufind.conf

@@ -24,10 +24,6 @@
        }
     }
   }
-
-  $url = $results->getUrlQuery();
-  $url->removeAllFilters();
-  $removeFiltersUrl = $this->url('combined-results') . $url->setPage(1);
 ?>
 <div class="row">
   <div class="col-xs-12 combined-titles">
@@ -66,6 +62,11 @@
 <? /* End Listing Options */ ?>
 
 <? if ($filtersActive): ?>
+  <?
+    $resultsClone = clone($results);
+    $resultsClone->getParams()->removeAllFilters();
+    $removeFiltersUrl = $this->url('combined-results') . $resultsClone->getUrlQuery()->setPage(1);
+  ?>
 <div class="alert alert-info filters-active">
   <a href="<?= $moreUrl ?>"><?= $this->transEsc('Active filters') ?></a>
   <a href="<?= $removeFiltersUrl ?>" title="<?= $this->transEsc('Remove filters') ?>"><i class="fa fa-times"></i></a>
@@ -105,7 +106,7 @@
   ?>
   <?= $this->authorizationNote($searchClassId) ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
-  
+
   <div class="clearfix">
     <? if ($recordTotal > 0): ?>
     <div class="row">

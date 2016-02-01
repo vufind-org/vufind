@@ -216,8 +216,8 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             $cache = $this->getMock('Zend\Cache\Storage\Adapter\Filesystem');
         }
         if (null === $container) {
-            // Using a mock here causes an error for some reason -- investigate later.
-            $container = new \Zend\Session\Container('EBSCO');
+            $container = $this->getMockBuilder('Zend\Session\Container')
+                ->disableOriginalConstructor()->getMock();
         }
         if (null === $mock) {
             return new Backend($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));

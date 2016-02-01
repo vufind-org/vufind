@@ -66,9 +66,10 @@ $translations = '{'
     . '"sInfoFiltered": "' . $this->transEsc('component_parts_filtered') . '",'
     . '"sInfo": "' . $this->transEsc('component_parts_entries_on_page') . '",'
     . '"oPaginate": {'
-    .   '"sNext": "' . $this->transEsc('component_parts_next') . '",'
-    .   '"sPrevious": "' . $this->transEsc('component_parts_previous') . '",'
-    . '}'
+    .   '"sNext": "<i class=\"fa fa-arrow-right\"></i> <span class=\"sr-only\">' . $this->transEsc('component_parts_next') . '</span>",'
+    .   '"sPrevious": "<span class=\"sr-only\">' . $this->transEsc('component_parts_previous') . '</span> <i class=\"fa fa-arrow-left\"></i>",'
+    . '},'
+    . '"sThousands": VuFind.translate("number_thousands_separator")'
     . '}';
 
 $script = <<<JS

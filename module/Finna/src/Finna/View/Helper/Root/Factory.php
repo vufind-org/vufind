@@ -42,6 +42,19 @@ use Zend\ServiceManager\ServiceManager;
 class Factory extends \VuFind\View\Helper\Root\Factory
 {
     /**
+     * Construct the Autocomplete helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Autocomplete
+     */
+    public static function getAutocomplete(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
+        return new Autocomplete($config);
+    }
+
+    /**
      * Construct Browse view helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -277,12 +290,16 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getOpenUrl(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $openUrlRules = json_decode(
-            file_get_contents(
-                \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json')
-            ),
-            true
-        );
+        $file = \VuFind\Config\Locator::getLocalConfigPath('OpenUrlRules.json');
+        if ($file === null) {
+            $file = \VuFind\Config\Locator::getLocalConfigPath(
+                'OpenUrlRules.json', 'config/finna'
+            );
+            if ($file === null) {
+                $file = \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json');
+            }
+        }
+        $openUrlRules = json_decode(file_get_contents($file), true);
         return new OpenUrl(
             $sm->get('context'),
             $openUrlRules,

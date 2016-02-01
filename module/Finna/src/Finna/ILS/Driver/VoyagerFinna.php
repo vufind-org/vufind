@@ -330,7 +330,7 @@ trait VoyagerFinna
 
                             // Clear patron blocks cache
                             $cacheId = "blocks_$patronId";
-                            unset($this->session->cache[$id]);
+                            unset($this->session->cache[$cacheId]);
 
                             return true;
                         } else {

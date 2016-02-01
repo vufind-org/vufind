@@ -90,9 +90,10 @@
                 foreach ($classifications as $class => $field) {
                   $field = array_unique($field);
                   foreach ($field as $i => $subfield) {
-                    $result = $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
+                    $result = $class . ' ' . $subfield;
+                    $classForTranslation = 'classification::' . str_replace('::', ' ', $result);
                     ?>
-                    <? if (!$this->translationEmpty('classification::'.$result) && $i < 1): ?><a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><?=$this->transEsc('classification::'.$result).'<span class="classification-detail"> (' . $result . ')</span>' ;?></a><br/><? endif; ?>
+                    <? if (!$this->translationEmpty($classForTranslation) && $i < 1): ?><a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><?=$this->transEsc($classForTranslation) . '<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>' ;?></a><br/><? endif; ?>
                 <?
                   }
                 }

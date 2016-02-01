@@ -60,6 +60,8 @@ table .iconlabel {
   letter-spacing: 0px;
   font-size: 1em;
 }
+
+// define common image icons and set them in the middle
 .image-popup-trigger {
         &:hover {
             text-decoration: none;   
@@ -245,6 +247,9 @@ table .iconlabel {
 }
 .fa-datevis:before {
     content: "\e614";
+}
+.fa-download:before {
+    font-family: 'FontAwesome';   
 }
 .fa-ratehalf:before {
     content: "\e607";
@@ -500,7 +505,7 @@ table .iconlabel {
 .iconlabel.format-1placebuilding:before, .iconlabel.format-1placeplace:before, .iconlabel.format-1placearchaeologicalsite:before {
     content: "\e60e";
 }
-.iconlabel.format-1otherother:before, .iconlabel.format-1othercollection:before, .iconlabel.format-1othersubunit:before, .iconlabel.format-1otherkit:before, .iconlabel.format-1othermanuscript:before, .iconlabel.format-1othertext:before {
+.iconlabel.format-1otherother:before, .iconlabel.format-1othercollection:before, .iconlabel.format-1othersubunit:before, .iconlabel.format-1otherkit:before, .iconlabel.format-1othermanuscript:before, .iconlabel.format-1othertext:before, .iconlabel.format-1othercdrom:before  {
     content: "\e00d";
 }
 .iconlabel.format-manuscript:before, .iconlabel.format-1thesisother:before, .iconlabel.format-1thesisgradu:before, .iconlabel.format-1thesisthesis:before, .iconlabel.format-1thesislaudatur:before, .iconlabel.format-1thesismasters:before, .iconlabel.format-1thesisbachelorspolytechnic:before, .iconlabel.format-1thesisbachelors:before, .iconlabel.format-1thesismasterspolytechnic:before, .iconlabel.yamk:before, .iconlabel.format-1thesislicentiate:before, .iconlabel.format-1otherresearchdata:before {
@@ -512,7 +517,7 @@ table .iconlabel {
 .iconlabel.format-1videovideo:before, .iconlabel.format-1videodvd:before, .iconlabel.format-1videobluray:before, .iconlabel.format-1videovideodisc:before, .iconlabel.format-1videovideocassette:before, .iconlabel.format-1videomotionpicture:before {
     content: "\e00a";
 }
-.iconlabel.format-1soundrecord:before, .iconlabel.format-1soundcd:before, .iconlabel.format-1soundsounddisc:before, .iconlabel.format-1soundsoundrecording:before, .iconlabel.format-1soundsoundcassette:before, .iconlabel.format-1soundmusicrecording:before {
+.iconlabel.format-1soundrecord:before, .iconlabel.format-1soundcd:before, .iconlabel.format-1soundsounddisc:before, .iconlabel.format-1soundsoundrecording:before, .iconlabel.format-1soundsoundcassette:before, .iconlabel.format-1soundmusicrecording:before, .iconlabel.format-1soundnonmusicalcassette:before, .iconlabel.format-1soundnonmusicalrecording:before, .iconlabel.format-1soundnonmusicalcd:before {
     content: "\e009";
 }
 .iconlabel.format-1imagephoto:before, .iconlabel.format-1imageimage:before, .iconlabel.format-1imagephotograph:before, .iconlabel.format-1imageslide:before, .iconlabel.format-1imagedrawing:before, .iconlabel.format-1imagetransparency:before {
@@ -679,8 +684,8 @@ table .iconlabel {
     text-decoration:line-through;
 }
 .list-group-item.active i.fa.fa-check-square-o:before, .sidebar .list-group-item .main.applied i.fa.fa-check-square-o:before, .sidebar .list-group.facet a.list-group-item.active i.fa.fa-check:before {
-    font-family: 'icomoon';
-    content: "\e02e";
+    font-family: 'FontAwesome';
+    content: "\f00c";
     color: @body-bg;
 }
 .sidebar .list-group-item .main.applied i.fa.fa-check-square-o {

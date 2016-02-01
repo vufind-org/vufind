@@ -49,16 +49,6 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
     }
 
     /**
-     * Remove all filters.
-     *
-     * @return void
-     */
-    public function removeAllFilters()
-    {
-        $this->params->removeAllFilters();
-    }
-
-    /**
      * Expose parent method since we need to use it from SearchTabs.
      *
      * @param array $a      Array of parameters to turn into a GET string

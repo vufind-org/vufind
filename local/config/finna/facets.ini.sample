@@ -17,6 +17,7 @@ original_lng_str_mv = original_work_language
 subtitle_lng_str_mv = subtitle_language
 main_date_str      = "Year"
 search_daterange_mv = "Main Year"
+major_genre_str_mv = "Major Genre"
 genre_facet        = Genre
 era_facet          = Era
 geographic_facet   = Region
@@ -102,7 +103,7 @@ top_cols = 3
 ; to false or omit to disable ORed facets.
 orFacets = *
 ; Do we want any facets to be collapsed by default?
-collapsedFacets = sector_str_mv,building,author2Str,language,original_lng_str_mv,subtitle_lng_str_mv,main_date_str,search_daterange_mv,genre_facet,era_facet,geographic_facet,topic_facet,hierarchy_parent_title,first_indexed,category_str_mv,usage_rights_str_mv
+collapsedFacets = sector_str_mv,building,author2Str,language,original_lng_str_mv,subtitle_lng_str_mv,main_date_str,search_daterange_mv,genre_facet,era_facet,geographic_facet,topic_facet,hierarchy_parent_title,first_indexed,category_str_mv,usage_rights_str_mv,major_genre_str_mv
 
 ; This can be used to sort specific facet fields alphabetically by index value
 ; (which normally results in alphabetical order).
@@ -171,6 +172,7 @@ translated_facets[] = original_lng_str_mv
 translated_facets[] = subtitle_lng_str_mv
 translated_facets[] = category_str_mv
 translated_facets[] = usage_rights_str_mv
+translated_facets[] = major_genre_str_mv
 
 ; Prefix to be used in facet translation to avoid mixing facet strings with other
 ; translated content

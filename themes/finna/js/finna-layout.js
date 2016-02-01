@@ -371,14 +371,18 @@ finna.layout = (function() {
 
     };
 
-    var initToolTips = function () {
-      $('[data-toggle="tooltip"]').tooltip({trigger:'click', viewport: '.container'});
+    var initToolTips = function (holder) {
+      if (typeof holder === 'undefined') {
+          holder = $(document);
+      }
+        
+      holder.find('[data-toggle="tooltip"]').tooltip({trigger: 'click', viewport: '.container'});
       // prevent link opening if tooltip is placed inside link element
-      $('[data-toggle="tooltip"] > i').click(function(event) {
+      holder.find('[data-toggle="tooltip"] > i').click(function(event) {
         event.preventDefault();
       });
       // close tooltip if user clicks anything else than tooltip button
-      $('html').on('click', function(e) {
+      $('html').click(function(e) {
         if (typeof $(e.target).parent().data('original-title') == 'undefined' && typeof $(e.target).data('original-title') == 'undefined') {
           $('[data-toggle="tooltip"]').tooltip('hide');
         }
@@ -524,8 +528,10 @@ finna.layout = (function() {
     var initImageCheck = function() {
         $(".image-popup-trigger img").each(function() {
             $(this).one("load",function() {
+
                 if (this.naturalWidth && this.naturalWidth == 10 && this.naturalHeight == 10) {
                     $(this).parent().addClass('no-image');
+                    $(this).parents('.grid').addClass('no-image');
                     $('.rating-stars').addClass('hidden-xs');
                 }
             }).each(function() {
@@ -576,6 +582,18 @@ finna.layout = (function() {
         }).change();
     }
 
+    var initRecordFeedbackForm = function() {
+        var id = $('.hiddenId')[0].value;
+        $('#feedback-record').click(function() {
+          var params = extractClassParams(this);
+          return Lightbox.get(params.controller, 'Feedback', {id:id});
+        });
+
+        Lightbox.addFormCallback('feedbackRecord', function(html) {
+            Lightbox.confirm(VuFind.translate('feedback_success'));
+        });
+    };
+
     var initSideFacets = function() {
         var $container = $('.side-facets-container');
         if ($container.length === 0) {
@@ -589,12 +607,32 @@ finna.layout = (function() {
                 if (response.status == 'OK') {
                     $container.replaceWith(response.data);
                     finna.dateRangeVis.init();
+                    initToolTips($('.sidebar'));
                 } else {
                     $container.find('.facet-load-indicator').addClass('hidden');
                     $container.find('.facet-load-failed').removeClass('hidden');
                 }
             }
         );
+    }
+
+    var initPiwikPopularSearches = function() {
+        var $container = $('.piwik-popular-searches');
+        if ($container.length === 0) {
+            return;
+        }
+        $container.find('.load-indicator').removeClass('hidden');
+        $.getJSON(
+            VuFind.getPath() + '/AJAX/JSON?method=getPiwikPopularSearches',
+            function(response) {
+                if (response.status == 'OK') {
+                    $container.html(response.data);
+                } else {
+                    $container.find('.load-indicator').addClass('hidden');
+                    $container.find('.load-failed').removeClass('hidden');
+                }
+            }
+        );    
     }
     
     var my = {
@@ -611,6 +649,7 @@ finna.layout = (function() {
         initJumpMenus: initJumpMenus,
         initMobileNarrowSearch: initMobileNarrowSearch,
         initSecondaryLoginField: initSecondaryLoginField,
+        initRecordFeedbackForm: initRecordFeedbackForm,
         init: function() {
             initJumpMenus();
             initAnchorNavigationLinks();
@@ -633,6 +672,7 @@ finna.layout = (function() {
             initTouchDeviceGallery();
             initImageCheck();
             initSideFacets();
+            initPiwikPopularSearches();
         }
     };
 

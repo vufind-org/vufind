@@ -4,6 +4,7 @@ return array(
     'helpers' => array(
         'factories' => array(
             'authorizationNote' => 'Finna\View\Helper\Root\Factory::getAuthorizationNote',
+            'autocomplete' => 'Finna\View\Helper\Root\Factory::getAutocomplete',
             'browse' => 'Finna\View\Helper\Root\Factory::getBrowse',
             'combined' => 'Finna\View\Helper\Root\Factory::getCombined',
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
@@ -55,6 +56,7 @@ return array(
     ),
     'js' => array(
         'finna.js',
+        'finna-autocomplete.js',
         'finna-combined-results.js',
         'image-popup.js',
         'finna-adv-search.js',

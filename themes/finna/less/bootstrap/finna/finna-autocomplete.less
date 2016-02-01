@@ -1,0 +1,109 @@
+.autocomplete-results {
+    .box-shadow(0px 5px 16px -2px @gray);
+    margin-top: 4px;
+    border: 1px solid @list-group-border;
+    background-color: #fff;
+    border-radius: 10px;
+    @media (max-width: @screen-sm-max) {
+        max-width: 85% !important;
+    }
+    &.checkbox-active {
+        margin-top: 40px !important;   
+    }
+    & .item {
+        display: block;
+        padding: 7px;
+        border-bottom: none; 
+        color: @gray;
+        position: relative;
+        &:hover {
+            text-decoration: none;   
+        }
+        cursor: pointer;
+        &.first {border-top-left-radius: 10px; border-top-right-radius: 10px;}
+        &.last {border: 0; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;}
+        &:not(.loading):hover, &.selected {
+            background-color: @brand-primary;
+            color: #fff;
+        }
+        &.loading {
+            font-style: normal;
+            &:before {
+                  font-family:'Fontawesome';
+                  content: "\f110";
+                  color: @gray-light;
+                  font-size: 1.2em;
+                  margin-right: 5px;
+                  .fa-spin();
+            }
+        }
+    }
+    & .group {
+        padding-bottom: 6px;
+        margin: 6px;
+        margin-top: 0px;
+        border-bottom: 1px solid @gray-lighter;
+        &:first-child {
+            margin-top: 5px;   
+        }
+        &:last-child {
+            border-bottom: none; 
+            padding-bottom: 0px;
+        }
+    }
+    & .query-exact:after {
+        margin-left: 8px;
+        content: 'Hae täsmälleen';
+        font-weight: bold;
+    }
+    & .query-Author:after {
+        margin-left: 8px;
+        content: 'Hae tekijöistä';
+        font-weight: bold;
+    }
+    & .query-Title:after {
+        margin-left: 8px;
+        content: 'Hae otsikoista';
+        font-weight: bold;
+    }
+    & .query-Subject:after {
+        margin-left: 8px;
+        content: 'Hae aiheesta';
+        font-weight: bold;
+    }
+    & .group:before {
+        float: right;
+        margin-top: 3px;
+        line-height: 1em;
+        font-size: 1em;
+        margin-right: 2px;
+        color: #ADADAD;
+        padding: 0px 2px;
+        font-weight: bold;
+    }
+    & .group:first-child:before {
+        margin-top: 0px;
+    }
+    & .group {
+        &.facet, &.filter, &.suggestion, &.phrase, &.handler {
+            &:before {
+                content: attr(data-title);
+            }
+        }
+    }
+    & .group {
+        &.facet, .filter {
+            font-weight: bold;
+        }
+    }
+    & .group.handler, .group.phrase {
+        & .item {
+            &:after {
+                font-weight: bold;
+                content: attr(data-title);
+                margin-left: 10px;
+            }
+        }
+    }
+
+}

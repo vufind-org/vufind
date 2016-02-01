@@ -13,6 +13,10 @@ available       = true
 debug           = false
 ; This setting should be set to false after auto-configuration is complete
 autoConfigure = "0"
+; This setting specifies a health check file location. If a health check file exists,
+; the getServerStatus AJAX call will return an error regardless of actual status
+; allowing the server to be disabled from a load-balancer.
+;healthCheckFile = /tmp/disable_vufind
 
 ; This section will need to be customized for your installation
 [Site]
@@ -65,8 +69,9 @@ logOutRoute = home
 defaultRecordTab= Holdings
 ; Hide the holdings tab if no holdings are available from the ILS
 hideHoldingsTabWhenEmpty = true
-; Whether to load all tabs (including default tab) via ajax (default is false):
-ajaxTabs = true
+; Whether to load the default tab through AJAX (which brings some performance
+; gain but breaks compatibility with non-Javascript-enabled browsers; off by default)
+loadInitialTabWithAjax = true
 ; This page will show by default when a user accesses the MyResearch module:
 defaultAccountPage = Favorites
 ; Allow access to the Admin module? (See [AdminAuth] below for more granular ways
@@ -905,8 +910,8 @@ alphabet_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ"
 RefWorks = "record,bulk"
 EndNote = "record,bulk"
 EndNoteWeb = "record,bulk"
-MARC = true
-MARCXML = true
+MARC = false
+MARCXML = false
 RDF = false
 BibTeX = false
 
@@ -1179,21 +1184,6 @@ custom_variables = 1
 ;threshold = 50
 ; Recommender service base url
 ;baseUrl = http://recommender.service.exlibrisgroup.com/service/recommender/openurl
-
-; This section allows configuration of institutional IP addresses that can be used
-; e.g. to determine if the user has access to restricted resources
-; Format is:
-; set_id = "address,address"
-;[IP_Addresses]
-;local = "10.0.0,192.168.1"
-
-; Authorization settings used to determine if the user has access to restricted
-; resources or whether additional resources might be available upon login
-[Authorization]
-; Whether authorization by IP address is enabled
-ip = true
-; Authorization-providing authentication methods defined in Authentication section or MultiAuth
-authentication_methods[] = Shibboleth
 
 ; Normalization preview allows one to display an external record
 ; as it would be displayed in VuFind. This requires a backend,

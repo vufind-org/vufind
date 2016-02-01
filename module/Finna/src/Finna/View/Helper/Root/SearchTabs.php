@@ -237,9 +237,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
             $currentResults->getParams()->getHiddenFilters()
         );
         $currentResults->getParams()->removeHiddenFilters();
-        if (method_exists($urlQuery, 'removeAllFilters')) {
-            $urlQuery->removeAllFilters();
-        }
+        $currentResults->getParams()->removeAllFilters();
 
         $queryString = null;
         if (!empty($oldFilters)) {

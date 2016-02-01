@@ -116,6 +116,7 @@
           <td><? foreach ($langs as $lang): ?><?= $this->escapeHtml($lang)?><br/><? endforeach; ?></td>
         </tr>
       <? endif; ?>
+
         <?
           $publications = $this->driver->getPublicationDetails();
           if (!empty($publications)):
@@ -133,7 +134,7 @@
             $pubName = $field->getName();
             if (!empty($pubName)) {
               $published = true;
-              $html .= '<span property="name">' . $this->escapeHtml($pubName) . '</span>';
+              $html .= ' <span property="name">' . $this->escapeHtml($pubName) . '</span>';
             }
             $html .= '</span><br/>';
           }

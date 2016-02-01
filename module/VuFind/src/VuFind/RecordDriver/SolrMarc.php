@@ -765,6 +765,14 @@ class SolrMarc extends SolrDefault
      */
     protected function getRecordLinkNote($field)
     {
+        // If set, use relationship information from subfield i
+        if ($subfieldI = $field->getSubfield('i')) {
+            $data = trim($subfieldI->getData());
+            if (!empty($data)) {
+                return $data;
+            }
+        }
+
         // Normalize blank relationship indicator to 0:
         $relationshipIndicator = $field->getIndicator('2');
         if ($relationshipIndicator == ' ') {

@@ -1,6 +1,10 @@
 .finna-main-tabs {
     background-color: @finna-main-header-background;
     margin-bottom: 30px;
+    @media(max-width: @screen-sm-max) {
+            margin-bottom: 0;
+            padding-top: 10px;
+    }
     & ul.nav-tabs {
         border-bottom: none;
         margin: 0 0 0 15px;

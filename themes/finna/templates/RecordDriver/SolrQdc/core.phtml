@@ -253,6 +253,15 @@
         </tr>
       <? endif; ?>
 
+      <? if ($toc = $this->driver->getTOC()): ?>
+        <tr class="truncate-field wide recordTOC">
+          <th><?=$this->transEsc('Table of Contents')?>:</th>
+          <td>
+            <?=implode('<br>', array_map(array($this, 'escapeHtml'), $toc))?>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <? if ($this->usertags()->getMode() !== 'disabled'): ?>
         <? $tagList = $this->driver->getTags(); ?>
         <tr>
