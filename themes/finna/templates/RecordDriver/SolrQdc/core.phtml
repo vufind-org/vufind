@@ -56,15 +56,30 @@
       // Account for replace_other_urls setting
       $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     ?>
-    <? if (!empty($urls) || $openUrlActive): ?>
-    <div class="local-available-online-record">
-      <? foreach ($urls as $current): ?>
-      <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($current['desc'])?></a><br/>
-      <? endforeach; ?>
+    <? $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
+    <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
+      <div class="recordURLs local-available-online-record">
+        <div class="truncate-field">
+          <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
+            <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
+              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
+              <? if ($url['source']): ?>
+                <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('source_' . $url['source'], null, $url['source']) ?>)</span>
+              <? endif; ?>
+              </div>
+            <? endforeach; ?>
+          <? endif; ?>
+          <? if (!empty($urls)): ?>
+            <? foreach ($urls as $url): ?>
+              <? $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
+              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('link_' . $desc, null, $desc) ?></a></div>
+            <? endforeach; ?>
+          <? endif; ?>
+        </div>
       <? if ($openUrlActive): ?>
-            <?=$openUrl->renderTemplate()?><br/>
+        <?=$openUrl->renderTemplate()?><br/>
       <? endif; ?>
-    </div>
+      </div>
     <? endif; ?>
 
     <div class="record-authors">
@@ -167,7 +182,7 @@
       <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
         <tr class="recordLanguage">
           <th><?=$this->transEsc('Language')?>: </th>
-          <td><? foreach ($langs as $lang): ?><?= $this->escapeHtml($lang)?><br/><? endforeach; ?></td>
+          <td><? foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br/><? endforeach; ?></td>
         </tr>
       <? endif; ?>
 

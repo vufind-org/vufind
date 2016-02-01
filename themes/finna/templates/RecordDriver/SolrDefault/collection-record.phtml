@@ -29,7 +29,7 @@
   <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
     <tr valign="top">
       <th><?=$this->transEsc('Language')?>: </th>
-      <td><? foreach ($langs as $lang): ?><?= $this->escapeHtml($lang)?><br/><? endforeach; ?></td>
+      <td><? foreach ($langs as $lang): ?><?= $this->transEsc($lang)?><br/><? endforeach; ?></td>
     </tr>
   <? endif; ?>
 
