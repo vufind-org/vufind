@@ -82,7 +82,6 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         }
         $manager->setAuthMethod($originalMethod);
 
-
         $view->secondaryUsername = $this->params()->fromPost(
             'secondary_username', ''
         );
