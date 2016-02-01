@@ -1987,9 +1987,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     {
         list($d, $m, $y) = isset($this->config['Holds']['defaultRequiredDate'])
              ? explode(':', $this->config['Holds']['defaultRequiredDate'])
-             : array(0, 1, 0);
+             : [0, 1, 0];
         return mktime(
-            0, 0, 0, date('m')+$m, date('d')+$d, date('Y')+$y
+            0, 0, 0, date('m') + $m, date('d') + $d, date('Y') + $y
         );
     }
 
