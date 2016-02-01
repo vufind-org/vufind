@@ -170,8 +170,7 @@ $config = [
                     'demo' => 'Finna\ILS\Driver\Factory::getDemo',
                     'multibackend' => 'Finna\ILS\Driver\Factory::getMultiBackend',
                     'voyager' => 'Finna\ILS\Driver\Factory::getVoyager',
-                    'voyagerrestful' => 'Finna\ILS\Driver\Factory::getVoyagerRestful',
-                    'axiellwebservices' => 'Finna\ILS\Driver\Factory::getAxiellWebServices',
+                    'voyagerrestful' => 'Finna\ILS\Driver\Factory::getVoyagerRestful'
                 ],
             ],
             'recommend' => [
