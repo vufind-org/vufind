@@ -68,7 +68,7 @@
       // Account for replace_other_urls setting
       $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     ?>
-    <? $urls = $this->driver->getURLs(); $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
+    <? $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
     <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
       <div class="recordURLs local-available-online-record">
         <div class="truncate-field">
