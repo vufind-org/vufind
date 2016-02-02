@@ -141,12 +141,58 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test that user A cannot delete user B's favorites.
+     *
+     * @return void
+     */
+    public function testSavedSearchSecurity()
+    {
+        // Log in as user A and get the ID of their saved search:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $page = $session->getPage();
+        $this->findCss($page, '#loginOptions a')->click();
+        $this->snooze();
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
+        $delete = $page->findLink('Delete')->getAttribute('href');
+        $page->findLink('Log Out')->click();
+        $this->snooze();
+
+        // Use user A's delete link, but try to execute it as user B:
+        list($base, $params) = explode('?', $delete);
+        $session->visit($this->getVuFindUrl() . '/MyResearch/SaveSearch?' . $params);
+        $page = $session->getPage();
+        $this->findCss($page, '.createAccountLink')->click();
+        $this->snooze();
+        $this->fillInAccountForm(
+            $page, ['username' => 'username2', 'email' => 'username2@example.com']
+        );
+        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->snooze();
+        $page->findLink('Log Out')->click();
+        $this->snooze();
+
+        // Go back in as user A -- see if the saved search still exists.
+        $page->findLink('Search History')->click();
+        $this->snooze();
+        $this->findCss($page, '#loginOptions a')->click();
+        $this->snooze();
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
+        $this->assertTrue(
+            $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
+        );
+        $this->assertEquals('test', $page->findLink('test')->getText());
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
      */
     public static function tearDownAfterClass()
     {
-        static::removeUsers(['username1']);
+        static::removeUsers(['username1', 'username2']);
     }
 }
