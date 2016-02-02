@@ -120,7 +120,8 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
         $this->assertNull($page->findLink('test'));
 
-        // Now log in and see if our saved search shows up:
+        // Now log in and see if our saved search shows up (without making the
+        // unsaved search go away):
         $this->findCss($page, '#loginOptions a')->click();
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
@@ -129,6 +130,13 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertTrue(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
+        $this->assertEquals('test', $page->findLink('test')->getText());
+
+        // Now purge unsaved searches, confirm that unsaved search is gone
+        // but saved search is still present:
+        $page->findLink('Purge unsaved searches')->click();
+        $this->snooze();
+        $this->assertNull($page->findLink('foo'));
         $this->assertEquals('test', $page->findLink('test')->getText());
     }
 
