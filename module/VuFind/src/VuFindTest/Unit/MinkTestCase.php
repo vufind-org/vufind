@@ -259,6 +259,25 @@ abstract class MinkTestCase extends DbTestCase
     }
 
     /**
+     * Check whether an element containing the specified text exists.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param string  $text     Expected text
+     *
+     * @return bool
+     */
+    protected function hasElementsMatchingText(Element $page, $selector, $text)
+    {
+        foreach ($page->findAll('css', $selector) as $current) {
+            if ($text === $current->getText()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Standard setup method.
      *
      * @return void
