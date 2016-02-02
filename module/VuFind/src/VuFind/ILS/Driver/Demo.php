@@ -110,12 +110,15 @@ class Demo extends AbstractBase
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      * @param SearchService          $ss            Search service
+     * @param SessionContainer       $session       Session container for persisting
+     * fake data to simulate consistency and reduce Solr hits
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        SearchService $ss
+        SearchService $ss, SessionContainer $session
     ) {
         $this->dateConverter = $dateConverter;
         $this->searchService = $ss;
+        $this->session = $session;
     }
 
     /**
@@ -142,10 +145,6 @@ class Demo extends AbstractBase
         if (isset($this->config['Failure_Probabilities'])) {
             $this->failureProbabilities = $this->config['Failure_Probabilities'];
         }
-        // Establish a namespace in the session for persisting fake data (to save
-        // on Solr hits):
-        $this->session = new SessionContainer('DemoDriver');
-
         if (isset($this->config['Holdings'])) {
             foreach ($this->config['Holdings'] as $id => $json) {
                 foreach (json_decode($json, true) as $i => $status) {

@@ -32,7 +32,8 @@
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
-    Zend\Session\Container as SessionContainer;
+    Zend\Session\Container as SessionContainer,
+    Zend\Session\SessionManager;
 
 /**
  * Voyager Restful ILS Driver
@@ -135,6 +136,13 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected $session;
 
     /**
+     * Session manager
+     *
+     * @var SessionManager
+     */
+    protected $sessionManager;
+
+    /**
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
      * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew
      *
@@ -211,13 +219,16 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
+     * @param SessionManager         $sessionManager Session manager
      * @param string                 $holdsMode      Holds mode setting
      * @param string                 $titleHoldsMode Title holds mode setting
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        $holdsMode = 'disabled', $titleHoldsMode = 'disabled'
+        SessionManager $sessionManager, $holdsMode = 'disabled',
+        $titleHoldsMode = 'disabled'
     ) {
         parent::__construct($dateConverter);
+        $this->sessionManager = $sessionManager;
         $this->holdsMode = $holdsMode;
         $this->titleHoldsMode = $titleHoldsMode;
     }
@@ -297,7 +308,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             : '';
 
         // Establish a namespace in the session for persisting cached data
-        $this->session = new SessionContainer('VoyagerRestful_' . $this->dbName);
+        $this->session = new SessionContainer(
+            'VoyagerRestful_' . $this->dbName, $this->sessionManager
+        );
     }
 
     /**

@@ -44,6 +44,9 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function __construct()
     {
-        $this->driver = new VoyagerRestful(new \VuFind\Date\Converter());
+        $this->driver = new VoyagerRestful(
+            new \VuFind\Date\Converter(),
+            $this->getMock('Zend\Session\SessionManager')
+        );
     }
 }

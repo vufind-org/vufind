@@ -42,6 +42,36 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Construct the ChoiceAuth plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ChoiceAuth
+     */
+    public static function getChoiceAuth(ServiceManager $sm)
+    {
+        $container = new \Zend\Session\Container(
+            'ChoiceAuth', $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
+        return new ChoiceAuth($container);
+    }
+
+    /**
+     * Construct the Facebook plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Facebook
+     */
+    public static function getFacebook(ServiceManager $sm)
+    {
+        $container = new \Zend\Session\Container(
+            'Facebook', $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
+        return new Facebook($container);
+    }
+
+    /**
      * Construct the ILS plugin.
      *
      * @param ServiceManager $sm Service manager.
@@ -117,8 +147,10 @@ class Factory
         $pm = $sm->get('VuFind\AuthPluginManager');
         $cookies = $sm->get('VuFind\CookieManager');
 
-        // Build the object:
-        return new Manager($config, $userTable, $sessionManager, $pm, $cookies);
+        // Build the object and make sure account credentials haven't expired:
+        $manager = new Manager($config, $userTable, $sessionManager, $pm, $cookies);
+        $manager->checkForExpiredCredentials();
+        return $manager;
     }
 
     /**

@@ -62,8 +62,30 @@ class Factory
      */
     public static function getUser(ServiceManager $sm)
     {
-        return new User(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        // Use a special row class when we're in privacy mode:
+        $privacy = isset($config->Authentication->privacy)
+            && $config->Authentication->privacy;
+        $rowClass = 'VuFind\Db\Row\\' . ($privacy ? 'PrivateUser' : 'User');
+        $session = null;
+        if ($privacy) {
+            $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            $session = new \Zend\Session\Container('Account', $sessionManager);
+        }
+        return new User($config, $rowClass, $session);
+    }
+
+    /**
+     * Construct the UserList table.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return UserList
+     */
+    public static function getUserList(ServiceManager $sm)
+    {
+        $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+        $session = new \Zend\Session\Container('List', $sessionManager);
+        return new UserList($session);
     }
 }

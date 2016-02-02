@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Table;
+use Zend\Config\Config, Zend\Session\Container;
 
 /**
  * Table Definition for user
@@ -41,23 +42,31 @@ class User extends Gateway
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var Config
      */
     protected $config;
 
     /**
+     * Session container
+     *
+     * @var Container
+     */
+    protected $session;
+
+    /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param Config    $config   VuFind configuration
+     * @param string    $rowClass Name of class for representing rows
+     * @param Container $session  Session container to inject into rows (optional;
+     * used for privacy mode)
      */
-    public function __construct(\Zend\Config\Config $config)
-    {
-        // Use a special row class when we're in privacy mode:
-        $privacy = isset($config->Authentication->privacy)
-            && $config->Authentication->privacy;
-        $rowClass = 'VuFind\Db\Row\\' . ($privacy ? 'PrivateUser' : 'User');
+    public function __construct(Config $config, $rowClass = 'VuFind\Db\Row\User',
+        Container $session = null
+    ) {
         parent::__construct('user', $rowClass);
         $this->config = $config;
+        $this->session = $session;
     }
 
     /**
@@ -128,6 +137,9 @@ class User extends Gateway
     {
         $prototype = parent::initializeRowPrototype();
         $prototype->setConfig($this->config);
+        if (null !== $this->session && is_callable([$prototype, 'setSession'])) {
+            $prototype->setSession($this->session);
+        }
         return $prototype;
     }
 

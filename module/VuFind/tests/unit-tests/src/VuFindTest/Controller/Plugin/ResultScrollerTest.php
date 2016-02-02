@@ -30,6 +30,7 @@ namespace VuFindTest\Controller\Plugin;
 
 use VuFind\Controller\Plugin\ResultScroller;
 use VuFindTest\Unit\TestCase as TestCase;
+use Zend\Session\Container;
 
 /**
  * ResultScroller controller plugin tests.
@@ -49,7 +50,7 @@ class ResultScrollerTest extends TestCase
      */
     public function testDisabled()
     {
-        $plugin = new ResultScroller(false);
+        $plugin = new ResultScroller(new Container('test'), false);
         $results = $this->getMockResults();
         $this->assertFalse($plugin->init($results));
         $expected = [
@@ -191,7 +192,9 @@ class ResultScrollerTest extends TestCase
      */
     protected function getMockResultScroller($results = null, $methods = ['restoreLastSearch', 'rememberSearch'])
     {
-        $mock = $this->getMock('VuFind\Controller\Plugin\ResultScroller', $methods);
+        $mock = $this->getMock(
+            'VuFind\Controller\Plugin\ResultScroller', $methods, [new Container('test')]
+        );
         if (in_array('restoreLastSearch', $methods) && null !== $results) {
             $mock->expects($this->any())->method('restoreLastSearch')->will($this->returnValue($results));
         }

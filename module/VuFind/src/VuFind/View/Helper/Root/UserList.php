@@ -47,13 +47,23 @@ class UserList extends AbstractHelper
     protected $mode;
 
     /**
+     * Session container for last list information.
+     *
+     * @var \Zend\Session\Container
+     */
+    protected $session;
+
+    /**
      * Constructor
      *
-     * @param string $mode List mode (enabled or disabled)
+     * @param \Zend\Session\Container $session Session container (must use same
+     * namespace as container provided to \VuFind\Db\Table\UserList)
+     * @param string                  $mode    List mode (enabled or disabled)
      */
-    public function __construct($mode = 'enabled')
+    public function __construct(\Zend\Session\Container $session, $mode = 'enabled')
     {
         $this->mode = $mode;
+        $this->session = $session;
     }
 
     /**
@@ -73,6 +83,6 @@ class UserList extends AbstractHelper
      */
     public function lastUsed()
     {
-        return UserListRow::getLastUsed();
+        return isset($this->session->lastUsed) ? $this->session->lastUsed : null;
     }
 }

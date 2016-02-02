@@ -49,10 +49,12 @@ class Followup extends AbstractPlugin
 
     /**
      * Constructor
+     *
+     * @param Container $session Session container
      */
-    public function __construct()
+    public function __construct(Container $session)
     {
-        $this->session = new Container('Followup');
+        $this->session = $session;
     }
 
     /**

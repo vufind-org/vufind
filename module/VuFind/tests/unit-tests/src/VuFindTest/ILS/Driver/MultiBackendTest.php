@@ -2498,25 +2498,38 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Get a mock Demo driver
+     *
+     * @return \VuFind\ILS\Driver\Demo
+     */
+    protected function getMockDemoDriver($methods)
+    {
+        $session = $this->getMockBuilder('Zend\Session\Container')
+            ->disableOriginalConstructor()->getMock();
+        return $this->getMock(
+            "VuFind\ILS\Driver\Demo", $methods,
+            [
+                new \VuFind\Date\Converter(),
+                $this->getMock('VuFindSearch\Service'),
+                $session
+            ]
+        );
+    }
+
+    /**
      * Get a mock driver
      *
      * @param string $type    Type of driver to make
      * @param array  $methods Array of methods to stub
      *
-     * @return \VuFind\ILS\Driver\$type
+     * @return \VuFind\ILS\Driver\AbstractBase
      */
     protected function getMockILS($type, $methods = null)
     {
         $mock = null;
         try {
             if ($type == 'Demo') {
-                $mock = $this->getMock(
-                    "VuFind\ILS\Driver\\$type", $methods,
-                    [
-                        new \VuFind\Date\Converter(),
-                        $this->getMock('VuFindSearch\Service')
-                    ]
-                );
+                $mock = $this->getMockDemoDriver($methods);
             } else {
                 $mock = $this->getMock(
                     "VuFind\ILS\Driver\\$type", $methods,

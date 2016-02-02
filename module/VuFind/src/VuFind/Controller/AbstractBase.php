@@ -48,10 +48,7 @@ use VuFind\Exception\Forbidden as ForbiddenException,
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class AbstractBase extends AbstractActionController
-    implements AuthorizationServiceAwareInterface
 {
-    use AuthorizationServiceAwareTrait;
-
     /**
      * Permission that must be granted to access this module (false for no
      * restriction)
@@ -198,6 +195,19 @@ class AbstractBase extends AbstractActionController
     protected function getAuthManager()
     {
         return $this->getServiceLocator()->get('VuFind\AuthManager');
+    }
+
+    /**
+     * Get the authorization service (note that we're doing this on-demand
+     * rather than through injection with the AuthorizationServiceAwareInterface
+     * to minimize expensive initialization when authorization is not needed.
+     *
+     * @return \ZfcRbac\Service\AuthorizationService
+     */
+    protected function getAuthorizationService()
+    {
+        return $this->getServiceLocator()
+            ->get('ZfcRbac\Service\AuthorizationService');
     }
 
     /**

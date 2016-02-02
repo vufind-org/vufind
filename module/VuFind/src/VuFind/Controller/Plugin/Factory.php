@@ -42,6 +42,22 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Construct the Followup plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Followup
+     */
+    public static function getFollowup(ServiceManager $sm)
+    {
+        return new Followup(
+            new \Zend\Session\Container(
+                'Followup', $sm->getServiceLocator()->get('VuFind\SessionManager')
+            )
+        );
+    }
+
+    /**
      * Construct the Holds plugin.
      *
      * @param ServiceManager $sm Service manager.
@@ -50,7 +66,10 @@ class Factory
      */
     public static function getHolds(ServiceManager $sm)
     {
-        return new Holds($sm->getServiceLocator()->get('VuFind\HMAC'));
+        return new Holds(
+            $sm->getServiceLocator()->get('VuFind\HMAC'),
+            $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
     }
 
     /**
@@ -78,7 +97,8 @@ class Factory
     public static function getILLRequests(ServiceManager $sm)
     {
         return new ILLRequests(
-            $sm->getServiceLocator()->get('VuFind\HMAC')
+            $sm->getServiceLocator()->get('VuFind\HMAC'),
+            $sm->getServiceLocator()->get('VuFind\SessionManager')
         );
     }
 
@@ -114,6 +134,23 @@ class Factory
     }
 
     /**
+     * Construct the ResultScroller plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ResultScroller
+     */
+    public static function getResultScroller(ServiceManager $sm)
+    {
+        return new ResultScroller(
+            new \Zend\Session\Container(
+                'ResultScroller',
+                $sm->getServiceLocator()->get('VuFind\SessionManager')
+            )
+        );
+    }
+
+    /**
      * Construct the StorageRetrievalRequests plugin.
      *
      * @param ServiceManager $sm Service manager.
@@ -123,7 +160,8 @@ class Factory
     public static function getStorageRetrievalRequests(ServiceManager $sm)
     {
         return new StorageRetrievalRequests(
-            $sm->getServiceLocator()->get('VuFind\HMAC')
+            $sm->getServiceLocator()->get('VuFind\HMAC'),
+            $sm->getServiceLocator()->get('VuFind\SessionManager')
         );
     }
 }

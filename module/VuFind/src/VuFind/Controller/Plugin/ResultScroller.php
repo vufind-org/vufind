@@ -57,14 +57,15 @@ class ResultScroller extends AbstractPlugin
     /**
      * Constructor. Create a new search result scroller.
      *
-     * @param bool $enabled Is the scroller enabled?
+     * @param SessionContainer $session Session container
+     * @param bool             $enabled Is the scroller enabled?
      */
-    public function __construct($enabled = true)
+    public function __construct(SessionContainer $session, $enabled = true)
     {
         $this->enabled = $enabled;
 
         // Set up session namespace for the class.
-        $this->data = new SessionContainer('ResultScroller');
+        $this->data = $session;
     }
 
     /**

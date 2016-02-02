@@ -135,8 +135,6 @@ class CoverController extends AbstractBase
      */
     public function showAction()
     {
-        $this->writeSession();  // avoid session write timing bug
-
         // Special case: proxy a full URL:
         $proxy = $this->params()->fromQuery('proxy');
         if (!empty($proxy)) {
@@ -164,7 +162,6 @@ class CoverController extends AbstractBase
      */
     public function unavailableAction()
     {
-        $this->writeSession();  // avoid session write timing bug
         $this->getLoader()->loadUnavailable();
         return $this->displayImage();
     }
