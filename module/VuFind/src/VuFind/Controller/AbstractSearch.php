@@ -185,12 +185,17 @@ class AbstractSearch extends AbstractBase
      */
     protected function rememberSearch($results)
     {
+        // Only save search URL if the property tells us to...
         if ($this->rememberSearch) {
             $searchUrl = $this->url()->fromRoute(
                 $results->getOptions()->getSearchAction()
             ) . $results->getUrlQuery()->getParams(false);
             $this->getSearchMemory()->rememberSearch($searchUrl);
         }
+
+        // Always save search parameters, since these are namespaced by search
+        // class ID.
+        $this->getSearchMemory()->rememberParams($results->getParams());
     }
 
     /**
@@ -279,8 +284,11 @@ class AbstractSearch extends AbstractBase
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
 
+        $lastView = $this->getSearchMemory()
+            ->retrieveLastSetting($this->searchClassId, 'view');
         $view->results = $results = $runner->run(
-            $request, $this->searchClassId, $this->getSearchSetupCallback()
+            $request, $this->searchClassId, $this->getSearchSetupCallback(),
+            $lastView
         );
         $view->params = $results->getParams();
 
