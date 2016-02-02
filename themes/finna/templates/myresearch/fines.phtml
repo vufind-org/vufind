@@ -39,31 +39,21 @@
     <? else: ?>
     <?
       $hideTitle = true;
+      $hideCheckout = true;
+      $hideDueDate = true;
+      $hideFineCreationDate = true;
       foreach ($this->fines as $fine) {
           if (!empty($fine['title'])) {
               $hideTitle = false;
-              break;
           }
-      }
-      $hideCheckout = true;
-      foreach ($this->fines as $fine) {
           if (!empty($fine['checkout'])) {
               $hideCheckout = false;
-              break;
           }
-      }
-      $hideDueDate = true;
-      foreach ($this->fines as $fine) {
           if (!empty($fine['duedate'])) {
               $hideDueDate = false;
-              break;
           }
-      }
-      $hideFineCreationDate = true;
-      foreach ($this->fines as $fine) {
-          if (!empty($fine['fine_creation_date'])) {
+          if (!empty($fine['createdate'])) {
               $hideFineCreationDate = false;
-              break;
           }
       }
     ?>

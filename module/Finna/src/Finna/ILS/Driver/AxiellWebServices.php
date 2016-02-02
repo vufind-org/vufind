@@ -1355,7 +1355,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'checkout' => '',
                 'fine' => $debt->debtType . ' - ' . $debt->debtNote,
                 'balance' => str_replace(',', '.', $debt->debtAmountFormatted) * 100,
-                'fine_creation_date' => $debt->debtDate
+                'createdate' => $debt->debtDate
             ];
             $finesList[] = $fine;
         }
