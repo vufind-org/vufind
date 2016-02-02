@@ -103,6 +103,36 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test search history.
+     *
+     * @return void
+     */
+    public function testSearchHistory()
+    {
+        $page = $this->performSearch('foo');
+        $page->findLink('Search History')->click();
+        $this->snooze();
+        // We should see our "foo" search in the history, but no saved
+        // searches because we are logged out:
+        $this->assertEquals('foo', $page->findLink('foo')->getText());
+        $this->assertFalse(
+            $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
+        );
+        $this->assertNull($page->findLink('test'));
+
+        // Now log in and see if our saved search shows up:
+        $this->findCss($page, '#loginOptions a')->click();
+        $this->snooze();
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
+        $this->assertEquals('foo', $page->findLink('foo')->getText());
+        $this->assertTrue(
+            $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
+        );
+        $this->assertEquals('test', $page->findLink('test')->getText());
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
