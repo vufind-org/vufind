@@ -48,7 +48,7 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @var array
      */
-    protected $modifiedConfigs;
+    protected $modifiedConfigs = [];
 
     /**
      * Mink session
