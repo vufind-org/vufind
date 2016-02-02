@@ -329,6 +329,9 @@ class DeduplicationListener
      */
     protected function determineSourcePriority($recordSources)
     {
+        if (empty($recordSources)) {
+            return [];
+        }
         return array_flip(explode(',', $recordSources));
     }
 
