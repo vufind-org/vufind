@@ -1,7 +1,6 @@
 /*global registerAjaxCommentRecord, registerTabEvents, setupRecordToolbar, VuFind */
 
 function showhideTabs(tabid) {
-  //console.log(tabid);
   $('#'+tabid).parents('.search_tabs').find('.tab-pane.active').removeClass('active');
   $('#'+tabid+'-tab').addClass('active');
   $('#'+tabid).tab('show');
@@ -66,12 +65,10 @@ function toggleDataView() {
       .parent().addClass('data-view');
     // Copy the title
     var dataView = mainNode.find('.data-view');
-    console.log($(this).closest('.middle'));
-    console.log();
     var pos = $(this).position();
     var clone = $(this).clone()
       .addClass('toggle').click(toggleDataView)
-      .css('padding-left', $(this).closest('.middle').position().left);
+      .css('padding-left', $(this).closest('.middle').position().left-1);
     dataView.prepend(clone);
     // Add loading status
     dataView.append('<div class="loading hidden">\

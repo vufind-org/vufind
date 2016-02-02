@@ -300,7 +300,7 @@ label.list-group-item {
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
-  padding-top: .5rem;
+  padding-top: 8px;
   a.title { font-weight: bold; }
   .toggle {
     display: inline-block;
@@ -328,14 +328,16 @@ label.list-group-item {
 
 .data-view > .toggle {
   width: 100%;
-  padding: .5rem 0;
+  margin-top: -6px;
+  padding: 5px 0;
+  padding-right: 30px;
   border: 1px solid @list-group-border;
   border-top-left-radius: @border-radius-base;
   border-top-right-radius: @border-radius-base;
   &::before {
     content: '\25BC';
     position: absolute;
-    left: 2.5rem;
+    right: 25px;
     color: @text-color;
   }
 }
