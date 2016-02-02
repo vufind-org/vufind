@@ -21,9 +21,12 @@ public Set getPublishers(Record record) {
     for (VariableField vf : list260)
     {
         DataField df = (DataField) vf;
-        Subfield current = df.getSubfield('b');
-        if (current != null) {
-            publishers.add(current.getData());
+        String currentString = "";
+        for (Subfield current : df.getSubfields('b')) {
+            currentString = currentString.trim().concat(" " + current.getData()).trim();
+        }
+        if (currentString.length() > 0) {
+            publishers.add(currentString);
         }
     }
 
@@ -36,16 +39,19 @@ public Set getPublishers(Record record) {
     for (VariableField vf : list264)
     {
         DataField df = (DataField) vf;
-        Subfield currentName = df.getSubfield('b');
-        if (currentName != null) {
+        String currentString = "";
+        for (Subfield current : df.getSubfields('b')) {
+            currentString = currentString.trim().concat(" " + current.getData()).trim();
+        }
+        if (currentString.length() > 0) {
             char ind2 = df.getIndicator2();
             switch (ind2)
             {
                 case '1':
-                    pubNames.add(currentName.getData());
+                    pubNames.add(currentString);
                     break;
                 case '4':
-                    copyNames.add(currentName.getData());
+                    copyNames.add(currentString);
                     break;
             }
         }
