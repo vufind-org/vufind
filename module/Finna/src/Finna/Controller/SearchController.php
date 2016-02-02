@@ -52,6 +52,15 @@ class SearchController extends \VuFind\Controller\SearchController
     {
         $view = parent::advancedAction();
 
+        $config = $this->getConfig();
+        $ticks = [0, 900, 1800, 1910];
+        if (!empty($config->Site->advSearchYearScale)) {
+            $ticks = array_map(
+                'trim', explode(',', $config->Site->advSearchYearScale)
+            );
+        }
+        $rangeEnd = date('Y', strtotime('+1 year'));
+
         $range = [
             'type' => 'date',
             'field' => \Finna\Search\Solr\Params::SPATIAL_DATERANGE_FIELD,
@@ -63,10 +72,25 @@ class SearchController extends \VuFind\Controller\SearchController
             if (isset($filter['from']) && isset($filter['to'])) {
                 $range['values'] = [$filter['from'], $filter['to']];
                 $range['rangeType'] = $filter['type'];
+                if ($ticks[0] > $filter['from']) {
+                    $ticks[0] = $filter['from'];
+                }
+                if ($rangeEnd < $filter['to']) {
+                    $rangeEnd = $filter['to'];
+                }
             } else {
                 $range['values'] = [null, null];
             }
         }
+        array_push($ticks, $rangeEnd);
+        $range['ticks'] = $ticks;
+
+        $positions = [];
+        $position = 0;
+        for ($i = 0; $i < count($ticks); $i++) {
+            $positions[] = floor($i * 100 / (count($ticks) - 1));
+        }
+        $range['ticks_positions'] = $positions;
 
         $view->daterange = [$range];
         return $view;
