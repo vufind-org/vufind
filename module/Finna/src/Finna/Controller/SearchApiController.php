@@ -237,6 +237,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             return $this->output([], self::STATUS_ERROR, 400, 'Invalid limit');
         }
 
+        // Sort by relevance by default
+        if (!isset($request['sort'])) {
+            $request['sort'] = 'relevance';
+        }
+
         $requestedFields = $this->getFieldList($request);
 
         $facetConfig = $this->getConfig('facets');
@@ -694,9 +699,10 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     protected function getRecordRawData($record)
     {
         $rawData = $record->tryMethod('getRawData');
-        if ($xml = $record->tryMethod('getFilteredXML')) {
-            $rawData['fullrecord'] = $xml;
-        }
+
+        // Filter out fullrecord since it has its own field
+        unset($rawData['fullrecord']);
+
         // description in MARC and QDC records may contain non-CC0 text, so leave
         // it out
         if ($record instanceof SolrMarc or $record instanceof SolrQdc) {
