@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\I18n\Translator\TranslatorAwareInterface,
-    Zend\Session\Container as SessionContainer;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Abstract options search model.
