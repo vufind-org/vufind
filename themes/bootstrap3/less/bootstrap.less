@@ -1,4 +1,5 @@
 @import "bootstrap/bootstrap";
+@import "bootstrap-accessibility/bootstrap-accessibility";
 @import "a11y";
 
 .alert.alert-info a {text-decoration: underline;}
@@ -9,17 +10,6 @@
 }
 [data-toggle~="dropdown"] {cursor: pointer;}
 .fa {cursor: default;}
-.form-control {
-  @media(min-width: 768px) {max-width: 400px;}
-}
-.has-error {margin-bottom: 0;}
-.sms-error {.has-error;}
-.help-block.with-errors {
-  padding-top: @padding-base-vertical;
-  padding-bottom: @padding-base-vertical;
-  &:empty {padding: 0;}
-}
-.help-block.with-errors,
 .list-unstyled {margin: 0;}
 .highlight,mark {
   background: lighten(#FF0, 20%);
@@ -37,25 +27,6 @@ label.list-group-item {
 #modal {background-color: rgba(0,0,0,.2);}
 #modal .modal-body > h2:first-child {display: none;}
 .popover {width: 250px;}
-h2 {
-  @media (min-width: 768px) {
-    font-size: 23px;
-    font-weight: normal;
-  }
-  @media (max-width: 767px) {
-    font-size: 20px;
-  }
-}
-h3 {
-  @media (min-width: 768px) {
-    font-size: 20px;
-    font-weight: normal;
-  }
-  @media (max-width: 767px) {
-    font-size: 16px;
-  }
-}
-.recordcover {max-height: 300px;}
 .sub-breadcrumb {
   padding: 5px 10px;
   white-space: nowrap;
@@ -68,12 +39,36 @@ h3 {
   }
 }
 .tab-content {padding: 4px;}
+
 @media (max-width: 991px) {
   header .container.navbar {margin-bottom: 0;}
   .searchForm {margin-top: 0;}
 }
+@media (min-width: 768px) {
+  h2 {
+    font-size: 23px;
+    font-weight: normal;
+  }
+  h3 {
+    font-size: 20px;
+    font-weight: normal;
+  }
+  .form-control { max-width: 400px; }
+}
 @media (max-width: 767px) {
+  h2 { font-size: 20px; }
+  h3 { font-size: 16px; }
   .searchForm {padding-top: 0;}
+}
+
+/* --- Form Errors --- */
+.has-error {margin-bottom: 0;}
+.sms-error {.has-error;}
+.help-block.with-errors {
+  margin: 0;
+  padding-top: @padding-base-vertical;
+  padding-bottom: @padding-base-vertical;
+  &:empty {padding: 0;}
 }
 
 /* --- Advanced Search --- */
@@ -275,6 +270,8 @@ h3 {
   font-weight: bold;
   color: #000;
 }
+.item-notes ul { padding-left: 2rem; }
+.recordcover {max-height: 300px;}
 .tagList {
   .tag {
     display: inline-block;
