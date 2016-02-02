@@ -211,6 +211,10 @@ class DeduplicationListener
             foreach ($localIds as $localId) {
                 $localPriority = null;
                 list($source) = explode('.', $localId, 2);
+                // Ignore ID if source is not in the list of allowed record sources:
+                if (!empty($sourcePriority) && !isset($sourcePriority[$source])) {
+                    continue;
+                }
                 if (!empty($buildingPriority)) {
                     if (isset($buildingPriority[$source])) {
                         $localPriority = -$buildingPriority[$source];
@@ -325,6 +329,9 @@ class DeduplicationListener
      */
     protected function determineSourcePriority($recordSources)
     {
+        if (empty($recordSources)) {
+            return [];
+        }
         return array_flip(explode(',', $recordSources));
     }
 

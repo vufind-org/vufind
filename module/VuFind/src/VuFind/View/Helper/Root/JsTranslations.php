@@ -98,7 +98,8 @@ class JsTranslations extends AbstractHelper
             $translation = is_array($v)
                 ? call_user_func_array([$this->transEsc, '__invoke'], $v)
                 : $this->transEsc->__invoke($v);
-            $parts[] = $k . ': "' . addslashes($translation) . '"';
+            $parts[] = '"' . addslashes($k) . '": "'
+                . addslashes($translation) . '"';
         }
         return '{' . implode(',', $parts) . '}';
     }

@@ -40,9 +40,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
     use \VuFindTest\Unit\UserCreationTrait;
 
-    protected static $hash;
-    protected static $hash2;
-
     /**
      * Standard setup method.
      *
@@ -66,6 +63,11 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         }
     }
 
+    /**
+     * Move the current page to a record by performing a search.
+     *
+     * @return \Behat\Mink\Element\Element
+     */
     protected function gotoRecord()
     {
         $session = $this->getMinkSession();
