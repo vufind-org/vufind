@@ -115,7 +115,7 @@
 
            $browse = isset($browse) ? $browse : false;
            if (!$browse) {
-             $activeTab = null;
+             $activeTab = isset($this->searchClassId) ? $this->searchClassId : DEFAULT_SEARCH_BACKEND;
              if (isset($searchTabs)) {
                foreach ($searchTabs as $tab) {
                  if ($tab['selected']) {

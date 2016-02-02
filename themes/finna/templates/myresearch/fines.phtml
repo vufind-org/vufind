@@ -37,12 +37,33 @@
     <? if (empty($this->fines)): ?>
     <h4><?=$this->transEsc('You do not have any fines')?></h4>
     <? else: ?>
+    <?
+      $hideTitle = true;
+      $hideCheckout = true;
+      $hideDueDate = true;
+      $hideFineCreationDate = true;
+      foreach ($this->fines as $fine) {
+          if (!empty($fine['title'])) {
+              $hideTitle = false;
+          }
+          if (!empty($fine['checkout'])) {
+              $hideCheckout = false;
+          }
+          if (!empty($fine['duedate'])) {
+              $hideDueDate = false;
+          }
+          if (!empty($fine['createdate'])) {
+              $hideFineCreationDate = false;
+          }
+      }
+    ?>
     <table class="table table-striped useraccount-table<?=$this->onlinePayment ? ' online-payment' : ''?>">
     <tr class="headers">
-      <th class="user-account-table-title"><?=$this->transEsc('Title')?></th>
-      <th><?=$this->transEsc('fine_checkout_date')?></th>
-      <th><?=$this->transEsc('Due Date')?></th>
+      <th class="user-account-table-title <? if ($hideTitle): ?> hidden<? endif; ?>"><?=$this->transEsc('Title')?></th>
+      <th <? if ($hideCheckout): ?> class="hidden"<? endif; ?>><?=$this->transEsc('fine_checkout_date')?></th>
+      <th <? if ($hideDueDate): ?> class="hidden"<? endif; ?>><?=$this->transEsc('Due Date')?></th>
       <th><?=$this->transEsc('fine_description')?></th>
+      <th <? if ($hideFineCreationDate): ?> class="hidden"<? endif; ?>><?=$this->transEsc('fine_creation_date')?></th>
       <th class="balance"><?=$this->transEsc('Balance')?></th>
     </tr>
     <? $totalDue = 0; ?>
@@ -58,7 +79,7 @@
       }
     ?>
     <tr>
-      <td class="user-account-table-title">
+      <td class="user-account-table-title<? if ($hideTitle): ?> hidden<? endif; ?>">
         <? if (empty($record['title'])): ?>
           <?=$this->transEsc('not_applicable')?>
         <? elseif (!is_object($record['driver'])): ?>
@@ -66,10 +87,16 @@
         <? else: ?>
           <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
         <? endif; ?>
+      <td <? if ($hideCheckout): ?> class="hidden"<? endif; ?>>
+        <?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?>
       </td>
-      <td><?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?></td>
-      <td><?=isset($record['duedate']) ? $this->escapeHtml($record['duedate']) : ''?></td>
+      <td <? if ($hideDueDate): ?> class="hidden"<? endif; ?>>
+        <?=isset($record['duedate']) ? $this->escapeHtml($record['duedate']) : ''?>
+      </td>
       <td><?=isset($fine) ? $this->transEsc($fine) : ''?></td>
+      <td <? if ($hideFineCreationDate): ?> class="hidden"<? endif; ?>>
+        <?=isset($record['createdate']) ? $this->escapeHtml($record['createdate']) : ''?>
+      </td>
       <td class="balance">
         <? if ($showNonPayable): ?>
         <span class="online-payment-nonpayable">

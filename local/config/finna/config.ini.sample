@@ -111,6 +111,9 @@ indexBasedNewItems = true
 ;hideDueDateReminder = true
 ; Whether to hide email address in patron profile. Default is false
 ;hideProfileEmailAddress = true
+; Scale for advanced search year slider. Current year + 1 is always added to the end.
+; Default scale is "0,900,1800,1910" 
+;advSearchYearScale = "1600,1800,2000,2010"
 
 ; This section allows you to configure the mechanism used for storing user
 ; sessions.  Available types: File, Memcache, Database.

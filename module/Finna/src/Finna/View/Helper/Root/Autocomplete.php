@@ -78,7 +78,7 @@ class Autocomplete extends \Zend\View\Helper\AbstractHelper
             }
             $tabs = count($data) > 2 && !empty($data[2])
                 ? explode('&', $data[2]) : [];
-            if (!empty($tabs) && !$searchTab || !in_array($searchTab, $tabs)) {
+            if (!empty($tabs) && !in_array($searchTab, $tabs)) {
                 continue;
             }
 

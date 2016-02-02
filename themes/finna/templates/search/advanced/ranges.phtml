@@ -26,9 +26,8 @@
         <? if ($current['type'] == 'date'): ?>
         <?
           $this->headScript()->appendFile('vendor/bootstrap-slider.js');
-          $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
-          $future = date('Y', time()+31536000);
-          $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
+          $min = $current['ticks'][0];
+          $max = end($current['ticks']);
           $low  = !empty($current['values'][0]) ? $current['values'][0] : $min;
           $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
           $min = intval($min);
@@ -36,6 +35,8 @@
           $low = intval($low);
           $high = intval($high);
           $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
+          $ticks = $ticks_labels = '[' . implode(', ', $current['ticks']) . ']';
+          $ticks_positions = '[' . implode(', ', $current['ticks_positions']) . ']';
           $script = <<<JS
 $(document).ready(function() {
   var fillTexts = function() {
@@ -49,9 +50,12 @@ $(document).ready(function() {
        'max':{$max},
        'handle':"square",
        'value':[{$low},{$high}],
-       'formatter': function(value) {
+       'formatter':function(value) {
 		     return value[0]+' - '+value[1];
 	     },
+	     'ticks':{$ticks},
+	     'ticks_labels':{$ticks_labels},
+	     'ticks_positions':{$ticks_positions}
     })
     .change(fillTexts)
     .data('slider');

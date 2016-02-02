@@ -122,6 +122,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'recordLinks' => ['method' => 'getRecordLinks'],
         'recordPage' => ['method' => 'getRecordPage'],
         'relationshipNotes' => 'getRelationshipNotes',
+        'sectors' => ['method' => 'getRecordSectors'],
         'series' => 'getSeries',
         'sfxObjectId' => 'getSfxObjectId',
         'shortTitle' => 'getShortTitle',
@@ -148,7 +149,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      */
     protected $defaultFields = [
         'buildings',
-        'comments',
         'formats',
         'id',
         'imageRights',
@@ -235,6 +235,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             || $request['limit'] < 0 || $request['limit'] > 100)
         ) {
             return $this->output([], self::STATUS_ERROR, 400, 'Invalid limit');
+        }
+
+        // Sort by relevance by default
+        if (!isset($request['sort'])) {
+            $request['sort'] = 'relevance';
         }
 
         $requestedFields = $this->getFieldList($request);
@@ -615,26 +620,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     }
 
     /**
-     * Get comments for a record as an array
-     *
-     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
-     *
-     * @return array
-     */
-    protected function getRecordComments($record)
-    {
-        $comments = [];
-        foreach ($record->tryMethod('getComments') as $comment) {
-            $comments[] = [
-                'comment' => $comment->comment,
-                'created' => $comment->created,
-                'rating' => $comment->finna_rating
-            ];
-        }
-        return $comments;
-    }
-
-    /**
      * Get dedup IDs
      *
      * @param \VuFind\RecordDriver\SolrDefault $record Record driver
@@ -714,9 +699,10 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     protected function getRecordRawData($record)
     {
         $rawData = $record->tryMethod('getRawData');
-        if ($xml = $record->tryMethod('getFilteredXML')) {
-            $rawData['fullrecord'] = $xml;
-        }
+
+        // Filter out fullrecord since it has its own field
+        unset($rawData['fullrecord']);
+
         // description in MARC and QDC records may contain non-CC0 text, so leave
         // it out
         if ($record instanceof SolrMarc or $record instanceof SolrQdc) {
@@ -727,6 +713,29 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         unset($rawData['spelling']);
 
         return $rawData;
+    }
+
+    /**
+     * Get sectors
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return array|null
+     */
+    protected function getRecordSectors($record)
+    {
+        $rawData = $record->tryMethod('getRawData');
+        if (empty($rawData['sector_str_mv'])) {
+            return null;
+        }
+        $result = [];
+        foreach ($rawData['sector_str_mv'] as $sector) {
+            $result[] = [
+               'value' => (string)$sector,
+               'translated' => $this->translate((string)$sector)
+            ];
+        }
+        return $result;
     }
 
     /**

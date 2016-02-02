@@ -62,6 +62,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 
         $manager = $this->getAuthManager();
         $options = $manager->getSelectableAuthOptions();
+        $originalMethod = $manager->getAuthMethod();
         if (in_array('MultiILS', $options)) {
             $manager->setAuthMethod('MultiILS');
         } else {
@@ -79,6 +80,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
             $view->secondaryLoginFieldLabel
                 = $manager->getSecondaryLoginFieldLabel();
         }
+        $manager->setAuthMethod($originalMethod);
 
         $view->secondaryUsername = $this->params()->fromPost(
             'secondary_username', ''
