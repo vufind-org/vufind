@@ -156,6 +156,7 @@ Author:
     - author^100
     - author_fuller^50
     - author2
+    - author2_fuller
     - author_additional
     - author_variant
     - author2_variant
@@ -169,6 +170,10 @@ Author:
       - [and, 100]
       - [or, 50]
     author2:
+      - [onephrase, 100]
+      - [and, 50]
+      - [or, ~]
+    author2_fuller:
       - [onephrase, 100]
       - [and, 50]
       - [or, ~]
