@@ -742,7 +742,7 @@ class Connection implements TranslatorAwareInterface
     {
         return isset($this->config->holdings_text_fields)
             ? $this->config->holdings_text_fields->toArray()
-            : ['notes', 'summary', 'supplements', 'indexes'];
+            : ['holdings_notes', 'summary', 'supplements', 'indexes'];
     }
 
     /**

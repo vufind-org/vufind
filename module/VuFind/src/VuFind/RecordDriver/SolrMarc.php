@@ -194,11 +194,13 @@ class SolrMarc extends SolrDefault
      * @param string $field     The MARC field number to read
      * @param array  $subfields The MARC subfield codes to read
      * @param bool   $concat    Should we concatenate subfields?
+     * @param string $separator Separator string (used only when $concat === true)
      *
      * @return array
      */
-    protected function getFieldArray($field, $subfields = null, $concat = true)
-    {
+    protected function getFieldArray($field, $subfields = null, $concat = true,
+        $separator = ' '
+    ) {
         // Default to subfield a if nothing is specified.
         if (!is_array($subfields)) {
             $subfields = ['a'];
@@ -216,7 +218,8 @@ class SolrMarc extends SolrDefault
 
         // Extract all the requested subfields, if applicable.
         foreach ($fields as $currentField) {
-            $next = $this->getSubfieldArray($currentField, $subfields, $concat);
+            $next = $this
+                ->getSubfieldArray($currentField, $subfields, $concat, $separator);
             $matches = array_merge($matches, $next);
         }
 
@@ -293,8 +296,12 @@ class SolrMarc extends SolrDefault
      */
     protected function getPublicationInfo($subfield = 'a')
     {
+        // Get string separator for publication information:
+        $separator = isset($this->mainConfig->Record->marcPublicationInfoSeparator)
+            ? $this->mainConfig->Record->marcPublicationInfoSeparator : ' ';
+
         // First check old-style 260 field:
-        $results = $this->getFieldArray('260', [$subfield]);
+        $results = $this->getFieldArray('260', [$subfield], true, $separator);
 
         // Now track down relevant RDA-style 264 fields; we only care about
         // copyright and publication places (and ignore copyright places if
@@ -305,25 +312,26 @@ class SolrMarc extends SolrDefault
         $fields = $this->getMarcRecord()->getFields('264');
         if (is_array($fields)) {
             foreach ($fields as $currentField) {
-                $currentVal = $currentField->getSubfield($subfield);
-                $currentVal = is_object($currentVal)
-                    ? $currentVal->getData() : null;
+                $currentVal = $this
+                    ->getSubfieldArray($currentField, [$subfield], true, $separator);
                 if (!empty($currentVal)) {
                     switch ($currentField->getIndicator('2')) {
                     case '1':
-                        $pubResults[] = $currentVal;
+                        $pubResults = array_merge($pubResults, $currentVal);
                         break;
                     case '4':
-                        $copyResults[] = $currentVal;
+                        $copyResults = array_merge($copyResults, $currentVal);
                         break;
                     }
                 }
             }
         }
+        $replace260 = isset($this->mainConfig->Record->replaceMarc260)
+            ? $this->mainConfig->Record->replaceMarc260 : false;
         if (count($pubResults) > 0) {
-            $results = array_merge($results, $pubResults);
+            return $replace260 ? $pubResults : array_merge($results, $pubResults);
         } else if (count($copyResults) > 0) {
-            $results = array_merge($results, $copyResults);
+            return $replace260 ? $copyResults : array_merge($results, $copyResults);
         }
 
         return $results;
@@ -488,14 +496,15 @@ class SolrMarc extends SolrDefault
      * @param object $currentField Result from File_MARC::getFields.
      * @param array  $subfields    The MARC subfield codes to read
      * @param bool   $concat       Should we concatenate subfields?
+     * @param string $separator    Separator string (used only when $concat === true)
      *
      * @return array
      */
-    protected function getSubfieldArray($currentField, $subfields, $concat = true)
-    {
+    protected function getSubfieldArray($currentField, $subfields, $concat = true,
+        $separator = ' '
+    ) {
         // Start building a line of text for the current field
         $matches = [];
-        $currentLine = '';
 
         // Loop through all subfields, collecting results that match the whitelist;
         // note that it is important to retain the original MARC order here!
@@ -507,26 +516,14 @@ class SolrMarc extends SolrDefault
                     // non-empty:
                     $data = trim($currentSubfield->getData());
                     if (!empty($data)) {
-                        // Are we concatenating fields or storing them separately?
-                        if ($concat) {
-                            $currentLine .= $data . ' ';
-                        } else {
-                            $matches[] = $data;
-                        }
+                        $matches[] = $data;
                     }
                 }
             }
         }
 
-        // If we're in concat mode and found data, it will be in $currentLine and
-        // must be moved into the matches array.  If we're not in concat mode,
-        // $currentLine will always be empty and this code will be ignored.
-        if (!empty($currentLine)) {
-            $matches[] = trim($currentLine);
-        }
-
-        // Send back our result array:
-        return $matches;
+        // Send back the data in a different format depending on $concat mode:
+        return $concat ? [implode($separator, $matches)] : $matches;
     }
 
     /**

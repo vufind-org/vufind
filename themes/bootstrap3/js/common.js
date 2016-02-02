@@ -88,9 +88,11 @@ function phoneNumberFormHandler(numID, regionCode) {
     }
     $(phoneInput).siblings('.help-block.with-errors').html(valid);
     $(phoneInput).closest('.form-group').addClass('sms-error');
+    return false;
   } else {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
+    return true;
   }
 }
 
@@ -319,7 +321,7 @@ function setupAutocomplete() {
             method:'getACSuggestions',
             searcher:searcher['searcher'],
             type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val(),
-            hiddenFilters:hiddenFilters 
+            hiddenFilters:hiddenFilters
           },
           dataType:'json',
           success: function(json) {
