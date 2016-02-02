@@ -65,7 +65,7 @@
      if($this->searchbox()->autocompleteEnabled($this->searchClassId)) {
       $phrase = $this->autocomplete()->getPhraseSearch();
       if (!$browse) {
-        $activeTab = null;
+        $activeTab = $this->searchClassId;
         if (isset($searchTabs)) {
            foreach ($searchTabs as $tab) {
               if ($tab['selected']) {
