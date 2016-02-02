@@ -170,7 +170,7 @@ finna.itemStatus = (function() {
       if (typeof holder == "undefined") {
           holder = $(document);
       }
-      holder.find('.placehold').unbind('click').on('click', function() {
+      holder.find('.placehold').unbind('click').click(function() {
           var parts = $(this).attr('href').split('?');
           parts = parts[0].split('/');
           var params = deparam($(this).attr('href'));

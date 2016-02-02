@@ -74,7 +74,7 @@ class HoldingsSettings extends AbstractHelper
     /**
      * Return configured thresholds for collapsing holdings.
      *
-     * @return array
+     * @return array|null
      */
     public function getCollapseThreshold()
     {
