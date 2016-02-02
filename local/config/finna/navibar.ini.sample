@@ -1,10 +1,13 @@
-; Example:
+; Examples:
 ;
 ; [menu]
 ; menu_item_1 = 'search-home'
 ; menu_item_2 = 'content-about'
 ; menu_item_3 = 'http://www.finna.fi'
 ; menu_item_4 = 'http://www.finna.fi,_blank'
+; menu_item_5[fi] = 'http://www.finna.fi?lng=fi,_blank'
+; menu_item_6[sv] = 'http://www.finna.fi?lng=sv,_blank'
+; menu_item_7[en-gb] = 'http://www.finna.fi?lng=en-gb,_blank'
 
 [search]
 advanced_search = 'search-advanced'

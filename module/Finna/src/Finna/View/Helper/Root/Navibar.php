@@ -81,6 +81,13 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     protected $menuItems;
 
     /**
+     * Current language
+     *
+     * @var string
+     */
+    protected $language;
+
+    /**
      * Constructor
      *
      * @param Zend\Config\Config $config Menu configuration
@@ -98,13 +105,6 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke()
     {
-        if (!$this->menuItems) {
-            $this->browseHelper = $this->getView()->plugin('browse');
-            $this->metaLibHelper = $this->getView()->plugin('metalib');
-            $this->primoHelper = $this->getView()->plugin('primo');
-            $this->urlHelper = $this->getView()->plugin('url');
-            $this->parseMenuConfig();
-        }
         return $this;
     }
 
@@ -126,10 +126,20 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      *                         False if url is a literal link.
      *    array   $routeParams Route parameters as a key-value pairs.
      *
+     * @param string $lng Language code
+     *
      * @return Array
      */
-    public function getMenuItems()
+    public function getMenuItems($lng)
     {
+        if (!$this->menuItems || $lng != $this->language) {
+            $this->browseHelper = $this->getView()->plugin('browse');
+            $this->metaLibHelper = $this->getView()->plugin('metalib');
+            $this->primoHelper = $this->getView()->plugin('primo');
+            $this->urlHelper = $this->getView()->plugin('url');
+            $this->language = $lng;
+            $this->parseMenuConfig($lng);
+        }
         return $this->menuItems;
     }
 
@@ -187,9 +197,11 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     /**
      * Internal function for parsing menu configuration.
      *
+     * @param string $lng Language code
+     *
      * @return void
      */
-    protected function parseMenuConfig()
+    protected function parseMenuConfig($lng)
     {
         $translator = $this->getView()->plugin('translate');
 
@@ -249,6 +261,14 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
                 if (!$action) {
                     continue;
                 }
+                if (!is_string($action)) {
+                    if (!isset($action[$lng])) {
+                        continue;
+                    } else {
+                        $action = $action[$lng];
+                    }
+                }
+
                 $option = array_merge(
                     ['label' => "menu_$itemKey"],
                     $parseUrl($action)
