@@ -470,7 +470,7 @@ Browse_Journal = "Solr:Title:title:title:format:1/Journal/eSerial/"
 ;
 ;   Each facet consists of the following options delimited by '|':
 ;     - [facet]   Facet field
-;     - [filters] Optional list of acceptable facet values, delimited by '&'
+;     - [filters] Optional restriction for an acceptable facet value
 ;     - [limit]   Optional maximum number of values to be displayed
 ;     - [tab]     Search tabs where the facet should be displayed, delimited by '&'.
 ;                 If none specified, the facet is shown on all tabs.
@@ -478,7 +478,7 @@ Browse_Journal = "Solr:Title:title:title:format:1/Journal/eSerial/"
 ;   Examples:
 ;     facets[] = "online_boolean|true"
 ;     facets[] = "building|2/JYU/100/3/"
-;     facets[] = "format|0/Book/&0/Sound/"
+;     facets[] = "format|0/Book/"
 ;     facets[] = "format||3|Solr"
 ;
 ;   Facet value translation can be overridden by defining a translation key "autocomplete_[facet]:[value]",

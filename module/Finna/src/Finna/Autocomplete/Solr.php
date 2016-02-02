@@ -110,21 +110,21 @@ class Solr extends \VuFind\Autocomplete\Solr
             = isset($facetConfig->SpecialFacets->hierarchical)
             ? $facetConfig->SpecialFacets->hierarchical->toArray() : [];
 
+        $pos = 0;
         foreach ($facets as $data) {
             $data = explode('|', $data);
             $field = $data[0];
-            $filters = isset($data[1]) ? $data[1] : null;
+            $filter = !empty($data[1]) ? ['pattern' => $data[1]] : null;
             $limit = isset($data[2]) && !empty($data[2]) ? $data[2] : null;
             $tabs = isset($data[3]) ? explode('&', $data[3]) : null;
             // Restrict hierarchical facet values to top-level if
             // no other filters are defined
-            if (!empty($filters)) {
-                $filters = explode('&', $filters);
-            } else if (in_array($field, $this->hierarchicalFacets)) {
-                $filters = ['^0/*.'];
+            if (!$filter && in_array($field, $this->hierarchicalFacets)) {
+                $filter = ['regex' => true, 'pattern' => '^0/*.'];
             }
-            $settings[$field] = [
-               'limit' => $limit, 'filters' => $filters, 'tabs' => $tabs
+            $settings[$field][] = [
+                'pos' => $pos++, 'limit' => $limit,
+                'filter' => $filter, 'tabs' => $tabs
             ];
         }
 
@@ -154,12 +154,14 @@ class Solr extends \VuFind\Autocomplete\Solr
         $this->searchObject->getOptions()->disableHighlighting();
 
         if (!$this->facetingDisabled) {
-            foreach ($this->facetSettings as $key => $facet) {
-                if (!empty($facet['tabs'])
-                    && (!$this->searchTab
-                    || !in_array($this->searchTab, $facet['tabs']))
-                ) {
-                    unset($this->facetSettings[$key]);
+            foreach ($this->facetSettings as $field => $facets) {
+                foreach ($facets as $key => $facet) {
+                    if (!empty($facet['tabs'])
+                        && (!$this->searchTab
+                        || !in_array($this->searchTab, $facet['tabs']))
+                    ) {
+                        unset($this->facetSettings[$field][$key]);
+                    }
                 }
             }
             $facetLimit = 20;
@@ -188,10 +190,12 @@ class Solr extends \VuFind\Autocomplete\Solr
 
             // Facets
             foreach ($this->searchObject->getFacetList() as $field => $data) {
-                $values = $this->filterFacetValues($field, $data['list']);
-                $values
-                    = $this->extractFacetData($field, $values);
-                $facetResults[$field] = $values;
+                $filtered = $this->filterFacetValues($field, $data['list']);
+                foreach ($filtered as $data) {
+                    $values
+                        = $this->extractFacetData($field, $data['values']);
+                    $facetResults[$data['pos']] = $values;
+                }
             }
 
             // Hierarchical facets
@@ -212,14 +216,19 @@ class Solr extends \VuFind\Autocomplete\Solr
                 false, -1, 'count'
             );
             foreach ($hierachicalFacets as $field => $data) {
-                $values = $this->filterFacetValues($field, $data['data']['list']);
-                $values = $this->extractFacetData(
-                    $field, $values, true
-                );
-                $facetResults[$field] = $values;
+                $filtered = $this->filterFacetValues($field, $data['data']['list']);
+                foreach ($filtered as $data) {
+                    $values = $this->extractFacetData(
+                        $field, $data['values'], true
+                    );
+                    $facetResults[$data['pos']] = $values;
+                }
             }
             $facets = $facetResults;
         }
+
+        ksort($facets);
+        $facets = array_values($facets);
 
         $result = compact('suggestions', 'facets');
         return $result;
@@ -257,23 +266,36 @@ class Solr extends \VuFind\Autocomplete\Solr
     protected function filterFacetValues($field, $values)
     {
         $result = [];
-        if (!empty($this->facetSettings[$field]['filters'])) {
-            foreach ($values as $value) {
-                foreach ($this->facetSettings[$field]['filters'] as $filter) {
-                    $pattern = '/' . addcslashes($filter, '/') . '/';
-                    if (preg_match($pattern, $value['value']) === 1) {
-                        $result[] = $value;
-                        continue;
+        foreach ($this->facetSettings[$field] as $facet) {
+            $filtered = [];
+            if (!empty($facet['filter'])) {
+                $filter = $facet['filter'];
+                foreach ($values as $value) {
+                    $pattern = $filter['pattern'];
+                    $facetValue = $value['value'];
+                    $match = false;
+                    if (isset($filter['regex'])) {
+                        $pattern = '/' . addcslashes($pattern, '/') . '/';
+                        $match = preg_match($pattern, $facetValue) === 1;
+                    } else {
+                        $match = $facetValue === $pattern;
+                    }
+                    if ($match) {
+                        $pos = $facet['pos'];
+                        $filtered[] = $value;
                     }
                 }
+            } else {
+                $pos = $facet['pos'];
+                $filtered = $values;
             }
-        } else {
-            $result = $values;
+            if (isset($facet['limit'])) {
+                $filtered = array_splice($filtered, 0, $facet['limit']);
+            }
+            if (!empty($filtered)) {
+                $result[] = ['pos' => $pos, 'values' => $filtered];
+            }
         }
-        $limit = isset($this->facetSettings[$field]['limit'])
-            ? $this->facetSettings[$field]['limit'] : 10;
-        $result = array_splice($result, 0, $limit);
-
         return $result;
     }
 
