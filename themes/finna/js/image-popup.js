@@ -241,7 +241,7 @@ finna.imagePopup = (function(finna) {
     };
 
     var initDimensions = function() {
-      if ($('.open-link a').attr('href') != 'undefined') {
+      if (typeof $('.open-link a').attr('href') != 'undefined') {
           var img = document.createElement('img')
           img.src = $('.open-link a').attr('href');
           img.onload = function() {
