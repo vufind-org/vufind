@@ -134,7 +134,7 @@ class Search extends Gateway
                 ->equalTo('id', $id)
                 ->and
                 ->nest
-                    ->equalTo('session_id', $sessId);
+                ->equalTo('session_id', $sessId);
             if (!empty($userId)) {
                 $nest->or->equalTo('user_id', $userId);
             }
