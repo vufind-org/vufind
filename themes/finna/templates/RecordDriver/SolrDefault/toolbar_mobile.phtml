@@ -1,8 +1,10 @@
 <!-- START of: finna - RecordDriver/SolrDefault/toolbar_mobile.phtml -->
 <?
-  $addThis = $this->addThis();
-  if (!empty($addThis)) {
-    $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
+  if ($this->driver->tryMethod('socialMediaSharingAllowed') !== false) {
+    $addThis = $this->addThis();
+    if (!empty($addThis)) {
+      $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
+    }
   }
 
   // Set up some variables for convenience:

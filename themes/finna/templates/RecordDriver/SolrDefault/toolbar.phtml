@@ -1,6 +1,6 @@
 <!-- START of: finna - RecordDriver/SolrDefault/toolbar.phtml -->
 <?
-  if ($this->driver->socialMediaSharingAllowed()) {
+  if ($this->driver->tryMethod('socialMediaSharingAllowed') !== false) {
       $addThis = $this->addThis();
       if (!empty($addThis)) {
         $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
