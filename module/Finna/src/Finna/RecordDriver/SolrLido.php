@@ -81,25 +81,25 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      */
     public function getAccessRestrictions()
     {
+        $restrictions = [];
         if ($rights = $this->getSimpleXML()->xpath(
             'lido/administrativeMetadata/resourceWrap/resourceSet/rightsResource/'
             . 'rightsType'
         )) {
-            $rights = $rights[0];
-
-            if ($conceptID = $rights->xpath('conceptID')) {
-                $conceptID = $conceptID[0];
-                $attributes = $conceptID->attributes();
-                if ($attributes->type
-                    && strtolower($attributes->type) == 'copyright'
-                ) {
-                    if ($desc = $rights->xpath('term')) {
-                        return [(string)$desc[0]];
+            foreach ($rights as $right) {
+                if (!isset($right->conceptID)) {
+                    continue;
+                }
+                $type = strtolower((string)$right->conceptID->attributes()->type);
+                if ($type == 'copyright') {
+                    $term = (string)$right->term;
+                    if ($term) {
+                        $restrictions[] = $term;
                     }
                 }
             }
         }
-        return false;
+        return $restrictions;
     }
 
     /**
@@ -712,6 +712,20 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     {
         parent::setRawData($data);
         $this->simpleXML = null;
+    }
+
+    /**
+     * Is social media sharing allowed (i.e. AddThis Tool).
+     *
+     * @return boolean
+     */
+    public function socialMediaSharingAllowed()
+    {
+        $rights = $this->getSimpleXML()->xpath(
+            'lido/administrativeMetadata/resourceWrap/resourceSet/rightsResource/'
+            . 'rightsType/conceptID[@type="Social media links"]'
+        );
+        return empty($rights) || (string)$rights[0] != 'no';
     }
 
     /**
