@@ -120,8 +120,11 @@ class Bootstrapper
                 return $response;
             }
         };
+
         // Attach with a high priority
-        $this->events->attach('dispatch', $callback, 11000);
+        if (!Console::isConsole()) {
+            $this->events->attach('dispatch', $callback, 11000);
+        }
     }
 
     /**
