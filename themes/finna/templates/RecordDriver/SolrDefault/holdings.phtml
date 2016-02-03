@@ -1,9 +1,13 @@
 <!-- START of: finna - RecordDriver/SolrDefault/holdings.phtml -->
-<div class="holding-details">
+<?
+  $dedupData = $this->driver->getDedupData();
+  $deduplicated = count($dedupData) > 1;
+?>
+
+<div class="holding-details<?= $deduplicated ? ' deduplicated' : ''?>">
   <?
   /* Display information on duplicate records if available */
-  $dedupData = $this->driver->getDedupData();
-  if (count($dedupData) > 1): ?>
+  if ($deduplicated): ?>
     <div class="dedupInformation">
         <select class="dedup-select form-control" role="listbox" aria-haspopup="true">
           <?
@@ -49,7 +53,7 @@
   <? endif; ?>
 
   <div class="callnumAndLocation ajax-availability<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
-    <span class="availability-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/></span>
+    <div class="availability-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/></div>
     <? if ($this->driver->supportsAjaxStatus()): ?>
       <strong class="hideIfDetailed"></strong>
       <span class="callnumber ajax-availability hidden">

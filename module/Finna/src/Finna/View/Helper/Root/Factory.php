@@ -99,6 +99,20 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the Holdings Details Mode helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HoldingsSettings
+     */
+    public static function getHoldingsSettings(ServiceManager $sm)
+    {
+        return new HoldingsSettings(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+        );
+    }
+
+    /**
      * Construct the Record helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -108,6 +122,7 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getRecord(ServiceManager $sm)
     {
         return new Record(
+            $sm->getServiceLocator()->get('VuFind\RecordLoader'),
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }

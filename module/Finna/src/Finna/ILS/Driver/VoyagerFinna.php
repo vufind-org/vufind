@@ -44,6 +44,81 @@ use VuFind\Exception\ILS as ILSException,
 trait VoyagerFinna
 {
     /**
+     * Return summary of holdings items.
+     *
+     * @param array $holdings Parsed holdings items
+     *
+     * @return array summary
+     */
+    protected function getHoldingsSummary($holdings)
+    {
+        $availableTotal = $itemsTotal = $reservationsTotal = 0;
+        $locations = [];
+
+        foreach ($holdings as $item) {
+            if (!empty($item['availability'])) {
+                $availableTotal++;
+            }
+            $locations[$item['location']] = true;
+        }
+
+        // Since summary data is appended to the holdings array as a fake item,
+        // we need to add a few dummy-fields that VuFind expects to be
+        // defined for all elements.
+
+        return [
+           'available' => $availableTotal,
+           'total' => count($holdings),
+           'locations' => count($locations),
+           'availability' => null,
+           'callnumber' => null,
+           'location' => null
+        ];
+    }
+
+    /**
+     * Protected support method for getHolding.
+     *
+     * @param array  $data   Item Data
+     * @param string $id     The BIB record id
+     * @param array  $patron Patron Data
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array Keyed data
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function processHoldingData($data, $id, $patron = false)
+    {
+        $data = parent::processHoldingData($data, $id, $patron);
+        if (!empty($data)) {
+            $summary = $this->getHoldingsSummary($data);
+            $data[] = $summary;
+        }
+        return $data;
+    }
+
+    /**
+     * Protected support method for getStatus -- process all details collected by
+     * getStatusData().
+     *
+     * @param array $data SQL Row Data
+     *
+     * @throws ILSException
+     * @return array Keyed data
+     */
+    protected function processStatusData($data)
+    {
+        $data = parent::processStatusData($data);
+        if (!empty($data)) {
+            $summary = $this->getHoldingsSummary($data);
+            $data[] = $summary;
+        }
+        return $data;
+    }
+
+    /**
      * Check if patron is authorized (e.g. to access licensed electronic material).
      *
      * @param array $patron The patron array from patronLogin

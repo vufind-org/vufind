@@ -1,6 +1,6 @@
 <?php
 /**
- * Holdings Details Mode Helper
+ * Holdings Settings Mode Helper
  *
  * PHP version 5
  *
@@ -22,6 +22,7 @@
  * @category VuFind2
  * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -30,15 +31,16 @@ namespace Finna\View\Helper\Root;
 use Zend\View\Helper\AbstractHelper;
 
 /**
- * Holdings Details Mode Helper
+ * Holdings Settings Helper
  *
  * @category VuFind2
  * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class HoldingsDetailsMode extends AbstractHelper
+class HoldingsSettings extends AbstractHelper
 {
     /**
      * VuFind configuration
@@ -58,14 +60,64 @@ class HoldingsDetailsMode extends AbstractHelper
     }
 
     /**
-     * Return the configured mode
+     * Return the configured holding details mode
      *
      * @return string
      */
-    public function __invoke()
+    public function getDetailsMode()
     {
         return empty($this->config->Record['holdings_details'])
             ? 'expand-first'
             : $this->config->Record['holdings_details'];
+    }
+
+    /**
+     * Return configured thresholds for collapsing holdings.
+     *
+     * @return array|null
+     */
+    public function getCollapseThreshold()
+    {
+        return empty($this->config->Item_Status->collapse_threshold)
+            ? null : $this->config->Item_Status->collapse_threshold->toArray();
+    }
+
+    /**
+     * Return configured option for showing
+     * link to record page in search results holdings.
+     *
+     * @return boolean
+     */
+    public function showLinkToRecordPage()
+    {
+        return empty($this->config->Item_Status->show_link_to_record_page)
+            ? false
+            : (boolean)$this->config->Item_Status->show_link_to_record_page;
+    }
+
+    /**
+     * Return configured option for showing
+     * place hold button link in search results holdings.
+     *
+     * @return boolean
+     */
+    public function showSearchResultsTitleHold()
+    {
+        return empty($this->config->Item_Status->show_title_hold)
+            ? false
+            : (boolean)$this->config->Item_Status->show_title_hold;
+    }
+
+    /**
+     * Return configured setting for showing
+     * holdings summariy on record page.
+     *
+     * @return boolean
+     */
+    public function showRecordPageSummary()
+    {
+        return empty($this->config->Item_Status->show_holdings_summary)
+            ? false
+            : (boolean)$this->config->Item_Status->show_holdings_summary;
     }
 }

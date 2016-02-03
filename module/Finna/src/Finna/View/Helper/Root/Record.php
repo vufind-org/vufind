@@ -44,6 +44,42 @@ namespace Finna\View\Helper\Root;
 class Record extends \VuFind\View\Helper\Root\Record
 {
     /**
+     * Record loader
+     *
+     * @var \VuFind\RecordLoader
+     */
+    protected $loader;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\RecordLoader $loader Record loader
+     * @param \Zend\Config\Config  $config VuFind configuration
+     */
+    public function __construct($loader, $config = null)
+    {
+        parent::__construct($config);
+        $this->loader = $loader;
+    }
+
+    /**
+     * Store a record driver object and return this object so that the appropriate
+     * template can be rendered.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record
+     * driver object or record id.
+     *
+     * @return Record
+     */
+    public function __invoke($driver)
+    {
+        if (is_string($driver)) {
+            $driver = $this->loader->load($driver);
+        }
+        return parent::__invoke($driver);
+    }
+
+    /**
      * Is commenting allowed.
      *
      * @param object $user Current user
@@ -74,6 +110,16 @@ class Record extends \VuFind\View\Helper\Root\Record
         return !isset($this->config->Social->comments)
             || ($this->config->Social->comments
                 && $this->config->Social->comments !== 'disabled');
+    }
+
+    /**
+     * Return record driver
+     *
+     * @return \VuFind\RecordDriver\AbstractBase
+     */
+    public function getDriver()
+    {
+        return $this->driver;
     }
 
     /**

@@ -2,6 +2,28 @@
 .holding-details {
     margin-top: 10px;
 }
+.record-container .holding-details {
+    clear: both;
+    & .available-total {
+        float: left;
+        margin-left: 10px;
+        & span {
+            margin-left: 5px;
+        }
+    }
+    & .dedupInformation {
+        float: left;
+    }
+    & .holdings, .holdings-container, .no-holdings, .availability-load-indicator {
+        clear: both;
+    }
+}
+.record-container .holding-details.deduplicated {
+    & .available-total {
+        margin-top: 0.5em;
+    }
+}
+
 .groupLocation {
     letter-spacing: 0.2px;
     padding: 0;
@@ -49,7 +71,11 @@
         }
     }
     & .copy-title {
-        font-weight: bold;   
+        padding-left: 25px;
+        font-weight: bold;
+        & .department {
+            font-weight: normal;
+        }
     }
     & .copy-details {
         &.collapsed {
@@ -89,5 +115,40 @@
     }
     @media (max-width: 450px) {
         table-layout: fixed;   
+    }
+}
+.callnumAndLocation {
+    & .collapsed {
+        display: none;
+    }
+    & .holdings-container:not(.root) {
+        border-bottom: 1px solid @gray-lighter;
+        padding: 1px 0 1px 0;
+    }
+    & .holdings-container.collapsible > .holdings:not(.root) {
+        padding-left: 10px;
+    }
+    & .holdings-container.collapsible > .header {
+        cursor: pointer;
+    }
+    & .header .info,
+    & .holdings .branchInfo {
+        float: right;
+        color: @gray-light;
+    }
+    & .actions {
+        float: right;
+        & .title-hold {
+            float: right;
+            margin-top: 10px;
+        }
+        & .all-holdings {
+            text-align: right;
+            clear: both;
+            padding-top: 5px;
+        }
+    }
+    & .fa.arrow {
+        color: @gray-light;
     }
 }

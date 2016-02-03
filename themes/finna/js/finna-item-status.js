@@ -17,6 +17,21 @@ finna.itemStatus = (function() {
     if (typeof item.data('xhr') !== 'undefined') {
       item.data('xhr').abort();
     }
+    // Callback for AJAX loaded holdings item on search results page.
+    var statusCallback =
+       function (holder) {
+           initTitleHolds(holder);
+           holder.find('a.login').unbind('click').click(function() {
+               var followUp = $(this).attr('href');
+               Lightbox.addCloseAction(function() {
+                   window.location = followUp;
+               });
+               $('#modal .modal-title').html(VuFind.translate('login'));
+               Lightbox.titleSet = true;
+               return Lightbox.get('MyResearch', 'UserLogin');
+           });
+       };
+
     var xhr = $.ajax({
       dataType: 'json',
       url: VuFind.getPath() + '/AJAX/JSON?method=getItemStatuses',
@@ -35,9 +50,16 @@ finna.itemStatus = (function() {
               // Full status mode is on -- display the HTML:
               var details = item.find('.locationDetails');
               details.empty().append(result.full_status);
-              details.wrapInner('<div class="truncate-field" data-rows="5"></div>');
               details.removeClass('hidden');
               finna.layout.initTruncate(details);
+
+              details.find('.holdings-container.collapsible > .header').click(function () {
+                 $(this).next('.holdings').toggleClass('collapsed');
+                  $(this).find('.fa.arrow:first')
+                      .removeClass('fa-arrow-right fa-arrow-down')
+                      .addClass('fa-arrow-' + ($(this).next('.holdings').hasClass('collapsed') ? 'right' : 'down'));
+              });
+              statusCallback(item);
             } else if (typeof(result.missing_data) != 'undefined'
               && result.missing_data
             ) {
@@ -143,6 +165,22 @@ finna.itemStatus = (function() {
             });
         });
     };
+
+  var initTitleHolds = function (holder) {
+      if (typeof holder == "undefined") {
+          holder = $(document);
+      }
+      holder.find('.placehold').unbind('click').click(function() {
+          var parts = $(this).attr('href').split('?');
+          parts = parts[0].split('/');
+          var params = deparam($(this).attr('href'));
+          params.id = parts[parts.length-2];
+          params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+          return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
+              Lightbox.checkForError(html, Lightbox.changeContent);
+          });
+      });
+  };
 
   var my = {
     initItemStatuses: initItemStatuses,

@@ -12,7 +12,7 @@ return array(
             'fileSrc' => 'Finna\View\Helper\Root\Factory::getFileSrc',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
             'headTitle' => 'Finna\View\Helper\Root\Factory::getHeadTitle',
-            'holdingsDetailsMode' => 'Finna\View\Helper\Root\Factory::getHoldingsDetailsMode',
+            'holdingsSettings' => 'Finna\View\Helper\Root\Factory::getHoldingsSettings',
             'imageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',
             'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
             'layoutclass' => 'Finna\View\Helper\Root\Factory::getLayoutClass',
