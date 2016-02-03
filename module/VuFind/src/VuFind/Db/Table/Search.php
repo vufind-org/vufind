@@ -118,6 +118,31 @@ class Search extends Gateway
     }
 
     /**
+     * Get a single row, enforcing user ownership. Returns row if found, null
+     * otherwise.
+     *
+     * @param int    $id     Primary key value
+     * @param string $sessId Current user session ID
+     * @param int    $userId Current logged-in user ID (or null if none)
+     *
+     * @return \VuFind\Db\Row\Search
+     */
+    public function getOwnedRowById($id, $sessId, $userId)
+    {
+        $callback = function ($select) use ($id, $sessId, $userId) {
+            $nest = $select->where
+                ->equalTo('id', $id)
+                ->and
+                ->nest
+                    ->equalTo('session_id', $sessId);
+            if (!empty($userId)) {
+                $nest->or->equalTo('user_id', $userId);
+            }
+        };
+        return $this->select($callback)->current();
+    }
+
+    /**
      * Set the "saved" flag for a specific row.
      *
      * @param int  $id      Primary key value of row to change.
