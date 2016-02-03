@@ -10,7 +10,7 @@
 <? if (!isset($this->layout()->renderingError)): ?>
   <div class="collapse navbar-collapse" id="header-collapse">
     <ul role="menubar" class="nav navbar-nav">
-      <? foreach ($this->navibar()->getMenuItems() as $key => $val): ?>
+      <? foreach ($this->navibar()->getMenuItems($this->layout()->userLang) as $key => $val): ?>
       <? if (count($val['items']) > 1): ?>
       <li role="menuitem" class="dropdown" id="<?= $val['label'] ?>">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-nav-<?= $val['label'] ?>"></i><?= $this->transEsc($val['label']) ?> <b class="caret"></b></a>
