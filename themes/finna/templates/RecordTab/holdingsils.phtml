@@ -4,6 +4,9 @@
     $account = $this->auth()->getManager();
     $user = $account->isLoggedIn();
     $holdings = $this->driver->getRealTimeHoldings();
+    if (empty($holdings)) {
+       $holdings = [];
+    }
     $openUrl = $this->openUrl($this->driver, 'holdings');
     $openUrlActive = $openUrl->isActive();
     // Account for replace_other_urls setting
@@ -12,22 +15,23 @@
     $holdsAllowed = $this->driver->tryMethod('getHoldsAllowed');
 
     $illRequestLink = false;
-    $holdLinks = $holdLinksBranch = false;
+    $holdLinks = $holdLinksBranch = $journal = $summary = false;
 
-    $location = reset($holdings);
-    $item = $location['items'][0];
-    $journal = isset($item['journalInfo']);
+    if (!empty($holdings)) {
+      $location = reset($holdings);
+      $item = $location['items'][0];
+      $journal = isset($item['journalInfo']);
 
-    $last = array_pop($holdings);
-    $summary = null;
-    if (isset($last['items']) && is_array($last['items'])) {
-        $summary = $last['items'][0];
-        if (!isset($summary['total'])) {
-           $summary = null;
-        }
-    }
-    if (!$summary) {
-       $holdings[] = $last;
+      $last = array_pop($holdings);
+      if (isset($last['items']) && is_array($last['items'])) {
+          $summary = $last['items'][0];
+          if (!isset($summary['total'])) {
+             $summary = false;
+          }
+      }
+      if (!$summary) {
+         $holdings[] = $last;
+      }
     }
 
     $showSummary = !$journal && $this->holdingsSettings()->showRecordPageSummary();
@@ -39,9 +43,6 @@
     }
 
     foreach ($holdings as $holding) {
-       if (empty($holding['items'])) {
-          continue;
-       }
        foreach ($holding['items'] as $row) {
           if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']) {
              $illRequestLink = $row['ILLRequestLink'];
@@ -153,9 +154,6 @@
 <? $holdingsGroup = 0; ?>
 <? foreach ($holdings as $holding): ?>
   <?
-    if (empty($holding['items'])) {
-       continue;
-    }
     ++$holdingsGroup;
 
     $available = 0;
