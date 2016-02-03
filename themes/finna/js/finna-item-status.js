@@ -34,6 +34,7 @@ finna.itemStatus = (function() {
 
     var xhr = $.ajax({
       dataType: 'json',
+      method: 'POST',
       url: VuFind.getPath() + '/AJAX/JSON?method=getItemStatuses',
       data: {id:[id]},
       success: function(response) {
