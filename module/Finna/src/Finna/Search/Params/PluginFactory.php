@@ -101,6 +101,12 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
                 clone($options),
                 $serviceLocator->getServiceLocator()->get('VuFind\Config')
             );
+        } elseif ($name === 'emptyset') {
+            // Clone the options instance in case caller modifies it:
+            return new \Finna\Search\EmptySet\Params(
+                clone($options),
+                $serviceLocator->getServiceLocator()->get('VuFind\Config')
+            );
         }
 
         return parent::createServiceWithName(
