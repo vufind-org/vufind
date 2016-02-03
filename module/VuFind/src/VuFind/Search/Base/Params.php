@@ -957,9 +957,12 @@ class Params implements ServiceLocatorAwareInterface
     public function checkForDelimitedFacetDisplayText($field, $displayText)
     {
         $delimitedFacetFields = $this->getOptions()->getDelimitedFacets(true);
-        return isset($delimitedFacetFields[$field])
-            ? current(explode($delimitedFacetFields[$field], $displayText, 2))
-            : $displayText;
+        if (isset($delimitedFacetFields[$field])) {
+            $parts = explode($delimitedFacetFields[$field], $displayText);
+            $displayText = end($parts);
+        }
+
+        return $displayText;
     }
 
     /**
