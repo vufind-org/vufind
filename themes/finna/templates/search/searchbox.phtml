@@ -33,7 +33,7 @@
             : null
       ;
     }
-    $defaultSortApplied = $lastSort == $options->getDefaultSortByHandler($params->getSearchHandler());
+    $defaultSortApplied = !isset($this->params) || $lastSort == $options->getDefaultSortByHandler($this->params->getSearchHandler());
 
     $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
     $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory);
