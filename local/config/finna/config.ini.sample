@@ -937,16 +937,16 @@ multiple_locations = group
 ; Show the full location,call number, availability for each item
 ; You can customize the way each item's status is display in AJAX/status-full.tpl
 ; When enabled, this largely overrides multiple_call_nos and multiple_locations
-show_full_status = 1
+show_full_status = true
 ; Show title hold option
-show_title_hold = 0;
+show_title_hold = false
 ; Show link to record page holdings-tab
-show_link_to_record_page = 0;
+show_link_to_record_page = false
 ; Threshold for collapsing locations and branches 
 collapse_threshold[location] = 5
 collapse_threshold[branch] = 20
 ; Show holdings summary on record page
-show_holdings_summary = 0
+show_holdings_summary = false
 
 
 ; This section controls the behavior of the Record module.

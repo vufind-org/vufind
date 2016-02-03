@@ -19,6 +19,7 @@
     $journal = isset($item['journalInfo']);
 
     $last = array_pop($holdings);
+    $summary = null;
     if (isset($last['items']) && is_array($last['items'])) {
         $summary = $last['items'][0];
         if (!isset($summary['total'])) {
@@ -27,7 +28,6 @@
     }
     if (!$summary) {
        $holdings[] = $last;
-       $summary = null;
     }
 
     $showSummary = !$journal && $this->holdingsSettings()->showRecordPageSummary();
@@ -39,6 +39,9 @@
     }
 
     foreach ($holdings as $holding) {
+       if (empty($holding['items'])) {
+          continue;
+       }
        foreach ($holding['items'] as $row) {
           if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']) {
              $illRequestLink = $row['ILLRequestLink'];
@@ -133,10 +136,10 @@
       <? // N.B. The division to 3 + 2 cols is required for the table to be valid HTML ?>
       <th class="headers">
         <? if ($showSummary): ?>
-          <? if ($reservationsTotal): ?>
+          <? if (!empty($reservationsTotal)): ?>
             <span class="reservations"><?=sprintf('%s: %d', $this->transEsc('Requests'), $reservationsTotal);?></span>
           <? endif; ?>
-          <? if ($itemsTotal): ?>
+          <? if (!empty($itemsTotal)): ?>
             <span class="total"><?=sprintf('%s: %d', ucfirst($this->transEsc('axiell_items')), $itemsTotal);?></span>
           <? endif; ?>
         <? endif; ?>
@@ -150,6 +153,9 @@
 <? $holdingsGroup = 0; ?>
 <? foreach ($holdings as $holding): ?>
   <?
+    if (empty($holding['items'])) {
+       continue;
+    }
     ++$holdingsGroup;
 
     $available = 0;
