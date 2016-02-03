@@ -947,7 +947,8 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Check for delimited facets
+     * Check for delimited facets -- if $field is a delimited facet field,
+     * process $displayText accordingly. Return the appropriate display value.
      *
      * @param string $field       The facet
      * @param string $displayText The facet value
