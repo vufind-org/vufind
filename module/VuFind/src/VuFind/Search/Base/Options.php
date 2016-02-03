@@ -142,6 +142,27 @@ abstract class Options implements TranslatorAwareInterface
     protected $viewOptions = [];
 
     /**
+     * Default delimiter used for delimited facets
+     *
+     * @var string
+     */
+    protected $defaultFacetDelimiter;
+
+    /**
+     * Facet settings
+     *
+     * @var array
+     */
+    protected $delimitedFacets = [];
+
+    /**
+     * Convenient field => delimiter lookup array derived from $delimitedFacets.
+     *
+     * @var array
+     */
+    protected $processedDelimitedFacets = null;
+
+    /**
      * Facet settings
      *
      * @var array
@@ -460,6 +481,71 @@ abstract class Options implements TranslatorAwareInterface
     public function getViewOptions()
     {
         return $this->viewOptions;
+    }
+
+    /**
+    * Returns the defaultFacetDelimiter value.
+    *
+    * @return string
+    */
+    public function getDefaultFacetDelimiter()
+    {
+        return $this->defaultFacetDelimiter;
+    }
+
+    /**
+    * Set the defaultFacetDelimiter value.
+    *
+    * @param string $defaultFacetDelimiter A default delimiter to be used with
+    * delimited facets
+    *
+    * @return void
+    */
+    public function setDefaultFacetDelimiter($defaultFacetDelimiter)
+    {
+        $this->defaultFacetDelimiter = $defaultFacetDelimiter;
+        $this->processedDelimitedFacets = null; // clear processed value cache
+    }
+
+    /**
+     * Get a list of delimited facets
+     *
+     * @param bool $processed False = return raw values; true = process values into
+     * field => delimiter associative array.
+     *
+     * @return array
+     */
+    public function getDelimitedFacets($processed = false)
+    {
+        if (!$processed) {
+            return $this->delimitedFacets;
+        }
+        if (null === $this->processedDelimitedFacets) {
+            $this->processedDelimitedFacets = [];
+            $defaultDelimiter = $this->getDefaultFacetDelimiter();
+            foreach ($this->delimitedFacets as $current) {
+                $parts = explode('|', $current, 2);
+                if (count($parts) == 2) {
+                    $this->processedDelimitedFacets[$parts[0]] = $parts[1];
+                } else {
+                    $this->processedDelimitedFacets[$parts[0]] = $defaultDelimiter;
+                }
+            }
+        }
+        return $this->processedDelimitedFacets;
+    }
+
+    /**
+    * Set the delimitedFacets value.
+    *
+    * @param array $delimitedFacets An array of delimited facet names
+    *
+    * @return void
+    */
+    public function setDelimitedFacets($delimitedFacets)
+    {
+        $this->delimitedFacets = $delimitedFacets;
+        $this->processedDelimitedFacets = null; // clear processed value cache
     }
 
     /**

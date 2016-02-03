@@ -947,6 +947,26 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Check for delimited facets -- if $field is a delimited facet field,
+     * process $displayText accordingly. Return the appropriate display value.
+     *
+     * @param string $field       The facet
+     * @param string $displayText The facet value
+     *
+     * @return string
+     */
+    public function checkForDelimitedFacetDisplayText($field, $displayText)
+    {
+        $delimitedFacetFields = $this->getOptions()->getDelimitedFacets(true);
+        if (isset($delimitedFacetFields[$field])) {
+            $parts = explode($delimitedFacetFields[$field], $displayText);
+            $displayText = end($parts);
+        }
+
+        return $displayText;
+    }
+
+    /**
      * Format a single filter for use in getFilterList().
      *
      * @param string $field     Field name
@@ -958,12 +978,13 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
+        $displayText = $this->checkForDelimitedFacetDisplayText($field, $value);
+
         if ($translate) {
             $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
-            $displayText = $this->translate("$domain::$value");
-        } else {
-            $displayText = $value;
+            $displayText = $this->translate("$domain::$displayText");
         }
+
         return compact('value', 'displayText', 'field', 'operator');
     }
 
