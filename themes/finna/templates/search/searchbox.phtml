@@ -33,6 +33,7 @@
             : null
       ;
     }
+    $defaultSortApplied = $lastSort == $options->getDefaultSortByHandler($params->getSearchHandler());
 
     $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
     $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory);
@@ -139,8 +140,8 @@
           isset($this->checkboxFilters) && is_array($this->checkboxFilters) ? $this->checkboxFilters : array()
       );
     ?>
-     <? $defaultFilterState = $this->hasDefaultsApplied || $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
-     <? if (!$browse && (!empty($filterDetails) || !empty($this->savedSearches) || (isset($this->searchIndex) && ($this->searchIndex != 'AllFields' && $handlerCount <= 1)))): ?>
+     <? $defaultFilterState = $this->hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>
+     <? if (!$browse && (!empty($filterDetails) || !empty($this->savedSearches) || !$defaultSortApplied || (isset($this->searchIndex) && ($this->searchIndex != 'AllFields' && $handlerCount <= 1)))): ?>
           <div class="checkbox<?=$defaultFilterState?' checked' : ''?>">
         <label>
           <input onChange="$('.applied-filter').click();$('.navbar-form .checkbox').toggleClass('checked'); var sort = $(this).closest('form').find('input[name=sort]'); sort.val($('.navbar-form .checkbox').hasClass('checked') ? sort.data('value') : '');" type="checkbox"<?=$defaultFilterState?> class="searchFormKeepFilters"/>
