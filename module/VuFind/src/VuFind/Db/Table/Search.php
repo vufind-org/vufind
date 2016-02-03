@@ -143,25 +143,6 @@ class Search extends Gateway
     }
 
     /**
-     * Set the "saved" flag for a specific row.
-     *
-     * @param int  $id      Primary key value of row to change.
-     * @param bool $saved   New status value to save.
-     * @param int  $user_id ID of user saving row (only required if $saved == true)
-     *
-     * @return void
-     */
-    public function setSavedFlag($id, $saved, $user_id = false)
-    {
-        $row = $this->getRowById($id);
-        $row->saved = $saved ? 1 : 0;
-        if ($user_id !== false) {
-            $row->user_id = $user_id;
-        }
-        $row->save();
-    }
-
-    /**
      * Add a search into the search table (history)
      *
      * @param \VuFind\Search\Results\PluginManager $manager       Search manager
