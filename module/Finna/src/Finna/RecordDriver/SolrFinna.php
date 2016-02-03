@@ -421,6 +421,16 @@ trait SolrFinna
     }
 
     /**
+     * Is social media sharing allowed (i.e. AddThis Tool).
+     *
+     * @return boolean
+     */
+    public function socialMediaSharingAllowed()
+    {
+        return true;
+    }
+
+    /**
      * Checks the current record if it's supported for generating OpenURLs.
      *
      * @return bool
