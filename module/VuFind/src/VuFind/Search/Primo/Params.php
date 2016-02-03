@@ -53,7 +53,11 @@ class Params extends \VuFind\Search\Base\Params
         $sort = $this->getSort();
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
-        $backendParams->set('filterList', $this->filterList);
+        $filterList = array_merge(
+            $this->getHiddenFilters(),
+            $this->filterList
+        );
+        $backendParams->set('filterList', $filterList);
 
         return $backendParams;
     }

@@ -112,7 +112,8 @@ class Writer
                 if ($currentSection == $section && !$settingSet
                     && $value !== null
                 ) {
-                    $line = $setting . ' = "' . $value . '"' . "\n\n" . $line;
+                    $line = $this->buildContentLine($setting, $value, 0)
+                        . "\n\n" . $line;
                     $settingSet = true;
                 }
                 $currentSection = $matches[1];
@@ -124,7 +125,7 @@ class Writer
                     if ($value === null) {
                         continue;
                     } else {
-                        $line = $setting . ' = "' . $value . '"';
+                        $line = $this->buildContentLine($setting, $value, 0);
                     }
                     if (!empty($comment)) {
                         $line .= ' ;' . $comment;
@@ -142,7 +143,7 @@ class Writer
             if ($currentSection != $section) {
                 $this->content .= '[' . $section . "]\n";
             }
-            $this->content .= $setting . ' = "' . $value . '"' . "\n";
+            $this->content .= $this->buildContentLine($setting, $value, 0) . "\n";
         }
     }
 
@@ -209,7 +210,7 @@ class Writer
         } else if ($e == "") {
             return '';
         } else {
-            return '"' . $e . '"';
+            return '"' . str_replace('"', '\"', $e) . '"';
         }
     }
 

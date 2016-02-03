@@ -50,10 +50,10 @@ class MemoryTest extends TestCase
     public function testBasicMemory()
     {
         $mem = new Memory();
-        $this->assertEquals(null, $mem->retrieve());
+        $this->assertEquals(null, $mem->retrieveSearch());
         $url = 'http://test';
         $mem->rememberSearch($url);
-        $this->assertEquals($url, $mem->retrieve());
+        $this->assertEquals($url, $mem->retrieveSearch());
     }
 
     /**
@@ -66,9 +66,9 @@ class MemoryTest extends TestCase
         $mem = new Memory();
         $url = 'http://test';
         $mem->rememberSearch($url);
-        $this->assertEquals($url, $mem->retrieve());
+        $this->assertEquals($url, $mem->retrieveSearch());
         $mem->forgetSearch();
-        $this->assertEquals(null, $mem->retrieve());
+        $this->assertEquals(null, $mem->retrieveSearch());
     }
 
     /**
@@ -80,7 +80,7 @@ class MemoryTest extends TestCase
     {
         $mem = new Memory();
         $mem->rememberSearch('');
-        $this->assertEquals(null, $mem->retrieve());
+        $this->assertEquals(null, $mem->retrieveSearch());
     }
 
     /**
@@ -93,9 +93,9 @@ class MemoryTest extends TestCase
         $mem = new Memory();
         $url = 'http://test';
         $mem->rememberSearch($url);
-        $this->assertEquals($url, $mem->retrieve());
+        $this->assertEquals($url, $mem->retrieveSearch());
         $mem->disable();
         $mem->rememberSearch('http://ignoreme');
-        $this->assertEquals($url, $mem->retrieve());
+        $this->assertEquals($url, $mem->retrieveSearch());
     }
 }

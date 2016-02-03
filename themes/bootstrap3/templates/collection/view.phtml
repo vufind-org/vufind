@@ -16,7 +16,7 @@
   $tree = (strtolower($this->activeTab) == 'hierarchytree');
 
   // Set up breadcrumbs:
-  $lastSearch = $this->getLastSearchLink($this->transEsc('Search'));
+  $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
   if (!empty($lastSearch)) {
     $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
   }
@@ -64,7 +64,7 @@
               $desc = $obj->getDescription();
               $tab_classes = array();
               if (0 === strcasecmp($this->activeTab, $tab)) {
-                if (!$this->ajaxTabs || !$obj->supportsAjax()) {
+                if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
                   $tab_classes[] = 'active';
                 }
                 $tab_classes[] = 'initiallyActive';
@@ -81,7 +81,7 @@
         </ul>
 
         <div class="tab-content collectionDetails<?=$tree ? 'Tree' : ''?>">
-          <? if (!$this->ajaxTabs || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+          <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
             <div class="tab-pane active <?=$this->activeTab ?>-tab">
               <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
             </div>

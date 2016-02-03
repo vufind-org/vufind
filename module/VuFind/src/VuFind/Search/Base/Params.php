@@ -106,6 +106,13 @@ class Params implements ServiceLocatorAwareInterface
     protected $view = null;
 
     /**
+     * Previously-used view (loaded in from session)
+     *
+     * @var string
+     */
+    protected $lastView = null;
+
+    /**
      * Search options
      *
      * @var Options
@@ -132,6 +139,13 @@ class Params implements ServiceLocatorAwareInterface
      * @var array
      */
     protected $filterList = [];
+
+    /**
+     * Pre-assigned filters
+     *
+     * @var array
+     */
+    protected $hiddenFilters = [];
 
     /**
      * Facets in "OR" mode
@@ -212,9 +226,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getSearchClassId()
     {
-        // Parse identifier out of class name of format VuFind\Search\[id]\Params:
-        $class = explode('\\', get_class($this));
-        return $class[2];
+        return $this->getOptions()->getSearchClassId();
     }
 
     /**
@@ -238,12 +250,7 @@ class Params implements ServiceLocatorAwareInterface
         $this->initSearch($request);
         $this->initSort($request);
         $this->initFilters($request);
-
-        // Remember the user's settings for future reference (we only want to do
-        // this in initFromRequest, since other code may call the set methods from
-        // other contexts!):
-        $this->getOptions()->rememberLastLimit($this->getLimit());
-        $this->getOptions()->rememberLastSort($this->getSort());
+        $this->initHiddenFilters($request);
     }
 
     /**
@@ -466,6 +473,18 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Set the last value of the view parameter (if available in session).
+     *
+     * @param string $view Last valid view parameter value
+     *
+     * @return void
+     */
+    public function setLastView($view)
+    {
+        $this->lastView = $view;
+    }
+
+    /**
      * Get the value for which results view to use
      *
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
@@ -477,25 +496,17 @@ class Params implements ServiceLocatorAwareInterface
     {
         // Check for a view parameter in the url.
         $view = $request->get('view');
-        $lastView = $this->getOptions()->getLastView();
-        if (!empty($view)) {
-            if ($view == 'rss') {
-                // we don't want to store rss in the Session
-                $this->setView('rss');
-            } else {
-                // store non-rss views in Session for persistence
-                $validViews = $this->getOptions()->getViewOptions();
-                // make sure the url parameter is a valid view
-                if (in_array($view, array_keys($validViews))) {
-                    $this->setView($view);
-                    $this->getOptions()->rememberLastView($view);
-                } else {
-                    $this->setView($this->getOptions()->getDefaultView());
-                }
-            }
-        } else if (!empty($lastView)) {
-            // if there is nothing in the URL, check the Session
-            $this->setView($lastView);
+        $validViews = $this->getOptions()->getViewOptions();
+        if ($view == 'rss') {
+            // RSS is a special case that does not require config validation
+            $this->setView('rss');
+        } else if (!empty($view) && in_array($view, array_keys($validViews))) {
+            // make sure the url parameter is a valid view
+            $this->setView($view);
+        } else if (!empty($this->lastView)) {
+            // if there is nothing in the URL, see if we had a previous value
+            // injected based on session information.
+            $this->setView($this->lastView);
         } else {
             // otherwise load the default
             $this->setView($this->getOptions()->getDefaultView());
@@ -1339,6 +1350,74 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Add hidden filters to the object based on values found in the request object.
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initHiddenFilters($request)
+    {
+        $hiddenFilters = $request->get('hiddenFilters');
+        if (!empty($hiddenFilters) && is_array($hiddenFilters)) {
+            foreach ($hiddenFilters as $current) {
+                $this->addHiddenFilter($current);
+            }
+        }
+    }
+
+    /**
+     * Get hidden filters grouped by field like normal filters.
+     *
+     * @return array
+     */
+    public function getHiddenFilters()
+    {
+        return $this->hiddenFilters;
+    }
+
+    /**
+     * Does the object already contain the specified hidden filter?
+     *
+     * @param string $filter A filter string from url : "field:value"
+     *
+     * @return bool
+     */
+    public function hasHiddenFilter($filter)
+    {
+        // Extract field and value from URL string:
+        list($field, $value) = $this->parseFilter($filter);
+
+        if (isset($this->hiddenFilters[$field])
+            && in_array($value, $this->hiddenFilters[$field])
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Take a filter string and add it into the protected hidden filters
+     *   array checking for duplicates.
+     *
+     * @param string $newFilter A filter string from url : "field:value"
+     *
+     * @return void
+     */
+    public function addHiddenFilter($newFilter)
+    {
+        // Check for duplicates -- if it's not in the array, we can add it
+        if (!$this->hasHiddenFilter($newFilter)) {
+            // Extract field and value from filter string:
+            list($field, $value) = $this->parseFilter($newFilter);
+            if (!empty($field) && !empty($value)) {
+                $this->hiddenFilters[$field][] = $value;
+            }
+        }
+    }
+
+    /**
      * Return a query string for the current search with a search term replaced.
      *
      * @param string $oldTerm The old term to replace
@@ -1427,8 +1506,9 @@ class Params implements ServiceLocatorAwareInterface
     public function deminify($minified)
     {
         // Some values will transfer without changes
-        $this->filterList   = $minified->f;
-        $this->searchType   = $minified->ty;
+        $this->filterList = $minified->f;
+        $this->hiddenFilters = $minified->hf;
+        $this->searchType = $minified->ty;
 
         // Deminified searches will always have defaults already applied;
         // we don't want to accidentally manipulate them further.
@@ -1619,6 +1699,7 @@ class Params implements ServiceLocatorAwareInterface
                 || in_array($key, $orFields);
             $this->addFacet($key, $value, $useOr);
         }
+
         return true;
     }
 
