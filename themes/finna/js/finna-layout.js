@@ -124,6 +124,7 @@ finna.layout = (function() {
               $(this).prevAll('.truncate-field').first().css('height', truncation[index]-1+'px');
               notifyTruncateChange(self);
             });
+            $(this).addClass('truncated');
           }
           notifyTruncateChange($(this));
         }

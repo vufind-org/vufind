@@ -808,8 +808,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             return [];
         }
 
-        $holdings
-            = (array)$result->$functionResult->catalogueRecord->compositeHolding;
+        $holdings = $this->objectToArray(
+            $result->$functionResult->catalogueRecord->compositeHolding
+        );
 
         if (isset($holdings[0]->type) && $holdings[0]->type == 'year') {
             $result = [];
@@ -1010,7 +1011,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     protected function getHoldingsSummary($holdings)
     {
-        $availableTotal = $itemsTotal = $reservationsTotal = 0;
+        $availableTotal = $itemsTotal = $orderedTotal = $reservationsTotal = 0;
         $locations = [];
         foreach ($holdings as $item) {
             if (!empty($item['availability'])) {
@@ -1020,6 +1021,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 $itemsTotal += $item['availabilityInfo']['total'];
             } else {
                 $itemsTotal++;
+            }
+            if (isset($item['availabilityInfo']['ordered'])) {
+                $orderedTotal += $item['availabilityInfo']['ordered'];
             }
             if (isset($item['availabilityInfo']['reservations'])) {
                 $reservations = max(
@@ -1035,6 +1039,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         // defined for all elements.
         return [
            'available' => $availableTotal,
+           'ordered' => $orderedTotal,
            'total' => $itemsTotal,
            'reservations' => $reservations,
            'locations' => count($locations),

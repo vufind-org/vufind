@@ -1,5 +1,6 @@
 <!-- START of: finna - ajax/status-full.phtml -->
 <?
+$locations = false;
 $holdings = $this->statusItems;
 $summary = array_pop($holdings);
 if (isset($summary['total'])) {
@@ -7,6 +8,8 @@ if (isset($summary['total'])) {
   $availableTotal = $summary['available'];
   $reservationsTotal
      = isset($summary['reservations']) ? $summary['reservations'] : null;
+  $orderdTotal
+     = isset($summary['ordered']) ? $summary['ordered'] : null;
   $locations = $summary['locations'];
 } else {
   $holdings[] = $summary;
@@ -17,7 +20,7 @@ $groupBranches = isset($this->statusItems[0]['branch']);
 $journal = isset($this->statusItems[0]['journalInfo']);
 
 if ($groupBranches) {
-  $locations = $availableLocations = $closestDueDateInLocation = [];
+  $availableLocations = $closestDueDateInLocation = [];
   $illRequestLink = false;
 
   foreach ($this->statusItems as $item) {
@@ -83,6 +86,8 @@ if ($groupBranches) {
         <?=sprintf('%s %d %s', $this->transEsc('axiell_available'), $availableTotal, $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
       <? elseif ($closestDueDate): ?>
         <?=sprintf('%s %s %s', $this->transEsc('status_Charged'), $this->transEsc('Due Date'), $closestDueDate);?>
+      <? elseif ($orderdTotal): ?>
+        <?=$this->transEsc('status_Ordered')?>
       <? else: ?>
         <?=$this->transEsc('status_Charged')?>
       <? endif; ?>

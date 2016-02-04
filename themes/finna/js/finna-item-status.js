@@ -52,6 +52,11 @@ finna.itemStatus = (function() {
               var details = item.find('.locationDetails');
               details.empty().append(result.full_status);
               details.removeClass('hidden');
+              details.find('.holdings').on('truncate-done', function() {
+                  if (!$(this).hasClass('truncated')) {
+                      details.find('.available-total').hide();
+                  }
+              });
               finna.layout.initTruncate(details);
 
               details.find('.holdings-container.collapsible > .header').click(function () {
