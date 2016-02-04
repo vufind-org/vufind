@@ -24,7 +24,7 @@
               }
             }
             foreach ($dedupData as $source => $current) {
-              $optionHtml = '<option value="' . $this->escapeHtmlAttr($current['id']) . '" class="dedup-data-id" data-source="' . $this->escapeHtmlAttr($source) . '" role="option">' . $this->transEsc("source_$source", null, $source) . '</option>';
+              $optionHtml = '<option value="' . $this->escapeHtmlAttr($current['id']) . '" class="dedup-data-id" data-source="' . $this->escapeHtmlAttr($source) . '">' . $this->transEsc("source_$source", null, $source) . '</option>';
               // see if logged in, no organisations selected and source & the users's organisation match
               if ($user && !$orgFacet && (strpos($user->cat_username, "$source") === 0)) {
                 array_unshift($sourceOptions, $optionHtml);
