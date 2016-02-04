@@ -1,6 +1,8 @@
 // Custom styles for user account functions
 
-.main.template-dir-myresearch, .main.template-dir-search.template-name-history, .main.template-dir-librarycards {   
+.main.template-dir-myresearch, .main.template-dir-search.template-name-history, .main.template-dir-librarycards {
+    padding-bottom: 30px;
+    
     h1 {
         display: inline-block;
     }
@@ -65,6 +67,9 @@
         padding-bottom: 0;
         border: 1px solid @gray-lighter;
         box-shadow: 0px 15px 30px -25px @gray;
+        & #profile_form {
+            margin-top: 10px;   
+        }
         div {
             padding: 8px;
             &.profile-title {
@@ -102,7 +107,7 @@
         }
     }
     & .myresearch-profile-middle-header {
-        font-size: @font-size-h2;
+        font-size: @font-size-h3;
         font-weight: bold;   
     }
     & select#library_card {
@@ -213,6 +218,18 @@
             margin:0;   
         }
     }
+    #renewals .toolbar {
+        & .checkboxFilter.mylist-select-all {
+            margin-right: 0;   
+        }
+        & .checkboxFilter .checkbox label {
+            line-height: auto;
+            font-size: 13px;
+            @media (min-width: @screen-sm-min) {
+                margin-left: 10px;   
+            }
+        }
+    }
     & .myresearch-notes {
         margin-top: 10px;  
     }
@@ -276,6 +293,10 @@
     }
     .finna-main-tabs {
          background: darken(@myresearch-header-background, 12%);
+         @media (max-width: @screen-sm-max) {
+            padding-top: 0;
+            margin-bottom: 20px;
+         }
     }
     & .list-title {
          margin-bottom: 0px;   
@@ -354,6 +375,11 @@
             float: right;
             line-height: 38px;   
         }
+        &.bottom {
+            padding-top: 15px;
+            border-top: 1px solid @gray-lighter;
+            border-bottom: none;
+        }
     }
     .myresearch-row {
         padding: 10px 0px;
@@ -367,11 +393,17 @@
         }
         & h3 {
             margin: 0;
-            font-size: 1.3em;
+            font-weight: 400;
+            font-size: 1.2em;
+            margin-bottom: 2px;
         }
         & .no-checkbox {
             font-size: 0.8em;
             color: @gray-light;
+        }
+        & .alert {
+            padding: 4px;
+            margin-bottom: 3px;
         }
     }
     & .useraccount-cancel > li {
