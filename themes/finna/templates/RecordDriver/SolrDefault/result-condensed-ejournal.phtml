@@ -1,6 +1,8 @@
 <!-- START of: finna - RecordDriver/SolrDefault/result-condensed-ejournal.phtml -->
 <div class="col-xs-12 col-sm-11">
-<table class="table table-condensed">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+  <table class="table table-condensed">
   <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
     <tr class="recordLanguage">
       <th><?=$this->transEsc('Language')?>: </th>
@@ -60,6 +62,18 @@
     </tr>
   <? endif; ?>
 
-</table>
+  <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+    <? /* Saved lists */ ?>
+    <tr class="savedLists hidden">
+      <th><?=$this->transEsc("Saved in")?>:</th>
+      <td>
+        <div class="alert alert-info">
+          <ul>
+          </ul>
+        </div>
+      </td>
+    </tr>
+  <? endif; ?>
+  </table>
 </div>
 <!-- END of: finna - RecordDriver/SolrDefault/result-condensed-ejournal.phtml -->

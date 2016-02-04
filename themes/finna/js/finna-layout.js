@@ -449,19 +449,19 @@ finna.layout = (function() {
                 data: {id:ids, 'source':srcs},
                 success: function(response) {
                     if(response.status == 'OK') {
-                        holder.find('.savedLists > ul').empty();
+                        holder.find('.savedLists ul').empty();
                         $.each(response.data, function(i, result) {
                             var $container = holder.find('input[value="' + result.record_id + '"]').closest(".result");
                             if ($container.length) {
-                                $container = $container.find(".savedLists");
+                                $container = $container.find('.savedLists');
                             }
                             if ($container.length == 0) { // Record view
                                 $container = $('.savedLists');
                             }
-                            var $ul = $container.children('ul:first');
+                            var $ul = $container.find('ul:first');
                             if ($ul.length == 0) {
                                 $container.append('<ul></ul>');
-                                $ul = $container.children('ul:first');
+                                $ul = $container.find('ul:first');
                             }
                             var html = '<li><a href="' + VuFind.getPath() + '/MyResearch/MyList/' + result.list_id + '">'
                                 + result.list_title + '</a></li>';
