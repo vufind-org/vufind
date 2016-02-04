@@ -84,7 +84,7 @@ if ($groupBranches) {
     <span>
       <? if ($availableTotal): ?>
         <?=sprintf('%s %d %s', $this->transEsc('axiell_available'), $availableTotal, $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
-      <? elseif ($closestDueDate): ?>
+      <? elseif (!empty($closestDueDate)): ?>
         <?=sprintf('%s %s %s', $this->transEsc('status_Charged'), $this->transEsc('Due Date'), $closestDueDate);?>
       <? elseif ($orderdTotal): ?>
         <?=$this->transEsc('status_Ordered')?>
