@@ -17,6 +17,13 @@ body {
     }
     background-color: @footer-background;
     background-repeat: no-repeat;
+    // make md and smaller layouts scale fluidly
+    .container {
+        @media (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
+        width: auto;   
+        }
+    }
+
 }
 body > .main { 
     background: @body-bg;
