@@ -42,12 +42,12 @@
             <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
           </div>
           <div class="col-sm-3 text-right hidden-xs">
-            <span class="myresearch-count"><?=$this->transEsc('total_loaned_items', ['%%count%%' => count($this->transactions)]);?></span>
+            <span class="myresearch-count"><?=$this->transEsc('total_borrowed_items', ['%%count%%' => count($this->transactions)]);?></span>
           </div>
         </div>
         <? else: ?>
         <div class="toolbar">
-          <p><?=$this->transEsc('cannot renew any checked out items')?> <span class="myresearch-count no-buttons"><?=$this->transEsc('total_loaned_items', ['%%count%%' => count($this->transactions)]);?></span></p>
+          <p><?=$this->transEsc('cannot renew any checked out items')?> <span class="myresearch-count no-buttons"><?=$this->transEsc('total_borrowed_items', ['%%count%%' => count($this->transactions)]);?></span></p>
         </div>
       <? endif; ?>
       <? $i = 0; foreach ($this->transactions as $resource): ?>
@@ -185,7 +185,7 @@
             <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
           </div>
           <div class="col-sm-3 text-right hidden-xs">
-            <span class="myresearch-count"><?=$this->transEsc('total_loaned_items', ['%%count%%' => count($this->transactions)]);?></span>
+            <span class="myresearch-count"><?=$this->transEsc('total_borrowed_items', ['%%count%%' => count($this->transactions)]);?></span>
           </div>
         </div>
         <? endif;?>
