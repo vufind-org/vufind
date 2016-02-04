@@ -1,6 +1,9 @@
 /* --  Holdings styling  -- */
 .holding-details {
     margin-top: 10px;
+    @media (max-width: 400px) {
+        width: 133%;   
+    }
 }
 .record-container .holding-details {
     clear: both;
@@ -123,18 +126,53 @@
     }
     & .holdings-container:not(.root) {
         border-bottom: 1px solid @gray-lighter;
-        padding: 1px 0 1px 0;
+        padding: 2px 0;
+        @media (max-width: @screen-xs-max) {
+            padding: 6px 0;   
+        }
     }
     & .holdings-container.collapsible > .holdings:not(.root) {
         padding-left: 10px;
     }
     & .holdings-container.collapsible > .header {
         cursor: pointer;
+        padding: 1px 0px;
+        @media (max-width: @screen-sm-max) {
+            padding: 3px 0px;   
+        }
     }
-    & .header .info,
-    & .holdings .branchInfo {
-        float: right;
+    & .header .info {
         color: @gray-light;
+        float: right;
+        @media (max-width: @screen-xs-max) {
+            float: none;
+            display: inline-block;
+            margin-left: 15px;
+        }
+    }
+    & .holdings .branch {
+        font-weight: 500;   
+    }
+    & .holdings {
+        & .groupLocation, .branchInfo {
+            padding-bottom: 2px;
+        }
+        & .branchInfo {
+            @media (min-width: @screen-sm-min) {
+                text-align: right;
+            }
+            color: @gray-light;
+            display: block;
+            @media (max-width: @screen-xs-max) {
+                margin-left: 20px; 
+            }
+        }
+    }
+    & .header {
+        font-weight: 600;
+        & span {
+            font-weight: 400;   
+        }
     }
     & .actions {
         float: right;
