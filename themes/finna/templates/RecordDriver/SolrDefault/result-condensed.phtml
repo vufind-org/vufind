@@ -5,7 +5,7 @@
     $this->record($this->driver)->getFormatClass(end($formats)) === '1journaleserial' ? $ejournal = 'true' :  $ejournal = 'false';
 
 ?>
-<div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view" id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
+<div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
   <div class="col-xs-12 condensed-collapse-toggle">
       <div class="col-sm-6 col-md-8">
         <i class="fa fa-arrow-right"></i>
@@ -140,7 +140,7 @@
         <div class="dedupInformation">
             <select class="dedup-select form-control" role="listbox" aria-haspopup="true">
             <? foreach ($dedupData as $source => $current): ?>
-              <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>" role="option"><?=$this->transEsc("source_$source", null, $source) ?></option>
+              <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>"><?=$this->transEsc("source_$source", null, $source) ?></option>
             <? endforeach; ?>
             </select>
         </div>

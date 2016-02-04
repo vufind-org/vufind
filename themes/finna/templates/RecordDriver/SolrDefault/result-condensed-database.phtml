@@ -1,6 +1,8 @@
 <!-- START of: finna - RecordDriver/SolrDefault/result-condensed-database.phtml -->
 <? $subjects = $this->driver->getAllSubjectHeadings(); ?>
 <div class="col-xs-12 <?= !empty($subjects) ? 'col-sm-8' : 'col-sm-11' ?>">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
   <div class="description">
   <? $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
     <h5><?=$this->transEsc('Summary')?>:</h5>
@@ -9,6 +11,12 @@
         <?=$this->escapeHtmlAttr($field); ?>
         <? endforeach; ?>
       </p>
+  <? endif; ?>
+  <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+    <? /* Saved lists */ ?>
+    <div class="savedLists alert alert-info hidden">
+      <strong><?=$this->transEsc("Saved in")?>:</strong>
+    </div>
   <? endif; ?>
   </div>
 </div>
