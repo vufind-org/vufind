@@ -108,6 +108,7 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
+            'flashmessenger' => 'VuFind\Controller\Plugin\Factory::getFlashMessenger',
             'followup' => 'VuFind\Controller\Plugin\Factory::getFollowup',
             'holds' => 'VuFind\Controller\Plugin\Factory::getHolds',
             'newitems' => 'VuFind\Controller\Plugin\Factory::getNewItems',

@@ -42,6 +42,21 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Construct the FlashMessenger plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Zend\Mvc\Controller\Plugin\FlashMessenger
+     */
+    public static function getFlashMessenger(ServiceManager $sm)
+    {
+        $plugin = new \Zend\Mvc\Controller\Plugin\FlashMessenger();
+        $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+        $plugin->setSessionManager($sessionManager);
+        return $plugin;
+    }
+
+    /**
      * Construct the Followup plugin.
      *
      * @param ServiceManager $sm Service manager.
