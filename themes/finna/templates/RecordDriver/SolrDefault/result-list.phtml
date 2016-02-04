@@ -4,7 +4,7 @@
 ?>
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
 
-    <div class="col-xs-9 <?= $combinedView ? 'col-sm-10' : '' ?> col-sm-push-2">
+    <div class="col-xs-9 <?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-8 col-sm-push-3 col-md-9 col-md-push-2' ?>">
       <div>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
           <?=$this->record($this->driver)->getTitleHtml()?>
@@ -135,7 +135,7 @@
     <?=$this->record($this->driver)->getPreviews()?>
 
   </div>
-  <div class="col-xs-3 col-sm-2 <?= $combinedView ? 'col-sm-pull-10' : 'col-sm-pull-9' ?> resultThumb">
+  <div class="col-xs-3 <?= $combinedView ? 'col-sm-2 col-sm-pull-10' : 'col-sm-3 col-sm-pull-8 col-md-2 col-md-pull-9' ?> resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
       <? $img = $this->recordImage($this->record($this->driver))?>

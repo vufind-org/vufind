@@ -36,7 +36,7 @@
     <div class="col-xs-12 myresearch-profile-list library-profile">
       <? if ($showHomeLibForm): ?>
         <form id="profile_form" class="inline" method="post">
-          <div class="col-sm-4 profile-title"><?=$this->transEsc('preferred_pickup_location')?>:</div>
+          <div class="col-sm-4 profile-title"><label for="home_library"><?=$this->transEsc('preferred_pickup_location')?>:</label></div>
           <div class="col-sm-8">
               <?
                 $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")

@@ -26,10 +26,24 @@
     <? if (!empty($this->transactions)): ?>
       <? if ($this->renewForm): ?>
       <form name="renewals" method="post" id="renewals">
-        <div class="toolbar">
-          <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
-          <input type="submit" class="btn btn-primary" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
-          <span class="myresearch-count"><?=$this->transEsc('total_loaned_items', ['%%count%%' => count($this->transactions)]);?></span>
+        <div class="toolbar row">
+          <div class="col-xs-6 col-sm-2">
+            <div class="checkboxFilter mylist-select-all">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+                  <span><?=$this->transEsc('Select All')?></span>
+                  <span class="selected"></span> <span class="loans-renewal-available"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-7">
+            <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+          </div>
+          <div class="col-sm-3 text-right hidden-xs">
+            <span class="myresearch-count"><?=$this->transEsc('total_loaned_items', ['%%count%%' => count($this->transactions)]);?></span>
+          </div>
         </div>
         <? else: ?>
         <div class="toolbar">
@@ -39,8 +53,8 @@
       <? $i = 0; foreach ($this->transactions as $resource): ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row myresearch-row">
-          <div class="col-xs-2 col-sm-1 text-center">
           <? if ($this->renewForm): ?>
+          <div class="col-xs-2 col-sm-1 text-center">
             <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
               <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
               <div class="checkboxFilter">
@@ -55,8 +69,8 @@
             <? else: ?>
               <span class="no-checkbox"><?=$this->transEsc('cannot renew');?></span>
             <? endif; ?>
-          <? endif; ?>
           </div>
+          <? endif; ?>
           <div class="col-sm-1 text-left hidden-xs">
             <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
               <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
@@ -64,7 +78,7 @@
               <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
             <? endif; ?>
           </div>
-          <div class="col-sm-6 col-xs-5">
+          <div class="<?=$this->renewForm ? 'col-sm-6 col-xs-10' : 'col-sm-7 col-xs-12'?>">
             <?
               // If this is a non-missing Solr record, we should display a link:
               if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
@@ -100,7 +114,8 @@
             <? endif; ?>
             </div>
           </div>
-          <div class="col-xs-5 col-sm-4 text-right">
+          <div class="col-xs-2 visible-xs"></div>
+          <div class="col-xs-10 col-sm-4 text-right">
             <? $showStatus = true; ?>
             <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
               <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
@@ -154,7 +169,28 @@
           </div>
         </div>
       <? endforeach; ?>
-      <? if ($this->renewForm): ?></form><? endif; ?>
+      <? if ($this->renewForm): ?>
+        <? if (count($this->transactions) > 10): ?>
+        <div class="toolbar bottom row">
+          <div class="col-xs-6 col-sm-2">
+            <div class="checkboxFilter mylist-select-all">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-7">
+            <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+          </div>
+          <div class="col-sm-3 text-right hidden-xs">
+            <span class="myresearch-count"><?=$this->transEsc('total_loaned_items', ['%%count%%' => count($this->transactions)]);?></span>
+          </div>
+        </div>
+        <? endif;?>
+      </form>
+      <? endif; ?>
     <? else: ?>
       <h4><?=$this->transEsc('You do not have any items checked out')?>.</h4>
     <? endif; ?>
