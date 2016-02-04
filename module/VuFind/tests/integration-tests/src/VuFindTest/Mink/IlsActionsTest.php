@@ -52,6 +52,19 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        // Give up if we're not running in CI:
+        if (!$this->continuousIntegrationRunning()) {
+            return $this->markTestSkipped('Continuous integration not running.');
+        }
+    }
+
+    /**
      * Get config.ini override settings for testing ILS functions.
      *
      * @return array
@@ -159,6 +172,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $element->click();
         $this->snooze();
         $this->findCss($page, '.createAccountLink')->click();
+        $this->snooze();
         $this->fillInAccountForm($page);
         $this->findCss($page, 'input.btn.btn-primary')->click();
         $this->snooze();
