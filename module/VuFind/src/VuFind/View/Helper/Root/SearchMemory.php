@@ -80,11 +80,13 @@ class SearchMemory extends AbstractHelper
     /**
      * Retrieve the last hidden filters used.
      *
+     * @param string $context Context of search (usually search class ID).
+     *
      * @return array
      */
-    public function getLastHiddenFilters()
+    public function getLastHiddenFilters($context)
     {
-        return $this->memory->retrieveLastSetting($context, 'hiddenFilters');
+        return $this->memory->retrieveLastSetting($context, 'hiddenFilters', []);
     }
 
     /**
