@@ -10,19 +10,14 @@
 ; This configuration file is compatible with RecordManager's datasources.ini, so the
 ; same file can be shared by RecordManager and VuFind.
 
-; Inherit main configuration
-[Parent_Config]
-relative_path = ../finna/config.ini
-
-; Add any overrides below
-;[OJS]
-;feedbackEmail = email@somewhere.invalid
-;mainView = web
-;institution = Library
+[OJS]
+feedbackEmail = email@somewhere.invalid
+mainView = web
+institution = Library
 ;disablePatronFunctions = true
 
 ; Online payment
-;onlinePayment['handler'] = ''
-;onlinePayment['url'] = ''
-;onlinePayment['merchantId'] = ''
-;onlinePayment['secret'] = ''
+onlinePayment['handler'] = ''
+onlinePayment['url'] = ''
+onlinePayment['merchantId'] = ''
+onlinePayment['secret'] = ''

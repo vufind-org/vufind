@@ -7,9 +7,40 @@
 
 @media (min-width: @screen-sm-min) {
     .searchLayout .introduction {
-        margin: 0px 0px 50px;   
+        margin: 0px 0px 30px;
     }
 }
+.introduction h1 {
+    @media (max-width: @screen-xs-max) {
+        background: rgba(1,1,1,0.35);
+    }
+    & span {
+        display: inline;
+        background: rgba(1,1,1,0.35);
+        padding: 3px 6px;
+        line-height:1.6em;
+        & em {
+            color: #addfdb;   
+        }
+        @media (max-width: @screen-xs-max) {
+            background: none;
+            padding: 0;
+        }
+    }
+}
+.home-1 .introduction p {
+    font-weight: 400;
+    line-height: 1.3em;
+    & a {
+        font-weight: bold;   
+    }
+    
+}
+.document-types li {
+    font-size: 1.05em;
+    margin-bottom: 8px;
+}
+
 .right-column-content {
     @media (max-width: @screen-xs-max) {
         margin-left: -15px;
@@ -99,13 +130,11 @@
                     box-shadow: 0 5px 20px -26px;   
                 }
                 @media (min-width: @screen-sm) and (max-width: @screen-sm-max) {
-                    width: @screen-sm - 35;
                     & .fa-spinner {
                         left: 350px;
                     }
                 }
                 @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
-                    width: @screen-md - 40;
                     & .fa-spinner {
                         left: 460px;
                     }
