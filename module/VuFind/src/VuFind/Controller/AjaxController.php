@@ -88,12 +88,13 @@ class AjaxController extends AbstractBase
                     ? ': ' . $e->getMessage() : '';
                 return $this->output(
                     $this->translate('An error has occurred') . $debugMsg,
-                    self::STATUS_ERROR
+                    self::STATUS_ERROR,
+                    500
                 );
             }
         } else {
             return $this->output(
-                $this->translate('Invalid Method'), self::STATUS_ERROR
+                $this->translate('Invalid Method'), self::STATUS_ERROR, 400
             );
         }
     }
@@ -478,7 +479,8 @@ class AjaxController extends AbstractBase
         if (!$user) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
 
@@ -491,7 +493,8 @@ class AjaxController extends AbstractBase
         if (!is_array($ids) || !is_array($sources)) {
             return $this->output(
                 $this->translate('Argument must be array.'),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                400
             );
         }
         foreach ($ids as $i => $id) {
@@ -614,7 +617,8 @@ class AjaxController extends AbstractBase
         } catch (AuthException $e) {
             return $this->output(
                 $this->translate($e->getMessage()),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                401
             );
         }
 
@@ -632,7 +636,8 @@ class AjaxController extends AbstractBase
         if ($user === false) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
         // empty tag
@@ -653,7 +658,8 @@ class AjaxController extends AbstractBase
         } catch (\Exception $e) {
             return $this->output(
                 ('development' == APPLICATION_ENV) ? $e->getMessage() : 'Failed',
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                500
             );
         }
 
@@ -898,7 +904,8 @@ class AjaxController extends AbstractBase
                         'status' => false,
                         'msg' => $this->translate('You must be logged in first')
                     ],
-                    self::STATUS_NEED_AUTH
+                    self::STATUS_NEED_AUTH,
+                    401
                 );
             }
 
@@ -953,7 +960,7 @@ class AjaxController extends AbstractBase
         }
 
         return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
         );
     }
 
@@ -968,7 +975,8 @@ class AjaxController extends AbstractBase
         if ($user === false) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
 
@@ -976,7 +984,7 @@ class AjaxController extends AbstractBase
         $comment = $this->params()->fromPost('comment');
         if (empty($id) || empty($comment)) {
             return $this->output(
-                $this->translate('An error has occurred'), self::STATUS_ERROR
+                $this->translate('An error has occurred'), self::STATUS_ERROR, 400
             );
         }
 
@@ -1000,15 +1008,21 @@ class AjaxController extends AbstractBase
         if ($user === false) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
 
         $id = $this->params()->fromQuery('id');
-        $table = $this->getTable('Comments');
-        if (empty($id) || !$table->deleteIfOwnedByUser($id, $user)) {
+        if (empty($id)) {
             return $this->output(
-                $this->translate('An error has occurred'), self::STATUS_ERROR
+                $this->translate('An error has occurred'), self::STATUS_ERROR, 400
+            );
+        }
+        $table = $this->getTable('Comments');
+        if (!$table->deleteIfOwnedByUser($id, $user)) {
+            return $this->output(
+                $this->translate('An error has occurred'), self::STATUS_ERROR, 405
             );
         }
 
@@ -1079,7 +1093,8 @@ class AjaxController extends AbstractBase
         if (!$pluginManager->has($resolverType)) {
             return $this->output(
                 $this->translate("Could not load driver for $resolverType"),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                500
             );
         }
         $resolver = new \VuFind\Resolver\Connection(
@@ -1163,7 +1178,8 @@ class AjaxController extends AbstractBase
                         'status' => false,
                         'msg' => $this->translate('You must be logged in first')
                     ],
-                    self::STATUS_NEED_AUTH
+                    self::STATUS_NEED_AUTH,
+                    401
                 );
             }
 
@@ -1193,7 +1209,7 @@ class AjaxController extends AbstractBase
         }
 
         return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
         );
     }
 
@@ -1216,7 +1232,8 @@ class AjaxController extends AbstractBase
                         'status' => false,
                         'msg' => $this->translate('You must be logged in first')
                     ],
-                    self::STATUS_NEED_AUTH
+                    self::STATUS_NEED_AUTH,
+                    401
                 );
             }
 
@@ -1250,7 +1267,7 @@ class AjaxController extends AbstractBase
         }
 
         return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
         );
     }
 
