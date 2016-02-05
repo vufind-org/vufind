@@ -14,17 +14,16 @@ function checkRequestIsValid(element, requestType, blockedClass) {
     cache: false,
     url: url,
     success: function(response) {
-      if (response.status == 'OK') {
-        if (response.data.status) {
-          $(element).removeClass('disabled')
-            .attr('title', response.data.msg)
-            .html('<i class="fa fa-flag"></i>&nbsp;'+response.data.msg);
-        } else {
-          $(element).remove();
-        }
-      } else if (response.status == 'NEED_AUTH') {
-        $(element).replaceWith('<span class="' + blockedClass + '">' + response.data.msg + '</span>');
+      if (typeof response.data.msg !== 'undefined') {
+        $(element).removeClass('disabled')
+          .attr('title', response.data.msg)
+          .html('<i class="fa fa-flag"></i>&nbsp;'+response.data.msg);
+      } else {
+        $(element).remove();
       }
+    },
+    error: function(response) {
+      $(element).replaceWith('<span class="' + blockedClass + '">' + response.data.msg + '</span>');
     }
   });
 }
@@ -47,9 +46,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
     dataType: 'json',
     url: url,
     success: function(response) {
-      if (response.status == 'OK') {
-        $($(element).closest('.comment')[0]).remove();
-      }
+      $($(element).closest('.comment')[0]).remove();
     }
   });
 }
@@ -61,17 +58,15 @@ function refreshCommentList($target, recordId, recordSource) {
     url: url,
     success: function(response) {
       // Update HTML
-      if (response.status == 'OK') {
-        var $commentList = $target.find('.comment-list');
-        $commentList.empty();
-        $commentList.append(response.data);
-        $commentList.find('.delete').unbind('click').click(function() {
-          var commentId = $(this).attr('id').substr('recordComment'.length);
-          deleteRecordComment(this, recordId, recordSource, commentId);
-          return false;
-        });
-        $target.find('.comment-form input[type="submit"]').button('reset');
-      }
+      var $commentList = $target.find('.comment-list');
+      $commentList.empty();
+      $commentList.append(response.data);
+      $commentList.find('.delete').unbind('click').click(function() {
+        var commentId = $(this).attr('id').substr('recordComment'.length);
+        deleteRecordComment(this, recordId, recordSource, commentId);
+        return false;
+      });
+      $target.find('.comment-form input[type="submit"]').button('reset');
     }
   });
 }
@@ -94,14 +89,13 @@ function registerAjaxCommentRecord() {
       data: data,
       dataType: 'json',
       success: function(response) {
-        if (response.status == 'OK') {
-          var $tab = $(form).closest('.tab-pane');
-          refreshCommentList($tab, id, recordSource);
-          $(form).find('textarea[name="comment"]').val('');
-          $(form).find('input[type="submit"]').button('loading');
-        } else {
-          Lightbox.displayError(response.data);
-        }
+        var $tab = $(form).closest('.tab-pane');
+        refreshCommentList($tab, id, recordSource);
+        $(form).find('textarea[name="comment"]').val('');
+        $(form).find('input[type="submit"]').button('loading');
+      },
+      error: function(response) {
+        Lightbox.displayError(response.data);
       }
     });
     return false;

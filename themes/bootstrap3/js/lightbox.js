@@ -79,6 +79,11 @@ var Lightbox = {
     if(this.XHR) {
       this.XHR.abort();
     }
+    if ('undefined' == typeof obj.error) {
+      obj.error = function() {
+        Lightbox.displayError(response.data);
+      };
+    }
     this.XHR = $.ajax(obj);
   },
   /**********************************/
