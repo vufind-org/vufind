@@ -225,22 +225,22 @@ function ajaxLogin(form) {
           dataType: 'json',
           data: params,
           success: function(response) {
-            if (response.status == 'OK') {
-              Lightbox.addCloseAction(refreshPageForLogin);
-              // and we update the modal
-              var params = deparam(Lightbox.lastURL);
-              if (params['subaction'] == 'UserLogin') {
-                Lightbox.close();
-              } else {
-                Lightbox.getByUrl(
-                  Lightbox.lastURL,
-                  Lightbox.lastPOST,
-                  Lightbox.changeContent
-                );
-              }
+            Lightbox.addCloseAction(refreshPageForLogin);
+            // and we update the modal
+            var params = deparam(Lightbox.lastURL);
+            if (params['subaction'] == 'UserLogin') {
+              Lightbox.close();
             } else {
-              Lightbox.displayError(response.data);
+              Lightbox.getByUrl(
+                Lightbox.lastURL,
+                Lightbox.lastPOST,
+                Lightbox.changeContent
+              );
             }
+          },
+          error: function(response) {
+            var json = JSON.parse(response.responseText);
+            Lightbox.displayError(json.data);
           }
         });
       } else {
