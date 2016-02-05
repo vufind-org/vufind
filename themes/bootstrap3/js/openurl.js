@@ -7,13 +7,12 @@ function loadResolverLinks($target, openUrl) {
     dataType: 'json',
     url: url,
     success: function(response) {
-      if (response.status == 'OK') {
-        $target.removeClass('ajax_availability')
-          .empty().append(response.data);
-      } else {
-        $target.removeClass('ajax_availability').addClass('error')
-          .empty().append(response.data);
-      }
+      $target.removeClass('ajax_availability')
+        .empty().append(response.data);
+    },
+    error: function(response) {
+      $target.removeClass('ajax_availability').addClass('error')
+        .empty().append(response.data);
     }
   });
 }
