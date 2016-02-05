@@ -263,9 +263,13 @@ class Results extends \VuFind\Search\Base\Results
                 // Initialize the array of data about the current facet:
                 $currentSettings = [];
                 $currentSettings['value'] = $value;
-                $currentSettings['displayText']
-                    = $translate
-                    ? $this->translate("$translateTextDomain::$value") : $value;
+
+                $displayText = $this->getParams()
+                    ->checkForDelimitedFacetDisplayText($field, $value);
+
+                $currentSettings['displayText'] = $translate
+                    ? $this->translate("$translateTextDomain::$displayText")
+                    : $displayText;
                 $currentSettings['count'] = $count;
                 $currentSettings['operator']
                     = $this->getParams()->getFacetOperator($field);

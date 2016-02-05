@@ -48,7 +48,7 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @var array
      */
-    protected $modifiedConfigs;
+    protected $modifiedConfigs = [];
 
     /**
      * Mink session
@@ -256,6 +256,25 @@ abstract class MinkTestCase extends DbTestCase
         $result = $page->find('css', $selector);
         $this->assertTrue(is_object($result));
         return $result;
+    }
+
+    /**
+     * Check whether an element containing the specified text exists.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param string  $text     Expected text
+     *
+     * @return bool
+     */
+    protected function hasElementsMatchingText(Element $page, $selector, $text)
+    {
+        foreach ($page->findAll('css', $selector) as $current) {
+            if ($text === $current->getText()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

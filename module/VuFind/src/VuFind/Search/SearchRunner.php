@@ -90,13 +90,16 @@ class SearchRunner
      * and attaching listeners; if provided, will be passed three parameters:
      * this object, the search parameters object, and a unique identifier for
      * the current running search.
+     * @param string           $lastView      Last valid view parameter loaded
+     * from a previous search (optional; used for view persistence).
      *
      * @return \VuFind\Search\Base\Results
      *
      * @throws \VuFindSearch\Backend\Exception\BackendException
      */
-    public function run($rawRequest, $searchClassId = 'Solr', $setupCallback = null)
-    {
+    public function run($rawRequest, $searchClassId = 'Solr', $setupCallback = null,
+        $lastView = null
+    ) {
         // Increment the ID counter, then save the current value to a variable;
         // since events within this run could theoretically trigger additional
         // runs of the SearchRunner, we can't rely on the property value past
@@ -112,6 +115,7 @@ class SearchRunner
         // Set up the search:
         $results = $this->resultsManager->get($searchClassId);
         $params = $results->getParams();
+        $params->setLastView($lastView);
         $params->initFromRequest($request);
 
         if (is_callable($setupCallback)) {
