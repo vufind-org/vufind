@@ -8,7 +8,7 @@ if (isset($summary['total'])) {
   $availableTotal = $summary['available'];
   $reservationsTotal
      = isset($summary['reservations']) ? $summary['reservations'] : null;
-  $orderdTotal
+  $orderedTotal
      = isset($summary['ordered']) ? $summary['ordered'] : null;
   $locations = $summary['locations'];
 } else {
@@ -86,7 +86,7 @@ if ($groupBranches) {
         <?=sprintf('%s %d %s', $this->transEsc('axiell_available'), $availableTotal, $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
       <? elseif (!empty($closestDueDate)): ?>
         <?=sprintf('%s %s %s', $this->transEsc('status_Charged'), $this->transEsc('Due Date'), $closestDueDate);?>
-      <? elseif ($orderdTotal): ?>
+      <? elseif ($orderedTotal): ?>
         <?=$this->transEsc('status_Ordered')?>
       <? else: ?>
         <?=$this->transEsc('status_Charged')?>
