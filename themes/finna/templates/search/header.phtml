@@ -15,8 +15,8 @@
     $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
     $searchHome = $options->getSearchHomeAction();
     $advSearch = $options->getAdvancedSearchAction();
-    $lastSort = $options->getLastSort();
-    $lastLimit = $options->getLastLimit();
+    $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+    $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
 ?>
 <div class="col-sm-9">
   <h1 class="search-result-header">

@@ -18,8 +18,8 @@
     $handlerCount = count($handlers);
     $basicSearch = $browse ? "browse-{$browse}" : $options->getSearchAction();
     $advSearch = $module != 'combined' ? $options->getAdvancedSearchAction() : 'search-advanced';
-    $lastSort = $browse ? null : $options->getLastSort();
-    $lastLimit = $browse ? null : $options->getLastLimit();
+    $lastSort = $browse ? null: $this->searchMemory()->getLastSort($this->searchClassId);
+    $lastLimit = $browse ? null: $this->searchMemory()->getLastLimit($this->searchClassId);
     $daterange
        = $this->params && method_exists($this->params, 'getSpatialDateRangeFilter')
        ? $this->params->getSpatialDateRangeFilter()
@@ -38,7 +38,7 @@
     $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
     $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory);
     if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
-        $hiddenFilters = $this->searchParams($this->searchClassId)->getLastHiddenFilters();
+        $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
     }
     $hiddenFilterParams = [];
     foreach ($hiddenFilters as $key => $filter) {
