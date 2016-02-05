@@ -93,8 +93,8 @@ if ($groupBranches) {
       <? endif; ?>
     </span>
     <? if ($collapseLocations): ?><i class="fa fa-arrow-right arrow"></i><? endif; ?>
-    <? if (!empty($reservations) && !$journal): ?>
-    <span class="info"><?=sprintf('%s: %d, %s: %d', $this->transEsc('Requests'), $reservations, $this->transEsc('axiell_items'), $itemsTotal);?></span>
+    <? if (!$journal): ?>
+    <span class="info"><?=sprintf('%s: %d, %s: %d', $this->transEsc('Requests'), $reservationsTotal, $this->transEsc('axiell_items'), $itemsTotal);?></span>
     <? endif; ?>
   </div>
   <div class="holdings<?=$collapseLocations ? ' collapsed' : ''?> root">
