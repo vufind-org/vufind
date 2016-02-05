@@ -129,16 +129,28 @@ class Holds
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
                 foreach ($textFieldNames as $fieldName) {
-                    if (!empty($item[$fieldName])) {
-                        $fields = is_array($item[$fieldName])
-                            ? $item[$fieldName]
-                            : [$item[$fieldName]];
-
-                        foreach ($fields as $field) {
-                            if (empty($retVal[$groupKey][$fieldName])
-                                || !in_array($field, $retVal[$groupKey][$fieldName])
+                    if (in_array($fieldName, ['notes', 'holdings_notes'])) {
+                        if (empty($item[$fieldName])) {
+                            // begin aliasing
+                            if ($fieldName == 'notes'
+                                && !empty($item['holdings_notes'])
                             ) {
-                                $retVal[$groupKey][$fieldName][] = $field;
+                                // using notes as alias for holdings_notes
+                                $item[$fieldName] = $item['holdings_notes'];
+                            } elseif ($fieldName == 'holdings_notes'
+                                && !empty($item['notes'])
+                            ) {
+                                // using holdings_notes as alias for notes
+                                $item[$fieldName] = $item['notes'];
+                            }
+                        }
+                    }
+
+                    if (!empty($item[$fieldName])) {
+                        $targetRef = & $retVal[$groupKey]['textfields'][$fieldName];
+                        foreach ((array)$item[$fieldName] as $field) {
+                            if (empty($targetRef) || !in_array($field, $targetRef)) {
+                                $targetRef[] = $field;
                             }
                         }
                     }
@@ -552,12 +564,40 @@ class Holds
      */
     protected function getHoldingsGroupKey($copy)
     {
-        // Group by holdings id unless configured otherwise or holdings id not
-        // available
+        // Group by holdings id unless configured otherwise
         $grouping = isset($this->config->Catalog->holdings_grouping)
             ? $this->config->Catalog->holdings_grouping : 'holdings_id';
-        return ($grouping != 'location_name' && isset($copy['holdings_id']))
-            ? $copy['holdings_id'] : $copy['location'];
+
+        $groupKey = "";
+
+        // Multiple keys may be used here (delimited by comma)
+        foreach (array_map('trim', explode(",", $grouping)) as $key) {
+            // backwards-compatibility:
+            // The config.ini file originally expected only
+            //   two possible settings: holdings_id and location_name.
+            // However, when location_name was set, the code actually
+            //   used the value of 'location' instead.
+            // From now on, we will expect (via config.ini documentation)
+            //   the value of 'location', but still continue to honor
+            //   'location_name'.
+            if ($key == "location_name") {
+                $key = "location";
+            }
+
+            if (isset($copy[$key])) {
+                if ($groupKey != "") {
+                    $groupKey .= '|';
+                }
+                $groupKey .= $copy[$key];
+            }
+        }
+
+        // default:
+        if ($groupKey == "") {
+            $groupKey = $copy['location'];
+        }
+
+        return $groupKey;
     }
 
     /**

@@ -99,6 +99,13 @@ class Demo extends AbstractBase
     protected $dateConverter;
 
     /**
+     * Failure probability settings
+     *
+     * @var array
+     */
+    protected $failureProbabilities = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -132,10 +139,39 @@ class Demo extends AbstractBase
         if (isset($this->config['Catalog']['ILLRequests'])) {
             $this->ILLRequests = $this->config['Catalog']['ILLRequests'];
         }
-
+        if (isset($this->config['Failure_Probabilities'])) {
+            $this->failureProbabilities = $this->config['Failure_Probabilities'];
+        }
         // Establish a namespace in the session for persisting fake data (to save
         // on Solr hits):
         $this->session = new SessionContainer('DemoDriver');
+
+        if (isset($this->config['Holdings'])) {
+            foreach ($this->config['Holdings'] as $id => $json) {
+                foreach (json_decode($json, true) as $i => $status) {
+                    $this->setStatus($id, $status, $i > 0);
+                }
+            }
+        }
+    }
+
+    /**
+     * Check for a simulated failure. Returns true for failure, false for
+     * success.
+     *
+     * @param string $method  Name of method that might fail
+     * @param int    $default Default probability (if config is empty)
+     *
+     * @return bool
+     */
+    protected function isFailing($method, $default = 0)
+    {
+        // Method may come in like Class::Method, we just want the Method part
+        $parts = explode('::', $method);
+        $key = array_pop($parts);
+        $probability = isset($this->failureProbabilities[$key])
+            ? $this->failureProbabilities[$key] : $default;
+        return rand(1, 100) <= $probability;
     }
 
     /**
@@ -384,31 +420,20 @@ class Demo extends AbstractBase
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getSimulatedStatus($id, array $patron = null)
+    protected function getSimulatedStatus($id, array $patron = null)
     {
-        $id = $id . ""; // make it a string for consistency
-        // How many items are there?
-        $records = rand() % 15;
-        $holding = [];
+        $id = (string) $id;
 
-        // NOTE: Ran into an interesting bug when using:
-
-        // 'availability' => rand()%2 ? true : false
-
-        // It seems rand() returns alternating even/odd
-        // patterns on some versions running under windows.
-        // So this method gives better 50/50 results:
-
-        // 'availability' => (rand()%100 > 49) ? true : false
-        if ($this->session->statuses
-            && array_key_exists($id, $this->session->statuses)
-        ) {
+        // Do we have a fake status persisted in the session?
+        if (isset($this->session->statuses[$id])) {
             return $this->session->statuses[$id];
         }
 
-        // Create a fake entry for each one
-        for ($i = 0; $i < $records; $i++) {
-            $holding[] = $this->getRandomHolding($id, $i + 1, $patron);
+        // Create fake entries for a random number of items
+        $holding = [];
+        $records = rand() % 15;
+        for ($i = 1; $i <= $records; $i++) {
+            $holding[] = $this->getRandomHolding($id, $i, $patron);
         }
         return $holding;
     }
@@ -424,16 +449,17 @@ class Demo extends AbstractBase
      *
      * @return array
      */
-    public function setStatus($id, $holding = [], $append = true)
+    protected function setStatus($id, $holding = [], $append = true)
     {
         $id = (string)$id;
-        $i = ($this->session->statuses) ? count($this->session->statuses) + 1 : 1;
+        $i = isset($this->session->statuses[$id])
+            ? count($this->session->statuses[$id]) + 1 : 1;
         $holding = array_merge($this->getRandomHolding($id, $i), $holding);
 
         // if statuses is already stored
         if ($this->session->statuses) {
             // and this id is part of it
-            if ($append && array_key_exists($id, $this->session->statuses)) {
+            if ($append && isset($this->session->statuses[$id])) {
                 // add to the array
                 $this->session->statuses[$id][] = $holding;
             } else {
@@ -445,42 +471,6 @@ class Demo extends AbstractBase
             $this->session->statuses = [$id => [$holding]];
         }
         return $holding;
-    }
-
-    /**
-     * Set Status to return an invalid entry
-     *
-     * @param array $id id for condemned record
-     *
-     * @return void;
-     */
-    public function setInvalidId($id)
-    {
-        $id = (string)$id;
-        // if statuses is already stored
-        if ($this->session->statuses) {
-            $this->session->statuses[$id] = [];
-        } else {
-            // brand new status storage!
-            $this->session->statuses = [$id => []];
-        }
-    }
-
-    /**
-     * Clear status
-     *
-     * @param array $id id for clearing the status
-     *
-     * @return void;
-     */
-    public function clearStatus($id)
-    {
-        $id = (string)$id;
-
-        // if statuses is already stored
-        if ($this->session->statuses) {
-            unset($this->session->statuses[$id]);
-        }
     }
 
     /**
@@ -527,9 +517,11 @@ class Demo extends AbstractBase
         foreach (array_keys($status) as $i) {
             $itemNum = $i + 1;
             $noteCount = rand(1, 3);
-            $status[$i]['notes'] = [];
+            $status[$i]['holdings_notes'] = [];
+            $status[$i]['item_notes'] = [];
             for ($j = 1; $j <= $noteCount; $j++) {
-                $status[$i]['notes'][] = "Item $itemNum note $j";
+                $status[$i]['holdings_notes'][] = "Item $itemNum holdings note $j";
+                $status[$i]['item_notes'][] = "Item $itemNum note $j";
             }
             $summCount = rand(1, 3);
             $status[$i]['summary'] = [];
@@ -877,7 +869,7 @@ class Demo extends AbstractBase
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
         // 5 years in the future (but similate intermittent failure):
-        return rand(0, 1) == 1
+        return !$this->isFailing(__METHOD__, 50)
             ? mktime(0, 0, 0, date('m'), date('d'), date('Y') + 5) : null;
     }
 
@@ -921,7 +913,7 @@ class Demo extends AbstractBase
      */
     public function getDefaultRequestGroup($patron = false, $holdDetails = null)
     {
-        if (rand(0, 1) == 1) {
+        if ($this->isFailing(__METHOD__, 50)) {
             return false;
         }
         $requestGroups = $this->getRequestGroups(0, 0);
@@ -1097,8 +1089,7 @@ class Demo extends AbstractBase
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newHolds->append($current);
             } else {
-                // 50% chance of cancel failure for testing purposes
-                if (rand() % 2) {
+                if (!$this->isFailing(__METHOD__, 50)) {
                     $retVal['count']++;
                     $retVal['items'][$current['item_id']] = [
                         'success' => true,
@@ -1160,8 +1151,7 @@ class Demo extends AbstractBase
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newRequests->append($current);
             } else {
-                // 50% chance of cancel failure for testing purposes
-                if (rand() % 2) {
+                if (!$this->isFailing(__METHOD__, 50)) {
                     $retVal['count']++;
                     $retVal['items'][$current['item_id']] = [
                         'success' => true,
@@ -1232,7 +1222,7 @@ class Demo extends AbstractBase
         foreach ($transactions as $i => $current) {
             // Only renew requested items:
             if (in_array($current['item_id'], $renewDetails['details'])) {
-                if (rand() % 2) {
+                if (!$this->isFailing(__METHOD__, 50)) {
                     $old = $transactions[$i]['duedate'];
                     $transactions[$i]['duedate']
                         = date("j-M-y", strtotime($old . " + 7 days"));
@@ -1319,7 +1309,7 @@ class Demo extends AbstractBase
     public function placeHold($holdDetails)
     {
         // Simulate failure:
-        if (rand() % 2) {
+        if ($this->isFailing(__METHOD__, 50)) {
             return [
                 "success" => false,
                 "sysMessage" =>
@@ -1426,7 +1416,7 @@ class Demo extends AbstractBase
             ];
         }
         // Simulate failure:
-        if (rand() % 2) {
+        if ($this->isFailing(__METHOD__, 50)) {
             return [
                 "success" => false,
                 "sysMessage" =>
@@ -1525,7 +1515,7 @@ class Demo extends AbstractBase
             ];
         }
         // Simulate failure:
-        if (rand() % 2) {
+        if ($this->isFailing(__METHOD__, 50)) {
             return [
                 'success' => false,
                 'sysMessage' =>
@@ -1707,8 +1697,7 @@ class Demo extends AbstractBase
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newRequests->append($current);
             } else {
-                // 50% chance of cancel failure for testing purposes
-                if (rand() % 2) {
+                if (!$this->isFailing(__METHOD__, 50)) {
                     $retVal['count']++;
                     $retVal['items'][$current['item_id']] = [
                         'success' => true,
@@ -1761,7 +1750,7 @@ class Demo extends AbstractBase
      */
     public function changePassword($details)
     {
-        if (rand() % 3) {
+        if (!$this->isFailing(__METHOD__, 33)) {
             return ['success' => true, 'status' => 'change_password_ok'];
         }
         return [

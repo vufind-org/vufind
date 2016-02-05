@@ -696,6 +696,7 @@ class DAIA extends AbstractBase implements
         $duedate = null;
         $availableLink = '';
         $queue = '';
+        $item_notes = [];
         $services = [];
 
         if (isset($item['available'])) {
@@ -727,7 +728,10 @@ class DAIA extends AbstractBase implements
 
                 // use limitation element for status string
                 if (isset($available['limitation'])) {
-                        $status = $this->getItemLimitation($available['limitation']);
+                    $item_notes = array_merge(
+                        $item_notes,
+                        $this->getItemLimitation($available['limitation'])
+                    );
                 }
 
                 // log messages for debugging
@@ -759,8 +763,10 @@ class DAIA extends AbstractBase implements
 
                     // use limitation element for status string
                     if (isset($unavailable['limitation'])) {
-                        $status = $this
-                            ->getItemLimitation($unavailable['limitation']);
+                        $item_notes = array_merge(
+                            $item_notes,
+                            $this->getItemLimitation($unavailable['limitation'])
+                        );
                     }
                 }
                 // attribute expected is mandatory for unavailable element
@@ -799,6 +805,7 @@ class DAIA extends AbstractBase implements
             $return['ilslink'] = $availableLink;
         }
 
+        $return['item_notes']      = $item_notes;
         $return['status']          = $status;
         $return['availability']    = $availability;
         $return['duedate']         = $duedate;
@@ -903,21 +910,22 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the evaluated value of the provided limitation element
+     * Returns the evaluated values of the provided limitations element
      *
      * @param array $limitations Array with DAIA limitation data
      *
-     * @return string
+     * @return array
      */
     protected function getItemLimitation($limitations)
     {
+        $itemLimitation = [];
         foreach ($limitations as $limitation) {
-            // return the first limitation with content set
+            // return the limitations with content set
             if (isset($limitation['content'])) {
-                return $limitation['content'];
+                $itemLimitation[] = $limitation['content'];
             }
         }
-        return '';
+        return $itemLimitation;
     }
 
     /**
@@ -942,7 +950,7 @@ class DAIA extends AbstractBase implements
         }
         return $availableServices;
     }
-
+    
     /**
      * Logs content of message elements in DAIA response for debugging
      *

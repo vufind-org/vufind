@@ -188,7 +188,7 @@ class AjaxController extends AbstractBase
     {
         $this->writeSession();  // avoid session write timing bug
         $catalog = $this->getILS();
-        $ids = $this->params()->fromQuery('id');
+        $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
         $results = $catalog->getStatuses($ids);
 
         if (!is_array($results)) {
@@ -501,8 +501,10 @@ class AjaxController extends AbstractBase
 
         // loop through each ID check if it is saved to any of the user's lists
         $result = [];
-        $ids = $this->params()->fromQuery('id', []);
-        $sources = $this->params()->fromQuery('source', []);
+        $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id', []));
+        $sources = $this->params()->fromPost(
+            'source', $this->params()->fromQuery('source', [])
+        );
         if (!is_array($ids) || !is_array($sources)) {
             return $this->output(
                 $this->translate('Argument must be array.'),
@@ -796,7 +798,7 @@ class AjaxController extends AbstractBase
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
         foreach ($this->params()->fromQuery('hf', []) as $hf) {
-            $params->getOptions()->addHiddenFilter($hf);
+            $params->addHiddenFilter($hf);
         }
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
