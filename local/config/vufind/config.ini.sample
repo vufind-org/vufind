@@ -2,59 +2,51 @@
 ; VuFind Configuration
 ;
 
-; This section will need to be customized for your installation
-[Site]
-email           = 
-
-[Index]
-;url             = 
-
-[Mail]
-default_from = "" 
-
-[Shibboleth]
-;userattribute_1       = "Shib-Identity-Provider"
-;userattribute_value_1 = "https:\\/\\/login\\.xyz\\.fi\\/idp\\/shibboleth"
-
-;provider_id           = https://
-
-[OpenURL]
-url             = "http://"
-
-;[EZproxy]
-;host            = http://proxy.myuniversity.edu
-
 ; Inherit main configuration
 [Parent_Config]
 relative_path = ../finna/config.ini
 override_full_sections = "Languages,AlphaBrowse_Types,SearchTabs"
 
+; This section will need to be customized for your installation
+[Site]
+email =
+
+[Index]
+;url =
+
+[Mail]
+default_from = ""
+
+[Shibboleth]
+;userattribute_1 = "Shib-Identity-Provider"
+;userattribute_value_1 = "https:\\/\\/login\\.xyz\\.fi\\/idp\\/shibboleth"
+
+;provider_id = https://
+
+[OpenURL]
+url = "http://"
+
+;[EZproxy]
+;host = http://proxy.myuniversity.edu
+
 [Languages]
-en-gb       = "English"              ; British spellings
-fi          = "Finnish"
-;sv          = "Swedish"
+en-gb = "English"
+fi = "Finnish"
+;sv = "Swedish"
 
 [Feedback]
-recipient_email   = ""
-recipient_name    = ""
+recipient_email = ""
+recipient_name = ""
 
 [Security]
 HMACkey = mySuperSecretValue
 
 [Piwik]
-url = https://
-site_id = 
-token_auth = 
+site_id =
+token_auth =
 
 [bX]
 token =
 
-[IP_Addresses]
-local = 
-
 [Logging]
-;file           = /var/log/vufind2.log:alert-5,error-5,debug-5,notice
-
-
-
-
+;file = /var/log/vufind2.log:alert-5,error-5,debug-5,notice

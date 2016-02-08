@@ -86,6 +86,47 @@ class Memory
     }
 
     /**
+     * Remember a user's last search parameters.
+     *
+     * @param string $context Context of search (usually search class ID).
+     * @param array  $params  Associative array of keys/values to store.
+     *
+     * @return void
+     */
+    public function rememberLastSettings($context, $params)
+    {
+        if (!$this->active) {
+            return;
+        }
+        foreach ($params as $setting => $value) {
+            $this->session->{"params|$context|$setting"} = $value;
+        }
+    }
+
+    /**
+     * Wrapper around rememberLastSettings() to extract key values from a
+     * search Params object.
+     *
+     * @param \VuFind\Search\Base\Params $params Parameter object
+     *
+     * @return void
+     */
+    public function rememberParams(\VuFind\Search\Base\Params $params)
+    {
+        $settings = [
+            'hiddenFilters' => $params->getHiddenFilters(),
+            'limit' => $params->getLimit(),
+            'sort' => $params->getSort(),
+            'view' => $params->getView(),
+        ];
+        // Special case: RSS view should not be persisted:
+        if (strtolower($settings['view']) == 'rss') {
+            unset($settings['view']);
+        }
+        $this->rememberLastSettings($params->getSearchClassId(), $settings);
+    }
+
+    /**
      * Store the last accessed search URL in the session for future reference.
      *
      * @param string $url URL to remember
@@ -108,12 +149,40 @@ class Memory
     }
 
     /**
+     * Deprecated alias for retrieveSearch, for legacy compatibility.
+     *
+     * @deprecated
+     *
+     * @return string|null
+     */
+    public function retrieve()
+    {
+        return $this->retrieveSearch();
+    }
+
+    /**
+     * Retrieve a previous user parameter, if available. Return $default if
+     * not found.
+     *
+     * @param string $context Context of search (usually search class ID).
+     * @param string $setting Name of setting to retrieve.
+     * @param mixed  $default Default value if setting is absent.
+     *
+     * @return mixed
+     */
+    public function retrieveLastSetting($context, $setting, $default = null)
+    {
+        return isset($this->session->{"params|$context|$setting"})
+            ? $this->session->{"params|$context|$setting"} : $default;
+    }
+
+    /**
      * Retrieve last accessed search URL, if available.  Returns null if no URL
      * is available.
      *
      * @return string|null
      */
-    public function retrieve()
+    public function retrieveSearch()
     {
         return isset($this->session->last) ? $this->session->last : null;
     }

@@ -8,7 +8,7 @@
     echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
   }
   // Set up breadcrumbs:
-  $lastSearch = $this->getLastSearchLink($this->transEsc('Search'));
+  $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
   // Set main header
   if (empty($lastSearch)) {
     $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">'.$this->transEsc('Collection').'</h1></div>';
@@ -42,7 +42,7 @@
     <?
       $html = '<span class="btn btn-primary"><i class="fa fa-arrow-left"></i> <i class="fa fa-search"></i></span>';
       $html .= '<span class="back-to-search-text hidden-xs">'.$this->transEsc('Back to search results').'</span>';
-      $previousSearch = $this->getLastSearchLink($html);
+      $previousSearch = $this->searchMemory()->getLastSearchLink($html);
       if ($previousSearch !== ''):
     ?>
       <div class="back-to-search"><?=$previousSearch?></div>

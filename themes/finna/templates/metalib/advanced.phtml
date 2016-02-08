@@ -110,7 +110,7 @@
   <div class="row">
     <div class="col-sm-12 col-md-10 col-lg-9"><button type="submit" class="btn btn-primary pull-right" name="submit" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Find")?></button></div>
   </div>
-  <? $lastSort = $this->options->getLastSort(); ?>
+  <? $lastSort = $this->searchMemory()->getLastSort($this->options->getSearchClassId()); ?>
   <? if (!empty($lastSort)): ?>
   <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
   <? endif; ?>

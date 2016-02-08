@@ -7,7 +7,7 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li>';
-  $lastSearchLink = $this->getLastSearchLink($this->transEsc('Search'));
+  $lastSearchLink = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
   $this->layout()->breadcrumbs .= !empty($lastSearchLink)
     ? $lastSearchLink : $this->transEsc('Search');
   $this->layout()->breadcrumbs .= '</li> <li class="active">' . $this->transEsc('Advanced') . '</li>';
@@ -71,7 +71,10 @@
     <? endforeach; ?>
     <div class="row">
       <div class="<?=$this->layoutClass('mainbody')?>">
-        <input type="hidden" name="sort" value="relevance">
+        <? $lastSort = $this->searchMemory()->getLastSort($this->searchClassId); ?>
+        <? if (!empty($lastSort)): ?>
+          <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
+        <? endif; ?>
         <div class="clearfix">
           <h2 class="pull-left flip"><?=$this->transEsc('Advanced Search')?></h2>
           <div id="groupJoin" class="form-inline pull-right flip">

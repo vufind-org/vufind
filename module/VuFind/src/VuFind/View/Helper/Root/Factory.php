@@ -238,20 +238,6 @@ class Factory
     }
 
     /**
-     * Construct the GetLastSearchLink helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return GetLastSearchLink
-     */
-    public static function getGetLastSearchLink(ServiceManager $sm)
-    {
-        return new GetLastSearchLink(
-            $sm->getServiceLocator()->get('VuFind\Search\Memory')
-        );
-    }
-
-    /**
      * Construct the HelpText helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -440,6 +426,20 @@ class Factory
         return new SearchBox(
             $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
             $config->get('searchbox')->toArray()
+        );
+    }
+
+    /**
+     * Construct the SearchMemory helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SearchMemory
+     */
+    public static function getSearchMemory(ServiceManager $sm)
+    {
+        return new SearchMemory(
+            $sm->getServiceLocator()->get('VuFind\Search\Memory')
         );
     }
 

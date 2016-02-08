@@ -10,8 +10,8 @@
   $basicSearch = $options->getSearchAction();
   $searchHome = $basicSearch;
   $searchHome['action'] = 'Home';
-  $lastSort = $options->getLastSort();
-  $lastLimit = $options->getLastLimit();
+  $lastSort = $this->searchMemory()->getLastSort($options->getSearchClassId());
+  $lastLimit = $this->searchMemory()->getLastLimit($options->getSearchClassId());
 ?>
 <div data-role="page" id="Search-home">
   <?=$this->mobileMenu()->header(array('hideSearchLink' => true))?>

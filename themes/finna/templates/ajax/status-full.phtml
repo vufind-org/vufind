@@ -1,5 +1,6 @@
 <!-- START of: finna - ajax/status-full.phtml -->
 <?
+$locations = false;
 $holdings = $this->statusItems;
 $summary = array_pop($holdings);
 if (isset($summary['total'])) {
@@ -7,6 +8,8 @@ if (isset($summary['total'])) {
   $availableTotal = $summary['available'];
   $reservationsTotal
      = isset($summary['reservations']) ? $summary['reservations'] : null;
+  $orderedTotal
+     = isset($summary['ordered']) ? $summary['ordered'] : null;
   $locations = $summary['locations'];
 } else {
   $holdings[] = $summary;
@@ -17,7 +20,7 @@ $groupBranches = isset($this->statusItems[0]['branch']);
 $journal = isset($this->statusItems[0]['journalInfo']);
 
 if ($groupBranches) {
-  $locations = $availableLocations = $closestDueDateInLocation = [];
+  $availableLocations = $closestDueDateInLocation = [];
   $illRequestLink = false;
 
   foreach ($this->statusItems as $item) {
@@ -81,15 +84,17 @@ if ($groupBranches) {
     <span>
       <? if ($availableTotal): ?>
         <?=sprintf('%s %d %s', $this->transEsc('axiell_available'), $availableTotal, $this->transEsc($journal ? 'axiell_issues' : 'axiell_branches'));?>
-      <? elseif ($closestDueDate): ?>
+      <? elseif (!empty($closestDueDate)): ?>
         <?=sprintf('%s %s %s', $this->transEsc('status_Charged'), $this->transEsc('Due Date'), $closestDueDate);?>
+      <? elseif ($orderedTotal): ?>
+        <?=$this->transEsc('status_Ordered')?>
       <? else: ?>
         <?=$this->transEsc('status_Charged')?>
       <? endif; ?>
     </span>
     <? if ($collapseLocations): ?><i class="fa fa-arrow-right arrow"></i><? endif; ?>
-    <? if (!empty($reservations) && !$journal): ?>
-    <span class="info"><?=sprintf('%s: %d, %s: %d', $this->transEsc('Requests'), $reservations, $this->transEsc('axiell_items'), $itemsTotal);?></span>
+    <? if (!$journal): ?>
+    <span class="info"><?=sprintf('%s: %d, %s: %d', $this->transEsc('Requests'), $reservationsTotal, $this->transEsc('axiell_items'), $itemsTotal);?></span>
     <? endif; ?>
   </div>
   <div class="holdings<?=$collapseLocations ? ' collapsed' : ''?> root">

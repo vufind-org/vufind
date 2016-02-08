@@ -485,6 +485,15 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     {
         $record = clone($this->getMarcRecord());
         $record->deleteFields('520');
+        $componentIds = $this->getFieldArray('979', 'a');
+        if ($componentIds) {
+            $record->deleteFields('979');
+            $subfields = [];
+            foreach ($componentIds as $id) {
+                $subfields[] = new \File_MARC_Subfield('a', $id);
+            }
+            $record->appendField(new \File_MARC_Data_Field('979', $subfields));
+        }
         return $record->toXML();
     }
 
