@@ -110,9 +110,9 @@
   </div>
 <? endif; ?>
 
-<table class="table record-holdings-table">
-  <tr>
-    <th <? if (!empty($holdings)): ?> colspan="3" <? endif; ?> class="headers">
+<div class="table record-holdings-table">
+  <div class="row headers">
+    <div class="headers <?=(!empty($holdings)) ?  'col-sm-6 col-xs-7' : 'col-xs-12';?>">
       <? $currentSource = $this->driver->tryMethod('getDataSource'); ?>
       <? $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
       <div class="dedup-information">
@@ -129,10 +129,10 @@
           </select>
         <? endif; ?>
         </div>
-      </th>
+      </div>
     <? if (!empty($holdings)): ?>
       <? // N.B. The division to 3 + 2 cols is required for the table to be valid HTML ?>
-      <th class="headers">
+      <div class="headers reservations-container col-sm-4 col-xs-5">
         <? if ($showSummary): ?>
           <? if (!empty($reservationsTotal)): ?>
             <span class="reservations"><?=sprintf('%s: %d', $this->transEsc('Requests'), $reservationsTotal);?></span>
@@ -141,13 +141,13 @@
             <span class="total"><?=sprintf('%s: %d', ucfirst($this->transEsc('axiell_items')), $itemsTotal);?></span>
           <? endif; ?>
         <? endif; ?>
-      </th>
-      <th class="headers">
+      </div>
+      <div class="headers total-container col-sm-2 hidden-xs text-right">
         <?=$this->transEsc("shelf_location"); ?>
-      </th>
-      <? if ($journal): ?><th class="headers"></th><? endif ?>
+      </div>
+      <? if ($journal): ?><!-- <div class="headers"></div> --><? endif ?>
     <? endif; ?>
-  </tr>
+  </div>
 <? $holdingsGroup = 0; ?>
 <? foreach ($holdings as $holding): ?>
   <?
@@ -195,56 +195,49 @@
     }
   ?>
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
-  <tr class="holdings-container-heading">
-    <th colspan="2" class="location">
+  <div class="holdings-container-heading row">
+    <div class="location col-sm-6 col-xs-6">
       <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>"></i> <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
-    </th>
-    <th colspan="2" class="holdings-details"><?=$holdingSummary ?></th>
-    <th class="location-link">
+    </div>
+    <div class="holdings-details col-sm-3 col-xs-6"><?=$holdingSummary ?></div>
+    <div class="location-link col-sm-3 col-xs-12 text-right">
       <? foreach ($callNos as $callNo): ?>
-        <?=$this->escapeHtml($callNo)?><br />
+      <div class="location-link-text"><span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc("shelf_location"); ?>: </span><?=$this->escapeHtml($callNo)?></div>
       <? endforeach; ?>
-    </th>
-    <? if ($journal): ?>
-    <th>
       <? if ($holdsAllowed && isset($holdLinksLocation[$holding['location']])): ?>
       <a class="expandedCheckRequest inlineblock modal-link placehold btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($holdLinksLocation[$holding['location']])?>" title="<?=$this->transEsc("request_place_text")?>"><?=$this->transEsc("request_place_text")?></a>
-      <? else: ?>
-      &nbsp;
-      <? endif ?>
-    </th>
-    <? endif; ?>
-  </tr>
+      <? endif; ?>
+    </div>
+  </div>
   <? endif; ?>
   <? if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
-    <tr class="copy-details <?=$holdingsDetails?>">
-      <? // Translation for summary is a special case for backwards-compatibility ?>
-      <td class="copy-title" colspan="2"><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
-      <td colspan="3">
-        <? foreach ($textFields as $current): ?>
-          <?=$this->escapeHtml($current)?><br/>
-        <? endforeach; ?>
-      </td>
-    </tr>
+  <div class="copy-details <?=$holdingsDetails?> row">
+    <? // Translation for summary is a special case for backwards-compatibility ?>
+    <div class="col-sm-3 col-xs-6"><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</div>
+    <div class="col-sm-3 col-xs-6">
+    <? foreach ($textFields as $current): ?>
+      <?=$this->escapeHtml($current)?><br/>
+    <? endforeach; ?>
+    </div>
+  </div>
   <? endforeach; endif; ?>
   <? foreach ($holding['items'] as $rowNum => $row): ?>
     <? $check = (isset($row['check']) && $row['check'] && $holdsAllowed); ?>
     <? $checkStorageRetrievalRequest = (isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest']); ?>
     <? $checkILLRequest = (isset($row['checkILLRequest']) && $row['checkILLRequest']); ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
-      <tr vocab="http://schema.org/" typeof="Offer" class="copy-details <?=$holdingsDetails?>">
+      <div vocab="http://schema.org/" typeof="Offer" class="copy-details <?=$holdingsDetails?> row">
         <? if (isset($row['branch']) && isset($row['department'])): ?>
-        <td class="copy-title">
+        <div class="copy-title col-sm-6">
           <span class="branch"><?=$row['branch']?></span><span class="department">, <?=$row['department']?></span>
-        </td>
+        </div>
         <? else: ?>
-        <td class="copy-title">
-          <?=$rowNum == 0 ? $this->transEsc('Copies') : ''?>
+        <div class="copy-title col-sm-6">
           <? // $row['number'] contains item number, and possible enumeration in parenthesis. We only display the part in parenthesis: ?>
-          <td class="copy-number"><?=preg_match('/\d+ \((.+)\)/', $row['number'], $matches) ? $this->escapeHtml($matches[1]) : $this->transEsc("Copy") ?></td>
-        </td>
+          <span class="copy-number"><?=preg_match('/\d+ \((.+)\)/', $row['number'], $matches) ? $this->escapeHtml($matches[1]) : $this->transEsc("Copy") ?></span>
+        </div>
         <? endif; ?>
-        <td class="copy-info" colspan="3">
+        <div class="copy-info <?=(isset($row['availabilityInfo'])) ? 'col-sm-3' : 'col-sm-6' ;?>">
           <? if (isset($row['reserve']) && $row['reserve'] == "Y"): ?>
             <link property="availability" href="http://schema.org/InStoreOnly" />
             <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
@@ -298,39 +291,39 @@
           <? /* Declare that the item is to be borrowed, not for sale */ ?>
             <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut" />
             <link property="itemOffered" href="#record" />
-        </td>
+        </div>
         <? if (isset($row['availabilityInfo'])): ?>
-        <td class="copy-available"<?=$journal ? ' colspan="2"' : ''?>>
+        <div class="copy-available col-sm-3">
           <? if (!empty($row['availabilityInfo']['ordered'])): ?>
             <div class="ordered">
               <?=$this->translate('status_Ordered')?>: <?=$row['availabilityInfo']['ordered']?>
             </div>
           <? endif; ?>
           <div class="available"><?=$this->translate('Available items')?>: <?=$row['availabilityInfo']['available']?> / <?=$row['availabilityInfo']['total']?></div>
-        </td>
+        </div>
         <? endif; ?>
-      </tr>
+      </div>
     <? endif; ?>
   <? endforeach; ?>
   <? if (!empty($holding['purchase_history'])): ?>
-    <tr>
-      <th><?=$this->transEsc("Most Recent Received Issues")?>:</th>
-      <td colspan="4">
+    <div class="row">
+      <div class="col-xs-4"><?=$this->transEsc("Most Recent Received Issues")?>:</div>
+      <div class="col-sm-8">
         <? foreach ($holding['purchase_history'] as $current): ?>
           <?=$this->escapeHtml($current['issue'])?><br/>
         <? endforeach; ?>
-      </td>
-    </tr>
+      </div>
+    </div>
   <? endif; ?>
 <? endforeach; ?>
 <? if (empty($holdings)): ?>
-  <tr>
-    <td>
-      <?=$this->transEsc('No Holdings Available'); ?>
-    </td>
-  </tr>
+  <div class="row">
+    <div class="col-xs-12">
+      <h5><?=$this->transEsc('No Holdings Available'); ?></h5>
+    </div>
+  </div>
 <? endif; ?>
-</table>
+</div>
 
 <? $history = $this->driver->getRealTimeHistory(); ?>
 <? if (is_array($history) && !empty($history)): ?>
