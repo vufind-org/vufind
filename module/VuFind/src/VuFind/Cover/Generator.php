@@ -359,7 +359,7 @@ class Generator
                 // Print black with white border
                 $this->drawText(
                     $im,
-                    $pline,
+                    rtrim($pline, ' '),
                     3,
                     $this->settings->topPadding + $lineHeight * $lineCount,
                     $this->settings->titleFont,
@@ -367,7 +367,7 @@ class Generator
                     $this->titleMColor,
                     $this->titleSColor
                 );
-                $line = $text . " ";
+                $line = $text . ' ';
                 $lineCount++;
             }
             $i++;
@@ -375,7 +375,7 @@ class Generator
         // Print the last words
         $this->drawText(
             $im,
-            $line,
+            rtrim($line, ' '),
             3,
             $this->settings->topPadding + $lineHeight * $lineCount,
             $this->settings->titleFont,
