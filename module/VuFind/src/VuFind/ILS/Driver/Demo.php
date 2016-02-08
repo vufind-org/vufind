@@ -289,10 +289,24 @@ class Demo extends AbstractBase
             'ILLRequest'   => 'auto',
             'addILLRequestLink' => $patron
                 ? rand() % 10 == 0 ? 'block' : 'check'
-                : false
+                : false,
+            'services'     => $status == 'Available' ? $this->getFakeServices() : []
         ];
     }
 
+    protected function getFakeServices()
+    {
+        $services = ['loan', 'presence'];
+        $keys = array_rand($services, (rand() % count($services))+1);
+        $keys = is_array($keys) ? $keys : [$keys];
+        $fakeServices = [];
+
+        foreach ($keys as $key) {
+            $fakeServices[] = $services[$key];
+        }
+
+        return $fakeServices;
+    }
     /**
      * Generate an associative array containing some sort of ID (for cover
      * generation).
