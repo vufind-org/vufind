@@ -5,7 +5,6 @@
  * this script, you will need to activate it in import/marc_local.properties before
  * it will be applied during indexing.
  */
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.marc4j.marc.Record;
 import org.solrmarc.index.SolrIndexer;
