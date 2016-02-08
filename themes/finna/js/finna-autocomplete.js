@@ -16,27 +16,31 @@ finna.autocomplete = (function() {
                         return;
                     }
 
+                    var data = {
+                        q:query,
+                        method:'getACSuggestions',
+                        searcher:searcher['searcher']
+                    }
+
+                    var form = $(op).closest('.searchForm');
                     var hiddenFilters = [];
-                    $(op).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function() {
+                    form.find('input[name="hiddenFilters[]"]').each(function() {
                         hiddenFilters.push($(this).val());
                     });
                     if (getPreserveFiltersMode()) {
                         // Include applied filters as hidden filters
-                        $(op).closest('.searchForm')
+                        form
                             .find('.applied-filter')
-                            .not("[name='dfApplied']").not("[name='type']")
+                            .not("[name='dfApplied']").not("[name='type']").not('.daterange')
                             .each(function() {
                                 hiddenFilters.push($(this).val());
                             });
+                        var daterange = form.find('.applied-filter.daterange');
+                        if (daterange.length) {
+                            data[daterange.attr('name')] = daterange.val();
+                        }
                     }
-
-                    var form = $(op).closest('.searchForm');
-                    var data = {
-                        q:query,
-                        method:'getACSuggestions',
-                        searcher:searcher['searcher'],
-                        hiddenFilters:hiddenFilters
-                    };
+                    data.hiddenFilters = hiddenFilters;
 
                     if (form.find(".select-type").length) {
                         // Multiple search handlers

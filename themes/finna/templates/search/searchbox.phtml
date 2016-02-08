@@ -181,7 +181,7 @@
         echo '<input type="hidden" name="sort" value="' . ($defaultFilterState ? $this->escapeHtmlAttr($lastSort) : '') . '" data-value="' . $this->escapeHtmlAttr($lastSort) . '" />';
       }
       if ($daterange && isset($daterange['field']) && isset($daterange['type'])) {
-        echo '<input class="hidden applied-filter" type="checkbox"' . $defaultFilterState . ' name="' . $daterange['field'] . '_type" value="' . $this->escapeHtmlAttr($daterange['type']) . '" />';
+        echo '<input class="hidden applied-filter daterange" type="checkbox"' . $defaultFilterState . ' name="' . $daterange['field'] . '_type" value="' . $this->escapeHtmlAttr($daterange['type']) . '" />';
       }
       if ($metalibSet) {
         echo '<input class="hidden applied-filter" type="checkbox"' . $defaultFilterState . ' name="set" value="' . $this->escapeHtmlAttr($metalibSet) . '" />';

@@ -93,6 +93,13 @@ class Solr extends \VuFind\Autocomplete\Solr
     protected $searchTab = null;
 
     /**
+     * Current request
+     *
+     * @var \Zend\Stdlib\Parameters
+     */
+    protected $request = null;
+
+    /**
      * Constructor
      *
      * @param PluginManager       $results      Results plugin manager
@@ -151,6 +158,8 @@ class Solr extends \VuFind\Autocomplete\Solr
     public function getSuggestions($query)
     {
         $params = $this->searchObject->getParams();
+        $this->request->set('filter', $this->request->get('hiddenFilters'));
+        $params->initSpatialDateRangeFilter($this->request);
         $this->searchObject->getOptions()->disableHighlighting();
 
         if (!$this->facetingDisabled) {
@@ -211,6 +220,9 @@ class Solr extends \VuFind\Autocomplete\Solr
             foreach ($this->hierarchicalFacets as $facet) {
                 $params->addFacet($facet, null, false);
             }
+            $this->searchObject->getParams()->initSpatialDateRangeFilter(
+                $this->request
+            );
             $hierachicalFacets = $this->searchObject->getFullFieldFacets(
                 array_intersect($this->hierarchicalFacets, $allFacets),
                 false, -1, 'count'
@@ -253,6 +265,18 @@ class Solr extends \VuFind\Autocomplete\Solr
     public function setSearchTab($tab)
     {
         $this->searchTab = $tab;
+    }
+
+    /**
+     * Set current request.
+     *
+     * @param \Zend\Stdlib\Parameters $request Request
+     *
+     * @return void
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
     }
 
     /**
