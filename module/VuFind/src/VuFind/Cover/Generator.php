@@ -48,20 +48,20 @@ class Generator
     /**
      * Reserved title's main color
      */
-    protected $titlemcolor;
+    protected $titleMColor;
     /**
      * Reserved title's secondary color
      */
-    protected $titlescolor;
+    protected $titleSColor;
 
     /**
      * Reserved author's main color
      */
-    protected $authormcolor;
+    protected $authorMColor;
     /**
      * Reserved author's secondary color
      */
-    protected $authorscolor;
+    protected $authorSColor;
 
     /**
      * Reserved base for image
@@ -90,10 +90,10 @@ class Generator
             'titleFont'    => 'DroidSerif-Bold.ttf',
             'topPadding'   => 19,
             'wrapWidth'    => 80,
-            'titlemcolor'  => 'black',
-            'titlescolor'  => 'none',
-            'authormcolor' => 'white',
-            'authorscolor' => 'black'
+            'titleMColor'  => 'black',
+            'titleSColor'  => 'none',
+            'authorMColor' => 'white',
+            'authorSColor' => 'black'
         ];
         foreach ($settings as $i => $setting) {
             $default[$i] = $setting;
@@ -107,10 +107,10 @@ class Generator
             throw new \Exception("Cannot Initialize new GD image stream");
         }
         // Get all colors
-        $this->titlemcolor = $this->getColor($this->settings->titlemcolor);
-        $this->titlescolor = $this->getColor($this->settings->titlescolor);
-        $this->authormcolor = $this->getColor($this->settings->authormcolor);
-        $this->authorscolor = $this->getColor($this->settings->authorscolor);
+        $this->titleMColor = $this->getColor($this->settings->titleMColor);
+        $this->titleSColor = $this->getColor($this->settings->titleSColor);
+        $this->authorMColor = $this->getColor($this->settings->authorMColor);
+        $this->authorSColor = $this->getColor($this->settings->authorSColor);
     }
 
     /**
@@ -364,8 +364,8 @@ class Generator
                     $this->settings->topPadding + $lineHeight * $lineCount,
                     $this->settings->titleFont,
                     $this->settings->fontSize,
-                    $this->titlemcolor,
-                    $this->titlescolor
+                    $this->titleMColor,
+                    $this->titleSColor
                 );
                 $line = $text . " ";
                 $lineCount++;
@@ -380,8 +380,8 @@ class Generator
             $this->settings->topPadding + $lineHeight * $lineCount,
             $this->settings->titleFont,
             $this->settings->fontSize,
-            $this->titlemcolor,
-            $this->titlescolor
+            $this->titleMColor,
+            $this->titleSColor
         );
         // Add ellipses if we've truncated
         if ($i < count($words) - 1) {
@@ -393,8 +393,8 @@ class Generator
                 + $this->settings->maxLines * $lineHeight,
                 $this->settings->titleFont,
                 $this->settings->fontSize + 1,
-                $this->titlemcolor,
-                $this->titlescolor
+                $this->titleMColor,
+                $this->titleSColor
             );
         }
     }
@@ -434,8 +434,8 @@ class Generator
             $this->settings->size - 3,
             $this->settings->authorFont,
             $fontSize,
-            $this->authormcolor,
-            $this->authorscolor,
+            $this->authorMColor,
+            $this->authorSColor,
             $alignment
         );
     }
