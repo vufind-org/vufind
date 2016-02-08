@@ -46,13 +46,27 @@ class Generator
      */
     protected $settings = [];
     /**
-     * Reserved color
+     * Reserved title's main color
      */
-    protected $black;
+    protected $titlemcolor;
     /**
-     * Reserved color
+     * Reserved title's secondary color
      */
-    protected $white;
+    protected $titlescolor;
+
+    /**
+     * Reserved author's main color
+     */
+    protected $authormcolor;
+    /**
+     * Reserved author's secondary color
+     */
+    protected $authorscolor;
+
+    /**
+     * Reserved base for image
+     */
+    protected $im;
 
     /**
      * Constructor
@@ -76,6 +90,10 @@ class Generator
             'titleFont'    => 'DroidSerif-Bold.ttf',
             'topPadding'   => 19,
             'wrapWidth'    => 80,
+            'titlemcolor'  => 'black',
+            'titlescolor'  => 'none',
+            'authormcolor' => 'white',
+            'authorscolor' => 'black'
         ];
         foreach ($settings as $i => $setting) {
             $default[$i] = $setting;
@@ -83,10 +101,67 @@ class Generator
         $default['authorFont'] = $this->fontPath($default['authorFont']);
         $default['titleFont']  = $this->fontPath($default['titleFont']);
         $this->settings = (object) $default;
+
+        // Create image
+        if (!($this->im = imagecreate($this->settings->size, $this->settings->size))) {
+            throw new \Exception("Cannot Initialize new GD image stream");
+        }
+        // Get all colors
+        $this->titlemcolor = $this->getColor($this->settings->titlemcolor);
+        $this->titlescolor = $this->getColor($this->settings->titlescolor);
+        $this->authormcolor = $this->getColor($this->settings->authormcolor);
+        $this->authorscolor = $this->getColor($this->settings->authorscolor);
     }
 
     /**
-     * Generates a dynamic cover image from elements of the book
+    * Check and allocates color
+    * @param string $color      Legal color name from HTML4
+    *
+    * @return allocated color
+    */
+    private function getColor($color){
+        switch (strtolower($color)){
+          case 'black':
+            return imagecolorallocate($this->im, 0, 0, 0);
+          case 'silver':
+            return imagecolorallocate($this->im, 192, 192, 192);
+          case 'gray':
+            return imagecolorallocate($this->im, 128, 128, 128);
+          case 'white':
+            return imagecolorallocate($this->im, 255, 255, 255);
+          case 'maroon':
+            return imagecolorallocate($this->im, 128, 0, 0);
+          case 'red':
+            return imagecolorallocate($this->im, 255, 0, 0);
+          case 'purple':
+            return imagecolorallocate($this->im, 128, 0, 128);
+          case 'fuchsia':
+            return imagecolorallocate($this->im, 255, 0, 255);
+          case 'green':
+            return imagecolorallocate($this->im, 0, 128, 0);
+          case 'lime':
+            return imagecolorallocate($this->im, 0, 255, 0);
+          case 'olive':
+            return imagecolorallocate($this->im, 128, 128, 0);
+          case 'yellow':
+            return imagecolorallocate($this->im, 255, 255, 0);
+          case 'navy':
+            return imagecolorallocate($this->im, 0, 0, 128);
+          case 'blue':
+            return imagecolorallocate($this->im, 0, 0, 255);
+          case 'teal':
+            return imagecolorallocate($this->im, 0, 128, 128);
+          case 'aqua':
+            return imagecolorallocate($this->im, 0, 255, 255);
+          case 'none':
+            return 'null';
+          default:
+            return imagecolorallocate($this->im, 0, 0, 0);
+        }
+    }
+
+    /**
+     * Generates a dynamic cover image from elements of the item
      *
      * @param string $title      Title of the book
      * @param string $author     Author of the book
@@ -116,29 +191,20 @@ class Generator
      */
     protected function generateSolid($title, $author, $callnumber)
     {
-        $half = $this->settings->size / 2;
         $box  = $this->settings->size / 8;
-        // Create image
-        if (!($im = imagecreate($this->settings->size, $this->settings->size))) {
-            throw new \Exception("Cannot Initialize new GD image stream");
-        }
-        // this->white backdrop
-        $this->white = imagecolorallocate($im, 255, 255, 255);
-        // this->black
-        $this->black = imagecolorallocate($im, 0, 0, 0);
 
         // Generate seed from callnumber, title back up
         $seed = $this->createSeed($title, $callnumber);
         // Number to color, hsb to control saturation and lightness
         $color = $this->makeHSBColor(
-            $im,
+            $this->im,
             $seed % 256,
             $this->settings->saturation,
             $this->settings->lightness
         );
         // Fill solid color
         imagefilledrectangle(
-            $im,
+            $this->im,
             0,
             0,
             $this->settings->size,
@@ -146,17 +212,17 @@ class Generator
             $color
         );
 
-        $this->drawTitle($im, $title, $box);
-        $this->drawAuthor($im, $author);
+        $this->drawTitle($this->im, $title, $box);
+        $this->drawAuthor($this->im, $author);
 
         // Output png CHECK THE PARAM
         ob_start();
-        imagepng($im);
+        imagepng($this->im);
         $img = ob_get_contents();
         ob_end_clean();
 
         // Clear memory
-        imagedestroy($im);
+        imagedestroy($this->im);
         // GTFO
         return $img;
     }
@@ -175,15 +241,6 @@ class Generator
         // Set up common variables
         $half = $this->settings->size / 2;
         $box  = $this->settings->size / 8;
-
-        // Create image
-        if (!($im = imagecreate($this->settings->size, $this->settings->size))) {
-            throw new \Exception("Cannot Initialize new GD image stream");
-        }
-        // this->white backdrop
-        $this->white = imagecolorallocate($im, 255, 255, 255);
-        // this->black
-        $this->black = imagecolorallocate($im, 0, 0, 0);
 
         // Generate seed from callnumber, title back up
         $seed = $this->createSeed($title, $callnumber);
@@ -307,8 +364,8 @@ class Generator
                     $this->settings->topPadding + $lineHeight * $lineCount,
                     $this->settings->titleFont,
                     $this->settings->fontSize,
-                    $this->black,
-                    $this->white
+                    $this->titlemcolor,
+                    $this->titlescolor
                 );
                 $line = $text . " ";
                 $lineCount++;
@@ -323,8 +380,8 @@ class Generator
             $this->settings->topPadding + $lineHeight * $lineCount,
             $this->settings->titleFont,
             $this->settings->fontSize,
-            $this->black,
-            $this->white
+            $this->titlemcolor,
+            $this->titlescolor
         );
         // Add ellipses if we've truncated
         if ($i < count($words) - 1) {
@@ -336,8 +393,8 @@ class Generator
                 + $this->settings->maxLines * $lineHeight,
                 $this->settings->titleFont,
                 $this->settings->fontSize + 1,
-                $this->black,
-                $this->white
+                $this->titlemcolor,
+                $this->titlescolor
             );
         }
     }
@@ -377,8 +434,8 @@ class Generator
             $this->settings->size - 3,
             $this->settings->authorFont,
             $fontSize,
-            $this->white,
-            $this->black,
+            $this->authormcolor,
+            $this->authorscolor,
             $alignment
         );
     }
