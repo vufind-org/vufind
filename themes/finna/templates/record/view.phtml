@@ -53,15 +53,15 @@
       <ul class="pager hidden-print" id="view-pager">
       <? if ($this->scrollData['previousRecord']): ?>
         <li class="pager-previous-record">
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>#searchForm" title="<?=$this->transEsc('Previous Record')?>" rel="nofollow"><i class="fa fa-arrow-left"></i></a>
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Record')?>" rel="nofollow"><i class="fa fa-arrow-left"></i></a>
         </li>
         <? else: ?>
-        <li class="disabled" title="<?=$this->transEsc('First Record')?>"><a href="#searchform"><i class="fa fa-arrow-left"></i></a></li>
+        <li class="disabled" title="<?=$this->transEsc('First Record')?>"><a href=""><i class="fa fa-arrow-left"></i></a></li>
       <? endif; ?>
         <li class="pager-text"><?=$this->localizedNumber($this->scrollData['currentPosition']) . ' / ' . $this->localizedNumber($this->scrollData['resultTotal']) ?></li>
       <? if ($this->scrollData['nextRecord']): ?>
         <li class="pager-next-record">
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>#searchForm" title="<?=$this->transEsc('Next Record')?>" rel="nofollow"><i class="fa fa-arrow-right"></i></a>
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Record')?>" rel="nofollow"><i class="fa fa-arrow-right"></i></a>
         </li>
       <? else: ?>
         <li class="disabled" title="<?=$this->transEsc('Last Record')?>"><a href="#"><i class="fa fa-arrow-right"></i></a></li>
@@ -110,7 +110,7 @@
               if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
             ?>
             <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-            <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?></a>
+            <a class="<?=strtolower($tab) ?><?= strtolower($tab) == details ? ' hidden-xs' : '';?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?><? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?></a>
           </li>
           <? endforeach; ?>
         </ul>
