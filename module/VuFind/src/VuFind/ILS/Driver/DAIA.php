@@ -944,7 +944,7 @@ class DAIA extends AbstractBase implements
                 if (!isset($services['unavailable'])
                     || !in_array($service, $services['unavailable'])
                 ) {
-                    array_push($availableServices, $service);
+                    $availableServices[] = $service;
                 }
             }
         }

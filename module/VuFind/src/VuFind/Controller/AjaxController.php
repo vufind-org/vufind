@@ -360,9 +360,7 @@ class AjaxController extends AbstractBase
             $locations[] = $info['location'];
             // Store all available services
             if (isset($info['services'])) {
-                foreach ($info['services'] as $service) {
-                    array_push($services, $service);
-                }
+                array_merge($services, $info['services']);
             }
         }
 
