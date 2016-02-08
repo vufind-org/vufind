@@ -191,6 +191,25 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Generate fake services.
+     *
+     * @return array
+     */
+    protected function getFakeServices()
+    {
+        $services = ['loan', 'presence'];
+        $keys = array_rand($services, (rand() % count($services)) + 1);
+        $keys = is_array($keys) ? $keys : [$keys];
+        $fakeServices = [];
+
+        foreach ($keys as $key) {
+            $fakeServices[] = $services[$key];
+        }
+
+        return $fakeServices;
+    }
+
+    /**
      * Generate a fake status message.
      *
      * @return string
@@ -294,19 +313,6 @@ class Demo extends AbstractBase
         ];
     }
 
-    protected function getFakeServices()
-    {
-        $services = ['loan', 'presence'];
-        $keys = array_rand($services, (rand() % count($services))+1);
-        $keys = is_array($keys) ? $keys : [$keys];
-        $fakeServices = [];
-
-        foreach ($keys as $key) {
-            $fakeServices[] = $services[$key];
-        }
-
-        return $fakeServices;
-    }
     /**
      * Generate an associative array containing some sort of ID (for cover
      * generation).
