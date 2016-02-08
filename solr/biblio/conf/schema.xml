@@ -113,17 +113,17 @@
    <field name="spelling" type="textSpell" indexed="true" stored="true" multiValued="true"/>
    <field name="spellingShingle" type="textSpellShingle" indexed="true" stored="true" multiValued="true"/>
    <!-- Institutional Fields -->
-   <field name="institution" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="collection" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="building" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="institution" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
+   <field name="collection" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
+   <field name="building" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
    <!-- Generic Fields -->
-   <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="format" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="language" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
+   <field name="format" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
    <field name="author" type="textProper" indexed="true" stored="true" termVectors="true"/>
    <field name="author-letter" type="string" indexed="true" stored="true"/>
-   <field name="authorStr" type="textFacet" indexed="true" stored="false"/>
+   <field name="authorStr" type="string" docValues="true" indexed="true" stored="false"/>
    <field name="title" type="text" indexed="true" stored="true"/>
-   <field name="title_sort" type="string" indexed="true" stored="true"/>
+   <field name="title_sort" type="string" docValues="true" indexed="true" stored="true"/>
    <field name="title_sub" type="text" indexed="true" stored="true"/>
    <field name="title_short" type="text" indexed="true" stored="true"/>
    <field name="title_full" type="text" indexed="true" stored="true"/>
@@ -132,9 +132,9 @@
    <field name="title_auth" type="text" indexed="true" stored="true"/>
    <field name="physical" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="publisher" type="textProper" indexed="true" stored="true" multiValued="true"/>
-   <field name="publisherStr" type="string" indexed="true" stored="false" multiValued="true"/>
+   <field name="publisherStr" type="string" docValues="true" indexed="true" stored="false" multiValued="true"/>
    <field name="publishDate" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="publishDateSort" type="string" indexed="true" stored="false"/>
+   <field name="publishDateSort" type="string" docValues="true" indexed="true" stored="false"/>
    <field name="edition" type="string" indexed="true" stored="true"/>
    <field name="description" type="text" indexed="true" stored="true"/>
    <field name="contents" type="text" indexed="true" stored="true" multiValued="true"/>
@@ -146,17 +146,17 @@
    <field name="isbn" type="isn" indexed="true" stored="true" multiValued="true"/>
    <field name="issn" type="isn" indexed="true" stored="true" multiValued="true"/>
    <field name="oclc_num" type="string" indexed="true" stored="true" multiValued="true" />
-   <field name="callnumber-first" type="string" indexed="true" stored="true"/>
-   <field name="callnumber-subject" type="string" indexed="true" stored="true"/>
+   <field name="callnumber-first" type="string" docValues="true" indexed="true" stored="true"/>
+   <field name="callnumber-subject" type="string" docValues="true" indexed="true" stored="true"/>
    <field name="callnumber-label" type="string" indexed="true" stored="true"/>
-   <field name="callnumber-sort" type="string" indexed="true" stored="true"/>
+   <field name="callnumber-sort" type="string" docValues="true" indexed="true" stored="true"/>
    <field name="callnumber-raw" type="string" indexed="true" stored="true" multiValued="true" />
    <field name="callnumber-search" type="callnumberSearch" indexed="true" stored="true" multiValued="true" />
-   <field name="dewey-hundreds" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="dewey-tens" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="dewey-ones" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="dewey-hundreds" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
+   <field name="dewey-tens" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
+   <field name="dewey-ones" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-full" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="dewey-sort" type="string" indexed="true" stored="true" />
+   <field name="dewey-sort" type="string" docValues="true" indexed="true" stored="true" />
    <field name="dewey-raw" type="string" indexed="true" stored="true" multiValued="true" />
    <field name="dewey-search" type="callnumberSearch" indexed="true" stored="true" multiValued="true" />
    <field name="author2" type="textProper" indexed="true" stored="true" multiValued="true"/>
@@ -173,17 +173,17 @@
    <field name="series2" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="topic" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="topic_unstemmed" type="textProper" indexed="true" stored="false" multiValued="true"/>
-   <field name="topic_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+   <field name="topic_facet" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
    <field name="topic_browse" type="string" indexed="true" stored="false" multiValued="true"/>
    <field name="author_browse" type="string" indexed="true" stored="false" multiValued="true"/>
    <field name="genre" type="text" indexed="true" stored="true" multiValued="true"/>
-   <field name="genre_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+   <field name="genre_facet" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
    <field name="geographic" type="text" indexed="true" stored="true" multiValued="true"/>
-   <field name="geographic_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+   <field name="geographic_facet" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
    <field name="era" type="text" indexed="true" stored="true" multiValued="true"/>
-   <field name="era_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+   <field name="era_facet" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
    <field name="illustrated" type="string" indexed="true" stored="true" multiValued="false"/>
-   <field name="long_lat" type="textFacet" indexed="true" stored="true" multiValued="false"/>
+   <field name="long_lat" type="string" indexed="true" stored="true" multiValued="false"/>
    <!-- Container fields (i.e. for describing journal containing an article) -->
    <field name="container_title" type="text" indexed="true" stored="true"/>
    <field name="container_volume" type="text" indexed="true" stored="true"/>
@@ -211,8 +211,8 @@
    <dynamicField name="*_date_mv" type="date" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_isn" type="isn" indexed="true" stored="true"/>
    <dynamicField name="*_isn_mv" type="isn" indexed="true" stored="true" multiValued="true"/>
-   <dynamicField name="*_str" type="string" indexed="true" stored="true"/>
-   <dynamicField name="*_str_mv" type="string" indexed="true" stored="true" multiValued="true"/>
+   <dynamicField name="*_str" type="string" docValues="true" indexed="true" stored="true"/>
+   <dynamicField name="*_str_mv" type="string" docValues="true" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_txt" type="text" indexed="true" stored="true"/>
    <dynamicField name="*_txt_mv" type="text" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_txtF" type="textFacet" indexed="true" stored="true"/>
@@ -236,7 +236,6 @@
  <!-- CopyFields for Faceting on Text -->
  <copyField source="title_full" dest="title_fullStr"/>
  <copyField source="title_full" dest="title_full_unstemmed"/>
- <copyField source="author" dest="authorStr"/>
  <copyField source="author2" dest="author2Str"/>
  <copyField source="author_additional" dest="author_additionalStr"/>
  <copyField source="publisher" dest="publisherStr"/>

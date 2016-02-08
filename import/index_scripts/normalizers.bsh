@@ -1,0 +1,37 @@
+/**
+ * Custom normalization functions.
+ *
+ * This can be used to override built-in SolrMarc custom functions.  If you change
+ * this script, you will need to activate it in import/marc_local.properties before
+ * it will be applied during indexing.
+ */
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.marc4j.marc.Record;
+import org.solrmarc.index.SolrIndexer;
+
+/**
+ * Normalize trailing punctuation. This mimics the functionality built into VuFind's
+ * textFacet field type, so that you can get equivalent values when indexing into
+ * a string field. (Useful for docValues support).
+ *
+ * Can return null
+ *
+ * @param record current MARC record
+ * @param fieldSpec which MARC fields / subfields need to be analyzed
+ * @return Set containing normalized values
+ */
+public Set normalizeTrailingPunctuation(Record record, String fieldSpec) {
+    // Initialize our return value:
+    Set result = new LinkedHashSet();
+
+    // Loop through the specified MARC fields:
+    Set input = SolrIndexer.getFieldList(record, fieldSpec);
+    Pattern pattern = Pattern.compile("(?<!\b[A-Z])[.\\s]*$");
+    for (String current: input) {
+        result.add(pattern.matcher(current).replaceAll(""));
+    }
+
+    // If we found no matches, return null; otherwise, return our results:
+    return result.isEmpty() ? null : result;
+}
