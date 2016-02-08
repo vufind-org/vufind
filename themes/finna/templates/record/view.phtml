@@ -110,7 +110,7 @@
               if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
             ?>
             <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-            <a class="<?=strtolower($tab) ?><?= strtolower($tab) == details ? ' hidden-xs' : '';?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?><? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?></a>
+            <a class="<?=strtolower($tab) ?><?=(strtolower($tab) == 'details') ? ' hidden-xs' : '';?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?><? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?></a>
           </li>
           <? endforeach; ?>
         </ul>
