@@ -31,7 +31,7 @@ finna.autocomplete = (function() {
                         // Include applied filters as hidden filters
                         form
                             .find('.applied-filter')
-                            .not("[name='dfApplied']").not("[name='type']").not('.daterange')
+                            .not("[name='dfApplied']").not("[name='type']").not('.daterange, .saved-search')
                             .each(function() {
                                 hiddenFilters.push($(this).val());
                             });

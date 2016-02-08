@@ -155,7 +155,7 @@
         <? endforeach; ?>
         <? if (!empty($this->savedSearches)): ?>
           <? foreach ($this->savedSearches as $searchClass => $searchId): ?>
-            <input class="applied-filter" id="search-<?=$this->escapeHtmlAttr($searchClass)?>" type="checkbox"<?=$defaultFilterState?> name="search[]" value="<?=$this->escapeHtmlAttr($searchClass . ':' . $searchId)?>" />
+            <input class="applied-filter saved-search" id="search-<?=$this->escapeHtmlAttr($searchClass)?>" type="checkbox"<?=$defaultFilterState?> name="search[]" value="<?=$this->escapeHtmlAttr($searchClass . ':' . $searchId)?>" />
             <label for="<?=$this->escapeHtmlAttr($searchClass)?>"><?=$this->escapeHtml($searchId)?></label>
           <? endforeach; ?>
         <? endif; ?>
