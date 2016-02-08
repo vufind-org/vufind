@@ -488,12 +488,12 @@ class Generator
     protected function drawText($im, $text, $x, $y,
         $font, $fontSize, $mcolor, $scolor = false, $align = null
     ) {
-        $txtWidth = $this->textWidth(
+        $textWidth = $this->textWidth(
             $text,
-            $this->settings->titleFont,
+            $font,
             $this->settings->fontSize
         );
-        if ($txtWidth > $this->settings->size) {
+        if ($textWidth > $this->settings->size) {
             $align = 'left';
             $x = 0;
         }
@@ -501,14 +501,10 @@ class Generator
             $align = $this->settings->textAlign;
         }
         if ($align == 'center') {
-            $p = imagettfbbox($fontSize, 0, $this->settings->titleFont, $text);
-            $txtWidth = $p[2] - $p[0] - 4;
-            $x = ($this->settings->size - $txtWidth) / 2;
+            $x = ($this->settings->size - $textWidth) / 2;
         }
         if ($align == 'right') {
-            $p = imagettfbbox($fontSize, 0, $this->settings->titleFont, $text);
-            $txtWidth = $p[2] - $p[0] - 4;
-            $x = $this->settings->size - $txtWidth - $x;
+            $x = $this->settings->size - $textWidth - $x;
         }
 
         // Generate 5 lines of text, 4 offset in a border color
