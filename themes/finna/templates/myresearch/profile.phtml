@@ -84,6 +84,7 @@
       <form id="profile_library_form" class="inline" method="post">
         <div class="col-xs-12">
           <span class="myresearch-profile-middle-header"><?=$this->transEsc('Personal details maintained by the library') ?></span>
+          <? if (!$this->translationEmpty('contact_details_instructions')): ?><p class="no-content-message"><?=$this->translate('contact_details_instructions')?></p><? endif; ?>
         </div>
         <? if (isset($this->profile['firstname'])): ?>
           <div class="col-sm-4 profile-title"><?=$this->transEsc('First Name') ?>:</div>
