@@ -360,7 +360,7 @@ class AjaxController extends AbstractBase
             $locations[] = $info['location'];
             // Store all available services
             if (isset($info['services'])) {
-                array_merge($services, $info['services']);
+                $services = array_merge($services, $info['services']);
             }
         }
 
@@ -375,11 +375,17 @@ class AjaxController extends AbstractBase
         );
 
         if (!empty($services)) {
-            // Dedup available services
+            // Normalize, dedup and sort available services
+            $normalize = function ($in) {
+                return strtolower(preg_replace('/[^A-Za-z]/', '', $in));
+            };
+            $services = array_map($normalize, array_unique($services));
+            sort($services);
+
             $availability_message = $this->getViewRenderer()
                 ->render(
                     'ajax/status-available-services.phtml',
-                    ['services' => array_unique($services)]
+                    ['services' => $services]
                 );
         } else {
             $availability_message = $use_unknown_status

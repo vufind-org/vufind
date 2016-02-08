@@ -1,10 +1,12 @@
 <?
 $that = $this;
 $translator = function ($in) use ($that) {
-    return $that->transEsc('HoldingStatus::service_' . $in);
+    return '<span class="service_' . $in . '">' . $that->translate('HoldingStatus::service_' . $in) . '</span>';
 };
-$serviceList = implode(', ', array_map($services, $translator));
+$serviceList = implode('', array_map($translator, $services));
 ?>
-<span class="label label-success">
-  <?=count($services) == 1 ? $this->transEsc('HoldingStatus::service_available_'.array_pop($services)) : $this->transEsc('HoldingStatus::services_available', ['%%list%%' => $serviceList]) ?>
+<span class="label label-success services-<?=implode('-', $services)?>">
+  <?=count($services) == 1
+      ? '<span class="service_' . $services[0] . '">' . $this->translate('HoldingStatus::service_available_'.$services[0],['%%list%%' => $serviceList],'HoldingStatus::services_available') . '</span>'
+      : $this->translate('HoldingStatus::services_available', ['%%list%%' => $serviceList]) ?>
 </span>
