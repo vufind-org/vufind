@@ -5,7 +5,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2013.
+ * Copyright (C) The National Library of Finland 2013-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -69,5 +69,35 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
             }
         }
         return $localRecordData;
+    }
+
+    /**
+     * Function that determines the priority for sources
+     *
+     * @param object $recordSources Record sources defined in searches.ini
+     *
+     * @return array Array keyed by source with priority as the value
+     */
+    protected function determineSourcePriority($recordSources)
+    {
+        $sources = explode(',', $recordSources);
+        $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
+
+        if (!($preferred = $cookieManager->get('preferredRecordSource'))) {
+            $authManager = $this->serviceLocator->get('VuFind\AuthManager');
+            if ($user = $authManager->isLoggedIn()) {
+                if ($user->cat_username) {
+                    list($preferred) = explode('.', $user->cat_username, 2);
+                }
+            }
+        }
+        // array_search may return 0, but that's fine since it means the source
+        // already has highest priority
+        if ($preferred && $key = array_search($preferred, $sources)) {
+            unset($sources[$key]);
+            array_unshift($sources, $preferred);
+        }
+
+        return array_flip($sources);
     }
 }
