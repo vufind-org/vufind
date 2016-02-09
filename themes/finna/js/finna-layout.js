@@ -510,18 +510,6 @@ finna.layout = (function() {
         return refreshPage;
     };
 
-    var updateLoginName = function() {
-        $.ajax({
-            dataType: 'json',
-            url: VuFind.getPath() + '/AJAX/JSON?method=getUserDisplayName',
-            success: function (response) {
-                if (response.status == 'OK') {
-                    $('.logoutOptions .username').text(response.data);
-                }
-            }
-        });
-    }
-
     var initTouchDeviceGallery = function () {
         if ($('.result-view-grid')[0] != null && isTouchDevice()) {
             $('.result-view-grid').addClass('touch-device');
@@ -647,7 +635,6 @@ finna.layout = (function() {
         checkSaveStatuses: checkSaveStatuses,
         initSaveRecordLinks: initSaveRecordLinks,
         initLightbox: initLightbox,
-        updateLoginName: updateLoginName,
         initHierarchicalFacet: initHierarchicalFacet,
         initJumpMenus: initJumpMenus,
         initMobileNarrowSearch: initMobileNarrowSearch,
