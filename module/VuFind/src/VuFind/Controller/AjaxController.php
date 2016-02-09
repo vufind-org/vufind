@@ -1022,7 +1022,7 @@ class AjaxController extends AbstractBase
         $table = $this->getTable('Comments');
         if (!$table->deleteIfOwnedByUser($id, $user)) {
             return $this->output(
-                $this->translate('An error has occurred'), self::STATUS_ERROR, 405
+                $this->translate('An error has occurred'), self::STATUS_ERROR, 403
             );
         }
 
