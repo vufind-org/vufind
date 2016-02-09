@@ -3,8 +3,7 @@
   $this->headTitle($this->translate('Book Bag'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
-    . '<li class="active">' . $this->transEsc('Book Bag') . '</li>';
+  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
 ?>
 <h2><?=$this->transEsc('Book Bag') ?></h2>
 <?=$this->flashmessages()?>

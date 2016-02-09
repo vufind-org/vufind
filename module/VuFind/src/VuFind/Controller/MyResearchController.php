@@ -271,6 +271,30 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Support method for savesearchAction(): set the saved flag in a secure
+     * fashion, throwing an exception if somebody attempts something invalid.
+     *
+     * @param int  $searchId The search ID to save/unsave
+     * @param bool $saved    The new desired state of the saved flag
+     * @param int  $userId   The user ID requesting the change
+     *
+     * @throws \Exception
+     * @return void
+     */
+    protected function setSavedFlagSecurely($searchId, $saved, $userId)
+    {
+        $searchTable = $this->getTable('Search');
+        $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
+        $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
+        if (empty($row)) {
+            throw new \Exception('Access denied.');
+        }
+        $row->saved = $saved ? 1 : 0;
+        $row->user_id = $userId;
+        $row->save();
+    }
+
+    /**
      * Handle 'save/unsave search' request
      *
      * @return mixed
@@ -289,12 +313,11 @@ class MyResearchController extends AbstractBase
         }
 
         // Check for the save / delete parameters and process them appropriately:
-        $search = $this->getTable('Search');
         if (($id = $this->params()->fromQuery('save', false)) !== false) {
-            $search->setSavedFlag($id, true, $user->id);
+            $this->setSavedFlagSecurely($id, true, $user->id);
             $this->flashMessenger()->addMessage('search_save_success', 'success');
         } else if (($id = $this->params()->fromQuery('delete', false)) !== false) {
-            $search->setSavedFlag($id, false);
+            $this->setSavedFlagSecurely($id, false, $user->id);
             $this->flashMessenger()->addMessage('search_unsave_success', 'success');
         } else {
             throw new \Exception('Missing save and delete parameters.');

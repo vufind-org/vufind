@@ -115,17 +115,20 @@ trait UserCreationTrait
      * @param Element $page     Page element.
      * @param string  $username Username to set (null to skip)
      * @param string  $password Password to set (null to skip)
+     * @param bool    $inModal  Should we assume the login box is in a lightbox?
      *
      * @return void
      */
-    protected function fillInLoginForm(Element $page, $username, $password)
-    {
+    protected function fillInLoginForm(Element $page, $username, $password,
+        $inModal = true
+    ) {
+        $prefix = $inModal ? '.modal-body ' : '';
         if (null !== $username) {
-            $usernameField = $this->findCss($page, '.modal-body [name="username"]');
+            $usernameField = $this->findCss($page, $prefix . '[name="username"]');
             $usernameField->setValue($username);
         }
         if (null !== $password) {
-            $passwordField = $this->findCss($page, '.modal-body [name="password"]');
+            $passwordField = $this->findCss($page, $prefix . '[name="password"]');
             $passwordField->setValue($password);
         }
     }
@@ -133,13 +136,15 @@ trait UserCreationTrait
     /**
      * Submit the login form (assuming it's open).
      *
-     * @param Element $page Page element.
+     * @param Element $page    Page element.
+     * @param bool    $inModal Should we assume the login box is in a lightbox?
      *
      * @return void
      */
-    protected function submitLoginForm(Element $page)
+    protected function submitLoginForm(Element $page, $inModal = true)
     {
-        $button = $this->findCss($page, '.modal-body .btn.btn-primary');
+        $prefix = $inModal ? '.modal-body ' : '';
+        $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');
         $button->click();
         $this->snooze();
     }
