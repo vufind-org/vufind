@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
 namespace VuFind\Cover;
-use VuFindCode\ISBN, Zend\Log\LoggerInterface, ZendService\Amazon\Amazon;
 
 /**
  * Dynamic Book Cover Generator
