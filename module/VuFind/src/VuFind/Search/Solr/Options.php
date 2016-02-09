@@ -156,6 +156,18 @@ class Options extends \VuFind\Search\Base\Options
                 $facetSettings->Advanced_Settings->translated_facets->toArray()
             );
         }
+        if (isset($facetSettings->Advanced_Settings->delimiter)) {
+            $this->setDefaultFacetDelimiter(
+                $facetSettings->Advanced_Settings->delimiter
+            );
+        }
+        if (isset($facetSettings->Advanced_Settings->delimited_facets)
+            && count($facetSettings->Advanced_Settings->delimited_facets) > 0
+        ) {
+            $this->setDelimitedFacets(
+                $facetSettings->Advanced_Settings->delimited_facets->toArray()
+            );
+        }
         if (isset($facetSettings->Advanced_Settings->special_facets)) {
             $this->specialAdvancedFacets
                 = $facetSettings->Advanced_Settings->special_facets;
