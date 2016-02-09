@@ -112,10 +112,9 @@
     </tr>
       <? $totalDue += $record['balance']; ?>
     <? endforeach; ?>
-
-      <tr>
-        <td colspan="5" class="total-balance"><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>): <span class="amount"><?=$this->safeMoneyFormat($totalDue/100.00) ?></span></td>
-      </tr>
+    <tr>
+      <td colspan="6" class="total-balance"><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>): <span class="amount"><?=$this->safeMoneyFormat($totalDue/100.00) ?></span></td>
+    </tr>
   </table>
   <div class="row">
       <? if ($this->onlinePayment): ?>
