@@ -43,17 +43,26 @@
         vertical-align: middle;
         margin-right: 10px;
     }
-    & .groupCallnumber {
-        color: @gray-light;
-        font-size: 0.9em;
-        line-height: 1.4em; 
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-    }
+}
+.no-branches .groupLocation {
+    display: inline-block;
+    line-height: 1.6em;
+}
+.groupCallnumber {
+    color: @gray-light;
+    display: inline;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-left: 15px;
 }
 
 // Record view holdings styles
+.holdings-tab {
+    & #library_card, .placehold.btn {
+        margin-bottom: 5px;   
+    }
+}
 .record-holdings-table {
     margin: 20px 0px;
     padding: 0px 15px;
@@ -102,6 +111,7 @@
             }
         }
         & .location-link {
+            font-weight: bold;
             @media (max-width: @screen-xs-max) {
                 text-align: right;
                 border-top: none;
@@ -168,6 +178,7 @@
         max-width: 130px;     
         display: inline-block;
         word-wrap: initial;
+        margin: 7px 0px;
     }
     & .holdings-title {
         .h4;
