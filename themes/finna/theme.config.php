@@ -11,6 +11,7 @@ return array(
             'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
             'fileSrc' => 'Finna\View\Helper\Root\Factory::getFileSrc',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
+            'headLink' => 'Finna\View\Helper\Root\Factory::getHeadLink',
             'headTitle' => 'Finna\View\Helper\Root\Factory::getHeadTitle',
             'holdingsSettings' => 'Finna\View\Helper\Root\Factory::getHoldingsSettings',
             'imageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',
