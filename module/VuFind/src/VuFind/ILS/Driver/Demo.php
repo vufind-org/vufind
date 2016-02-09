@@ -1387,7 +1387,7 @@ class Demo extends AbstractBase
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        if (!$this->storageRetrievalRequests || rand() % 10 == 0) {
+        if (!$this->storageRetrievalRequests || $this->isFailing(__METHOD__, 10)) {
             return false;
         }
         return true;
@@ -1486,7 +1486,7 @@ class Demo extends AbstractBase
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
-        if (!$this->ILLRequests || rand() % 10 == 0) {
+        if (!$this->ILLRequests || $this->isFailing(__METHOD__, 10)) {
             return false;
         }
         return true;

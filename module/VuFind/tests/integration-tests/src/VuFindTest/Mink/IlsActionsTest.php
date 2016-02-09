@@ -92,10 +92,16 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         return [
             'Failure_Probabilities' => [
                 'cancelHolds' => 0,
+                'cancelILLRequests' => 0,
+                'cancelStorageRetrievalRequests' => 0,
+                'checkILLRequestIsValid' => 0,
                 'checkRequestIsValid' => 0,
+                'checkStorageRetrievalRequestIsValid' => 0,
                 'getDefaultRequestGroup' => 0,
                 'getHoldDefaultRequiredDate' => 0,
                 'placeHold' => 0,
+                'placeILLRequest' => 0,
+                'placeStorageRetrievalRequest' => 0,
             ],
             'Holdings' => [$bibId => json_encode([$this->getFakeItem()])],
             'Users' => ['catuser' => 'catpass'],
@@ -184,6 +190,61 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Make sure we arrived where we expected to:
         $this->assertEquals(
             'Your Holds and Recalls', $this->findCss($page, 'h2')->getText()
+        );
+    }
+
+    /**
+     * Support method to place an ILL request and end up on the ILL screen.
+     *
+     * @param Element $page Page element.
+     *
+     * @return void
+     */
+    protected function placeIllRequestAndGoToIllScreen($page)
+    {
+        // Open the "place hold" dialog
+        $this->snooze();
+        $this->findCss($page, 'a.placeILLRequest')->click();
+        $this->snooze();
+
+        // Set pickup location to a non-default value so we can confirm that
+        // the element is being passed through correctly, then submit form:
+        $this->findCss($page, '#pickupLibrary')->setValue('2');
+        $this->snooze();
+        $this->findCss($page, '#pickupLibraryLocation')->setValue('3');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+
+        // Make sure we arrived where we expected to:
+        $this->assertEquals(
+            'Your request was successful',
+            $this->findCss($page, '.alert.alert-success')->getText()
+        );
+        $this->assertEquals(
+            'Interlibrary Loan Requests', $this->findCss($page, 'h2')->getText()
+        );
+    }
+
+    protected function placeStorageRetrievalRequestAndGoToSRRScreen($page)
+    {
+        // Open the "place hold" dialog
+        $this->snooze();
+        $this->findCss($page, 'a.placeStorageRetrievalRequest')->click();
+        $this->snooze();
+
+        // Set pickup location to a non-default value so we can confirm that
+        // the element is being passed through correctly, then submit form:
+        $this->findCss($page, '.modal-body select')->setValue('C');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+
+        // Make sure we arrived where we expected to:
+        $this->assertEquals(
+            'Your request was successful',
+            $this->findCss($page, '.alert.alert-success')->getText()
+        );
+        $this->assertEquals(
+            'Storage Retrieval Requests', $this->findCss($page, 'h2')->getText()
         );
     }
 
@@ -323,6 +384,78 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
             $this->findCss($page, '.alert.alert-success')->getText()
         );
         $this->assertNull($page->find('css', 'a.title'));
+    }
+
+    /**
+     * Test ILL requests.
+     *
+     * @return void
+     */
+    public function testIllRequest()
+    {
+        // Turn on "cancel holds" in addition to normal defaults:
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Login', $element->getText());
+        $element->click();
+        $this->snooze();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+
+        // Place the hold:
+        $this->placeIllRequestAndGoToIllScreen($page);
+
+        // Verify the request is correct:
+        $this->assertEquals(
+            'Journal of rational emotive therapy :'
+            . ' the journal of the Institute for Rational-Emotive Therapy.',
+            $this->findCss($page, 'a.title')->getText()
+        );
+        $this->assertTrue(false !== strstr($page->getContent(), 'Main Desk'));
+    }
+
+    /**
+     * Test storage retrieval requests.
+     *
+     * @return void
+     */
+    public function testStorageRetrievalRequest()
+    {
+        // Turn on "cancel holds" in addition to normal defaults:
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Login', $element->getText());
+        $element->click();
+        $this->snooze();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+
+        // Place the hold:
+        $this->placeStorageRetrievalRequestAndGoToSRRScreen($page);
+
+        // Verify the request is correct:
+        $this->assertEquals(
+            'Journal of rational emotive therapy :'
+            . ' the journal of the Institute for Rational-Emotive Therapy.',
+            $this->findCss($page, 'a.title')->getText()
+        );
+        $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
     }
 
     /**
