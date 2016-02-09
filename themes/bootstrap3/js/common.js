@@ -238,8 +238,7 @@ function ajaxLogin(form) {
           }
         },
         error: function(response) {
-          var json = JSON.parse(response.responseText);
-          Lightbox.displayError(json.data);
+          Lightbox.displayError(json.responseJSON.data);
         }
       });
     }
