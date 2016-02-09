@@ -158,7 +158,7 @@ class Feed extends AbstractRenderer
         if (!empty($searchTerms)) {
             $elem = $dom->createElement('opensearch:Query');
             $elem->setAttribute('role', 'request');
-            $elem->setAttribute('searchTerms', $searchTerms);
+            $elem->setAttribute('searchTerms', rawurlencode($searchTerms));
             if ($startIndex !== null) {
                 $elem->setAttribute('startIndex', $startIndex);
             }

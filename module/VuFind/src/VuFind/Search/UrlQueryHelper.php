@@ -213,6 +213,14 @@ class UrlQueryHelper
                 }
             }
         }
+        $hiddenFilters = $this->params->getHiddenFilters();
+        if (!empty($hiddenFilters)) {
+            foreach ($hiddenFilters as $field => $values) {
+                foreach ($values as $current) {
+                    $params['hiddenFilters'][] = $field . ':"' . $current . '"';
+                }
+            }
+        }
         $shards = $this->params->getSelectedShards();
         if (!empty($shards)) {
             sort($shards);
@@ -284,6 +292,20 @@ class UrlQueryHelper
 
         // Clear page:
         unset($params['page']);
+
+        return '?' . $this->buildQueryString($params);
+    }
+
+    /**
+     * Remove all filters.
+     *
+     * @return string
+     */
+    public function removeAllFilters()
+    {
+        $params = $this->getParamArray();
+        // Clear page:
+        unset($params['filter']);
 
         return '?' . $this->buildQueryString($params);
     }

@@ -190,7 +190,7 @@ class AuthorityRecommend implements RecommendInterface
             $authParams = $authResults->getParams();
             $authParams->initFromRequest($request);
             foreach ($this->filters as $filter) {
-                $authParams->getOptions()->addHiddenFilter($filter);
+                $authParams->addHiddenFilter($filter);
             }
             $results = $authResults->getResults();
         } catch (RequestErrorException $e) {

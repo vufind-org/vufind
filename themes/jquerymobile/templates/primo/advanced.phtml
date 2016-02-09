@@ -8,8 +8,8 @@
   // Load search actions and settings (if any):
   $options = $this->searchOptions($this->searchClassId);
   $basicSearch = $options->getSearchAction();
-  $lastSort = $options->getLastSort();
-  $lastLimit = $options->getLastLimit();
+  $lastSort = $this->searchMemory()->getLastSort($options->getSearchClassId());
+  $lastLimit = $this->searchMemory()->getLastLimit($options->getSearchClassId());
 ?>
 <div data-role="page" id="Search-home">
   <?=$this->mobileMenu()->header(array('hideSearchLink' => true))?>
@@ -42,7 +42,6 @@
         <? endfor; ?>
         </fieldset>
       <? endfor; ?>
-      <? $lastSort = $this->options->getLastSort(); ?>
       <? if (!empty($lastSort)): ?>
         <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
       <? endif; ?>

@@ -27,7 +27,8 @@
  */
 namespace VuFind\Controller\Plugin;
 use VuFind\Exception\LoginRequired as LoginRequiredException,
-    Zend\Mvc\Controller\Plugin\AbstractPlugin;
+    Zend\Mvc\Controller\Plugin\AbstractPlugin,
+    VuFind\Db\Row\User, VuFind\Record\Cache;
 
 /**
  * Zend action helper to perform favorites-related actions
@@ -41,15 +42,65 @@ use VuFind\Exception\LoginRequired as LoginRequiredException,
 class Favorites extends AbstractPlugin
 {
     /**
+     * Support method for saveBulk() -- get list to save records into. Either
+     * retrieves existing list or creates a new one.
+     *
+     * @param mixed $listId List ID to load (or empty/'NEW' to create new list)
+     * @param User  $user   User object.
+     *
+     * @return \VuFind\Db\Row\UserList
+     */
+    protected function getList($listId, User $user)
+    {
+        $table = $this->getController()->getTable('UserList');
+        if (empty($listId) || $listId == 'NEW') {
+            $list = $table->getNew($user);
+            $list->title = $this->getController()->translate('My Favorites');
+            $list->save($user);
+        } else {
+            $list = $table->getExisting($listId);
+            $list->rememberLastUsed(); // handled by save() in other case
+        }
+        return $list;
+    }
+
+    /**
+     * Support method for saveBulk() -- save a batch of records to the cache.
+     *
+     * @param Cache $recordCache    Cache service
+     * @param array $cacheRecordIds Array of IDs in source|id format
+     *
+     * @return void
+     */
+    protected function cacheBatch(Cache $recordCache, array $cacheRecordIds)
+    {
+        if ($cacheRecordIds) {
+            $recordLoader = $this->getController()->getServiceLocator()
+                ->get('VuFind\RecordLoader');
+            // Disable the cache so that we fetch latest versions, not cached ones:
+            $recordLoader->setCacheContext(Cache::CONTEXT_DISABLED);
+            $records = $recordLoader->loadBatch($cacheRecordIds);
+            // Re-enable the cache so that we actually save the records:
+            $recordLoader->setCacheContext(Cache::CONTEXT_FAVORITE);
+            foreach ($records as $record) {
+                $recordCache->createOrUpdate(
+                    $record->getUniqueID(), $record->getSourceIdentifier(),
+                    $record->getRawData()
+                );
+            }
+        }
+    }
+
+    /**
      * Save a group of records to the user's favorites.
      *
-     * @param array               $params Array with some or all of these keys:
+     * @param array $params Array with some or all of these keys:
      *  <ul>
      *    <li>ids - Array of IDs in source|id format</li>
      *    <li>mytags - Unparsed tag string to associate with record (optional)</li>
      *    <li>list - ID of list to save record into (omit to create new list)</li>
      *  </ul>
-     * @param \VuFind\Db\Row\User $user   The user saving the record
+     * @param User  $user   The user saving the record
      *
      * @return array list information
      */
@@ -60,20 +111,14 @@ class Favorites extends AbstractPlugin
             throw new LoginRequiredException('You must be logged in first');
         }
 
-        // Get or create a list object as needed:
-        $listId = isset($params['list']) ? $params['list'] : '';
-        $table = $this->getController()->getTable('UserList');
-        if (empty($listId) || $listId == 'NEW') {
-            $list = $table->getNew($user);
-            $list->title = $this->getController()->translate('My Favorites');
-            $list->save($user);
-        } else {
-            $list = $table->getExisting($listId);
-            $list->rememberLastUsed(); // handled by save() in other case
-        }
-
-        // Loop through all the IDs and save them:
+        // Load helper objects needed for the saving process:
+        $list = $this->getList(isset($params['list']) ? $params['list'] : '', $user);
         $tagParser = $this->getController()->getServiceLocator()->get('VuFind\Tags');
+        $recordCache = $this->getController()->getServiceLocator()
+            ->get('VuFind\RecordCache');
+        $recordCache->setContext(Cache::CONTEXT_FAVORITE);
+
+        $cacheRecordIds = [];   // list of record IDs to save to cache
         foreach ($params['ids'] as $current) {
             // Break apart components of ID:
             list($source, $id) = explode('|', $current, 2);
@@ -86,17 +131,24 @@ class Favorites extends AbstractPlugin
             $tags = isset($params['mytags'])
                 ? $tagParser->parse($params['mytags']) : [];
             $user->saveResource($resource, $list, $tags, '', false);
+
+            // Collect record IDs for caching
+            if ($recordCache->isCachable($resource->source)) {
+                $cacheRecordIds[] = $current;
+            }
         }
+
+        $this->cacheBatch($recordCache, $cacheRecordIds);
         return ['listId' => $list->id];
     }
 
     /**
      * Delete a group of favorites.
      *
-     * @param array               $ids    Array of IDs in source|id format.
-     * @param mixed               $listID ID of list to delete from (null for all
+     * @param array $ids    Array of IDs in source|id format.
+     * @param mixed $listID ID of list to delete from (null for all
      * lists)
-     * @param \VuFind\Db\Row\User $user   Logged in user
+     * @param User  $user   Logged in user
      *
      * @return void
      */

@@ -1,6 +1,6 @@
 <?php
 /**
- * "Last search link" view helper
+ * View helper for remembering recent user searches/parameters.
  *
  * PHP version 5
  *
@@ -29,7 +29,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\Search\Memory, Zend\View\Helper\AbstractHelper;
 
 /**
- * "Last search link" view helper
+ * View helper for remembering recent user searches/parameters.
  *
  * @category VuFind2
  * @package  View_Helpers
@@ -37,7 +37,7 @@ use VuFind\Search\Memory, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class GetLastSearchLink extends AbstractHelper
+class SearchMemory extends AbstractHelper
 {
     /**
      * Search memory
@@ -66,14 +66,50 @@ class GetLastSearchLink extends AbstractHelper
      *
      * @return string
      */
-    public function __invoke($link, $prefix = '', $suffix = '')
+    public function getLastSearchLink($link, $prefix = '', $suffix = '')
     {
-        $last = $this->memory->retrieve();
+        $last = $this->memory->retrieveSearch();
         if (!empty($last)) {
             $escaper = $this->getView()->plugin('escapeHtml');
             return $prefix . '<a href="' . $escaper($last) . '">' . $link . '</a>'
                 . $suffix;
         }
         return '';
+    }
+
+    /**
+     * Retrieve the last hidden filters used.
+     *
+     * @param string $context Context of search (usually search class ID).
+     *
+     * @return array
+     */
+    public function getLastHiddenFilters($context)
+    {
+        return $this->memory->retrieveLastSetting($context, 'hiddenFilters', []);
+    }
+
+    /**
+     * Retrieve the last limit option used.
+     *
+     * @param string $context Context of search (usually search class ID).
+     *
+     * @return string
+     */
+    public function getLastLimit($context)
+    {
+        return $this->memory->retrieveLastSetting($context, 'limit');
+    }
+
+    /**
+     * Retrieve the last sort option used.
+     *
+     * @param string $context Context of search (usually search class ID).
+     *
+     * @return string
+     */
+    public function getLastSort($context)
+    {
+        return $this->memory->retrieveLastSetting($context, 'sort');
     }
 }
