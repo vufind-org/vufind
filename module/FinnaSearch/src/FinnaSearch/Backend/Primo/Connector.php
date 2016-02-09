@@ -75,6 +75,51 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
     }
 
     /**
+     * Support method for query() -- perform inner search logic
+     *
+     * @param string $institution Institution
+     * @param array  $terms       Associative array:
+     *     index       string: primo index to search (default "any")
+     *     lookfor     string: actual search terms
+     * @param array  $args        Associative array of optional arguments:
+     *     phrase      bool:   true if it's a quoted phrase (default false)
+     *     onCampus    bool:   (default true)
+     *     didyoumean  bool:   (default false)
+     *     filterList  array:  (field, value) pairs to filter results (def null)
+     *     pageNumber  string: index of first record (default 1)
+     *     limit       string: number of records to return (default 20)
+     *     sort        string: value to be used by for sorting (default null)
+     *     returnErr   bool:   false to fail on error; true to return empty
+     *                         empty result set with an error field (def true)
+     *     Anything in $args   not listed here will be ignored.
+     *
+     * Note: some input parameters accepted by Primo are not implemented here:
+     *  - dym (did you mean)
+     *  - highlight
+     *  - more (get more)
+     *  - lang (specify input language so engine can do lang. recognition)
+     *  - displayField (has to do with highlighting somehow)
+     *
+     * @throws \Exception
+     * @return array             An array of query results
+     */
+    protected function performSearch($institution, $terms, $args)
+    {
+        $map = ['contains_all' => 'AND', 'contains' => 'OR'];
+        foreach ($terms as &$term) {
+            if (isset($term['op']) && isset($map[$term['op']])) {
+                $lookfor = $term['lookfor'];
+                $op = $map[$term['op']];
+                $lookfor = explode(' ', trim($lookfor));
+                $lookfor = implode(" $op ", $lookfor);
+                $term['op'] = 'contains';
+                $term['lookfor'] = $lookfor;
+            }
+        }
+        return parent::performSearch($institution, $terms, $args);
+    }
+
+    /**
      * Translate Primo's XML into array of arrays.
      *
      * @param array $data The raw xml from Primo
