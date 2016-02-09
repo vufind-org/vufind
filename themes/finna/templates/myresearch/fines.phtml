@@ -42,6 +42,7 @@
       $hideCheckout = true;
       $hideDueDate = true;
       $hideFineCreationDate = true;
+      $hideAmount = true;
       foreach ($this->fines as $fine) {
           if (!empty($fine['title'])) {
               $hideTitle = false;
@@ -55,15 +56,19 @@
           if (!empty($fine['createdate'])) {
               $hideFineCreationDate = false;
           }
+          if (!empty($fine['amount']) && $fine['amount'] !== $fine['balance']) {
+              $hideAmount = false;
+          }
       }
     ?>
     <table class="table table-striped useraccount-table<?=$this->onlinePayment ? ' online-payment' : ''?>">
     <tr class="headers">
       <th class="user-account-table-title <? if ($hideTitle): ?> hidden<? endif; ?>"><?=$this->transEsc('Title')?></th>
-      <th <? if ($hideCheckout): ?> class="hidden"<? endif; ?>><?=$this->transEsc('fine_checkout_date')?></th>
-      <th <? if ($hideDueDate): ?> class="hidden"<? endif; ?>><?=$this->transEsc('Due Date')?></th>
+      <th<? if ($hideCheckout): ?> class="hidden"<? endif; ?>><?=$this->transEsc('fine_checkout_date')?></th>
+      <th<? if ($hideDueDate): ?> class="hidden"<? endif; ?>><?=$this->transEsc('Due Date')?></th>
       <th><?=$this->transEsc('fine_description')?></th>
-      <th <? if ($hideFineCreationDate): ?> class="hidden"<? endif; ?>><?=$this->transEsc('fine_creation_date')?></th>
+      <th<? if ($hideFineCreationDate): ?> class="hidden"<? endif; ?>><?=$this->transEsc('fine_creation_date')?></th>
+      <th<? if ($hideAmount): ?> class="hidden"<? endif; ?>><?=$this->transEsc('Fee')?></th>
       <th class="balance"><?=$this->transEsc('Balance')?></th>
     </tr>
     <? $totalDue = 0; ?>
@@ -87,16 +92,17 @@
         <? else: ?>
           <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
         <? endif; ?>
-      <td <? if ($hideCheckout): ?> class="hidden"<? endif; ?>>
+      <td<? if ($hideCheckout): ?> class="hidden"<? endif; ?>>
         <?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?>
       </td>
-      <td <? if ($hideDueDate): ?> class="hidden"<? endif; ?>>
+      <td<? if ($hideDueDate): ?> class="hidden"<? endif; ?>>
         <?=isset($record['duedate']) ? $this->escapeHtml($record['duedate']) : ''?>
       </td>
       <td><?=isset($fine) ? $this->transEsc($fine) : ''?></td>
-      <td <? if ($hideFineCreationDate): ?> class="hidden"<? endif; ?>>
+      <td<? if ($hideFineCreationDate): ?> class="hidden"<? endif; ?>>
         <?=isset($record['createdate']) ? $this->escapeHtml($record['createdate']) : ''?>
       </td>
+      <td<? if ($hideAmount): ?> class="hidden"<? endif; ?>><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount']/100.00) : ''?></td>
       <td class="balance">
         <? if ($showNonPayable): ?>
         <span class="online-payment-nonpayable">
@@ -113,7 +119,7 @@
       <? $totalDue += $record['balance']; ?>
     <? endforeach; ?>
     <tr>
-      <td colspan="6" class="total-balance"><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>): <span class="amount"><?=$this->safeMoneyFormat($totalDue/100.00) ?></span></td>
+      <td colspan="7" class="total-balance"><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>): <span class="amount"><?=$this->safeMoneyFormat($totalDue/100.00) ?></span></td>
     </tr>
   </table>
   <div class="row">
