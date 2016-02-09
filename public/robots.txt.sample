@@ -1,6 +1,9 @@
 # Take into account both the default view and any non-default views 
 # (hence two versions of each url)
 User-agent: *
+Disallow: /AJAX/
+Disallow: /*/AJAX/
+# Block any api version:
 Disallow: /*/api/
 Disallow: /*/*/api/
 Disallow: /MetaLib/

@@ -1,22 +1,18 @@
 <?
-  $fields = $this->driver->getRawData();
   $title = $this->driver->getTitle();
   $date = substr($title, strpos($title, '('), strpos($title, ')'));
-  $format = end($fields['format']);
+  $formats = $this->driver->getFormats();
+  $format = end($formats);
   $url = $this->recordLink()->getUrl($this->driver);
 ?>
 
-<? if (!empty($format)) : ?>
-<?= PHP_EOL . $this->translate($format) ?>
-<? endif; ?>
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
-<? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
 <? if (!$this->translationEmpty('Archive Repository')): ?><?= $this->transEsc('Archive Repository')?>:<? endif; ?>
 <?= implode(', ', array_map(function($str) { $this->escapeHtml($this->translate("source_$str", array(), $str)); }, $this->driver->getInstitutions())); ?>
 <? if ($origination = $this->driver->getOrigination()): ?>
 <?= PHP_EOL . $this->transEsc('Archive Origination')?>: <?=$this->escapeHtml($origination)?>
 <? endif; ?>
-<? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats()))): ?>
+<? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $formats) || in_array('Document/ArchiveCollection', $formats))): ?>
   <? if ($this->driver->isPartOfArchiveSeries()): ?>
     <? $topIds = $this->driver->getHierarchyTopId(); $topTitles = $this->driver->getHierarchyTopTitle(); ?>
   <? else: ?>
@@ -29,6 +25,9 @@
 <? endif; ?>
 <? if (!empty($dates)) : ?>
 <?= PHP_EOL . $this->translate('Published') . ': ' . $this->escapeHtml($dates);?>
+<? endif; ?>
+<? if (!empty($format)) : ?>
+<?= PHP_EOL . $this->translate($format) ?>
 <? endif; ?>
 
 <?= $this->translate('View Full Record') . ": {$info['baseUrl']}$url"; ?>

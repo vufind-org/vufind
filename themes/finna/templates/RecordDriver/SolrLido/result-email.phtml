@@ -1,14 +1,15 @@
 <?
-  $fields = $this->driver->getRawData();
+  $author = $this->driver->getPrimaryAuthor();
   $title = $this->driver->getTitle();
   $dates = $this->driver->getResultDateRange();
-  $format = end($fields['format']);
+  $formats = $this->driver->getFormats();
+  $format = end($formats);
   $url = $this->recordLink()->getUrl($this->driver);
 ?>
 
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
-<? if (!empty($fields['author'])): ?>
-<?= PHP_EOL . $this->translate('by') . ': ' . $fields['author']; ?>
+<? if (!empty($author)): ?>
+<?= PHP_EOL . $this->translate('by') . ': ' . $author; ?>
 <? endif; ?>
 <? if (!empty($dates)) : ?>
 <?= PHP_EOL . $this->translate('Main Year') . ': ' . $this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>–<?=$this->escapeHtml($dates[1])?><? endif; ?>
