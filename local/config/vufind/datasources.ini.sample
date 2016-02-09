@@ -12,7 +12,7 @@
 
 ; Inherit main configuration
 [Parent_Config]
-relative_path = ../finna/config.ini
+relative_path = ../finna/datasources.ini
 
 ; Add any overrides below
 ;[OJS]
