@@ -45,10 +45,12 @@ class Generator
      * @var array
      */
     protected $settings = [];
+
     /**
      * Reserved title's main color
      */
     protected $titleMColor;
+
     /**
      * Reserved title's secondary color
      */
@@ -58,6 +60,7 @@ class Generator
      * Reserved author's main color
      */
     protected $authorMColor;
+
     /**
      * Reserved author's secondary color
      */
@@ -89,6 +92,7 @@ class Generator
             'textAlign'    => 'center',
             'titleFont'    => 'DroidSerif-Bold.ttf',
             'topPadding'   => 19,
+            'bottomPadding'=> 3,
             'wrapWidth'    => 80,
             'titleMColor'  => 'black',
             'titleSColor'  => 'none',
@@ -154,7 +158,7 @@ class Generator
           case 'aqua':
             return imagecolorallocate($this->im, 0, 255, 255);
           case 'none':
-            return 'null';
+            return false;
           default:
             return imagecolorallocate($this->im, 0, 0, 0);
         }
@@ -351,7 +355,7 @@ class Generator
             $text = $words[$i];
             $line .= $text . ' ';
             $textWidth = $this->textWidth(
-                $line,
+                rtrim($line, ' '),
                 $this->settings->titleFont,
                 $this->settings->fontSize
             );
@@ -360,7 +364,6 @@ class Generator
                 $this->drawText(
                     $im,
                     rtrim($pline, ' '),
-                    3,
                     $this->settings->topPadding + $lineHeight * $lineCount,
                     $this->settings->titleFont,
                     $this->settings->fontSize,
@@ -376,7 +379,6 @@ class Generator
         $this->drawText(
             $im,
             rtrim($line, ' '),
-            3,
             $this->settings->topPadding + $lineHeight * $lineCount,
             $this->settings->titleFont,
             $this->settings->fontSize,
@@ -388,7 +390,6 @@ class Generator
             $this->drawText(
                 $im,
                 '...',
-                5,
                 $this->settings->topPadding
                 + $this->settings->maxLines * $lineHeight,
                 $this->settings->titleFont,
@@ -412,31 +413,31 @@ class Generator
         // Scale author to fit by incrementing fontsizes down
         $fontSize = $this->settings->fontSize;
         do {
-            $txtWidth = $this->textWidth(
+            $fontSize--;
+            $textWidth = $this->textWidth(
                 $author,
                 $this->settings->authorFont,
                 $fontSize
             );
-            $fontSize--;
-        } while ($txtWidth > $this->settings->wrapWidth);
-        // white text, black outline
-        $fontSize = ++$fontSize < $this->settings->minFontSize
-            ? $this->settings->fontSize
-            : $fontSize;
+        } while ($textWidth > $this->settings->wrapWidth && $fontSize > $this->minFontSize);
         // Too small to read? Align left
-        $alignment = $fontSize < $this->settings->minFontSize
+        $textWidth = $this->textWidth(
+            $author,
+            $this->settings->authorFont,
+            $fontSize
+        );
+        $align = $textWidth > $this->settings->size
             ? 'left'
             : null;
         $this->drawText(
             $im,
             $author,
-            5,
-            $this->settings->size - 3,
+            $this->settings->size - $this->settings->bottomPadding,
             $this->settings->authorFont,
             $fontSize,
             $this->authorMColor,
             $this->authorSColor,
-            $alignment
+            $align
         );
     }
 
@@ -467,7 +468,7 @@ class Generator
     protected function textWidth($text, $font, $size)
     {
         $p = imagettfbbox($size, 0, $font, $text);
-        return $p[2] - $p[0] - 4;
+        return $p[2] - $p[0];
     }
 
     /**
@@ -485,26 +486,28 @@ class Generator
      *
      * @return void
      */
-    protected function drawText($im, $text, $x, $y,
+    protected function drawText($im, $text, $y,
         $font, $fontSize, $mcolor, $scolor = false, $align = null
     ) {
         $textWidth = $this->textWidth(
             $text,
             $font,
-            $this->settings->fontSize
+            $fontSize
         );
         if ($textWidth > $this->settings->size) {
             $align = 'left';
-            $x = 0;
         }
         if (null == $align) {
             $align = $this->settings->textAlign;
+        }
+        if ($align == 'left') {
+            $x = 0;
         }
         if ($align == 'center') {
             $x = ($this->settings->size - $textWidth) / 2;
         }
         if ($align == 'right') {
-            $x = $this->settings->size - $textWidth - $x;
+            $x = $this->settings->size - $textWidth;
         }
 
         // Generate 5 lines of text, 4 offset in a border color
