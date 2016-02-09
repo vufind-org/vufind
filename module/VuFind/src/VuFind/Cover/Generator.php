@@ -107,14 +107,17 @@ class Generator
         $this->settings = (object) $default;
 
         // Create image
-        if (!($this->im = imagecreate($this->settings->size, $this->settings->size))) {
+        if (!($this->im = imagecreate($this->settings->size, $this->settings->size))
+        ) {
             throw new \Exception("Cannot Initialize new GD image stream");
         }
         // Get all colors
         $this->titleFillColor = $this->getColor($this->settings->titleFillColor);
         $this->titleBorderColor = $this->getColor($this->settings->titleBorderColor);
         $this->authorFillColor = $this->getColor($this->settings->authorFillColor);
-        $this->authorBorderColor = $this->getColor($this->settings->authorBorderColor);
+        $this->authorBorderColor = $this->getColor(
+            $this->settings->authorBorderColor
+        );
     }
 
     /**
@@ -419,7 +422,9 @@ class Generator
                 $this->settings->authorFont,
                 $fontSize
             );
-        } while ($textWidth > $this->settings->wrapWidth && $fontSize > $this->minFontSize);
+        } while ($textWidth > $this->settings->wrapWidth &&
+              $fontSize > $this->minFontSize
+          );
         // Too small to read? Align left
         $textWidth = $this->textWidth(
             $author,
