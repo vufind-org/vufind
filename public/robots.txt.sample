@@ -1,0 +1,21 @@
+# Take into account both the default view and any non-default views 
+# (hence two versions of each url)
+User-agent: *
+Disallow: /AJAX/
+Disallow: /*/AJAX/
+# Block any api version:
+Disallow: /*/api/
+Disallow: /*/*/api/
+Disallow: /MetaLib/
+Disallow: /*/MetaLib/
+Disallow: /Primo/
+Disallow: /*/Primo/
+Disallow: /PrimoRecord/
+Disallow: /*/PrimoRecord/
+Disallow: /Record/*/Holdings
+Disallow: /*/Record/*/Holdings
+Disallow: /SearchApi/
+Disallow: /*/SearchApi/
+# Allow indexing of record pages by commenting out the following two lines:
+Disallow: /Record/
+Disallow: /*/Record/

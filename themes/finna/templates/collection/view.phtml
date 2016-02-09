@@ -8,7 +8,7 @@
     echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
   }
   // Set up breadcrumbs:
-  $lastSearch = $this->getLastSearchLink($this->transEsc('Search'));
+  $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
   // Set main header
   if (empty($lastSearch)) {
     $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">'.$this->transEsc('Collection').'</h1></div>';
@@ -42,7 +42,7 @@
     <?
       $html = '<span class="btn btn-primary"><i class="fa fa-arrow-left"></i> <i class="fa fa-search"></i></span>';
       $html .= '<span class="back-to-search-text hidden-xs">'.$this->transEsc('Back to search results').'</span>';
-      $previousSearch = $this->getLastSearchLink($html);
+      $previousSearch = $this->searchMemory()->getLastSearchLink($html);
       if ($previousSearch !== ''):
     ?>
       <div class="back-to-search"><?=$previousSearch?></div>
@@ -53,15 +53,15 @@
       <ul class="pager hidden-print" id="view-pager">
       <? if ($this->scrollData['previousRecord']): ?>
         <li class="pager-previous-record">
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>#searchForm" title="<?=$this->transEsc('Previous Record')?>"><i class="fa fa-arrow-left"></i></a>
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Record')?>"><i class="fa fa-arrow-left"></i></a>
         </li>
         <? else: ?>
-        <li class="disabled" title="<?=$this->transEsc('First Record')?>"><a href="#searchform"><i class="fa fa-arrow-left"></i></a></li>
+        <li class="disabled" title="<?=$this->transEsc('First Record')?>"><a href=""><i class="fa fa-arrow-left"></i></a></li>
       <? endif; ?>
         <li class="pager-text"><?=$this->localizedNumber($this->scrollData['currentPosition']) . ' / ' . $this->localizedNumber($this->scrollData['resultTotal']) ?></li>
       <? if ($this->scrollData['nextRecord']): ?>
         <li class="pager-next-record">
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>#searchForm" title="<?=$this->transEsc('Next Record')?>"><i class="fa fa-arrow-right"></i></a>
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Record')?>"><i class="fa fa-arrow-right"></i></a>
         </li>
       <? else: ?>
         <li class="disabled" title="<?=$this->transEsc('Last Record')?>"><a href="#"><i class="fa fa-arrow-right"></i></a></li>

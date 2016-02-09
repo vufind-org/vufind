@@ -6,7 +6,11 @@
 // Base class
 // --------------------------------------------------
 .recordTabs.nav {
-    margin-top: 20px;   
+    margin-top: 20px;
+    @media (max-width: @screen-xs-max) {
+        margin-left: -15px;
+        margin-right: -15px;
+    }
 }
 // add classes when there are too many tabs to fit on the screen
 .tabs-responsive {

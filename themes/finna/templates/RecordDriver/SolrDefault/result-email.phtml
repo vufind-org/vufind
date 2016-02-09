@@ -1,18 +1,19 @@
 <?
-  $fields = $this->driver->getRawData();
+  $author = $this->driver->getPrimaryAuthor();
   $title = $this->driver->getTitle();
   $journalTitle = $this->driver->getContainerTitle();
   $publicationDate = $this->driver->getPublicationDates();
   $collection = $this->driver->getContainingCollections();
   $containerTitle = $this->driver->getContainerTitle();
   $containerReference = $this->driver->getContainerReference();
-  $format = end($fields['format']);
+  $formats = $this->driver->getFormats();
+  $format = end($formats);
   $url = $this->recordLink()->getUrl($this->driver);
 ?>
 
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
-<? if (!empty($fields['author'])): ?>
-<?= PHP_EOL . $this->translate('by') . ': ' . $fields['author']; ?>
+<? if (!empty($author)): ?>
+<?= PHP_EOL . $this->translate('by') . ': ' . $author; ?>
 <? endif; ?>
 <? if (!empty($publicationDate)) : ?>
 <?= PHP_EOL . $this->translate('Published') . ': ' . $publicationDate[0]; ?>

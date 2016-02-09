@@ -258,19 +258,19 @@ finna.layout = (function() {
     };
 
     var initMobileNarrowSearch = function() {
-        var filterAmount = $('.checkboxFilter input[checked]').length+$('.list-group.filters .list-group-item.active').length;
+        var filterAmount = $('.checkboxFilter input[checked]').length + $('.list-group.filters .list-group-item.active').length;
         if (filterAmount > 0) {
+          $('.mobile-navigation .sidebar-navigation .active-filters  .active-filter-count').text(filterAmount);
           $('.mobile-navigation .sidebar-navigation .active-filters').removeClass('hidden');
-          $('.mobile-navigation .sidebar-navigation .active-filters').append(' '+filterAmount);
         }
-        $('.mobile-navigation .sidebar-navigation, .sidebar h4').click(function(e) {
+        $('.mobile-navigation .sidebar-navigation, .sidebar h4').unbind('click').click(function(e) {
             if ($(e.target).attr('class') != 'fa fa-info-big') {
               $('.sidebar').toggleClass('open');
             }
             $('.mobile-navigation .sidebar-navigation i').toggleClass('fa-arrow-down');
             $('body').toggleClass('prevent-scroll');
         });
-        $('.mobile-navigation .sidebar-navigation .active-filters').click(function() {
+        $('.mobile-navigation .sidebar-navigation .active-filters').unbind('click').click(function() {
             $('.sidebar').scrollTop(0);
         });
     };
@@ -610,6 +610,7 @@ finna.layout = (function() {
                     $container.replaceWith(response.data);
                     finna.dateRangeVis.init();
                     initToolTips($('.sidebar'));
+                    initMobileNarrowSearch();
                 } else {
                     $container.find('.facet-load-indicator').addClass('hidden');
                     $container.find('.facet-load-failed').removeClass('hidden');

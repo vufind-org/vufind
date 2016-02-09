@@ -175,8 +175,14 @@
 <?
   $component = $this->escapeHtmlAttr($title) . 'from';
   $endDate = $this->dateTime()->convertToDisplayDate('U', time());
-  $this->headScript()->appendScript(<<<EOT
-$(document).ready(function() {
+  // Load the script inline to support asynchronously loaded sidefacets:
+  $script = <<<EOT
+if ($.isReady) {
+  initDatePicker();
+} else {
+  $(document).ready(initDatePicker);
+}
+function initDatePicker() {
   $('#$component').datepicker({
     'language': '$datePickerLang',
     'format': 'd.m.yyyy',
@@ -184,9 +190,10 @@ $(document).ready(function() {
     'endDate': '$endDate',
     'autoclose': true
   });
-});
+}
 EOT
-  );
+;
+echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
 ?>
               </div>
             </div>
