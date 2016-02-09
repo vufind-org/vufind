@@ -31,7 +31,7 @@ function setUpHoldRequestForm(recordId) {
         $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
         $('#pickUpLocation').removeAttr('disabled');
       },
-      error: function() {
+      error: function(response) {
         $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
         $('#pickUpLocation').removeAttr('disabled');
       }

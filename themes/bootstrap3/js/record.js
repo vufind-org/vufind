@@ -95,7 +95,7 @@ function registerAjaxCommentRecord() {
         $(form).find('input[type="submit"]').button('loading');
       },
       error: function(response) {
-        Lightbox.displayError(response.data);
+        Lightbox.displayError(response.responseJSON.data);
       }
     });
     return false;
