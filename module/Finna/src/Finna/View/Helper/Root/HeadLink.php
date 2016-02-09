@@ -167,8 +167,8 @@ class HeadLink extends \VuFindTheme\View\Helper\HeadLink
             $fileTime = filemtime($file);
             $cache = $this->cacheManager->getCache('stylesheet')->getOptions()
                 ->getCacheDir();
-            if (!file_exists("$cache/$theme/{$basename}_1.css")
-                || filemtime("$cache/$theme/{$basename}_1.css") < $fileTime
+            if (!file_exists("$cache/$theme/{$basename}_part1.css")
+                || filemtime("$cache/$theme/{$basename}_part1.css") < $fileTime
             ) {
                 // Populate cache
                 if (!is_dir("$cache/$theme")) {
