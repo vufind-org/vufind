@@ -92,6 +92,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         return [
             'Failure_Probabilities' => [
                 'cancelHolds' => 0,
+                'checkRequestIsValid' => 0,
                 'getDefaultRequestGroup' => 0,
                 'getHoldDefaultRequiredDate' => 0,
                 'placeHold' => 0,

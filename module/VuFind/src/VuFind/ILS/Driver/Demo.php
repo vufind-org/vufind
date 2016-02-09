@@ -1289,10 +1289,7 @@ class Demo extends AbstractBase
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        if (rand() % 10 == 0) {
-            return false;
-        }
-        return true;
+        return !$this->isFailing(__METHOD__, 10);
     }
 
     /**
