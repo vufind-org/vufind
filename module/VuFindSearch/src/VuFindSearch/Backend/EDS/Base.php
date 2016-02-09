@@ -305,7 +305,8 @@ abstract class EdsApi_REST_Base
         // Build headers
         $headers = [
             'Accept' => $this->accept,
-            'Content-Type' => $this->contentType
+            'Content-Type' => $this->contentType,
+            'Accept-Encoding' => 'gzip,deflate'
         ];
         if (null != $headerParams && !empty($headerParams)) {
             foreach ($headerParams as $key => $value) {

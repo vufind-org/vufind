@@ -238,20 +238,6 @@ class Factory
     }
 
     /**
-     * Construct the GetLastSearchLink helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return GetLastSearchLink
-     */
-    public static function getGetLastSearchLink(ServiceManager $sm)
-    {
-        return new GetLastSearchLink(
-            $sm->getServiceLocator()->get('VuFind\Search\Memory')
-        );
-    }
-
-    /**
      * Construct the HelpText helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -444,6 +430,20 @@ class Factory
     }
 
     /**
+     * Construct the SearchMemory helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SearchMemory
+     */
+    public static function getSearchMemory(ServiceManager $sm)
+    {
+        return new SearchMemory(
+            $sm->getServiceLocator()->get('VuFind\Search\Memory')
+        );
+    }
+
+    /**
      * Construct the SearchOptions helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -480,12 +480,9 @@ class Factory
      */
     public static function getSearchTabs(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $config = isset($config->SearchTabs)
-            ? $config->SearchTabs->toArray() : [];
         return new SearchTabs(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-            $config, $sm->get('url')
+            $sm->get('url'), $sm->getServiceLocator()->get('VuFind\SearchTabsHelper')
         );
     }
 

@@ -421,6 +421,36 @@ class UtilController extends AbstractBase
 
     /**
      * Command-line tool to clear unwanted entries
+     * from record cache table.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function cleanuprecordcacheAction()
+    {
+        $this->consoleOpts->addRules(
+            [
+                'h|help' => 'Get help',
+            ]
+        );
+
+        if ($this->consoleOpts->getOption('h')
+            || $this->consoleOpts->getOption('help')
+        ) {
+            Console::writeLine('Clean up unused cached records from the database.');
+            return $this->getFailureResponse();
+        }
+
+        $recordTable = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+            ->get('Record');
+
+        $count = $recordTable->cleanup();
+
+        Console::writeLine("$count records deleted.");
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Command-line tool to clear unwanted entries
      * from search history database table.
      *
      * @return \Zend\Console\Response
