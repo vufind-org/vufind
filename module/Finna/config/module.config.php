@@ -139,6 +139,7 @@ $config = [
                     'multiils' => 'Finna\Auth\Factory::getMultiILS',
                 ],
                 'invokables' => [
+                    'choiceauth' => 'Finna\Auth\ChoiceAuth',
                     'mozillapersona' => 'Finna\Auth\MozillaPersona',
                     'shibboleth' => 'Finna\Auth\Shibboleth',
                 ],
