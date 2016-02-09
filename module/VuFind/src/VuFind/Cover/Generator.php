@@ -92,7 +92,7 @@ class Generator
             'textAlign'    => 'center',
             'titleFont'    => 'DroidSerif-Bold.ttf',
             'topPadding'   => 19,
-            'bottomPadding'=> 3,
+            'bottomPadding' => 3,
             'wrapWidth'    => 80,
             'titleFillColor'  => 'black',
             'titleBorderColor'  => 'none',
