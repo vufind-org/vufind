@@ -113,7 +113,7 @@ class HeadLink extends \VuFindTheme\View\Helper\HeadLink
      *
      * @return resource Lock file handle
      */
-    function acquireLock($lockfile)
+    protected function acquireLock($lockfile)
     {
         $handle = fopen($lockfile, 'c+');
         if (!is_resource($handle)) {
@@ -133,7 +133,7 @@ class HeadLink extends \VuFindTheme\View\Helper\HeadLink
      *
      * @return void
      */
-    function releaseLock($handle)
+    protected function releaseLock($handle)
     {
         if ($handle) {
             flock($handle, LOCK_UN);
