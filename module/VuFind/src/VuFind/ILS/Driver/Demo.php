@@ -202,7 +202,9 @@ class Demo extends AbstractBase
         $fakeServices = [];
 
         foreach ($keys as $key) {
-            $fakeServices[] = $services[$key];
+            if ($key !== null) {
+                $fakeServices[] = $services[$key];
+            }
         }
 
         return $fakeServices;
