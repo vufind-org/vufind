@@ -65,6 +65,13 @@ class Solr extends \VuFind\Autocomplete\Solr
     protected $hierarchicalFacets;
 
     /**
+     * OR facets
+     *
+     * @var array
+     */
+    protected $orFacets;
+
+    /**
      * Search configuration
      *
      * @var \Zend\Config\Config
@@ -93,6 +100,13 @@ class Solr extends \VuFind\Autocomplete\Solr
     protected $searchTab = null;
 
     /**
+     * Current request
+     *
+     * @var \Zend\Stdlib\Parameters
+     */
+    protected $request = null;
+
+    /**
      * Constructor
      *
      * @param PluginManager       $results      Results plugin manager
@@ -110,6 +124,13 @@ class Solr extends \VuFind\Autocomplete\Solr
             = isset($facetConfig->SpecialFacets->hierarchical)
             ? $facetConfig->SpecialFacets->hierarchical->toArray() : [];
 
+        if (isset($facetConfig->CheckboxFacets)) {
+            $this->checkboxFacets = [];
+            foreach ($facetConfig->CheckboxFacets as $facet => $label) {
+                list($field, $val) = explode(':', $facet, 2);
+                $this->checkboxFacets[] = $field;
+            }
+        }
         $pos = 0;
         foreach ($facets as $data) {
             $data = explode('|', $data);
@@ -137,6 +158,12 @@ class Solr extends \VuFind\Autocomplete\Solr
             $this->facetTranslations[$field] = $val;
         }
 
+        $this->orFacets = [];
+        if (isset($this->facetConfig->Results_Settings->orFacets)) {
+            $this->orFacets = array_map(
+                'trim', explode(',', $this->facetConfig->Results_Settings->orFacets)
+            );
+        }
         parent::__construct($results);
     }
 
@@ -151,6 +178,8 @@ class Solr extends \VuFind\Autocomplete\Solr
     public function getSuggestions($query)
     {
         $params = $this->searchObject->getParams();
+        $this->request->set('filter', $this->request->get('hiddenFilters'));
+        $params->initSpatialDateRangeFilter($this->request);
         $this->searchObject->getOptions()->disableHighlighting();
 
         if (!$this->facetingDisabled) {
@@ -169,7 +198,7 @@ class Solr extends \VuFind\Autocomplete\Solr
             $allFacets = array_keys($this->facetSettings);
             $facets = array_diff($allFacets, $this->hierarchicalFacets);
             foreach ($facets as $facet) {
-                $params->addFacet($facet);
+                $params->addFacet($facet, null, $this->useOrFacet($facet));
             }
         }
 
@@ -209,8 +238,13 @@ class Solr extends \VuFind\Autocomplete\Solr
                 $this->searchObject->getParams()->addFilter($current);
             }
             foreach ($this->hierarchicalFacets as $facet) {
-                $params->addFacet($facet, null, false);
+                $this->searchObject->getParams()->addFacet(
+                    $facet, null, $this->useOrFacet($facet)
+                );
             }
+            $this->searchObject->getParams()->initSpatialDateRangeFilter(
+                $this->request
+            );
             $hierachicalFacets = $this->searchObject->getFullFieldFacets(
                 array_intersect($this->hierarchicalFacets, $allFacets),
                 false, -1, 'count'
@@ -256,6 +290,18 @@ class Solr extends \VuFind\Autocomplete\Solr
     }
 
     /**
+     * Set current request.
+     *
+     * @param \Zend\Stdlib\Parameters $request Request
+     *
+     * @return void
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
+    }
+
+    /**
      * Filter and limit facet values.
      *
      * @param string $field  Facet field.
@@ -265,6 +311,21 @@ class Solr extends \VuFind\Autocomplete\Solr
      */
     protected function filterFacetValues($field, $values)
     {
+        $values = $this->convertBooleanValues($values);
+        foreach ($values as $key => $value) {
+            $discard = false;
+            if ($this->isCheckboxFacet($field)) {
+                $discard = $this->searchObject->getParams()->hasFilter(
+                    "$field:" . $value['value']
+                );
+            } else if (isset($value['isApplied']) && $value['isApplied']) {
+                $discard = true;
+            }
+            if ($discard) {
+                unset($values[$key]);
+            }
+        }
+
         $result = [];
         foreach ($this->facetSettings[$field] as $facet) {
             $filtered = [];
@@ -311,8 +372,10 @@ class Solr extends \VuFind\Autocomplete\Solr
     protected function extractFacetData(
         $facet, $values, $hierarchicalFacet = false
     ) {
+        $orFacet = $this->useOrFacet($facet);
+        $checkboxFacet = $this->isCheckboxFacet($facet);
         $fn = function ($value) use (
-            $facet, $hierarchicalFacet
+            $facet, $hierarchicalFacet, $orFacet, $checkboxFacet
         ) {
             $label = $value['value'];
             $key = "autocomplete_$facet:$label";
@@ -324,26 +387,44 @@ class Solr extends \VuFind\Autocomplete\Solr
                 ? $value['displayText']
                 : $this->translator->translate($label);
             }
-
-            $facetTabel = $this->translator->translate(
-                $this->facetTranslations[$facet]
-            );
+            if ($checkboxFacet) {
+                $label = $this->translator->translate(
+                    $this->facetTranslations[$facet]
+                );
+            }
 
             $count = $value['count'];
             $value = $value['value'];
-            if (is_bool($value)) {
-                $value = (int)$value;
-                $label = $facetTabel;
-            } else if (in_array($value, ['true', 'false'])) {
-                $value = $value === 'true' ? '1' : '0';
-                $label = $facetTabel;
-            }
 
             $data = [$label, $count];
-            $data[] = $facet . ':' . $value;
+            $filter = $orFacet ? '~' : '';
+            $filter .= $facet . ':' . $value;
+            $data[] = $filter;
+
             return $data;
         };
         return array_map($fn, $values);
+    }
+
+    /**
+     * Convert the 'value' fields of boolean facet items to integers (0 or 1).
+     *
+     * @param array $values Facet values.
+     *
+     * @return array Converted facet values
+     */
+    protected function convertBooleanValues($values)
+    {
+        foreach ($values as &$item) {
+            $value = $item['value'];
+            if (is_bool($value)) {
+                $value = (int)$value;
+            } else if (in_array($value, ['true', 'false'])) {
+                $value = $value === 'true' ? '1' : '0';
+            }
+            $item['value'] = $value;
+        }
+        return $values;
     }
 
     /**
@@ -356,5 +437,34 @@ class Solr extends \VuFind\Autocomplete\Solr
     protected function mungeQuery($query)
     {
         return $query;
+    }
+
+    /**
+     * Check if the given facet should be used with the OR operator.
+     *
+     * @param string $facet Facet
+     *
+     * @return boolean
+     */
+    protected function useOrFacet($facet)
+    {
+        if ($this->isCheckboxFacet($facet)) {
+            return false;
+        }
+        return (isset($this->orFacets[0]) && $this->orFacets[0] == '*')
+            || in_array($facet, $this->orFacets);
+    }
+
+    /**
+     * Check if the given facet is a checkbox (boolean) facet.
+     *
+     * @param string $facet Facet
+     *
+     * @return boolean
+     */
+    protected function isCheckboxFacet($facet)
+    {
+        return
+            isset($this->checkboxFacets) && in_array($facet, $this->checkboxFacets);
     }
 }
