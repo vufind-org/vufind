@@ -431,6 +431,9 @@ finna.dateRangeVis = (function() {
                     return false;
                 } else { // both dates set
                     query += '"['+padZeros(from)+' TO '+padZeros(to)+']"';
+                    if (type == 'within') {
+                        query += '&search_daterange_mv_type=' + type;
+                    }
                 }
 
                 // Perform the new search

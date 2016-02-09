@@ -476,7 +476,7 @@ Browse_Journal = "Solr:Title:title:title:format:1/Journal/eSerial/"
 ;                 If none specified, the facet is shown on all tabs.
 ;
 ;   Examples:
-;     facets[] = "online_boolean|true"
+;     facets[] = "online_boolean"
 ;     facets[] = "building|2/JYU/100/3/"
 ;     facets[] = "format|0/Book/"
 ;     facets[] = "format||3|Solr"

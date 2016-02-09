@@ -1184,24 +1184,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
-     * Get logged-in user's display name
-     *
-     * @return \Zend\Http\Response
-     * @throws \Exception
-     */
-    public function getUserDisplayNameAjax()
-    {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
-            );
-        }
-        return $this->output($user->getDisplayName(), self::STATUS_OK);
-    }
-
-    /**
      * Report comment inappropriate.
      *
      * @return void

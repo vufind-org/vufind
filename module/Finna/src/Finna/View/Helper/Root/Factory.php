@@ -68,6 +68,23 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the HeadLink helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HeadLink
+     */
+    public static function getHeadLink(ServiceManager $sm)
+    {
+        $locator = $sm->getServiceLocator();
+        return new HeadLink(
+            $locator->get('VuFindTheme\ThemeInfo'),
+            $locator->get('Request'),
+            $locator->get('VuFind\Cache\Manager')
+        );
+    }
+
+    /**
      * Construct the LayoutClass helper.
      *
      * @param ServiceManager $sm Service manager.
