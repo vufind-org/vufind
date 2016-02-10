@@ -147,4 +147,27 @@ class SolrDefaultBackendFactory
         );
     }
 
+    /**
+     * Get all hidden filter settings.
+     *
+     * @return array
+     */
+    protected function getHiddenFilters()
+    {
+        $hf = parent::getHiddenFilters();
+
+        if (!isset($_ENV['VUFIND_API_CALL']) || !$_ENV['VUFIND_API_CALL']) {
+            return $hf;
+        }
+        $search = $this->config->get($this->searchConfig);
+
+        // API hidden filters
+        if (isset($search->ApiHiddenFilters)) {
+            foreach ($search->ApiHiddenFilters as $filter) {
+                $hf[] = $filter;
+            }
+        }
+
+        return $hf;
+    }
 }

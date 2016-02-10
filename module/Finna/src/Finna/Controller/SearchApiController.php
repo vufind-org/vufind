@@ -4,7 +4,7 @@
  *
  * PHP Version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -173,6 +173,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      */
     public function recordAction()
     {
+        // Make sure VUFIND_API_CALL environment variable is set (it's ok for this to
+        // not propagate, so manipulating $_ENV directly works)
+        $_ENV['VUFIND_API_CALL'] = 1;
         $this->writeSession();
         $this->determineOutputMode();
 
@@ -223,6 +226,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      */
     public function searchAction()
     {
+        // Make sure VUFIND_API_CALL environment variable is set (it's ok for this to
+        // not propagate, so manipulating $_ENV directly works)
+        $_ENV['VUFIND_API_CALL'] = 1;
         $this->writeSession();
         $this->determineOutputMode();
 

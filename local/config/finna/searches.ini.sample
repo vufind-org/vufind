@@ -592,6 +592,14 @@ container_title = "Journal Title"
 ;0 = "format:\"Book\" OR format:\"Journal\""
 ;1 = "language:\"English\" OR language:\"French\""
 
+; This section is an extension to [RawHiddenFilters] when you need to create 
+; additional advanced types of filters -- i.e. complex boolean queries -- applied
+; only when the API functions are used (in addition to any HiddenFilters or 
+; RawHiddenFilters. Keys are ignored, but increasing numeric values (1, 2, 3...) are
+; recommended.  Values are fully-formed filter queries.
+[ApiHiddenFilters]
+;0 = "format:\"Book\""
+
 ; This section defines how records are handled when being fetched from Solr.
 [Records]
 ; Boolean value indicating if deduplication is enabled. Defaults to false.
