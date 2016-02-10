@@ -208,9 +208,11 @@ class SolrExtensionsListener
         if (empty($facetConfig->SpecialFacets->hierarchical)) {
             return;
         }
-        // Check if we're retrieving the complete list
-        $limit = $params->get('facet.limit');
-        if ($limit === null || $limit[0] == -1) {
+        // Check if we're retrieving the complete list or something else than records
+        // (limit=0, e.g. facets for search screen)
+        $limit = $params->get('limit');
+        $facetLimit = $params->get('facet.limit');
+        if ($facetLimit === null || $facetLimit[0] == -1 || $limit === 0) {
             return;
         }
         $hierarchical = $facetConfig->SpecialFacets->hierarchical->toArray();
