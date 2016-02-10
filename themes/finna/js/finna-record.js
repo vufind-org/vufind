@@ -114,6 +114,17 @@ finna.record = (function() {
         return Lightbox.get(params['controller'], 'Save', {id:id});
       });
     };
+
+    // Override recordDocReady so that we can hook up our own saveRecord callback
+    var origRecordDocReady = recordDocReady;
+    recordDocReady = function() {
+      origRecordDocReady();
+      Lightbox.addFormCallback('saveRecord', function(html) {
+        Lightbox.close();
+        checkSaveStatuses();
+        refreshTagList();
+      });
+    }
     
     var my = {
         checkRequestsAreValid: checkRequestsAreValid,
