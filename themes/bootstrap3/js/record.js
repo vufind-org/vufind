@@ -14,7 +14,7 @@ function checkRequestIsValid(element, requestType, blockedClass) {
     cache: false,
     url: url,
     success: function(response) {
-      if (typeof response.data.msg !== 'undefined') {
+      if (response.data.status) {
         $(element).removeClass('disabled')
           .attr('title', response.data.msg)
           .html('<i class="fa fa-flag"></i>&nbsp;'+response.data.msg);
@@ -23,7 +23,7 @@ function checkRequestIsValid(element, requestType, blockedClass) {
       }
     },
     error: function(response) {
-      $(element).replaceWith('<span class="' + blockedClass + '">' + response.data.msg + '</span>');
+      $(element).remove();
     }
   });
 }

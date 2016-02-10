@@ -253,6 +253,36 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Are holds/recalls blocked?
+     *
+     * @return bool
+     */
+    protected function checkRequestBlock()
+    {
+        return $this->isFailing(__METHOD__, 10);
+    }
+
+    /**
+     * Are ILL requests blocked?
+     *
+     * @return bool
+     */
+    protected function checkILLRequestBlock()
+    {
+        return $this->isFailing(__METHOD__, 10);
+    }
+
+    /**
+     * Are storage retrieval requests blocked?
+     *
+     * @return bool
+     */
+    protected function checkStorageRetrievalRequestBlock()
+    {
+        return $this->isFailing(__METHOD__, 10);
+    }
+
+    /**
      * Generates a random, fake holding array
      *
      * @param string $id     set id
@@ -280,16 +310,16 @@ class Demo extends AbstractBase
             'callnumber'   => $this->getFakeCallNum(),
             'duedate'      => '',
             'is_holdable'  => true,
-            'addLink'      => $patron ? rand() % 10 == 0 ? 'block' : true : false,
+            'addLink'      => $patron
+                ? $this->checkRequestBlock() ? 'block' : true : false,
             'level'        => 'copy',
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => $patron
-                ? rand() % 10 == 0 ? 'block' : 'check'
+                ? $this->checkStorageRetrievalRequestBlock() ? 'block' : 'check'
                 : false,
             'ILLRequest'   => 'auto',
             'addILLRequestLink' => $patron
-                ? rand() % 10 == 0 ? 'block' : 'check'
-                : false
+                ? $this->checkILLRequestBlock() ? 'block' : 'check' : false
         ];
     }
 
@@ -1289,10 +1319,7 @@ class Demo extends AbstractBase
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        if (rand() % 10 == 0) {
-            return false;
-        }
-        return true;
+        return !$this->isFailing(__METHOD__, 10);
     }
 
     /**
@@ -1390,7 +1417,7 @@ class Demo extends AbstractBase
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        if (!$this->storageRetrievalRequests || rand() % 10 == 0) {
+        if (!$this->storageRetrievalRequests || $this->isFailing(__METHOD__, 10)) {
             return false;
         }
         return true;
@@ -1489,7 +1516,7 @@ class Demo extends AbstractBase
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
-        if (!$this->ILLRequests || rand() % 10 == 0) {
+        if (!$this->ILLRequests || $this->isFailing(__METHOD__, 10)) {
             return false;
         }
         return true;
