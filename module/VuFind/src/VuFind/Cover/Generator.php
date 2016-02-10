@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
 namespace VuFind\Cover;
-use VuFindCode\ISBN, Zend\Log\LoggerInterface, ZendService\Amazon\Amazon;
 
 /**
  * Dynamic Book Cover Generator
@@ -45,14 +44,41 @@ class Generator
      * @var array
      */
     protected $settings = [];
+
     /**
-     * Reserved color
+     * Title's fill color
+     *
+     * @var int
      */
-    protected $black;
+    protected $titleFillColor;
+
     /**
-     * Reserved color
+     * Title's border color
+     *
+     * @var int
      */
-    protected $white;
+    protected $titleBorderColor;
+
+    /**
+     * Author's fill color
+     *
+     * @var int
+     */
+    protected $authorFillColor;
+
+    /**
+     * Author's border color
+     *
+     * @var int
+     */
+    protected $authorBorderColor;
+
+    /**
+     * Base for image
+     *
+     * @var resource
+     */
+    protected $im;
 
     /**
      * Constructor
@@ -75,7 +101,12 @@ class Generator
             'textAlign'    => 'center',
             'titleFont'    => 'DroidSerif-Bold.ttf',
             'topPadding'   => 19,
+            'bottomPadding' => 3,
             'wrapWidth'    => 80,
+            'titleFillColor'  => 'black',
+            'titleBorderColor'  => 'none',
+            'authorFillColor' => 'white',
+            'authorBorderColor' => 'black'
         ];
         foreach ($settings as $i => $setting) {
             $default[$i] = $setting;
@@ -83,10 +114,70 @@ class Generator
         $default['authorFont'] = $this->fontPath($default['authorFont']);
         $default['titleFont']  = $this->fontPath($default['titleFont']);
         $this->settings = (object) $default;
+
+        // Create image
+        if (!($this->im = imagecreate($this->settings->size, $this->settings->size))
+        ) {
+            throw new \Exception("Cannot Initialize new GD image stream");
+        }
+        // Get all colors
+        $this->titleFillColor = $this->getColor($this->settings->titleFillColor);
+        $this->titleBorderColor = $this->getColor($this->settings->titleBorderColor);
+        $this->authorFillColor = $this->getColor($this->settings->authorFillColor);
+        $this->authorBorderColor = $this->getColor(
+            $this->settings->authorBorderColor
+        );
     }
 
     /**
-     * Generates a dynamic cover image from elements of the book
+     * Check and allocates color
+     *
+     * @param string $color Legal color name from HTML4
+     *
+     * @return allocated color
+     */
+    protected function getColor($color)
+    {
+        switch (strtolower($color)){
+        case 'black':
+            return imagecolorallocate($this->im, 0, 0, 0);
+        case 'silver':
+            return imagecolorallocate($this->im, 192, 192, 192);
+        case 'gray':
+            return imagecolorallocate($this->im, 128, 128, 128);
+        case 'white':
+            return imagecolorallocate($this->im, 255, 255, 255);
+        case 'maroon':
+            return imagecolorallocate($this->im, 128, 0, 0);
+        case 'red':
+            return imagecolorallocate($this->im, 255, 0, 0);
+        case 'purple':
+            return imagecolorallocate($this->im, 128, 0, 128);
+        case 'fuchsia':
+            return imagecolorallocate($this->im, 255, 0, 255);
+        case 'green':
+            return imagecolorallocate($this->im, 0, 128, 0);
+        case 'lime':
+            return imagecolorallocate($this->im, 0, 255, 0);
+        case 'olive':
+            return imagecolorallocate($this->im, 128, 128, 0);
+        case 'yellow':
+            return imagecolorallocate($this->im, 255, 255, 0);
+        case 'navy':
+            return imagecolorallocate($this->im, 0, 0, 128);
+        case 'blue':
+            return imagecolorallocate($this->im, 0, 0, 255);
+        case 'teal':
+            return imagecolorallocate($this->im, 0, 128, 128);
+        case 'aqua':
+            return imagecolorallocate($this->im, 0, 255, 255);
+        default:
+            return false;
+        }
+    }
+
+    /**
+     * Generates a dynamic cover image from elements of the item
      *
      * @param string $title      Title of the book
      * @param string $author     Author of the book
@@ -116,29 +207,20 @@ class Generator
      */
     protected function generateSolid($title, $author, $callnumber)
     {
-        $half = $this->settings->size / 2;
         $box  = $this->settings->size / 8;
-        // Create image
-        if (!($im = imagecreate($this->settings->size, $this->settings->size))) {
-            throw new \Exception("Cannot Initialize new GD image stream");
-        }
-        // this->white backdrop
-        $this->white = imagecolorallocate($im, 255, 255, 255);
-        // this->black
-        $this->black = imagecolorallocate($im, 0, 0, 0);
 
         // Generate seed from callnumber, title back up
         $seed = $this->createSeed($title, $callnumber);
         // Number to color, hsb to control saturation and lightness
         $color = $this->makeHSBColor(
-            $im,
+            $this->im,
             $seed % 256,
             $this->settings->saturation,
             $this->settings->lightness
         );
         // Fill solid color
         imagefilledrectangle(
-            $im,
+            $this->im,
             0,
             0,
             $this->settings->size,
@@ -146,17 +228,17 @@ class Generator
             $color
         );
 
-        $this->drawTitle($im, $title, $box);
-        $this->drawAuthor($im, $author);
+        $this->drawTitle($this->im, $title, $box);
+        $this->drawAuthor($this->im, $author);
 
         // Output png CHECK THE PARAM
         ob_start();
-        imagepng($im);
+        imagepng($this->im);
         $img = ob_get_contents();
         ob_end_clean();
 
         // Clear memory
-        imagedestroy($im);
+        imagedestroy($this->im);
         // GTFO
         return $img;
     }
@@ -175,15 +257,6 @@ class Generator
         // Set up common variables
         $half = $this->settings->size / 2;
         $box  = $this->settings->size / 8;
-
-        // Create image
-        if (!($im = imagecreate($this->settings->size, $this->settings->size))) {
-            throw new \Exception("Cannot Initialize new GD image stream");
-        }
-        // this->white backdrop
-        $this->white = imagecolorallocate($im, 255, 255, 255);
-        // this->black
-        $this->black = imagecolorallocate($im, 0, 0, 0);
 
         // Generate seed from callnumber, title back up
         $seed = $this->createSeed($title, $callnumber);
@@ -294,7 +367,7 @@ class Generator
             $text = $words[$i];
             $line .= $text . ' ';
             $textWidth = $this->textWidth(
-                $line,
+                rtrim($line, ' '),
                 $this->settings->titleFont,
                 $this->settings->fontSize
             );
@@ -302,15 +375,14 @@ class Generator
                 // Print black with white border
                 $this->drawText(
                     $im,
-                    $pline,
-                    3,
+                    rtrim($pline, ' '),
                     $this->settings->topPadding + $lineHeight * $lineCount,
                     $this->settings->titleFont,
                     $this->settings->fontSize,
-                    $this->black,
-                    $this->white
+                    $this->titleFillColor,
+                    $this->titleBorderColor
                 );
-                $line = $text . " ";
+                $line = $text . ' ';
                 $lineCount++;
             }
             $i++;
@@ -318,26 +390,24 @@ class Generator
         // Print the last words
         $this->drawText(
             $im,
-            $line,
-            3,
+            rtrim($line, ' '),
             $this->settings->topPadding + $lineHeight * $lineCount,
             $this->settings->titleFont,
             $this->settings->fontSize,
-            $this->black,
-            $this->white
+            $this->titleFillColor,
+            $this->titleBorderColor
         );
         // Add ellipses if we've truncated
         if ($i < count($words) - 1) {
             $this->drawText(
                 $im,
                 '...',
-                5,
                 $this->settings->topPadding
                 + $this->settings->maxLines * $lineHeight,
                 $this->settings->titleFont,
                 $this->settings->fontSize + 1,
-                $this->black,
-                $this->white
+                $this->titleFillColor,
+                $this->titleBorderColor
             );
         }
     }
@@ -355,31 +425,33 @@ class Generator
         // Scale author to fit by incrementing fontsizes down
         $fontSize = $this->settings->fontSize;
         do {
-            $txtWidth = $this->textWidth(
+            $fontSize--;
+            $textWidth = $this->textWidth(
                 $author,
-                $this->settings->titleFont,
+                $this->settings->authorFont,
                 $fontSize
             );
-            $fontSize--;
-        } while ($txtWidth > $this->settings->wrapWidth);
-        // white text, black outline
-        $fontSize = ++$fontSize < $this->settings->minFontSize
-            ? $this->settings->fontSize
-            : $fontSize;
+        } while ($textWidth > $this->settings->wrapWidth &&
+              $fontSize > $this->minFontSize
+          );
         // Too small to read? Align left
-        $alignment = $fontSize < $this->settings->minFontSize
+        $textWidth = $this->textWidth(
+            $author,
+            $this->settings->authorFont,
+            $fontSize
+        );
+        $align = $textWidth > $this->settings->size
             ? 'left'
             : null;
         $this->drawText(
             $im,
             $author,
-            5,
-            $this->settings->size - 3,
+            $this->settings->size - $this->settings->bottomPadding,
             $this->settings->authorFont,
             $fontSize,
-            $this->white,
-            $this->black,
-            $alignment
+            $this->authorFillColor,
+            $this->authorBorderColor,
+            $align
         );
     }
 
@@ -410,7 +482,7 @@ class Generator
     protected function textWidth($text, $font, $size)
     {
         $p = imagettfbbox($size, 0, $font, $text);
-        return $p[2] - $p[0] - 4;
+        return $p[2] - $p[0];
     }
 
     /**
@@ -418,7 +490,6 @@ class Generator
      *
      * @param GCImage $im       Image object
      * @param string  $text     Text to render
-     * @param integer $x        Left position
      * @param integer $y        Top position
      * @param string  $font     Full path to font
      * @param integer $fontSize Size of the font
@@ -428,30 +499,28 @@ class Generator
      *
      * @return void
      */
-    protected function drawText($im, $text, $x, $y,
+    protected function drawText($im, $text, $y,
         $font, $fontSize, $mcolor, $scolor = false, $align = null
     ) {
-        $txtWidth = $this->textWidth(
+        $textWidth = $this->textWidth(
             $text,
-            $this->settings->titleFont,
-            $this->settings->fontSize
+            $font,
+            $fontSize
         );
-        if ($txtWidth > $this->settings->size) {
+        if ($textWidth > $this->settings->size) {
             $align = 'left';
-            $x = 0;
         }
         if (null == $align) {
             $align = $this->settings->textAlign;
         }
+        if ($align == 'left') {
+            $x = 0;
+        }
         if ($align == 'center') {
-            $p = imagettfbbox($fontSize, 0, $this->settings->titleFont, $text);
-            $txtWidth = $p[2] - $p[0] - 4;
-            $x = ($this->settings->size - $txtWidth) / 2;
+            $x = ($this->settings->size - $textWidth) / 2;
         }
         if ($align == 'right') {
-            $p = imagettfbbox($fontSize, 0, $this->settings->titleFont, $text);
-            $txtWidth = $p[2] - $p[0] - 4;
-            $x = $this->settings->size - $txtWidth - $x;
+            $x = $this->settings->size - $textWidth;
         }
 
         // Generate 5 lines of text, 4 offset in a border color
