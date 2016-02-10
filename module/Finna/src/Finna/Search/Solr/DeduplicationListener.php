@@ -52,10 +52,20 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
     protected function appendDedupRecordFields($localRecordData, $dedupRecordData,
         $recordSources, $sourcePriority
     ) {
-        $localRecordData = parent::appendDedupRecordFields(
-            $localRecordData, $dedupRecordData,
-            $recordSources, $sourcePriority
-        );
+        // Copy over only those local IDs that
+        if (empty($recordSources)) {
+            $localRecordData['local_ids_str_mv']
+                = $dedupRecordData['local_ids_str_mv'];
+        } else {
+            $sources = array_flip(explode(',', $recordSources));
+            $localIds = $dedupRecordData['local_ids_str_mv'];
+            foreach ($localIds as $id) {
+                list($idSource) = explode('.', $id, 2);
+                if (isset($sources[$idSource])) {
+                    $localRecordData['local_ids_str_mv'][] = $id;
+                }
+            }
+        }
 
         if (isset($dedupRecordData['online_urls_str_mv'])) {
             $localRecordData['online_urls_str_mv'] = [];
