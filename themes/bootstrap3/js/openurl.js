@@ -12,7 +12,7 @@ function loadResolverLinks($target, openUrl) {
     },
     error: function(response) {
       $target.removeClass('ajax_availability').addClass('error')
-        .empty().append(response.data);
+        .empty().append(response.responseJSON.data);
     }
   });
 }

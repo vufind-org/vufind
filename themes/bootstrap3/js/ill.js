@@ -22,7 +22,7 @@ function setUpILLRequestForm(recordId) {
         });
         $("#ILLRequestForm #pickupLibraryLocationLabel i").removeClass("fa fa-spinner icon-spin");
       },
-      error: function() {
+      error: function(response) {
         $("#ILLRequestForm #pickupLibraryLocationLabel i").removeClass("fa fa-spinner icon-spin");
       }
     });

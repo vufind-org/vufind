@@ -80,7 +80,7 @@ function checkItemStatuses() {
     },
     error: function(response) {
       // display the error message on each of the ajax status place holder
-      $(".ajax-availability").empty().append(response.data);
+      $(".ajax-availability").empty().append(response.responseJSON.data);
     }
   });
 }
