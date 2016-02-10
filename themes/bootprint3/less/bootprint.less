@@ -85,7 +85,24 @@ input[type="radio"], input[type="checkbox"] {
     width:100%;
   }
 }
-.row > p {padding:0 1em;}
+.row {
+  &:not(.top-row) {
+    padding:6px 4px;
+    margin:0 -4px;
+  }
+  &.result {
+    &:nth-child(even) {
+      background:@gray-lighter;
+    }
+    &:last-child {
+      margin-bottom:1em;
+    }
+  }
+  & > p {padding:0 1em;}
+}
+.search .row {
+  padding:2px 0;
+}
 .sub-breadcrumb {
   padding:0 5px;
 }
