@@ -46,6 +46,13 @@ class Generator
     protected $settings = [];
 
     /**
+     * Base color used to fill initially created image.
+     *
+     * @var int
+     */
+    protected $baseColor;
+
+    /**
      * Title's fill color
      *
      * @var int
@@ -108,6 +115,7 @@ class Generator
             'authorFillColor' => 'white',
             'authorBorderColor' => 'black',
             'baseColor' => 'white',
+            'accentColor' => 'random',
         ];
         foreach ($settings as $i => $setting) {
             $default[$i] = $setting;
@@ -115,9 +123,17 @@ class Generator
         $default['authorFont'] = $this->fontPath($default['authorFont']);
         $default['titleFont']  = $this->fontPath($default['titleFont']);
         $this->settings = (object) $default;
-
-        // Get all colors
         $this->initImage();
+        $this->initColors();
+    }
+
+    /**
+     * Initialize colors to be used in the image.
+     *
+     * @return void
+     */
+    protected function initColors()
+    {
         $this->baseColor = $this->getColor($this->settings->baseColor);
         $this->titleFillColor = $this->getColor($this->settings->titleFillColor);
         $this->titleBorderColor = $this->getColor($this->settings->titleBorderColor);
@@ -237,6 +253,26 @@ class Generator
     }
 
     /**
+     * Generate an accent color from a seed value.
+     *
+     * @param int $seed Seed value
+     *
+     * @return int
+     */
+    protected function getAccentColor($seed)
+    {
+        // Number to color, hsb to control saturation and lightness
+        if ($this->settings->accentColor == 'random') {
+            return $this->makeHSBColor(
+                $seed % 256,
+                $this->settings->saturation,
+                $this->settings->lightness
+            );
+        }
+        return $this->getColor($this->settings->accentColor);
+    }
+
+    /**
      * Generates a solid color background, ala Google
      *
      * @param string $title      Title of the book
@@ -251,12 +287,7 @@ class Generator
 
         // Generate seed from callnumber, title back up
         $seed = $this->createSeed($title, $callnumber);
-        // Number to color, hsb to control saturation and lightness
-        $color = $this->makeHSBColor(
-            $seed % 256,
-            $this->settings->saturation,
-            $this->settings->lightness
-        );
+
         // Fill solid color
         imagefilledrectangle(
             $this->im,
@@ -264,7 +295,7 @@ class Generator
             0,
             $this->settings->size,
             $this->settings->size,
-            $color
+            $this->getAccentColor($seed)
         );
 
         $this->drawTitle($title, $box);
@@ -288,15 +319,9 @@ class Generator
 
         // Generate seed from callnumber, title back up
         $seed = $this->createSeed($title, $callnumber);
-        // Number to color, hsb to control saturation and lightness
-        $grid_color = $this->makeHSBColor(
-            $seed % 256,
-            $this->settings->saturation,
-            $this->settings->lightness
-        );
         // Render the grid
         $pattern = $this->createPattern($seed);
-        $this->render($pattern, $grid_color, $half, $box);
+        $this->render($pattern, $this->getAccentColor($seed), $half, $box);
 
         if (null !== $title) {
             $this->drawTitle($title, $box);
