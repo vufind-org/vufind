@@ -557,6 +557,10 @@ class Generator
     protected function drawText($text, $y, $font, $fontSize, $mcolor,
         $scolor = false, $align = null
     ) {
+        // If the wrap width is smaller than the image width, we want to account
+        // for this when right or left aligning to maintain padding on the image.
+        $wrapGap = ($this->width - $this->settings->wrapWidth) / 2;
+
         $textWidth = $this->textWidth(
             $text,
             $font,
@@ -564,18 +568,19 @@ class Generator
         );
         if ($textWidth > $this->width) {
             $align = 'left';
+            $wrapGap = 0; // kill wrap gap to maximize text fit
         }
         if (null == $align) {
             $align = $this->settings->textAlign;
         }
         if ($align == 'left') {
-            $x = 0;
+            $x = $wrapGap;
         }
         if ($align == 'center') {
             $x = ($this->width - $textWidth) / 2;
         }
         if ($align == 'right') {
-            $x = $this->width - $textWidth;
+            $x = $this->width - ($textWidth + $wrapGap);
         }
 
         // Generate 5 lines of text, 4 offset in a border color
