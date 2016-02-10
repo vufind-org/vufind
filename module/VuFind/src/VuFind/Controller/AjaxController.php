@@ -1278,7 +1278,6 @@ class AjaxController extends AbstractBase
             // Do nothing -- just fail through to the error message below.
         }
 
-
         return $this->output(
             $this->translate('An error has occurred'), self::STATUS_ERROR, 500
         );
