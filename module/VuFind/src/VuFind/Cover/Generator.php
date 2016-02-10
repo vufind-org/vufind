@@ -88,6 +88,20 @@ class Generator
     protected $im;
 
     /**
+     * Width of image (pixels)
+     *
+     * @var int
+     */
+    protected $width;
+
+    /**
+     * Height of image (pixels)
+     *
+     * @var int
+     */
+    protected $height;
+
+    /**
      * Constructor
      *
      * @param \VuFindTheme\ThemeInfo $themeTools For font loading
@@ -101,8 +115,8 @@ class Generator
             'authorFont'   => 'DroidSerif-Bold.ttf',
             'fontSize'     => 7,
             'lightness'    => 220,
-            'maxLines'     => 5,
-            'minFontSize'  => 5,
+            'maxTitleLines' => 5,
+            'minAuthorFontSize' => 5,
             'saturation'   => 80,
             'size'         => 84,
             'textAlign'    => 'center',
@@ -110,8 +124,8 @@ class Generator
             'topPadding'   => 19,
             'bottomPadding' => 3,
             'wrapWidth'    => 80,
-            'titleFillColor'  => 'black',
-            'titleBorderColor'  => 'none',
+            'titleFillColor' => 'black',
+            'titleBorderColor' => 'none',
             'authorFillColor' => 'white',
             'authorBorderColor' => 'black',
             'baseColor' => 'white',
@@ -151,8 +165,13 @@ class Generator
     protected function initImage()
     {
         // Create image
-        $this->im = imagecreate($this->settings->size, $this->settings->size);
-        if (!$this->im) {
+        $parts = explode('x', strtolower($this->settings->size));
+        if (count($parts) < 2) {
+            $this->width = $this->height = $parts[0];
+        } else {
+            list($this->width, $this->height) = $parts;
+        }
+        if (!($this->im = imagecreate($this->width, $this->height))) {
             throw new \Exception("Cannot Initialize new GD image stream");
         }
     }
@@ -289,8 +308,6 @@ class Generator
      */
     protected function generateSolid($title, $author, $callnumber)
     {
-        $box  = $this->settings->size / 8;
-
         // Generate seed from callnumber, title back up
         $seed = $this->createSeed($title, $callnumber);
 
@@ -299,12 +316,12 @@ class Generator
             $this->im,
             0,
             0,
-            $this->settings->size,
-            $this->settings->size,
+            $this->width,
+            $this->height,
             $this->getAccentColor($seed)
         );
 
-        $this->drawTitle($title, $box);
+        $this->drawTitle($title, $this->height / 8);
         $this->drawAuthor($author);
     }
 
@@ -319,18 +336,14 @@ class Generator
      */
     protected function generateGrid($title, $author, $callnumber)
     {
-        // Set up common variables
-        $half = $this->settings->size / 2;
-        $box  = $this->settings->size / 8;
-
         // Generate seed from callnumber, title back up
         $seed = $this->createSeed($title, $callnumber);
         // Render the grid
         $pattern = $this->createPattern($seed);
-        $this->render($pattern, $this->getAccentColor($seed), $half, $box);
+        $this->render($pattern, $this->getAccentColor($seed));
 
         if (null !== $title) {
-            $this->drawTitle($title, $box);
+            $this->drawTitle($title, $this->height / 8);
         }
         if (null !== $author) {
             $this->drawAuthor($author);
@@ -408,7 +421,9 @@ class Generator
         $line = '';
         $lineCount = 0;
         $i = 0;
-        while ($i < count($words) && $lineCount < $this->settings->maxLines - 1) {
+        while ($i < count($words)
+            && $lineCount < $this->settings->maxTitleLines - 1
+        ) {
             $pline = $line;
             // Format
             $text = $words[$i];
@@ -447,7 +462,7 @@ class Generator
             $this->drawText(
                 '...',
                 $this->settings->topPadding
-                + $this->settings->maxLines * $lineHeight,
+                + $this->settings->maxTitleLines * $lineHeight,
                 $this->settings->titleFont,
                 $this->settings->fontSize + 1,
                 $this->titleFillColor,
@@ -475,7 +490,7 @@ class Generator
                 $fontSize
             );
         } while ($textWidth > $this->settings->wrapWidth &&
-              $fontSize > $this->settings->minFontSize
+              $fontSize > $this->settings->minAuthorFontSize
           );
         // Too small to read? Align left
         $textWidth = $this->textWidth(
@@ -483,12 +498,10 @@ class Generator
             $this->settings->authorFont,
             $fontSize
         );
-        $align = $textWidth > $this->settings->size
-            ? 'left'
-            : null;
+        $align = $textWidth > $this->width ? 'left' : null;
         $this->drawText(
             $author,
-            $this->settings->size - $this->settings->bottomPadding,
+            $this->height - $this->settings->bottomPadding,
             $this->settings->authorFont,
             $fontSize,
             $this->authorFillColor,
@@ -548,7 +561,7 @@ class Generator
             $font,
             $fontSize
         );
-        if ($textWidth > $this->settings->size) {
+        if ($textWidth > $this->width) {
             $align = 'left';
         }
         if (null == $align) {
@@ -558,10 +571,10 @@ class Generator
             $x = 0;
         }
         if ($align == 'center') {
-            $x = ($this->settings->size - $textWidth) / 2;
+            $x = ($this->width - $textWidth) / 2;
         }
         if ($align == 'right') {
-            $x = $this->settings->size - $textWidth;
+            $x = $this->width - $textWidth;
         }
 
         // Generate 5 lines of text, 4 offset in a border color
@@ -589,28 +602,32 @@ class Generator
      *
      * @param string  $bc    Binary string of pattern
      * @param GCColor $color Fill color
-     * @param int     $half  Half the size, shortcut for math
-     * @param int     $box   Box size
      *
      * @return void
      */
-    protected function render($bc, $color, $half, $box)
+    protected function render($bc, $color)
     {
+        $halfWidth = $this->width / 2;
+        $halfHeight = $this->height / 2;
+        $boxWidth  = $this->width / 8;
+        $boxHeight = $this->height / 8;
+
         $bc = str_split($bc);
         for ($k = 0;$k < 4;$k++) {
-            $x = $k % 2   ? $half : $half - $box;
-            $y = $k / 2 < 1 ? $half : $half - $box;
-            $u = $k % 2   ? $box : -$box;
-            $v = $k / 2 < 1 ? $box : -$box;
+            $x = $k % 2   ? $halfWidth : $halfWidth - $boxWidth;
+            $y = $k / 2 < 1 ? $halfHeight : $halfHeight - $boxHeight;
+            $u = $k % 2   ? $boxWidth : -$boxWidth;
+            $v = $k / 2 < 1 ? $boxHeight : -$boxHeight;
             for ($i = 0;$i < 16;$i++) {
                 if ($bc[$i] == "1") {
                     imagefilledrectangle(
-                        $this->im, $x, $y, $x + $box - 1, $y + $box - 1, $color
+                        $this->im, $x, $y,
+                        $x + $boxWidth - 1, $y + $boxHeight - 1, $color
                     );
                 }
                 $x += $u;
-                if ($x >= $this->settings->size || $x < 0) {
-                    $x = $k % 2 ? $half : $half - $box;
+                if ($x >= $this->width || $x < 0) {
+                    $x = $k % 2 ? $halfWidth : $halfWidth - $boxWidth;
                     $y += $v;
                 }
             }
@@ -622,8 +639,8 @@ class Generator
      * Using HSB allows us to control the contrast while allowing randomness
      *
      * @param int $h Hue (0-255)
-     * @param int $s Saturation (0-100)
-     * @param int $v Lightness (0-100)
+     * @param int $s Saturation (0-255)
+     * @param int $v Lightness (0-255)
      *
      * @return GCColor
      */
