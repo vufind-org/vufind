@@ -101,6 +101,8 @@
 ;role = loggedin
 ;permission = conditionalFilter.MyUniversity
 
+; User authorization configuration (access to licensed material is based on this
+; configuration)
 ;[finna.authorized]
 ;require = ANY
 ;ipRange[] = 127.0.0.1
@@ -114,8 +116,17 @@
 ;authenticationStrategy[] = MozillaPersona
 ;permission = finna.authorized
 
+; Admin access to finna cache clearing function. Normally no local configuration 
+; override needed.
 [finna.cache]
 require = ANY
 ipRange[] = 127.0.0.1
 ipRange[] = ::1
 permission = finna.cache
+
+; Access to Finna API
+;[finna.api]
+;require = ANY
+;ipRange[] = 127.0.0.1
+;ipRange[] = ::1
+;permission = finna.api

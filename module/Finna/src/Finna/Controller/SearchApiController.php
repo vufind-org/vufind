@@ -179,6 +179,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $this->writeSession();
         $this->determineOutputMode();
 
+        $auth = $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService');
+        if (!$auth->isGranted('finna.api')) {
+            return $this->output([], self::STATUS_ERROR, 403, 'Permission denied');
+        }
+
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
 
@@ -231,6 +236,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $_ENV['VUFIND_API_CALL'] = 1;
         $this->writeSession();
         $this->determineOutputMode();
+
+        $auth = $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService');
+        if (!$auth->isGranted('finna.api')) {
+            return $this->output([], self::STATUS_ERROR, 403, 'Permission denied');
+        }
 
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
