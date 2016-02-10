@@ -113,7 +113,8 @@ class Generator
         $default = [
             'mode'         => 'grid',
             'authorFont'   => 'DroidSerif-Bold.ttf',
-            'fontSize'     => 7,
+            'titleFontSize' => 7,
+            'authorFontSize' => 6,
             'lightness'    => 220,
             'maxTitleLines' => 5,
             'minAuthorFontSize' => 5,
@@ -431,7 +432,7 @@ class Generator
             $textWidth = $this->textWidth(
                 rtrim($line, ' '),
                 $this->settings->titleFont,
-                $this->settings->fontSize
+                $this->settings->titleFontSize
             );
             if ($textWidth > $this->settings->wrapWidth) {
                 // Print black with white border
@@ -439,7 +440,7 @@ class Generator
                     rtrim($pline, ' '),
                     $this->settings->topPadding + $lineHeight * $lineCount,
                     $this->settings->titleFont,
-                    $this->settings->fontSize,
+                    $this->settings->titleFontSize,
                     $this->titleFillColor,
                     $this->titleBorderColor
                 );
@@ -453,7 +454,7 @@ class Generator
             rtrim($line, ' '),
             $this->settings->topPadding + $lineHeight * $lineCount,
             $this->settings->titleFont,
-            $this->settings->fontSize,
+            $this->settings->titleFontSize,
             $this->titleFillColor,
             $this->titleBorderColor
         );
@@ -464,7 +465,7 @@ class Generator
                 $this->settings->topPadding
                 + $this->settings->maxTitleLines * $lineHeight,
                 $this->settings->titleFont,
-                $this->settings->fontSize + 1,
+                $this->settings->titleFontSize + 1,
                 $this->titleFillColor,
                 $this->titleBorderColor
             );
@@ -481,7 +482,7 @@ class Generator
     protected function drawAuthor($author)
     {
         // Scale author to fit by incrementing fontsizes down
-        $fontSize = $this->settings->fontSize;
+        $fontSize = $this->settings->authorFontSize + 1;
         do {
             $fontSize--;
             $textWidth = $this->textWidth(
