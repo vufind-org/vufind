@@ -224,6 +224,12 @@ class Generator
         case 'aqua':
             return imagecolorallocate($this->im, 0, 255, 255);
         default:
+            if (substr($color, 0, 1) == '#' && strlen($color) == 7) {
+                $r = hexdec(substr($color, 1, 2));
+                $g = hexdec(substr($color, 3, 2));
+                $b = hexdec(substr($color, 5, 2));
+                return imagecolorallocate($this->im, $r, $g, $b);
+            }
             return false;
         }
     }
