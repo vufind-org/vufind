@@ -173,9 +173,9 @@ class HierarchicalFacetHelper extends \VuFind\Search\Solr\HierarchicalFacetHelpe
      * Check all facets for applied ancestors/children and change the href to remove
      * those filters
      *
-     * @param string    $facetName       Facet name
-     * @param array     $facets          Hierarchical facet array
-     * @param bool      $ancestorApplied Boolean indicating whether any ancestor is
+     * @param string $facetName       Facet name
+     * @param array  $facets          Hierarchical facet array
+     * @param bool   $ancestorApplied Boolean indicating whether any ancestor is
      * applied
      *
      * @return array Modified facet array
@@ -208,6 +208,8 @@ class HierarchicalFacetHelper extends \VuFind\Search\Solr\HierarchicalFacetHelpe
      * @param string $facet    Facet name
      * @param array  $item     Facet item
      * @param bool   $children Whether to remove children or ancestors
+     *
+     * @return string Modified href
      */
     protected function removeFilters($facet, $item, $children)
     {
@@ -222,15 +224,15 @@ class HierarchicalFacetHelper extends \VuFind\Search\Solr\HierarchicalFacetHelpe
         }
         $newFilters = [];
         foreach ($params['filter'] as $filter) {
-             list($filterField, $filterValue) = explode(':', $filter, 2);
-             if ($filterField == $facet || $filterField == "~$facet") {
-                 if ((!$children && $this->isAncestor($item, $filterValue))
-                     || ($children && $this->isChild($item, $filterValue))
-                 ) {
-                     continue;
-                 }
-             }
-             $newFilters[] = $filter;
+            list($filterField, $filterValue) = explode(':', $filter, 2);
+            if ($filterField == $facet || $filterField == "~$facet") {
+                if ((!$children && $this->isAncestor($item, $filterValue))
+                    || ($children && $this->isChild($item, $filterValue))
+                ) {
+                    continue;
+                }
+            }
+            $newFilters[] = $filter;
         }
         $params['filter'] = $newFilters;
         return $urlParts[0] . '?' . htmlspecialchars(http_build_query($params));
