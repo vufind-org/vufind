@@ -718,7 +718,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             }
             return [
                 'success' => false,
-                'sysMessage' => $statusAWS->message
+                'sysMessage' => $message
             ];
         }
 
@@ -837,14 +837,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         } else {
             $result = $this->parseHoldings($holdings, $id, '', '');
         }
-        
+
         if (!empty($result)) {
             usort($result, [$this, 'holdingsSortFunction']);
 
             $summary = $this->getHoldingsSummary($result);
             $result[] = $summary;
         }
-        
+
         return empty($result) ? false : $result;
     }
 
@@ -1860,7 +1860,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $this->error("$function Request failed for '$this->arenaMember'.'$id'");
             $this->error("AWS error: '$message'");
             return $status[$message];
-        } return $message;
+        } return $this->mapStatus($message);
     }
 
     /**
@@ -2034,16 +2034,17 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     protected function mapStatus($status)
     {
         $statuses =  [
+            'copyHasSpecialCircCat' => 'Copy has special circulation',
+            'copyIsReserved'        => 'renew_item_requested',
             'isLoanedToday'         => 'Borrowed today',
             'isRenewedToday'        => 'Renewed today',
             'isOverdue'             => 'renew_item_overdue',
-            'patronIsDeniedLoan'    => 'fine_limit_patron',
-            'patronHasDebt'         => 'renew_item_patron_has_debt',
             'maxNofRenewals'        => 'renew_item_limit',
+            'patronIsDeniedLoan'    => 'fine_limit_patron',
+            'patronHasDebt'         => 'fine_limit_patron',
             'patronIsInvoiced'      => 'renew_item_patron_is_invoiced',
-            'copyHasSpecialCircCat' => 'Copy has special circulation',
-            'copyIsReserved'        => 'renew_item_requested',
-            'renewalIsDenied'       => 'renew_denied'
+            'renewalIsDenied'       => 'renew_denied',
+            'ReservationDenied'     => 'hold_error_denied'
         ];
 
         if (isset($statuses[$status])) {
