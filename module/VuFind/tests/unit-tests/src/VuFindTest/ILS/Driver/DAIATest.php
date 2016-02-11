@@ -62,7 +62,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'location' => "Example Library for DAIA Tests - Abteilung III",
                 'locationhref' => false,
                 'item_notes' => [],
-                'services' => ['loan', 'presence']
+                'services' => ['loan', 'presentation']
             ],
         1 =>
             [
@@ -80,7 +80,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'location' => "Example Library for DAIA Tests - Abteilung III",
                 'locationhref' => false,
                 'item_notes' => ['mit Zustimmung', 'nur Kopie'],
-                'services' => ['loan', 'presence']
+                'services' => ['loan', 'presentation']
             ],
         2 =>
             [

@@ -197,7 +197,7 @@ class Demo extends AbstractBase
      */
     protected function getFakeServices()
     {
-        $services = ['loan', 'presence'];
+        $services = ['loan', 'presentation'];
         $keys = (array) array_rand($services, (rand() % count($services)) + 1);
         $fakeServices = [];
 

@@ -944,12 +944,11 @@ class DAIA extends AbstractBase implements
                 if (!isset($services['unavailable'])
                     || !in_array($service, $services['unavailable'])
                 ) {
-                    $availableServices[]
-                        = $service != 'presentation' ? $service : 'presence';
+                    $availableServices[] = $service;
                 }
             }
         }
-        return array_intersect(['loan', 'presence'], $availableServices);
+        return array_intersect(['loan', 'presentation'], $availableServices);
     }
     
     /**
