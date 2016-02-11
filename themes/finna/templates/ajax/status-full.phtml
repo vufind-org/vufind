@@ -149,8 +149,8 @@ foreach ($this->statusItems as $item):
       if (!empty($item['availability'])) {
         $classes = ['ok', 'success'];
       }
-      if (!$classes && !empty($item['status_unknown'])) {
-        $classes = ['ok', 'warning'];
+      if (!$classes && !empty($item['use_unknown_message']) && $item['use_unknown_message']) {
+        $classes = ['status-unknown', 'warning'];
       }
       if (!$classes) {
         $classes = ['remove', 'error'];
