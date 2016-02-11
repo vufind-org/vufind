@@ -71,7 +71,10 @@ if ($groupBranches) {
         $statusItemsFiltered[$location] = $item;
     } else {
         if ($item['availability'] > $statusItemsFiltered[$location]['availability']) {
-            $statusItemsFiltered[$location]['availability'] = $item['availability'];
+            // Copy keys one by one so as to not overwrite callnumbers or any other existing field
+            foreach (array_keys($item) as $key) {
+                $statusItemsFiltered[$location][$key] = $item[$key];
+            }
         }
         $statusItemsFiltered[$location]['callnumbers'] = 'Multiple Locations';
     }
