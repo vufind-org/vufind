@@ -252,13 +252,13 @@ class Holds
                     if ($holdConfig) {
                         // Is this copy holdable / linkable
                         if (isset($copy['addLink']) && $copy['addLink']) {
-                            // If the hold is blocked, link to an error page
-                            // instead of the hold form:
-                            $copy['link'] = $copy['addLink'] === 'block'
-                                ? $this->getBlockedDetails($copy)
-                                : $this->getRequestDetails(
-                                    $copy, $holdConfig['HMACKeys'], 'Hold'
-                                );
+                            // If the hold is blocked, skip:
+                            if ($copy['addLink'] === 'block') {
+                                continue;
+                            }
+                            $copy['link'] = $this->getRequestDetails(
+                                $copy, $holdConfig['HMACKeys'], 'Hold'
+                            );
                             // If we are unsure whether hold options are available,
                             // set a flag so we can check later via AJAX:
                             $copy['check'] = $copy['addLink'] == 'check';
