@@ -442,25 +442,12 @@ class EIT extends SolrDefault
             ? $this->controlInfo['artinfo']['tig']['atl'] : '';
     }
 
-        /**
-     * Does the OpenURL configuration indicate that we should display OpenURLs in
-     * the specified context?
-     *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
-     * @return bool
-     */
-    public function openURLActive($area)
-    {
-        return true;
-    }
-
     /**
-     * Support method for getOpenURL() -- pick the OpenURL format.
+     * Support method for getOpenUrl() -- pick the OpenURL format.
      *
      * @return string
      */
-    protected function getOpenURLFormat()
+    protected function getOpenUrlFormat()
     {
         // If we have multiple formats, Book, Journal and Article are most
         // important...

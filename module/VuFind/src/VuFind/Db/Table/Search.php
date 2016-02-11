@@ -118,22 +118,28 @@ class Search extends Gateway
     }
 
     /**
-     * Set the "saved" flag for a specific row.
+     * Get a single row, enforcing user ownership. Returns row if found, null
+     * otherwise.
      *
-     * @param int  $id      Primary key value of row to change.
-     * @param bool $saved   New status value to save.
-     * @param int  $user_id ID of user saving row (only required if $saved == true)
+     * @param int    $id     Primary key value
+     * @param string $sessId Current user session ID
+     * @param int    $userId Current logged-in user ID (or null if none)
      *
-     * @return void
+     * @return \VuFind\Db\Row\Search
      */
-    public function setSavedFlag($id, $saved, $user_id = false)
+    public function getOwnedRowById($id, $sessId, $userId)
     {
-        $row = $this->getRowById($id);
-        $row->saved = $saved ? 1 : 0;
-        if ($user_id !== false) {
-            $row->user_id = $user_id;
-        }
-        $row->save();
+        $callback = function ($select) use ($id, $sessId, $userId) {
+            $nest = $select->where
+                ->equalTo('id', $id)
+                ->and
+                ->nest
+                ->equalTo('session_id', $sessId);
+            if (!empty($userId)) {
+                $nest->or->equalTo('user_id', $userId);
+            }
+        };
+        return $this->select($callback)->current();
     }
 
     /**
@@ -151,6 +157,7 @@ class Search extends Gateway
         $newSearch, $sessionId, $searchHistory = []
     ) {
         // Duplicate elimination
+        $newUrl = $newSearch->getUrlQuery()->getParams();
         foreach ($searchHistory as $oldSearch) {
             // Deminify the old search (note that if we have a resource, we need
             // to grab the contents -- this is necessary for PostgreSQL compatibility
@@ -159,7 +166,6 @@ class Search extends Gateway
             $dupSearch = $minSO->deminify($manager);
             // See if the classes and urls match
             $oldUrl = $dupSearch->getUrlQuery()->getParams();
-            $newUrl = $newSearch->getUrlQuery()->getParams();
             if (get_class($dupSearch) == get_class($newSearch)
                 && $oldUrl == $newUrl
             ) {

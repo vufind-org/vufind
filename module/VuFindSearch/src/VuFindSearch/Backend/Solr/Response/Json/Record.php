@@ -44,7 +44,6 @@ use VuFindSearch\Response\RecordInterface;
  */
 class Record implements RecordInterface
 {
-
     /**
      * SOLR fields.
      *

@@ -48,21 +48,21 @@ class Printms extends AbstractHelper
      */
     public function __invoke($ms)
     {
-        $seconds = floor($ms/1000);
+        $seconds = floor($ms / 1000);
         $ms = ($ms % 1000);
 
-        $minutes = floor($seconds/60);
+        $minutes = floor($seconds / 60);
         $seconds = ($seconds % 60);
 
-        $hours = floor($minutes/60);
+        $hours = floor($minutes / 60);
         $minutes = ($minutes % 60);
 
         if ($hours) {
-            $days = floor($hours/60);
+            $days = floor($hours / 60);
             $hours = ($hours % 60);
 
             if ($days) {
-                $years = floor($days/365);
+                $years = floor($days / 365);
                 $days = ($days % 365);
 
                 if ($years) {

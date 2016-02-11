@@ -46,7 +46,6 @@ use VuFindSearch\ParamBag;
  */
 abstract class AbstractHandlerMap
 {
-
     /**
      * Prepare final set of parameters for search function.
      *

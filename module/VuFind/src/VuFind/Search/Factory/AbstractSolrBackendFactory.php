@@ -28,7 +28,10 @@
  */
 namespace VuFind\Search\Factory;
 
+use VuFind\Search\Solr\FilterFieldConversionListener;
+use VuFind\Search\Solr\HideFacetValueListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
+use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
@@ -173,9 +176,17 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         // Load configurations:
         $config = $this->config->get('config');
         $search = $this->config->get($this->searchConfig);
+        $facet = $this->config->get($this->facetConfig);
 
         // Highlighting
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
+
+        // Conditional Filters
+        if (isset($search->ConditionalHiddenFilters)
+            && $search->ConditionalHiddenFilters->count() > 0
+        ) {
+            $this->getInjectConditionalFilterListener($search)->attach($events);
+        }
 
         // Spellcheck
         if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
@@ -204,14 +215,28 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         }
 
         // Apply deduplication if applicable:
-        if (isset($search->Records->deduplication)
-            && $search->Records->deduplication
-        ) {
-            $this->getDeduplicationListener($backend)->attach($events);
+        if (isset($search->Records->deduplication)) {
+            $this->getDeduplicationListener(
+                $backend, $search->Records->deduplication
+            )->attach($events);
         }
 
         // Attach hierarchical facet listener:
         $this->getHierarchicalFacetListener($backend)->attach($events);
+
+        // Apply legacy filter conversion if necessary:
+        $facets = $this->config->get($this->facetConfig);
+        if (!empty($facets->LegacyFields)) {
+            $filterFieldConversionListener = new FilterFieldConversionListener(
+                $facets->LegacyFields->toArray()
+            );
+            $filterFieldConversionListener->attach($events);
+        }
+
+        // Attach hide facet value listener:
+        if ($hfvListener = $this->getHideFacetValueListener($backend, $facet)) {
+            $hfvListener->attach($events);
+        }
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
         // compatibility with VuFind 1.x instances).
@@ -234,11 +259,21 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     /**
      * Get the Solr URL.
      *
-     * @return string
+     * @return string|array
      */
     protected function getSolrUrl()
     {
-        return $this->config->get('config')->Index->url . '/' . $this->getSolrCore();
+        $url = $this->config->get('config')->Index->url;
+        $core = $this->getSolrCore();
+        if (is_object($url)) {
+            return array_map(
+                function ($value) use ($core) {
+                    return "$value/$core";
+                },
+                $url->toArray()
+            );
+        }
+        return "$url/$core";
     }
 
     /**
@@ -352,15 +387,41 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * Get a deduplication listener for the backend
      *
      * @param BackendInterface $backend Search backend
+     * @param bool             $enabled Whether deduplication is enabled
      *
      * @return DeduplicationListener
      */
-    protected function getDeduplicationListener(BackendInterface $backend)
+    protected function getDeduplicationListener(BackendInterface $backend, $enabled)
     {
         return new DeduplicationListener(
             $backend,
             $this->serviceLocator,
-            $this->searchConfig
+            $this->searchConfig,
+            'datasources',
+            $enabled
+        );
+    }
+
+    /**
+    * Get a hide facet value listener for the backend
+    *
+    * @param BackendInterface $backend Search backend
+    * @param Config           $facet   Configuration of facets
+    *
+    * @return mixed null|HideFacetValueListener
+    */
+    protected function getHideFacetValueListener(
+        BackendInterface $backend,
+        Config $facet
+    ) {
+        if (!isset($facet->HideFacetValue)
+            || ($facet->HideFacetValue->count()) == 0
+        ) {
+            return null;
+        }
+        return new HideFacetValueListener(
+            $backend,
+            $facet->HideFacetValue->toArray()
         );
     }
 
@@ -394,5 +455,23 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $fl = isset($search->General->highlighting_fields)
             ? $search->General->highlighting_fields : '*';
         return new InjectHighlightingListener($backend, $fl);
+    }
+
+    /**
+     * Get a Conditional Filter Listener
+     *
+     * @param Config $search Search configuration
+     *
+     * @return InjectConditionalFilterListener
+     */
+    protected function getInjectConditionalFilterListener(Config $search)
+    {
+        $listener = new InjectConditionalFilterListener(
+            $search->ConditionalHiddenFilters->toArray()
+        );
+        $listener->setAuthorizationService(
+            $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+        );
+        return $listener;
     }
 }

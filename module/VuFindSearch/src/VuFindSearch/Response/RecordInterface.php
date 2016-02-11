@@ -41,7 +41,6 @@ namespace VuFindSearch\Response;
  */
 interface RecordInterface
 {
-
     /**
      * Set the source backend identifier.
      *

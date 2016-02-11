@@ -151,7 +151,7 @@ class RandomRecommend implements RecommendInterface
 
         // all other params are filters and their values respectively
         for ($i = 5; $i < count($settings); $i += 2) {
-            if (isset($settings[$i+1])) {
+            if (isset($settings[$i + 1])) {
                 $this->filters[] = $settings[$i] . ':' . $settings[$i + 1];
             }
         }

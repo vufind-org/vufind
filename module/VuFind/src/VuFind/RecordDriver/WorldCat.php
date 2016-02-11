@@ -148,7 +148,7 @@ class WorldCat extends SolrMarc
      */
     public function getUniqueID()
     {
-        return (string)$this->marcRecord->getField('001')->getData();
+        return (string)$this->getMarcRecord()->getField('001')->getData();
     }
 
     /**
@@ -200,7 +200,7 @@ class WorldCat extends SolrMarc
     public function getLanguages()
     {
         $retVal = [];
-        $field = $this->marcRecord->getField('008');
+        $field = $this->getMarcRecord()->getField('008');
         if ($field) {
             $content = $field->getData();
             if (strlen($content) >= 38) {
@@ -227,7 +227,7 @@ class WorldCat extends SolrMarc
      */
     public function getSortTitle()
     {
-        $field = $this->marcRecord->getField('245');
+        $field = $this->getMarcRecord()->getField('245');
         if ($field) {
             $title = $field->getSubfield('a');
             if ($title) {

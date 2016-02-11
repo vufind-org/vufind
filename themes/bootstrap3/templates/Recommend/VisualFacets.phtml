@@ -3,27 +3,29 @@
 
   $visualFacetSet = $this->recommend->getPivotFacetSet();
 
-  $flarechildren = array();
+  if (isset($visualFacetSet->children)) {
+    $flarechildren = array();
 
-  foreach ($visualFacetSet->children as $toplevelfacet) {
-    $toplevelinfo = array();
-    $toplevelchildren = array();
-    $toplevelinfo['name'] = $toplevelfacet['value'];
-    $toplevelinfo['field'] = $toplevelfacet['field'];
-    $toplevelinfo['size'] = $toplevelfacet['count'];
-    foreach($toplevelfacet['pivot'] as $secondlevelfacet) {
-      $secondlevelinfo = array();
-      $secondlevelinfo['name'] = $secondlevelfacet['value'];
-      $secondlevelinfo['size'] = $secondlevelfacet['count'];
-      $secondlevelinfo['field'] = $secondlevelfacet['field'];
-      $secondlevelinfo['parentlevel'] = $toplevelinfo['name'];
-      array_push($toplevelchildren, $secondlevelinfo);
+    foreach ($visualFacetSet->children as $toplevelfacet) {
+      $toplevelinfo = array();
+      $toplevelchildren = array();
+      $toplevelinfo['name'] = $toplevelfacet['value'];
+      $toplevelinfo['field'] = $toplevelfacet['field'];
+      $toplevelinfo['size'] = $toplevelfacet['count'];
+      foreach($toplevelfacet['pivot'] as $secondlevelfacet) {
+        $secondlevelinfo = array();
+        $secondlevelinfo['name'] = $secondlevelfacet['value'];
+        $secondlevelinfo['size'] = $secondlevelfacet['count'];
+        $secondlevelinfo['field'] = $secondlevelfacet['field'];
+        $secondlevelinfo['parentlevel'] = $toplevelinfo['name'];
+        array_push($toplevelchildren, $secondlevelinfo);
+      }
+      $toplevelinfo['children'] = $toplevelchildren;
+      array_push($flarechildren, $toplevelinfo);
     }
-    $toplevelinfo['children'] = $toplevelchildren;
-    array_push($flarechildren, $toplevelinfo);
-  }
 
-  $visualFacetSet->children = $flarechildren;
+    $visualFacetSet->children = $flarechildren;
+  }
 ?>
 
 <? if (isset($visualFacetSet)): ?>

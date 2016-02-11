@@ -1,12 +1,13 @@
+<?
+  if($loggedin = $this->auth()->isLoggedIn()) {
+    $user_id = $loggedin->id;
+    $loggedin = true;
+  } else {
+    $user_id = false;
+  }
+?>
 <? /* Display thumbnail if appropriate: */ ?>
-<? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
-<? if ($mediumThumb): ?>
-  <? if ($largeThumb): ?><a rel="external" href="<?=$this->escapeHtmlAttr($largeThumb)?>"><? endif; ?>
-    <div class="recordcover">
-      <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
-    </div>
-  <? if ($largeThumb): ?></a><? endif; ?>
-<? endif; ?>
+<?=$this->record($this->driver)->getCover('core', 'medium', $this->record($this->driver)->getThumbnail('large')); ?>
 
 <h3><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
 
@@ -17,8 +18,11 @@
   <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
     <dt><?=$this->transEsc('Published in')?>:</dt>
       <dd>
-      <? $containerID = $this->driver->getContainerRecordID(); ?>
-      <a rel="external" href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
+      <?
+        $containerSource = $this->driver->getSourceIdentifier();
+        $containerID = $this->driver->getContainerRecordID();
+      ?>
+      <a rel="external" href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
       <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
     </dd>
   <? endif; ?>
@@ -132,18 +136,19 @@
   <? endif; ?>
 
   <?
-      $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
+      $openUrl = $this->openUrl($this->driver, 'record');
+      $openUrlActive = $openUrl->isActive();
       // Account for replace_other_urls setting
-      $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
+      $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
   ?>
-  <? if (!empty($urls) || $openUrl): ?>
+  <? if (!empty($urls) || $openUrlActive): ?>
     <dt><?=$this->transEsc('Online Access')?>: </dt>
     <dd>
       <? foreach ($urls as $current): ?>
         <p><a rel="external" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a></p>
       <? endforeach; ?>
-      <? if ($openUrl): ?>
-        <?=$this->openUrl($openUrl)?><br/>
+      <? if ($openUrlActive): ?>
+        <?=$openUrl->renderTemplate()?><br/>
       <? endif; ?>
     </dd>
   <? endif; ?>
@@ -167,16 +172,26 @@
     </dd>
   <? endif; ?>
 
-  <? $tagList = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags() : array(); ?>
+  <? $tagList = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(null, null, 'count', $user_id) : array(); ?>
   <? if (count($tagList) > 0): ?>
     <dt><?=$this->transEsc('Tags')?>: </dt>
-    <dd>
-      <span style="float:right;">
-        <a rel="external" href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" class="tool add tagRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add Tag')?>" id="tagRecord"><?=$this->transEsc('Add Tag')?></a>
-      </span>
-      <div id="tagList">
-        <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a rel="external" href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a> (<?=$this->escapeHtml($tag->cnt)?>)<? endforeach; ?>
-      </div>
+    <dd id="tagList">
+      <? $i=0; foreach ($tagList as $tag): ?>
+        <? if($loggedin): ?>
+          <? $is_me = isset($tag['is_me']) && !is_null($tag['is_me']) ? $tag['is_me'] : false; ?>
+          <span class="tag ui-btn ui-btn-inline ui-mini ui-btn-corner-all ui-btn-up-<?=$is_me ? 'b' : 'c' ?>">
+            <a rel="external" href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>" class="text ui-btn-text">
+              <?=$this->escapeHtml($tag->tag)?> (<?=$this->escapeHtml($tag->cnt)?>)
+            </a>
+            <form method="POST" action="<?=$this->recordLink()->getActionUrl($this->driver, $is_me ? 'DeleteTag' : 'AddTag') ?>" class="tag-form">
+              <input type="hidden" name="tag" value="<?=$this->escapeHtmlAttr($tag['tag'])?>"/>
+              <button type="submit" onClick="ajaxTagUpdate('<?=$this->escapeHtmlAttr($tag['tag'])?>', <?=$is_me ? 'true' : 'false' ?>);return false;" data-theme="<?=$is_me ? 'c' : 'b' ?>" data-icon="<?=$is_me ? 'minus' : 'plus' ?>" data-iconpos="notext" data-inline="true" data-mini="true">&nbsp;</button>
+            </form>
+          </span>
+        <? else: ?>
+          <a rel="external" href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a> (<?=$this->escapeHtml($tag->cnt)?>)<?=(++$i < count($tagList)) ? ', ' : '' ?>
+        <? endif; ?>
+      <? endforeach; ?>
     </dd>
   <? endif; ?>
 </dl>

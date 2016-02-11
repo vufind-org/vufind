@@ -150,10 +150,12 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $test = new Writer('fake.ini', $cfg);
         $test->set('test', 'key2', 'val2');
         $test->set('test', 'key1', 'val1b');
+        $test->set('test', 'keyQuote', 'I "quoted" it');
         $ini = parse_ini_string($test->getContent(), true);
         $this->assertEquals('val1b', $ini['test']['key1']);
         $this->assertEquals('val2', $ini['test']['key2']);
         $this->assertEquals('val3', $ini['test']['key3']);
+        $this->assertEquals('I "quoted" it', $ini['test']['keyQuote']);
     }
 
     /**
@@ -211,5 +213,32 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $test->set('a', 'two', '');
         $ini = parse_ini_string($test->getContent(), true);
         $this->assertEquals('', $ini['a']['two']);
+    }
+
+    /**
+     * Test alignment of values.
+     *
+     * @return void
+     */
+    public function testTabAlignment()
+    {
+        $test = new Writer('fake.ini', ['general' => ['foo' => 'bar', 'foofoofoofoofoofo' => 'baz']]);
+        $expected = "[general]\nfoo              = \"bar\"\nfoofoofoofoofoofo = \"baz\"\n";
+        $this->assertEquals($expected, $test->getContent());
+    }
+
+    /**
+     * Test clearing values.
+     *
+     * @return void
+     */
+    public function testClear()
+    {
+        $cfg = "[a]\nb[]=1\nb[]=2\n[b]\nc=3\n";
+        $test = new Writer('fake.ini', $cfg);
+        $test->clear('a', 'b[]');   // clear array
+        $test->clear('b', 'c');     // clear single value
+        $test->clear('z', 'z');     // clear value that does not exist
+        $this->assertEquals("[a]\n[b]", trim($test->getContent()));
     }
 }

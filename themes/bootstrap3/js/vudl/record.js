@@ -8,7 +8,6 @@ function ajaxGetView(pageObject) {
   pageObject['counts'] = counts;
   if (currentTab == 'master-tab' && currentID == pageObject['id']) {
     // Trigger file download
-    //alert('download');
     $('#file-download').submit();
   } else if (currentType != pageObject['filetype']) {
     if(viewLoadAjax) {
@@ -49,16 +48,9 @@ function updateTechInfo(record) {
       $('#techinfo').html(d.data.div);
       var downloadSrc = 'MASTER';
       if(typeof d.data.type !== "undefined") {
-        if(d.data.type.indexOf('image') > -1) {
-          downloadSrc = 'LARGE';
-          d.data.type = 'image/png';
-        } else if(d.data.type.indexOf('audio') > -1) {
-          downloadSrc = 'MP3';
-          d.data.type = 'audio/mp3';
-        }
         $('#download-button .details').html(d.data.type+' ~ '+d.data.size);
       }
-      $('#file-download').attr('action', path+'/files/'+record.id+'/'+downloadSrc+'?download=true');
+      $('#file-download').attr('action', VuFind.getPath()+'/files/'+record.id+'/'+downloadSrc+'?download=true');
     },
     error:function(d,e) {
       console.log(d.responseText);
@@ -135,7 +127,6 @@ function scrollToSelected() {
   if($(listID).length > 0 && $(listID+' .selected').length > 0) {
     $(listID).finish();
     scrollAnimation = $(listID).animate({
-
       scrollTop: $(listID+' .selected').offset().top-$(listID).offset().top+$(listID).scrollTop()-12
     });
   }

@@ -3,11 +3,11 @@
     $account = $this->auth()->getManager();
     $user = $account->isLoggedIn();
     $holdings = $this->driver->getRealTimeHoldings();
-    $openUrl = $this->driver->openURLActive('holdings') ? $this->driver->getOpenURL() : false;
-    $offlineMode = $this->ils()->getOfflineMode();
+    $openUrl = $this->openUrl($this->driver, 'holdings');
+    $openUrlActive = $openUrl->isActive();
     // Account for replace_other_urls setting
-    $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
-
+    $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+    $offlineMode = $this->ils()->getOfflineMode();
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>
@@ -27,11 +27,11 @@
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
       <div class="alert alert-info">
-        <a href="<?=$this->currentPath()?>?login=true&amp;catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
+        <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'Holdings')?>?login=true&amp;catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
       </div>
     <? elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
-        <?=$this->translate("hold_profile_html", array('%%url%%' => $this->currentPath() . '?catalogLogin=true'))?>
+        <?=$this->translate("hold_profile_html", array('%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true'))?>
       </div>
     <? endif; ?>
   <? endif; ?>
@@ -39,17 +39,24 @@
 <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
     <a class="placehold modal-link" title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"><i class="fa fa-flag"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
-<? if (!empty($urls) || $openUrl): ?>
+<? if (!empty($urls) || $openUrlActive): ?>
   <h3><?=$this->transEsc("Internet")?></h3>
   <? if (!empty($urls)): ?>
     <? foreach ($urls as $current): ?>
       <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
     <? endforeach; ?>
   <? endif; ?>
-  <? if ($openUrl): ?><?=$this->openUrl($openUrl);?><? endif; ?>
+  <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
 <? endif; ?>
 <? foreach ($holdings as $holding): ?>
-<h3><?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?></h3>
+<h3>
+  <? $locationText = $this->transEsc('location_' . $holding['location'], array(), $holding['location']); ?>
+  <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
+    <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
+  <? else: ?>
+    <?=$locationText?>
+  <? endif; ?>
+</h3>
 <table class="table table-striped" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
@@ -61,23 +68,28 @@
     </td>
   </tr>
   <? endif; ?>
-  <? foreach ($this->ils()->getHoldingsTextFieldNames() as $textField): ?>
-    <? if (!empty($holding[$textField])): ?>
-      <tr>
-        <? // Translation for summary is a special case for backwards-compatibility ?>
-        <th><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>:</th>
-        <td>
-          <? foreach ($holding[$textField] as $current): ?>
-            <?=$this->escapeHtml($current)?><br/>
-          <? endforeach; ?>
-        </td>
-      </tr>
-    <? endif; ?>
-  <? endforeach; ?>
+  <? if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+    <tr>
+      <? // Translation for summary is a special case for backwards-compatibility ?>
+      <th><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
+      <td>
+        <? foreach ($textFields as $current): ?>
+          <?=$this->escapeHtml($current)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endforeach; endif; ?>
   <? foreach ($holding['items'] as $row): ?>
-    <? $check = (isset($row['check']) && $row['check']); ?>
-    <? $checkStorageRetrievalRequest = (isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest']); ?>
-    <? $checkILLRequest = (isset($row['checkILLRequest']) && $row['checkILLRequest']); ?>
+    <?
+      // AJAX Check record?
+      $check = isset($row['check']) && $row['check'];
+      $checkStorageRetrievalRequest = isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest'];
+      $checkILLRequest = isset($row['checkILLRequest']) && $row['checkILLRequest'];
+      // AJAX block record?
+      $block = !$check && isset($row['addLink']) && $row['addLink'] === 'block';
+      $blockStorageRetrievalRequest = !$checkStorageRetrievalRequest && isset($row['addStorageRetrievalRequestLink']) && $row['addStorageRetrievalRequestLink'];
+      $blockILLRequest = !$checkILLRequest && isset($row['addILLRequestLink']) && $row['addILLRequestLink'];
+    ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
       <tr vocab="http://schema.org/" typeof="Offer">
         <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
@@ -91,15 +103,15 @@
           <? else: ?>
             <? if ($row['availability']): ?>
               <? /* Begin Available Items (Holds) */ ?>
-               <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
-              <? if (isset($row['link']) && $row['link']): ?>
-                <a style="display:inline-block" class="<?=$check ? 'checkRequest ' : ''?>inlineblock modal-link placehold" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" title="<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?>"><i class="fa fa-flag"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+              <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
+              <? if (!$block && isset($row['link']) && $row['link']): ?>
+                <a class="<?=$check ? 'checkRequest ' : ''?>modal-link placehold" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" title="<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?>"><i class="fa fa-flag"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
               <? endif; ?>
-              <? if (isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
+              <? if (!$blockStorageRetrievalRequest && isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
                 <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?>modal-link placeStorageRetrievalRequest" href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>" title="<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?>"><i class="fa fa-flag"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
               <? endif; ?>
-              <? if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']): ?>
-                <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>inlineblock modal-link placeILLRequest" href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"  title="<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?>"><i class="fa fa-flag"></i>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
+              <? if (!$blockILLRequest && isset($row['ILLRequestLink']) && $row['ILLRequestLink']): ?>
+                <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>modal-link placeILLRequest" href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"  title="<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?>"><i class="fa fa-flag"></i>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
               <? endif; ?>
             <? else: ?>
               <? /* Begin Unavailable Items (Recalls) */ ?>
@@ -111,9 +123,19 @@
               <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
                 <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
               <? endif; ?>
-              <? if (isset($row['link']) && $row['link']): ?>
-                <a class="<?=$check ? 'checkRequest' : ''?> modal-link inlineblock placehold" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+              <? if (!$block && isset($row['link']) && $row['link']): ?>
+                <a class="<?=$check ? 'checkRequest' : ''?> modal-link placehold" href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
               <? endif; ?>
+            <? endif; ?>
+            <? if (isset($row['item_notes'])): ?>
+              <div class="item-notes">
+                <b><?=$this->transEsc("Item Notes")?>:</b>
+                <ul>
+                  <? foreach ($row['item_notes'] as $item_note): ?>
+                    <li><?=$this->escapeHtml($item_note) ?></li>
+                  <? endforeach; ?>
+                </ul>
+              </div>
             <? endif; ?>
           <? endif; ?>
           <? /* Embed item structured data: library, barcode, call number */ ?>

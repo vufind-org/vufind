@@ -13,7 +13,9 @@ function addSearch(group, fieldValues)
   $newSearch.attr('id', 'search'+inputID);
   $newSearch.find('input.form-control')
     .attr('id', 'search_lookfor'+inputID)
-    .attr('name', 'lookfor'+group+'[]');
+    .attr('name', 'lookfor'+group+'[]')
+    .attr('value', '');
+  $newSearch.find('select.type option:first-child').attr('selected', 1);
   $newSearch.find('select.type')
     .attr('id', 'search_type'+inputID)
     .attr('name', 'type'+group+'[]');
@@ -136,3 +138,11 @@ function addSearchJS(group)
   addSearch(groupNum);
   return false;
 }
+
+$(document).ready(function() {
+  $('.clear-btn').click(function() {
+    $('input[type="text"]').val('');
+    $("option:selected").removeAttr("selected");
+    $("#illustrated_-1").click();
+  });
+});

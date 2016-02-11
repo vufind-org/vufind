@@ -1,10 +1,10 @@
 <? $this->info = $this->recommend->getAuthorInfo() ?>
 <? if (!(empty($this->info['description']) || empty($this->info))): ?>
 <div class="well clearfix">
-  <p class="lead"><?=$this->info['name'] ?></p>
+  <h2><?=$this->info['name'] ?></h2>
 
   <? if (isset($this->info['image'])): ?>
-    <img class="pull-left" src="<?=$this->info['image'] ?>" alt="<?=$this->escapeHtmlAttr($this->info['altimage']) ?>" width="150px"/>
+    <img class="pull-left flip" src="<?=$this->info['image'] ?>" alt="<?=$this->escapeHtmlAttr($this->info['altimage']) ?>" width="150px"/>
   <? endif; ?>
 
   <?=preg_replace('/___baseurl___/', $this->url('search-results'), $this->info['description']) ?>

@@ -41,7 +41,6 @@ use XMLWriter;
  */
 class CommitDocument extends AbstractDocument
 {
-
     /**
      * Value for commitWithin attribute
      *

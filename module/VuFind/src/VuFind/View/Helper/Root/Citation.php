@@ -704,7 +704,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
                 $authorStr = $this->cleanNameDates($author) . ', et al';
             } else {
                 foreach ($this->details['authors'] as $author) {
-                    if (($i+1 == count($this->details['authors'])) && ($i > 0)) {
+                    if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
                         // Last
                         $authorStr .= ', and ' .
                             $this->reverseName($this->stripPunctuation($author));

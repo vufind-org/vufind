@@ -130,7 +130,7 @@ class Router
     ) {
         // Extract source and ID from driver or string:
         if (is_object($driver)) {
-            $source = $driver->getResourceSource();
+            $source = $driver->getSourceIdentifier();
             $id = $driver->getUniqueId();
         } else {
             list($source, $id) = $this->extractSourceAndId($driver);
@@ -142,7 +142,7 @@ class Router
 
         // Determine route based on naming convention (default VuFind route is
         // the exception to the rule):
-        $routeBase = ($source == 'VuFind')
+        $routeBase = ($source == DEFAULT_SEARCH_BACKEND)
             ? 'record' : strtolower($source . 'record');
 
         return [
@@ -162,7 +162,7 @@ class Router
     {
         $parts = explode('|', $driver, 2);
         if (count($parts) < 2) {
-            $source = 'VuFind';
+            $source = DEFAULT_SEARCH_BACKEND;
             $id = $parts[0];
         } else {
             $source = $parts[0];

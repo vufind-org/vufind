@@ -452,12 +452,16 @@ class SearchHandler
      */
     protected function tokenize($string)
     {
-        // Tokenize on spaces and quotes (but ignore escaped quotes)
-        $phrases = [];
-        preg_match_all(
-            '/"(?:\\\\"|.)*?"[~[0-9]+]*|"(?:\\\\"|.)*?"|[^ ]+/', $string, $phrases
-        );
-        $phrases = $phrases[0];
+        // First replace escaped quotes with a non-printable character that will
+        // never be found in user input (ASCII 26, "substitute"). Next use a regex
+        // to split on whitespace and quoted phrases. Finally, swap the "substitute"
+        // characters back to escaped quotes. This allows for a simpler regex.
+        $string = str_replace('\\"', chr(26), $string);
+        preg_match_all('/[^\s"]+|"([^"]*)"/', $string, $phrases);
+        $callback = function ($str) {
+            return str_replace(chr(26), '\\"', $str);
+        };
+        $phrases = array_map($callback, $phrases[0]);
 
         $tokens  = [];
         $token   = [];

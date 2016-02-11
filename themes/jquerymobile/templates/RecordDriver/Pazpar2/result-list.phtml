@@ -1,17 +1,7 @@
 <b>
-  <div class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+  <div class="result source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-    <h3><?
-      $summHighlightedTitle = $this->driver->getHighlightedTitle();
-      $summTitle = $this->driver->getTitle();
-      if (!empty($summHighlightedTitle)) {
-          echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-      } else if (!empty($summTitle)) {
-          echo $this->escapeHtml($this->truncate($summTitle, 180));
-      } else {
-          echo $this->transEsc('Title not available');
-      }
-    ?></h3>
+    <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
     <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
       <p><?=$this->transEsc('by')?> <?
       $summHighlightedAuthor = $this->driver->getHighlightedAuthor();

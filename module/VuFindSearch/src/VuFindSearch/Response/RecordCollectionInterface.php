@@ -39,7 +39,6 @@ namespace VuFindSearch\Response;
  */
 interface RecordCollectionInterface extends \Countable, \Iterator
 {
-
     /**
      * Return total number of records found.
      *

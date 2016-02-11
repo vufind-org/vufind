@@ -41,7 +41,6 @@ use XMLWriter;
  */
 class OptimizeDocument extends AbstractDocument
 {
-
     /**
      * Value for waitFlush attribute
      *

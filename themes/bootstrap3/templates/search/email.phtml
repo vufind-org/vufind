@@ -3,11 +3,11 @@
   $this->headTitle($this->translate('Email this Search'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
+  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
     '<li class="active">' . $this->transEsc('Email this Search') . '</li>';
 ?>
 <?=$this->flashmessages()?>
-<form class="form-horizontal" action="" method="post"  name="emailSearch">
+<form class="form-horizontal" method="post"  name="emailSearch">
   <input type="hidden" name="url" value="<?=$this->escapeHtmlAttr($this->url)?>" />
   <?=$this->render('Helpers/email-form-fields.phtml')?>
 </form>

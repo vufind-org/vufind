@@ -23,9 +23,8 @@ body {
     font-size:85%;
     margin-top:1px;
   }
-  .label {
-    padding-top:.3em;
-  }
+  .label { padding-top:.3em; }
+  .modal-dialog { width: 650px; }
 }
 .btn {
   padding:3px 5px 2px;
@@ -48,9 +47,9 @@ body {
 .btn-success,.btn-success:hover {border-color:darken(@brand-success, 12%);font-weight:bold;}
 .btn-warning,.btn-warning:hover {border-color:darken(@brand-warning, 12%);font-weight:bold;}
 h2 {margin:0 8px 8px}
-input[type=checkbox] {
-  margin-top:2px;
+input[type="radio"], input[type="checkbox"] {
   margin:0 auto;
+  margin-top:2px;
   padding:0 2px;
 }
 .nav > li > a {
@@ -124,9 +123,12 @@ header {
   .navbar {
     border-radius:5px 5px 0 0;
     padding:0 10px;
-    #searchForm {display:none !important}
+    .searchForm {display:none !important}
     .navbar-brand {
       background-image:url('../../images/vufind_logo.png');
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
       color:transparent;
       height:65px;
       margin-top:5px;
@@ -135,6 +137,7 @@ header {
         color:transparent;
       }
     }
+    .navbar-brand.lang-ar {background-image:url('../../images/vufind_logo_ar.png');}
     .navbar-nav > li > a {
       padding:12px 6px;
       @media (max-width: 767px) {
@@ -162,7 +165,7 @@ header {
     #header-collapse .navbar-right li {
       text-align:right;
     }
-    #searchForm_type {
+    .searchForm_type {
       margin-top:2px;
       margin-bottom:2px;
     }
@@ -176,13 +179,15 @@ header {
     padding:7px 20px 5px;
   }
 }
-#searchForm_lookfor,#searchForm_type {
+.searchForm_lookfor,.searchForm_type {
   border-color:@brand-primary;
 }
 [name=searchForm] {
   margin:6px 8px 8px;
   padding:0;
-  & .btn-primary,& .form-control {
+  & .btn-primary,& .form-control,
+  .template-dir-eds.template-name-advanced & .clear-btn,
+  .template-dir-search.template-name-advanced & .clear-btn {
     font-size:14px;
     height:32px;
     padding:5px 8px;
@@ -233,6 +238,19 @@ footer {
   p {margin:0}
   ul {padding-left:30px}
 }
+
+/* --- Offcanvas --- */
+body.offcanvas .sidebar .list-group {color: #000;}
+body.offcanvas .sidebar .list-group {color: #000;}
+body.offcanvas .offcanvas-toggle {
+  padding-bottom: 18px;
+  font-size: 16px;
+  background: #fff;
+  box-shadow: 0 0 2px #000;
+  color: @brand-primary;
+}
+body.offcanvas.active .sidebar {color: #FFF;}
+body.offcanvas.active .offcanvas-toggle {box-shadow: none;}
 
 /* --- PubDateVis --- */
 #dateVisColorSettings {
@@ -302,6 +320,8 @@ footer {
 /* --- Advanced Search --- */
 #advSearchForm .search {margin:0}
 .group .match {margin-top: .5em;}
+.template-dir-eds.template-name-advanced .clear-btn,
+.template-dir-search.template-name-advanced .clear-btn {background-image: linear-gradient(#fff, #eee);}
 
 /* --- Sidebar --- */
 @active-orange: #E70;
@@ -363,7 +383,7 @@ ul.random {
   list-style: none;
   padding: 0;
   margin: 0px;
-  text-align:justified;
+  text-align:justify;
   li {
     padding-bottom:10px;
     img {

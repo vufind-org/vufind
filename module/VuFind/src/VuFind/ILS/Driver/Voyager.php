@@ -495,6 +495,9 @@ class Voyager extends AbstractBase
                     = $this->pickStatus($availability['otherStatuses']);
             }
             $current['availability'] = $availability['available'];
+            $current['use_unknown_message']
+                = in_array('No information available', $current['status_array']);
+
             $status[] = $current;
         }
 
@@ -797,7 +800,7 @@ class Voyager extends AbstractBase
         $raw = $processed = [];
         // Collect raw data:
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-            $raw[] = $row['MFHD_ID'] . '||' . $row['ENUMCHRON'];
+            $raw[] = $row['MFHD_ID'] . '||' . utf8_encode($row['ENUMCHRON']);
         }
         // Deduplicate data and format it:
         foreach (array_unique($raw) as $current) {
@@ -1157,6 +1160,19 @@ class Voyager extends AbstractBase
     }
 
     /**
+     * Sanitize patron PIN code (remove characters Voyager doesn't handle properly)
+     *
+     * @param string $pin PIN code to sanitize
+     *
+     * @return string Sanitized PIN code
+     */
+    protected function sanitizePIN($pin)
+    {
+        $pin = preg_replace('/[^0-9a-zA-Z#&<>+^`~]+/', '', $pin);
+        return $pin;
+    }
+
+    /**
      * Patron Login
      *
      * This is responsible for authenticating a patron against the catalog.
@@ -1216,7 +1232,8 @@ class Voyager extends AbstractBase
                     ? mb_strtolower(utf8_encode($row['FALLBACK_LOGIN']), 'UTF-8')
                     : null;
 
-                if ((!is_null($primary) && $primary == $compareLogin)
+                if ((!is_null($primary) && ($primary == $compareLogin
+                    || $primary == $this->sanitizePIN($compareLogin)))
                     || ($fallback_login_field && is_null($primary)
                     && $fallback == $compareLogin)
                 ) {
@@ -1364,7 +1381,7 @@ class Voyager extends AbstractBase
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
                     $dueStatus = "overdue";
-                } else if ($now > $dueTimeStamp-(1*24*60*60)) {
+                } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                     $dueStatus = "due";
                 }
             }
@@ -2026,8 +2043,8 @@ class Voyager extends AbstractBase
 
         $page = ($page) ? $page : 1;
         $limit = ($limit) ? $limit : 20;
-        $bindParams[':startRow'] = (($page-1)*$limit)+1;
-        $bindParams[':endRow'] = ($page*$limit);
+        $bindParams[':startRow'] = (($page - 1) * $limit) + 1;
+        $bindParams[':endRow'] = ($page * $limit);
         /*
         $sql = "select * from " .
                "(select a.*, rownum rnum from " .

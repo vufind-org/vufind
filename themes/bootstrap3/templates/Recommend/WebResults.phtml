@@ -5,17 +5,9 @@
   <ul class="similar">
     <? foreach ($results as $driver): ?>
     <li>
-      <a href="<?=$this->escapeHtmlAttr($driver->getUrl())?>" class="title"><?
-        $summHighlightedTitle = $driver->getHighlightedTitle();
-        $summTitle = $driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } else if (!empty($summTitle)) {
-            echo $this->escapeHtml($this->truncate($summTitle, 180));
-        } else {
-            echo $this->transEsc('Title not available');
-        }
-      ?></a>
+      <a href="<?=$this->escapeHtmlAttr($driver->getUrl())?>" class="title">
+        <?=$this->record($driver)->getTitleHtml()?>
+      </a>
       <? $snippet = $driver->getHighlightedSnippet(); ?>
       <? $summary = $driver->getSummary(); ?>
       <? if (!empty($snippet)): ?>

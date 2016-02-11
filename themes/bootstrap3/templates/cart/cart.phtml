@@ -3,39 +3,59 @@
   $this->headTitle($this->translate('Book Bag'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
     . '<li class="active">' . $this->transEsc('Book Bag') . '</li>';
 ?>
 <?=$this->flashmessages()?>
 <form class="form-inline" action="<?=$this->url('cart-home')?>" method="post"  name="cartForm">
   <? if (!$this->cart()->isEmpty()): ?>
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" name="selectAll" class="checkbox-select-all"/> <?=$this->transEsc('select_page')?>
-          | <?=$this->transEsc('with_selected')?>:
-      </label>
-    </div>
-    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-      <input class="btn btn-default" type="submit" name="saveCart" value="<?=$this->transEsc('bookbag_save_selected')?>" title="<?=$this->transEsc('bookbag_save')?>"/>
-    <? endif; ?>
-    <input class="btn btn-default" type="submit" name="email" value="<?=$this->transEsc('bookbag_email_selected')?>" title="<?=$this->transEsc('bookbag_email')?>"/>
-    <? $exportOptions = $this->export()->getBulkOptions(); if (count($exportOptions) > 0): ?>
-      <input class="btn btn-default" type="submit" name="export" value="<?=$this->transEsc('bookbag_export_selected')?>" title="<?=$this->transEsc('bookbag_export')?>"/>
-    <? endif; ?>
-    <input class="btn btn-default" type="submit" name="print" value="<?=$this->transEsc('bookbag_print_selected')?>" title="<?=$this->transEsc('print_selected')?>"/>
-    <div class="btn-group" id="cartDelete">
-      <button type="submit" name="delete" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-delete-label"><?=$this->transEsc('bookbag_delete_selected')?></button>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
-        <li><a id="cart-confirm-delete" onClick="submitFormWithIds(this, {'delete':'delete'})" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-        <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
-      </ul>
-    </div>
-    <div class="btn-group">
-      <input type="submit" name="empty" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-empty-label" value="<?=$this->transEsc('Empty Book Bag')?>"/>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
-        <li><a id="cart-confirm-empty" onClick="submitCartForm(this, {'empty':'empty'})" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-        <li><a onClick="$('.fa.fa-spinner').remove()"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-      </ul>
+    <div class="cart-controls clearfix">
+      <div class="checkbox pull-left flip">
+        <label>
+          <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+          <?=$this->transEsc('select_page')?>
+        </label>
+      </div>
+      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <button type="submit" class="btn btn-default" name="saveCart" title="<?=$this->transEsc('bookbag_save')?>" value="1">
+          <i class="fa fa-save"></i>
+          <?=$this->transEsc('Save')?>
+        </button>
+      <? endif; ?>
+      <button type="submit" class="btn btn-default" name="email" title="<?=$this->transEsc('bookbag_email')?>" value="1">
+        <i class="fa fa-envelope-o"></i>
+        <?=$this->transEsc('Email')?>
+      </button>
+      <? $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
+        <button type="submit" class="btn btn-default" name="export" title="<?=$this->transEsc('bookbag_export')?>" value="1">
+          <i class="fa fa-list-alt"></i>
+          <?=$this->transEsc('Export')?>
+        </button>
+      <? endif; ?>
+      <button type="submit" class="btn btn-default dropdown-toggle" name="print" title="<?=$this->transEsc('print_selected')?>" value="1">
+        <i class="fa fa-print"></i>
+        <?=$this->transEsc('Print')?>
+      </button>
+      <div class="btn-group" id="cartDelete">
+        <button type="submit" name="delete" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-delete-label" value="1">
+          <i class="fa fa-trash"></i>
+          <?=$this->transEsc('Delete')?>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
+          <li><a id="cart-confirm-delete" onClick="submitFormWithIds(this, {'delete':'delete'})" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
+        </ul>
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-default dropdown-toggle" name="empty" data-toggle="dropdown" id="cart-empty-label" value="1">
+          <i class="fa fa-close"></i>
+          <?=$this->transEsc('Empty Book Bag')?>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
+          <li><a id="cart-confirm-empty" onClick="submitCartForm(this, {'empty':'empty'})" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a onClick="$('.fa.fa-spinner').remove()"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+        </ul>
+      </div>
     </div>
   <? endif; ?>
   <?=$this->render('cart/contents.phtml')?>
@@ -52,7 +72,7 @@
     }
   }
   function submitCartForm(elem, data) {
-    var url = path+'/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Home';
+    var url = VuFind.getPath() + '/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Home';
     $.post(url, data, determineCallback(elem));
   }
   function submitFormWithIds(elem, data) {
@@ -82,7 +102,7 @@
     var form = $(this).closest('form')[0];
     var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
     if(checkboxes.length == 0) {
-      Lightbox.displayError(vufindString['bulk_noitems_advice']);
+      Lightbox.displayError(VuFind.translate('bulk_noitems_advice'));
       return false;
     }
   });

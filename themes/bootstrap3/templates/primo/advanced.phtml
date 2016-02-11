@@ -77,7 +77,7 @@
           </div>
         </div>
       <? endfor; ?>
-      <? $lastSort = $this->options->getLastSort(); ?>
+      <? $lastSort = $this->searchMemory()->getLastSort($this->options->getSearchClassId()); ?>
       <? if (!empty($lastSort)): ?>
         <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
       <? endif; ?>

@@ -19,6 +19,32 @@
         </fieldset>
       <? endif; ?>
 
+      <? if ($paginator): ?>
+        <?=$this->transEsc("Showing")?>
+        <? $start = $paginator->getAbsoluteItemNumber(1);
+           $end = $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage());
+           $total = $paginator->getTotalItemCount();
+        ?>
+        <strong><?=$this->localizedNumber($start)?></strong> - <strong><?=$this->localizedNumber($end > $total ? $total : $end)?></strong>
+        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($total)?></strong>
+      <? endif; ?>
+
+      <? foreach ($hiddenTransactions as $ilsDetails): ?>
+        <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
+          <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
+          <? $prefix = isset($ilsDetails['title']) ? $ilsDetails['title'] : $ilsDetails['item_id']; ?>
+          <? if (isset($renewDetails['success']) && $renewDetails['success']): ?>
+            <div class="success"><?=$this->escapeHtml($prefix . ': ') . $this->transEsc('renew_success')?></div>
+          <? else: ?>
+            <div class="error"><?=$this->escapeHtml($prefix . ': ') . $this->transEsc('renew_fail')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escapeHtml($renewDetails['sysMessage'])?><? endif; ?></div>
+          <? endif; ?>
+        <? endif; ?>
+        <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
+          <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
+          <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+        <? endif; ?>
+      <? endforeach; ?>
+
       <ul class="results checkedout-list" data-role="listview">
       <? foreach ($this->transactions as $resource): ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
@@ -114,6 +140,7 @@
         </fieldset>
       </form>
       <? endif; ?>
+      <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml') : ''?>
     <? else: ?>
       <p><?=$this->transEsc('You do not have any items checked out')?>.</p>
     <? endif; ?>

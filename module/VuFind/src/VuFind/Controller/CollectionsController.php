@@ -198,7 +198,7 @@ class CollectionsController extends AbstractBase
             $key = 0;
         }
         if ($key >= count($result)) {
-            $key = count($result)-1;
+            $key = count($result) - 1;
         }
 
         // Begin building view model:

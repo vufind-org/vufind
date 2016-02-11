@@ -299,7 +299,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
     {
         list($d, $m, $y) = $dateArray;
         return mktime(
-            0, 0, 0, date('m')+$m, date('d')+$d, date('Y')+$y
+            0, 0, 0, date('m') + $m, date('d') + $d, date('Y') + $y
         );
     }
 }

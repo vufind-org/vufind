@@ -93,6 +93,30 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
+     * Remove a tag from the current resource.
+     *
+     * @param string              $tagText The tag to save.
+     * @param \VuFind\Db\Row\User $user    The user posting the tag.
+     * @param string              $list_id The list associated with the tag
+     * (optional).
+     *
+     * @return void
+     */
+    public function deleteTag($tagText, $user, $list_id = null)
+    {
+        $tagText = trim($tagText);
+        if (!empty($tagText)) {
+            $tags = $this->getDbTable('Tags');
+            $tag = $tags->getByText($tagText);
+
+            $linker = $this->getDbTable('ResourceTags');
+            $linker->destroyLinks(
+                $this->id, $user->id, $list_id, $tag->id
+            );
+        }
+    }
+
+    /**
      * Add a comment to the current resource.
      *
      * @param string              $comment The comment to save.

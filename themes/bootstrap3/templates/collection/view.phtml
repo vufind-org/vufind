@@ -16,7 +16,7 @@
   $tree = (strtolower($this->activeTab) == 'hierarchytree');
 
   // Set up breadcrumbs:
-  $lastSearch = $this->getLastSearchLink($this->transEsc('Search'));
+  $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
   if (!empty($lastSearch)) {
     $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
   }
@@ -47,44 +47,50 @@
 <?=$this->record($this->driver)->getToolbar()?>
 
 <div class="row">
-  <div class="<?=$this->layoutClass('mainbody') ?>">
+  <div class="<?=$tree ? 'col-sm-12' : $this->layoutClass('mainbody') ?>">
     <div class="record">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getCollectionMetadata()?>
     </div>
 
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
-      <ul class="recordTabs nav nav-tabs">
-        <? foreach ($this->tabs as $tab => $obj): ?>
-        <? // add current tab to breadcrumbs if applicable:
-          $desc = $obj->getDescription();
-          $tab_classes = array();
-          if (0 === strcasecmp($this->activeTab, $tab)) {
-            $tab_classes[] = 'active';
-            $this->layout()->breadcrumbs .= ' <li class="active">' . $this->transEsc($desc) . '</li>';
-            $activeTabObj = $obj;
-          }
-          if (!$obj->isVisible()) { $tab_classes = 'hidden'; }
-          if (!$obj->supportsAjax()) { $tab_classes = 'noajax'; }
-        ?>
-        <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
-        </li>
-        <? endforeach; ?>
-      </ul>
+      <div class="record-tabs">
+        <ul class="nav nav-tabs">
+          <? foreach ($this->tabs as $tab => $obj): ?>
+            <? // add current tab to breadcrumbs if applicable:
+              $desc = $obj->getDescription();
+              $tab_classes = array();
+              if (0 === strcasecmp($this->activeTab, $tab)) {
+                if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
+                  $tab_classes[] = 'active';
+                }
+                $tab_classes[] = 'initiallyActive';
+                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+                $activeTabObj = $obj;
+              }
+              if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
+              if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+            ?>
+            <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+              <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+            </li>
+          <? endforeach; ?>
+        </ul>
+
+        <div class="tab-content collectionDetails<?=$tree ? 'Tree' : ''?>">
+          <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+            <div class="tab-pane active <?=$this->activeTab ?>-tab">
+              <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+            </div>
+          <? endif; ?>
+        </div>
+      </div>
     <? endif; ?>
 
-
-    <div class="collectionDetails<?=$tree ? 'Tree' : ''?> tab-content" id="record-tabs">
-      <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
-        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-      </div>
-    </div>
-
-    <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
+    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenURL()).'"></span>':''?>
   </div>
 
   <? if (isset($activeTabObj) && is_callable(array($activeTabObj, 'getSideRecommendations'))): ?>
@@ -95,3 +101,4 @@
     </div>
   <? endif; ?>
 </div>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>

@@ -5,17 +5,7 @@
       <li class="list-group-item catalog-result">
         <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>
         <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
-          <?
-            $summHighlightedTitle = $driver->getHighlightedTitle();
-            $summTitle = $driver->getTitle();
-            if (!empty($summHighlightedTitle)) {
-                echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-            } else if (!empty($summTitle)) {
-                echo $this->escapeHtml($this->truncate($summTitle, 180));
-            } else {
-                echo $this->transEsc('Title not available');
-            }
-          ?>
+          <?=$this->record($driver)->getTitleHtml()?>
         </a>
         <? $summDate = $driver->getPublicationDates(); ?>
         <? $summAuthor = $driver->getPrimaryAuthor(); ?>

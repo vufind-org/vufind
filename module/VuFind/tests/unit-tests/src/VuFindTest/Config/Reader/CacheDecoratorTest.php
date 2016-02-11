@@ -41,7 +41,6 @@ use VuFind\Config\Reader\CacheDecorator;
  */
 class CacheDecoratorTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Read config from while, new file.
      *

@@ -15,7 +15,7 @@
         'searchIndex' => $this->params->getSearchHandler(),
         'searchType' => $this->params->getSearchType(),
         'searchId' => $this->results->getSearchId(),
-        'searchClassId' => $this->params->getsearchClassId(),
+        'searchClassId' => $this->params->getSearchClassId(),
         'checkboxFilters' => $this->params->getCheckboxFacets(),
         'filterList' => $this->params->getFilters(),
         'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
@@ -65,7 +65,7 @@
             <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
           <? endif; ?>
         <? else: ?>
-          <p class="lead"><?=$this->transEsc('nohit_heading')?></p>
+          <h2><?=$this->transEsc('nohit_heading')?></h2>
         <? endif; ?>
       </div>
 
@@ -103,21 +103,21 @@
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
         <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
-        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results, 'options' => isset($this->paginationOptions) ? $this->paginationOptions : []))?>
       </form>
 
       <div class="searchtools hidden-print">
         <strong><?=$this->transEsc('Search Tools')?>:</strong>
-        <i class="fa fa-bell"></i> <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><?=$this->transEsc('Get RSS Feed')?></a>
+        <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell"></i> <?=$this->transEsc('Get RSS Feed')?></a>
         &mdash;
-        <i class="fa fa-envelope"></i> <a href="<?=$this->url('search-email')?>" class="mailSearch modal-link" id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
-        <? if (($account = $this->auth()->getManager()) && $account->loginEnabled()): // hide save option if login disabled ?>
+        <a href="<?=$this->url('search-email')?>" class="mailSearch modal-link" id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><i class="fa fa-envelope"></i> <?=$this->transEsc('Email this Search')?></a>
+        <? if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
           &mdash;
           <? if (is_numeric($this->results->getSearchId())): ?>
             <? if ($this->results->isSavedSearch()): ?>
-              <i class="fa fa-minus-square"></i> <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search_remove')?></a>
+              <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove"></i> <?=$this->transEsc('save_search_remove')?></a>
             <? else: ?>
-              <i class="fa fa-plus-square"></i> <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search')?></a>
+              <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-save"></i> <?=$this->transEsc('save_search')?></a>
             <? endif; ?>
           <? endif; ?>
         <? endif; ?>

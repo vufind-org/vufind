@@ -27,7 +27,10 @@
  */
 namespace VuFind\Search\Favorites;
 use VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Search\Base\Results as BaseResults;
+    VuFind\Search\Base\Results as BaseResults,
+    VuFind\Record\Cache,
+    ZfcRbac\Service\AuthorizationServiceAwareInterface,
+    ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Search Favorites Results
@@ -39,7 +42,10 @@ use VuFind\Exception\ListPermission as ListPermissionException,
  * @link     http://vufind.org   Main Site
  */
 class Results extends BaseResults
+    implements AuthorizationServiceAwareInterface
 {
+    use AuthorizationServiceAwareTrait;
+
     /**
      * Object if user is logged in, false otherwise.
      *
@@ -120,8 +126,8 @@ class Results extends BaseResults
     protected function performSearch()
     {
         $list = $this->getListObject();
-        $account = $this->getParams()->getAuthManager();
-        $this->user = $account ? $account->isLoggedIn() : false;
+        $auth = $this->getAuthorizationService();
+        $this->user = $auth ? $auth->getIdentity() : false;
 
         // Make sure the user and/or list objects make it possible to view
         // the current result set -- we need to check logged in status and
@@ -167,8 +173,10 @@ class Results extends BaseResults
                 ]
             ];
         }
-        $this->results = $this->getServiceLocator()->get('VuFind\RecordLoader')
-            ->loadBatch($recordsToRequest);
+
+        $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $recordLoader->setCacheContext(Cache::CONTEXT_FAVORITE);
+        $this->results = $recordLoader->loadBatch($recordsToRequest);
     }
 
     /**

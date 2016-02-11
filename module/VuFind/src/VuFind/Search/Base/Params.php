@@ -28,7 +28,8 @@
 namespace VuFind\Search\Base;
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
-use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query,
+    VuFindSearch\Query\QueryGroup;
 use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
 
 /**
@@ -105,25 +106,18 @@ class Params implements ServiceLocatorAwareInterface
     protected $view = null;
 
     /**
+     * Previously-used view (loaded in from session)
+     *
+     * @var string
+     */
+    protected $lastView = null;
+
+    /**
      * Search options
      *
      * @var Options
      */
     protected $options;
-
-    /**
-     * Recommendation settings
-     *
-     * @var array
-     */
-    protected $recommend = [];
-
-    /**
-     * Are recommendations turned on?
-     *
-     * @var bool
-     */
-    protected $recommendationEnabled = [];
 
     /**
      * Main facet configuration
@@ -145,6 +139,13 @@ class Params implements ServiceLocatorAwareInterface
      * @var array
      */
     protected $filterList = [];
+
+    /**
+     * Pre-assigned filters
+     *
+     * @var array
+     */
+    protected $hiddenFilters = [];
 
     /**
      * Facets in "OR" mode
@@ -225,9 +226,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getSearchClassId()
     {
-        // Parse identifier out of class name of format VuFind\Search\[id]\Params:
-        $class = explode('\\', get_class($this));
-        return $class[2];
+        return $this->getOptions()->getSearchClassId();
     }
 
     /**
@@ -251,16 +250,7 @@ class Params implements ServiceLocatorAwareInterface
         $this->initSearch($request);
         $this->initSort($request);
         $this->initFilters($request);
-
-        // Always initialize recommendations last (since they rely on knowing
-        // other search settings that were set above).
-        $this->initRecommendations($request);
-
-        // Remember the user's settings for future reference (we only want to do
-        // this in initFromRequest, since other code may call the set methods from
-        // other contexts!):
-        $this->getOptions()->rememberLastLimit($this->getLimit());
-        $this->getOptions()->rememberLastSort($this->getSort());
+        $this->initHiddenFilters($request);
     }
 
     /**
@@ -422,6 +412,26 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Convert a basic query into an advanced query:
+     *
+     * @return void
+     */
+    public function convertToAdvancedSearch()
+    {
+        if ($this->searchType === 'basic') {
+            $this->query = new QueryGroup(
+                'AND', [new QueryGroup('AND', [$this->query])]
+            );
+            $this->searchType = 'advanced';
+        }
+        if ($this->searchType !== 'advanced') {
+            throw new \Exception(
+                'Unsupported search type: ' . $this->searchType
+            );
+        }
+    }
+
+    /**
      * Support method for initSearch() -- handle advanced settings.  Advanced
      * searches have numeric subscripts on the lookfor and type parameters --
      * this is how they are distinguished from basic searches.
@@ -463,6 +473,18 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Set the last value of the view parameter (if available in session).
+     *
+     * @param string $view Last valid view parameter value
+     *
+     * @return void
+     */
+    public function setLastView($view)
+    {
+        $this->lastView = $view;
+    }
+
+    /**
      * Get the value for which results view to use
      *
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
@@ -474,25 +496,17 @@ class Params implements ServiceLocatorAwareInterface
     {
         // Check for a view parameter in the url.
         $view = $request->get('view');
-        $lastView = $this->getOptions()->getLastView();
-        if (!empty($view)) {
-            if ($view == 'rss') {
-                // we don't want to store rss in the Session
-                $this->setView('rss');
-            } else {
-                // store non-rss views in Session for persistence
-                $validViews = $this->getOptions()->getViewOptions();
-                // make sure the url parameter is a valid view
-                if (in_array($view, array_keys($validViews))) {
-                    $this->setView($view);
-                    $this->getOptions()->rememberLastView($view);
-                } else {
-                    $this->setView($this->getOptions()->getDefaultView());
-                }
-            }
-        } else if (!empty($lastView)) {
-            // if there is nothing in the URL, check the Session
-            $this->setView($lastView);
+        $validViews = $this->getOptions()->getViewOptions();
+        if ($view == 'rss') {
+            // RSS is a special case that does not require config validation
+            $this->setView('rss');
+        } else if (!empty($view) && in_array($view, array_keys($validViews))) {
+            // make sure the url parameter is a valid view
+            $this->setView($view);
+        } else if (!empty($this->lastView)) {
+            // if there is nothing in the URL, see if we had a previous value
+            // injected based on session information.
+            $this->setView($this->lastView);
         } else {
             // otherwise load the default
             $this->setView($this->getOptions()->getDefaultView());
@@ -658,184 +672,6 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Get an array of recommendation objects for augmenting the results display.
-     *
-     * @param string $location Name of location to use as a filter (null to get
-     * associative array of all locations); legal non-null values: 'top', 'side'
-     *
-     * @return array
-     */
-    public function getRecommendations($location = 'top')
-    {
-        $enabled = $this->recommendationsEnabled();
-        if (null === $location) {
-            $active = [];
-            foreach ($enabled as $current) {
-                if (isset($this->recommend[$current])) {
-                    $active[$current] = $this->recommend[$current];
-                }
-            }
-            return $active;
-        }
-        return in_array($location, $enabled) && isset($this->recommend[$location])
-            ? $this->recommend[$location] : [];
-    }
-
-    /**
-     * Set the enabled status of recommendation modules -- it is often useful to turn
-     * off recommendations when retrieving results in a context other than standard
-     * display of results.
-     *
-     * @param bool|array $new New setting (true to enable all, false to disable all,
-     * array to set which areas are active, null to leave unchanged)
-     *
-     * @return array          Current active recommendation areas
-     */
-    public function recommendationsEnabled($new = null)
-    {
-        if (true === $new) {
-            $this->recommendationEnabled = ['top', 'side', 'noresults'];
-        } else if (false === $new) {
-            $this->recommendationEnabled = [];
-        } else if (null !== $new) {
-            $this->recommendationEnabled = $new;
-        }
-        return $this->recommendationEnabled;
-    }
-
-    /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
-     * associative array where the key is the location of the recommendations (top
-     * or side) and the value is the settings found in the file (which may be either
-     * a single string or an array of strings).
-     *
-     * @return array associative: location (top/side) => search settings
-     */
-    protected function getRecommendationSettings()
-    {
-        // Bypass settings if recommendations are disabled.
-        $enabled = $this->recommendationsEnabled();
-        if (empty($enabled)) {
-            return [];
-        }
-
-        // Load the necessary settings to determine the appropriate recommendations
-        // module:
-        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
-            ->get($this->getOptions()->getSearchIni());
-
-        // If we have a search type set, save it so we can try to load a
-        // type-specific recommendations module:
-        $handler = $this->getSearchHandler();
-
-        // Load a type-specific recommendations setting if possible, or the default
-        // otherwise:
-        $recommend = [];
-
-        if (in_array('top', $enabled)) {
-            if (null !== $handler
-                && isset($searchSettings->TopRecommendations->$handler)
-            ) {
-                $recommend['top'] = $searchSettings->TopRecommendations
-                    ->$handler->toArray();
-            } else {
-                $recommend['top']
-                    = isset($searchSettings->General->default_top_recommend)
-                    ? $searchSettings->General->default_top_recommend->toArray()
-                    : false;
-            }
-        }
-        if (in_array('side', $enabled)) {
-            if (null !== $handler
-                && isset($searchSettings->SideRecommendations->$handler)
-            ) {
-                $recommend['side'] = $searchSettings->SideRecommendations
-                    ->$handler->toArray();
-            } else {
-                $recommend['side']
-                    = isset($searchSettings->General->default_side_recommend)
-                    ? $searchSettings->General->default_side_recommend->toArray()
-                    : false;
-            }
-        }
-        if (in_array('noresults', $enabled)) {
-            if (null !== $handler
-                && isset($searchSettings->NoResultsRecommendations->$handler)
-            ) {
-                $recommend['noresults'] = $searchSettings->NoResultsRecommendations
-                    ->$handler->toArray();
-            } else {
-                $recommend['noresults']
-                    = isset($searchSettings->General->default_noresults_recommend)
-                    ? $searchSettings->General->default_noresults_recommend
-                        ->toArray()
-                    : false;
-            }
-        }
-
-        return $recommend;
-    }
-
-    /**
-     * Initialize the recommendations modules.
-     *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
-     * request.
-     *
-     * @return void
-     */
-    protected function initRecommendations($request)
-    {
-        // If no settings were found, quit now:
-        $settings = $this->getRecommendationSettings();
-        if (empty($settings)) {
-            return;
-        }
-
-        // Get the plugin manager (skip recommendations if it is unavailable):
-        $sm = $this->getServiceLocator();
-        if (!is_object($sm) || !$sm->has('VuFind\RecommendPluginManager')) {
-            return;
-        }
-        $manager = $sm->get('VuFind\RecommendPluginManager');
-
-        // Process recommendations for each location:
-        $this->recommend = [
-            'top' => [], 'side' => [], 'noresults' => [],
-            'bottom' => [],
-        ];
-        foreach ($settings as $location => $currentSet) {
-            // If the current location is disabled, skip processing!
-            if (empty($currentSet)) {
-                continue;
-            }
-            // Make sure the current location's set of recommendations is an array;
-            // if it's a single string, this normalization will simplify processing.
-            if (!is_array($currentSet)) {
-                $currentSet = [$currentSet];
-            }
-            // Now loop through all recommendation settings for the location.
-            foreach ($currentSet as $current) {
-                // Break apart the setting into module name and extra parameters:
-                $current = explode(':', $current);
-                $module = array_shift($current);
-                $params = implode(':', $current);
-                if (!$manager->has($module)) {
-                    throw new \Exception(
-                        'Could not load recommendation module: ' . $module
-                    );
-                }
-
-                // Build a recommendation module with the provided settings.
-                $obj = $manager->get($module);
-                $obj->setConfig($params);
-                $obj->init($this, $request);
-                $this->recommend[$location][] = $obj;
-            }
-        }
-    }
-
-    /**
      * Parse apart the field and value from a URL filter string.
      *
      * @param string $filter A filter string from url : "field:value"
@@ -844,6 +680,13 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function parseFilter($filter)
     {
+        // Special case: complex filters cannot be split into field/value
+        // since they have multiple parts (e.g. field1:a OR field2:b). Use
+        // a fake "#" field to collect these types of filters.
+        if ($this->isAdvancedFilter($filter) == true) {
+            return ['#', $filter];
+        }
+
         // Split the string and assign the parts to $field and $value
         $temp = explode(':', $filter, 2);
         $field = array_shift($temp);
@@ -893,13 +736,31 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function addFilter($newFilter)
     {
-        // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($newFilter);
-
         // Check for duplicates -- if it's not in the array, we can add it
         if (!$this->hasFilter($newFilter)) {
+            // Extract field and value from filter string:
+            list($field, $value) = $this->parseFilter($newFilter);
             $this->filterList[$field][] = $value;
         }
+    }
+
+    /**
+     * Detects if a filter is advanced (true) or simple (false). An advanced
+     * filter is currently defined as one surrounded by parentheses, while a
+     * simple filter is of the form field:value. Advanced filters are used to
+     * express more complex queries, such as combining multiple values from
+     * multiple fields using boolean operators.
+     *
+     * @param string $filter A filter string
+     *
+     * @return bool
+     */
+    public function isAdvancedFilter($filter)
+    {
+        if (substr($filter, 0, 1) == '(') {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -1064,11 +925,11 @@ class Params implements ServiceLocatorAwareInterface
             ? $this->getCheckboxFacetValues() : [];
 
         $list = [];
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
             list($operator, $field) = $this->parseOperatorAndFieldName($field);
-            $translate
-                = in_array($field, $this->getOptions()->getTranslatedFacets());
+            $translate = in_array($field, $translatedFacets);
             // and each value currently used for that field
             foreach ($values as $value) {
                 // Add to the list unless it's in the list of fields to skip:
@@ -1086,6 +947,26 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Check for delimited facets -- if $field is a delimited facet field,
+     * process $displayText accordingly. Return the appropriate display value.
+     *
+     * @param string $field       The facet
+     * @param string $displayText The facet value
+     *
+     * @return string
+     */
+    public function checkForDelimitedFacetDisplayText($field, $displayText)
+    {
+        $delimitedFacetFields = $this->getOptions()->getDelimitedFacets(true);
+        if (isset($delimitedFacetFields[$field])) {
+            $parts = explode($delimitedFacetFields[$field], $displayText);
+            $displayText = end($parts);
+        }
+
+        return $displayText;
+    }
+
+    /**
      * Format a single filter for use in getFilterList().
      *
      * @param string $field     Field name
@@ -1097,12 +978,14 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
-        return [
-            'value'       => $value,
-            'displayText' => $translate ? $this->translate($value) : $value,
-            'field'       => $field,
-            'operator'    => $operator,
-        ];
+        $displayText = $this->checkForDelimitedFacetDisplayText($field, $value);
+
+        if ($translate) {
+            $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
+            $displayText = $this->translate("$domain::$displayText");
+        }
+
+        return compact('value', 'displayText', 'field', 'operator');
     }
 
     /**
@@ -1471,6 +1354,74 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Add hidden filters to the object based on values found in the request object.
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initHiddenFilters($request)
+    {
+        $hiddenFilters = $request->get('hiddenFilters');
+        if (!empty($hiddenFilters) && is_array($hiddenFilters)) {
+            foreach ($hiddenFilters as $current) {
+                $this->addHiddenFilter($current);
+            }
+        }
+    }
+
+    /**
+     * Get hidden filters grouped by field like normal filters.
+     *
+     * @return array
+     */
+    public function getHiddenFilters()
+    {
+        return $this->hiddenFilters;
+    }
+
+    /**
+     * Does the object already contain the specified hidden filter?
+     *
+     * @param string $filter A filter string from url : "field:value"
+     *
+     * @return bool
+     */
+    public function hasHiddenFilter($filter)
+    {
+        // Extract field and value from URL string:
+        list($field, $value) = $this->parseFilter($filter);
+
+        if (isset($this->hiddenFilters[$field])
+            && in_array($value, $this->hiddenFilters[$field])
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Take a filter string and add it into the protected hidden filters
+     *   array checking for duplicates.
+     *
+     * @param string $newFilter A filter string from url : "field:value"
+     *
+     * @return void
+     */
+    public function addHiddenFilter($newFilter)
+    {
+        // Check for duplicates -- if it's not in the array, we can add it
+        if (!$this->hasHiddenFilter($newFilter)) {
+            // Extract field and value from filter string:
+            list($field, $value) = $this->parseFilter($newFilter);
+            if (!empty($field) && !empty($value)) {
+                $this->hiddenFilters[$field][] = $value;
+            }
+        }
+    }
+
+    /**
      * Return a query string for the current search with a search term replaced.
      *
      * @param string $oldTerm The old term to replace
@@ -1559,8 +1510,9 @@ class Params implements ServiceLocatorAwareInterface
     public function deminify($minified)
     {
         // Some values will transfer without changes
-        $this->filterList   = $minified->f;
-        $this->searchType   = $minified->ty;
+        $this->filterList = $minified->f;
+        $this->hiddenFilters = $minified->hf;
+        $this->searchType = $minified->ty;
 
         // Deminified searches will always have defaults already applied;
         // we don't want to accidentally manipulate them further.
@@ -1751,6 +1703,7 @@ class Params implements ServiceLocatorAwareInterface
                 || in_array($key, $orFields);
             $this->addFacet($key, $value, $useOr);
         }
+
         return true;
     }
 

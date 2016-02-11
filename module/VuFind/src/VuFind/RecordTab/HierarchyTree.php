@@ -205,4 +205,15 @@ class HierarchyTree extends AbstractBase
         return isset($config->Hierarchy->treeSearchLimit)
             ? $config->Hierarchy->treeSearchLimit : -1;
     }
+
+    /**
+     * Can this tab be loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function supportsAjax()
+    {
+        // No, special width adjustment needed.
+        return false;
+    }
 }

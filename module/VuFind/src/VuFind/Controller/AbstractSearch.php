@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Solr\Utils as SolrUtils;
+use VuFind\Search\RecommendListener, VuFind\Solr\Utils as SolrUtils;
 use Zend\Stdlib\Parameters;
 
 /**
@@ -135,34 +135,27 @@ class AbstractSearch extends AbstractBase
      */
     protected function redirectToSavedSearch($id)
     {
-        $table = $this->getTable('Search');
-        $search = $table->getRowById($id);
-
-        // Found, make sure the user has the rights to view this search
-        $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
-        $user = $this->getUser();
-        $userId = $user ? $user->id : false;
-        if ($search->session_id == $sessId || $search->user_id === $userId) {
-            // They do, deminify it to a new object.
-            $minSO = $search->getSearchObject();
-            $savedSearch = $minSO->deminify($this->getResultsManager());
-
-            // Now redirect to the URL associated with the saved search; this
-            // simplifies problems caused by mixing different classes of search
-            // object, and it also prevents the user from ever landing on a
-            // "?saved=xxxx" URL, which may not persist beyond the current session.
-            // (We want all searches to be persistent and bookmarkable).
-            $details = $savedSearch->getOptions()->getSearchAction();
-            $url = $this->url()->fromRoute($details);
-            $url .= $savedSearch->getUrlQuery()->getParams(false);
-            return $this->redirect()->toUrl($url);
-        } else {
-            // They don't
-            // TODO : Error handling -
-            //    User is trying to view a saved search from another session
-            //    (deliberate or expired) or associated with another user.
+        $search = $this->retrieveSearchSecurely($id);
+        if (empty($search)) {
+            // User is trying to view a saved search from another session
+            // (deliberate or expired) or associated with another user.
             throw new \Exception("Attempt to access invalid search ID");
         }
+
+        // If we got this far, the user is allowed to view the search, so we can
+        // deminify it to a new object.
+        $minSO = $search->getSearchObject();
+        $savedSearch = $minSO->deminify($this->getResultsManager());
+
+        // Now redirect to the URL associated with the saved search; this
+        // simplifies problems caused by mixing different classes of search
+        // object, and it also prevents the user from ever landing on a
+        // "?saved=xxxx" URL, which may not persist beyond the current session.
+        // (We want all searches to be persistent and bookmarkable).
+        $details = $savedSearch->getOptions()->getSearchAction();
+        $url = $this->url()->fromRoute($details);
+        $url .= $savedSearch->getUrlQuery()->getParams(false);
+        return $this->redirect()->toUrl($url);
     }
 
     /**
@@ -185,12 +178,17 @@ class AbstractSearch extends AbstractBase
      */
     protected function rememberSearch($results)
     {
+        // Only save search URL if the property tells us to...
         if ($this->rememberSearch) {
             $searchUrl = $this->url()->fromRoute(
                 $results->getOptions()->getSearchAction()
             ) . $results->getUrlQuery()->getParams(false);
             $this->getSearchMemory()->rememberSearch($searchUrl);
         }
+
+        // Always save search parameters, since these are namespaced by search
+        // class ID.
+        $this->getSearchMemory()->rememberParams($results->getParams());
     }
 
     /**
@@ -201,7 +199,7 @@ class AbstractSearch extends AbstractBase
     protected function getActiveRecommendationSettings()
     {
         // Enable recommendations unless explicitly told to disable them:
-        $all = ['top', 'side', 'noresults'];
+        $all = ['top', 'side', 'noresults', 'bottom'];
         $noRecommend = $this->params()->fromQuery('noRecommend', false);
         if ($noRecommend === 1 || $noRecommend === '1'
             || $noRecommend === 'true' || $noRecommend === true
@@ -215,6 +213,47 @@ class AbstractSearch extends AbstractBase
         return array_diff(
             $all, array_map('trim', explode(',', strtolower($noRecommend)))
         );
+    }
+
+    /**
+     * Get a callback for setting up a search (or null if callback is unnecessary).
+     *
+     * @return mixed
+     */
+    protected function getSearchSetupCallback()
+    {
+        // Setup callback to attach listener if appropriate:
+        $activeRecs = $this->getActiveRecommendationSettings();
+        if (empty($activeRecs)) {
+            return null;
+        }
+
+        $rManager = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
+
+        // Special case: override recommend settings through parameter (used by
+        // combined search)
+        if ($override = $this->params()->fromQuery('recommendOverride')) {
+            return function ($runner, $p, $searchId) use ($rManager, $override) {
+                $listener = new RecommendListener($rManager, $searchId);
+                $listener->setConfig($override);
+                $listener->attach($runner->getEventManager()->getSharedManager());
+            };
+        }
+
+        // Standard case: retrieve recommend settings from params object:
+        return function ($runner, $params, $searchId) use ($rManager, $activeRecs) {
+            $listener = new RecommendListener($rManager, $searchId);
+            $config = [];
+            $rawConfig = $params->getOptions()
+                ->getRecommendationSettings($params->getSearchHandler());
+            foreach ($rawConfig as $key => $value) {
+                if (in_array($key, $activeRecs)) {
+                    $config[$key] = $value;
+                }
+            }
+            $listener->setConfig($config);
+            $listener->attach($runner->getEventManager()->getSharedManager());
+        };
     }
 
     /**
@@ -232,72 +271,46 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $results = $this->getResultsManager()->get($this->searchClassId);
-        $params = $results->getParams();
-        $params->recommendationsEnabled($this->getActiveRecommendationSettings());
+        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
 
         // Send both GET and POST variables to search class:
-        $params->initFromRequest(
-            new Parameters(
-                $this->getRequest()->getQuery()->toArray()
-                + $this->getRequest()->getPost()->toArray()
-            )
+        $request = $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray();
+
+        $lastView = $this->getSearchMemory()
+            ->retrieveLastSetting($this->searchClassId, 'view');
+        $view->results = $results = $runner->run(
+            $request, $this->searchClassId, $this->getSearchSetupCallback(),
+            $lastView
         );
+        $view->params = $results->getParams();
 
-        // Make parameters available to the view:
-        $view->params = $params;
-
-        // Attempt to perform the search; if there is a problem, inspect any Solr
-        // exceptions to see if we should communicate to the user about them.
-        try {
-            // Explicitly execute search within controller -- this allows us to
-            // catch exceptions more reliably:
-            $results->performAndProcessSearch();
-
+        // If we received an EmptySet back, that indicates that the real search
+        // failed due to some kind of syntax error, and we should display a
+        // warning to the user; otherwise, we should proceed with normal post-search
+        // processing.
+        if ($results instanceof \VuFind\Search\EmptySet\Results) {
+            $view->parseError = true;
+        } else {
             // If a "jumpto" parameter is set, deal with that now:
             if ($jump = $this->processJumpTo($results)) {
                 return $jump;
             }
 
-            // Send results to the view and remember the current URL as the last
-            // search.
-            $view->results = $results;
+            // Remember the current URL as the last search.
             $this->rememberSearch($results);
 
             // Add to search history:
             if ($this->saveToHistory) {
-                $user = $this->getUser();
-                $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')
-                    ->getId();
-                $history = $this->getTable('Search');
-                $history->saveSearch(
-                    $this->getResultsManager(), $results, $sessId,
-                    $history->getSearches(
-                        $sessId, isset($user->id) ? $user->id : null
-                    )
-                );
+                $this->saveSearchToHistory($results);
             }
 
             // Set up results scroller:
             if ($this->resultScrollerActive()) {
                 $this->resultScroller()->init($results);
             }
-        } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
-            if ($e->hasTag('VuFind\Search\ParserError')) {
-                // If it's a parse error or the user specified an invalid field, we
-                // should display an appropriate message:
-                $view->parseError = true;
-
-                // We need to create and process an "empty results" object to
-                // ensure that recommendation modules and templates behave
-                // properly when displaying the error message.
-                $view->results = $this->getResultsManager()->get('EmptySet');
-                $view->results->setParams($params);
-                $view->results->performAndProcessSearch();
-            } else {
-                throw $e;
-            }
         }
+
         // Save statistics:
         if ($this->logStatistics) {
             $this->getServiceLocator()->get('VuFind\SearchStats')
@@ -305,9 +318,7 @@ class AbstractSearch extends AbstractBase
         }
 
         // Special case: If we're in RSS view, we need to render differently:
-        if (isset($view->results)
-            && $view->results->getParams()->getView() == 'rss'
-        ) {
+        if (isset($view->params) && $view->params->getView() == 'rss') {
             $response = $this->getResponse();
             $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
             $feed = $this->getViewRenderer()->plugin('resultfeed');
@@ -353,6 +364,41 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Get a saved search, enforcing user ownership. Returns row if found, null
+     * otherwise.
+     *
+     * @param int $searchId Primary key value
+     *
+     * @return \VuFind\Db\Row\Search
+     */
+    protected function retrieveSearchSecurely($searchId)
+    {
+        $searchTable = $this->getTable('Search');
+        $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
+        $user = $this->getUser();
+        $userId = $user ? $user->id : null;
+        return $searchTable->getOwnedRowById($searchId, $sessId, $userId);
+    }
+
+    /**
+     * Save a search to the history in the database.
+     *
+     * @param \VuFind\Search\Base\Results $results Search results
+     *
+     * @return void
+     */
+    protected function saveSearchToHistory($results)
+    {
+        $user = $this->getUser();
+        $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
+        $history = $this->getTable('Search');
+        $history->saveSearch(
+            $this->getResultsManager(), $results, $sessId,
+            $history->getSearches($sessId, isset($user->id) ? $user->id : null)
+        );
+    }
+
+    /**
      * Either assign the requested search object to the view or display a flash
      * message indicating why the operation failed.
      *
@@ -363,20 +409,9 @@ class AbstractSearch extends AbstractBase
     protected function restoreAdvancedSearch($searchId)
     {
         // Look up search in database and fail if it is not found:
-        $searchTable = $this->getTable('Search');
-        $search = $searchTable->select(['id' => $searchId])->current();
+        $search = $this->retrieveSearchSecurely($searchId);
         if (empty($search)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('advSearchError_notFound');
-            return false;
-        }
-
-        // Fail if user has no permission to view this search:
-        $user = $this->getUser();
-        $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
-        if ($search->session_id != $sessId && $search->user_id != $user->id) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('advSearchError_noRights');
+            $this->flashMessenger()->addMessage('advSearchError_notFound', 'error');
             return false;
         }
 
@@ -386,9 +421,13 @@ class AbstractSearch extends AbstractBase
 
         // Fail if this is not the right type of search:
         if ($savedSearch->getParams()->getSearchType() != 'advanced') {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('advSearchError_notAdvanced');
-            return false;
+            try {
+                $savedSearch->getParams()->convertToAdvancedSearch();
+            } catch (\Exception $ex) {
+                $this->flashMessenger()
+                    ->addMessage('advSearchError_notAdvanced', 'error');
+                return false;
+            }
         }
 
         // Activate facets so we get appropriate descriptions in the filter list:

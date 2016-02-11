@@ -236,7 +236,7 @@ class ClaviusSQL extends AbstractBase
       */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        $limitFrom = ($page-1) * $limit;
+        $limitFrom = ($page - 1) * $limit;
         //TODO better escaping; mssql, oracle
         $sql = "SELECT t.tcislo as tcislo, t.druhdoku as druhdoku "
             . "FROM svazky s JOIN tituly t ON s.tcislo = t.tcislo "
@@ -436,7 +436,7 @@ class ClaviusSQL extends AbstractBase
                     'amount' => abs($fine['amount']),
                     'checkout' => null, // TODO maybe
                     'fine' => $reasons[$fine['reason']],
-                    'balance' => ($fine['amount']<0) ? abs($fine['amount']) : 0,
+                    'balance' => ($fine['amount'] < 0) ? abs($fine['amount']) : 0,
                     'createdate' => $fine['createdate'],
                     'duedate' => null, // TODO maybe
                     'id' => null,        // TODO maybe

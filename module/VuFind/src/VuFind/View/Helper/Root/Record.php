@@ -304,6 +304,31 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Get HTML to render a title.
+     *
+     * @param int $maxLength Maximum length of non-highlighted title.
+     *
+     * @return string
+     */
+    public function getTitleHtml($maxLength = 180)
+    {
+        $highlightedTitle = $this->driver->tryMethod('getHighlightedTitle');
+        $title = trim($this->driver->tryMethod('getTitle'));
+        if (!empty($highlightedTitle)) {
+            $highlight = $this->getView()->plugin('highlight');
+            $addEllipsis = $this->getView()->plugin('addEllipsis');
+            return $highlight($addEllipsis($highlightedTitle, $title));
+        }
+        if (!empty($title)) {
+            $escapeHtml = $this->getView()->plugin('escapeHtml');
+            $truncate = $this->getView()->plugin('truncate');
+            return $escapeHtml($truncate($title, $maxLength));
+        }
+        $transEsc = $this->getView()->plugin('transEsc');
+        return $transEsc('Title not available');
+    }
+
+    /**
      * Get the name of the controller used by the record route.
      *
      * @return string
@@ -312,13 +337,13 @@ class Record extends AbstractHelper
     {
         // Figure out controller using naming convention based on resource
         // source:
-        $source = $this->driver->getResourceSource();
-        if ($source == 'VuFind') {
-            // "VuFind" is special case -- it refers to Solr, which uses
-            // the basic record controller.
+        $source = $this->driver->getSourceIdentifier();
+        if ($source == DEFAULT_SEARCH_BACKEND) {
+            // Default source is special case -- it uses the basic record
+            // controller.
             return 'Record';
         }
-        // All non-Solr controllers will correspond with the record source:
+        // All other controllers will correspond with the record source:
         return ucwords(strtolower($source)) . 'record';
     }
 
@@ -387,12 +412,51 @@ class Record extends AbstractHelper
     public function getCheckbox($idPrefix = '')
     {
         static $checkboxCount = 0;
-        $id = $this->driver->getResourceSource() . '|'
+        $id = $this->driver->getSourceIdentifier() . '|'
             . $this->driver->getUniqueId();
         $context
             = ['id' => $id, 'count' => $checkboxCount++, 'prefix' => $idPrefix];
         return $this->contextHelper->renderInContext(
             'record/checkbox.phtml', $context
+        );
+    }
+
+    /**
+     * Render a cover for the current record.
+     *
+     * @param string $context Context of code being genarated
+     * @param string $default The default size of the cover
+     * @param string $link    The link for the anchor
+     *
+     * @return string
+     */
+    public function getCover($context, $default, $link = false)
+    {
+        if (isset($this->config->Content->coversize)
+            && !$this->config->Content->coversize
+        ) {
+            // covers disabled entirely
+            $preferredSize = false;
+        } else {
+            // check for context-specific overrides
+            $preferredSize = isset($this->config->Content->coversize[$context])
+                ? $this->config->Content->coversize[$context] : $default;
+        }
+        if (empty($preferredSize)) {
+            return '';
+        }
+
+        // Find best option if more than one size is defined (e.g. small:medium)
+        $cover = false;  // assume invalid until good size found below
+        foreach (explode(':', $preferredSize) as $size) {
+            if ($cover = $this->getThumbnail($size)) {
+                break;
+            }
+        }
+
+        $driver = $this->driver;    // for convenient use in compact()
+        return $this->contextHelper->renderInContext(
+            'record/cover.phtml', compact('cover', 'link', 'context', 'driver')
         );
     }
 
@@ -489,13 +553,15 @@ class Record extends AbstractHelper
      * Get all the links associated with this record.  Returns an array of
      * associative arrays each containing 'desc' and 'url' keys.
      *
+     * @param bool $openUrlActive Is there an active OpenURL on the page?
+     *
      * @return array
      */
-    public function getLinkDetails()
+    public function getLinkDetails($openUrlActive = false)
     {
         // See if there are any links available:
         $urls = $this->driver->tryMethod('getURLs');
-        if (empty($urls)) {
+        if (empty($urls) || ($openUrlActive && $this->hasOpenUrlReplaceSetting())) {
             return [];
         }
 
@@ -530,10 +596,23 @@ class Record extends AbstractHelper
             if (!isset($link['desc'])) {
                 $link['desc'] = $link['url'];
             }
-            
+
             return $link;
         };
 
         return array_map($formatLink, $urls);
+    }
+
+    /**
+     * Get all the links associated with this record depending on the OpenURL setting
+     * replace_other_urls.  Returns an array of associative arrays each containing
+     * 'desc' and 'url' keys.
+     *
+     * @return bool
+     */
+    protected function hasOpenUrlReplaceSetting()
+    {
+        return isset($this->config->OpenURL->replace_other_urls)
+            && $this->config->OpenURL->replace_other_urls;
     }
 }

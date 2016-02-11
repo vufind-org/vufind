@@ -35,7 +35,6 @@ use VuFindSearch\Backend\BackendInterface;
 use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\I18n\Translator\TranslatorInterface;
 
 /**
  * Solr hierarchical facet handling listener.
@@ -78,20 +77,6 @@ class HierarchicalFacetListener
     protected $facetHelper;
 
     /**
-     * Translator.
-     *
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
-     * Translated facets.
-     *
-     * @var array
-     */
-    protected $translatedFacets;
-
-    /**
      * Facet display styles.
      *
      * @var array
@@ -127,11 +112,6 @@ class HierarchicalFacetListener
         $this->facetHelper
             = $this->serviceLocator->get('VuFind\HierarchicalFacetHelper');
 
-        $this->translator = $this->serviceLocator->get('VuFind\Translator');
-        $this->translatedFacets
-            = isset($this->facetConfig->Advanced_Settings->translated_facets)
-            ? $this->facetConfig->Advanced_Settings->translated_facets->toArray()
-            : [];
         $specialFacets = $this->facetConfig->SpecialFacets;
         $this->displayStyles
             = isset($specialFacets->hierarchicalFacetDisplayStyles)
@@ -196,25 +176,14 @@ class HierarchicalFacetListener
                 if (!isset($fields[$facetName])) {
                     continue;
                 }
-                // Keep the original data too
-                $fields["__unprocessed_$facetName"] = $fields[$facetName];
                 if (is_array($fields[$facetName])) {
-                    // If full facet display style is used, discard all but the
-                    // most significant value
-                    if (isset($this->displayStyles[$facetName])
-                        && $this->displayStyles[$facetName] == 'full'
-                    ) {
-                        $fields[$facetName] = [
-                            $this->formatFacetField(
-                                $facetName, end($fields[$facetName])
-                            )
-                        ];
-                    } else {
-                        foreach ($fields[$facetName] as &$value) {
-                            $value = $this->formatFacetField($facetName, $value);
-                        }
-                        $fields[$facetName] = array_unique($fields[$facetName]);
+                    $lastElem = end($fields[$facetName]);
+                    foreach ($fields[$facetName] as &$value) {
+                        $value = $this->formatFacetField(
+                            $facetName, $value, $value == $lastElem
+                        );
                     }
+                    $fields[$facetName] = array_unique($fields[$facetName]);
                 } else {
                     $fields[$facetName]
                         = $this->formatFacetField($facetName, $fields[$facetName]);
@@ -230,15 +199,12 @@ class HierarchicalFacetListener
      *
      * @param string $facet Facet field
      * @param string $value Facet value
+     * @param bool   $last  Whether this is the last of multiple values
      *
      * @return string Formatted field
      */
-    protected function formatFacetField($facet, $value)
+    protected function formatFacetField($facet, $value, $last)
     {
-        if (in_array($facet, $this->translatedFacets)) {
-            $value = $this->translator->translate($value);
-        }
-
         $allLevels = isset($this->displayStyles[$facet])
             ? $this->displayStyles[$facet] == 'full'
             : false;
@@ -248,6 +214,12 @@ class HierarchicalFacetListener
         $value = $this->facetHelper->formatDisplayText(
             $value, $allLevels, $separator
         );
+
+        // If full display style is used, clear out default display text for all but
+        // the last value:
+        if ($allLevels && !$last) {
+            $value = new \VuFind\I18n\TranslatableString((string)$value, '');
+        }
 
         return $value;
     }

@@ -101,6 +101,9 @@ class InjectHighlightingListener
      */
     public function onSearchPre(EventInterface $event)
     {
+        if ($event->getParam('context') != 'search') {
+            return $event;
+        }
         $backend = $event->getTarget();
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
@@ -132,8 +135,8 @@ class InjectHighlightingListener
      */
     public function onSearchPost(EventInterface $event)
     {
-        // Do nothing if highlighting is disabled....
-        if (!$this->active) {
+        // Do nothing if highlighting is disabled or context is wrong
+        if (!$this->active || $event->getParam('context') != 'search') {
             return $event;
         }
 

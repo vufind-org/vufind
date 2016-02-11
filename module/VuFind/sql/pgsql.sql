@@ -28,7 +28,7 @@ record_id varchar(120) NOT NULL DEFAULT '',
 title varchar(200) NOT NULL DEFAULT '',
 author varchar(200) DEFAULT NULL,
 year int DEFAULT NULL,
-source varchar(50) NOT NULL DEFAULT 'VuFind',
+source varchar(50) NOT NULL DEFAULT 'Solr',
 PRIMARY KEY (id)
 );
 CREATE INDEX resource_record_id_idx ON resource (record_id);
@@ -97,15 +97,15 @@ PRIMARY KEY (id)
 
 CREATE TABLE "user"(
 id SERIAL,
-username varchar(50) NOT NULL DEFAULT '',
+username varchar(255) NOT NULL DEFAULT '',
 password varchar(32) NOT NULL DEFAULT '',
 pass_hash varchar(60) DEFAULT NULL,
 firstname varchar(50) NOT NULL DEFAULT '',
 lastname varchar(50) NOT NULL DEFAULT '',
-email varchar(250) NOT NULL DEFAULT '',
+email varchar(255) NOT NULL DEFAULT '',
 cat_username varchar(50) DEFAULT NULL,
-cat_password varchar(50) DEFAULT NULL,
-cat_pass_enc varchar(110) DEFAULT NULL,
+cat_password varchar(70) DEFAULT NULL,
+cat_pass_enc varchar(170) DEFAULT NULL,
 college varchar(100) NOT NULL DEFAULT '',
 major varchar(100) NOT NULL DEFAULT '',
 home_library varchar(100) NOT NULL DEFAULT '',
@@ -245,6 +245,25 @@ PRIMARY KEY (id)
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `record`
+--
+
+DROP TABLE IF EXISTS "record";
+
+CREATE TABLE `record` (
+  id serial NOT NULL,
+  record_id varchar(120),
+  source varchar(50),
+  version varchar(20) NOT NULL,
+  data text,
+  updated timestamp without time zone,
+  PRIMARY KEY (id),
+  UNIQUE(record_id, source)
+);
+
+-- --------------------------------------------------------
+
+-- 
 -- Table structure for table `user_card`
 --
 

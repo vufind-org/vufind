@@ -88,7 +88,7 @@ class HierarchicalFacetHelperTest extends TestCase
         ],
         [
             'value' => '1/Audio/Music/',
-            'displayText' => '1/Audio/Music/',
+            'displayText' => 'Music',
             'count' => 50,
             'operator' => 'OR',
             'isApplied' => false
@@ -207,20 +207,34 @@ class HierarchicalFacetHelperTest extends TestCase
     public function testFormatDisplayText()
     {
         $this->assertEquals(
-            $this->helper->formatDisplayText('0/Sound/'),
+            $this->helper->formatDisplayText('0/Sound/')->getDisplayString(),
             'Sound'
         );
         $this->assertEquals(
-            $this->helper->formatDisplayText('1/Sound/Noisy/'),
+            $this->helper->formatDisplayText('1/Sound/Noisy/')->getDisplayString(),
             'Noisy'
         );
         $this->assertEquals(
-            $this->helper->formatDisplayText('1/Sound/Noisy/', true),
+            $this->helper->formatDisplayText('1/Sound/Noisy/', true)
+                ->getDisplayString(),
             'Sound/Noisy'
         );
         $this->assertEquals(
-            $this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - '),
+            $this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - ')
+                ->getDisplayString(),
             'Sound - Noisy'
+        );
+        $this->assertEquals(
+            $this->helper->formatDisplayText('0/Sound/'),
+            '0/Sound/'
+        );
+        $this->assertEquals(
+            (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true),
+            '1/Sound/Noisy/'
+        );
+        $this->assertEquals(
+            (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - '),
+            '1/Sound/Noisy/'
         );
     }
 

@@ -3,61 +3,63 @@
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
     <a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' ? ' active' : ''?>">
       <?=$this->transEsc('Favorites')?>
-      <span class="pull-right"><i class="fa fa-star"></i></span>
+      <span class="pull-right flip"><i class="fa fa-fw fa-star"></i></span>
     </a>
   <? endif; ?>
   <? if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
     <? if ($this->ils()->checkCapability('getMyTransactions')): ?>
       <a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item<?=$this->active == 'checkedout' ? ' active' : ''?>">
         <?=$this->transEsc('Checked Out Items')?>
-        <span class="pull-right"><i class="fa fa-book"></i></span>
+        <span class="pull-right flip"><i class="fa fa-fw fa-book"></i></span>
       </a>
     <? endif; ?>
     <? if ($this->ils()->checkCapability('getMyHolds')): ?>
       <a href="<?=$this->url('myresearch-holds')?>" class="list-group-item<?=$this->active == 'holds' ? ' active' : ''?>">
         <?=$this->transEsc('Holds and Recalls')?>
-        <span class="pull-right"><i class="fa fa-flag"></i></span>
+        <span class="pull-right flip"><i class="fa fa-fw fa-flag"></i></span>
       </a>
     <? endif; ?>
     <? if ($this->ils()->checkFunction('StorageRetrievalRequests')): ?>
       <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item<?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
         <?=$this->transEsc('Storage Retrieval Requests')?>
-        <span class="pull-right"><i class="fa fa-archive"></i></span>
+        <span class="pull-right flip"><i class="fa fa-fw fa-archive"></i></span>
       </a>
     <? endif; ?>
     <? if ($this->ils()->checkFunction('ILLRequests')): ?>
     <a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item<?=$this->active == 'ILLRequests' ? ' active' : ''?>">
       <?=$this->transEsc('Interlibrary Loan Requests')?>
-      <span class="pull-right"><i class="fa fa-exchange"></i></span>
+      <span class="pull-right flip"><i class="fa fa-fw fa-exchange"></i></span>
     </a>
     <? endif; ?>
     <? if ($this->ils()->checkCapability('getMyFines')): ?>
       <a href="<?=$this->url('myresearch-fines')?>" class="list-group-item<?=$this->active == 'fines' ? ' active' : ''?>">
         <?=$this->transEsc('Fines')?>
-        <span class="pull-right"><i class="fa fa-usd"></i></span>
+        <span class="pull-right flip"><i class="fa fa-fw fa-usd"></i></span>
       </a>
     <? endif; ?>
     <? if ($this->ils()->checkCapability('getMyProfile')): ?>
       <a href="<?=$this->url('myresearch-profile')?>" class="list-group-item<?=$this->active == 'profile' ? ' active' : ''?>">
         <?=$this->transEsc('Profile')?>
-        <span class="pull-right"><i class="fa fa-user"></i></span>
+        <span class="pull-right flip"><i class="fa fa-fw fa-user"></i></span>
       </a>
     <? endif; ?>
     <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
       <a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
         <?=$this->transEsc('Library Cards')?>
-        <span class="pull-right"><i class="fa fa-barcode"></i></span>
+        <span class="pull-right flip"><i class="fa fa-fw fa-barcode"></i></span>
       </a>
     <? endif; ?>
   <? endif; ?>
-  <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item<?=$this->active == 'history' ? ' active' : ''?>">
-    <?=$this->transEsc('history_saved_searches')?>
-    <span class="pull-right"><i class="fa fa-search"></i></span>
-  </a>
+  <? if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
+    <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item<?=$this->active == 'history' ? ' active' : ''?>">
+      <?=$this->transEsc('history_saved_searches')?>
+      <span class="pull-right flip"><i class="fa fa-fw fa-search"></i></span>
+    </a>
+  <? endif; ?>
   <? if ($user = $this->auth()->isLoggedIn()): ?>
     <a href="<?=$this->url('myresearch-logout')?>" class="list-group-item">
       <?=$this->transEsc("Log Out")?>
-      <span class="pull-right"><i class="fa fa-sign-out"></i></span>
+      <span class="pull-right flip"><i class="fa fa-fw fa-sign-out"></i></span>
     </a>
   <? endif; ?>
 </div>
@@ -66,7 +68,7 @@
   <div class="list-group">
     <a href="<?=$this->url('myresearch-changepassword') ?>" class="list-group-item<?=$this->active == 'newpassword' ? ' active' : ''?>">
       <?=$this->transEsc('Change Password') ?>
-      <span class="pull-right"><i class="fa fa-lock"></i></span>
+      <span class="pull-right flip"><i class="fa fa-fw fa-lock"></i></span>
     </a>
   </div>
 <? endif; ?>
@@ -75,7 +77,7 @@
   <div class="list-group">
     <a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' ? ' active' : ''?>">
       <?=$this->transEsc('Your Favorites')?>
-      <span class="pull-right"><i class="fa fa-star"></i></span>
+      <span class="pull-right flip"><i class="fa fa-fw fa-star"></i></span>
     </a>
     <? $lists = $user->getLists() ?>
     <? foreach ($lists as $list): ?>
@@ -86,7 +88,7 @@
     <? endforeach; ?>
     <a href="<?=$this->url('editList', array('id'=>'NEW'))?>" title="<?=$this->transEsc('Create a List') ?>" class="list-group-item">
       <?=$this->transEsc('Create a List') ?>
-      <span class="pull-right"><i class="fa fa-plus"></i></span>
+      <span class="pull-right flip"><i class="fa fa-fw fa-plus"></i></span>
     </a>
   </div>
 <? endif ?>

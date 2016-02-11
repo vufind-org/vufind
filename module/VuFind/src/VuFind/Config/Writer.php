@@ -84,7 +84,7 @@ class Writer
      *
      * @param string $section Section to change/add
      * @param string $setting Setting within section to change/add
-     * @param string $value   Value to set
+     * @param string $value   Value to set (or null to unset)
      *
      * @return void
      */
@@ -109,20 +109,27 @@ class Writer
             if (preg_match('/^\[(.+)\]$/', trim($content), $matches)) {
                 // If we just left the target section and didn't find the
                 // desired setting, we should write it to the end.
-                if ($currentSection == $section && !$settingSet) {
-                    $line = $setting . ' = "' . $value . '"' . "\n\n" . $line;
+                if ($currentSection == $section && !$settingSet
+                    && $value !== null
+                ) {
+                    $line = $this->buildContentLine($setting, $value, 0)
+                        . "\n\n" . $line;
                     $settingSet = true;
                 }
                 $currentSection = $matches[1];
             } else if (strstr($content, '=')) {
                 $contentParts = explode('=', $content, 2);
-                $key = reset($contentParts);
-                if ($currentSection == $section && trim($key) == $setting) {
-                    $line = $setting . ' = "' . $value . '"';
+                $key = trim($contentParts[0]);
+                if ($currentSection == $section && $key == $setting) {
+                    $settingSet = true;
+                    if ($value === null) {
+                        continue;
+                    } else {
+                        $line = $this->buildContentLine($setting, $value, 0);
+                    }
                     if (!empty($comment)) {
                         $line .= ' ;' . $comment;
                     }
-                    $settingSet = true;
                 }
             }
 
@@ -131,13 +138,26 @@ class Writer
         }
 
         // Did we loop through everything without finding a place to put the setting?
-        if (!$settingSet) {
+        if (!$settingSet && $value !== null) {
             // We never found the target section?
             if ($currentSection != $section) {
                 $this->content .= '[' . $section . "]\n";
             }
-            $this->content .= $setting . ' = "' . $value . '"' . "\n";
+            $this->content .= $this->buildContentLine($setting, $value, 0) . "\n";
         }
+    }
+
+    /**
+     * Remove a setting (convenience wrapper around set to null).
+     *
+     * @param string $section Section to change/add
+     * @param string $setting Setting within section to change/add
+     *
+     * @return void
+     */
+    public function clear($section, $setting)
+    {
+        $this->set($section, $setting, null);
     }
 
     /**
@@ -190,7 +210,7 @@ class Writer
         } else if ($e == "") {
             return '';
         } else {
-            return '"' . $e . '"';
+            return '"' . str_replace('"', '\"', $e) . '"';
         }
     }
 
@@ -207,11 +227,11 @@ class Writer
     {
         // Build a tab string so the equals signs line up attractively:
         $tabStr = '';
-        for ($i = strlen($key); $i < $tab; $i++) {
+        for ($i = strlen($key) + 1; $i < $tab; $i++) {
             $tabStr .= ' ';
         }
 
-        return $key . $tabStr . "= " . $this->buildContentValue($value);
+        return $key . $tabStr . " = " . $this->buildContentValue($value);
     }
 
     /**

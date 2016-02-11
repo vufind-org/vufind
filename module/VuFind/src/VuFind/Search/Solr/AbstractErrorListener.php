@@ -46,7 +46,6 @@ use SplObjectStorage;
  */
 abstract class AbstractErrorListener
 {
-
     /**
      * Tag indicating a parser error.
      *

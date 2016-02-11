@@ -26,6 +26,8 @@
  * @author   Anna Headley <aheadle1@swarthmore.edu>
  * @author   Chelsea Lobdell <clobdel1@swarthmore.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
@@ -41,6 +43,8 @@ use Zend\Http\Client as HttpClient;
  * @author   Anna Headley <aheadle1@swarthmore.edu>
  * @author   Chelsea Lobdell <clobdel1@swarthmore.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
@@ -70,6 +74,18 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     protected $host;
 
     /**
+     * Response for an empty search
+     *
+     * @var array
+     */
+    protected static $emptyQueryResponse = [
+        'recordCount' => 0,
+        'documents' => [],
+        'facets' => [],
+        'error' => 'Primo does not accept an empty query'
+    ];
+
+    /**
      * Debug status
      *
      * @var bool
@@ -81,21 +97,27 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * Sets up the Primo API Client
      *
-     * @param string     $apiId  Primo API ID
+     * @param string     $url    Primo API URL (either a host name and port or a full
+     * path to the brief search including a trailing question mark)
      * @param string     $inst   Institution code
      * @param HttpClient $client HTTP client
-     * @param int        $port   API connection port
      */
-    public function __construct($apiId, $inst, $client, $port = 1701)
+    public function __construct($url, $inst, $client)
     {
-        $this->host = "http://$apiId.hosted.exlibrisgroup.com:{$port}/"
-            . "PrimoWebServices/xservice/search/brief?";
+        $parts = parse_url($url);
+        if (empty($parts['path']) || $parts['path'] == '/') {
+            $parts['path'] = '/PrimoWebServices/xservice/search/brief';
+        }
+        $this->host = $parts['scheme'] . '://' . $parts['host']
+            . (!empty($parts['port']) ? ':' . $parts['port'] : '')
+            . $parts['path'] . '?';
+
         $this->inst = $inst;
         $this->client = $client;
     }
 
     /**
-     * Execute a search.  adds all the querystring parameters into
+     * Execute a search. Adds all the querystring parameters into
      * $this->client and returns the parsed response
      *
      * @param string $institution Institution
@@ -110,8 +132,6 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *     pageNumber  string: index of first record (default 1)
      *     limit       string: number of records to return (default 20)
      *     sort        string: value to be used by for sorting (default null)
-     *     returnErr   bool:   false to fail on error; true to return empty
-     *                         empty result set with an error field (def true)
      *     Anything in $params not listed here will be ignored.
      *
      * Note: some input parameters accepted by Primo are not implemented here:
@@ -134,31 +154,16 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             "onCampus" => true,
             "didYouMean" => false,
             "filterList" => null,
+            "pcAvailability" => false,
             "pageNumber" => 1,
             "limit" => 20,
-            "sort" => null,
-            "returnErr" => true,
+            "sort" => null
         ];
         if (isset($params)) {
             $args = array_merge($args, $params);
         }
 
-        // run search, deal with exceptions
-        try {
-            $result = $this->performSearch($institution, $terms, $args);
-        } catch (\Exception $e) {
-            if ($args["returnErr"]) {
-                $this->debug($e->getMessage());
-                return [
-                    'recordCount' => 0,
-                    'documents' => [],
-                    'facets' => [],
-                    'error' => $e->getMessage()
-                ];
-            } else {
-                throw $e;
-            }
-        }
+        $result = $this->performSearch($institution, $terms, $args);
         return $result;
     }
 
@@ -286,6 +291,17 @@ class Connector implements \Zend\Log\LoggerAwareInterface
                 }
             }
 
+            // QUERYSTRING: pcAvailability
+            // by default, PrimoCentral only returns matches,
+            // which are available via Holdingsfile
+            // pcAvailability = false
+            // By setting this value to true, also matches, which
+            // are NOT available via Holdingsfile are returned
+            // (yes, right, set this to true - thats ExLibris Logic)
+            if ($args["pcAvailability"]) {
+                $qs[] = "pcAvailability=true";
+            }
+
             // QUERYSTRING: indx (start record)
             $recordStart = $args["pageNumber"];
             if ($recordStart != 1) {
@@ -318,8 +334,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             // Send Request
             $result = $this->call(implode('&', $qs));
         } else {
-            throw new \Exception('Primo API does not accept a null query');
+            return self::$emptyQueryResponse;
         }
+
         return $result;
     }
 
@@ -438,7 +455,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $creator
                 = trim((string)$prefix->PrimoNMBib->record->display->creator);
             if (strlen($creator) > 0) {
-                $item['creator'] = explode(';', $creator);
+                $item['creator'] = array_map('trim', explode(';', $creator));
             }
             // subjects
             $subject
@@ -471,12 +488,13 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $item['language']
                 = (string)$prefix->PrimoNMBib->record->display->language;
             $item['source']
-                = (string)$prefix->PrimoNMBib->record->display->source;
+                = implode('; ', (array)$prefix->PrimoNMBib->record->display->source);
             $item['identifier']
                 = (string)$prefix->PrimoNMBib->record->display->identifier;
             $item['fulltext']
                 = (string)$prefix->PrimoNMBib->record->delivery->fulltext;
 
+            $item['issn'] = [];
             foreach ($prefix->PrimoNMBib->record->search->issn as $issn) {
                 $item['issn'][] = (string)$issn;
             }
@@ -492,6 +510,36 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $item['url'] = !empty($sear->LINKS->openurl)
                 ? (string)$sear->LINKS->openurl
                 : (string)$sear->GETIT->attributes()->GetIt2;
+
+            // Container data
+            $addata = $prefix->PrimoNMBib->record->addata;
+            $item['container_title'] = (string)$addata->jtitle;
+            $item['container_volume'] = (string)$addata->volume;
+            $item['container_issue'] = (string)$addata->issue;
+            $item['container_start_page'] = (string)$addata->spage;
+            $item['container_end_page'] = (string)$addata->epage;
+            foreach ($addata->eissn as $eissn) {
+                if (!in_array((string)$eissn, $item['issn'])) {
+                    $item['issn'][] = (string)$eissn;
+                }
+            }
+            foreach ($addata->issn as $issn) {
+                if (!in_array((string)$issn, $item['issn'])) {
+                    $item['issn'][] = (string)$issn;
+                }
+            }
+
+            // Remove dash-less ISSNs if there are corresponding dashed ones
+            // (We could convert dash-less ISSNs to dashed ones, but try to stay
+            // true to the metadata)
+            $callback = function ($issn) use ($item) {
+                return strlen($issn) != 8
+                    || !in_array(
+                        substr($issn, 0, 4) . '-' . substr($issn, 4),
+                        $item['issn']
+                    );
+            };
+            $item['issn'] = array_values(array_filter($item['issn'], $callback));
 
             $item['fullrecord'] = $prefix->PrimoNMBib->record->asXml();
             $items[] = $item;
@@ -552,26 +600,82 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $recordId  The document to retrieve from the Primo API
      * @param string $inst_code Institution code (optional)
+     * @param bool   $onCampus  Whether the user is on campus
      *
      * @throws \Exception
      * @return string    The requested resource
      */
-    public function getRecord($recordId, $inst_code = null)
+    public function getRecord($recordId, $inst_code = null, $onCampus = false)
     {
         // Query String Parameters
         if (isset($recordId)) {
             $qs   = [];
-            $qs[] = "query=any,contains,\"$recordId\"";
+            // There is currently (at 2015-12-17) a problem with Primo fetching
+            // records that have colons in the id (e.g.
+            // doaj_xmloai:doaj.org/article:94935655971c4917aab4fcaeafeb67b9).
+            // According to Ex Libris support we must use contains search without
+            // quotes for the time being.
+            $qs[] = 'query=rid,contains,'
+                . urlencode(addcslashes($recordId, '":-()'));
             $qs[] = "institution=$inst_code";
-            $qs[] = "onCampus=true";
+            $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
             $qs[] = "indx=1";
             $qs[] = "bulkSize=1";
             $qs[] = "loc=adaptor,primo_central_multiple_fe";
+            // pcAvailability=true is needed for records, which
+            // are NOT in the PrimoCentral Holdingsfile.
+            // It won't hurt to have this parameter always set to true.
+            // But it'd hurt to have it not set in case you want to get
+            // a record, which is not in the Holdingsfile.
+            $qs[] = "pcAvailability=true";
 
             // Send Request
             $result = $this->call(implode('&', $qs));
         } else {
-            throw new \Exception('Primo API does not accept a null query');
+            return self::$emptyQueryResponse;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Retrieves multiple documents specified by the ID.
+     *
+     * @param array  $recordIds The documents to retrieve from the Primo API
+     * @param string $inst_code Institution code (optional)
+     * @param bool   $onCampus  Whether the user is on campus
+     *
+     * @throws \Exception
+     * @return string    The requested resource
+     */
+    public function getRecords($recordIds, $inst_code = null, $onCampus = false)
+    {
+        // Callback function for formatting IDs:
+        $formatIds = function ($id) {
+            return addcslashes($id, '":-()');
+        };
+
+        // Query String Parameters
+        if ($recordIds) {
+            $qs   = [];
+            $recordIds = array_map($formatIds, $recordIds);
+            $qs[] = 'query=rid,contains,' . urlencode(implode(' OR ', $recordIds));
+            $qs[] = "institution=$inst_code";
+            $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
+            $qs[] = "indx=1";
+            $qs[] = "bulkSize=" . count($recordIds);
+            $qs[] = "loc=adaptor,primo_central_multiple_fe";
+            // pcAvailability=true is needed for records, which
+            // are NOT in the PrimoCentral Holdingsfile.
+            // It won't hurt to have this parameter always set to true.
+            // But it'd hurt to have it not set in case you want to get
+            // a record, which is not in the Holdingsfile.
+            $qs[] = "pcAvailability=true";
+
+            // Send Request
+            $result = $this->call(implode('&', $qs));
+        } else {
+            return self::$emptyQueryResponse;
         }
 
         return $result;

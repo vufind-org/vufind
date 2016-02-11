@@ -59,8 +59,8 @@ class UserResource extends Gateway
      *
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
-    public function getSavedData($resourceId, $source = 'VuFind', $listId = null,
-        $userId = null
+    public function getSavedData($resourceId, $source = DEFAULT_SEARCH_BACKEND,
+        $listId = null, $userId = null
     ) {
         $callback = function ($select) use ($resourceId, $source, $listId, $userId) {
             $select->columns(
@@ -133,7 +133,9 @@ class UserResource extends Gateway
      * unlink (null for ALL matching resources)
      * @param string       $user_id     ID of user removing links
      * @param string       $list_id     ID of list to unlink
-     *                                  (null for ALL matching lists)
+     * (null for ALL matching lists, with the destruction of all tags associated
+     * with the $resource_id value; true for ALL matching lists, but retaining
+     * any tags associated with the $resource_id independently of lists)
      *
      * @return void
      */
@@ -148,13 +150,18 @@ class UserResource extends Gateway
         // Now build the where clause to figure out which rows to remove:
         $callback = function ($select) use ($resource_id, $user_id, $list_id) {
             $select->where->equalTo('user_id', $user_id);
-            if (!is_null($resource_id)) {
+            if (null !== $resource_id) {
                 if (!is_array($resource_id)) {
                     $resource_id = [$resource_id];
                 }
                 $select->where->in('resource_id', $resource_id);
             }
-            if (!is_null($list_id)) {
+            // null or true values of $list_id have different meanings in the
+            // context of the $resourceTags->destroyLinks() call above, since
+            // some tags have a null $list_id value. In the case of user_resource
+            // rows, however, every row has a non-null $list_id value, so the
+            // two cases are equivalent and may be handled identically.
+            if (null !== $list_id && true !== $list_id) {
                 $select->where->equalTo('list_id', $list_id);
             }
         };

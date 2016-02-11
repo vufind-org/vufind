@@ -51,7 +51,7 @@ class ShibbolethTest extends \VuFindTest\Unit\TestCase
         $this->checkShibboleth(
             ['Shib-Identity-Provider' => 'https://example.org/shibboleth-idp'],
             ['idpentityid https://example.org/shibboleth-idp'],
-            ['loggedin']
+            ['guest', 'loggedin']
         );
     }
 
@@ -63,9 +63,10 @@ class ShibbolethTest extends \VuFindTest\Unit\TestCase
     public function testMultivaluedOptionTrue()
     {
         $this->checkShibboleth(
-            ['affiliation' => 'student@example.org;member@example.org'],
+            ['Shib-Identity-Provider' => 'https://example.org/shibboleth-idp',
+             'affiliation' => 'student@example.org;member@example.org'],
             ['affiliation member@example.org'],
-            ['loggedin']
+            ['guest', 'loggedin']
         );
     }
 
@@ -77,7 +78,8 @@ class ShibbolethTest extends \VuFindTest\Unit\TestCase
     public function testMultivaluedOptionFalse()
     {
         $this->checkShibboleth(
-            ['affiliation' => 'student@example.org;member@example.org'],
+            ['Shib-Identity-Provider' => 'https://example.org/shibboleth-idp',
+             'affiliation' => 'student@example.org;member@example.org'],
             ['affiliation staff@example.org'],
             []
         );
@@ -89,14 +91,16 @@ class ShibbolethTest extends \VuFindTest\Unit\TestCase
      * @param array $headers        Request headers
      * @param mixed $options        options as from configuration
      * @param array $expectedResult expected result returned by getPermissions
+     * @param array $config         VuFind configuration options
      *
      * @return void
      */
-    protected function checkShibboleth($headers, $options, $expectedResult)
-    {
+    protected function checkShibboleth($headers, $options, $expectedResult,
+        $config = []
+    ) {
         $request = new \Zend\Http\PhpEnvironment\Request();
         $request->setServer(new \Zend\Stdlib\Parameters($headers));
-        $shibboleth = new Shibboleth($request);
+        $shibboleth = new Shibboleth($request, new \Zend\Config\Config($config));
         $result = $shibboleth->getPermissions($options);
         $this->assertEquals($result, $expectedResult);
     }

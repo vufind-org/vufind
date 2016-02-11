@@ -27,6 +27,8 @@
  */
 namespace VuFindSearch\Backend\EDS;
 
+use Exception;
+
 use VuFindSearch\Backend\EDS\Zend2 as ApiClient;
 
 use VuFindSearch\Query\AbstractQuery;
@@ -133,6 +135,13 @@ class Backend extends AbstractBackend
     protected $session;
 
     /**
+     * Is the current user a guest?
+     *
+     * @var bool
+     */
+    protected $isGuest;
+
+    /**
      * Constructor.
      *
      * @param ApiClient                        $client  EdsApi client to use
@@ -140,16 +149,18 @@ class Backend extends AbstractBackend
      * @param CacheAdapter                     $cache   Object cache
      * @param SessionContainer                 $session Session container
      * @param Config                           $config  Object representing EDS.ini
+     * @param bool                             $isGuest Is the current user a guest?
      */
     public function __construct(ApiClient $client,
         RecordCollectionFactoryInterface $factory, CacheAdapter $cache,
-        SessionContainer $session, Config $config = null
+        SessionContainer $session, Config $config = null, $isGuest = true
     ) {
-        // Save dependencies:
+        // Save dependencies/incoming parameters:
         $this->client = $client;
         $this->setRecordCollectionFactory($factory);
         $this->cache = $cache;
         $this->session = $session;
+        $this->isGuest = $isGuest;
 
         // Extract key values from configuration:
         if (isset($config->EBSCO_Account->user_name)) {
@@ -297,7 +308,7 @@ class Backend extends AbstractBackend
                         $sessionToken = $this->getSessionToken(true);
                     }
                     $response = $this->client->retrieve(
-                        $an, $dbId,  $authenticationToken, $sessionToken, $hlTerms
+                        $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
                     );
                 } catch(Exception $e) {
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
@@ -419,7 +430,7 @@ class Backend extends AbstractBackend
             // Check to see if the token expiration time is greater than the current
             // time.  If the token is expired or within 5 minutes of expiring,
             // generate a new one.
-            if (!empty($currentToken) && (time() <= ($expirationTime - (60*5)))) {
+            if (!empty($currentToken) && (time() <= ($expirationTime - (60 * 5)))) {
                 return $currentToken;
             }
         }
@@ -498,23 +509,13 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Determines whether or not the current user session is identifed as a guest
-     * session
+     * Is the current user a guest? If so, return 'y' else 'n'.
      *
-     * @return string 'y'|'n'
+     * @return string
      */
     protected function isGuest()
     {
-        // If the user is not logged in, then treat them as a guest. Unless they are
-        // using IP Authentication.
-        // If IP Authentication is used, then don't treat them as a guest.
-        if ($this->ipAuth) {
-            return 'n';
-        }
-        if (isset($this->authManager)) {
-            return $this->authManager->isLoggedIn() ? 'n' : 'y';
-        }
-        return 'y';
+        return $this->isGuest ? 'y' : 'n';
     }
 
     /**
@@ -531,7 +532,7 @@ class Backend extends AbstractBackend
     {
         try {
             $authToken = $this->getAuthenticationToken();
-            $results = $this->client->createSession($profile,  $isGuest, $authToken);
+            $results = $this->client->createSession($profile, $isGuest, $authToken);
         } catch(\EbscoEdsApiException $e) {
             $errorCode = $e->getApiErrorCode();
             $desc = $e->getApiErrorDescription();
@@ -543,7 +544,7 @@ class Backend extends AbstractBackend
                 try {
                     $authToken = $this->getAuthenticationToken(true);
                     $results = $this->client
-                        ->createSession($this->profile,  $isGuest, $authToken);
+                        ->createSession($this->profile, $isGuest, $authToken);
                 } catch(Exception $e) {
                     throw new BackendException(
                         $e->getMessage(),

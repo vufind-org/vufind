@@ -87,19 +87,30 @@ class JsTranslations extends AbstractHelper
     }
 
     /**
-     * Generate Javascript from the internal strings.
+     * Generate JSON from the internal strings.
      *
      * @return string
      */
-    public function getScript()
+    public function getJSON()
     {
         $parts = [];
         foreach ($this->strings as $k => $v) {
             $translation = is_array($v)
                 ? call_user_func_array([$this->transEsc, '__invoke'], $v)
                 : $this->transEsc->__invoke($v);
-            $parts[] = $k . ': "' . addslashes($translation) . '"';
+            $parts[] = '"' . addslashes($k) . '": "'
+                . addslashes($translation) . '"';
         }
-        return $this->varName . ' = {' . implode(',', $parts) . '};';
+        return '{' . implode(',', $parts) . '}';
+    }
+
+    /**
+     * Assign JSON to a variable.
+     *
+     * @return string
+     */
+    public function getScript()
+    {
+        return $this->varName . ' = ' . $this->getJSON() . ';';
     }
 }

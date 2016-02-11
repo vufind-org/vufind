@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, path, Recaptcha, vufindString */
+/*global ajaxLogin, checkSaveStatuses, console, deparam, newAccountHandler, Recaptcha, refreshPageForLogin, registerLightboxEvents, VuFind */
 
 var Lightbox = {
   /**
@@ -135,8 +135,8 @@ var Lightbox = {
     if(this.XHR) { this.XHR.abort(); }
     // Reset content so we start fresh when we open a lightbox
     $('#modal').removeData('modal');
-    $('#modal').find('.modal-title').html('');
-    $('#modal').find('.modal-body').html(vufindString.loading + "...");
+    $('#modal').find('.modal-title').html('&nbsp;');
+    $('#modal').find('.modal-body').html(VuFind.translate('loading') + "...");
   },
   /**
    * Call all the functions we need for when the modal loads
@@ -152,7 +152,10 @@ var Lightbox = {
    * This function changes the content of the lightbox to a message with a close button
    */
   confirm: function(message) {
-    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VuFind.translate('close')+'</button>');
+  },
+  success: function(message) {
+    this.changeContent('<div class="alert alert-success">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VuFind.translate('close')+'</button>');
   },
   /**
    * Regexes a piece of html to find an error alert
@@ -183,9 +186,9 @@ var Lightbox = {
     $('#modal .modal-body .alert').remove();
     var html = $.parseHTML($('#modal .modal-body').html());
      // Empty or alert only, change to message with button
-    if($('#modal .modal-body').html() == vufindString.loading+"..."
+    if($('#modal .modal-body').html() == VuFind.translate('loading') + "..."
       || (html.length == 1 && $(html).hasClass('alert-'+type))) {
-      Lightbox.changeContent('<div class="alert alert-'+type+'" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+      Lightbox.changeContent('<div class="alert alert-'+type+'" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+VuFind.translate('close')+'</button>');
     // Page without alert
     } else {
       $('#modal .modal-body').prepend('<div class="alert alert-'+type+' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><p class="message">'+message+'</p></div>');
@@ -259,7 +262,7 @@ var Lightbox = {
    */
   get: function(controller, action, get, post, callback) {
     // Build URL
-    var url = path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
+    var url = VuFind.getPath()+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
     if(typeof get !== "undefined" && get !== {}) {
       url += '&'+$.param(get);
     }
@@ -364,10 +367,10 @@ var Lightbox = {
    * The default, automatic form submission
    *
    * This function gleans all the information in a form from the function above
-   * Then it uses the action="" attribute of the form to figure out where to send the data
+   * Then it uses the action="..." attribute of the form to figure out where to send the data
    * and the method="" attribute to send it the proper way
    *
-   * In the wild, forms without an action="" are submitted to the current URL.
+   * Forms without an action="..." are submitted to the current URL.
    * In the case where we have a form with no action in the lightbox,
    * we emulate that behaviour by submitting the last URL loaded through
    * .getByUrl, stored in lastURL in the Lightbox object.
@@ -382,6 +385,7 @@ var Lightbox = {
     var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
     if($form.attr('action')) {
       // Parse action location
+      var path = VuFind.getPath();
       var action = $form.attr('action').substring($form.attr('action').indexOf(path)+path.length+1);
       var params = action.split('?');
       action = action.split('/');
@@ -397,10 +401,25 @@ var Lightbox = {
     } else {
       this.getByUrl(this.lastURL, {}, callback);
     }
-    $(this).find('.modal-body').html(vufindString.loading + "...");
+    $(this).find('.modal-body').html(VuFind.translate('loading') + "...");
   }
 };
 
+function getListUrlFromHTML(html) {
+  var fakePage = $('<div>'+html+'</div>');
+  var listUrl = fakePage.find('a.gotolist').attr('href');
+  if (typeof listUrl === 'undefined') {
+    var listID = fakePage.find('[name="listID"]');
+    if(listID.length > 0) {
+      listUrl = VuFind.getPath() + '/MyResearch/MyList/'+listID.val();
+    }
+  }
+  var message = VuFind.translate('bulk_save_success');
+  if (listUrl) {
+    message += '. <a href="'+listUrl+'" class="gotolist">' + VuFind.translate('go_to_list') + '</a>.';
+  }
+  return message;
+}
 /**
  * This is where you add click events to open the lightbox.
  * We do it here so that non-JS users still have a good time.
@@ -416,7 +435,7 @@ $(document).ready(function() {
   $('#modal').on('hidden.bs.modal', Lightbox.closeActions);
   /**
    * If a link with the class .modal-link triggers the lightbox,
-   * look for a title="" to use as our lightbox title.
+   * look for a title attribute to use as our lightbox title.
    */
   $('.modal-link,.help-link').click(function() {
     var title = $(this).attr('title');
@@ -425,5 +444,106 @@ $(document).ready(function() {
     }
     $('#modal .modal-title').html(title);
     Lightbox.titleSet = true;
+  });
+
+  /******************************
+   * LIGHTBOX DEFAULT BEHAVIOUR *
+   ******************************/
+  Lightbox.addOpenAction(registerLightboxEvents);
+
+  Lightbox.addFormCallback('newList', Lightbox.changeContent);
+  Lightbox.addFormCallback('accountForm', newAccountHandler);
+  Lightbox.addFormCallback('bulkDelete', function(html) {
+    location.reload();
+  });
+  Lightbox.addFormCallback('bulkSave', function(html) {
+    // go to list link
+    var msg = getListUrlFromHTML(html);
+    Lightbox.success(msg);
+  });
+  Lightbox.addFormCallback('bulkRecord', function(html) {
+    Lightbox.close();
+    checkSaveStatuses();
+  });
+  Lightbox.addFormCallback('emailSearch', function(html) {
+    Lightbox.success(VuFind.translate('bulk_email_success'));
+  });
+  Lightbox.addFormCallback('saveRecord', function(html) {
+    Lightbox.close();
+    checkSaveStatuses();
+  });
+
+  Lightbox.addFormHandler('exportForm', function(evt) {
+    $.ajax({
+      url: VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
+      type:'POST',
+      dataType:'json',
+      data:Lightbox.getFormData($(evt.target)),
+      success:function(data) {
+        if(data.data.export_type == 'download' || data.data.needs_redirect) {
+          document.location.href = data.data.result_url;
+          Lightbox.close();
+          return false;
+        } else {
+          Lightbox.changeContent(data.data.result_additional);
+        }
+      },
+      error:function(d,e) {
+        //console.log(d,e); // Error reporting
+      }
+    });
+    return false;
+  });
+  Lightbox.addFormHandler('feedback', function(evt) {
+    var $form = $(evt.target);
+    // Grabs hidden inputs
+    var formSuccess     = $form.find("input#formSuccess").val();
+    var feedbackFailure = $form.find("input#feedbackFailure").val();
+    var feedbackSuccess = $form.find("input#feedbackSuccess").val();
+    // validate and process form here
+    var name  = $form.find("input#name").val();
+    var email = $form.find("input#email").val();
+    var comments = $form.find("textarea#comments").val();
+    if (name.length == 0 || comments.length == 0) {
+      Lightbox.displayError(feedbackFailure);
+    } else {
+      Lightbox.get('Feedback', 'Email', {}, {'name':name,'email':email,'comments':comments}, function() {
+        Lightbox.changeContent('<div class="alert alert-info">'+formSuccess+'</div>');
+      });
+    }
+    return false;
+  });
+  Lightbox.addFormHandler('loginForm', function(evt) {
+    ajaxLogin(evt.target);
+    return false;
+  });
+
+  // Feedback
+  $('#feedbackLink').click(function() {
+    return Lightbox.get('Feedback', 'Home');
+  });
+  // Help links
+  $('.help-link').click(function() {
+    var split = this.href.split('=');
+    return Lightbox.get('Help','Home',{topic:split[1]});
+  });
+  // Hierarchy links
+  $('.hierarchyTreeLink a').click(function() {
+    var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
+    var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
+    return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
+  });
+  // Login link
+  $('#loginOptions a.modal-link').click(function() {
+    return Lightbox.get('MyResearch','UserLogin');
+  });
+  // Email search link
+  $('.mailSearch').click(function() {
+    return Lightbox.get('Search','Email',{url:document.URL});
+  });
+  // Save record links
+  $('.result .save-record').click(function() {
+    var parts = this.href.split('/');
+    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('data-id')});
   });
 });

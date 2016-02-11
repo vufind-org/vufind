@@ -39,13 +39,6 @@ namespace VuFind\Search\Solr;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Pre-assigned filters
-     *
-     * @var array
-     */
-    protected $hiddenFilters = [];
-
-    /**
      * Hierarchical facets
      *
      * @var array
@@ -113,6 +106,10 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultFilters = $searchSettings->General->default_filters
                 ->toArray();
         }
+        // Result limit:
+        if (isset($searchSettings->General->result_limit)) {
+            $this->resultLimit = $searchSettings->General->result_limit;
+        }
         if (isset($searchSettings->Basic_Searches)) {
             foreach ($searchSettings->Basic_Searches as $key => $value) {
                 $this->basicHandlers[$key] = $value;
@@ -151,9 +148,21 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($facetSettings->Advanced_Settings->translated_facets)
             && count($facetSettings->Advanced_Settings->translated_facets) > 0
         ) {
-            foreach ($facetSettings->Advanced_Settings->translated_facets as $c) {
-                $this->translatedFacets[] = $c;
-            }
+            $this->setTranslatedFacets(
+                $facetSettings->Advanced_Settings->translated_facets->toArray()
+            );
+        }
+        if (isset($facetSettings->Advanced_Settings->delimiter)) {
+            $this->setDefaultFacetDelimiter(
+                $facetSettings->Advanced_Settings->delimiter
+            );
+        }
+        if (isset($facetSettings->Advanced_Settings->delimited_facets)
+            && count($facetSettings->Advanced_Settings->delimited_facets) > 0
+        ) {
+            $this->setDelimitedFacets(
+                $facetSettings->Advanced_Settings->delimited_facets->toArray()
+            );
         }
         if (isset($facetSettings->Advanced_Settings->special_facets)) {
             $this->specialAdvancedFacets
@@ -218,28 +227,6 @@ class Options extends \VuFind\Search\Base\Options
                     = $searchSettings->ShardPreferences->showCheckboxes;
             }
         }
-    }
-
-    /**
-     * Add a hidden (i.e. not visible in facet controls) filter query to the object.
-     *
-     * @param string $fq Filter query for Solr.
-     *
-     * @return void
-     */
-    public function addHiddenFilter($fq)
-    {
-        $this->hiddenFilters[] = $fq;
-    }
-
-    /**
-     * Get an array of hidden filters.
-     *
-     * @return array
-     */
-    public function getHiddenFilters()
-    {
-        return $this->hiddenFilters;
     }
 
     /**

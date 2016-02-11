@@ -149,4 +149,35 @@ class NamedList implements Countable, Iterator
         reset($this->list);
         $this->current = current($this->list);
     }
+
+    /**
+     * Remove single element from list.
+     *
+     * @param string $key Key to remove
+     *
+     * @return void
+     */
+    public function removeKey($key)
+    {
+        return $this->removeKeys([$key]);
+    }
+
+    /**
+     * Remove elements from list.
+     *
+     * @param array $keys Keys to remove
+     *
+     * @return void
+     */
+    public function removeKeys(array $keys)
+    {
+        $newList = [];
+        foreach ($this->list as $current) {
+            if (!in_array($current[0], $keys)) {
+                $newList[] = $current;
+            }
+        }
+        $this->list = $newList;
+        $this->rewind();
+    }
 }

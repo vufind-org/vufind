@@ -53,14 +53,10 @@ class DisplayLanguageOption extends \Zend\View\Helper\AbstractHelper
      */
     public function __construct(TranslatorInterface $translator)
     {
-        // Clone the translator; we need to switch language for the purposes
-        // of this plugin, but we don't want that change to happen globally.
-        $this->translator = clone($translator);
+        $this->translator = $translator;
         try {
             $this->translator->addTranslationFile(
-                'ExtendedIni',
-                APPLICATION_PATH  . '/languages/native.ini',
-                'default', 'native'
+                'ExtendedIni', null, 'default', 'native'
             );
             $this->translator->setLocale('native');
         } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {

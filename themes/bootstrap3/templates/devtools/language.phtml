@@ -4,7 +4,7 @@
 
 <h2>Comparing Languages Against <?=$this->escapeHtml($mainName)?></h2>
 
-<p class="lead">Summary</p>
+<h3>Summary</h3>
 
 <table class="table table-striped">
   <tr><th>Language</th><th>Missing Lines</th><th>Extra Lines</th><th>Percent Translated</th><th>Extra Help Files</th></tr>
@@ -41,7 +41,7 @@
         <div class="accordion-heading">
           <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#missing_<?=$langCode ?>">
             Missing From <?=$this->escapeHtml($diffs['name'])?> (<?=$this->escapeHtml($langCode)?>.ini)
-            <span class="pull-right"></span>
+            <span class="pull-right flip"></span>
           </a>
         </div>
         <div id="missing_<?=$langCode ?>" class="accordion-body collapse">

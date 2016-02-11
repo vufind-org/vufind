@@ -1,7 +1,7 @@
 <?
   // Set up some convenience variables:
   $id = $this->driver->getUniqueId();
-  $source = $this->driver->getResourceSource();
+  $source = $this->driver->getSourceIdentifier();
   if (isset($this->list) && is_object($this->list)) {
     $list_id = $this->list->id;
     $user_id = $this->list->user_id;
@@ -11,31 +11,27 @@
   }
 ?>
 <div class="row result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
+  <? $cover=$this->record($this->driver)->getCover('list-entry', 'small', $this->recordLink()->getUrl($this->driver)); ?>
+  <? if ($cover): ?>
   <div class="col-xs-2 left">
-    <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
+  <? else: ?>
+  <div class="col-xs-1 left">
+  <? endif ?>
+    <label class="pull-left flip"><?=$this->record($this->driver)->getCheckbox() ?></label>
     <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
-    <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-      <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
-      <? else: ?>
-        <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-      <? endif; ?>
-    </a>
+  <? if ($cover): ?>
+    <?=$cover ?>
   </div>
   <div class="col-xs-6 middle">
+  <? else: ?>
+  </div>
+  <div class="col-xs-7 middle">
+  <? endif ?>
+
     <div class="resultItemLine1">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-      <?
-        $summHighlightedTitle = $this->driver->getHighlightedTitle();
-        $summTitle = $this->driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } else if (!empty($summTitle)) {
-            echo $this->escapeHtml($this->truncate($summTitle, 180));
-        } else {
-            echo $this->transEsc('Title not available');
-        }
-      ?></a>
+        <?=$this->record($this->driver)->getTitleHtml()?>
+      </a>
     </div>
 
     <div class="resultItemLine2">
@@ -43,13 +39,8 @@
         <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
       <? else: ?>
         <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
-        <?=$this->transEsc('by')?>
-        <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
-          $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
-          echo !empty($summHighlightedAuthor)
-              ? $this->highlight($summHighlightedAuthor)
-              : $this->escapeHtml($summAuthor);
-        ?></a>
+          <?=$this->transEsc('by')?>
+          <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?=$this->escapeHtml($summAuthor)?></a>
         <? endif; ?>
 
         <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
@@ -87,13 +78,15 @@
       } ?>
 
     <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
-        $list_id, // get tags for all lists if no single list is selected
+        null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
         $user_id, 'tag'
        ) : array();
     ?>
     <? if (count($listTags) > 0): ?>
       <strong><?=$this->transEsc('Your Tags')?>:</strong>
-      <? $i = 0; foreach ($listTags as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a><? endforeach; ?>
+      <? foreach ($listTags as $tag): ?>
+        <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a>
+      <? endforeach; ?>
       <br/>
     <? endif; ?>
     <? $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
@@ -134,20 +127,16 @@
             but even if we don't plan to display the link, we still want to get the $openUrl
             value for use in generating a COinS (Z3988) tag -- see bottom of file.
           */
-        $openUrl = $this->driver->getOpenURL();
-        $openUrlActive = $this->driver->openURLActive('results');
-        $urls = $this->record($this->driver)->getLinkDetails();
+        $openUrl = $this->openUrl($this->driver, 'results');
+        $openUrlActive = $openUrl->isActive();
+        // Account for replace_other_urls setting
+        $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+
         if ($openUrlActive || !empty($urls)):
       ?>
         <? if ($openUrlActive): ?>
           <br/>
-          <?=$this->openUrl($openUrl)?>
-          <?
-            if ($this->driver->replaceURLsWithOpenURL()) {
-              // clear URL list if replace setting is active
-              $urls = array();
-            }
-          ?>
+          <?=$openUrl->renderTemplate()?>
         <? endif;?>
 
         <? if (!is_array($urls)) { $urls = array(); }
@@ -169,9 +158,9 @@
   </div>
 
   <div class="col-xs-2 right">
-    <i class="fa fa-edit"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
+    <i class="fa fa-fw fa-edit"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
     <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
-      $deleteUrl = is_null($list_id)
+      $deleteUrl = null === $list_id
           ? $this->url('myresearch-favorites')
           : $this->url('userList', array('id' => $list_id));
       $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
@@ -179,15 +168,15 @@
       $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);
     ?>
     <div class="dropdown">
-      <i class="fa fa-trash-o"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
+      <i class="fa fa-fw fa-trash-o"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
         <?=$this->transEsc('Delete') ?>
       </a>
       <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
-        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeHtmlAttr($id) ?>','source':'<?=$this->escapeHtmlAttr($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeJs($id) ?>','source':'<?=$this->escapeJs($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
         <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>
     </div>
 
-    <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+    <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
   </div>
 </div>

@@ -1,0 +1,66 @@
+<?
+// Convert Primo format to EndNote format:
+$formats = $this->driver->tryMethod('getFormats');
+if (is_array($formats) && !empty($formats[0])) {
+    $format = $formats[0];
+} else {
+    $format = $formats;
+}
+$endnoteFormat = 'Generic';
+
+switch ($format) {
+case 'Article':
+    $endnoteFormat = 'Electronic Article';
+    break;
+case 'Book Chapter':
+    $endnoteFormat = 'Book Section';
+    break;
+case 'Book':
+    $endnoteFormat = 'Book';
+    break;
+case 'Audio':
+case 'Audio Video':
+case 'Video':
+    $endnoteFormat = 'Audiovisual Material';
+    break;
+case 'Conference Proceeding':
+    $endnoteFormat = 'Conference Proceedings';
+    break;
+case 'Database':
+    // No suitable mapping
+    break;
+case 'Dissertation':
+    $endnoteFormat = 'Thesis';
+    break;
+case 'Image':
+    // No suitable mapping
+    break;
+case 'Journal':
+    $endnoteFormat = 'Journal Article';
+    break;
+case 'Legal_Document':
+    // No suitable mapping
+    break;
+case 'Newspaper Article':
+    // If there is issue in the record, use 'Journal Article'. Otherwise
+    // EndNote might use issue as the start page.
+    if ($this->driver->tryMethod('getContainerIssue')) {
+        $endnoteFormat = 'Journal Article';
+    } else {
+        $endnoteFormat = 'Newspaper Article';
+    }
+    break;
+case 'Reference_Entry':
+    // No suitable mapping
+    break;
+case 'Score':
+    // No suitable mapping
+    break;
+case 'Website':
+    // No suitable mapping
+    break;
+}
+
+$this->overrideFormats = [$endnoteFormat];
+// Use the default template, but override the formats:
+echo $this->render('RecordDriver/AbstractBase/export-endnote.phtml');

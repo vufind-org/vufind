@@ -148,11 +148,16 @@ class Manager
     public function getCacheDir($allowCliOverride = true)
     {
         if ($this->defaults && isset($this->defaults['cache_dir'])) {
-            $dir = $this->defaults['cache_dir'];
-            // ensure trailing slash:
-            if (substr($dir, -1) != '/') {
-                $dir .= '/';
-            }
+            // cache_dir setting in config.ini is deprecated
+            throw new \Exception(
+                'Deprecated cache_dir setting found in config.ini - please use '
+                . 'Apache environment variable VUFIND_CACHE_DIR in '
+                . 'httpd-vufind.conf instead.'
+            );
+        }
+
+        if (strlen(LOCAL_CACHE_DIR) > 0) {
+            $dir = LOCAL_CACHE_DIR . '/';
         } else if (strlen(LOCAL_OVERRIDE_DIR) > 0) {
             $dir = LOCAL_OVERRIDE_DIR . '/cache/';
         } else {
@@ -185,6 +190,24 @@ class Manager
     public function hasDirectoryCreationError()
     {
         return $this->directoryCreationError;
+    }
+
+    /**
+     * Create a new file cache for the given theme name if neccessary. Return
+     * the name of the cache.
+     *
+     * @param string $themeName Name of the theme
+     *
+     * @return string
+     */
+    public function addLanguageCacheForTheme($themeName)
+    {
+        $cacheName = 'languages-' . $themeName;
+        $this->createFileCache(
+            $cacheName,
+            $this->getCacheDir() . 'languages/' . $themeName
+        );
+        return $cacheName;
     }
 
     /**

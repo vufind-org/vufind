@@ -7,15 +7,6 @@ var Zoomy = {
     this.showMinimap = true;
     this.canvas.width  = Math.floor(this.canvas.clientWidth);
     this.canvas.height = Math.floor(this.canvas.clientHeight);
-
-
-
-
-
-
-
-
-
     addEventListener('mousemove', Zoomy.mouseHandle, false);
     addEventListener('touchmove', Zoomy.mouseHandle, false);
     addEventListener('mouseup', function(e) {

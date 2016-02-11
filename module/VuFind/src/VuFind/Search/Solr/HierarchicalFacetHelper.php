@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\Solr;
 
+use VuFind\I18n\TranslatableString;
+
 /**
  * Functions for manipulating facets
  *
@@ -151,21 +153,23 @@ class HierarchicalFacetHelper
      * the current one
      * @param string $separator   Separator string displayed between levels
      *
-     * @return string Formatted text
+     * @return TranslatableString Formatted text
      */
     public function formatDisplayText(
         $displayText, $allLevels = false, $separator = '/'
     ) {
+        $originalText = $displayText;
         $parts = explode('/', $displayText);
         if (count($parts) > 1 && is_numeric($parts[0])) {
             if (!$allLevels && isset($parts[$parts[0] + 1])) {
-                return $parts[$parts[0] + 1];
+                $displayText = $parts[$parts[0] + 1];
+            } else {
+                array_shift($parts);
+                array_pop($parts);
+                $displayText = implode($separator, $parts);
             }
-            array_shift($parts);
-            array_pop($parts);
-            return implode($separator, $parts);
         }
-        return $displayText;
+        return new TranslatableString($originalText, $displayText);
     }
 
     /**
@@ -203,7 +207,8 @@ class HierarchicalFacetHelper
         $displayText = $item['displayText'];
         if ($displayText == $item['value']) {
             // Only show the current level part
-            $displayText = $this->formatDisplayText($displayText);
+            $displayText = $this->formatDisplayText($displayText)
+                ->getDisplayString();
         }
 
         list($level, $value) = explode('/', $item['value'], 2);
@@ -247,7 +252,7 @@ class HierarchicalFacetHelper
         foreach ($list as &$item) {
             $item['hasAppliedChildren'] = !empty($item['children'])
                 && $this->updateAppliedChildrenStatus($item['children']);
-            if ($item['isApplied']) {
+            if ($item['isApplied'] || $item['hasAppliedChildren']) {
                 $result = true;
             }
         }

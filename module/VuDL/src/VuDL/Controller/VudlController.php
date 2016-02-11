@@ -178,7 +178,7 @@ class VudlController extends AbstractVuDL
         $start = $this->params()->fromQuery('start');
         $end = $this->params()->fromQuery('end');
         $data = [
-            'outline' => $this->getOutline($id, $start, $end-$start),
+            'outline' => $this->getOutline($id, $start, $end - $start),
             'start'  => (int)$start
         ];
         $data['outline'] = current($data['outline']['lists']);
@@ -252,7 +252,7 @@ class VudlController extends AbstractVuDL
         $view->id = $root;
 
         try {
-            $driver = $this->getRecordLoader()->load($root, 'VuFind');
+            $driver = $this->getRecordLoader()->load($root);
         } catch(\Exception $e) {
         }
         if (isset($driver) && $driver->isProtected()) {
@@ -271,7 +271,7 @@ class VudlController extends AbstractVuDL
         // Get ids for all files
         $outline = $this->getOutline(
             $root,
-            max(0, $view->initPage-($this->getConnector()->getPageLength()/2))
+            max(0, $view->initPage - ($this->getConnector()->getPageLength() / 2))
         );
 
         // Send the data for the first pages
@@ -283,7 +283,6 @@ class VudlController extends AbstractVuDL
         $view->parents = $parents;
         if ($id != $root) {
             $view->parentID = $root;
-            $view->breadcrumbEnd = $outline['lists'][0][$view->initPage]['label'];
         }
         $view->pagelength = $this->getConnector()->getPageLength();
         return $view;
@@ -431,11 +430,11 @@ class VudlController extends AbstractVuDL
                 ->toRoute('collection', ['id' => $params['trail']]);
         } elseif (isset($params['prev'])) {
             return $this->redirect()->toRoute(
-                'vudl-record', ['id' => $members[($index-1)%count($members)]]
+                'vudl-record', ['id' => $members[($index - 1) % count($members)]]
             );
         } else {
             return $this->redirect()->toRoute(
-                'vudl-record', ['id' => $members[($index+1)%count($members)]]
+                'vudl-record', ['id' => $members[($index + 1) % count($members)]]
             );
         }
     }

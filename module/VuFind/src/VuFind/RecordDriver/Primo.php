@@ -123,18 +123,6 @@ class Primo extends SolrDefault
     }
 
     /**
-     * Get the title of the item that contains this record (i.e. MARC 773s of a
-     * journal).
-     *
-     * @return string
-     */
-    public function getContainerTitle()
-    {
-        $parts = explode(',', $this->getIsPartOf(), 2);
-        return isset($parts[0]) ? trim($parts[0]) : '';
-    }
-
-    /**
      * Get a full, free-form reference to the context of the item that contains this
      * record (i.e. volume, year, issue, pages).
      *
@@ -144,6 +132,17 @@ class Primo extends SolrDefault
     {
         $parts = explode(',', $this->getIsPartOf(), 2);
         return isset($parts[1]) ? trim($parts[1]) : '';
+    }
+
+    /**
+     * Get the end page of the item that contains this record.
+     *
+     * @return string
+     */
+    public function getContainerEndPage()
+    {
+        return isset($this->fields['container_end_page'])
+            ? $this->fields['container_end_page'] : '';
     }
 
     /**
@@ -187,9 +186,8 @@ class Primo extends SolrDefault
     public function getSource()
     {
         $base = isset($this->fields['source']) ? $this->fields['source'] : '';
-        // Trim off unwanted image:
-        $parts = explode('<img', $base);
-        return $parts[0];
+        // Trim off unwanted image and any other tags:
+        return strip_tags($base);
     }
 
     /**
@@ -303,7 +301,7 @@ class Primo extends SolrDefault
      */
     public function exportDisabled($format)
     {
-        // Primo is not export-friendly; disable all formats.
-        return true;
+        // Support export for EndNote and RefWorks
+        return !in_array($format, ['EndNote', 'RefWorks']);
     }
 }

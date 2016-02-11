@@ -42,7 +42,6 @@ use Zend\Cache\Storage\StorageInterface;
  */
 class CacheDecorator implements ReaderInterface
 {
-
     /**
      * The decorated reader.
      *

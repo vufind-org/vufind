@@ -60,4 +60,37 @@ class Options extends \VuFind\Search\Solr\Options
     {
         return 'author-home';
     }
+
+    /**
+     * Load all recommendation settings from the relevant ini file.  Returns an
+     * associative array where the key is the location of the recommendations (top
+     * or side) and the value is the settings found in the file (which may be either
+     * a single string or an array of strings).
+     *
+     * @param string $handler Name of handler for which to load specific settings.
+     *
+     * @return array associative: location (top/side/etc.) => search settings
+     */
+    public function getRecommendationSettings($handler = null)
+    {
+        // Load the necessary settings to determine the appropriate recommendations
+        // module:
+        $ss = $this->configLoader->get($this->getSearchIni());
+
+        // Load the AuthorModuleRecommendations configuration if available, use
+        // standard defaults otherwise:
+        if (isset($ss->AuthorModuleRecommendations)) {
+            $recommend = [];
+            foreach ($ss->AuthorModuleRecommendations as $section => $content) {
+                $recommend[$section] = [];
+                foreach ($content as $current) {
+                    $recommend[$section][] = $current;
+                }
+            }
+        } else {
+            $recommend = ['side' => ['ExpandFacets:Author']];
+        }
+
+        return $recommend;
+    }
 }

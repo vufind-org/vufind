@@ -211,7 +211,7 @@ class Fedora extends AbstractBase
         $response = $this->query($query);
         $list = explode("\n", $response->getBody());
         $items = [];
-        for ($i = 1;$i<count($list);$i++) {
+        for ($i = 1;$i < count($list);$i++) {
             if (empty($list[$i])) {
                 continue;
             }
@@ -261,7 +261,7 @@ class Fedora extends AbstractBase
         if (count($list) > 2) {
             $items = [];
             $sequenced = true;
-            for ($i = 1;$i<count($list);$i++) {
+            for ($i = 1;$i < count($list);$i++) {
                 if (empty($list[$i])) {
                     continue;
                 }
@@ -280,7 +280,7 @@ class Fedora extends AbstractBase
                 usort(
                     $items,
                     function ($a, $b) {
-                        return intval($a['seq'])-intval($b['seq']);
+                        return intval($a['seq']) - intval($b['seq']);
                     }
                 );
                 return array_map(
@@ -301,7 +301,7 @@ class Fedora extends AbstractBase
         $response = $this->query($query);
         $list = explode("\n", $response->getBody());
         $items = [];
-        for ($i = 1;$i<count($list);$i++) {
+        for ($i = 1;$i < count($list);$i++) {
             if (empty($list[$i])) {
                 continue;
             }
@@ -335,7 +335,7 @@ class Fedora extends AbstractBase
         $response = $this->query($query);
         $list = explode("\n", trim($response->getBody(), "\n"));
         $tree = [];
-        for ($i = 1;$i<count($list);$i++) {
+        for ($i = 1;$i < count($list);$i++) {
             list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
             $parent = substr($parent, 12);
             if (!isset($tree[$parent])) {
@@ -420,7 +420,7 @@ class Fedora extends AbstractBase
         if (count($data) > 1) {
             $bytes = intval($data[1]);
             $sizes = ['bytes','KB','MB'];
-            while ($size_index < count($sizes)-1 && $bytes > 1024) {
+            while ($size_index < count($sizes) - 1 && $bytes > 1024) {
                 $bytes /= 1024;
                 $size_index++;
             }

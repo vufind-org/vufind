@@ -6,9 +6,9 @@
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
     <?=$this->flashmessages()?>
-    <form method="post" action="" name="smsRecord" data-ajax="false">
+    <form method="post" name="smsRecord" data-ajax="false">
       <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
-      <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
+      <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
       <div data-role="fieldcontain">
         <label for="sms_to"><?=$this->transEsc('Number')?>:</label>
         <input id="sms_to" type="text" name="to" value="<?=isset($this->to) ? $this->to : ''?>" />

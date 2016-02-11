@@ -495,7 +495,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                     'duedate' => $this->sacaFecha($row['CPY_ID_NBR']),
                     // TODO: fill this in if you want "recently returned" support:
                     'returnDate' => false,
-                    'number' => count($data) +1,
+                    'number' => count($data) + 1,
                     'item_id' => $row['CPY_ID_NBR'],
                     'barcode' => $row['BRCDE_NBR']
                 ];
@@ -812,8 +812,8 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
 
         $page = ($page) ? $page : 1;
         $limit = ($limit) ? $limit : 20;
-        $startRow = (($page-1)*$limit)+1;
-        $endRow = ($page*$limit);
+        $startRow = (($page - 1) * $limit) + 1;
+        $endRow = ($page * $limit);
         $sql = "select * from " .
                "(select a.*, rownum rnum from " .
                "(select  CPY_ID.BIB_ITM_NBR  as BIB_ID, CPY_ID.CRTN_DTE " .

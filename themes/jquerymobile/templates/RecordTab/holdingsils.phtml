@@ -24,11 +24,11 @@
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
       <div class="info">
-        <a href="<?=$this->currentPath()?>?login=true&amp;catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
+        <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'Holdings')?>?login=true&amp;catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
       </div>
     <? elseif (!$user->cat_username): ?>
       <div class="info">
-        <?=str_replace('href="', 'rel="external" href="', $this->translate("hold_profile_html", array('%%url%%' => $this->currentPath() . '?catalogLogin=true')))?>
+        <?=str_replace('href="', 'rel="external" href="', $this->translate("hold_profile_html", array('%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true')))?>
       </div>
     <? endif; ?>
   <? endif; ?>
@@ -37,7 +37,14 @@
     <a rel="external" class="holdPlace" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold, false)?>"><?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
 <? foreach ($holdings as $holding): ?>
-<h4><?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?></h4>
+<h4>
+  <? $locationText = $this->transEsc('location_' . $holding['location'], array(), $holding['location']); ?>
+  <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
+    <a href="<?=$holding['locationhref']?>" rel="external"><?=$locationText?></a>
+  <? else: ?>
+    <?=$locationText?>
+  <? endif; ?>
+</h4>
 <table class="holdings" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
@@ -49,19 +56,17 @@
     </td>
   </tr>
   <? endif; ?>
-  <? foreach ($this->ils()->getHoldingsTextFieldNames() as $textField): ?>
-    <? if (!empty($holding[$textField])): ?>
-      <tr>
-        <? // Translation for summary is a special case for backwards-compatibility ?>
-        <th><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>: </th>
-        <td>
-          <? foreach ($holding[$textField] as $current): ?>
-            <?=$this->escapeHtml($current)?><br/>
-          <? endforeach; ?>
-        </td>
-      </tr>
-    <? endif; ?>
-  <? endforeach; ?>
+  <? if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+    <tr>
+      <? // Translation for summary is a special case for backwards-compatibility ?>
+      <th><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
+      <td>
+        <? foreach ($textFields as $current): ?>
+          <?=$this->escapeHtml($current)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endforeach; endif; ?>
   <? foreach ($holding['items'] as $row): ?>
     <? $check = (isset($row['check']) && $row['check']); ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
@@ -95,6 +100,18 @@
                 <br />
                 <a rel="external" class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getRequestUrl($row['link'], false)?>"><span><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></span></a>
               <? endif; ?>
+            <? endif; ?>
+            <? if (isset($row['item_notes'])): ?>
+              <ul>
+                <li>
+                  <?=$this->transEsc("Item Notes")?>:
+                  <ul>
+                    <? foreach ($row['item_notes'] as $item_note): ?>
+                      <li><?=$this->escapeHtml($item_note) ?></li>
+                    <? endforeach; ?>
+                  </ul>
+                </li>
+              </ul>
             <? endif; ?>
           <? endif; ?>
         </td>

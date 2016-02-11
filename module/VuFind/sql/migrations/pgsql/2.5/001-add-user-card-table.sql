@@ -4,7 +4,7 @@
 
 DROP TABLE IF EXISTS "user_card";
 
-CREATE TABLE `user_card` (
+CREATE TABLE "user_card" (
 id SERIAL,
 user_id int NOT NULL,
 card_name varchar(255) NOT NULL DEFAULT '',

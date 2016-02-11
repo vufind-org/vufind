@@ -12,7 +12,7 @@
 
 <h2><?=$this->transEsc($pageTitle); ?></h2>
 
-<form class="form-horizontal edit-list-form" method="post" name="<?=empty($this->list->id) ? 'newList' : 'editListForm'?>" action="">
+<form class="form-horizontal edit-list-form" method="post" name="<?=empty($this->list->id) ? 'newList' : 'editListForm'?>">
   <input type="hidden" name="id" value="<?=empty($this->list->id) ? 'NEW' : $this->list->id ?>"/>
   <div class="form-group">
     <label class="col-sm-3 control-label" for="list_title"><?=$this->transEsc('List'); ?>:</label>
@@ -34,12 +34,16 @@
     <div class="form-group">
       <label class="col-sm-3 control-label"><?=$this->transEsc('Access') ?></label>
       <div class="col-sm-9">
-        <label class="radio inline">
-          <input id="list_public_1" type="radio" name="public" value="1"<? if ($this->list->isPublic()): ?> checked="checked"<? endif; ?>/> <?=$this->transEsc('Public') ?>
-        </label>
-        <label class="radio inline">
-          <input id="list_public_0" type="radio" name="public" value="0"<? if (!$this->list->isPublic()): ?> checked="checked"<? endif; ?>/> <?=$this->transEsc('Private') ?>
-        </label>
+        <div class="radio inline">
+          <label>
+            <input id="list_public_1" type="radio" name="public" value="1"<? if ($this->list->isPublic()): ?> checked="checked"<? endif; ?>/> <?=$this->transEsc('Public') ?>
+          </label>
+        </div>
+        <div class="radio inline">
+          <label>
+            <input id="list_public_0" type="radio" name="public" value="0"<? if (!$this->list->isPublic()): ?> checked="checked"<? endif; ?>/> <?=$this->transEsc('Private') ?>
+          </label>
+        </div>
       </div>
     </div>
   <? endif; ?>

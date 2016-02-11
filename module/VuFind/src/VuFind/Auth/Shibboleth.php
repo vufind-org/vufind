@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2014.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,8 @@
  * @category VuFind2
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
+ * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
+ * @author   Bernd Oberknapp <bo@ub.uni-freiburg.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
@@ -35,12 +37,16 @@ use VuFind\Exception\Auth as AuthException;
  * @category VuFind2
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
+ * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
+ * @author   Bernd Oberknapp <bo@ub.uni-freiburg.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
 class Shibboleth extends AbstractBase
 {
+    const DEFAULT_IDPSERVERPARAM = 'Shib-Identity-Provider';
+
     /**
      * Validate configuration parameters.  This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
@@ -59,6 +65,7 @@ class Shibboleth extends AbstractBase
             );
         }
 
+        // Throw an exception if no login endpoint is available.
         if (!isset($shib->login)) {
             throw new AuthException(
                 'Shibboleth login configuration parameter is not set.'
@@ -115,7 +122,7 @@ class Shibboleth extends AbstractBase
         }
 
         // Save credentials if applicable:
-        if (!empty($catPassword) && !empty($user->cat_username)) {
+        if (!empty($user->cat_username)) {
             $user->saveCredentials($user->cat_username, $catPassword);
         }
 
@@ -151,7 +158,7 @@ class Shibboleth extends AbstractBase
                                                     // proxies others
 
         if (isset($config->Shibboleth->provider_id)) {
-            $sessionInitiator = $sessionInitiator . '&providerId=' .
+            $sessionInitiator = $sessionInitiator . '&entityID=' .
                 urlencode($config->Shibboleth->provider_id);
         }
 

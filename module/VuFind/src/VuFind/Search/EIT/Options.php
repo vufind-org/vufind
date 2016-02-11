@@ -41,7 +41,6 @@ namespace VuFind\Search\EIT;
  */
 class Options extends \VuFind\Search\Base\Options
 {
-    
     /**
      * Constructor
      *

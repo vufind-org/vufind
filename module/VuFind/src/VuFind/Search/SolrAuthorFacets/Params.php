@@ -86,20 +86,6 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
-     * associative array where the key is the location of the recommendations (top
-     * or side) and the value is the settings found in the file (which may be either
-     * a single string or an array of strings).
-     *
-     * @return array associative: location (top/side) => search settings
-     */
-    protected function getRecommendationSettings()
-    {
-        // No recommendations here:
-        return [];
-    }
-
-    /**
      * Initialize view
      *
      * @param \Zend\StdLib\Parameters $request Parameter object representing user

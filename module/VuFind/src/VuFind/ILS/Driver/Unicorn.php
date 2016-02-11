@@ -1011,7 +1011,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $rescount++;
         }
 
-        $results = array_slice($items, ($page - 1) * $limit, ($page * $limit)-1);
+        $results = array_slice($items, ($page - 1) * $limit, ($page * $limit) - 1);
         return ['count' => $rescount, 'results' => $results];
     }
 

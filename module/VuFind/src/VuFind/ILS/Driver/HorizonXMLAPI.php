@@ -651,7 +651,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                         'success' => true, 'status' => "hold_cancel_success",
 
                     ];
-                    $count = $count+1;
+                    $count = $count + 1;
                 }
             }
         } else {

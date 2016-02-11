@@ -2,6 +2,7 @@
   // TODO: This file needs love
   $topFacetSet = $this->recommend->getTopFacetSet();
   $topFacetSettings = $this->recommend->getTopFacetSettings();
+  $results = $this->recommend->getResults();
 ?>
 <? if (isset($topFacetSet)): ?>
   <? $row=0; foreach($topFacetSet as $title => $cluster): ?>
@@ -14,7 +15,7 @@
       <? /* More link */ ?>
       <? if ($iter == $corner+1): ?>
         </div><div id="more-NarrowGroupHidden_<?=$this->escapeHtml($title)?>" class="row top-row">
-          <span class="col-sm-12"><a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a></span>
+          <span class="col-sm-12 narrow-toggle"><a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a></span>
         </div><div class="row top-row <?=$moreClass ?>">
       <? endif; ?>
       <? /* Columns */ ?>
@@ -29,7 +30,7 @@
             <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check"></i>
           </a>
         <? else: ?>
-          <a href="<?=$this->currentPath().$this->recommend->getResults()->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?>
+          <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?>
           <? if ($allowExclude): ?>
             <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><i class="fa fa-times"></i></a>
           <? endif; ?>
@@ -40,7 +41,7 @@
       <? if ($iter%$topFacetSettings['cols'] == 0 && $iter > 0): ?></div><div class="row top-row<? if(++$row > $topFacetSettings['rows']) echo $moreClass ?>"><? endif; ?>
       <? /* Less link */ ?>
       <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
-        <a class="col-sm-12" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
+        <a class="col-sm-12 narrow-toggle" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
       <? endif; ?>
       <? $iter++; ?>
     <? endforeach; ?>

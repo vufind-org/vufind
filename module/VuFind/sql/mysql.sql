@@ -73,7 +73,7 @@ CREATE TABLE `resource` (
   `title` varchar(200) NOT NULL DEFAULT '',
   `author` varchar(200) DEFAULT NULL,
   `year` mediumint(6) DEFAULT NULL,
-  `source` varchar(50) NOT NULL DEFAULT 'VuFind',
+  `source` varchar(50) NOT NULL DEFAULT 'Solr',
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -165,15 +165,15 @@ CREATE TABLE `tags` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL DEFAULT '',
+  `username` varchar(255) NOT NULL DEFAULT '',
   `password` varchar(32) NOT NULL DEFAULT '',
   `pass_hash` varchar(60) DEFAULT NULL,
   `firstname` varchar(50) NOT NULL DEFAULT '',
   `lastname` varchar(50) NOT NULL DEFAULT '',
-  `email` varchar(250) NOT NULL DEFAULT '',
+  `email` varchar(255) NOT NULL DEFAULT '',
   `cat_username` varchar(50) DEFAULT NULL,
-  `cat_password` varchar(50) DEFAULT NULL,
-  `cat_pass_enc` varchar(110) DEFAULT NULL,
+  `cat_password` varchar(70) DEFAULT NULL,
+  `cat_pass_enc` varchar(170) DEFAULT NULL,
   `college` varchar(100) NOT NULL DEFAULT '',
   `major` varchar(100) NOT NULL DEFAULT '',
   `home_library` varchar(100) NOT NULL DEFAULT '',
@@ -291,3 +291,21 @@ CREATE TABLE `user_card` (
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+--
+-- Table structure for table `record`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `record` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `record_id` varchar(120) DEFAULT NULL,
+  `source` varchar(50) DEFAULT NULL,
+  `version` varchar(20) NOT NULL,
+  `data` longtext DEFAULT NULL,
+  `updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `record_id_source` (`record_id`, `source`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;

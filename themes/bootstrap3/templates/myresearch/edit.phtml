@@ -11,7 +11,7 @@
 <div class="record">
   <h2><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h2>
 
-  <form class="form-horizontal" method="post" name="editForm" action="">
+  <form class="form-horizontal" method="post" name="editForm">
   <? if (empty($this->savedData)): ?>
     <p class="alert alert-info">
       <? if (isset($listFilter)): ?>
@@ -24,7 +24,7 @@
     <? foreach ($this->savedData as $i=>$current): ?>
       <fieldset>
         <legend>
-          <a href="<?=$this->url('userList', array('id' => $current['listId'])) ?>?delete=<?=urlencode($this->driver->getUniqueId())?>&amp;source=<?=urlencode($this->driver->getResourceSource())?>" id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>delete<?=$current['listId'] ?>" title="<?=$this->transEsc('confirm_delete')?>" class="close">&times;</a> <?=$this->transEsc('List') ?>: <?=$this->escapeHtml($current['listTitle'])?>
+          <a href="<?=$this->url('userList', array('id' => $current['listId'])) ?>?delete=<?=urlencode($this->driver->getUniqueId())?>&amp;source=<?=urlencode($this->driver->getSourceIdentifier())?>" id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>delete<?=$current['listId'] ?>" title="<?=$this->transEsc('confirm_delete')?>" class="close">&times;</a> <?=$this->transEsc('List') ?>: <?=$this->escapeHtml($current['listTitle'])?>
         </legend>
         <input type="hidden" name="lists[]" value="<?=$current['listId'] ?>"/>
         <? if ($this->usertags()->getMode() !== 'disabled'): ?>

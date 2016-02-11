@@ -162,8 +162,9 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return void
      */
-    public function removeResourcesById($user, $ids, $source = 'VuFind')
-    {
+    public function removeResourcesById($user, $ids,
+        $source = DEFAULT_SEARCH_BACKEND
+    ) {
         if (!$this->editAllowed($user)) {
             throw new ListPermissionException('list_access_denied');
         }

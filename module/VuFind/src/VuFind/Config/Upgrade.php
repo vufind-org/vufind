@@ -159,6 +159,7 @@ class Upgrade
         $this->upgradeSitemap();
         $this->upgradeSms();
         $this->upgradeSummon();
+        $this->upgradePrimo();
         $this->upgradeWorldCat();
 
         // The previous upgrade routines may have added values to permissions.ini,
@@ -236,7 +237,8 @@ class Upgrade
     protected function loadOldBaseConfig()
     {
         // Load the base settings:
-        $mainArray = parse_ini_file($this->oldDir . '/config.ini', true);
+        $oldIni = $this->oldDir . '/config.ini';
+        $mainArray = file_exists($oldIni) ? parse_ini_file($oldIni, true) : [];
 
         // Merge in local overrides as needed.  VuFind 2 structures configurations
         // differently, so people who used this mechanism will need to refactor
@@ -292,7 +294,7 @@ class Upgrade
         $configs = [
             'config.ini', 'authority.ini', 'facets.ini', 'reserves.ini',
             'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini',
-            'permissions.ini'
+            'Primo.ini', 'permissions.ini'
         ];
         foreach ($configs as $config) {
             // Special case for config.ini, since we may need to overlay extra
@@ -365,7 +367,7 @@ class Upgrade
         // If target file already exists, back it up:
         $outfile = $this->newDir . '/' . $filename;
         $bakfile = $outfile . '.bak.' . time();
-        if (!copy($outfile, $bakfile)) {
+        if (file_exists($outfile) && !copy($outfile, $bakfile)) {
             throw new FileAccessException(
                 "Error: Could not copy {$outfile} to {$bakfile}."
             );
@@ -407,12 +409,14 @@ class Upgrade
 
         // Compare the source file against the raw file; if they happen to be the
         // same, we don't need to copy anything!
-        if (md5(file_get_contents($src)) == md5(file_get_contents($raw))) {
+        if (file_exists($src) && file_exists($raw)
+            && md5(file_get_contents($src)) == md5(file_get_contents($raw))
+        ) {
             return;
         }
 
         // If we got this far, we need to copy the user's file into place:
-        if (!copy($src, $dest)) {
+        if (file_exists($src) && !copy($src, $dest)) {
             throw new FileAccessException(
                 "Error: Could not copy {$src} to {$dest}."
             );
@@ -525,11 +529,19 @@ class Upgrade
         // Set up reference for convenience (and shorter lines):
         $newConfig = & $this->newConfigs['config.ini'];
 
-        // If the [BulkExport] options setting is an old default, update it to
-        // reflect the fact that we now support more options.
-        if ($this->isDefaultBulkExportOptions($newConfig['BulkExport']['options'])) {
-            $newConfig['BulkExport']['options']
-                = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX:RIS';
+        // If the [BulkExport] options setting is present and non-default, warn
+        // the user about its deprecation.
+        if (isset($newConfig['BulkExport']['options'])) {
+            $default = $this->isDefaultBulkExportOptions(
+                $newConfig['BulkExport']['options']
+            );
+            if (!$default) {
+                $this->addWarning(
+                    'The [BulkExport] options setting is deprecated; please '
+                    . 'customize the [Export] section instead.'
+                );
+            }
+            unset($newConfig['BulkExport']['options']);
         }
 
         // Warn the user about Amazon configuration issues:
@@ -554,12 +566,35 @@ class Upgrade
             }
         }
 
-        // Warn the user about deprecated WorldCat setting:
+        // Warn the user about deprecated WorldCat settings:
         if (isset($newConfig['WorldCat']['LimitCodes'])) {
             unset($newConfig['WorldCat']['LimitCodes']);
             $this->addWarning(
                 'The [WorldCat] LimitCodes setting never had any effect and has been'
                 . ' removed.'
+            );
+        }
+        $badKeys
+            = ['id', 'xISBN_token', 'xISBN_secret', 'xISSN_token', 'xISSN_secret'];
+        foreach ($badKeys as $key) {
+            if (isset($newConfig['WorldCat'][$key])) {
+                unset($newConfig['WorldCat'][$key]);
+                $this->addWarning(
+                    'The [WorldCat] ' . $key . ' setting is no longer used and'
+                    . ' has been removed.'
+                );
+            }
+        }
+        if (isset($newConfig['Record']['related'])
+            && in_array('Editions', $newConfig['Record']['related'])
+        ) {
+            $newConfig['Record']['related'] = array_diff(
+                $newConfig['Record']['related'], ['Editions']
+            );
+            $this->addWarning(
+                'The Editions related record module is no longer '
+                . 'supported due to OCLC\'s xID API shutdown.'
+                . ' It has been removed from your settings.'
             );
         }
 
@@ -959,8 +994,112 @@ class Upgrade
                 unset($permissions['access.SummonExtendedResults']);
             }
 
-            // Remove any old settings remaining in config.ini:
+            // Remove any old settings remaining in Summon.ini:
             unset($config['Auth']);
+        }
+    }
+
+    /**
+     * Upgrade Primo.ini.
+     *
+     * @throws FileAccessException
+     * @return void
+     */
+    protected function upgradePrimo()
+    {
+        // we want to retain the old installation's search and facet settings
+        // exactly as-is
+        $groups = [
+            'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting'
+        ];
+        $this->applyOldSettings('Primo.ini', $groups);
+
+        // update permission settings
+        $this->upgradePrimoPermissions();
+
+        // update server settings
+        $this->upgradePrimoServerSettings();
+
+        // save the file
+        $this->saveModifiedConfig('Primo.ini');
+    }
+
+    /**
+     * Translate obsolete permission settings.
+     *
+     * @return void
+     */
+    protected function upgradePrimoPermissions()
+    {
+        $config = & $this->newConfigs['Primo.ini'];
+        $permissions = & $this->newConfigs['permissions.ini'];
+        if (isset($config['Institutions']['code'])
+            && isset($config['Institutions']['regex'])
+        ) {
+            $codes = $config['Institutions']['code'];
+            $regex = $config['Institutions']['regex'];
+            if (count($regex) != count($codes)) {
+                $this->addWarning(
+                    'Mismatched code/regex counts in Primo.ini [Institutions].'
+                );
+            }
+
+            // Map parallel arrays into code => array of regexes and detect
+            // wildcard regex to treat as default code.
+            $map = [];
+            $default = null;
+            foreach ($codes as $i => $code) {
+                if ($regex[$i] == '/.*/') {
+                    $default = $code;
+                } else {
+                    $map[$code] = !isset($map[$code])
+                        ? [$regex[$i]]
+                        : array_merge($map[$code], [$regex[$i]]);
+                }
+            }
+            foreach ($map as $code => $regexes) {
+                $perm = "access.PrimoInstitution.$code";
+                $config['Institutions']["onCampusRule['$code']"] = $perm;
+                $permissions[$perm] = [
+                    'ipRegEx' => count($regexes) == 1 ? $regexes[0] : $regexes,
+                    'permission' => $perm,
+                ];
+                $this->permissionsModified = true;
+            }
+            if (null !== $default) {
+                $config['Institutions']['defaultCode'] = $default;
+            }
+
+            // Remove any old settings remaining in Primo.ini:
+            unset($config['Institutions']['code']);
+            unset($config['Institutions']['regex']);
+        }
+    }
+
+    /**
+     * Translate obsolete server settings.
+     *
+     * @return void
+     */
+    protected function upgradePrimoServerSettings()
+    {
+        $config = & $this->newConfigs['Primo.ini'];
+        $permissions = & $this->newConfigs['permissions.ini'];
+        // Convert apiId to url
+        if (isset($config['General']['apiId'])) {
+            $url = 'http://' . $config['General']['apiId']
+                . '.hosted.exlibrisgroup.com';
+            if (isset($config['General']['port'])) {
+                $url .= ':' . $config['General']['port'];
+            } else {
+                $url .= ':1701';
+            }
+
+            $config['General']['url'] = $url;
+
+            // Remove any old settings remaining in Primo.ini:
+            unset($config['General']['apiId']);
+            unset($config['General']['port']);
         }
     }
 
@@ -994,6 +1133,21 @@ class Upgrade
                 $new[$k] = $v;
             }
             $this->newConfigs['WorldCat.ini'][$section] = $new;
+        }
+
+        // Deal with deprecated related record module.
+        $newConfig = & $this->newConfigs['WorldCat.ini'];
+        if (isset($newConfig['Record']['related'])
+            && in_array('WorldCatEditions', $newConfig['Record']['related'])
+        ) {
+            $newConfig['Record']['related'] = array_diff(
+                $newConfig['Record']['related'], ['WorldCatEditions']
+            );
+            $this->addWarning(
+                'The WorldCatEditions related record module is no longer '
+                . 'supported due to OCLC\'s xID API shutdown.'
+                . ' It has been removed from your settings.'
+            );
         }
 
         // save the file

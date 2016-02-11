@@ -113,7 +113,7 @@ class AuthorityRecommend implements RecommendInterface
     {
         $params = explode(':', $settings);
         for ($i = 0; $i < count($params); $i += 2) {
-            if (isset($params[$i+1])) {
+            if (isset($params[$i + 1])) {
                 if ($params[$i] == '__resultlimit__') {
                     $this->resultLimit = intval($params[$i + 1]);
                 } else {
@@ -190,7 +190,7 @@ class AuthorityRecommend implements RecommendInterface
             $authParams = $authResults->getParams();
             $authParams->initFromRequest($request);
             foreach ($this->filters as $filter) {
-                $authParams->getOptions()->addHiddenFilter($filter);
+                $authParams->addHiddenFilter($filter);
             }
             $results = $authResults->getResults();
         } catch (RequestErrorException $e) {

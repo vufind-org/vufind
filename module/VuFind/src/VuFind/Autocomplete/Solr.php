@@ -139,6 +139,18 @@ class Solr implements AutocompleteInterface
     }
 
     /**
+     * Add filters (in addition to the configured ones)
+     *
+     * @param array $filters Filters to add
+     *
+     * @return void
+     */
+    public function addFilters($filters)
+    {
+        $this->filters += $filters;
+    }
+
+    /**
      * Initialize the search object used for finding recommendations.
      *
      * @return void
@@ -148,7 +160,6 @@ class Solr implements AutocompleteInterface
         // Build a new search object:
         $this->searchObject = $this->resultsManager->get($this->searchClassId);
         $this->searchObject->getOptions()->spellcheckEnabled(false);
-        $this->searchObject->getParams()->recommendationsEnabled(false);
     }
 
     /**
@@ -207,7 +218,7 @@ class Solr implements AutocompleteInterface
         } catch (\Exception $e) {
             // Ignore errors -- just return empty results if we must.
         }
-        return array_unique($results);
+        return isset($results) ? array_unique($results) : [];
     }
 
     /**

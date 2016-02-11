@@ -45,7 +45,6 @@ use Zend\EventManager\EventInterface;
  */
 class ErrorListener extends AbstractErrorListener
 {
-
     /**
      * Normalized media types.
      *

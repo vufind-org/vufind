@@ -6,7 +6,7 @@
     $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Reserves') . '</li>';
 ?>
 <h2><?=$this->transEsc('Search For Items on Reserve')?></h2>
-<form method="get" action="" name="searchForm" class="form-horizontal">
+<form method="get" name="searchForm" class="form-horizontal">
   <? if (is_array($this->courseList)): ?>
     <div class="form-group">
       <label for="reserves_by_course" class="col-sm-2 control-label"><?=$this->transEsc('By Course')?>:</label>

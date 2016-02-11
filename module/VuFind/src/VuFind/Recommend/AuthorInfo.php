@@ -211,10 +211,10 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
         $last = $nameParts[0];
         // - move all names up an index, move last name to last
         // - Last, First M. -> First M. Last
-        for ($i = 1;$i<count($nameParts);$i++) {
-            $nameParts[$i-1] = $nameParts[$i];
+        for ($i = 1;$i < count($nameParts);$i++) {
+            $nameParts[$i - 1] = $nameParts[$i];
         }
-        $nameParts[count($nameParts)-1] = $last;
+        $nameParts[count($nameParts) - 1] = $last;
         $author = implode($nameParts, ' ');
         return $author;
     }

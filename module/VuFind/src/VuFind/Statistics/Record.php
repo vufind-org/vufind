@@ -51,7 +51,7 @@ class Record extends AbstractBase
         $this->save(
             [
                 'recordId'     => $data->getUniqueId(),
-                'recordSource' => $data->getResourceSource()
+                'recordSource' => $data->getSourceIdentifier()
             ],
             $request
         );
@@ -74,7 +74,7 @@ class Record extends AbstractBase
                 $sources = $driver->getFullList('recordSource');
                 $hashes = [];
                 // Generate hashes (faster than grouping by looping)
-                for ($i = 0;$i<count($summary);$i++) {
+                for ($i = 0;$i < count($summary);$i++) {
                     $source = $sources[$i]['recordSource'];
                     $id = $summary[$i]['recordId'];
                     $hashes[$source][$id]
@@ -99,7 +99,8 @@ class Record extends AbstractBase
                             'source' => $source
                         ];
                         // Insert sort (limit to listLength)
-                        for ($i = 0;$i<$listLength-1 && $i<count($reference);$i++) {
+                        $refCount = count($reference);
+                        for ($i = 0; $i < $listLength - 1 && $i < $refCount; $i++) {
                             if ($count > $reference[$i]['count']) {
                                 // Insert in order
                                 array_splice($reference, $i, 0, [$newRecord]);

@@ -77,24 +77,34 @@ class DeduplicationListener
     protected $dataSourceConfig;
 
     /**
+     * Whether deduplication is enabled.
+     *
+     * @var bool
+     */
+    protected $enabled;
+
+    /**
      * Constructor.
      *
      * @param BackendInterface        $backend          Search backend
      * @param ServiceLocatorInterface $serviceLocator   Service locator
      * @param string                  $searchConfig     Search config file id
      * @param string                  $dataSourceConfig Data source file id
+     * @param bool                    $enabled          Whether deduplication is
+     * enabled
      *
      * @return void
      */
     public function __construct(
         BackendInterface $backend,
         ServiceLocatorInterface $serviceLocator,
-        $searchConfig, $dataSourceConfig = 'datasources'
+        $searchConfig, $dataSourceConfig = 'datasources', $enabled = true
     ) {
         $this->backend = $backend;
         $this->serviceLocator = $serviceLocator;
         $this->searchConfig = $searchConfig;
         $this->dataSourceConfig = $dataSourceConfig;
+        $this->enabled = $enabled;
     }
 
     /**
@@ -125,7 +135,18 @@ class DeduplicationListener
             $params = $event->getParam('params');
             $context = $event->getParam('context');
             if (($context == 'search' || $context == 'similar') && $params) {
-                $params->add('fq', '-merged_child_boolean:TRUE');
+                // If deduplication is enabled, filter out merged child records,
+                // otherwise filter out dedup records.
+                if ($this->enabled) {
+                    $fq = '-merged_child_boolean:true';
+                    if ($context == 'similar' && $id = $event->getParam('id')) {
+                        $fq .= ' AND -local_ids_str_mv:"'
+                            . addcslashes($id, '"') . '"';
+                    }
+                } else {
+                    $fq = '-merged_boolean:true';
+                }
+                $params->add('fq', $fq);
             }
         }
         return $event;
@@ -147,7 +168,7 @@ class DeduplicationListener
             return $event;
         }
         $context = $event->getParam('context');
-        if ($context == 'search') {
+        if ($this->enabled && ($context == 'search' || $context == 'similar')) {
             $this->fetchLocalRecords($event);
         }
         return $event;
@@ -165,9 +186,9 @@ class DeduplicationListener
         $config = $this->serviceLocator->get('VuFind\Config');
         $searchConfig = $config->get($this->searchConfig);
         $dataSourceConfig = $config->get($this->dataSourceConfig);
-        $recordSources = isset($searchConfig->Records->sources)
-            ? $searchConfig->Records->sources
-            : '';
+        $recordSources = !empty($searchConfig->Records->sources)
+            ? explode(',', $searchConfig->Records->sources)
+            : [];
         $sourcePriority = $this->determineSourcePriority($recordSources);
         $params = $event->getParam('params');
         $buildingPriority = $this->determineBuildingPriority($params);
@@ -190,6 +211,10 @@ class DeduplicationListener
             foreach ($localIds as $localId) {
                 $localPriority = null;
                 list($source) = explode('.', $localId, 2);
+                // Ignore ID if source is not in the list of allowed record sources:
+                if ($recordSources && !in_array($source, $recordSources)) {
+                    continue;
+                }
                 if (!empty($buildingPriority)) {
                     if (isset($buildingPriority[$source])) {
                         $localPriority = -$buildingPriority[$source];
@@ -269,6 +294,7 @@ class DeduplicationListener
                 $sourcePriority
             );
             $foundLocalRecord->setRawData($localRecordData);
+            $foundLocalRecord->setHighlightDetails($record->getHighlightDetails());
             $result->replace($record, $foundLocalRecord);
         }
     }
@@ -278,10 +304,10 @@ class DeduplicationListener
      * two parameters are unused in this default method, but they may be useful for
      * custom behavior in subclasses.
      *
-     * @param array  $localRecordData Local record data
-     * @param array  $dedupRecordData Dedup record data
-     * @param string $recordSources   List of active record sources, empty if all
-     * @param array  $sourcePriority  Array of source priorities keyed by source id
+     * @param array $localRecordData Local record data
+     * @param array $dedupRecordData Dedup record data
+     * @param array $recordSources   List of active record sources, empty if all
+     * @param array $sourcePriority  Array of source priorities keyed by source id
      *
      * @return array Local record data
      *
@@ -297,13 +323,16 @@ class DeduplicationListener
     /**
      * Function that determines the priority for sources
      *
-     * @param object $recordSources Record sources defined in searches.ini
+     * @param array $recordSources Record sources defined in searches.ini
      *
      * @return array Array keyed by source with priority as the value
      */
     protected function determineSourcePriority($recordSources)
     {
-        return array_flip(explode(',', $recordSources));
+        if (empty($recordSources)) {
+            return [];
+        }
+        return array_flip($recordSources);
     }
 
     /**
@@ -317,17 +346,19 @@ class DeduplicationListener
     {
         $result = [];
         foreach ($params->get('fq') as $fq) {
-            if (preg_match(
-                '/\bbuilding:"([^"]+)"/', //'/\bbuilding:"?\d+\/([^\/]+?)\//',
+            if (preg_match_all(
+                '/\bbuilding:"([^"]+)"/',
                 $fq,
                 $matches
             )) {
-                $value = $matches[1];
-                if (preg_match('/^\d+\/([^\/]+?)\//', $value, $matches)) {
-                    // Hierarchical facets; take only first level:
-                    $result[] = $matches[1];
-                } else {
-                    $result[] = $value;
+                $values = $matches[1];
+                foreach ($values as $value) {
+                    if (preg_match('/^\d+\/([^\/]+?)\//', $value, $matches)) {
+                        // Hierarchical facets; take only first level:
+                        $result[] = $matches[1];
+                    } else {
+                        $result[] = $value;
+                    }
                 }
             }
         }

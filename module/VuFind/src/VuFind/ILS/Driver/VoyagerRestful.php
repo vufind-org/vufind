@@ -335,9 +335,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     {
         if (isset($this->session->cache[$id])) {
             $item = $this->session->cache[$id];
-            if (time() - $item['time'] > 30) {
+            if (time() - $item['time'] < 30) {
                 return $item['entry'];
             }
+            unset($this->session->cache[$id]);
         }
         return null;
     }
@@ -431,6 +432,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function isStorageRetrievalRequestAllowed($holdingsRow)
     {
+        $holdingsRow = $holdingsRow['_fullRow'];
         if (!isset($holdingsRow['TEMP_ITEM_TYPE_ID'])
             || !isset($holdingsRow['ITEM_TYPE_ID'])
         ) {
@@ -438,7 +440,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             return false;
         }
 
-        $holdingsRow = $holdingsRow['_fullRow'];
         if (isset($this->config['StorageRetrievalRequests']['valid_item_types'])) {
             $validTypes = explode(
                 ':', $this->config['StorageRetrievalRequests']['valid_item_types']
@@ -532,21 +533,23 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             $holdType = '';
             $storageRetrieval = '';
 
-            // Hold Type - If we have patron data, we can use it to determine if a
-            // hold link should be shown
-            if ($patron && $this->holdsMode == "driver") {
-                // This limit is set as the api is slow to return results
-                if ($i < $this->holdCheckLimit && $this->holdCheckLimit != "0") {
-                    $holdType = $this->determineHoldType(
-                        $patron['id'], $row['id'], $row['item_id']
-                    );
-                    $addLink = $holdType ? $holdType : false;
+            if ($is_holdable) {
+                // Hold Type - If we have patron data, we can use it to determine if
+                // a hold link should be shown
+                if ($patron && $this->holdsMode == "driver") {
+                    // This limit is set as the api is slow to return results
+                    if ($i < $this->holdCheckLimit && $this->holdCheckLimit != "0") {
+                        $holdType = $this->determineHoldType(
+                            $patron['id'], $row['id'], $row['item_id']
+                        );
+                        $addLink = $holdType ? $holdType : false;
+                    } else {
+                        $holdType = "auto";
+                        $addLink = "check";
+                    }
                 } else {
                     $holdType = "auto";
-                    $addLink = "check";
                 }
-            } else {
-                $holdType = "auto";
             }
 
             if ($isStorageRetrievalRequestAllowed) {
@@ -769,6 +772,32 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 ];
             }
         }
+
+        // Do we need to sort pickup locations? If the setting is false, don't
+        // bother doing any more work. If it's not set at all, default to
+        // alphabetical order.
+        $orderSetting = isset($this->config['Holds']['pickUpLocationOrder'])
+            ? $this->config['Holds']['pickUpLocationOrder'] : 'default';
+        if (count($pickResponse) > 1 && !empty($orderSetting)) {
+            $locationOrder = $orderSetting === 'default'
+                ? [] : array_flip(explode(':', $orderSetting));
+            $sortFunction = function ($a, $b) use ($locationOrder) {
+                $aLoc = $a['locationID'];
+                $bLoc = $b['locationID'];
+                if (isset($locationOrder[$aLoc])) {
+                    if (isset($locationOrder[$bLoc])) {
+                        return $locationOrder[$aLoc] - $locationOrder[$bLoc];
+                    }
+                    return -1;
+                }
+                if (isset($locationOrder[$bLoc])) {
+                    return 1;
+                }
+                return strcasecmp($a['locationDisplay'], $b['locationDisplay']);
+            };
+            usort($pickResponse, $sortFunction);
+        }
+
         return $pickResponse;
     }
 
@@ -1012,7 +1041,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             $sqlStmt = $this->db->prepare($sql['string']);
             $sqlStmt->execute($sql['bind']);
         } catch (PDOException $e) {
-            return new PEAR_Error($e->getMessage());
+            throw new ILSException($e->getMessage());
         }
 
         $groups = [];
@@ -1975,7 +2004,7 @@ EOT;
                 $cancel = $cancel->children();
                 $node = "reply-text";
                 $reply = (string)$cancel->$node;
-                $count = ($reply == "ok") ? $count+1 : $count;
+                $count = ($reply == "ok") ? $count + 1 : $count;
 
                 $response[$itemId] = [
                     'success' => ($reply == "ok") ? true : false,
@@ -2099,7 +2128,7 @@ EOT;
                     if ($dueTimeStamp !== false && is_numeric($dueTimeStamp)) {
                         if ($now > $dueTimeStamp) {
                             $dueStatus = 'overdue';
-                        } else if ($now > $dueTimeStamp-(1*24*60*60)) {
+                        } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                             $dueStatus = 'due';
                         }
                     }
@@ -3068,7 +3097,7 @@ EOT;
                 $cancel = $cancel->children();
                 $node = "reply-text";
                 $reply = (string)$cancel->$node;
-                $count = ($reply == "ok") ? $count+1 : $count;
+                $count = ($reply == "ok") ? $count + 1 : $count;
 
                 $response[$itemId] = [
                     'success' => ($reply == "ok") ? true : false,
@@ -3149,15 +3178,24 @@ EOT;
         $lastname = htmlspecialchars($patron['lastname'], ENT_COMPAT, 'UTF-8');
         $ubId = htmlspecialchars($this->ws_patronHomeUbId, ENT_COMPAT, 'UTF-8');
         $oldPIN = trim(
-            htmlspecialchars($details['oldPassword'], ENT_COMPAT, 'UTF-8')
+            htmlspecialchars(
+                $this->sanitizePIN($details['oldPassword']), ENT_COMPAT, 'UTF-8'
+            )
         );
         if ($oldPIN === '') {
             // Voyager requires the PIN code to be set even if it was empty
             $oldPIN = '     ';
         }
         $newPIN = trim(
-            htmlspecialchars($details['newPassword'], ENT_COMPAT, 'UTF-8')
+            htmlspecialchars(
+                $this->sanitizePIN($details['newPassword']), ENT_COMPAT, 'UTF-8'
+            )
         );
+        if ($newPIN === '') {
+            return [
+                'success' => false, 'status' => 'password_error_invalid'
+            ];
+        }
         $barcode = htmlspecialchars($patron['cat_username'], ENT_COMPAT, 'UTF-8');
 
         $xml =  <<<EOT
@@ -3201,12 +3239,11 @@ EOT;
                 ];
             }
             if ($code == $exceptionNamespace . 'ValidateLengthException') {
-                // This issue should not be encountered if the settings are correct.
-                // Log an error and let through for an exception
-                $this->error(
-                    'ValidateLengthException encountered when trying to'
-                    . ' change patron PIN. Verify PIN length settings.'
-                );
+                // This error may happen even with correct settings if the new PIN
+                // contains invalid characters.
+                return [
+                    'success' => false, 'status' => 'password_error_invalid'
+                ];
             }
             throw new ILSException((string)$error);
         }

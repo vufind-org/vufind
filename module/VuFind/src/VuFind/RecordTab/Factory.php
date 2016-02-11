@@ -66,8 +66,8 @@ class Factory
     public static function getCollectionList(ServiceManager $sm)
     {
         return new CollectionList(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                ->get('SolrCollection')
+            $sm->getServiceLocator()->get('VuFind\SearchRunner'),
+            $sm->getServiceLocator()->get('VuFind\RecommendPluginManager')
         );
     }
 
@@ -256,9 +256,7 @@ class Factory
      */
     public static function getUserComments(ServiceManager $sm)
     {
-        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $enabled = !isset($cfg->Social->comments)
-            || ($cfg->Social->comments && $cfg->Social->comments !== 'disabled');
-        return new UserComments($enabled);
+        $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
+        return new UserComments('enabled' === $capabilities->getCommentSetting());
     }
 }

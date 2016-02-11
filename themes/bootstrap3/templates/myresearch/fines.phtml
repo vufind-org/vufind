@@ -28,7 +28,7 @@
         <td>
           <? if (empty($record['title'])): ?>
             <?=$this->transEsc('not_applicable')?>
-          <? elseif (!is_object($record['driver'])): ?>
+          <? elseif (!isset($record['driver']) || !is_object($record['driver'])): ?>
             <?=$this->escapeHtml(trim($record['title'], '/:'))?>
           <? else: ?>
             <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>

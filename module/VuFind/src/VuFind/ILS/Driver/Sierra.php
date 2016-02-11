@@ -82,7 +82,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
         // see Millennium manual page #105781 for the logic behind this
         for ($i = $numberLength; $i > 0; $i--) {
             $j = $numberLength - $i;
-            $partialCheck = $partialCheck + ($digitArray[$j] * ($i+1));
+            $partialCheck = $partialCheck + ($digitArray[$j] * ($i + 1));
         }
         $checkdigit = $partialCheck % 11;
         if ($checkdigit == 10) {
@@ -133,7 +133,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
         }
 
         // Convert hours to seconds:
-        $seconds = 60*60*$this->config['Catalog']['just_cataloged_time'];
+        $seconds = 60 * 60 * $this->config['Catalog']['just_cataloged_time'];
 
         // Was this a recently cataloged item? If so, return a special string
         // based on the append setting....
@@ -171,11 +171,15 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             $results = pg_query_params(
                 $this->db, $query, [$this->idStrip($id)]
             );
-            $callnumberarray = pg_fetch_array($results, 0, PGSQL_NUM);
-            $callnumber = $callnumberarray[0];
+            if (pg_num_rows($results) > 0) {
+                $callnumberarray = pg_fetch_array($results, 0, PGSQL_NUM);
+                $callnumber = $callnumberarray[0];
+                // stripping subfield codes from call numbers
+                $callnumber = preg_replace('/\|(a|b)/', ' ', $callnumber);
+            } else {
+                $callnumber = '';
+            }
         }
-        // stripping subfield codes from call numbers
-        $callnumber = preg_replace('/\|(a|b)/', ' ', $callnumber);
         return $callnumber;
     }
 
@@ -493,7 +497,9 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
+                $barcode = null;
                 $results1 = pg_execute($this->db, "prep_query", [$item]);
+                $number = null;
                 while ($row1 = pg_fetch_row($results1)) {
                     if ($row1[4] == "b") {
                         $barcode = $row1[3];

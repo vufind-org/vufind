@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Table;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Expression, Zend\Db\Sql\Select;
 
 /**
  * Table Definition for tags
@@ -87,38 +87,60 @@ class Tags extends Gateway
     /**
      * Get tags associated with the specified resource.
      *
-     * @param string $id     Record ID to look up
-     * @param string $source Source of record to look up
-     * @param int    $limit  Max. number of tags to return (0 = no limit)
-     * @param int    $list   ID of list to load tags from (null for no restriction,
-     * true for on ANY list, false for on NO list)
-     * @param int    $user   ID of user to load tags from (null for all users)
-     * @param string $sort   Sort type ('count' or 'tag')
+     * @param string $id          Record ID to look up
+     * @param string $source      Source of record to look up
+     * @param int    $limit       Max. number of tags to return (0 = no limit)
+     * @param int    $list        ID of list to load tags from (null for no
+     * restriction,  true for on ANY list, false for on NO list)
+     * @param int    $user        ID of user to load tags from (null for all users)
+     * @param string $sort        Sort type ('count' or 'tag')
+     * @param int    $userToCheck ID of user to check for ownership (this will
+     * not filter the result list, but rows owned by this user will have an is_me
+     * column set to 1)
      *
      * @return array
      */
-    public function getForResource($id, $source = 'VuFind', $limit = 0,
-        $list = null, $user = null, $sort = 'count'
+    public function getForResource($id, $source = DEFAULT_SEARCH_BACKEND, $limit = 0,
+        $list = null, $user = null, $sort = 'count', $userToCheck = null
     ) {
         return $this->select(
-            function ($select) use ($id, $source, $limit, $list, $user, $sort) {
+            function ($select) use (
+                $id, $source, $limit, $list, $user, $sort, $userToCheck
+            ) {
+                // If we're looking for ownership, create sub query to merge in
+                // an "is_me" flag value if the selected resource is tagged by
+                // the specified user.
+                if (!empty($userToCheck)) {
+                    $subq = $this->getIsMeSubquery($id, $source, $userToCheck);
+                    $select->join(
+                        ['subq' => $subq],
+                        'tags.id = subq.tag_id',
+                        [
+                            'is_me' => new Expression(
+                                'MAX(?)', ['subq.is_me'],
+                                [Expression::TYPE_IDENTIFIER]
+                            )
+                        ],
+                        Select::JOIN_LEFT
+                    );
+                }
+                // SELECT (do not add table prefixes)
                 $select->columns(
                     [
                         'id', 'tag',
                         'cnt' => new Expression(
-                            'COUNT(?)', ['tags.tag'],
+                            'COUNT(DISTINCT(?))', ["rt.user_id"],
                             [Expression::TYPE_IDENTIFIER]
                         )
                     ]
                 );
                 $select->join(
-                    ['rt' => 'resource_tags'], 'tags.id = rt.tag_id', []
+                    ['rt' => 'resource_tags'], 'rt.tag_id = tags.id', []
                 );
                 $select->join(
                     ['r' => 'resource'], 'rt.resource_id = r.id', []
                 );
-                $select->where->equalTo('r.record_id', $id)
-                    ->equalTo('r.source', $source);
+                $select->where(['r.record_id' => $id, 'r.source' => $source]);
                 $select->group(['tags.id', 'tag']);
 
                 if ($sort == 'count') {
@@ -142,6 +164,35 @@ class Tags extends Gateway
                 }
             }
         );
+    }
+
+    /**
+     * Get a subquery used for flagging tag ownership (see getForResource).
+     *
+     * @param string $id          Record ID to look up
+     * @param string $source      Source of record to look up
+     * @param int    $userToCheck ID of user to check for ownership
+     *
+     * @return Select
+     */
+    protected function getIsMeSubquery($id, $source, $userToCheck)
+    {
+        $sub = new Select('resource_tags');
+        $sub->columns(['tag_id', 'is_me' => new Expression("1")])
+            ->join(
+                // Convert record_id to resource_id
+                ['r' => 'resource'],
+                'resource_id = r.id',
+                []
+            )
+            ->where(
+                [
+                    'r.record_id' => $id,
+                    'r.source' => $source,
+                    'user_id' => $userToCheck
+                ]
+            );
+        return $sub;
     }
 
     /**
