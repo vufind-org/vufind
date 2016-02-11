@@ -111,7 +111,8 @@ class Generator
     {
         $this->themeTools = $themeTools;
         $default = [
-            'mode'         => 'grid',
+            'backgroundMode' => 'grid',
+            'textMode' => 'default',
             'authorFont'   => 'DroidSerif-Bold.ttf',
             'titleFontSize' => 7,
             'authorFontSize' => 6,
@@ -265,17 +266,106 @@ class Generator
      */
     public function generate($title, $author, $callnumber = null)
     {
-        switch (strtolower($this->settings->mode)) {
-        case 'solid':
-            $this->generateSolid($title, $author, $callnumber);
-        case 'grid':
-        default:
-            $this->generateGrid($title, $author, $callnumber);
-        }
+        // Generate seed from callnumber, title back up
+        $seed = $this->createSeed($title, $callnumber);
 
+        // Build the image
+        $this->drawBackgroundLayer($seed);
+        $this->drawTextLayer($title, $author);
+
+        // Render the image
         $png = $this->renderPng();
         $this->destroyImage();
         return $png;
+    }
+
+    /**
+     * Draw the background behind the text.
+     *
+     * @param int $seed Seed value
+     *
+     * @return void
+     */
+    protected function drawBackgroundLayer($seed)
+    {
+        // Construct a method name using the mode setting; if the method is not
+        // defined, use the default drawGridBackground().
+        $mode = ucwords(strtolower($this->settings->backgroundMode));
+        $method = "draw{$mode}Background";
+        return method_exists($this, $method)
+            ? $this->$method($seed) : $this->drawGridBackground($seed);
+    }
+
+    /**
+     * Position the text on the image.
+     *
+     * @param string $title  Title of the book
+     * @param string $author Author of the book
+     *
+     * @return void
+     */
+    protected function drawTextLayer($title, $author)
+    {
+        // Construct a method name using the mode setting; if the method is not
+        // defined, use the default drawGridBackground().
+        $mode = ucwords(strtolower($this->settings->textMode));
+        $method = "draw{$mode}Text";
+        return method_exists($this, $method)
+            ? $this->$method($title, $author)
+            : $this->drawDefaultText($title, $author);
+    }
+
+    /**
+     * Position the text on the image using default rules.
+     *
+     * @param string $title  Title of the book
+     * @param string $author Author of the book
+     *
+     * @return void
+     */
+    protected function drawDefaultText($title, $author)
+    {
+        if (null !== $title) {
+            $this->drawTitle($title, $this->height / 8);
+        }
+        if (null !== $author) {
+            $this->drawAuthor($author);
+        }
+    }
+
+    /**
+     * Position the text on the image using "initials" rules.
+     *
+     * @param string $title  Title of the book
+     * @param string $author Author of the book
+     *
+     * @return void
+     */
+    protected function drawInitialText($title, $author)
+    {
+        // Get the first letter of title or author...
+        $initial = mb_substr($title . $author, 0, 1, 'UTF-8');
+
+        // Get the height of a character with no descenders:
+        $heightWithoutDescenders = $this->textHeight(
+            'O', $this->settings->titleFont, $this->settings->titleFontSize
+        );
+
+        // Get the height of the currently selected character:
+        $textHeight = $this->textHeight(
+            $initial, $this->settings->titleFont, $this->settings->titleFontSize
+        );
+
+        // Draw the letter...
+        $this->drawText(
+            $initial,
+            $heightWithoutDescenders + ($this->height - $textHeight) / 2,
+            $this->settings->titleFont,
+            $this->settings->titleFontSize,
+            $this->titleFillColor,
+            $this->titleBorderColor,
+            $this->settings->textAlign
+        );
     }
 
     /**
@@ -301,17 +391,12 @@ class Generator
     /**
      * Generates a solid color background, ala Google
      *
-     * @param string $title      Title of the book
-     * @param string $author     Author of the book
-     * @param string $callnumber Callnumber of the book
+     * @param int $seed Seed value
      *
      * @return void
      */
-    protected function generateSolid($title, $author, $callnumber)
+    protected function drawSolidBackground($seed)
     {
-        // Generate seed from callnumber, title back up
-        $seed = $this->createSeed($title, $callnumber);
-
         // Fill solid color
         imagefilledrectangle(
             $this->im,
@@ -321,34 +406,19 @@ class Generator
             $this->height,
             $this->getAccentColor($seed)
         );
-
-        $this->drawTitle($title, $this->height / 8);
-        $this->drawAuthor($author);
     }
 
     /**
      * Generates a grid of colors as primary feature
      *
-     * @param string $title      Title of the book
-     * @param string $author     Author of the book
-     * @param string $callnumber Callnumber of the book
+     * @param int $seed Seed value
      *
      * @return void
      */
-    protected function generateGrid($title, $author, $callnumber)
+    protected function drawGridBackground($seed)
     {
-        // Generate seed from callnumber, title back up
-        $seed = $this->createSeed($title, $callnumber);
         // Render the grid
-        $pattern = $this->createPattern($seed);
-        $this->render($pattern, $this->getAccentColor($seed));
-
-        if (null !== $title) {
-            $this->drawTitle($title, $this->height / 8);
-        }
-        if (null !== $author) {
-            $this->drawAuthor($author);
-        }
+        $this->renderGrid($this->createPattern($seed), $this->getAccentColor($seed));
     }
 
     /**
@@ -533,7 +603,7 @@ class Generator
      * @param string $font Full font path
      * @param string $size Size of the font
      *
-     * @return string file path
+     * @return int
      */
     protected function textWidth($text, $font, $size)
     {
@@ -542,15 +612,30 @@ class Generator
     }
 
     /**
+     * Returns the height a string would render to
+     *
+     * @param string $text Text to test
+     * @param string $font Full font path
+     * @param string $size Size of the font
+     *
+     * @return int
+     */
+    protected function textHeight($text, $font, $size)
+    {
+        $p = imagettfbbox($size, 0, $font, $text);
+        return $p[1] - $p[5];
+    }
+
+    /**
      * Simulate outlined text
      *
-     * @param string  $text     Text to render
-     * @param int     $y        Top position
-     * @param string  $font     Full path to font
-     * @param int     $fontSize Size of the font
-     * @param GCColor $mcolor   Main text color
-     * @param GCColor $scolor   Secondary border color
-     * @param string  $align    'left','center','right'
+     * @param string $text     Text to render
+     * @param int    $y        Top position
+     * @param string $font     Full path to font
+     * @param int    $fontSize Size of the font
+     * @param int    $mcolor   Main text color
+     * @param int    $scolor   Secondary border color
+     * @param string $align    'left','center','right'
      *
      * @return void
      */
@@ -606,12 +691,12 @@ class Generator
      * Convert 16 long binary string to 8x8 color grid
      * Reflects vertically and horizontally
      *
-     * @param string  $bc    Binary string of pattern
-     * @param GCColor $color Fill color
+     * @param string $bc    Binary string of pattern
+     * @param int    $color Fill color
      *
      * @return void
      */
-    protected function render($bc, $color)
+    protected function renderGrid($bc, $color)
     {
         $halfWidth = $this->width / 2;
         $halfHeight = $this->height / 2;
@@ -648,7 +733,7 @@ class Generator
      * @param int $s Saturation (0-255)
      * @param int $v Lightness (0-255)
      *
-     * @return GCColor
+     * @return int
      */
     protected function makeHSBColor($h, $s, $v)
     {

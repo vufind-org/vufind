@@ -158,8 +158,11 @@ class Loader extends \VuFind\ImageLoader
     {
         $settings = isset($this->config->DynamicCovers)
             ? $this->config->DynamicCovers->toArray() : [];
-        $settings['mode'] = isset($this->config->Content->makeDynamicCovers)
-            ? $this->config->Content->makeDynamicCovers : false;
+        if (!isset($settings['backgroundMode'])
+            && isset($this->config->Content->makeDynamicCovers)
+        ) {
+            $settings['backgroundMode'] = $this->config->Content->makeDynamicCovers;
+        }
         return new \VuFind\Cover\Generator($this->themeTools, $settings);
     }
 
