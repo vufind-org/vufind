@@ -826,6 +826,12 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         .search, .primo-advanced-search-fields {
           margin-bottom: 0px;
           padding-top: 3px;
+          & select, input {
+            margin-bottom: 3px;   
+          }
+          .close {opacity: .8;}
+        }
+        .search {
           @media (min-width: @screen-sm-min) {
               border-right: 1px solid @gray-mid-light;
               &:first-child:after {
@@ -850,10 +856,11 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
                   }
               }
           }
-          & select, input {
-            margin-bottom: 3px;   
-          }
-          .close {opacity: .8;}
+        }
+        & .primo-advanced-search-fields {
+            & .responsive-field {
+                min-width: inherit;
+            }
         }
         & .primo-add-search {
             display: inline-block;

@@ -170,6 +170,7 @@ ISSN                = ISSN
 ; the left side contains the actual operator names, while the right side
 ; contains display text that will be run through the translator logic.
 [Advanced_Operators]
+contains_all        = operator_contains_all
 contains            = operator_contains
 exact               = operator_exact
 
