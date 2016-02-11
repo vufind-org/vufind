@@ -42,10 +42,10 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
     /**
      * Append fields from dedup record to the selected local record
      *
-     * @param array  $localRecordData Local record data
-     * @param array  $dedupRecordData Dedup record data
-     * @param string $recordSources   List of active record sources, empty if all
-     * @param array  $sourcePriority  Array of source priorities keyed by source id
+     * @param array $localRecordData Local record data
+     * @param array $dedupRecordData Dedup record data
+     * @param array $recordSources   List of active record sources, empty if all
+     * @param array $sourcePriority  Array of source priorities keyed by source id
      *
      * @return array Local record data
      */
@@ -57,7 +57,7 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
             $localRecordData['local_ids_str_mv']
                 = $dedupRecordData['local_ids_str_mv'];
         } else {
-            $sources = array_flip(explode(',', $recordSources));
+            $sources = array_flip($recordSources);
             $localIds = $dedupRecordData['local_ids_str_mv'];
             foreach ($localIds as $id) {
                 list($idSource) = explode('.', $id, 2);
@@ -84,13 +84,12 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
     /**
      * Function that determines the priority for sources
      *
-     * @param object $recordSources Record sources defined in searches.ini
+     * @param string $recordSources Record sources defined in searches.ini
      *
      * @return array Array keyed by source with priority as the value
      */
     protected function determineSourcePriority($recordSources)
     {
-        $sources = explode(',', $recordSources);
         $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
 
         if (!($preferred = $cookieManager->get('preferredRecordSource'))) {
@@ -103,11 +102,11 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
         }
         // array_search may return 0, but that's fine since it means the source
         // already has highest priority
-        if ($preferred && $key = array_search($preferred, $sources)) {
+        if ($preferred && $key = array_search($preferred, $recordSources)) {
             unset($sources[$key]);
-            array_unshift($sources, $preferred);
+            array_unshift($recordSources, $preferred);
         }
 
-        return array_flip($sources);
+        return array_flip($recordSources);
     }
 }
