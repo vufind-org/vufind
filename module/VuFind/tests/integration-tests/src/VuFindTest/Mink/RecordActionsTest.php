@@ -268,15 +268,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal #email_to')->setValue('blargarsaurus');
         $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
         $this->findCss($page, '.modal #email_message')->setValue('message');
-        // Make sure form cannot submit
-        /* TODO: Not working with validator
-        $this->getMinkSession()->executeScript('$(".modal form").validator();');
-        $forms = $page->findAll('css', '.modal-body .form-group');
-        foreach ($forms as $f) {
-            var_dump($f->getHtml());
-        }
-        $this->findCss($page, '.modal .disabled');
-        */
         // Send text to false email
         $this->snooze();
         $this->findCss($page, '.modal #email_to')->setValue('asdf@vufind.org');

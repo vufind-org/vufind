@@ -98,7 +98,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.save-record')->click();
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         // Empty
-        // $this->findCss($page, '.modal-body .btn.btn-primary.disabled');
         $this->snooze();
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
 
@@ -218,7 +217,6 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.save-record')->click();
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         // Empty
-        //$this->findCss($page, '.modal-body .btn.btn-primary.disabled');
         $this->snooze();
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->fillInAccountForm(
