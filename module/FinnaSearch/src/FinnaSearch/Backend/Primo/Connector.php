@@ -106,12 +106,29 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
     protected function performSearch($institution, $terms, $args)
     {
         $map = ['contains_all' => 'AND', 'contains' => 'OR'];
+
+        // Regex for quoted words
+        $pattern = '/"(.*?)"/';
+
         foreach ($terms as &$term) {
             if (isset($term['op']) && isset($map[$term['op']])) {
-                $lookfor = $term['lookfor'];
+                $lookfor = trim($term['lookfor']);
                 $op = $map[$term['op']];
-                $lookfor = explode(' ', trim($lookfor));
-                $lookfor = implode(" $op ", $lookfor);
+                $words = $quoted = [];
+                if (preg_match_all($pattern, $lookfor, $quoted)) {
+                    // Search term includes quoted words, preserve them as groups.
+                    $quoted = $quoted[0];
+                    $unquoted = preg_replace($pattern, '', $lookfor);
+                    $unquoted = preg_replace('/\s\s+/', ' ', $unquoted);
+                    $unquoted = explode(' ', $unquoted);
+                    $words = array_merge($unquoted, $quoted);
+                } else {
+                    // No quoted words in search term
+                    $words = explode(' ', $lookfor);
+                }
+                $words = array_filter($words);
+
+                $lookfor = implode(" $op ", $words);
                 $term['op'] = 'contains';
                 $term['lookfor'] = $lookfor;
             }
