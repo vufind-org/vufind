@@ -121,17 +121,19 @@
         <? else: ?>
           <? $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
         <? endif; ?>
-        <tr>
-          <th><?=$this->transEsc('Archive')?>:</th>
-          <td>
-          <? foreach ($topIds as $index => $parentId): ?>
-            <?=($index > 0 ? ', ' : '')?><a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
-          <? endforeach; ?>
-          </td>
-        </tr>
+        <? if ($topIds): ?>
+          <tr>
+            <th><?=$this->transEsc('Archive')?>:</th>
+            <td>
+            <? foreach ($topIds as $index => $parentId): ?>
+              <?=($index > 0 ? ', ' : '')?><a href="<?=$this->recordLink()->getUrl("$parentSource|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
+            <? endforeach; ?>
+            </td>
+          </tr>
         <? endif; ?>
+      <? endif; ?>
 
-        <? if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
+      <? if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
         <tr>
           <th><?=$this->transEsc('Archive Series')?>:</th>
           <td>
