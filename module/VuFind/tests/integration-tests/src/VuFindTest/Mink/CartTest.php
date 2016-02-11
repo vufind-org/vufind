@@ -289,8 +289,6 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Now do it for real -- we should get a login prompt.
         $this->selectAllItemsInCart($page);
         $button->click();
-        //$title = $this->findCss($page, '#modalTitle');
-        //$this->assertEquals('Email Selected Book Bag Items', $title->getText());
         $this->snooze();
         $this->checkForLoginMessage($page);
 
@@ -321,8 +319,6 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Now do it for real -- we should get a login prompt.
         $this->selectAllItemsInCart($page);
         $button->click();
-        //$title = $this->findCss($page, '#modalTitle');
-        //$this->assertEquals('Save Selected Book Bag Items', $title->getText());
         $this->snooze();
         $this->checkForLoginMessage($page);
 
@@ -368,8 +364,6 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Now do it for real -- we should get an export option list:
         $this->selectAllItemsInCart($page);
         $button->click();
-        //$title = $this->findCss($page, '#modalTitle');
-        //$this->assertEquals('Export Selected Book Bag Items', $title->getText());
 
         // Select EndNote option
         $select = $this->findCss($page, '#format');
