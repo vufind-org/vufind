@@ -41,9 +41,7 @@
             <? foreach ($summAuthors as $i => $summAuthor): ?>
               <?= $i > 0 ? '; ' : '' ?>
               <? $cleanAuthor = str_replace('{{{{END_HILITE}}}}', '', str_replace('{{{{START_HILITE}}}}', '', $summAuthor)); ?>
-              <a href="<?=$this->record($this->driver)->getLink('author', $cleanAuthor)?>">
-                <?=$highlight ? $this->highlight($summAuthor) : $this->escapeHtml($summAuthor); ?>
-              </a>
+              <a href="<?=$this->record($this->driver)->getLink('author', $cleanAuthor)?>"><?=$highlight ? $this->highlight($summAuthor) : $this->escapeHtml($summAuthor); ?></a>
             <? endforeach; ?>
           <? endif; ?>
           <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
