@@ -1030,7 +1030,7 @@ class AjaxController extends AbstractBase
             return $this->output(
                 $this->translate('edit_list_fail'),
                 self::STATUS_ERROR,
-                405
+                403
             );
         }
 
