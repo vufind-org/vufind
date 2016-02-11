@@ -356,7 +356,14 @@ class Generator
             $initial, $this->settings->titleFont, $this->settings->titleFontSize
         );
 
-        // Draw the letter...
+        // Draw the letter... Note that the way we are using $textHeight and
+        // $heightWithoutDescenders is something of a fudge driven by the fact
+        // that PHP measures text in total pixels, but positions text using the
+        // baseline (thus not accounting for descenders). To truly vertically
+        // center something, we need more information than we can get without
+        // using an extension or library to read more information from the font
+        // file. The formula here is not particularly well-informed but seems
+        // to produce acceptable results for many scenarios.
         $this->drawText(
             $initial,
             $heightWithoutDescenders + ($this->height - $textHeight) / 2,
