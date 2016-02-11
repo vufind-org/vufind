@@ -623,9 +623,19 @@ finna.layout = (function() {
                     $container.find('.load-failed').removeClass('hidden');
                 }
             }
-        );    
+        );
     }
-    
+
+    var initAutoScrollTouch = function() {
+      if (isTouchDevice() && $(window).width() < 1025) {
+        $( ".search-query" ).click(function() {
+          $('html, body').animate({
+            scrollTop: $(this).offset().top-5
+          }, 200);
+        });
+      };
+    };
+
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -663,6 +673,7 @@ finna.layout = (function() {
             initImageCheck();
             initSideFacets();
             initPiwikPopularSearches();
+            initAutoScrollTouch();
         }
     };
 

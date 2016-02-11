@@ -6,7 +6,7 @@
   <? $urls = $this->driver->getURLs(); $onlineURLs = $this->driver->tryMethod('getOnlineURLs'); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
   <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
     <div class="available-online-links">
-      <strong><?=$this->transEsc('Available Online') ?>:</strong>
+      <strong class="available-online-header <?=(!empty($onlineURLs) || !empty($mergedData['urls']) || !empty($urls)) ? '' : 'hidden'; ?>"><?=$this->transEsc('Available Online') ?>:</strong>
       <div class="truncate-field">
       <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
         <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $i => $url): ?>
@@ -24,7 +24,7 @@
       <? endif; ?>
       </div>
     <? if ($openUrlActive): ?>
-      <?=$openUrl->renderTemplate()?><br/>
+      <?=$openUrl->renderTemplate()?>
     <? endif; ?>
     </div>
   <? endif; ?>

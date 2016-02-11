@@ -16,7 +16,7 @@ $fulltextAvailable = $this->driver->getFulltextAvailable();
 ?>
 <div class="primo-available-online<?= $fulltextAvailable ? ' fulltext-available' : ''?>">
   <? if ($openUrlActive || !empty($urls)): ?>
-    <div class="heading"><strong><?=$this->transEsc('Available Online')?></strong></div>
+    <div class="heading <?=!empty($urls) ? '' : 'hidden'?>"><strong><?=$this->transEsc('Available Online')?></strong></div>
     <? if(!$this->driver->isCollection()): ?>
       <? foreach ($urls as $current): ?>
         <? $format = $this->driver->getFormats(); $format = end($format); ?>

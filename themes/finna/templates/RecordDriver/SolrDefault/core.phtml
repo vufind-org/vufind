@@ -88,7 +88,7 @@
           <? endif; ?>
         </div>
       <? if ($openUrlActive): ?>
-        <?=$openUrl->renderTemplate()?><br/>
+        <?=$openUrl->renderTemplate()?>
       <? endif; ?>
       </div>
     <? endif; ?>
@@ -343,7 +343,7 @@
                   $result = $class . ' ' . $subfield;
                   $classForTranslation = 'classification::' . str_replace('::', ' ', $result);
                   ?>
-                  <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><? if (!$this->translationEmpty($classForTranslation)): ?><?=$this->transEsc($classForTranslation).'<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>' ;?><? else: ?><?=$this->escapeHtml($result); ?><? endif; ?></a></br>
+                  <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><? if (!$this->translationEmpty($classForTranslation)): ?><?=$this->transEsc($classForTranslation).'<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>' ;?><? else: ?><?=$this->escapeHtml($result); ?><? endif; ?></a><br>
                 <?
                 }
               }
@@ -645,6 +645,11 @@
             </div>
           </td>
         </tr>
+      <? endif; ?>
+      <? if ($openUrlActive): ?>
+      <tr>
+        <td colspan="2" class="more-options-link"><?=$openUrl->renderTemplate()?> </td>
+      </tr>
       <? endif; ?>
       </tbody>
     </table>
