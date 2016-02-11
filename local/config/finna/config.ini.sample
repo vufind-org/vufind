@@ -355,7 +355,7 @@ port            = 25
 ;username       = user
 ;password       = pass
 ; If set to false, users can send anonymous emails; otherwise, they must log in first
-require_login   = true
+require_login   = false
 ; Should we put the logged-in user's address in the "from" field by default?
 user_email_in_from = true
 ; Should we put the logged-in user's address in the "to" field by default?
