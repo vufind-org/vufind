@@ -66,10 +66,14 @@ if ($groupBranches) {
   // Group holdings by location
   $statusItemsFiltered = [];
   foreach ($this->statusItems as $item) {
-    if (!array_key_exists($item['location'], $statusItemsFiltered)
-      || $item['availability'] > $statusItemsFiltered[$item['location']]['availability']
-    ) {
-      $statusItemsFiltered[$item['location']] = $item;
+    $location = $item['location'];
+    if (!isset($statusItemsFiltered[$location])) {
+        $statusItemsFiltered[$location] = $item;
+    } else {
+        if ($item['availability'] > $statusItemsFiltered[$location]['availability']) {
+            $statusItemsFiltered[$location]['availability'] = $item['availability'];
+        }
+        $statusItemsFiltered[$location]['callnumbers'] = 'Multiple Locations';
     }
   }
   $this->statusItems = array_values($statusItemsFiltered);
@@ -180,7 +184,11 @@ foreach ($this->statusItems as $item):
           <? endif; ?>
         <? else: ?>
           <div class="groupCallnumber">
-            (<span class="shelf"><?=$this->translate('shelf_location')?>: </span><?=$this->escapeHtml($item['callnumber'])?>)
+            <? if (!empty($item['callnumbers'])): ?>
+              (<?=$this->transEsc($item['callnumbers'])?>)
+            <? elseif (!empty($item['callnumber'])): ?>
+              (<span class="shelf"><?=$this->translate('shelf_location')?>: </span><?=$this->escapeHtml($item['callnumber'])?>)
+            <? endif; ?>
           </div>
         <? endif; ?>
       </div>
