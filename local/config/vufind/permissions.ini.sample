@@ -1,2 +1,12 @@
 [Parent_Config]
 relative_path = "../finna/permissions.ini"
+override_full_sections = "finna.api,finna.authorized"
+
+; Add any overrides below
+
+; Access to Finna API
+;[finna.api]
+;require = ANY
+;ipRange[] = 127.0.0.1
+;ipRange[] = ::1
+;permission = finna.api

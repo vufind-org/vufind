@@ -133,7 +133,7 @@ finna.itemStatus = (function() {
         holder.find('.dedup-select').change(function() {
             var id = $(this).val();
             var source = $(this).find('option:selected').data('source');
-            $.cookie('preferredRecordSource', source);
+            $.cookie('preferredRecordSource', source, {path: VuFind.getPath()});
 
             var recordContainer = $(this).closest('.record-container');
             var oldRecordId = recordContainer.find('.hiddenId')[0].value;

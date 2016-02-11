@@ -141,7 +141,7 @@ format           = Format
 ; Most of these settings affect the way the [Advanced] facets are displayed; the
 ; translated_facets setting affects facets globally.
 [Advanced_Settings]
-facet_limit      = 100      ; how many values should we show for each facet?
+facet_limit      = -1      ; how many values should we show for each facet?
 ; Should we OR together facets rather than ANDing them? Set to * for
 ; all facets, use a comma-separated list to apply to some of the facets, set
 ; to false or omit to disable ORed facets.
@@ -192,7 +192,7 @@ facet_translation_prefix = "facet_"
 [HomePage_Settings]
 ; how many values should we load for each facet?  depending on the column layout
 ; of the homepage facet lists, we may not display all loaded values for every facet
-facet_limit      = 20
+facet_limit      = -1
 
 ; Facet filters can be specified to limit hierarchical facet display to given values.
 ; If no values are specified on a facet level, all items for the level are displayed.

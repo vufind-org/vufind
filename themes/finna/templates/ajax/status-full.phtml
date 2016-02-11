@@ -161,13 +161,13 @@ foreach ($this->statusItems as $item):
         : '<span class="branch">' . $this->transEsc($item['location'], [], $item['location']) . '</span>';
     ?>
     <div class="row">
-      <div class="col-sm-8 col-xs-12">
+      <div class="<?=$groupBranches ? 'col-sm-8' : 'no-branches'?> col-xs-12">
         <div class="groupLocation <?= $prevOrganisation && $newOrganisation ? ' new-organisation' : ''; ?>">
           <i class="fa fa-<?=$classes[0]?> text-<?=$classes[1]?>"></i> <span class="text-<?=$classes[0]?>"><?=$location?></span>
         </div>
+      <? if ($groupBranches): ?>
       </div>
       <div class="col-sm-4 col-xs-12">
-        <? if ($groupBranches): ?>
           <span class="branchInfo">
           <? if ($item['availability'] && !empty($item['availabilityInfo']['available'])): ?>
             <?= sprintf('%s: %d', $this->transEsc('Available items'), $item['availabilityInfo']['available']); ?>
@@ -179,9 +179,9 @@ foreach ($this->statusItems as $item):
             <?= $this->transEsc('status_' . $item['availabilityInfo']['displayText']); ?></span>
           <? endif; ?>
         <? else: ?>
-          <span class="groupCallnumber">
+          <div class="groupCallnumber">
             (<span class="shelf"><?=$this->translate('shelf_location')?>: </span><?=$this->escapeHtml($item['callnumber'])?>)
-          </span>
+          </div>
         <? endif; ?>
       </div>
     </div>

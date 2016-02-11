@@ -73,6 +73,7 @@ class PluginManager extends \VuFind\Autocomplete\PluginManager
         if ($request->tab) {
             $this->searchTab = str_replace('###', ':', $request->tab);
         }
+        $this->request = $request;
         return parent::getSuggestions($request, $typeParam, $queryParam);
     }
 
@@ -104,6 +105,7 @@ class PluginManager extends \VuFind\Autocomplete\PluginManager
         if ($this->searchTab) {
             $handler->setSearchTab($this->searchTab);
         }
+        $handler->setRequest($this->request);
         return $handler;
     }
 }
