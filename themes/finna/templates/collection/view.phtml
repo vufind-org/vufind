@@ -87,6 +87,7 @@
       <div class="truncate-field wide">
         <?=implode('<br><br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
       </div>
+      <a href="<?=$this->url('record') . urlencode($this->driver->getUniqueID()); ?>"><?=$this->transEsc('Collection Details'); ?></a>
     </div>
 
     <? // N.B. The element/class structure here is important for the ajax tabs to work properly ?>
