@@ -51,4 +51,32 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
         $page = $session->getPage();
         $this->assertTrue(false !== strstr($page->getContent(), 'VuFind'));
     }
+
+    /**
+     * Test that AJAX availability status is working.
+     *
+     * @return void
+     */
+    public function testAjaxStatus()
+    {
+        // Search for a known record:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '.searchForm [name="lookfor"]')
+            ->setValue('id:testsample1');
+        $this->findCss($page, '.btn.btn-primary')->click();
+        $this->snooze();
+
+        // Check for sample driver location/call number in output (this will
+        // only appear after AJAX returns):
+        $this->assertEquals(
+            'A1234.567',
+            $this->findCss($page, '.callnumber')->getText()
+        );
+        $this->assertEquals(
+            '3rd Floor Main Library',
+            $this->findCss($page, '.location')->getText()
+        );
+    }
 }

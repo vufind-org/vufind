@@ -60,7 +60,8 @@ class HideFacetValueListener
      * Constructor.
      *
      * @param BackendInterface $backend         Search backend
-     * @param array            $hideFacetValues Facet config file id
+     * @param array            $hideFacetValues Associative array of field name
+     * to array of facet values to hide.
      */
     public function __construct(
         BackendInterface $backend,
@@ -118,13 +119,7 @@ class HideFacetValueListener
 
         foreach ($this->hideFacets as $facet => $value) {
             if (isset($facets[$facet])) {
-                foreach ((array)$value as $configValue) {
-                    foreach (array_keys($facets[$facet]) as $facetValue) {
-                        if ($facetValue == $configValue) {
-                            $facets[$facet]->remove();
-                        }
-                    }
-                }
+                $facets[$facet]->removeKeys((array)$value);
             }
         }
         return null;
