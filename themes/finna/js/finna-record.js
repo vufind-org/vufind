@@ -56,7 +56,6 @@ finna.record = (function() {
               var element = elements[idx];
               if (response.status) {
                 $(element).removeClass('disabled')
-                  .attr('title', response.msg)
                   .html(response.msg);
                 } else {
                   $(element).remove();
