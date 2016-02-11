@@ -33,7 +33,9 @@ ALTER TABLE search ADD INDEX `finna_schedule_base_url` (`finna_schedule_base_url
 -- Additional columns for user
 --
 ALTER TABLE user ADD COLUMN `finna_language` varchar(30) NOT NULL DEFAULT '';
-ALTER TABLE `user` ADD  `finna_due_date_reminder` int(11) NOT NULL DEFAULT '0';
+ALTER TABLE `user` ADD `finna_due_date_reminder` int(11) NOT NULL DEFAULT '0';
+ALTER TABLE `user` ADD `finna_last_login` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
+ALTER TABLE `user` ADD `finna_auth_method` varchar(50) DEFAULT NULL;
 CREATE INDEX `finna_user_due_date_reminder_key` ON user (`finna_due_date_reminder`);
 --
 -- Additional columns for user_list
@@ -50,22 +52,6 @@ CREATE TABLE `finna_comments_record` (
   KEY `key_record_id` (`record_id`),
   CONSTRAINT `comments_record_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `finna_user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL DEFAULT '0',
-  `language` varchar(30) NOT NULL DEFAULT '',
-  `due_date_notification` int(11) NOT NULL DEFAULT '0',
-  `due_date_reminder` int(11) NOT NULL DEFAULT '0',
-  `last_login` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `auth_method` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `finna_user_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 CREATE TABLE `finna_metalib_search` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
