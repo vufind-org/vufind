@@ -186,18 +186,32 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
-     * Get a highlighted author string, if available.
+     * Get highlighted authors, if available.
      *
-     * @return string
+     * @return array
      */
-    public function getHighlightedAuthor()
+    public function getHighlightedAuthors()
     {
-        // Don't check for highlighted values if highlighting is disabled:
-        if (!$this->highlight) {
-            return '';
+        $authors = $this->getCreators();
+        // Don't check for highlighted values if highlighting is disabled or we
+        // don't have highlighting data:
+        if (!$this->highlight || !isset($this->fields['highlightDetails']['author'])
+        ) {
+            return $authors;
         }
-        return (isset($this->fields['highlightDetails']['author'][0]))
-            ? $this->fields['highlightDetails']['author'][0] : '';
+        foreach ($this->fields['highlightDetails']['author'] as $highlightedAuthor) {
+            $cleanAuthor = str_replace(
+                '{{{{END_HILITE}}}}', '',
+                str_replace('{{{{START_HILITE}}}}', '', $highlightedAuthor)
+            );
+            foreach ($authors as &$author) {
+                if ($author == $cleanAuthor) {
+                    $author = $highlightedAuthor;
+                    break;
+                }
+            }
+        }
+        return $authors;
     }
 
     /**

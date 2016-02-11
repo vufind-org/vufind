@@ -29,21 +29,30 @@
         <? if($this->driver->isCollection()): ?>
           <?=implode('<br>', $this->driver->getSummary()); ?>
         <? else: ?>
-          <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
-          <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
-            $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
-            echo !empty($summHighlightedAuthor)
-                ? $this->highlight($summHighlightedAuthor)
-                : $this->escapeHtml($summAuthor);
-          ?></a>
+          <?
+            $highlight = true;
+            $summAuthors = $this->driver->getHighlightedAuthors();
+            if (empty($summAuthors)) {
+                $summAuthors = $this->driver->getCreators();
+                $highlight = false;
+            }
+          ?>
+          <? if (!empty($summAuthors)): ?>
+            <? foreach ($summAuthors as $i => $summAuthor): ?>
+              <?= $i > 0 ? '; ' : '' ?>
+              <? $cleanAuthor = str_replace('{{{{END_HILITE}}}}', '', str_replace('{{{{START_HILITE}}}}', '', $summAuthor)); ?>
+              <a href="<?=$this->record($this->driver)->getLink('author', $cleanAuthor)?>">
+                <?=$highlight ? $this->highlight($summAuthor) : $this->escapeHtml($summAuthor); ?>
+              </a>
+            <? endforeach; ?>
           <? endif; ?>
           <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
           <? if (!empty($journalTitle)): ?>
-            <?=!empty($summAuthor) ? '' : ' '?>
+            <?=!empty($summAuthors) ? '' : ' '?>
             <?=$this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', $journalTitle) . '">' . $journalTitle . '</a>';?>
             <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } else if (!empty($summDate)) { echo($this->escapeHtml($summDate[0])); } ?>
           <? elseif (!empty($summDate)): ?>
-            <?=!empty($summAuthor) ? '' : ' '?>
+            <?=!empty($summAuthors) ? '' : ' '?>
             <?=$this->escapeHtml($summDate[0])?>
           <? endif; ?>
           <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>

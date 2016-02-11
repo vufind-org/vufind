@@ -49,9 +49,8 @@
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <div><?=$this->record($this->driver)->getFormatList()?></div>
       <? endif; ?>
-    <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
-      <? if (isset($authors['main']) && !empty($authors['main'])): ?>
-        <span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></span>
+      <? if ($authors = $this->driver->getCreators()): ?>
+        <? foreach ($authors as $i => $field): ?><?=($i > 0) ? ' ; ' : ''?><span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a></span><? endforeach; ?>
       <? endif; ?>
       <?
         $journalTitle = $this->driver->getContainerTitle();
@@ -66,21 +65,9 @@
           <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
           <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
       <? elseif (!empty($summDate)): ?>
-        <?=!empty($summAuthor) ? '' : ' '?>
         <?=$this->escapeHtml($summDate[0])?>
       <? endif; ?>
-      <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
-      <br>
-        <?=$this->transEsc('Corporate Author')?>:
-        <span property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></span>
-      <? endif; ?>
-
-      <? if (isset($authors['secondary']) && !empty($authors['secondary'])): ?>
-      <br>
-        <?=$this->transEsc('Other Authors')?>:
-          <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a></span><? endforeach; ?>
-      <? endif; ?>
-      </div>
+    </div>
 
 
     <?/* Display Main Details */?>

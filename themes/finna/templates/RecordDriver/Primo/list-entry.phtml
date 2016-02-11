@@ -1,0 +1,177 @@
+<!-- START of: finna - RecordDriver/SolrDefault/list-entry.phtml -->
+<?
+  // Set up some convenience variables:
+  $id = $this->driver->getUniqueId();
+  $source = $this->driver->getSourceIdentifier();
+  if (isset($this->list) && is_object($this->list)) {
+    $list_id = $this->list->id;
+    $user_id = $this->list->user_id;
+  } else {
+    $list_id = null;
+    $user_id = $this->user ? $this->user->id : null;
+  }
+?>
+<!-- start list-entry -->
+<div class="row record-container<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?> myresearch-row">
+  <div class="col-xs-2 col-sm-1 hidden-print">
+    <div class="checkboxFilter">
+      <div class="checkbox">
+        <? // Request a checkbox with a label (can't add the label here as checkbox template contains more than one field): ?>
+        <?=$this->record($this->driver)->getCheckbox('', true) ?>
+      </div>
+    </div>
+    <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
+  </div>
+  <div class="col-xs-2 col-sm-2 text-center">
+    <? $img = $this->recordImage($this->record($this->driver))?>
+    <?= $img->render('list', array('medium' => array('w' => 250))) ?>
+  </div>
+  <div class="col-xs-8 col-sm-9">
+    <div class="resultItemLine1">
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+        <h3 class="record-title"><?=$this->record($this->driver)->getTitleHtml()?></h3>
+      </a>
+    </div>
+
+    <div class="record-authors">
+      <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList());?><br/>
+      <? if($this->driver->isCollection()): ?>
+        <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+      <? else: ?>
+        <?
+          $highlight = true;
+          $summAuthors = $this->driver->getHighlightedAuthors();
+          if (empty($summAuthors)) {
+              $summAuthors = $this->driver->getCreators();
+              $highlight = false;
+          }
+        ?>
+        <? if (!empty($summAuthors)): ?>
+          <? foreach ($summAuthors as $i => $summAuthor): ?>
+            <?= $i > 0 ? '; ' : '' ?>
+            <? $cleanAuthor = str_replace('{{{{END_HILITE}}}}', '', str_replace('{{{{START_HILITE}}}}', '', $summAuthor)); ?>
+            <a href="<?=$this->record($this->driver)->getLink('author', $cleanAuthor)?>">
+              <?=$highlight ? $this->highlight($summAuthor) : $this->escapeHtml($summAuthor); ?>
+            </a>
+          <? endforeach; ?>
+        <? endif; ?>
+
+        <?
+          $journalTitle = $this->driver->getContainerTitle();
+          $summDate = $this->driver->getPublicationDates();
+          $dates = $this->driver->tryMethod('getResultDateRange', []);
+        ?>
+        <? if (!empty($journalTitle)): ?>
+          <?=!empty($summAuthors) ? '' : ''?>
+          <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)) . '">' . $this->highlight($journalTitle) . '</a>';?>
+          <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
+        <? elseif (!empty($summDate)): ?>
+          <?=!empty($summAuthors) ? '' : ''?>
+            <?=$this->escapeHtml($summDate[0])?>
+        <? elseif ($dates): ?>
+            <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
+        <? endif; ?>
+        <? $summInCollection = $this->driver->getContainingCollections(); if (false && !empty($summInCollection)): ?>
+          <? foreach ($summInCollection as $collId => $collText): ?>
+            <div>
+              <b><?=$this->transEsc("in_collection_label")?></b>
+              <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+                <?=$this->escapeHtml($collText)?>
+              </a>
+            </div>
+          <? endforeach; ?>
+        <? endif; ?>
+      <? endif; ?>
+    </div>
+
+    <div class="last">
+    <? if(!$this->driver->isCollection()) {
+        if ($snippet = $this->driver->getHighlightedSnippet()) {
+          if (!empty($snippet['caption'])) {
+            echo '<strong>' . $this->transEsc($snippet['caption']) . ':</strong> ';
+          }
+          if (!empty($snippet['snippet'])) {
+            echo '<span class="quotestart">&#8220;</span>...' . $this->highlight($snippet['snippet']) . '...<span class="quoteend">&#8221;</span><br/>';
+          }
+        }
+      } ?>
+
+    <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
+        null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
+        $user_id, 'tag'
+       ) : array();
+    ?>
+    <? if (count($listTags) > 0): ?>
+      <strong><?=$this->transEsc('Your Tags')?>:</strong>
+      <? $i = 0; foreach ($listTags as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a><? endforeach; ?>
+      <br/>
+    <? endif; ?>
+
+      <?=$this->partial('RecordDriver/SolrDefault/holdings.phtml') ?>
+      <?=$this->record($this->driver)->getOnlineUrls('results')?>
+      <?=$this->record($this->driver)->getPreviews()?>
+    </div>
+    <div class="myresearch-notes">
+    <?
+      $hasNote = false;
+      $notes = false;
+      $listNotes = $list_id != null ? $this->driver->getListNotes($list_id, $user_id) : false;
+      if ($listNotes) {
+        $notes = implode('', $listNotes);
+        $notes = preg_replace("/\r\n|\r|\n/",'<br class="newline">', $this->escapeHtml($notes));
+        $hasNote = strlen($notes) > 0;
+      }
+    ?>
+      <div class="note-info <?= $hasNote ? '' : ' hide' ?>"><strong><?=$this->transEsc('Description')?>:</strong></div>
+      <div class="resource-note">
+        <span data-empty="<?= $hasNote ? '0' : '1' ?>">
+          <? if (count($listNotes) > 0): ?>
+            <?= $notes; ?>
+          <? else: ?>
+            <?=$this->transEsc('Add note')?>
+          <? endif; ?>
+        </span>
+        <? if ($list_id): ?>
+          <i class="fa fa-pen icon"></i>
+        <? endif; ?>
+      </div>
+    </div>
+    <? if (count($this->lists) > 0 && !$list): ?>
+    <div class="saved-lists">
+      <strong><?=$this->transEsc('Saved in')?>:</strong>
+      <? $i=0;foreach($this->lists as $current): ?>
+        <a href="<?=$this->url('userList', array('id' => $current->id))?>"><?=$current->title?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
+      <? endforeach; ?>
+      <br/>
+    </div>
+    <? endif; ?>
+
+    <? $countNotes = count($this->driver->getListNotes($list_id, $user_id)); ?>
+    <? if ($countNotes > 0 && !$list): ?>
+      <strong><?=$this->transEsc('Description')?>:</strong> <?=$countNotes?>
+    <? endif; ?>
+  </div>
+
+  <div class="col-xs-3 col-sm-2 hidden">
+    <i class="fa fa-pen"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
+    <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
+      $deleteUrl = null === $list_id
+          ? $this->url('myresearch-favorites')
+          : $this->url('userList', array('id' => $list_id));
+      $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
+
+      $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);
+    ?>
+    <div class="dropdown">
+      <i class="fa fa-remove"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
+        <?=$this->transEsc('Delete') ?>
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
+        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeJs($id) ?>','source':'<?=$this->escapeJs($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+<!-- END of: finna - RecordDriver/SolrDefault/list-entry.phtml -->
