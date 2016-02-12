@@ -186,9 +186,9 @@ class DeduplicationListener
         $config = $this->serviceLocator->get('VuFind\Config');
         $searchConfig = $config->get($this->searchConfig);
         $dataSourceConfig = $config->get($this->dataSourceConfig);
-        $recordSources = isset($searchConfig->Records->sources)
-            ? $searchConfig->Records->sources
-            : '';
+        $recordSources = !empty($searchConfig->Records->sources)
+            ? explode(',', $searchConfig->Records->sources)
+            : [];
         $sourcePriority = $this->determineSourcePriority($recordSources);
         $params = $event->getParam('params');
         $buildingPriority = $this->determineBuildingPriority($params);
@@ -212,7 +212,7 @@ class DeduplicationListener
                 $localPriority = null;
                 list($source) = explode('.', $localId, 2);
                 // Ignore ID if source is not in the list of allowed record sources:
-                if (!empty($sourcePriority) && !isset($sourcePriority[$source])) {
+                if ($recordSources && !in_array($source, $recordSources)) {
                     continue;
                 }
                 if (!empty($buildingPriority)) {
@@ -304,10 +304,10 @@ class DeduplicationListener
      * two parameters are unused in this default method, but they may be useful for
      * custom behavior in subclasses.
      *
-     * @param array  $localRecordData Local record data
-     * @param array  $dedupRecordData Dedup record data
-     * @param string $recordSources   List of active record sources, empty if all
-     * @param array  $sourcePriority  Array of source priorities keyed by source id
+     * @param array $localRecordData Local record data
+     * @param array $dedupRecordData Dedup record data
+     * @param array $recordSources   List of active record sources, empty if all
+     * @param array $sourcePriority  Array of source priorities keyed by source id
      *
      * @return array Local record data
      *
@@ -323,7 +323,7 @@ class DeduplicationListener
     /**
      * Function that determines the priority for sources
      *
-     * @param object $recordSources Record sources defined in searches.ini
+     * @param array $recordSources Record sources defined in searches.ini
      *
      * @return array Array keyed by source with priority as the value
      */
@@ -332,7 +332,7 @@ class DeduplicationListener
         if (empty($recordSources)) {
             return [];
         }
-        return array_flip(explode(',', $recordSources));
+        return array_flip($recordSources);
     }
 
     /**
