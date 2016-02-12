@@ -174,14 +174,14 @@ function refreshTagList(target, loggedin) {
   var recordSource = $(target).find('.hiddenSource').val();
   var $tagList = $(target).find('.tagList');
   if ($tagList.length > 0) {
-    $tagList.empty();
     var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
     $.ajax({
-      dataType: 'json',
+      dataType: 'html',
       url: url
     })
     .done(function(response) {
-      $tagList.replaceWith(response.responseText);
+      $tagList.empty();
+      $tagList.replaceWith(response);
       if(loggedin) {
         $tagList.addClass('loggedin');
       } else {
