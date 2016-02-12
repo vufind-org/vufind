@@ -194,54 +194,51 @@ function newAccountHandler(html) {
 
 // This is a full handler for the login form
 function ajaxLogin(form) {
-  Lightbox.ajax({
+  $.ajax({
     url: VuFind.getPath() + '/AJAX/JSON?method=getSalt',
-    dataType: 'json',
-    success: function(response) {
-      var salt = response.data;
+    dataType: 'json'
+  })
+  .done(function(response) {
+    var salt = response.data;
 
-      // extract form values
-      var params = {};
-      for (var i = 0; i < form.length; i++) {
-        // special handling for password
-        if (form.elements[i].name == 'password') {
-          // base-64 encode the password (to allow support for Unicode)
-          // and then encrypt the password with the salt
-          var password = rc4Encrypt(
-              salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
-          );
-          // hex encode the encrypted password
-          params[form.elements[i].name] = hexEncode(password);
-        } else {
-          params[form.elements[i].name] = form.elements[i].value;
-        }
+    // extract form values
+    var params = {};
+    for (var i = 0; i < form.length; i++) {
+      // special handling for password
+      if (form.elements[i].name == 'password') {
+        // base-64 encode the password (to allow support for Unicode)
+        // and then encrypt the password with the salt
+        var password = rc4Encrypt(
+            salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
+        );
+        // hex encode the encrypted password
+        params[form.elements[i].name] = hexEncode(password);
+      } else {
+        params[form.elements[i].name] = form.elements[i].value;
       }
-
-      // login via ajax
-      Lightbox.ajax({
-        type: 'POST',
-        url: VuFind.getPath() + '/AJAX/JSON?method=login',
-        dataType: 'json',
-        data: params,
-        success: function(response) {
-          Lightbox.addCloseAction(refreshPageForLogin);
-          // and we update the modal
-          var params = deparam(Lightbox.lastURL);
-          if (params['subaction'] == 'UserLogin') {
-            Lightbox.close();
-          } else {
-            Lightbox.getByUrl(
-              Lightbox.lastURL,
-              Lightbox.lastPOST,
-              Lightbox.changeContent
-            );
-          }
-        },
-        error: function(response) {
-          Lightbox.displayError(response.responseJSON.data);
-        }
-      });
     }
+
+    // login via ajax
+    Lightbox.ajax({
+      type: 'POST',
+      url: VuFind.getPath() + '/AJAX/JSON?method=login',
+      dataType: 'json',
+      data: params
+    })
+    .done(function(response) {
+      Lightbox.addCloseAction(refreshPageForLogin);
+      // and we update the modal
+      var params = deparam(Lightbox.lastURL);
+      if (params['subaction'] == 'UserLogin') {
+        Lightbox.close();
+      } else {
+        Lightbox.getByUrl(
+          Lightbox.lastURL,
+          Lightbox.lastPOST,
+          Lightbox.changeContent
+        );
+      }
+    });
   });
 }
 
@@ -318,17 +315,17 @@ function setupAutocomplete() {
             type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val(),
             hiddenFilters:hiddenFilters
           },
-          dataType:'json',
-          success: function(json) {
-            if (json.data.length > 0) {
-              var datums = [];
-              for (var i=0;i<json.data.length;i++) {
-                datums.push(json.data[i]);
-              }
-              cb(datums);
-            } else {
-              cb([]);
+          dataType:'json'
+        })
+        .done(function(json) {
+          if (json.data.length > 0) {
+            var datums = [];
+            for (var i=0;i<json.data.length;i++) {
+              datums.push(json.data[i]);
             }
+            cb(datums);
+          } else {
+            cb([]);
           }
         });
       }

@@ -79,12 +79,10 @@ var Lightbox = {
     if(this.XHR) {
       this.XHR.abort();
     }
-    if ('undefined' == typeof obj.error) {
-      obj.error = function() {
-        Lightbox.displayError(response.data);
-      };
-    }
-    this.XHR = $.ajax(obj);
+    this.XHR = $.ajax(obj).fail(function(response) {
+      Lightbox.displayError(response.responseJSON.data);
+    });
+    return this.XHR;
   },
   /**********************************/
   /* ====== LIGHTBOX ACTIONS ====== */
@@ -232,24 +230,22 @@ var Lightbox = {
     this.ajax({
       type:'POST',
       url:url,
-      data:post,
-      success:function(html) { // Success!
-        callback(html);
-      },
-      error:function(d,e) {
-        if (d.status == 200) {
-          try {
-            var data = JSON.parse(d.responseText);
-            Lightbox.changeContent('<p class="alert alert-danger">'+data.data+'</p>');
-          } catch(error) {
-            Lightbox.changeContent('<p class="alert alert-danger">'+d.responseText+'</p>');
-          }
-        } else if(d.status > 0) {
-          Lightbox.changeContent('<p class="alert alert-danger">'+d.statusText+' ('+d.status+')</p>');
+      data:post
+    })
+    .done(callback)
+    .fail(function(d,e) {
+      if (d.status == 200) {
+        try {
+          var data = JSON.parse(d.responseText);
+          Lightbox.changeContent('<p class="alert alert-danger">'+data.data+'</p>');
+        } catch(error) {
+          Lightbox.changeContent('<p class="alert alert-danger">'+d.responseText+'</p>');
         }
-        console.log(e,d); // Error reporting
-        console.log(url,post);
+      } else if(d.status > 0) {
+        Lightbox.changeContent('<p class="alert alert-danger">'+d.statusText+' ('+d.status+')</p>');
       }
+      console.log(e,d); // Error reporting
+      console.log(url,post);
     });
     // Store current "page" context for empty targets
     if(this.openingURL === false) {
@@ -483,19 +479,19 @@ $(document).ready(function() {
       url: VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
       dataType:'json',
-      data:Lightbox.getFormData($(evt.target)),
-      success:function(data) {
-        if(data.data.export_type == 'download' || data.data.needs_redirect) {
-          document.location.href = data.data.result_url;
-          Lightbox.close();
-          return false;
-        } else {
-          Lightbox.changeContent(data.data.result_additional);
-        }
-      },
-      error:function(d,e) {
-        //console.log(d,e); // Error reporting
+      data:Lightbox.getFormData($(evt.target))
+    })
+    .done(function(data) {
+      if(data.data.export_type == 'download' || data.data.needs_redirect) {
+        document.location.href = data.data.result_url;
+        Lightbox.close();
+        return false;
+      } else {
+        Lightbox.changeContent(data.data.result_additional);
       }
+    })
+    .fail(function(d,e) {
+      //console.log(d,e); // Error reporting
     });
     return false;
   });

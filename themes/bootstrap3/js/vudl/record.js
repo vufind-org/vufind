@@ -17,21 +17,21 @@ function ajaxGetView(pageObject) {
       type: 'POST',
       url : '../VuDL/ajax?method=viewLoad',
       data: pageObject,
-      success: function(e) {
-        $('#view').html(e.data);
-        currentType = pageObject['filetype'];
-        var tab = $('#'+currentTab, e.data);
-        if(tab.length > 0) {
-          tab.click();
-        } else {
-          currentTab = $('.nav-tabs li a:eq(0)')[0].id;
-        }
-      },
-      error: function(d,e){
-        console.log(d.responseText);
-        console.log(e);
-      },
       dataType: 'json'
+    })
+    .done(function(e) {
+      $('#view').html(e.data);
+      currentType = pageObject['filetype'];
+      var tab = $('#'+currentTab, e.data);
+      if(tab.length > 0) {
+        tab.click();
+      } else {
+        currentTab = $('.nav-tabs li a:eq(0)')[0].id;
+      }
+    })
+    .fail(function(d,e) {
+      console.log(d.responseText);
+      console.log(e);
     });
   } else {
     updateFunction(pageObject, currentTab);
@@ -43,19 +43,19 @@ function updateTechInfo(record) {
   $.ajax({dataType:'json',
     type:'post',
     url:path+'/VuDL/ajax?method=getTechInfo',
-    data:record,
-    success:function(d) {
-      $('#techinfo').html(d.data.div);
-      var downloadSrc = 'MASTER';
-      if(typeof d.data.type !== "undefined") {
-        $('#download-button .details').html(d.data.type+' ~ '+d.data.size);
-      }
-      $('#file-download').attr('action', VuFind.getPath()+'/files/'+record.id+'/'+downloadSrc+'?download=true');
-    },
-    error:function(d,e) {
-      console.log(d.responseText);
-      console.log(e);
+    data:record
+  })
+  .done(function(d) {
+    $('#techinfo').html(d.data.div);
+    var downloadSrc = 'MASTER';
+    if(typeof d.data.type !== "undefined") {
+      $('#download-button .details').html(d.data.type+' ~ '+d.data.size);
     }
+    $('#file-download').attr('action', VuFind.getPath()+'/files/'+record.id+'/'+downloadSrc+'?download=true');
+  })
+  .fail(function(d,e) {
+    console.log(d.responseText);
+    console.log(e);
   });
 }
 // ====== GET MORE THUMBNAILS ====== //
