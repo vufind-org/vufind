@@ -72,7 +72,7 @@ class UserResource extends \VuFind\Db\Table\UserResource
     public function destroyLinks($resource_id, $user_id, $list_id = null)
     {
         parent::destroyLinks($resource_id, $user_id, $list_id);
-        if (null !== $list_id) {
+        if (null !== $list_id && true !== $list_id) {
             $this->updateListDate($list_id, $user_id);
         }
     }
