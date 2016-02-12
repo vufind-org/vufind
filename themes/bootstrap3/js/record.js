@@ -14,17 +14,16 @@ function checkRequestIsValid(element, requestType, blockedClass) {
     cache: false,
     url: url,
     success: function(response) {
-      if (response.status == 'OK') {
-        if (response.data.status) {
-          $(element).removeClass('disabled')
-            .attr('title', response.data.msg)
-            .html('<i class="fa fa-flag"></i>&nbsp;'+response.data.msg);
-        } else {
-          $(element).remove();
-        }
-      } else if (response.status == 'NEED_AUTH') {
-        $(element).replaceWith('<span class="' + blockedClass + '">' + response.data.msg + '</span>');
+      if (response.data.status) {
+        $(element).removeClass('disabled')
+          .attr('title', response.data.msg)
+          .html('<i class="fa fa-flag"></i>&nbsp;'+response.data.msg);
+      } else {
+        $(element).remove();
       }
+    },
+    error: function(response) {
+      $(element).remove();
     }
   });
 }
