@@ -12,7 +12,11 @@
     $holdsAllowed = $this->driver->tryMethod('getHoldsAllowed');
 
     $illRequestLink = false;
-    $holdLinks = $holdLinksBranch = $journal = $summary = false;
+    $holdLinks = $journal = $summary = false;
+
+    // Use location-specific hold links only if we have branches
+    $first = reset($holdings);
+    $useLocationHoldLinks = isset($first['items'][0]['branch']);
 
     if (!empty($holdings)) {
       $location = reset($holdings);
@@ -46,7 +50,7 @@
           }
           if (isset($row['link']) && $row['link']) {
              $holdLinks = true;
-             if (!$journal || !empty($row['item_id'])) {
+             if ($useLocationHoldLinks && (!$journal || !empty($row['item_id']))) {
                 $holdLinksLocation[$row['location']] = $row['link'];
              }
           }
@@ -92,7 +96,7 @@
   <div class="place-hold-wrapper text-right hidden-print">
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn(), 'label' => 'Library Card')); ?>
   <? if ($illRequestLink): ?>
-    <a class="expandedCheckILLRequest modal-link placeILLRequest btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>"  title="<?=$this->transEsc("ill_request_check_text")?>"><?=$this->transEsc("ill_request_check_text")?></a>
+    <a class="expandedCheckILLRequesst modal-link placeILLRequest btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>" title="<?=$this->transEsc("ill_request_check_text")?>"><?=$this->transEsc("ill_request_check_text")?></a>
   <? endif; ?>
   <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
     <a class="placehold modal-link btn btn-primary hidden-print" title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . ': ' . $this->driver->getTitle()); ?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
