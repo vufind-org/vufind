@@ -393,19 +393,15 @@ class Holds
                 if (isset($copy['addStorageRetrievalRequestLink'])
                     && $copy['addStorageRetrievalRequestLink']
                 ) {
-                    // If the request is blocked, link to an error page
-                    // instead of the form:
+                    // If the hold is blocked, skip:
                     if ($copy['addStorageRetrievalRequestLink'] === 'block') {
-                        $copy['storageRetrievalRequestLink']
-                            = $this->getBlockedStorageRetrievalRequestDetails($copy);
-                    } else {
-                        $copy['storageRetrievalRequestLink']
-                            = $this->getRequestDetails(
-                                $copy,
-                                $requestConfig['HMACKeys'],
-                                'StorageRetrievalRequest'
-                            );
+                        continue;
                     }
+                    $copy['storageRetrievalRequestLink'] = $this->getRequestDetails(
+                        $copy,
+                        $requestConfig['HMACKeys'],
+                        'StorageRetrievalRequest'
+                    );
                     // If we are unsure whether request options are
                     // available, set a flag so we can check later via AJAX:
                     $copy['checkStorageRetrievalRequest']
@@ -448,19 +444,15 @@ class Holds
                 if (isset($copy['addILLRequestLink'])
                     && $copy['addILLRequestLink']
                 ) {
-                    // If the request is blocked, link to an error page
-                    // instead of the form:
+                    // If the hold is blocked, skip:
                     if ($copy['addILLRequestLink'] === 'block') {
-                        $copy['ILLRequestLink']
-                            = $this->getBlockedILLRequestDetails($copy);
-                    } else {
-                        $copy['ILLRequestLink']
-                            = $this->getRequestDetails(
-                                $copy,
-                                $requestConfig['HMACKeys'],
-                                'ILLRequest'
-                            );
+                        continue;
                     }
+                    $copy['ILLRequestLink'] = $this->getRequestDetails(
+                        $copy,
+                        $requestConfig['HMACKeys'],
+                        'ILLRequest'
+                    );
                     // If we are unsure whether request options are
                     // available, set a flag so we can check later via AJAX:
                     $copy['checkILLRequest']
