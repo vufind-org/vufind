@@ -303,10 +303,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             }
 
             // QUERYSTRING: indx (start record)
-            $recordStart = $args["pageNumber"];
-            if ($recordStart != 1) {
-                $recordStart = ($recordStart * 10) + 1;
-            }
+            $recordStart = ($args["pageNumber"] - 1) * $args['limit'] + 1;
             $qs[] = "indx=$recordStart";
 
             // TODO: put bulksize in conf file?  set a reasonable cap...
