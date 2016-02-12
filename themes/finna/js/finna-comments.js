@@ -53,7 +53,7 @@ finna.comments = (function() {
     var initCommentForm = function(parentMethod, allowRating) {
         parentMethod();
 
-        $('form.comment-form').unbind('submit').submit(function(){
+        $('form.comment-form').unbind('submit').submit(function(event){
             var form = this;
             var id = form.id.value;
             var recordSource = form.source.value;
@@ -65,6 +65,23 @@ finna.comments = (function() {
                 type: type
             };
 
+            if (typeof form.checkValidity == 'function') {
+                // This is for Safari, which doesn't validate forms on submit
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    return;
+                }
+            } else {
+                // JS validation for browsers that don't support form validation
+                if (form.comment.value == '') {
+                    $(form.comment).addClass('invalid');
+                    event.preventDefault();
+                    return;
+                } else {
+                    $(form.comment).removeClass('invalid');
+                }
+            }
+            
             if (allowRating) {
                 var rating = $(this).find('.rating');
                 if (rating.length) {
