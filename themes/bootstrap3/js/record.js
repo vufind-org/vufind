@@ -180,14 +180,12 @@ function refreshTagList(target, loggedin) {
       dataType: 'json',
       url: url
     })
-    .always(function(response) {
-      if(response.status == 200) {
-        $tagList.replaceWith(response.responseText);
-        if(loggedin) {
-          $tagList.addClass('loggedin');
-        } else {
-          $tagList.removeClass('loggedin');
-        }
+    .done(function(response) {
+      $tagList.replaceWith(response.responseText);
+      if(loggedin) {
+        $tagList.addClass('loggedin');
+      } else {
+        $tagList.removeClass('loggedin');
       }
     });
   }

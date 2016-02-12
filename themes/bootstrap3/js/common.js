@@ -194,7 +194,7 @@ function newAccountHandler(html) {
 
 // This is a full handler for the login form
 function ajaxLogin(form) {
-  $.ajax({
+  Lightbox.ajax({
     url: VuFind.getPath() + '/AJAX/JSON?method=getSalt',
     dataType: 'json'
   })

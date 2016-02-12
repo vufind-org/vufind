@@ -475,7 +475,7 @@ $(document).ready(function() {
   });
 
   Lightbox.addFormHandler('exportForm', function(evt) {
-    $.ajax({
+    Lightbox.ajax({
       url: VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
       dataType:'json',
@@ -489,9 +489,6 @@ $(document).ready(function() {
       } else {
         Lightbox.changeContent(data.data.result_additional);
       }
-    })
-    .fail(function(d,e) {
-      //console.log(d,e); // Error reporting
     });
     return false;
   });
