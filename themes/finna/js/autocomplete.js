@@ -5,6 +5,7 @@
  * vufind.typeahead.js 0.10
  * ~ @crhallberg (original version)
  * ~ @samuli (modifications)
+ * ~ @emaijala (modifications)
  */
 (function ( $ ) {
     var xhr = false;
@@ -12,15 +13,17 @@
     $.fn.autocomplete = function(settings) {
         var options = $.extend( {}, $.fn.autocomplete.options, settings );
 
-        // Use input position from focus event to avoid trouble with Windows Phone
-        // changing offset on keyboard
+        // Use input position from setup or focus event with IE Mobile to avoid 
+        // trouble with changing offset of the input field when the keyboard is
+        // displayed (IE Mobile does something quite weird here).
         var autocompleteTop = 0; 
         
         function align(input, element) {
             var position = input.offset();
+            var iemobile = navigator.userAgent.match(/iemobile/i);
             element.css({
                 position: 'absolute',
-                top: autocompleteTop,
+                top: iemobile ? autocompleteTop : position.top + input.outerHeight(),
                 left: position.left,
                 minWidth: input.width(),
                 maxWidth: Math.max(input.width(), input.closest('form').width()),
@@ -267,7 +270,6 @@
         }
 
         function setup(input, element) {
-            updateAutocompleteTop(input);
             if (typeof element === 'undefined') {
                 element = $('<div/>')
                     .addClass('autocomplete-results hidden')
@@ -276,6 +278,7 @@
                 $(document.body).append(element);
             }
 
+            updateAutocompleteTop(input);
             input.data('selected', -1);
             input.data('length', 0);
 
