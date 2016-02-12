@@ -267,6 +267,7 @@
         }
 
         function setup(input, element) {
+            updateAutocompleteTop(input);
             if (typeof element === 'undefined') {
                 element = $('<div/>')
                     .addClass('autocomplete-results hidden')
@@ -275,7 +276,6 @@
                 $(document.body).append(element);
             }
 
-            updateAutocompleteTop(input);
             input.data('selected', -1);
             input.data('length', 0);
 
