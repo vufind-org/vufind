@@ -79,7 +79,7 @@ var Lightbox = {
     if(this.XHR) {
       this.XHR.abort();
     }
-    this.XHR = $.ajax(obj).fail(function(response) {
+    this.XHR = $.ajax(obj).then().fail(function(response) {
       Lightbox.displayError(response.responseJSON.data);
     });
     return this.XHR;
