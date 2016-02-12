@@ -79,7 +79,8 @@ function checkItemStatuses() {
 
     $(".ajax-availability").removeClass('ajax-availability');
   })
-  .fail(function(response) {
+  .fail(function(response, textStatus) {
+    if (textStatus == "abort") { return; }
     // display the error message on each of the ajax status place holder
     $(".ajax-availability").empty().append(response.responseJSON.data);
   });

@@ -80,7 +80,8 @@ var Lightbox = {
       this.XHR.abort();
     }
     this.XHR = $.ajax(obj)
-    this.XHR.then().fail(function(response) {
+    this.XHR.then().fail(function(response, textStatus) {
+      if (textStatus == "abort") { return; }
       Lightbox.displayError(response.responseJSON.data);
     });
     return this.XHR;
@@ -234,19 +235,9 @@ var Lightbox = {
       data:post
     })
     .done(callback)
-    .fail(function(d,e) {
-      if (d.status == 200) {
-        try {
-          var data = JSON.parse(d.responseText);
-          Lightbox.changeContent('<p class="alert alert-danger">'+data.data+'</p>');
-        } catch(error) {
-          Lightbox.changeContent('<p class="alert alert-danger">'+d.responseText+'</p>');
-        }
-      } else if(d.status > 0) {
-        Lightbox.changeContent('<p class="alert alert-danger">'+d.statusText+' ('+d.status+')</p>');
-      }
-      console.log(e,d); // Error reporting
-      console.log(url,post);
+    .fail(function(response, textStatus) {
+      console.log(response, textStatus); // Error reporting
+      console.log(url, post);
     });
     // Store current "page" context for empty targets
     if(this.openingURL === false) {

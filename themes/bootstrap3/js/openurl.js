@@ -10,7 +10,8 @@ function loadResolverLinks($target, openUrl) {
   .done(function(response) {
     $target.removeClass('ajax_availability').empty().append(response.data);
   })
-  .fail(function(response) {
+  .fail(function(response, textStatus) {
+    if (textStatus == "abort") { return; }
     $target.removeClass('ajax_availability').addClass('error')
       .empty().append(response.responseJSON.data);
   });

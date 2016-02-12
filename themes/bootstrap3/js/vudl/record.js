@@ -29,9 +29,8 @@ function ajaxGetView(pageObject) {
         currentTab = $('.nav-tabs li a:eq(0)')[0].id;
       }
     })
-    .fail(function(d,e) {
-      console.log(d.responseText);
-      console.log(e);
+    .fail(function(response, textStatus) {
+      console.log(response, textStatus);
     });
   } else {
     updateFunction(pageObject, currentTab);
@@ -53,9 +52,8 @@ function updateTechInfo(record) {
     }
     $('#file-download').attr('action', VuFind.getPath()+'/files/'+record.id+'/'+downloadSrc+'?download=true');
   })
-  .fail(function(d,e) {
-    console.log(d.responseText);
-    console.log(e);
+  .fail(function(response, textStatus) {
+    console.log(response, textStatus);
   });
 }
 // ====== GET MORE THUMBNAILS ====== //
@@ -85,32 +83,31 @@ function ajaxLoadPages(min, max) {
   //console.log('ajax', min, max, counts);
   $.ajax({
     url:path+'/VuDL/ajax?method=pageAjax&record='+documentID+'&start='+min+'&end='+max,
-    dataType:'json',
-    success : function(response) {
-      loadWait = false;
-      // For each page
-      for(var i=0;i<response.data.length;i++) {
-        var page = response.data.outline[response.data.start];
-        if(page == undefined) continue;
-        var img = $('<img src="'+page.thumbnail+'"/>');
-        $('.page-link#item'+response.data.start)
-          .attr('onClick','ajaxGetView('+JSON.stringify(page).replace(/"/g, "'")+', this)')
-          .attr('title',page.id)
-          .attr('alt',page.label)
-          .attr('id', 'item'+response.data.start)
-          .html('<br/>'+page.label)
-          .prepend(img)
-          .addClass('active')
-          .removeClass('loading')
-          .removeClass('unloaded');
-        response.data.start++;
-      }
-      findVisible();
-    },
-    error : function(d,e){
-      console.log(d.responseText);
-      console.log(e);
+    dataType:'json'
+  })
+  .done(function(response) {
+    loadWait = false;
+    // For each page
+    for(var i=0;i<response.data.length;i++) {
+      var page = response.data.outline[response.data.start];
+      if(page == undefined) continue;
+      var img = $('<img src="'+page.thumbnail+'"/>');
+      $('.page-link#item'+response.data.start)
+        .attr('onClick','ajaxGetView('+JSON.stringify(page).replace(/"/g, "'")+', this)')
+        .attr('title',page.id)
+        .attr('alt',page.label)
+        .attr('id', 'item'+response.data.start)
+        .html('<br/>'+page.label)
+        .prepend(img)
+        .addClass('active')
+        .removeClass('loading')
+        .removeClass('unloaded');
+      response.data.start++;
     }
+    findVisible();
+  }
+  .fail(function(response, textStatus) {
+    console.log(response, textStatus);
   });
 }
 // Pages
