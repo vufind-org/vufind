@@ -77,7 +77,9 @@ trait FinnaParams
     {
         // Set up callbacks with no-op translator to keep the English
         // boolean operators:
-        $translate = function($str) { return $str; };
+        $translate = function ($str) {
+            return $str;
+        };
         $showField = [$this->getOptions(), 'getHumanReadableFieldName'];
 
         // Build display query:
