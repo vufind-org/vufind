@@ -918,43 +918,25 @@ class AjaxController extends AbstractBase
             if ($patron) {
                 switch ($requestType) {
                 case 'ILLRequest':
-                    $results = $catalog->checkILLRequestIsValid(
-                        $id, $data, $patron
-                    );
-
+                    $results = $catalog->checkILLRequestIsValid($id, $data, $patron);
                     $msg = $results
-                        ? $this->translate(
-                            'ill_request_place_text'
-                        )
-                        : $this->translate(
-                            'ill_request_error_blocked'
-                        );
+                        ? 'ill_request_place_text' : 'ill_request_error_blocked';
                     break;
                 case 'StorageRetrievalRequest':
                     $results = $catalog->checkStorageRetrievalRequestIsValid(
                         $id, $data, $patron
                     );
-
-                    $msg = $results
-                        ? $this->translate(
-                            'storage_retrieval_request_place_text'
-                        )
-                        : $this->translate(
-                            'storage_retrieval_request_error_blocked'
-                        );
+                    $msg = $results ? 'storage_retrieval_request_place_text'
+                        : 'storage_retrieval_request_error_blocked';
                     break;
                 default:
-                    $results = $catalog->checkRequestIsValid(
-                        $id, $data, $patron
-                    );
-
-                    $msg = $results
-                        ? $this->translate('request_place_text')
-                        : $this->translate('hold_error_blocked');
+                    $results = $catalog->checkRequestIsValid($id, $data, $patron);
+                    $msg = $results ? 'request_place_text' : 'hold_error_blocked';
                     break;
                 }
                 return $this->output(
-                    ['status' => $results, 'msg' => $msg], self::STATUS_OK
+                    ['status' => $results, 'msg' => $this->translate($msg)],
+                    self::STATUS_OK
                 );
             }
         } catch (\Exception $e) {
@@ -1198,9 +1180,7 @@ class AjaxController extends AbstractBase
             $catalog = $this->getILS();
             $patron = $this->getILSAuthenticator()->storedCatalogLogin();
             if ($patron) {
-                $results = $catalog->getILLPickupLocations(
-                    $id, $pickupLib, $patron
-                );
+                $results = $catalog->getILLPickupLocations($id, $pickupLib, $patron);
                 foreach ($results as &$result) {
                     if (isset($result['name'])) {
                         $result['name'] = $this->translate(
@@ -1210,9 +1190,7 @@ class AjaxController extends AbstractBase
                         );
                     }
                 }
-                return $this->output(
-                    ['locations' => $results], self::STATUS_OK
-                );
+                return $this->output(['locations' => $results], self::STATUS_OK);
             }
         } catch (\Exception $e) {
             // Do nothing -- just fail through to the error message below.
@@ -1258,9 +1236,7 @@ class AjaxController extends AbstractBase
                     'id' => $id,
                     'requestGroupId' => $requestGroupId
                 ];
-                $results = $catalog->getPickupLocations(
-                    $patron, $details
-                );
+                $results = $catalog->getPickupLocations($patron, $details);
                 foreach ($results as &$result) {
                     if (isset($result['locationDisplay'])) {
                         $result['locationDisplay'] = $this->translate(
@@ -1270,9 +1246,7 @@ class AjaxController extends AbstractBase
                         );
                     }
                 }
-                return $this->output(
-                    ['locations' => $results], self::STATUS_OK
-                );
+                return $this->output(['locations' => $results], self::STATUS_OK);
             }
         } catch (\Exception $e) {
             // Do nothing -- just fail through to the error message below.
