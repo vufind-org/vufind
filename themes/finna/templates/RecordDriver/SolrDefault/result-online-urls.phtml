@@ -2,26 +2,59 @@
   <?
     $openUrl = $this->openUrl($this->driver, 'results');
     $openUrlActive = $openUrl->isActive();
+
+    $images = $this->record($this->driver)->getAllRecordImages();
+    $urls = $this->driver->getURLs();
+    $onlineURLs = $this->driver->tryMethod('getOnlineURLs');
+    $mergedData = $this->driver->tryMethod('getMergedRecordData');
+
+    if (!empty($images)
+      && !$this->record($this->driver)->containsNonImageURL($urls, $images)
+      && !$this->record($this->driver)->containsNonImageURL($onlineURLs, $images)
+      && !empty($mergedData['urls']) && !$this->record($this->driver)->containsNonImageURL($mergedData['urls'], $images)
+    ) {
+       // All online URLs are record images that are handled by image-popup
+       return;
+    }
   ?>
-  <? $urls = $this->driver->getURLs(); $onlineURLs = $this->driver->tryMethod('getOnlineURLs'); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
   <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
     <div class="available-online-links">
       <strong class="available-online-header <?=(!empty($onlineURLs) || !empty($mergedData['urls']) || !empty($urls)) ? '' : 'hidden'; ?>"><?=$this->transEsc('Available Online') ?>:</strong>
       <div class="truncate-field">
+      <? $renderedURLs = []; ?>
+      <? if (!empty($urls)): ?>
+        <? foreach ($urls as $i => $url): ?>
+          <?
+            if (in_array($url['url'], $images)) {
+               continue;
+            } else {
+               $renderedURLs[] = $url['url'];
+            }
+          ?>
+          <?=$i > 0 ? '<br/>' : '' ?>
+          <?
+            $icon = 'fa-external-link';
+            if (!empty($url['desc'])) {
+               $map = ['Database Guide' => 'fa-info-database', 'Database Interface' => 'fa-browse-database'];
+               if (array_key_exists($url['desc'], $map)) {
+                 $icon = $map[$url['desc']];
+               }
+            }
+          ?>
+          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa <?=$icon?>"></i> <?=!empty($url['desc']) ? $this->transEsc('link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?></a>
+        <? endforeach; ?>
+      <? endif; ?>
+
       <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
         <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $i => $url): ?>
-          <?=$i > 0 ? '<br/>' : '' ?>
+          <? if (in_array($url['url'], $images) || in_array($url['url'], $renderedURLs)) { continue; } ?>
+          <?=count($renderedURLs) || $i > 0 ? '<br/>' : '' ?>
           <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
           <? if ($url['source']): ?>
             <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('source_' . $url['source'], null, $url['source']) ?>)</span>
           <? endif; ?>
         <? endforeach; ?>
-      <? elseif (!empty($urls)): ?>
-        <? foreach ($urls as $i => $url): ?>
-          <?=$i > 0 ? '<br/>' : '' ?>
-          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><?=!empty($url['desc']) && $url['desc'] === 'Database Guide' ? '<i class="fa fa-info-database"></i> ' : ''?><?=!empty($url['desc']) && $url['desc'] === 'Database Interface' ? '<i class="fa fa-browse-database"></i> ' : ''?><?=!empty($url['desc']) && $url['desc'] != 'Database Guide' && $url['desc'] != 'Database Interface' ? '<i class="fa fa-external-link"></i> ' : ''?><?=!empty($url['desc']) ? $this->transEsc('link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?></a>
-        <? endforeach; ?>
-      <? endif; ?>
+      <? endif; ?>   
       </div>
     <? if ($openUrlActive): ?>
       <?=$openUrl->renderTemplate()?>

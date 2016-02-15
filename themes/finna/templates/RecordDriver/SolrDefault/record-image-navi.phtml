@@ -9,9 +9,12 @@
   } else {
      $content = '<span data-src="' . $this->escapeHtmlAttr($img['small']) . '">IMG</span>';
   }
+  $largeImg = isset($img['large']) && is_string($img['large']);
 ?>
 <a href="<?=str_replace('&', '&amp;', $img['medium']) ?>" class="image-popup image-popup-navi<?= (($type === 'list' || $type === 'list grid') && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?> hidden-print"><?= $content ?></a>
-<a href="<?=str_replace('&', '&amp;', $img['large']) ?>" class="hide"><?= $content ?></a>
+<? if ($largeImg): ?>
+<a href="<?=str_replace('&', '&amp;', isset($img['large']) ? $img['large'] : $img['medium']) ?>" class="hide"><?= $content ?></a>
+<? endif; ?>
 <? $ind++; ?>
 <? endforeach; ?>
 </div>

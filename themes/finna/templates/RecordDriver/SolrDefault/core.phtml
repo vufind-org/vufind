@@ -72,18 +72,31 @@
     <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
       <div class="recordURLs local-available-online-record">
         <div class="truncate-field">
+          <? $renderedURLs = []; ?>
+          <? if (!empty($urls)): ?>
+            <? foreach ($urls as $url): ?>
+              <? $renderedURLs[] = $url['url']; ?>
+              <?
+                $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']);
+                $icon = 'fa-external-link';
+                if (!empty($url['desc'])) {
+                  $map = ['Database Guide' => 'fa-info-database', 'Database Interface' => 'fa-browse-database'];
+                  if (array_key_exists($url['desc'], $map)) {
+                    $icon = $map[$url['desc']];
+                  }
+                }
+              ?>
+              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa <?=$icon?>"></i> <?=$this->transEsc('link_' . $desc, null, $desc) ?></a></div>
+            <? endforeach; ?>
+          <? endif; ?>
           <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
             <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
+              <? if (in_array($url['url'], $renderedURLs)) { continue; } ?>
               <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
               <? if ($url['source']): ?>
                 <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('source_' . $url['source'], null, $url['source']) ?>)</span>
               <? endif; ?>
               </div>
-            <? endforeach; ?>
-          <? elseif (!empty($urls)): ?>
-            <? foreach ($urls as $url): ?>
-              <? $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
-              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('link_' . $desc, null, $desc) ?></a></div>
             <? endforeach; ?>
           <? endif; ?>
         </div>

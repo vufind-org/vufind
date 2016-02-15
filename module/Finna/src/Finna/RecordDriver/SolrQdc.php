@@ -83,8 +83,32 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
      */
     public function getAllThumbnails($size = 'large')
     {
-        return !empty($this->fields['thumbnail'])
-            ? [$this->fields['thumbnail'] => $this->fields['thumbnail']] : [];
+        $urls = [];
+        foreach ($this->getSimpleXML()
+            ->xpath('file') as $node
+        ) {
+            $attributes = $node->attributes();
+            if ($attributes->bundle
+                && $attributes->bundle == 'ORIGINAL' && $size == 'large'
+                || $attributes->bundle == 'THUMBNAIL' && $size != 'large'
+            ) {
+                $mimes = ['image/jpeg', 'image/png'];
+                $url = (string)$node;
+                if ($size == 'large') {
+                    if ($attributes->type) {
+                        if (!in_array($attributes->type, $mimes)) {
+                            continue;
+                        }
+                    } else {
+                        if (!preg_match('/.*(.jpg|.png)$/i', $url)) {
+                            continue;
+                        }
+                    }
+                }
+                $urls[$url] = $url;
+            }
+        }
+        return $urls;
     }
 
     /**

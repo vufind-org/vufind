@@ -7,11 +7,11 @@
   <h4 class="record-organisation-header">
     <? if ($mergedData && count($mergedData['records']) > 1): ?>
       <?=$this->transEsc('material_provided_by_multiple', ['%%count%%' => count($mergedData['records'])])?>
-    <? elseif  ($this->driver->getRecordType() != 'lido' && $this->driver->getRecordType() != 'ead'): ?>
+    <? elseif  (!in_array($this->driver->getRecordType(), ['ead','lido','qdc'])): ?>
       <?=$this->transEsc('material_provided_by_single')?>
     <? endif; ?>
   </h4>
-  <ul class="<?=($this->driver->getRecordType() != 'lido' && $this->driver->getRecordType() != 'ead') ? 'list-group organisations' : 'record-type organisations'?>">
+  <ul class="<?=(!in_array($this->driver->getRecordType(), ['ead','lido','qdc'])) ? 'list-group organisations' : 'record-type organisations'?>">
     <li class="record-organisation"><?=$this->transEsc("source_$currentSource", null, $currentSource) ?>
       <ul class="record-organisation-info">
       <? if (isset($currentSource['imageUrl'])): ?>
