@@ -26,13 +26,19 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace FinnaConsole\Controller;
-use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader,
-    Zend\Console\Console,
-    Zend\Log\Logger, Zend\Log\Writer\Stream,
-    Zend\Stdlib\Parameters,
-    Finna\Search\Solr\Options, Finna\Search\Solr\Params,
-    Finna\Search\UrlQueryHelper,
-    VuFind\Date\Converter as DateConverter;
+
+use Finna\Db\Row\User;
+use Finna\Db\Table\Search;
+use Finna\Search\Solr\Options;
+use Finna\Search\Solr\Params;
+use Finna\Search\UrlQueryHelper;
+use VuFind\Date\Converter as DateConverter;
+use Zend\Config\Config;
+use Zend\Config\Reader\Ini as IniReader;
+use Zend\Db\Sql\Select;
+use Zend\Log\Logger;
+use Zend\Log\Writer\Stream;
+use Zend\Stdlib\Parameters;
 
 /**
  * This controller handles various command-line tools
@@ -48,14 +54,14 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Logger
      *
-     * @var Zend\Log\Logger
+     * @var Logger
      */
     protected $logger = null;
 
     /**
      * Error logger
      *
-     * @var Zend\Log\Logger
+     * @var Logger
      */
     protected $errLogger = null;
 
@@ -104,14 +110,14 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Datasource configuration
      *
-     * @var Zend\Config\Config
+     * @var Config
      */
     protected $datasourceConfig = null;
 
     /**
      * Main configuration
      *
-     * @var Zend\Config\Config
+     * @var Config
      */
     protected $mainConfig = null;
 
@@ -125,7 +131,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Table for saved searches
      *
-     * @var Finna\Db\Table\Search
+     * @var Search
      */
     protected $searchTable = null;
 
@@ -180,6 +186,64 @@ class UtilController extends \VuFindConsole\Controller\UtilController
         $this->msg('Scheduled alerts execution completed');
 
         return $this->getSuccessResponse();
+    }
+
+    /**
+     * Anonymizes all the expired user accounts.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function expireUsersAction()
+    {
+        $this->initLogging();
+        $arguments = $this->consoleOpts->getRemainingArgs();
+
+        if (!isset($arguments[0]) || (int) $arguments[0] < 180) {
+            echo "Usage:\n  php index.php util expire_users <days>\n\n"
+                . "  Anonymizes all user accounts that have not been logged into\n"
+                . "  for past <days> days. Values below 180 are not accepted.\n";
+            return $this->getFailureResponse();
+        }
+
+        $users = $this->getExpiredUsers($arguments[0]);
+        $count = 0;
+
+        foreach ($users as $user) {
+            $this->msg("Anonymizing the user: " . $user->username);
+            $user->anonymizeAccount();
+            $count++;
+        }
+
+        if ($count === 0) {
+            $this->msg('No expired users to anonymize.');
+        } else {
+            $this->msg("$count expired users anonymized.");
+        }
+
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Returns all users that have not been active for given amount of days.
+     *
+     * @param int $days Preserve users active less than provided amount of days ago
+     *
+     * @return User[] Expired users
+     */
+    protected function getExpiredUsers($days)
+    {
+        $expireDate = date('Y-m-d', strtotime(sprintf('-%d days', (int) $days)));
+
+        return $this->getTable('User')->select(
+            function (Select $select) use ($expireDate) {
+                $select->where->notLike('username', 'deleted:%');
+                $select->where->lessThan('finna_last_login', $expireDate);
+                $select->where->notEqualTo(
+                    'finna_last_login',
+                    '0000-00-00 00:00:00'
+                );
+            }
+        );
     }
 
     /**
