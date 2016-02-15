@@ -1,5 +1,8 @@
 /*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape, VuFind */
 
+// IE 9< console polyfill
+window.console = window.console || {log: function () {}};
+
 function VuFindNamespace(p, s, dsb) {
   var defaultSearchBackend = dsb;
   var path = p;
