@@ -318,17 +318,17 @@ function setupAutocomplete() {
             type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val(),
             hiddenFilters:hiddenFilters
           },
-          dataType:'json'
-        })
-        .done(function(json) {
-          if (json.data.length > 0) {
-            var datums = [];
-            for (var i=0;i<json.data.length;i++) {
-              datums.push(json.data[i]);
+          dataType:'json',
+          success: function(json) {
+            if (json.data.length > 0) {
+              var datums = [];
+              for (var i=0;i<json.data.length;i++) {
+                datums.push(json.data[i]);
+              }
+              cb(datums);
+            } else {
+              cb([]);
             }
-            cb(datums);
-          } else {
-            cb([]);
           }
         });
       }
