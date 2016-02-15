@@ -55,7 +55,7 @@ function checkItemStatuses() {
                 + result.locationList[x].location + '</span> ';
             }
           } else {
-            locationListHTML += '<i class="fa fa-remove text-error"></i> <span class="text-error"">'
+            locationListHTML += '<i class="fa fa-remove text-danger"></i> <span class="text-danger"">'
               + result.locationList[x].location + '</span> ';
           }
           locationListHTML += '</div>';
@@ -82,7 +82,7 @@ function checkItemStatuses() {
   .fail(function(response, textStatus) {
     if (textStatus == "abort") { return; }
     // display the error message on each of the ajax status place holder
-    $(".ajax-availability").empty().append(response.responseJSON.data);
+    $(".ajax-availability").empty().append(response.responseJSON.data).addClass('text-danger');
   });
 }
 
