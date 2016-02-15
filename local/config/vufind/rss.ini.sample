@@ -44,7 +44,7 @@
 
 ; titlePosition = "bottom" Display item title below image.
 ; height = [pixels] Carousel height
-; autoplay = [milliseconds] Autoplay slide change interval (autoplay is off by default).
+; autoplay = [false|milliseconds] Autoplay slide change interval (autoplay is off by default).
 ; dots = [0|1] Display current slide indicator (default 1).
 
 
