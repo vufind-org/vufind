@@ -173,6 +173,22 @@ class Record extends \VuFind\View\Helper\Root\Record
     }
 
     /**
+     * Return all record images (thumbnail and large).
+     *
+     * @return array
+     */
+    public function getAllRecordImages()
+    {
+        $large = $this->driver->getAllThumbnails('large');
+        $large = !empty($large) ? array_keys($large) : [];
+
+        $thumb = $this->driver->getAllThumbnails('thumb');
+        $thumb = !empty($thumb) ? array_keys($thumb) : [];
+
+        return array_merge($thumb, $large);
+    }
+
+    /**
      * Return record image URL.
      *
      * @param string $size Size of requested image
@@ -244,6 +260,26 @@ class Record extends \VuFind\View\Helper\Root\Record
                 'Helpers/record-rating.phtml',
                 ['average' => $average['average'], 'count' => $average['count']]
             );
+        }
+        return false;
+    }
+
+    /**
+     * Check if the given array of URLs contain URLs that
+     * are not record images.
+     *
+     * @param array $urls      Array of URLs in the format returned by
+     *                         getURLs and getOnlineURLs.
+     * @param array $imageURLs Array of record image URLs.
+     *
+     * @return boolean
+     */
+    public function containsNonImageURL($urls, $imageURLs)
+    {
+        foreach ($urls as $url) {
+            if (!in_array($url['url'], $imageURLs)) {
+                return true;
+            }
         }
         return false;
     }

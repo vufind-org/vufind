@@ -31,7 +31,9 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     <div class="dateyeartype">
       <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
         <? $authorForSearch = $this->driver->tryMethod('getPrimaryAuthorForSearch'); ?>
-        <?=$this->escapeHtml($summAuthor) ?>
+        <div class="truncate-field" data-rows="1">
+          <p><?=$this->escapeHtml($summAuthor) ?></p>
+        </div>
       <? else: ?>
         <? $authors = $this->driver->tryMethod('getNonPresenterAuthors'); if (!empty($authors)): ?>
           <div class="truncate-field" data-rows="1">
@@ -78,16 +80,6 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
             <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
           <? endif; ?>
       </div>
-    <? if ($openUrlActive || !empty($urls)): ?>
-      <? if ($openUrlActive): ?>
-        <?=$openUrl->renderTemplate()?><br />
-      <? endif; ?>
-      <div class="fulltext-links truncate-field" data-rows="2">
-      <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
-        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
-      <? endforeach; ?>
-      </div>
-    <? endif; ?>
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
         <div class="save-record-container">

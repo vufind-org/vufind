@@ -76,25 +76,37 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
         </div>
       <? endif; ?>
           <div class="popup-link-buttons">
-          <? $urls = $this->driver->getURLs(); $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
+          <?
+            $urls = $this->driver->getURLs();
+            $onlineURLs = $this->driver->getOnlineURLs();
+            $mergedData = $this->driver->tryMethod('getMergedRecordData');
+            $images = array_keys($this->driver->getAllThumbnails('large'));
+            $images = array_merge($images, array_keys($this->driver->getAllThumbnails('thumb')));
+          ?>
           <? if (!empty($urls) || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
               <? $index = 0; ?>
-                <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
-                  <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
-                    <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i><? if (count($onlineURLs) == 1 || count($mergedData['urls']) == 1): ?> <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><? else: ?><?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?><? endif; ?></a>
-                    <? if ($url['source']): ?>
-                      <span class="online-source"><?=is_array($url['source']) ? '('.$this->transEsc('Multiple Organisations').')' : '';?></span>
-                    <? endif; ?>
-                    </div>
-                  <? endforeach; ?>
-                <? elseif (!empty($urls)): ?>
+                <? $renderedURLs = []; ?>
+                <? if (!empty($urls)): ?>
                   <? foreach ($urls as $url): ?>
-                    <? $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
+                    <?
+                      $renderedURLs[] = $url['url'];
+                      $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']);
+                    ?>
                     <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <? if (count($urls) == 1): ?>  <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><? else: ?><?=$this->transEsc('link_' . $desc, null, $desc) ?><? endif; ?></a></div>
                     <? $index++; ?>
                     <? if ($index > 4): ?>
                     <div>...</div>
                     <? break; endif; ?>
+                  <? endforeach; ?>
+                <? endif; ?>
+                <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
+                  <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
+                    <? if (in_array($url['url'], $images) || in_array($url['url'], $renderedURLs)) { continue; } ?>
+                    <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i><? if (count($onlineURLs) == 1 || count($mergedData['urls']) == 1): ?> <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><? else: ?><?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?><? endif; ?></a>
+                    <? if ($url['source']): ?>
+                      <span class="online-source"><?=is_array($url['source']) ? '('.$this->transEsc('Multiple Organisations').')' : '';?></span>
+                    <? endif; ?>
+                    </div>
                   <? endforeach; ?>
                 <? endif; ?>
           <? endif; ?>
@@ -104,7 +116,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
           <div class="open-link"><a target="_blank" href="<?= $originalImage ?>"><i class="fa fa-download"></i> <?= $this->translate('Show image in new window') ?></a> <span class="image-dimensions"></span></div>
 
         </div>
-        <? if ($recordType == 'lido'): ?>
+        <? if (in_array($recordType, ['ead', 'lido', 'qdc'])): ?>
         <div class="image-rights">
           <div class="rights">
             <? $hasLink = isset($rights['link']); ?>

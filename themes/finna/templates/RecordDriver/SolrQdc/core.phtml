@@ -55,13 +55,30 @@
       $openUrlActive = $openUrl->isActive();
       // Account for replace_other_urls setting
       $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+      $onlineURLs = $this->driver->getOnlineURLs();
+      $mergedData = $this->driver->tryMethod('getMergedRecordData');
+      $images = $this->record($this->driver)->getAllRecordImages();
+
+      $hasOnlineURLs =
+        $this->record($this->driver)->containsNonImageURL($urls, $images)
+        || $this->record($this->driver)->containsNonImageURL($onlineURLs, $images)
+        || !empty($mergedData['urls']) && $this->record($this->driver)->containsNonImageURL($mergedData['urls'], $images)
+      ;
     ?>
-    <? $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
     <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
+      <? if ($hasOnlineURLs || $openUrlActive): ?>
       <div class="recordURLs local-available-online-record">
         <div class="truncate-field">
+          <? if (!empty($urls)): ?>
+            <? foreach ($urls as $url): ?>
+              <? if (in_array($url['url'], $images)) { continue; } ?>
+              <? $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
+              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('link_' . $desc, null, $desc) ?></a></div>
+            <? endforeach; ?>
+          <? endif; ?>
           <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
             <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
+              <? if (in_array($url['url'], $images)) { continue; } ?>
               <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
               <? if ($url['source']): ?>
                 <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('source_' . $url['source'], null, $url['source']) ?>)</span>
@@ -69,18 +86,14 @@
               </div>
             <? endforeach; ?>
           <? endif; ?>
-          <? if (!empty($urls)): ?>
-            <? foreach ($urls as $url): ?>
-              <? $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
-              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('link_' . $desc, null, $desc) ?></a></div>
-            <? endforeach; ?>
-          <? endif; ?>
         </div>
       <? if ($openUrlActive): ?>
         <?=$openUrl->renderTemplate()?><br/>
       <? endif; ?>
       </div>
-    <? endif; ?>
+     <? endif; ?>
+   <? endif; ?>
+
 
     <div class="record-authors">
         <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
@@ -98,6 +111,7 @@
         <? endif; ?>
 
         <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
+        <div>
         <? foreach ($publications as $field): ?>
             <span property="publisher" typeof="Organization">
             <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
@@ -111,6 +125,7 @@
             <? endif; ?>
             </span>
           <? endforeach; ?>
+          </div>
         <? endif; ?>
     </div>
 
@@ -269,7 +284,7 @@
       <? endif; ?>
 
       <? if ($toc = $this->driver->getTOC()): ?>
-        <tr class="truncate-field wide recordTOC">
+        <tr class="recordTOC">
           <th><?=$this->transEsc('Table of Contents')?>:</th>
           <td>
             <?=implode('<br>', array_map(array($this, 'escapeHtml'), $toc))?>

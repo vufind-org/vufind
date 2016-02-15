@@ -72,6 +72,7 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
 
     /**
      * Return URL to large record image.
+     * Fallbacks to thumbnail if no large image is available.
      *
      * @param int   $index     Record image index.
      * @param array $params    Optional array of image parameters.
@@ -85,10 +86,10 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
     {
         $cnt = $this->record->getNumOfRecordImages('large');
         $urlHelper = $this->getView()->plugin('url');
-        $imageParams = $this->record->getRecordImage('large');
+        $imageParams = $this->record->getRecordImage($cnt ? 'large' : 'small');
         unset($imageParams['url']);
 
-        $imageParams['index'] = $cnt > 0 ? $index : 0;
+        $imageParams['index'] = $index;
         $imageParams = array_merge($imageParams, $this->params['large']);
         $imageParams = array_merge($imageParams, $params);
 
@@ -122,7 +123,9 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
 
         $view = $this->getView();
         $urlHelper = $this->getView()->plugin('url');
-        $numOfImages = $this->record->getNumOfRecordImages('large');
+        $numOfImages = $this->record->getNumOfRecordImages('small');
+        $numOfLargeImages = $this->record->getNumOfRecordImages('large');
+
         if ($view->layout()->templateDir === 'combined') {
             $numOfImages = min(1, $numOfImages);
         }
@@ -137,7 +140,9 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
         foreach ($imageTypes as $imageType => $viewParam) {
             $params = $this->record->getRecordImage($imageType);
 
-            if (is_array($params)) {
+            if ($imageType == 'large' && !$numOfLargeImages || !is_array($params)) {
+                $view->{$viewParam} = $params;
+            } else {
                 unset($params['url']);
                 unset($params['size']);
 
@@ -162,8 +167,6 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
                             );
                     }
                 }
-            } else {
-                $view->{$viewParam} = $params;
             }
         }
         $view->allImages = $images;

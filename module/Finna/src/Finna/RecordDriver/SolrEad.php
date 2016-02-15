@@ -361,9 +361,10 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
         $record = $this->getSimpleXML();
         foreach ($record->xpath('//daoloc') as $node) {
             $url = (string)$node->attributes()->href;
-            if (isset($node->attributes()->role)
-                && $node->attributes()->role == 'image_thumbnail'
-            ) {
+            if (isset($node->attributes()->role) && in_array(
+                $node->attributes()->role,
+                ['image_thumbnail', 'image_reference']
+            )) {
                 continue;
             }
 
