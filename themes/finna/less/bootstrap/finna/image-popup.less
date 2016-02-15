@@ -51,11 +51,13 @@
     padding: 8px;
     & .mfp-arrow-right.touch-device {
         right:0px;
+        transform: translate(0,0);
         .opacity(0.8);
         transition-delay: 0;
     }
     & .mfp-arrow-left.touch-device {
         left:0px;
+        transform: translate(0,0);
         .opacity(0.8);
         transition-delay: 0;
     }
@@ -395,6 +397,9 @@
 	    & .record-link {
 	        paddding-bottom: 0px;
 	        margin: 0px 20px;
+	    }
+	    & .record-online-link {
+	        margin: 0 20px;   
 	    }
         & .content { 
             width: 100%;
