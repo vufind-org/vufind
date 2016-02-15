@@ -36,7 +36,7 @@
             $icon = 'fa-external-link';
             if (!empty($url['desc'])) {
                $map = ['Database Guide' => 'fa-info-database', 'Database Interface' => 'fa-browse-database'];
-               if (array_key_exists($url['desc'], $map)) {
+               if (isset($map[$url['desc']])) {
                  $icon = $map[$url['desc']];
                }
             }

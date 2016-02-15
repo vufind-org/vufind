@@ -100,7 +100,7 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
                             continue;
                         }
                     } else {
-                        if (!preg_match('/.*(.jpg|.png)$/i', $url)) {
+                        if (!preg_match('/\.(jpg|png)$/i', $url)) {
                             continue;
                         }
                     }

@@ -274,7 +274,8 @@ class Record extends \VuFind\View\Helper\Root\Record
      *
      * @return boolean
      */
-    public function containsNonImageURL($urls, $imageURLs) {
+    public function containsNonImageURL($urls, $imageURLs)
+    {
         foreach ($urls as $url) {
             if (!in_array($url['url'], $imageURLs)) {
                 return true;
