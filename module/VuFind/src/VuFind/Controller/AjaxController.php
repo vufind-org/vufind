@@ -502,12 +502,8 @@ class AjaxController extends AbstractBase
                 // if this item was saved, add it to the list of saved items.
                 foreach ($data as $list) {
                     $result[$i][] = [
-                        'record_id' => $id,
-                        'record_source' => $source,
-                        'resource_id' => $list->id,
                         'list_id' => $list->list_id,
-                        'list_title' => $list->list_title,
-                        'record_number' => $i
+                        'list_title' => $list->list_title
                     ];
                 }
             }
