@@ -38,6 +38,9 @@
             var element = $.fn.autocomplete.element;
             element.find('.item').removeClass('selected');
             $.fn.autocomplete.element.addClass(options.hidingClass);
+            if (xhr) {
+                xhr.abort();
+            }
         }
 
         function populate(item, input, eventType) {
