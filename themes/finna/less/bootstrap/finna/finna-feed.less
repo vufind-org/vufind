@@ -115,8 +115,13 @@
             display: none;  
         }
     }
-    & .slick-slider:not(.slick-vertical) .slick-slide.slick-active:hover .carousel-text {
-        opacity: 1;
+    & .slick-slider:not(.slick-vertical) .slick-slide.slick-active {
+        &:hover,
+        &.ie-mobile-tap {
+            & .carousel-text {
+                opacity: 1;
+            }
+        }
     }
     & .slick-slider:not(.slick-vertical) .slick-slide.slick-active:hover .carousel-slide-header p:not(.title-bottom) {
         opacity: 0;

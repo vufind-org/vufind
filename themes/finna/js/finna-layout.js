@@ -376,7 +376,7 @@ finna.layout = (function() {
       if (typeof holder === 'undefined') {
           holder = $(document);
       }
-        
+
       holder.find('[data-toggle="tooltip"]').tooltip({trigger: 'click', viewport: '.container'});
       // prevent link opening if tooltip is placed inside link element
       holder.find('[data-toggle="tooltip"] > i').click(function(event) {
@@ -627,7 +627,7 @@ finna.layout = (function() {
     }
 
     var initAutoScrollTouch = function() {
-      if (isTouchDevice() && $(window).width() < 1025) {
+      if (!navigator.userAgent.match(/iemobile/i) && isTouchDevice() && $(window).width() < 1025) {
         $( ".search-query" ).click(function() {
           $('html, body').animate({
             scrollTop: $(this).offset().top-5

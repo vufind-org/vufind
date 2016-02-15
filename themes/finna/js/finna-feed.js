@@ -165,6 +165,11 @@ finna.feed = (function() {
                                 return false;
                             }
                         });
+                        if (navigator.userAgent.match(/iemobile/i)) {
+                          $('.slick-slide').click(function() {
+                            $(this).toggleClass('ie-mobile-tap');
+                          });
+                        }
                     }
 
                     // Force refresh to make sure that the layout is ok
@@ -220,6 +225,7 @@ finna.feed = (function() {
             loadFeed($(this));
         });
     };
+
 
     var my = {
         init: function() {
