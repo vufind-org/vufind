@@ -1009,8 +1009,15 @@ ead_external_link_template[narc] = "http://www.narc.fi:8080/VakkaWWW/Selaus.acti
 ead_document_order_link_template[narc] = "https://testavapaingest.narc.fi/astiaUi/palvelut/kdk_checkout.php?id={id}"
 ead_usage_permission_request_link_template[narc] = "https://testavapaingest.narc.fi/astiaUi/palvelut/kdk_askpermission.php?id={id}"
 
+; Blacklisting regexp's for record URLs 
 url_blacklist[] = '/btj\.com\/btjcgi\/arvo\/get_add_info\.cgi\?type=(PRES|IMAGE)/'
 url_blacklist[] = '/data\.kirjavalitys\.fi\/data\/servlets\/ProductRequestServlet/'
+
+; Allow image links from BTJ (default is false)
+;btj_links = true
+
+; Allow image links from Kirjavälitys (default is false)
+;kirjavalitys_links = true
 
 ; The following two sections control the Alphabetic Browse module.
 [AlphaBrowse]
