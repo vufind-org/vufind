@@ -21,7 +21,7 @@ function checkSaveStatuses() {
       data: {id:ids, 'source':srcs},
       success: function(response) {
         if(response.status == 'OK') {
-          for (var rn=0; rn<response.data.length; rn++) {
+          for (var rn in response.data) {
             var list = $('#result'+rn).find('.savedLists')
             var html = list.find('strong')[0].outerHTML+'<ul>';
             for (var i=0; i<response.data[rn].length; i++) {
