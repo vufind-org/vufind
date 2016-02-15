@@ -32,26 +32,6 @@ function Lightbox() {
     if (VuFind.lightbox.originalUrl === false) {
       VuFind.lightbox.originalUrl = obj.url;
     }
-    obj.success = function(html, status) {
-      if ( // Close the lightbox after deliberate login
-        obj.method                           // is a form
-        && obj.url.match(/MyResearch/)       // that matches login/create account
-        && !html.match(/alert alert-danger/) // skip failed logins
-      ) {
-        if (VuFind.lightbox.originalUrl.match(/UserLogin/)) {
-          window.location.reload();
-          return false;
-        } else {
-          refreshPageForLogin();
-        }
-      }
-      VuFind.lightbox.update(html);
-      VuFind.lightbox.xhr = false;
-    },
-    obj.error = function(e) {
-      $('body').html('<div>'+e.responseText+'</div>');
-      VuFind.lightbox.modal.addClass('hidden');
-    }
     if (!obj.url.match(/layout=lightbox/)) {
       var parts = obj.url.split('#');
       obj.url = parts[0].indexOf('?') < 0
@@ -60,8 +40,28 @@ function Lightbox() {
       obj.url += 'layout=lightbox&lbreferer='+encodeURIComponent(this.currentUrl);
       obj.url += parts.length < 2 ? '' : '#'+parts[1];
     }
-    $.ajax(obj);
-    return false;
+    this.xhr = $.ajax(obj)
+      .done(function(html, status) {
+        if ( // Close the lightbox after deliberate login
+          obj.method                           // is a form
+          && obj.url.match(/MyResearch/)       // that matches login/create account
+          && !html.match(/alert alert-danger/) // skip failed logins
+        ) {
+          if (VuFind.lightbox.originalUrl.match(/UserLogin/)) {
+            window.location.reload();
+            return false;
+          } else {
+            refreshPageForLogin();
+          }
+        }
+        VuFind.lightbox.update(html);
+        VuFind.lightbox.xhr = false;
+      })
+      .then().fail(function(e) {
+        $('body').html('<div>'+e.responseText+'</div>');
+        VuFind.lightbox.modal.addClass('hidden');
+      });
+    return this.xhr;
   };
 
   // Update content
