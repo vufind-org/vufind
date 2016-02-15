@@ -75,8 +75,8 @@
           <? $renderedURLs = []; ?>
           <? if (!empty($urls)): ?>
             <? foreach ($urls as $url): ?>
-              <? $renderedURLs[] = $url['url']; ?>
               <?
+                $renderedURLs[] = $url['url'];
                 $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']);
                 $icon = 'fa-external-link';
                 if (!empty($url['desc'])) {
