@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -104,6 +104,16 @@ class SearchController extends \VuFind\Controller\SearchController
     public function databaseAction()
     {
         return $this->browse('Database');
+    }
+
+    /**
+     * Redirection for VuFind 1 DualResults action
+     *
+     * @return mixed
+     */
+    public function dualResultsAction()
+    {
+        return $this->forwardTo('Combined', 'Results');
     }
 
     /**

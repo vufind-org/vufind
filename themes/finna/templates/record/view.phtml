@@ -6,7 +6,7 @@
   $this->headScript()->appendFile("finna-comments.js");
   if ($this->record($this->driver)->ratingAllowed()) {
      $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
-     $this->headLink()->appendStylesheet('vendor/bootstrap-rating.css');
+     $this->headLink()->appendStylesheet('vendor/bootstrap-rating.min.css');
   }
   if (in_array($this->driver->getSourceIdentifier(), ['MetaLib', 'Primo'])) {
     $this->headScript()->appendFile("finna-bx.js");

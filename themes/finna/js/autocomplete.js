@@ -5,6 +5,7 @@
  * vufind.typeahead.js 0.10
  * ~ @crhallberg (original version)
  * ~ @samuli (modifications)
+ * ~ @emaijala (modifications)
  */
 (function ( $ ) {
     var xhr = false;
@@ -12,11 +13,17 @@
     $.fn.autocomplete = function(settings) {
         var options = $.extend( {}, $.fn.autocomplete.options, settings );
 
+        // Use input position from setup or focus event with IE Mobile to avoid 
+        // trouble with changing offset of the input field when the keyboard is
+        // displayed (IE Mobile does something quite weird here).
+        var autocompleteTop = 0; 
+        
         function align(input, element) {
             var position = input.offset();
+            var iemobile = navigator.userAgent.match(/iemobile/i);
             element.css({
                 position: 'absolute',
-                top: position.top + input.outerHeight(),
+                top: iemobile ? autocompleteTop : position.top + input.outerHeight(),
                 left: position.left,
                 minWidth: input.width(),
                 maxWidth: Math.max(input.width(), input.closest('form').width()),
@@ -257,6 +264,10 @@
             }
             return form.find('.applied-filter[name=type]').val();
         };
+        
+        function updateAutocompleteTop(input) {
+            autocompleteTop = input.offset().top + input.outerHeight();            
+        }
 
         function setup(input, element) {
             if (typeof element === 'undefined') {
@@ -267,6 +278,7 @@
                 $(document.body).append(element);
             }
 
+            updateAutocompleteTop(input);
             input.data('selected', -1);
             input.data('length', 0);
 
@@ -287,6 +299,7 @@
                 search(input, element);
             });
             input.focus(function() {
+                updateAutocompleteTop(input);
                 search(input, element);
             });
             input.keyup(function(event) {
@@ -381,7 +394,10 @@
                 return input;
             }
 
-            window.addEventListener("resize", hide, false);
+            $(window).resize(function() {
+                updateAutocompleteTop(input);
+                hide();
+            });
 
             return element;
         }
