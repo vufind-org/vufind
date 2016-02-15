@@ -1,7 +1,10 @@
 /*global VuFind */
 
-function checkSaveStatuses() {
-  var data = $.map($('.result,.record'), function(record) {
+function checkSaveStatuses(target) {
+  if ('undefined' == typeof target) {
+    target = '.result,.record';
+  }
+  var data = $.map($(target), function(record) {
     if($(record).find('.hiddenId').length == 0 || $(record).find('.hiddenSource').length == 0) {
       return false;
     }
@@ -11,8 +14,12 @@ function checkSaveStatuses() {
     var ids = [];
     var srcs = [];
     for (var i = 0; i < data.length; i++) {
-      ids[i] = data[i].id;
-      srcs[i] = data[i].source;
+      var index = ids.indexOf(data[i].id);
+      // embedded record views cause duplicate ids
+      if (index < 0 || srcs[index] != data[i].source) {
+        ids[i] = data[i].id;
+        srcs[i] = data[i].source;
+      }
     }
     $.ajax({
       dataType: 'json',

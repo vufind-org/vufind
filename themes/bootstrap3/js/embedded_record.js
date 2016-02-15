@@ -14,8 +14,9 @@ function ajaxFLLoadTab(tabid, reload) {
     window.location.href = $('#'+tabid).attr('href');
     return true;
   }
-  var id = $('#'+tabid).closest('.record').find(".hiddenId")[0].value;
-  var source = $('#'+tabid).closest('.record').find(".hiddenSource")[0].value;
+  var $record = $('#'+tabid).closest('.record,.result');
+  var id = $record.find(".hiddenId")[0].value;
+  var source = $record.find(".hiddenSource")[0].value;
   var urlroot;
   if (source == VuFind.getDefaultSearchBackend()) {
     urlroot = 'Record';
@@ -129,6 +130,7 @@ function toggleDataView() {
                 longNode.find('[id^=usercomment]').find('input[type=submit]').closest('form')
               );
             });
+            checkSaveStatuses(shortNode.closest('.result,.record'));
           }
         }
       });
