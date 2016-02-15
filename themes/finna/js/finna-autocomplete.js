@@ -4,6 +4,10 @@ finna.autocomplete = (function() {
     };
 
     var setupAutocomplete = function () {
+        $('.searchForm').on('submit', function() {
+            $('.autocomplete-finna').autocomplete.element.hide();
+        });
+
         // Search autocomplete
         $('.autocomplete-finna').each(function(i, op) {
             var searcher = extractClassParams(op);
