@@ -47,11 +47,11 @@ return array(
         )
     ),
     'css' => array(
-        'vendor/dataTables.bootstrap.css',
-        'vendor/magnific-popup.css',
+        'vendor/dataTables.bootstrap.min.css',
+        'vendor/magnific-popup.min.css',
         'dataTables.bootstrap.custom.css',
-        'vendor/slick.css',
-        'vendor/bootstrap-multiselect.css',
+        'vendor/slick.min.css',
+        'vendor/bootstrap-multiselect.min.css',
         'vendor/bootstrap-datepicker3.min.css',
         'finna.css'
     ),
@@ -68,8 +68,8 @@ return array(
         'finna-persona.js',
         'finna-common.js',
         'finna-user-profile.js',
-        'vendor/jquery.dataTables.js',
-        'vendor/dataTables.bootstrap.js',
+        'vendor/jquery.dataTables.min.js',
+        'vendor/dataTables.bootstrap.min.js',
         'vendor/jquery.inview.min.js',
         'vendor/jquery.magnific-popup.min.js',
         'vendor/jquery.cookie-1.4.1.min.js',

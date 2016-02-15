@@ -59,7 +59,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
         <? else: ?>
           <? if ($summary = $this->driver->getSummary()): ?>
             <? foreach ($this->driver->getSummary() as $item): ?>
-              <p><?= $this->escapeHtml($item) ?></p>
+              <p><?=preg_replace('/&lt;br\/?&gt;/', '<br>', $this->escapeHtml($item)) /* Allow <br> tag */ ?></p>
             <? endforeach ?>
           <? endif ?>
         <? endif ?>

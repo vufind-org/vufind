@@ -27,6 +27,7 @@
  */
 namespace Finna\Search;
 use Finna\Solr\Utils;
+use VuFind\Search\QueryAdapter;
 
 /**
  * Additional functionality for Finna parameters.
@@ -64,6 +65,25 @@ trait FinnaParams
     public function initDateFilters($request)
     {
         return parent::initDateFilters($request);
+    }
+
+    /**
+     * Build a string for onscreen display showing the
+     *   query used in the search (not the filters).
+     *
+     * @return string user friendly version of 'query'
+     */
+    public function getDisplayQuery()
+    {
+        // Set up callbacks with no-op translator to keep the English
+        // boolean operators:
+        $translate = function ($str) {
+            return $str;
+        };
+        $showField = [$this->getOptions(), 'getHumanReadableFieldName'];
+
+        // Build display query:
+        return QueryAdapter::display($this->getQuery(), $translate, $showField);
     }
 
     /**
