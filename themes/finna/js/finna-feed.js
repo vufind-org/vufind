@@ -185,7 +185,7 @@ finna.feed = (function() {
             swipe: !settings['vertical'],
             infinite: true,
             touchThreshold: 8,
-            autoplay: settings['autoplay'],
+            autoplay: settings['autoplay'] != 0,
             autoplaySpeed: settings['autoplay'],
             slidesToShow: settings['slidesToShow']['desktop'],
             slidesToScroll: settings['scrolledItems']['desktop'],
