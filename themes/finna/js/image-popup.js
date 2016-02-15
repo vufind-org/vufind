@@ -3,8 +3,8 @@ finna.imagePopup = (function(finna) {
     var openPopup = function(trigger) {
         var ind = trigger.data('ind');
         var links = trigger.closest('.recordcover-holder').find('.image-popup');
-        var link = links.filter(function() { 
-            return $(this).data('ind') === ind 
+        var link = links.filter(function() {
+            return $(this).data('ind') === ind
         } );
         link.click();
     }
@@ -56,14 +56,14 @@ finna.imagePopup = (function(finna) {
         $(".image-popup-trigger").click(function(e) {
             openPopup($(this));
             e.preventDefault();
-        });     
+        });
     };
 
     // Copied from finna-mylist.js to avoid dependency
     var getActiveListId = function() {
         return $('input[name="listID"]').val();
     };
-    
+
     var initRecordImage = function() {
         // Collect data for all image-popup triggers on page.
         urls = $('.image-popup').map(
@@ -112,7 +112,7 @@ finna.imagePopup = (function(finna) {
                     ind: ind,
                     recordInd: recordInd
                 }
-            } 
+            }
         ).toArray();
 
         // Init image-popup components.
@@ -144,11 +144,11 @@ finna.imagePopup = (function(finna) {
                                 $(this).load();
                             }
                         });
-                        
+
                         // Prevent navigation button CSS-transitions on touch-devices
                         if (finna.layout.isTouchDevice()) {
-                            $(".mfp-container .mfp-close").addClass('touch-device');
-                            
+                            $(".mfp-container .mfp-close, .mfp-container .mfp-arrow-right, .mfp-container .mfp-arrow-left").addClass('touch-device');
+
                             $(".mfp-container").swipe( {
                               allowPageScroll:"vertical",
                               //Generic swipe handler for all directions
@@ -160,8 +160,8 @@ finna.imagePopup = (function(finna) {
                               },
                             threshold: 75,
                             cancelThreshold:20,
-                            });   
-                        }                        
+                            });
+                        }
 
                         // Record index
                         if (recordIndex) {
@@ -213,7 +213,7 @@ finna.imagePopup = (function(finna) {
                     },
                 },
 
-                gallery: {                 
+                gallery: {
                     enabled: true,
                     preload: [0,2],
                     navigateByImgClick: true,
@@ -245,7 +245,7 @@ finna.imagePopup = (function(finna) {
           var img = document.createElement('img')
           img.src = $('.open-link a').attr('href');
           img.onload = function() {
-            if (this.width == 10 && this.height == 10) { 
+            if (this.width == 10 && this.height == 10) {
               $('.open-link').hide();
             }
             else {
@@ -268,7 +268,7 @@ finna.imagePopup = (function(finna) {
             }
         }
     };
-    
+
     return my;
 
 })(finna);
