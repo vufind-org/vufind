@@ -82,7 +82,16 @@ var Lightbox = {
     this.XHR = $.ajax(obj)
     this.XHR.then().fail(function(response, textStatus) {
       if (textStatus == "abort") { return; }
-      Lightbox.displayError(response.responseJSON.data);
+      if (response.responseJSON) {
+        Lightbox.displayError(response.responseJSON.data);
+      } else {
+        var json = JSON.parse(response.responseText);
+        if (json.data) {
+          Lightbox.displayError(json.data);
+        } else {
+          Lightbox.displayError(response.responseText);
+        }
+      }
     });
     return this.XHR;
   },
