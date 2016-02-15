@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2007.
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind2
  * @package  Cover_Generator
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
@@ -35,6 +36,7 @@ use VuFindCode\ISBN;
  * @category VuFind2
  * @package  Cover_Generator
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
@@ -188,7 +190,7 @@ class Loader extends \VuFind\Cover\Loader
         $keys = [];
 
         if (isset($this->url)) {
-            $keys['id'] = $this->id;
+            $keys['url'] = md5($this->url);
         } else {
             if (isset($ids['isbn'])) {
                 $keys['isbn'] = $ids['isbn']->get13();
