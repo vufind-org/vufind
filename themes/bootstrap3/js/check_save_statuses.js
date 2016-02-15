@@ -23,6 +23,9 @@ function checkSaveStatuses() {
         if(response.status == 'OK') {
           for (var rn in response.data) {
             var list = $('#result'+rn).find('.savedLists')
+            if (list.length == 0) {
+              list = $('.savedLists');
+            }
             var html = list.find('strong')[0].outerHTML+'<ul>';
             for (var i=0; i<response.data[rn].length; i++) {
               html += '<li><a href="' + VuFind.getPath() + '/MyResearch/MyList/' + response.data[rn][i].list_id + '">'
