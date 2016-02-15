@@ -485,7 +485,6 @@ class AjaxController extends AbstractBase
         }
 
         // loop through each ID check if it is saved to any of the user's lists
-        $result = [];
         $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id', []));
         $sources = $this->params()->fromPost(
             'source', $this->params()->fromQuery('source', [])
@@ -497,19 +496,17 @@ class AjaxController extends AbstractBase
                 400
             );
         }
+        $result = [];
         foreach ($ids as $i => $id) {
             $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
             $data = $user->getSavedData($id, null, $source);
-            if ($data) {
+            if ($data && count($data) > 0) {
+                $result[$i] = [];
                 // if this item was saved, add it to the list of saved items.
                 foreach ($data as $list) {
-                    $result[] = [
-                        'record_id' => $id,
-                        'record_source' => $source,
-                        'resource_id' => $list->id,
+                    $result[$i][] = [
                         'list_id' => $list->list_id,
-                        'list_title' => $list->list_title,
-                        'record_number' => $i
+                        'list_title' => $list->list_title
                     ];
                 }
             }
