@@ -88,12 +88,13 @@ class AjaxController extends AbstractBase
                     ? ': ' . $e->getMessage() : '';
                 return $this->output(
                     $this->translate('An error has occurred') . $debugMsg,
-                    self::STATUS_ERROR
+                    self::STATUS_ERROR,
+                    500
                 );
             }
         } else {
             return $this->output(
-                $this->translate('Invalid Method'), self::STATUS_ERROR
+                $this->translate('Invalid Method'), self::STATUS_ERROR, 400
             );
         }
     }
@@ -478,7 +479,8 @@ class AjaxController extends AbstractBase
         if (!$user) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
 
@@ -490,7 +492,8 @@ class AjaxController extends AbstractBase
         if (!is_array($ids) || !is_array($sources)) {
             return $this->output(
                 $this->translate('Argument must be array.'),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                400
             );
         }
         $result = [];
@@ -611,7 +614,8 @@ class AjaxController extends AbstractBase
         } catch (AuthException $e) {
             return $this->output(
                 $this->translate($e->getMessage()),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                401
             );
         }
 
@@ -629,7 +633,8 @@ class AjaxController extends AbstractBase
         if ($user === false) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
         // empty tag
@@ -650,7 +655,8 @@ class AjaxController extends AbstractBase
         } catch (\Exception $e) {
             return $this->output(
                 ('development' == APPLICATION_ENV) ? $e->getMessage() : 'Failed',
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                500
             );
         }
 
@@ -886,71 +892,56 @@ class AjaxController extends AbstractBase
         $id = $this->params()->fromQuery('id');
         $data = $this->params()->fromQuery('data');
         $requestType = $this->params()->fromQuery('requestType');
-        if (!empty($id) && !empty($data)) {
-            // check if user is logged in
-            $user = $this->getUser();
-            if (!$user) {
+        if (empty($id) || empty($data)) {
+            return $this->output(
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH,
+                401
+            );
+        }
+
+        try {
+            $catalog = $this->getILS();
+            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+            if ($patron) {
+                switch ($requestType) {
+                case 'ILLRequest':
+                    $results = $catalog->checkILLRequestIsValid($id, $data, $patron);
+                    $msg = $results
+                        ? 'ill_request_place_text' : 'ill_request_error_blocked';
+                    break;
+                case 'StorageRetrievalRequest':
+                    $results = $catalog->checkStorageRetrievalRequestIsValid(
+                        $id, $data, $patron
+                    );
+                    $msg = $results ? 'storage_retrieval_request_place_text'
+                        : 'storage_retrieval_request_error_blocked';
+                    break;
+                default:
+                    $results = $catalog->checkRequestIsValid($id, $data, $patron);
+                    $msg = $results ? 'request_place_text' : 'hold_error_blocked';
+                    break;
+                }
                 return $this->output(
-                    [
-                        'status' => false,
-                        'msg' => $this->translate('You must be logged in first')
-                    ],
-                    self::STATUS_NEED_AUTH
+                    ['status' => $results, 'msg' => $this->translate($msg)],
+                    self::STATUS_OK
                 );
             }
-
-            try {
-                $catalog = $this->getILS();
-                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
-                if ($patron) {
-                    switch ($requestType) {
-                    case 'ILLRequest':
-                        $results = $catalog->checkILLRequestIsValid(
-                            $id, $data, $patron
-                        );
-
-                        $msg = $results
-                            ? $this->translate(
-                                'ill_request_place_text'
-                            )
-                            : $this->translate(
-                                'ill_request_error_blocked'
-                            );
-                        break;
-                    case 'StorageRetrievalRequest':
-                        $results = $catalog->checkStorageRetrievalRequestIsValid(
-                            $id, $data, $patron
-                        );
-
-                        $msg = $results
-                            ? $this->translate(
-                                'storage_retrieval_request_place_text'
-                            )
-                            : $this->translate(
-                                'storage_retrieval_request_error_blocked'
-                            );
-                        break;
-                    default:
-                        $results = $catalog->checkRequestIsValid(
-                            $id, $data, $patron
-                        );
-
-                        $msg = $results
-                            ? $this->translate('request_place_text')
-                            : $this->translate('hold_error_blocked');
-                        break;
-                    }
-                    return $this->output(
-                        ['status' => $results, 'msg' => $msg], self::STATUS_OK
-                    );
-                }
-            } catch (\Exception $e) {
-                // Do nothing -- just fail through to the error message below.
-            }
+        } catch (\Exception $e) {
+            // Do nothing -- just fail through to the error message below.
         }
 
         return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
         );
     }
 
@@ -965,7 +956,8 @@ class AjaxController extends AbstractBase
         if ($user === false) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
 
@@ -973,7 +965,9 @@ class AjaxController extends AbstractBase
         $comment = $this->params()->fromPost('comment');
         if (empty($id) || empty($comment)) {
             return $this->output(
-                $this->translate('An error has occurred'), self::STATUS_ERROR
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
             );
         }
 
@@ -997,15 +991,25 @@ class AjaxController extends AbstractBase
         if ($user === false) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
 
         $id = $this->params()->fromQuery('id');
-        $table = $this->getTable('Comments');
-        if (empty($id) || !$table->deleteIfOwnedByUser($id, $user)) {
+        if (empty($id)) {
             return $this->output(
-                $this->translate('An error has occurred'), self::STATUS_ERROR
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+        $table = $this->getTable('Comments');
+        if (!$table->deleteIfOwnedByUser($id, $user)) {
+            return $this->output(
+                $this->translate('edit_list_fail'),
+                self::STATUS_ERROR,
+                403
             );
         }
 
@@ -1076,7 +1080,8 @@ class AjaxController extends AbstractBase
         if (!$pluginManager->has($resolverType)) {
             return $this->output(
                 $this->translate("Could not load driver for $resolverType"),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                500
             );
         }
         $resolver = new \VuFind\Resolver\Connection(
@@ -1151,46 +1156,45 @@ class AjaxController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $pickupLib = $this->params()->fromQuery('pickupLib');
-        if (!empty($id) && !empty($pickupLib)) {
-            // check if user is logged in
-            $user = $this->getUser();
-            if (!$user) {
-                return $this->output(
-                    [
-                        'status' => false,
-                        'msg' => $this->translate('You must be logged in first')
-                    ],
-                    self::STATUS_NEED_AUTH
-                );
-            }
+        if (empty($id) || empty($pickupLib)) {
+            return $this->output(
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH,
+                401
+            );
+        }
 
-            try {
-                $catalog = $this->getILS();
-                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
-                if ($patron) {
-                    $results = $catalog->getILLPickupLocations(
-                        $id, $pickupLib, $patron
-                    );
-                    foreach ($results as &$result) {
-                        if (isset($result['name'])) {
-                            $result['name'] = $this->translate(
-                                'location_' . $result['name'],
-                                [],
-                                $result['name']
-                            );
-                        }
+        try {
+            $catalog = $this->getILS();
+            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+            if ($patron) {
+                $results = $catalog->getILLPickupLocations($id, $pickupLib, $patron);
+                foreach ($results as &$result) {
+                    if (isset($result['name'])) {
+                        $result['name'] = $this->translate(
+                            'location_' . $result['name'],
+                            [],
+                            $result['name']
+                        );
                     }
-                    return $this->output(
-                        ['locations' => $results], self::STATUS_OK
-                    );
                 }
-            } catch (\Exception $e) {
-                // Do nothing -- just fail through to the error message below.
+                return $this->output(['locations' => $results], self::STATUS_OK);
             }
+        } catch (\Exception $e) {
+            // Do nothing -- just fail through to the error message below.
         }
 
         return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
         );
     }
 
@@ -1204,50 +1208,49 @@ class AjaxController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $requestGroupId = $this->params()->fromQuery('requestGroupId');
-        if (!empty($id) && !empty($requestGroupId)) {
-            // check if user is logged in
-            $user = $this->getUser();
-            if (!$user) {
-                return $this->output(
-                    [
-                        'status' => false,
-                        'msg' => $this->translate('You must be logged in first')
-                    ],
-                    self::STATUS_NEED_AUTH
-                );
-            }
+        if (empty($id) || empty($requestGroupId)) {
+            return $this->output(
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH,
+                401
+            );
+        }
 
-            try {
-                $catalog = $this->getILS();
-                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
-                if ($patron) {
-                    $details = [
-                        'id' => $id,
-                        'requestGroupId' => $requestGroupId
-                    ];
-                    $results = $catalog->getPickupLocations(
-                        $patron, $details
-                    );
-                    foreach ($results as &$result) {
-                        if (isset($result['locationDisplay'])) {
-                            $result['locationDisplay'] = $this->translate(
-                                'location_' . $result['locationDisplay'],
-                                [],
-                                $result['locationDisplay']
-                            );
-                        }
+        try {
+            $catalog = $this->getILS();
+            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+            if ($patron) {
+                $details = [
+                    'id' => $id,
+                    'requestGroupId' => $requestGroupId
+                ];
+                $results = $catalog->getPickupLocations($patron, $details);
+                foreach ($results as &$result) {
+                    if (isset($result['locationDisplay'])) {
+                        $result['locationDisplay'] = $this->translate(
+                            'location_' . $result['locationDisplay'],
+                            [],
+                            $result['locationDisplay']
+                        );
                     }
-                    return $this->output(
-                        ['locations' => $results], self::STATUS_OK
-                    );
                 }
-            } catch (\Exception $e) {
-                // Do nothing -- just fail through to the error message below.
+                return $this->output(['locations' => $results], self::STATUS_OK);
             }
+        } catch (\Exception $e) {
+            // Do nothing -- just fail through to the error message below.
         }
 
         return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
         );
     }
 
