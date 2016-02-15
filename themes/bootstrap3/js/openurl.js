@@ -5,15 +5,16 @@ function loadResolverLinks($target, openUrl) {
   var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl});
   $.ajax({
     dataType: 'json',
-    url: url
-  })
-  .done(function(response) {
-    $target.removeClass('ajax_availability').empty().append(response.data);
-  })
-  .fail(function(response, textStatus) {
-    if (textStatus == "abort") { return; }
-    $target.removeClass('ajax_availability').addClass('error')
-      .empty().append(response.responseJSON.data);
+    url: url,
+    success: function(response) {
+      if (response.status == 'OK') {
+        $target.removeClass('ajax_availability')
+          .empty().append(response.data);
+      } else {
+        $target.removeClass('ajax_availability').addClass('text-danger')
+          .empty().append(response.data);
+      }
+    }
   });
 }
 
