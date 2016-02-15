@@ -138,20 +138,20 @@ class User extends \VuFind\Db\Row\User
             $this->lastname = '';
             $this->email = '';
 
-            $this->cat_username = 'null';
-            $this->cat_password = 'null';
+            $this->cat_username = null;
+            $this->cat_password = null;
 
             $this->college = '';
             $this->major = '';
             $this->home_library = '';
 
             $this->finna_due_date_reminder = 0;
+            $this->finna_auth_method = null;
 
             $this->save();
 
             $connection->commit();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $connection->rollback();
             return false;
         }
