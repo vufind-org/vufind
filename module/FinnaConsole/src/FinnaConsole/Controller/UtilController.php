@@ -199,7 +199,9 @@ class UtilController extends \VuFindConsole\Controller\UtilController
         $arguments = $this->consoleOpts->getRemainingArgs();
 
         if (!isset($arguments[0]) || (int) $arguments[0] < 180) {
-            echo "Usage:\n  php index.php util expire_users <days>\n";
+            echo "Usage:\n  php index.php util expire_users <days>\n\n"
+                . "  Anonymizes all user accounts that have not been logged into\n"
+                . "  for past <days> days. Values below 180 are not accepted.\n";
             return $this->getFailureResponse();
         }
 
