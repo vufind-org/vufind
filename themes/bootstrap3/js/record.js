@@ -324,7 +324,7 @@ function recordDocReady() {
   });
   // Tag lightbox
   Lightbox.addFormCallback('tagRecord', function(html) {
-    refreshTagList(true);
+    refreshTagList(document, true);
     Lightbox.confirm(VuFind.translate('add_tag_success'));
   });
 }
