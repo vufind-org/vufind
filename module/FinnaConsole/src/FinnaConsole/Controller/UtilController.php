@@ -204,10 +204,18 @@ class UtilController extends \VuFindConsole\Controller\UtilController
         }
 
         $users = $this->getExpiredUsers($arguments[0]);
+        $count = 0;
 
         foreach ($users as $user) {
             $this->msg("Anonymizing the user: " . $user->username);
             $user->anonymizeAccount();
+            $count++;
+        }
+
+        if ($count === 0) {
+            $this->msg('No expired users to anonymize.');
+        } else {
+            $this->msg("$count expired users anonymized.");
         }
 
         return $this->getSuccessResponse();
