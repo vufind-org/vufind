@@ -636,6 +636,14 @@ finna.layout = (function() {
       };
     };
 
+    var initIpadCheck = function() {
+      if (navigator.userAgent.match(/iPad/i)) {
+        if (navigator.userAgent.match(/OS 6_\d(_\d) like Mac OS X/i)) {
+          $('body').addClass('ipad-six');
+        }
+      }
+    };
+
     var my = {
         isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
@@ -674,6 +682,7 @@ finna.layout = (function() {
             initSideFacets();
             initPiwikPopularSearches();
             initAutoScrollTouch();
+            initIpadCheck();
         }
     };
 
