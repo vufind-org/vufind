@@ -11,6 +11,14 @@
 
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
   <?=$this->flashmessages()?>
+
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <? /* Display the lists that this record is saved to */ ?>
+      <div class="savedLists hidden alert alert-info">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+    <? endif; ?>
+
   <div class="panel-group" id="accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>">
     <? $coreMetadata = $this->record($this->driver)->getCoreMetadata(); ?>
     <? if (!empty($coreMetadata)): ?>
