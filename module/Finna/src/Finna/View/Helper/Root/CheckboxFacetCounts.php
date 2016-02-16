@@ -87,11 +87,13 @@ class CheckboxFacetCounts extends \Zend\View\Helper\AbstractHelper
                     },
                     $sources
                 );
-                $params->setBasicSearch(
-                    'online_str_mv:(' . implode(' OR ', $sources) . ')'
+                $params->addFilter(
+                    '(online_str_mv:'
+                    . implode(' OR online_str_mv:', $sources) . ')'
                 );
             } else {
-                $params->setBasicSearch('online_str_mv:*');
+                $
+                $params->addFilter('online_str_mv:*');
             }
             $params->setLimit(0);
             $params->resetFacetConfig();
