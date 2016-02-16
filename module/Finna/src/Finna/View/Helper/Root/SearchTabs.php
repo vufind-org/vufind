@@ -219,12 +219,8 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
             $targetUrlQuery->removeSearchId($targetTabId);
         }
 
-        // Find matching handler for new query (and use default if no match):
         $targetOptions = $targetResults->getOptions();
-        $targetHandler = $targetOptions->getHandlerForLabel(
-            $activeOptions->getLabelForBasicHandler($handler)
-        );
-        $targetParams->setBasicSearch($query, $targetHandler);
+        $targetParams->setBasicSearch($query, $handler);
 
         // Clone the active query so that we can remove active filters
         $currentResults = clone($this->getView()->results);

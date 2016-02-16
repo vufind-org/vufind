@@ -222,7 +222,6 @@ class SearchController extends \VuFind\Controller\SearchController
         // Preserve last result view
         $configLoader = $this->getServiceLocator()->get('VuFind\Config');
         $options = new Options($configLoader);
-        $lastView = $options->getLastView();
 
         try {
             $config = $config[$type];
@@ -261,9 +260,6 @@ class SearchController extends \VuFind\Controller\SearchController
             $this->rememberSearch($view->results);
 
             $view->results->getParams()->getQuery()->setHandler($queryType);
-
-            // Restore last result view
-            $view->results->getOptions()->rememberLastView($lastView);
 
             return $view;
         } catch (\Exception $e) {
