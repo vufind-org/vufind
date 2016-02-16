@@ -58,6 +58,11 @@ class Search extends RowGateway
         // Resource check for PostgreSQL compatibility:
         $raw = is_resource($this->search_object)
             ? stream_get_contents($this->search_object) : $this->search_object;
+        // Some search objects may be Base64-encoded; if so, they're flagged
+        // with a prefix so we know how to decode them:
+        if (substr($raw, 0, 5) == 'B64__') {
+            $raw = base64_decode(substr($raw, 5));
+        }
         $result = unserialize($raw);
         if (!($result instanceof \VuFind\Search\Minified)) {
             throw new \Exception('Problem decoding saved search');
@@ -75,9 +80,16 @@ class Search extends RowGateway
         // Note that if we have a resource, we need to grab the contents before
         // saving -- this is necessary for PostgreSQL compatibility although MySQL
         // returns a plain string
-        $this->search_object = is_resource($this->search_object)
-            ? stream_get_contents($this->search_object)
-            : $this->search_object;
+        if (is_resource($this->search_object)) {
+            $this->search_object = stream_get_contents($this->search_object);
+        }
+        // Due to inconsistent encoding standards for bytea fields in different
+        // versions of PostgreSQL, we need to base64-encode serialized objects
+        // before storing them to avoid errors caused by special characters such
+        // as backslashes.
+        if ('PostgreSQL' == $this->sql->getAdapter()->getPlatform()->getName()) {
+            $this->search_object = 'B64__' . base64_encode($this->search_object);
+        }
         parent::save();
     }
 }
