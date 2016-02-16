@@ -118,7 +118,8 @@ function Lightbox() {
   /**
    * Form data options
    *
-   * data-lightbox-submit = on success, run named function
+   * data-lightbox-onsubmit = on success, run named function
+   * data-lightbox-onclose  = on close, run named function
    */
   this.formSubmit = function(event) {
     // Gather data
