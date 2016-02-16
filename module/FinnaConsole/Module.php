@@ -77,6 +77,7 @@ class Module
     public function getConsoleUsage(Console $console)
     {
         return [
+            'util clear_metalib_search' => 'Removes old metalib search entries',
             'util expire_users' => 'Anonymizes expired user accounts',
             'util scheduled_alerts' => 'Send scheduled alerts'
         ];
