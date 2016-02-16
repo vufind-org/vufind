@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind2
  * @package  View_Helpers
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -33,6 +34,7 @@ namespace Finna\View\Helper\Root;
  * @category VuFind2
  * @package  View_Helpers
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -65,6 +67,39 @@ class CheckboxFacetCounts extends \Zend\View\Helper\AbstractHelper
                     $ret += $item['count'];
                 }
             }
+        } elseif ($field == 'online_boolean' && $value == '1') {
+            // Special case for online_boolean, which is translated to online_str_mv
+            // when deduplication is enabled.
+            // If we don't have a facet value for online_boolean it means we need to
+            // do an additional lookup for online_str_mv.
+            $results = clone($results);
+            $params = $results->getParams();
+            $options = $results->getOptions();
+
+            $searchConfig = $this->getView()->getHelperPluginManager()
+                ->getServiceLocator()->get('VuFind\Config')
+                ->get($options->getSearchIni());
+            if (!empty($searchConfig->Records->sources)) {
+                $sources = explode(',', $searchConfig->Records->sources);
+                $sources = array_map(
+                    function ($s) {
+                        return "\"$s\"";
+                    },
+                    $sources
+                );
+                $params->setBasicSearch(
+                    'online_str_mv:(' . implode(' OR ', $sources) . ')'
+                );
+            } else {
+                $params->setBasicSearch('online_str_mv:*');
+            }
+            $params->setLimit(0);
+            $params->resetFacetConfig();
+            $options->disableHighlighting();
+            $options->spellcheckEnabled(false);
+
+            $results->performAndProcessSearch();
+            return $results->getResultTotal();
         }
 
         return $ret;
