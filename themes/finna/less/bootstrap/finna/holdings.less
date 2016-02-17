@@ -209,8 +209,13 @@
             padding: 6px 0;   
         }
     }
-    & .holdinngs-container.root > .header {
-        margin-bottom: 3px;   
+    & .holdings-container.root > .header {
+        margin-bottom: 3px;
+        & .info {
+            @media (max-width: @screen-xs-max) {
+                float: none;
+            }
+        }
     }
     & .holdings-container.collapsible > .holdings:not(.root) {
         padding-left: 10px;
@@ -226,7 +231,6 @@
         color: @gray-light;
         float: right;
         @media (max-width: @screen-xs-max) {
-            float: none;
             display: inline-block;
             margin-left: 15px;
         }
