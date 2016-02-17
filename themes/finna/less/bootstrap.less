@@ -2,6 +2,7 @@
 ::-ms-clear {
     display: none;
 }
+
 body {
     -webkit-overflow-scrolling: touch;
     background: @background-image-url;
@@ -1800,3 +1801,26 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         text-decoration: none;
     }
 }
+
+// ipad ios 6 fix
+ .ipad-six {
+    & header, .nav-tabs, .search-controls, nav, .mylist-functions {
+        position: relative;
+    }
+    & header {
+        z-index: 4;   
+    }
+    & .nav {
+        z-index: 3;  
+    }
+    & .nav-tabs, .template-dir-myresearch .search-controls {
+        z-index: 2;   
+    }
+    & .search-controls, .mylist-functions {
+        z-index: 1;   
+    }
+    & .tooltip-facet {
+        position: absolute;   
+    }
+    
+ }
