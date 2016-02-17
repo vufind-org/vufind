@@ -15,14 +15,24 @@
 
   $url = $results->getUrlQuery();
   $url->setSearchId($searchClassId, null);
-  $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $url->setPage(1);
   // Use URL from search tab as "moreUrl" since it includes daterange type parameter
+  $moreUrl = '';
   if (isset($this->layout()->searchTabs)) {
+    $fallbackUrl = '';
     foreach ($this->layout()->searchTabs as $tab) {
-       if (strcasecmp($tab['class'], $searchClassId) === 0) {
-         $moreUrl = $tab['url'];
-       }
+      if ($tab['id'] == $searchClassId) {
+        $moreUrl = $tab['url'];
+        break;
+      } elseif (!$fallbackUrl && strcasecmp($tab['class'], $searchClassId) === 0) {
+        $fallbackUrl = $tab['url'];
+      }
     }
+    if (!$moreUrl) {
+        $moreUrl = $fallbackUrl;
+    }
+  }
+  if (!$moreUrl) {
+    $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $url->setPage(1);
   }
 ?>
 <div class="row">
