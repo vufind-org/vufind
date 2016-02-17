@@ -181,24 +181,34 @@
           <button class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>"><i class="fa fa-search-adv"></i> <?= $this->transEsc('Find')?></button>
       </div>
     </div>
-
-    <div class="<?=$this->layoutClass('sidebar')?>">
-      <? if ($hasDefaultsApplied): ?>
-        <input type="hidden" name="dfApplied" value="1" />
-      <? endif ?>
-      <? if (!empty($searchFilters)): ?>
+    <? if ($hasDefaultsApplied): ?>
+      <input type="hidden" name="dfApplied" value="1" />
+    <? endif ?>
+    <? if (!empty($searchFilters)): ?>
+    <div class="row">
+      <div class="col-sm-6 applied-adv-search-filters sidebar">
         <h4><?=$this->transEsc("adv_search_filters")?></h4>
-        <div class="list-group">
-          <label class="list-group-item checkbox"><?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" class="checkbox-select-all"/></label>
+          <div class="col-xs-12">
+            <label>
+              <input type="checkbox" checked="checked" class="checkbox-select-all" />
+              <?=$this->transEsc("adv_search_select_all")?>
+            </label>
+            <br>
+            <br>
+          </div>
+          <div class="col-xs-12">
+            <? foreach ($searchFilters as $field => $data): ?>
+              <? foreach ($data as $value): ?>
+                <div>
+                    <label>
+                      <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?>
+                    </label>
+                </div>
+              <? endforeach; ?>
+          <? endforeach; ?>
+          </div>
         </div>
-        <? foreach ($searchFilters as $field => $data): ?>
-          <ul class="list-group">
-            <li class="list-group-item title"><?=$this->transEsc($field)?></li>
-            <? foreach ($data as $value): ?>
-              <label class="list-group-item checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></label>
-            <? endforeach; ?>
-          </ul>
-        <? endforeach; ?>
+      </div>
       <? endif; ?>
     </div>
   </div>
