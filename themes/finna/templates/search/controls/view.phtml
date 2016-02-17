@@ -1,5 +1,7 @@
 <!-- START of: finna - search/controls/view.phtml -->
 <? $viewList = $this->params->getViewList(); if (count($viewList) > 1): ?>
+  <span class="hidden-sm hidden-xs button-label"><?=$this->transEsc('show_as')?></span>
+  <span class="sr-only hidden-lg hidden-md"><?=$this->transEsc('show_as')?></span>
   <div class="view-button">
     <div class="dropdown">
     <? foreach ($viewList as $viewType => $viewData): ?>
