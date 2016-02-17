@@ -564,7 +564,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                 )
             );
         }
-        return array_values(array_unique($issn));
+        return array_values(array_unique(array_filter($issn)));
     }
 
     /**
@@ -1105,7 +1105,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             }
         }
 
-        return $matches;
+        return array_values(array_unique($matches));
     }
 
     /**
