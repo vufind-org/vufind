@@ -77,6 +77,99 @@ trait VoyagerFinna
     }
 
     /**
+     * Get purchase order data for a holding
+     *
+     * @param string $mfhdID MFHD record ID
+     *
+     * @return array Keyed array
+     */
+    protected function getPurchaseOrderData($mfhdID)
+    {
+        $expressions = [
+            'LI_COPY_STATUS.STATUS_DATE',
+            'LINE_ITEM_STATUS.LINE_ITEM_STATUS_DESC'
+        ];
+
+        $from = [
+            "$this->dbName.LINE_ITEM_STATUS",
+            "$this->dbName.LINE_ITEM_COPY_STATUS LI_COPY_STATUS"
+        ];
+
+        $where = [
+            'LI_COPY_STATUS.MFHD_ID=:mfhdId',
+            'LINE_ITEM_STATUS.LINE_ITEM_STATUS = LI_COPY_STATUS.LINE_ITEM_STATUS'
+        ];
+
+        if (!empty($this->config['Holdings']['order_statuses'])
+            && $this->config['Holdings']['order_statuses'] != '*'
+        ) {
+            $statuses = array_map(
+                function ($s) {
+                    return "'" . preg_replace('/[^\w\/]*/', '', $s) . "'";
+                },
+                explode(':', $this->config['Holdings']['order_statuses'])
+            );
+            $statuses = implode(', ', $statuses);
+
+            $where = array_merge(
+                $where, ["LINE_ITEM_STATUS.LINE_ITEM_STATUS_DESC in ($statuses)"]
+            );
+
+        }
+
+        if (!empty($this->config['Holdings']['order_formats'])) {
+            $formats = array_map(
+                function ($s) {
+                    return "'" . preg_replace('/[^\w]*/', '', $s) . "'";
+                },
+                explode(':', $this->config['Holdings']['order_formats'])
+            );
+            $formats = implode(', ', $formats);
+
+            $from = array_merge(
+                $from, ["$this->dbName.LINE_ITEM", "$this->dbName.BIB_TEXT"]
+            );
+
+            $where = array_merge(
+                $where, [
+                    'LINE_ITEM.LINE_ITEM_ID = LI_COPY_STATUS.LINE_ITEM_ID',
+                    'BIB_TEXT.BIB_ID = LINE_ITEM.BIB_ID',
+                    "BIB_TEXT.BIB_FORMAT in ($formats)"
+                ]
+            );
+
+        }
+
+        $sqlArray = [
+            'expressions' => $expressions,
+            'from' => $from,
+            'where' => $where,
+            'group' => ['STATUS_DATE', 'LINE_ITEM_STATUS_DESC'],
+            'bind' => ['mfhdId' => $mfhdID]
+        ];
+
+        $sql = $this->buildSqlFromArray($sqlArray);
+
+        try {
+            $sqlStmt = $this->executeSQL($sql);
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        $result = [];
+        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+            $result[] = [
+                'order_update_date' => $this->dateFormat->convertToDisplayDate(
+                    'm-d-y', $row['STATUS_DATE']
+                ),
+                'status' => $row['LINE_ITEM_STATUS_DESC']
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
      * Protected support method for getHolding.
      *
      * @param array  $data   Item Data
@@ -95,6 +188,41 @@ trait VoyagerFinna
         if (!empty($data)) {
             $summary = $this->getHoldingsSummary($data);
             $data[] = $summary;
+        }
+        return $data;
+    }
+
+    /**
+     * Protected support method for getHolding.
+     *
+     * @param array $sqlRow SQL Row Data
+     *
+     * @return array Keyed data
+     */
+    protected function processHoldingRow($sqlRow)
+    {
+        $data = parent::processHoldingRow($sqlRow);
+
+        // Get purchase order information for holdings that don't have items
+        if ($data['status'] == 'No information available'
+            && isset($this->config['Holdings']['order_statuses'])
+        ) {
+            $data += [
+                'order_statuses' => $this->getPurchaseOrderData($sqlRow['MFHD_ID'])
+            ];
+
+            // Modify 'No information available' status if we have order information
+            if ($data['status'] == 'No information available'
+                && !empty($data['order_statuses'])
+            ) {
+                $orderedStatuses = ['Approved', 'Approved/Sent', 'Pending'];
+                foreach ($data['order_statuses'] as $orderStatus) {
+                    if (in_array($orderStatus['status'], $orderedStatuses)) {
+                        $data['status'] = 'Ordered';
+                        break;
+                    }
+                }
+            }
         }
         return $data;
     }

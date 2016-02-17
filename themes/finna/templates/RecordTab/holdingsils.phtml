@@ -198,7 +198,7 @@
         break;
     }
   ?>
-  <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
+  <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); ?>
   <?
     $dialogTitle = ': ' . $this->driver->getTitle();
     $titleLocation = $this->transEsc('location_' . $holding['location'], array(), $holding['location']);
@@ -220,7 +220,6 @@
       <? endif; ?>
     </div>
   </div>
-  <? endif; ?>
   <? if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
   <div class="copy-details <?=$holdingsDetails?> row">
     <? // Translation for summary is a special case for backwards-compatibility ?>
@@ -232,6 +231,17 @@
     </div>
   </div>
   <? endforeach; endif; ?>
+  <? $formats = $this->driver->getFormats(); ?>
+  <? if (!empty($holding['items'][0]['order_statuses']) && !in_array(end($formats), ['1/Book/eBook/', '1/Journal/eJournal/', '1/Journal/eArticle/'])): ?>
+  <div class="copy-details <?=$holdingsDetails?> row">
+    <div class="col-sm-3 col-xs-6"><?=$this->transEsc("Order Information") ?>:</div>
+    <div class="col-sm-3 col-xs-6">
+      <? foreach ($holding['items'][0]['order_statuses'] as $orderStatus): ?>
+        <?=$this->transEsc('order_status_' . $orderStatus['status'], null, $orderStatus['status']) ?> <?=$this->escapeHtml($orderStatus['order_update_date']) ?>
+      <? endforeach; ?>
+    </div>
+  </div>
+  <? endif; ?>
   <? foreach ($holding['items'] as $rowNum => $row): ?>
     <?
       // AJAX Check record?
