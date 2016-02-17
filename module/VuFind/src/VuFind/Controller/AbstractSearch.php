@@ -330,6 +330,15 @@ class AbstractSearch extends AbstractBase
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         $view->showBulkOptions = isset($config->Site->showBulkOptions)
           && $config->Site->showBulkOptions;
+        // Get coversize setting
+        if (isset($config->Content->coversize) && $config->Content->coversize) {
+            $searchType = 'result-' . $results->getParams()->getView();
+            if (isset($config->Content->coversize[$searchType])) {
+                $view->coversize = $config->Content->coversize[$searchType];
+            } else {
+                $view->coversize = $config->Content->coversize;
+            }
+        }
 
         return $view;
     }

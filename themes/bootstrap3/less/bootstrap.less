@@ -271,7 +271,6 @@ label.list-group-item {
   color: #000;
 }
 .item-notes ul { padding-left: 2rem; }
-.recordcover {max-height: 300px;}
 .tagList {
   .tag {
     display: inline-block;
@@ -300,11 +299,33 @@ label.list-group-item {
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
-  a.title {font-weight: bold;}
-  .left {
-    text-align: center;
-    img {max-width: 100%;}
+  .checkbox {
+    float: left;
+    padding-right: 1rem;
   }
+  .media {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  .media-left {
+    box-sizing: initial;
+    display: inline-block;
+    float: left;
+    text-align: center;
+    &.small {
+      width: 60px;
+      img { max-width: 60px; }
+    }
+    &.medium {
+      width: 100px;
+      img { max-width: 100px; }
+    }
+    &.large {
+      width: 160px;
+      img { max-width: 160px; }
+    }
+  }
+  a.title {font-weight: bold;}
   @media (max-width: 767px) {
     a {text-decoration: underline;}
     .middle,
@@ -312,7 +333,6 @@ label.list-group-item {
   }
   @media (max-width: 530px) {
     .checkbox {display: none !important;}
-    .left {width: 40%;}
     .middle {width: 60%;}
     .right {display: none;}
   }

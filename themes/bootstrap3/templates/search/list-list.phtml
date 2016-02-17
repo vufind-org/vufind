@@ -4,7 +4,9 @@
 <? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
   $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
   <div id="result<?=$i++ ?>" class="row result clearfix">
-    <div class="col-xs-1 hidden-print<? if ($showCheckboxes): ?> checkbox<? endif; ?>">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($current->getUniqueID())?>" class="hiddenId" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier())?>" class="hiddenSource" />
+    <div class="checkbox hidden-print">
       <label>
         <? if ($showCheckboxes): ?>
           <?=$this->record($current)->getCheckbox()?>
