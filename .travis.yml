@@ -1,7 +1,7 @@
 sudo: false
 language: php
 php:
-  - 5.4
+  - 5.5
 
 env:
   - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
