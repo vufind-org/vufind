@@ -9,12 +9,12 @@ collapsedFacets = author2Str,genre_facet,language,topic_facet,first_indexed
 [CheckboxFacets]
 
 [BrowseDatabase]
-category_str_mv        = Category
+category_str_mv        = category_facet_heading
 author2Str             = Author
 genre_facet            = Genre
 
 [BrowseJournal]
-category_str_mv        = Category
+category_str_mv        = category_facet_heading
 language               = Language
 topic_facet            = Topic
 first_indexed          = "New Items in Index"

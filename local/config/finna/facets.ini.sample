@@ -26,7 +26,7 @@ topic_facet        = Topic
 usage_rights_str_mv = "Usage Rights"
 hierarchy_parent_title = component_part_is_part_of
 first_indexed      = "New Items in Index"
-category_str_mv    = Category
+category_str_mv    = category_facet_heading
 
 ; Facets that will appear at the top of search results when the TopFacets
 ; recommendations module is used.  See the [TopRecommendations] section of
@@ -59,9 +59,9 @@ hierarchical[] = category_str_mv
 ; How hierarchical facets are sorted. Default is result count, but alternative ways
 ; can be specified:
 ; top = Sort the top level list alphabetically, others by result count (useful e.g.
-;       for a large number of building facets where top level is organization and 
-;       second level the library branch) 
-; all = Sort all levels alphabetically 
+;       for a large number of building facets where top level is organization and
+;       second level the library branch)
+; all = Sort all levels alphabetically
 hierarchicalFacetSortOptions[building] = top
 ; How hierarchical facet values are displayed in the records:
 ; single = Display only the deepest level (default)
@@ -71,7 +71,7 @@ hierarchicalFacetSortOptions[building] = top
 ;hierarchicalFacetSeparators[format] = " > "
 ; Any fields listed below will be treated as new items facets
 newItems[] = first_indexed
-; Date visualisations 
+; Date visualisations
 dateVis[] = main_date_str
 dateRangeVis = search_daterange_mv:main_date_str
 
@@ -156,10 +156,10 @@ orFacets = *
 ; control.
 special_facets   = "daterange"
 
-; Any facets named in the list below will have their values run through the 
+; Any facets named in the list below will have their values run through the
 ; translation code; unlisted facets will displayed as-is without translation.  For
 ; translated facets, be sure that all of the necessary strings are included in the
-; language files found in the web/lang directory.  By default, no facets are 
+; language files found in the web/lang directory.  By default, no facets are
 ; translated -- uncomment or add lines below to turn on this feature.
 translated_facets[] = institution
 translated_facets[] = building
