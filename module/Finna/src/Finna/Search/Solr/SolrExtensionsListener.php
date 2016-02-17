@@ -5,7 +5,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2013-2015.
+ * Copyright (C) The National Library of Finland 2013-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -131,6 +131,7 @@ class SolrExtensionsListener
             if ($event->getParam('context') == 'search') {
                 $this->limitHierarchicalFacets($event);
                 $this->addHiddenComponentPartFilter($event);
+                $this->handleOnlineBoolean($event);
             }
         }
         return $event;
@@ -183,6 +184,56 @@ class SolrExtensionsListener
             $params = $event->getParam('params');
             if ($params) {
                 $params->add('fq', '-hidden_component_boolean:true');
+            }
+        }
+    }
+
+    /**
+     * Change the online_boolean filter to online_str_mv filter if deduplication is
+     * enabled
+     *
+     * @param EventInterface $event Event
+     *
+     * @return void
+     */
+    protected function handleOnlineBoolean(EventInterface $event)
+    {
+        $config = $this->serviceLocator->get('VuFind\Config');
+        $searchConfig = $config->get($this->searchConfig);
+        if (isset($searchConfig->Records->deduplication)
+            && $searchConfig->Records->deduplication
+            && isset($searchConfig->Records->sources)
+            && !empty($searchConfig->Records->sources)
+        ) {
+            $params = $event->getParam('params');
+            $filters = $params->get('fq');
+            if (null !== $filters) {
+                foreach ($filters as $key => $value) {
+                    if ($value == 'online_boolean:"1"') {
+                        unset($filters[$key]);
+                        $sources = explode(',', $searchConfig->Records->sources);
+                        $sources = array_map(
+                            function ($s) {
+                                return "\"$s\"";
+                            },
+                            $sources
+                        );
+                        $filters[] = 'online_str_mv:(' . implode(' OR ', $sources)
+                            . ')';
+                        $params->set('fq', $filters);
+                        break;
+                    }
+                }
+            }
+            $facets = $params->get('facet.field');
+            if (null !== $facets) {
+                foreach ($facets as $key => $value) {
+                    if (substr($value, -14) == 'online_boolean') {
+                        unset($facets[$key]);
+                        $params->set('facet.field', $facets);
+                        break;
+                    }
+                }
             }
         }
     }

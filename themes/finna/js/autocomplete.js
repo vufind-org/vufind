@@ -92,12 +92,7 @@
                     .attr('data-type', data[i].type)
                     .addClass('item')
                     .addClass(data[i].css)
-                    .html(content)
-                    .mouseover(function() {
-                        $.fn.autocomplete.element.find('.item.selected').removeClass('selected');
-                        $(this).addClass('selected');
-                        input.data('selected', $(this).data('index'));
-                    });
+                    .html(content);
 
                 if ("handler" in data[i]) {
                     item.attr('data-handler', data[i]['handler']);

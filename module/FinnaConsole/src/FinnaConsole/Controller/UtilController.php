@@ -27,6 +27,7 @@
  */
 namespace FinnaConsole\Controller;
 
+use Finna\Db\Row\MetaLibSearch;
 use Finna\Db\Row\User;
 use Finna\Db\Table\Search;
 use Finna\Search\Solr\Options;
@@ -186,6 +187,60 @@ class UtilController extends \VuFindConsole\Controller\UtilController
         $this->msg('Scheduled alerts execution completed');
 
         return $this->getSuccessResponse();
+    }
+
+    /**
+     * Clears expired MetaLib searches from the database.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function clearMetalibSearchAction()
+    {
+        $this->initLogging();
+        $arguments = $this->consoleOpts->getRemainingArgs();
+
+        if (!isset($arguments[0]) || (int) $arguments[0] < 1) {
+            echo "Usage:\n  php index.php util clear_metalib_search <m>\n\n"
+                . "  Removes all metalib searches from the database that are older\n"
+                . "  than <m> minutes.\n";
+            return $this->getFailureResponse();
+        }
+
+        $count = 0;
+
+        foreach ($this->getExpiredMetalibSearches($arguments[0]) as $row) {
+            $row->delete();
+            $count++;
+        }
+
+        if ($count === 0) {
+            $this->msg("There were no expired MetaLib searches to remove");
+        } else {
+            $this->msg("$count expired MetaLib searches were removed");
+        }
+
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Returns expired MetaLib searches
+     *
+     * @param int $minutes Number of minutes the searches are considered live
+     *
+     * @return MetaLibSearch[] Traversable list of expired MetaLib searches
+     */
+    protected function getExpiredMetalibSearches($minutes)
+    {
+        $expires = date(
+            'Y-m-d H:i:s',
+            strtotime(sprintf('-%d minutes', (int) $minutes))
+        );
+
+        return $this->getTable('metalibSearch')->select(
+            function (Select $select) use ($expires) {
+                $select->where->lessThan('created', $expires);
+            }
+        );
     }
 
     /**

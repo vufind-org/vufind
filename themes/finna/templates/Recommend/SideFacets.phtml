@@ -26,7 +26,7 @@
   $html = '';
   $shown = 0;
   foreach ($checkboxFilters as $current) {
-    $availCount = $this->checkboxFacetCounts($current, $results);
+    $availCount = $current['selected'] ? $results->getResultTotal() : $this->checkboxFacetCounts($current, $results);
     $availableRecords = $availCount < 0 ? '' : $this->localizedNumber($availCount);
     $html .= '<div class="checkbox';
     if ($current['selected']) {
