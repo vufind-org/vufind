@@ -57,12 +57,14 @@
         item.attr('data-index', i+0)
             .attr('data-value', data[i].val)
             .addClass('item')
-            .html(content)
-            .mouseover(function() {
-              $.fn.autocomplete.element.find('.item.selected').removeClass('selected mouse');
-              $(this).addClass('selected mouse');
-              input.data('selected', $(this).data('index'));
-            });
+            .html(content);
+        if (!$.fn.autocomplete.options.disableMouse) {
+          item.mouseover(function() {
+            $.fn.autocomplete.element.find('.item.selected').removeClass('selected');
+            $(this).addClass('selected');
+            input.data('selected', $(this).data('index'));
+          });
+        }
         if (typeof data[i].description !== 'undefined') {
           item.append($('<small/>').text(data[i].description));
         }
@@ -178,7 +180,7 @@
           // arrow keys through items
           case 38:
             event.preventDefault();
-            element.find('.item.selected').removeClass('selected mouse');
+            element.find('.item.selected').removeClass('selected');
             if (position > 0) {
               position--;
               element.find('.item:eq('+position+')').addClass('selected');
@@ -193,7 +195,7 @@
               search(input, element);
             } else if (position < input.data('length')-1) {
               position++;
-              element.find('.item.selected').removeClass('selected mouse');
+              element.find('.item.selected').removeClass('selected');
               element.find('.item:eq('+position+')').addClass('selected');
               $(this).data('selected', position);
             }
@@ -202,17 +204,13 @@
           case 9:
           case 13:
             var selected = element.find('.item.selected');
-            if (selected.hasClass('mouse')) {
-              hide();
-              return;
-            }
             if (selected.length > 0) {
               event.preventDefault();
               if (event.which === 13 && selected.attr('href')) {
                 location.assign(selected.attr('href'));
               } else {
                 populate(selected.attr('data-value'), $(this), element, {key: true});
-                element.find('.item.selected').removeClass('selected mouse');
+                element.find('.item.selected').removeClass('selected');
                 $(this).data('selected', -1);
               }
             }
@@ -274,6 +272,7 @@
     $.fn.autocomplete.options = {
       ajaxDelay: 200,
       cache: true,
+      disableMouse: false,
       hidingClass: 'hidden',
       highlight: true,
       loadingString: 'Loading...',
