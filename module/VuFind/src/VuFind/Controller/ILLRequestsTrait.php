@@ -111,14 +111,15 @@ trait ILLRequestsTrait
 
             // Success: Go to Display ILL Requests
             if (isset($results['success']) && $results['success'] == true) {
-                $this->flashMessenger()
-                    ->addMessage('ill_request_place_success', 'success');
-                if ($this->inLightbox()) {
-                    return false;
-                }
-                return $this->redirect()->toRoute(
-                    'myresearch-illrequests'
-                );
+                $msg = [
+                    'html' => true,
+                    'msg' => 'ill_request_place_success',
+                    'tokens' => [
+                        '%%url%%' => $this->url()->fromRoute('myresearch-holds')
+                    ],
+                ];
+                $this->flashMessenger()->addMessage($msg, 'success');
+                return $this->redirectToRecord('#top');
             } else {
                 // Failure: use flash messenger to display messages, stay on
                 // the current form.
