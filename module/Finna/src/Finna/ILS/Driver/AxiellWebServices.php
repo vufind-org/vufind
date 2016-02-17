@@ -161,7 +161,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     /**
      * Message Settings
      *
-     * method_none determines if "no notification" option is selectable
+     * The Variable method_none determines if "no notification" option is selectable
      *
      * @var array
      */
@@ -346,16 +346,19 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             : [];
         $this->holdingsBranchOrder = array_flip($this->holdingsBranchOrder);
 
-            if (isset($this->config['messagingSettings']['pickUpNoticeMethodNone'])) {
-            $this->messagingSettings['pickUpNotice']['method_none'] = $this->config['messagingSettings']['pickUpNoticeMethodNone'];
+        if (isset($this->config['messagingSettings']['pickUpNoticeMethodNone'])) {
+            $this->messagingSettings['pickUpNotice']['method_none']
+                = $this->config['messagingSettings']['pickUpNoticeMethodNone'];
         }
 
         if (isset($this->config['messagingSettings']['overdueNoticeMethodNone'])) {
-            $this->messagingSettings['overdueNotice']['method_none'] = $this->config['messagingSettings']['overdueNoticeMethodNone'];
+            $this->messagingSettings['overdueNotice']['method_none']
+                = $this->config['messagingSettings']['overdueNoticeMethodNone'];
         }
 
         if (isset($this->config['messagingSettings']['dueDateAlertMethodNone'])) {
-            $this->messagingSettings['dueDateAlert']['method_none'] = $this->config['messagingSettings']['dueDateAlertMethodNone'];
+            $this->messagingSettings['dueDateAlert']['method_none']
+                = $this->config['messagingSettings']['dueDateAlertMethodNone'];
         }
 
         // Establish a namespace in the session for persisting cached data
@@ -1236,9 +1239,12 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'type' => $this->translate("messaging_settings_type_$service")
             ];
             if ($this->messagingSettings[$service]['method_none']) {
-             $data['sendMethods'] = [
-                'none' => ['active' => false, 'type' => 'none']];
-            } else $data['sendMethods'] = [];
+                $data['sendMethods'] = [
+                    'none' => ['active' => false, 'type' => 'none']
+                ];
+            } else {
+                $data['sendMethods'] = [];
+            }
 
             if ($service == 'dueDateAlert') {
                 $data['sendMethods'] += [
@@ -1271,10 +1277,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                             = $method->sendMethod->isActive === 'yes';
                 }
 
-                foreach ($userCached['messagingServices'][$serviceType]['sendMethods']
-                        as $key => &$data) {
+                foreach ($userCached['messagingServices'][$serviceType]
+                    ['sendMethods'] as $key => &$data) {
 
-                    $typeLabel = $this->translate("messaging_settings_type_$serviceType");
+                    $typeLabel
+                        = $this->translate("messaging_settings_type_$serviceType");
                     $methodLabel
                         = $this->translate("messaging_settings_method_$key");
 
