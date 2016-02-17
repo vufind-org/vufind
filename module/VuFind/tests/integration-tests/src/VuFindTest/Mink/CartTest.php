@@ -133,7 +133,10 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Activate the cart:
         $this->changeConfigs(
             ['config' =>
-                ['Site' => ['showBookBag' => true, 'theme' => 'bootprint3']]
+                [
+                    'Site' => ['showBookBag' => true, 'theme' => 'bootprint3'],
+                    'Mail' => ['testOnly' => 1],
+                ],
             ]
         );
 
@@ -297,9 +300,17 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
 
-        // Test that we now have an email form.
-        $toField = $this->findCss($page, '#email_to');
-        $this->assertNotNull($toField);
+        $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
+        $this->findCss($page, '.modal #email_message')->setValue('message');
+        $this->findCss($page, '.modal #email_to')
+            ->setValue('demian.katz@villanova.edu');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+        // Check for confirmation message
+        $this->assertEquals(
+            'Your item(s) were emailed',
+            $this->findCss($page, '.modal .alert-info')->getText()
+        );
     }
 
     /**

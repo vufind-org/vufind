@@ -243,7 +243,12 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Change the theme:
         $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
+            [
+                'config' => [
+                    'Site' => ['theme' => 'bootstrap3'],
+                    'Mail' => ['testOnly' => 1],
+                ]
+            ]
         );
 
         // Go to a record view
@@ -288,7 +293,12 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Change the theme:
         $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
+            [
+                'config' => [
+                    'Site' => ['theme' => 'bootstrap3'],
+                    'Mail' => ['testOnly' => 1],
+                ]
+            ]
         );
 
         // Go to a record view
