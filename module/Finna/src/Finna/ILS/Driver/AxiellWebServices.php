@@ -37,6 +37,7 @@ use SoapClient, SoapFault, SoapHeader, File_MARC, PDO, PDOException, DOMDocument
 use VuFind\Exception\Date;
 use Zend\Db\Sql\Ddl\Column\Boolean;
 use VuFind\Config\Locator;
+use VuFind\View\Helper\Root\Translate;
 
 /**
  * Axiell Web Services ILS Driver
@@ -156,6 +157,25 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      * @var string
      */
     protected $holdingsBranchOrder;
+
+    /**
+     * Message Settings
+     *
+     * method_none determines if "no notification" option is selectable
+     *
+     * @var array
+     */
+    protected $messagingSettings = [
+        'pickUpNotice' => [
+            'method_none' => false
+        ],
+        'overdueNotice' => [
+            'method_none' => false
+        ],
+        'dueDateAlert' => [
+            'method_none' => false
+        ]
+     ];
 
     /**
      * Container for storing cached ILS data.
@@ -325,6 +345,18 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             ? explode(":", $this->config['Holdings']['holdingsBranchOrder'])
             : [];
         $this->holdingsBranchOrder = array_flip($this->holdingsBranchOrder);
+
+            if (isset($this->config['messagingSettings']['pickUpNoticeMethodNone'])) {
+            $this->messagingSettings['pickUpNotice']['method_none'] = $this->config['messagingSettings']['pickUpNoticeMethodNone'];
+        }
+
+        if (isset($this->config['messagingSettings']['overdueNoticeMethodNone'])) {
+            $this->messagingSettings['overdueNotice']['method_none'] = $this->config['messagingSettings']['overdueNoticeMethodNone'];
+        }
+
+        if (isset($this->config['messagingSettings']['dueDateAlertMethodNone'])) {
+            $this->messagingSettings['dueDateAlert']['method_none'] = $this->config['messagingSettings']['dueDateAlertMethodNone'];
+        }
 
         // Establish a namespace in the session for persisting cached data
         $this->session
@@ -1195,6 +1227,82 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             }
         }
 
+        $userCached['messagingServices'] = [];
+        $services = ['pickUpNotice', 'overdueNotice', 'dueDateAlert'];
+
+        foreach ($services as $service) {
+            $data = [
+                'active' => false,
+                'type' => $this->translate("messaging_settings_type_$service")
+            ];
+            if ($this->messagingSettings[$service]['method_none']) {
+             $data['sendMethods'] = [
+                'none' => ['active' => false, 'type' => 'none']];
+            } else $data['sendMethods'] = [];
+
+            if ($service == 'dueDateAlert') {
+                $data['sendMethods'] += [
+                    'email' => ['active' => false, 'type' => 'email']
+                ];
+            } else {
+                $data['sendMethods'] += [
+                    'letter' => ['active' => false, 'type' => 'letter'],
+                    'email' => ['active' => false, 'type' => 'email'],
+                    'sms' => ['active' => false, 'type' => 'sms']
+                ];
+            }
+            $userCached['messagingServices'][$service] = $data;
+        }
+
+        if (isset($info->messageServices)) {
+            foreach ($info->messageServices->messageService as $service) {
+                $methods = [];
+                $serviceType = $service->serviceType;
+                $numOfDays = $service->nofDays->value;
+                $active = $service->isActive === 'yes';
+
+                $sendMethods = $this->objectToArray($service->sendMethods);
+
+                foreach ($sendMethods as $method) {
+                    $methodType = isset($method->sendMethod->value)
+                        ? $method->sendMethod->value : 'none';
+                    $userCached['messagingServices'][$serviceType]['sendMethods']
+                        [$methodType]['active']
+                            = $method->sendMethod->isActive === 'yes';
+                }
+
+                foreach ($userCached['messagingServices'][$serviceType]['sendMethods']
+                        as $key => &$data) {
+
+                    $typeLabel = $this->translate("messaging_settings_type_$serviceType");
+                    $methodLabel
+                        = $this->translate("messaging_settings_method_$key");
+
+                    if ($numOfDays > 0 && $key == 'email') {
+                        $days =  $this->translate(
+                            $numOfDays == 1
+                            ? 'messaging_settings_num_of_days'
+                            : 'messaging_settings_num_of_days_plural'
+                        );
+                        $methodLabel = str_replace('%%days%%', $numOfDays, $days);
+                    }
+
+                    if (!$active) {
+                        $methodLabel
+                            =  $this->translate("messaging_settings_method_none");
+                    }
+                    $data['method'] = $methodLabel;
+                }
+
+                if (isset($userCached['messagingServices'][$serviceType])) {
+                    $userCached['messagingServices'][$serviceType]['active']
+                        = $active;
+                    $userCached['messagingServices'][$serviceType]['numOfDays']
+                        = $numOfDays;
+                }
+            }
+        }
+
         $this->putCachedData($cacheId, $userCached);
 
         return $user;
@@ -1427,9 +1535,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             return $holdsList;
         }
         $reservations
-            = is_object($result->$functionResult->reservations->reservation)
-            ? [$result->$functionResult->reservations->reservation]
-            : $result->$functionResult->reservations->reservation;
+            = $this->objectToArray(
+                $result->$functionResult->reservations->reservation
+            );
 
         foreach ($reservations as $reservation) {
             $expireDate = $reservation->reservationStatus == 'fetchable'
