@@ -28,6 +28,7 @@
 namespace VuFind\View\Helper\Root;
 use DateTime,
     VuFind\I18n\Translator\TranslatorAwareInterface,
+    Zend\Feed\Writer\ExtensionPluginManager,
     Zend\Feed\Writer\Writer as FeedWriter,
     Zend\Feed\Writer\Feed,
     Zend\View\Helper\AbstractHelper;
@@ -71,7 +72,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
      */
     protected function registerExtension()
     {
-        $manager = FeedWriter::getExtensionManager();
+        $manager = new ExtensionPluginManager();
         $manager->setInvokableClass(
             'dublincorerendererentry',
             'VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry'
@@ -86,6 +87,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $manager->setInvokableClass(
             'opensearchfeed', 'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
         );
+        FeedWriter::setExtensionManager($manager);
         FeedWriter::registerExtension('OpenSearch');
     }
 
