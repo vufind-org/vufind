@@ -78,8 +78,11 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
         $total = 1;
     }
     for ($i = 0; $i < $total; $i++) {
+        if (isset($pubNames[$i]) && strstr($pubNames[$i], 'jakaja')) {
+            continue;
+        }
         if (isset($pubPlaces[$i])) {
-            echo "PP " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': '). "\n";
+            echo "PP " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ':, '). "\n";
         }
         if (isset($pubNames[$i])) {
             echo "PB " . rtrim($pubNames[$i], ", ") . "\n";
@@ -131,6 +134,10 @@ if (is_array($notes)) {
     foreach ($notes as $note) {
         echo "NO $note\n";
     }
+}
+
+if ($note = $this->driver->tryMethod('getDissertationNote')) {
+    echo "NO $note\n";
 }
 
 $callNo = $this->driver->tryMethod('getCallNumber');

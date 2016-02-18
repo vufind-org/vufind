@@ -92,7 +92,6 @@ class CheckboxFacetCounts extends \Zend\View\Helper\AbstractHelper
                     . implode(' OR online_str_mv:', $sources) . ')'
                 );
             } else {
-                $
                 $params->addFilter('online_str_mv:*');
             }
             $params->setLimit(0);

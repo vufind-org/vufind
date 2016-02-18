@@ -262,6 +262,14 @@ indexes = "868az"
 ; By default holdings are sorted by Voyager's Holdings Sort Groups. Uncomment this
 ; line to disable sorting.
 ;use_sort_groups = false
+; A colon-separated list of purchase order statuses displayed to the users for 
+; records without items. * = all. 
+; Default is none.
+;order_statuses = "Pending:Approved:Approved/Sent"
+; A colon-separated list of allowed BIB formats for purchase order statuses to be 
+; displayed. 
+; Default is any. 
+;order_formats = 'am:jm'
 
 ; Settings for controlling how loans are displayed
 [Loans]

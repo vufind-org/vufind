@@ -179,10 +179,10 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     public function getAllRecordImages()
     {
-        $large = $this->driver->getAllThumbnails('large');
+        $large = $this->driver->tryMethod('getAllThumbnails', ['large']);
         $large = !empty($large) ? array_keys($large) : [];
 
-        $thumb = $this->driver->getAllThumbnails('thumb');
+        $thumb = $this->driver->tryMethod('getAllThumbnails', ['thumb']);
         $thumb = !empty($thumb) ? array_keys($thumb) : [];
 
         return array_merge($thumb, $large);
