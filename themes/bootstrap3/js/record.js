@@ -12,20 +12,19 @@ function checkRequestIsValid(element, requestType, blockedClass) {
   $.ajax({
     dataType: 'json',
     cache: false,
-    url: url,
-    success: function(response) {
-      if (response.status == 'OK') {
-        if (response.data.status) {
-          $(element).removeClass('disabled')
-            .attr('title', response.data.msg)
-            .html('<i class="fa fa-flag"></i>&nbsp;'+response.data.msg);
-        } else {
-          $(element).remove();
-        }
-      } else if (response.status == 'NEED_AUTH') {
-        $(element).replaceWith('<span class="' + blockedClass + '">' + response.data.msg + '</span>');
-      }
+    url: url
+  })
+  .done(function(response) {
+    if (response.data.status) {
+      $(element).removeClass('disabled')
+        .attr('title', response.data.msg)
+        .html('<i class="fa fa-flag"></i>&nbsp;'+response.data.msg);
+    } else {
+      $(element).remove();
     }
+  })
+  .fail(function(response) {
+    $(element).remove();
   });
 }
 
@@ -45,12 +44,10 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
   var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
   $.ajax({
     dataType: 'json',
-    url: url,
-    success: function(response) {
-      if (response.status == 'OK') {
-        $($(element).closest('.comment')[0]).remove();
-      }
-    }
+    url: url
+  })
+  .done(function(response) {
+    $($(element).closest('.comment')[0]).remove();
   });
 }
 
@@ -58,21 +55,19 @@ function refreshCommentList($target, recordId, recordSource) {
   var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
   $.ajax({
     dataType: 'json',
-    url: url,
-    success: function(response) {
-      // Update HTML
-      if (response.status == 'OK') {
-        var $commentList = $target.find('.comment-list');
-        $commentList.empty();
-        $commentList.append(response.data);
-        $commentList.find('.delete').unbind('click').click(function() {
-          var commentId = $(this).attr('id').substr('recordComment'.length);
-          deleteRecordComment(this, recordId, recordSource, commentId);
-          return false;
-        });
-        $target.find('.comment-form input[type="submit"]').button('reset');
-      }
-    }
+    url: url
+  })
+  .done(function(response) {
+    // Update HTML
+    var $commentList = $target.find('.comment-list');
+    $commentList.empty();
+    $commentList.append(response.data);
+    $commentList.find('.delete').unbind('click').click(function() {
+      var commentId = $(this).attr('id').substr('recordComment'.length);
+      deleteRecordComment(this, recordId, recordSource, commentId);
+      return false;
+    });
+    $target.find('.comment-form input[type="submit"]').button('reset');
   });
 }
 
@@ -92,17 +87,17 @@ function registerAjaxCommentRecord() {
       type: 'POST',
       url:  url,
       data: data,
-      dataType: 'json',
-      success: function(response) {
-        if (response.status == 'OK') {
-          var $tab = $(form).closest('.tab-pane');
-          refreshCommentList($tab, id, recordSource);
-          $(form).find('textarea[name="comment"]').val('');
-          $(form).find('input[type="submit"]').button('loading');
-        } else {
-          Lightbox.displayError(response.data);
-        }
-      }
+      dataType: 'json'
+    })
+    .done(function(response) {
+      var $tab = $(form).closest('.tab-pane');
+      refreshCommentList($tab, id, recordSource);
+      $(form).find('textarea[name="comment"]').val('');
+      $(form).find('input[type="submit"]').button('loading');
+    })
+    .fail(function(response, textStatus) {
+      if (textStatus == "abort") { return; }
+      Lightbox.displayError(response.responseJSON.data);
     });
     return false;
   });
@@ -157,15 +152,15 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     url: path + urlroot + '/AjaxTab',
     type: 'POST',
     data: {tab: tabid},
-    success: function(data) {
-      $newTab.html(data);
-      registerTabEvents();
-      if(typeof syn_get_widget === "function") {
-        syn_get_widget();
-      }
-      if (typeof setHash == 'undefined' || setHash) {
-        window.location.hash = tabid;
-      }
+  })
+  .done(function(data) {
+    $newTab.html(data);
+    registerTabEvents();
+    if(typeof syn_get_widget === "function") {
+      syn_get_widget();
+    }
+    if (typeof setHash == 'undefined' || setHash) {
+      window.location.hash = tabid;
     }
   });
   return false;
@@ -180,20 +175,18 @@ function refreshTagList(target, loggedin) {
   var recordSource = $(target).find('.hiddenSource').val();
   var $tagList = $(target).find('.tagList');
   if ($tagList.length > 0) {
-    $tagList.empty();
     var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
     $.ajax({
-      dataType: 'json',
-      url: url,
-      complete: function(response) {
-        if(response.status == 200) {
-          $tagList.replaceWith(response.responseText);
-          if(loggedin) {
-            $tagList.addClass('loggedin');
-          } else {
-            $tagList.removeClass('loggedin');
-          }
-        }
+      dataType: 'html',
+      url: url
+    })
+    .done(function(response) {
+      $tagList.empty();
+      $tagList.replaceWith(response);
+      if(loggedin) {
+        $tagList.addClass('loggedin');
+      } else {
+        $tagList.removeClass('loggedin');
       }
     });
   }
@@ -217,10 +210,10 @@ function ajaxTagUpdate(link, tag, remove) {
       id:recordId,
       source:recordSource,
       remove:remove
-    },
-    complete: function() {
-      refreshTagList($target, false);
     }
+  })
+  .always(function() {
+    refreshTagList($target, false);
   });
 }
 
@@ -331,7 +324,7 @@ function recordDocReady() {
   });
   // Tag lightbox
   Lightbox.addFormCallback('tagRecord', function(html) {
-    refreshTagList(true);
+    refreshTagList(document, true);
     Lightbox.confirm(VuFind.translate('add_tag_success'));
   });
 }

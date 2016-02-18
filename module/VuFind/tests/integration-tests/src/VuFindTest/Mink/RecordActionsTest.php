@@ -40,9 +40,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
     use \VuFindTest\Unit\UserCreationTrait;
 
-    protected static $hash;
-    protected static $hash2;
-
     /**
      * Standard setup method.
      *
@@ -66,6 +63,11 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         }
     }
 
+    /**
+     * Move the current page to a record by performing a search.
+     *
+     * @return \Behat\Mink\Element\Element
+     */
     protected function gotoRecord()
     {
         $session = $this->getMinkSession();
@@ -240,7 +242,12 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Change the theme:
         $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
+            [
+                'config' => [
+                    'Site' => ['theme' => 'bootstrap3'],
+                    'Mail' => ['testOnly' => 1],
+                ]
+            ]
         );
 
         // Go to a record view
@@ -293,7 +300,12 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Change the theme:
         $this->changeConfigs(
-            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
+            [
+                'config' => [
+                    'Site' => ['theme' => 'bootstrap3'],
+                    'Mail' => ['testOnly' => 1],
+                ]
+            ]
         );
 
         // Go to a record view

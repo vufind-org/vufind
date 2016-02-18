@@ -440,6 +440,7 @@ $config = [
                     'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
+                    'removefilters' => 'VuFind\Recommend\RemoveFilters',
                     'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
                     'spellingsuggestions' => 'VuFind\Recommend\SpellingSuggestions',
                     'summonbestbetsdeferred' => 'VuFind\Recommend\SummonBestBetsDeferred',
@@ -513,6 +514,9 @@ $config = [
                     'ezb' => 'VuFind\Resolver\Driver\Factory::getEzb',
                     'sfx' => 'VuFind\Resolver\Driver\Factory::getSfx',
                     'redi' => 'VuFind\Resolver\Driver\Factory::getRedi',
+                ],
+                'invokables' => [
+                    'demo' => 'VuFind\Resolver\Driver\Demo',
                 ],
                 'aliases' => [
                     'threesixtylink' => '360link',
