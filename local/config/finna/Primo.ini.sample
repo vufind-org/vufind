@@ -15,11 +15,11 @@ case_sensitive_bools = true
 ; HTTP timeout
 timeout = 30
 
-; URL of the Primo server. For hosted services typically of the form 
-; http://XYZ.hosted.exlibrisgroup.com:1701 where XYZ is the ID of the Primo 
-; instance (e.g. primoapac01). Use http://mlplus.hosted.exlibrisgroup.com for 
+; URL of the Primo server. For hosted services typically of the form
+; http://XYZ.hosted.exlibrisgroup.com:1701 where XYZ is the ID of the Primo
+; instance (e.g. primoapac01). Use http://mlplus.hosted.exlibrisgroup.com for
 ; MetaLib Plus.
-; You may also enter the full URL including a path to the brief search if necessary. 
+; You may also enter the full URL including a path to the brief search if necessary.
 url = "http://ndl-pc-fe1.hosted.exlibrisgroup.com:1701"
 
 ; This section controls the result limit options for search results. default_limit
@@ -149,7 +149,7 @@ tlevel:peer_reviewed = "peer_reviewed"
 ; be sure to update language files if necessary.  The order of these settings
 ; will be maintained in the drop-down list in the UI.
 [Basic_Searches]
-AllFields           = Keyword
+AllFields           = All Fields
 Title               = Title
 Author              = Author
 Subject             = Subject
@@ -159,7 +159,7 @@ Subject             = Subject
 ; This section defines which search options will be included on the advanced
 ; search screen.  All the notes above [Basic_Searches] also apply here.
 [Advanced_Searches]
-AllFields           = Keyword
+AllFields           = All Fields
 Title               = Title
 Author              = Author
 Subject             = Subject
