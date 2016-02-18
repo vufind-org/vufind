@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,17 +22,20 @@
  * @category VuFind2
  * @package  Db_Table
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
 namespace Finna\Db\Table;
 use fminSO;
+
 /**
  * Table Definition for search
  *
  * @category VuFind2
  * @package  Db_Table
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -108,27 +111,17 @@ class Search extends \VuFind\Db\Table\Search
     /**
      * Return filters for a saved search.
      *
-     * @param string                               $searchHash Search hash
-     * @param \VuFind\Search\Results\PluginManager $results    PluginManager
+     * @param string $searchHash Search hash
      *
-     * @return mixed array of filters or false if the given search has no filters.
+     * @return mixed \Finna\Db\Row\Search or false if the row doesn't exist
      */
-    public function getSearchFilters($searchHash, $results)
+    public function getRowByHash($searchHash)
     {
         $search = $this->select(['finna_search_id' => $searchHash])->current();
         if (empty($search)) {
             return false;
         }
-
-        $minSO = $search->getSearchObject();
-        $savedSearch = $minSO->deminify($results);
-        $params = $savedSearch->getUrlQuery()->getParamArray();
-        foreach ($params as $key => $value) {
-            if ($key == 'filter') {
-                return $value;
-            }
-        }
-        return false;
+        return $search;
     }
 
     /**
