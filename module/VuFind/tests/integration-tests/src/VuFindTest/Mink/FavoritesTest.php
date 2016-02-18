@@ -1,6 +1,6 @@
 <?php
 /**
- * Mink cart test class.
+ * Mink favorites test class.
  *
  * PHP version 5
  *
@@ -26,9 +26,10 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindTest\Mink;
+use Behat\Mink\Element\Element;
 
 /**
- * Mink cart test class.
+ * Mink favorites test class.
  *
  * @category VuFind2
  * @package  Tests
@@ -63,6 +64,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         }
     }
 
+    /**
+     * Perform a search and return the page after submitting the form.
+     *
+     * @return Element
+     */
     protected function gotoSearch()
     {
         $session = $this->getMinkSession();
@@ -73,6 +79,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         return $page;
     }
 
+    /**
+     * Perform a search and return the page after submitting the form and
+     * clicking the first record.
+     *
+     * @return Element
+     */
     protected function gotoRecord()
     {
         $page = $this->gotoSearch();
@@ -80,12 +92,25 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         return $page;
     }
 
+    /**
+     * Strip off the hash segment of a URL.
+     *
+     * @param string $url URL to strip
+     *
+     * @return string
+     */
     protected function stripHash($url)
     {
         $parts = explode('#', $url);
         return $parts[0];
     }
 
+    /**
+     * Test adding a record to favorites (from the record page) while creating a
+     * new account.
+     *
+     * @return void
+     */
     public function testAddRecordToFavoritesNewAccount()
     {
         // Change the theme:
@@ -136,6 +161,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
     }
 
+    /**
+     * Test adding a record to favorites (from the record page) using an existing
+     * account that is not yet logged in.
+     *
+     * @return void
+     */
     public function testAddRecordToFavoritesLogin()
     {
         // Change the theme:
@@ -181,6 +212,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal .alert.alert-success');
     }
 
+    /**
+     * Test adding a record to favorites (from the record page) using an existing
+     * account that is already logged in.
+     *
+     * @return void
+     */
     public function testAddRecordToFavoritesLoggedIn()
     {
         // Change the theme:
@@ -202,6 +239,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal .alert.alert-success');
     }
 
+    /**
+     * Test adding a record to favorites (from the search results) while creating a
+     * new account.
+     *
+     * @return void
+     */
     public function testAddSearchItemToFavoritesNewAccount()
     {
         // Change the theme:
@@ -260,6 +303,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
     }
 
+    /**
+     * Test adding a record to favorites (from the search results) using an existing
+     * account that is not yet logged in.
+     *
+     * @return void
+     */
     public function testAddSearchItemToFavoritesLogin()
     {
         // Change the theme:
@@ -300,6 +349,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.alert.alert-info'); // .success?
     }
 
+    /**
+     * Test adding a record to favorites (from the search results) using an existing
+     * account that is already logged in.
+     *
+     * @return void
+     */
     public function testAddSearchItemToFavoritesLoggedIn()
     {
         // Change the theme:

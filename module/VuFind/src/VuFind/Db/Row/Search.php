@@ -58,7 +58,11 @@ class Search extends RowGateway
         // Resource check for PostgreSQL compatibility:
         $raw = is_resource($this->search_object)
             ? stream_get_contents($this->search_object) : $this->search_object;
-        return unserialize($raw);
+        $result = unserialize($raw);
+        if (!($result instanceof \VuFind\Search\Minified)) {
+            throw new \Exception('Problem decoding saved search');
+        }
+        return $result;
     }
 
     /**
