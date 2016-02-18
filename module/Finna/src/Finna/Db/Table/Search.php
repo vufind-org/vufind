@@ -111,7 +111,7 @@ class Search extends \VuFind\Db\Table\Search
     /**
      * Return filters for a saved search.
      *
-     * @param string        $searchHash Search hash
+     * @param string $searchHash Search hash
      *
      * @return mixed \Finna\Db\Row\Search or false if the row doesn't exist
      */
