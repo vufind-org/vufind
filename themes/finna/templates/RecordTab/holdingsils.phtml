@@ -198,8 +198,18 @@
         break;
     }
   ?>
-  <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); ?>
   <?
+    $callnumbers = [];
+    foreach ($this->tab->getUniqueCallNumbers($holding['items']) as $callNo) {
+       $collection = null;
+       foreach ($holding['items'] as $item) {
+          if ($item['callnumber'] === $callNo) {
+             $collection = $item['collection'];
+             break;
+          }
+       }
+       $callnumbers[] = ['callNo' => $callNo, 'collection' => $collection];
+    }
     $dialogTitle = ': ' . $this->driver->getTitle();
     $titleLocation = $this->transEsc('location_' . $holding['location'], array(), $holding['location']);
     if ($titleLocation) {
@@ -212,8 +222,8 @@
     </div>
     <div class="holdings-details col-sm-3 col-xs-6"><?=$holdingSummary ?></div>
     <div class="location-link col-sm-3 col-xs-12 text-right">
-      <? foreach ($callNos as $callNo): ?>
-      <div class="location-link-text"><span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc("shelf_location"); ?>: </span><?=$this->escapeHtml($callNo)?></div>
+      <? foreach ($callnumbers as $data): ?>
+        <?=$this->callnumber($currentSource, $data['callNo'], $data['collection'], $this->layout()->userLang)?>
       <? endforeach; ?>
       <? if ($holdsAllowed && isset($holdLinksLocation[$holding['location']])): ?>
       <a class="expandedCheckRequest inlineblock modal-link placehold btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($holdLinksLocation[$holding['location']])?>" title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . $dialogTitle); ?>"><?=$this->transEsc("request_place_text")?></a>

@@ -98,6 +98,7 @@ $config = [
             'cover' => 'Finna\Controller\CoverController',
             'feedback' => 'Finna\Controller\FeedbackController',
             'librarycards' => 'Finna\Controller\LibraryCardsController',
+            'locationService' => 'Finna\Controller\LocationServiceController',
             'metalib' => 'Finna\Controller\MetaLibController',
             'metalibrecord' => 'Finna\Controller\MetaLibrecordController',
             'my-research' => 'Finna\Controller\MyResearchController',
@@ -111,6 +112,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
+            'Finna\LocationService' => 'Finna\Service\Factory::getLocationService',
             'Finna\OnlinePayment' => 'Finna\Service\Factory::getOnlinePayment',
             'VuFind\AutocompletePluginManager' => 'Finna\Service\Factory::getAutocompletePluginManager',
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
@@ -336,6 +338,7 @@ $dynamicRoutes = [
 
 $staticRoutes = [
     'Browse/Database', 'Browse/Journal',
+    'LocationService/Modal',
     'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
     'PCI/Home', 'PCI/Search', 'PCI/Record'
 ];
