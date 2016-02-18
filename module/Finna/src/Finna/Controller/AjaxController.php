@@ -1704,27 +1704,11 @@ class AjaxController extends \VuFind\Controller\AjaxController
         libxml_clear_errors();
 
         $img = null;
-
-        // Search for <a> elements with <img> children;
-        // they are likely links to full-size images
-        if ($links = iterator_to_array($doc->getElementsByTagName('a'))) {
-            foreach ($links as $link) {
-                foreach ($link->childNodes as $child) {
-                    if ($child->nodeName == 'img') {
-                        $img = $child;
-                        break;
-                    }
-                }
-            }
+        $imgs = iterator_to_array($doc->getElementsByTagName('img'));
+        if (!empty($imgs)) {
+            $img = $imgs[0];
         }
 
-        // Not found, return first <img> element if available
-        if (!$img) {
-            $imgs = iterator_to_array($doc->getElementsByTagName('img'));
-            if (!empty($imgs)) {
-                $img = $imgs[0];
-            }
-        }
         return $img ? $img->getAttribute('src') : null;
     }
 

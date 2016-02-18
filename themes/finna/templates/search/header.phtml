@@ -18,7 +18,7 @@
     $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
     $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
 ?>
-<div class="col-sm-9">
+<div class="col-sm-9 <?=$this->params->getsearchType() != 'advanced' ? 'hidden-xs' : '' ;?>">
   <h1 class="search-result-header">
   <? if ($this->recordsFound): ?>
     <? if (isset($this->overrideSearchHeading)): ?>

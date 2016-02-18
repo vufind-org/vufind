@@ -272,10 +272,17 @@ input[type=number].input-year::-webkit-outer-spin-button {
     margin: 0;
 }
 /* Results */
-.template-name-results , .template-name-search {
+.template-name-results, .template-name-search {
     @media (max-width: @screen-xs-max) {
         & .finna-main-header {
-            display: none;   
+            padding: 0px 0;
+            & .search-result-header {
+                font-size: 1.3em;
+                margin-top: 15px;
+            }
+            .adv_search_links {
+                margin-bottom: 15px;   
+            }
         }
     }
 }
@@ -790,6 +797,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     & .responsive-field {
         min-width: 45%;
     }
+    & .applied-adv-search-filters {
+        margin-top: 15px; 
+    }
     .group {
         position: relative;
         background: #f5f5f5;
@@ -831,6 +841,12 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
             margin-bottom: 3px;   
           }
           .close {opacity: .8;}
+          @media (max-width: @screen-xs-max) {
+            margin-bottom: 10px;
+            & select:first-child {
+                display: block;
+            }
+          }
         }
         .search {
           @media (min-width: @screen-sm-min) {
