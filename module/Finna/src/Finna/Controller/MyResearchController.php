@@ -41,6 +41,44 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     use OnlinePaymentControllerTrait;
 
     /**
+     * Catalog Login Action
+     *
+     * @return mixed
+     */
+    public function catalogloginAction()
+    {
+        $result = parent::catalogloginAction();
+
+        if (!($result instanceof \Zend\View\Model\ViewModel)) {
+            return $result;
+        }
+
+        // Try to find the original action and map it to the corresponding menu item
+        // since we were probably forwarded here.
+        $requestedAction = '';
+        $router = $this->getEvent()->getRouter();
+        if ($router) {
+            $route = $router->match($this->getRequest());
+            if ($route) {
+                $requestedAction = $route->getParam('action');
+                switch ($requestedAction) {
+                case 'ILLRequests':
+                    break;
+                case 'CheckedOut':
+                    $requestedAction = 'checkedout';
+                    break;
+                default:
+                    $requestedAction = lcfirst($requestedAction);
+                    break;
+                }
+            }
+        }
+        $result->requestedAction = $requestedAction;
+
+        return $result;
+    }
+
+    /**
      * Send list of checked out books to view.
      * Added profile to view, so borrow blocks can be shown.
      *

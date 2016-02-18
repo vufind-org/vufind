@@ -2,6 +2,11 @@
     // Set up page title:
     $this->headTitle($this->translate('Login'));
 
+    // Set up myresearch menu
+    if (empty($this->layout()->finnaMainTabs)) {
+        $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => $this->requestedAction));
+    }
+
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Login') . '</li>';
 
