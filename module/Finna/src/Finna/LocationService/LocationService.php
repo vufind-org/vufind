@@ -96,11 +96,10 @@ class LocationService
             'callno' => $callnumber,
             'collection' => $collection,
             'lang' => substr($language, 0, 2),
+            'owner' => isset($this->config[$source]['owner'])
+               ? $this->config[$source]['owner']
+               : ''
         ];
-
-        if (isset($this->config[$source]['owner'])) {
-            $params['owner'] = $this->config[$source]['owner'];
-        }
 
         foreach ($params as $key => $val) {
             $url = str_replace('{' . $key . '}', urlencode($val), $url);
