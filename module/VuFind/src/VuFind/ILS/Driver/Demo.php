@@ -197,8 +197,10 @@ class Demo extends AbstractBase
      */
     protected function getFakeServices()
     {
-        $services = ['loan', 'presentation'];
-        $keys = (array) array_rand($services, (rand() % count($services)) + 1);
+        $services = ['loan', 'presentation', 'custom'];
+        // Make it more likely we have a single service than many:
+        $count = rand(1, 5) == 1 ? rand(1, count($services)) : 1;
+        $keys = (array) array_rand($services, $count);
         $fakeServices = [];
 
         foreach ($keys as $key) {
