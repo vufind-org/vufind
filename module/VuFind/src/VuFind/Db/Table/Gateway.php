@@ -93,7 +93,9 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
             $maps = isset($cfg['vufind']['pgsql_seq_mapping'])
                 ? $cfg['vufind']['pgsql_seq_mapping'] : null;
             if (isset($maps[$this->table])) {
-                $this->featureSet = new Feature\FeatureSet();
+                if (!is_object($this->featureSet)) {
+                    $this->featureSet = new Feature\FeatureSet();
+                }
                 $this->featureSet->addFeature(
                     new Feature\SequenceFeature(
                         $maps[$this->table][0], $maps[$this->table][1]
