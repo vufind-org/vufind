@@ -14,7 +14,9 @@
         & .slick-slide {
             &.adjusted-height {
                 & .wrapper {
-                    background: #000;   
+                    @media (min-width: @screen-sm-min) {
+                        background: #000;
+                    }
                 }
                 & .wrapper img {
                     margin-left: auto;
@@ -24,7 +26,8 @@
                 }
             }
             & .carousel-slide-header p:not(.title-bottom) {
-                bottom: 0; 
+                bottom: 0;
+                margin-bottom: 0;
             }
         }
     }
