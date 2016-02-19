@@ -11,7 +11,7 @@ $serviceStatusMessage =
 // build the translated serviceList for usage in defaultServiceStatusMessage
 $that = $this;
 $translator = function ($in) use ($that) {
-    return '<span class="service_' . $in . '">' . $that->transEsc('HoldingStatus::service_' . $in) . '</span>';
+    return '<span class="service_' . $in . '">' . $that->transEsc('HoldingStatus::service_' . $in, [], $in) . '</span>';
 };
 $serviceList = implode('', array_map($translator, $services));
 
