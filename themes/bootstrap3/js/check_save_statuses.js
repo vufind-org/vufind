@@ -25,23 +25,21 @@ function checkSaveStatuses(target) {
       dataType: 'json',
       method: 'POST',
       url: VuFind.getPath() + '/AJAX/JSON?method=getSaveStatuses',
-      data: {id:ids, 'source':srcs},
-      success: function(response) {
-        if(response.status == 'OK') {
-          for (var rn in response.data) {
-            var list = $('#result'+rn).find('.savedLists')
-            if (list.length == 0) {
-              list = $('.savedLists');
-            }
-            var html = list.find('strong')[0].outerHTML+'<ul>';
-            for (var i=0; i<response.data[rn].length; i++) {
-              html += '<li><a href="' + VuFind.getPath() + '/MyResearch/MyList/' + response.data[rn][i].list_id + '">'
-                       + response.data[rn][i].list_title + '</a></li>';
-            }
-            html += '</ul>';
-            list.html(html).removeClass('hidden');
-          }
+      data: {id:ids, 'source':srcs}
+    })
+    .done(function(response) {
+      for (var rn in response.data) {
+        var list = $('#result'+rn).find('.savedLists')
+        if (list.length == 0) {
+          list = $('.savedLists');
         }
+        var html = list.find('strong')[0].outerHTML+'<ul>';
+        for (var i=0; i<response.data[rn].length; i++) {
+          html += '<li><a href="' + VuFind.getPath() + '/MyResearch/MyList/' + response.data[rn][i].list_id + '">'
+                   + response.data[rn][i].list_title + '</a></li>';
+        }
+        html += '</ul>';
+        list.html(html).removeClass('hidden');
       }
     });
   }
