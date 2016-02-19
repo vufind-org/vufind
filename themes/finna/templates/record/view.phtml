@@ -16,6 +16,11 @@
     echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
   }
 
+  // QR-code for National Library Location Service links
+  if ($this->callnumber()->useQrCode()) {
+    $this->headScript()->appendFile('vendor/jquery.qrcode.min.js');
+  }
+
   // Add RDF header link if applicable:
   if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
     $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
