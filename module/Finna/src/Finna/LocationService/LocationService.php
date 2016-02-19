@@ -77,7 +77,7 @@ class LocationService
             return false;
         }
 
-        list($url,) = explode('?', $this->config->General->url);
+        $url = $this->config->General->url;
         $params = [
             'owner' => $this->config->{$source}->owner,
             'callno' => $callnumber,
@@ -85,7 +85,8 @@ class LocationService
             'lang' => substr($language, 0, 2),
         ];
 
-        $url .= '?' . http_build_query($params);
+        $url .= (strpos($url, '?') === false ? '?' : '&')
+            . http_build_query($params);
 
         return [
            'url' => $url,
