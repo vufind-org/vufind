@@ -3,7 +3,7 @@
   || (isset($this->showBulkOptions) && $this->showBulkOptions); ?>
 <? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
   $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
-  <div id="result<?=$i++ ?>" class="row result clearfix">
+  <div id="result<?=$i++ ?>" class="result">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($current->getUniqueID())?>" class="hiddenId" />
     <input type="hidden" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier())?>" class="hiddenSource" />
     <div class="checkbox hidden-print">

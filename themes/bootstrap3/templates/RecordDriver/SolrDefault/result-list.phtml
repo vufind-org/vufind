@@ -4,7 +4,7 @@
   <? endif ?>
   <div class="media-body">
     <div class="row">
-      <div class="col-sm-9 middle">
+      <div class="col-sm-8 middle">
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
           <?=$this->record($this->driver)->getTitleHtml()?>
         </a>
@@ -132,7 +132,7 @@
         <? endif; ?>
         <?=$this->record($this->driver)->getPreviews()?>
       </div>
-      <div class="col-sm-3 right hidden-print">
+      <div class="col-sm-4 right hidden-print">
         <? /* Display qrcode if appropriate: */ ?>
         <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
           <?
