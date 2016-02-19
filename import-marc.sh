@@ -144,5 +144,3 @@ echo "Now Importing $1 ..."
 # solrmarc writes log messages to stderr, write RUN_CMD to the same place
 echo "`date '+%h %d, %H:%M:%S'` $RUN_CMD" >&2
 exec $RUN_CMD
-
-exit 0
