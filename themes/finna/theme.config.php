@@ -6,6 +6,7 @@ return array(
             'authorizationNote' => 'Finna\View\Helper\Root\Factory::getAuthorizationNote',
             'autocomplete' => 'Finna\View\Helper\Root\Factory::getAutocomplete',
             'browse' => 'Finna\View\Helper\Root\Factory::getBrowse',
+            'callnumber' => 'Finna\View\Helper\Root\Factory::getCallnumber',
             'combined' => 'Finna\View\Helper\Root\Factory::getCombined',
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'feed' => 'Finna\View\Helper\Root\Factory::getFeed',

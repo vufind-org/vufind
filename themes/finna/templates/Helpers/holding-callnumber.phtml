@@ -1,0 +1,9 @@
+<!-- START of: finna - Helpers/holding-callnumber.phtml -->
+<div class="location-link-text"><span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc("shelf_location"); ?>: </span> <?= isset($this->locationServiceUrl) ? ('<a class="location-service' . ($this->locationServiceModal ? ' location-service-modal' : '') . '" href="' . $this->locationServiceUrl . '" target="location-service" data-callnumber="' . $this->escapeHtmlAttr($this->callnumber) . '" data-collection="' . $this->escapeHtmlAttr($this->collection) . '"><i class="fa fa-map-marker"></i> ') : ''?><?=$this->escapeHtml($this->callnumber)?><?= isset($this->locationServiceUrl) ? '</a>' : ''?><?=$this->qrCode ? '<i class="fa fa-qrcode hidden-xs2 location-service"></i>' : ''?></div>
+<?
+if ($this->qrCode) {
+  $this->headScript()->appendFile('vendor/jquery.qrcode.min.js');
+}
+?>
+<!-- END of: finna - Helpers/holding-callnumber.phtml -->
+

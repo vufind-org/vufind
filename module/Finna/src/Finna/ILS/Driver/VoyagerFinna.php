@@ -44,6 +44,21 @@ use VuFind\Exception\ILS as ILSException,
 trait VoyagerFinna
 {
     /**
+     * Protected support method for getHolding.
+     *
+     * @param array $id A Bibliographic id
+     *
+     * @return array Keyed data for use in an sql query
+     */
+    protected function getHoldingItemsSQL($id)
+    {
+        $sqlArray = parent::getHoldingItemsSQL($id);
+        $sqlArray['expressions'][] = "LOCATION_CODE";
+
+        return $sqlArray;
+    }
+
+    /**
      * Return summary of holdings items.
      *
      * @param array $holdings Parsed holdings items
@@ -202,6 +217,8 @@ trait VoyagerFinna
     protected function processHoldingRow($sqlRow)
     {
         $data = parent::processHoldingRow($sqlRow);
+
+        $data['collection'] = $sqlRow['LOCATION_CODE'];
 
         // Get purchase order information for holdings that don't have items
         if ($data['status'] == 'No information available'
