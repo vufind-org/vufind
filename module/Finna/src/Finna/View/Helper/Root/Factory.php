@@ -68,6 +68,20 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the holding callnumber helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Callnumber
+     */
+    public static function getCallnumber(ServiceManager $sm)
+    {
+        return new Callnumber(
+            $sm->getServiceLocator()->get('Finna\LocationService')
+        );
+    }
+
+    /**
      * Construct the HeadLink helper.
      *
      * @param ServiceManager $sm Service manager.

@@ -1816,7 +1816,7 @@ EOT;
 
         try {
             $sqlStmt = $this->db->prepare($outersql);
-            $this->debugLogSQL(__FUNCTION__, $outersql, $sql['bind']);
+            $this->debugSQL(__FUNCTION__, $outersql, $sql['bind']);
             $sqlStmt->execute($sql['bind']);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             return $sqlRow['CNT'] > 0;

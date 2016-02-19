@@ -122,6 +122,20 @@ class Factory extends \VuFind\Service\Factory
     }
 
     /**
+     * Construct the National Library of Finland Location Service.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\LocationService
+     */
+    public static function getLocationService(ServiceManager $sm)
+    {
+        return new \Finna\LocationService\LocationService(
+            $sm->get('VuFind\Config')->get('LocationService')
+        );
+    }
+
+    /**
      * Construct the online payment manager.
      *
      * @param ServiceManager $sm Service manager.

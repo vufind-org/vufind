@@ -1,0 +1,7 @@
+; Inherit main configuration
+[Parent_Config]
+relative_path = ../finna/LocationService.ini
+
+[General]
+;enabled = true
+
