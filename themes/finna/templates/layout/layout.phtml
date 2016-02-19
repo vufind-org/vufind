@@ -204,6 +204,9 @@
       </div>
     </header>
     <section role="search" class="searchLayout<?=$currentTabClass?>" id="content">
+      <? if ($this->layout()->templateName === 'home'): ?>
+          <a class="modal-link btn btn-primary floating-feedback-btn hidden-xs" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Give Feedback')?></a>
+      <? endif; ?>
       <div class="container">
         <div class="row">
           <div class="logo col-xs-12 clearfix">
