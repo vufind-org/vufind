@@ -52,7 +52,7 @@ class LocationService
      */
     public function __construct($config)
     {
-        $this->config = $config;
+        $this->config = $config->toArray();
     }
 
     /**
@@ -70,30 +70,48 @@ class LocationService
      */
     public function getConfig($source, $callnumber, $collection, $language)
     {
-        if (empty($this->config->General->enabled)
-            || empty($this->config->General->url)
-            || !isset($this->config->{$source}->owner)
+        if (empty($this->config['General']['enabled'])
+            || empty($this->config['General']['url'])
+            || empty($this->config[$source])
+            || (empty($this->config[$source]['owner'])
+            && empty($this->config[$source]['url']))
         ) {
             return false;
         }
 
-        $url = $this->config->General->url;
+        $url = $this->config['General']['url'];
+        if (!empty($this->config[$source]['url'])) {
+            $url = $this->config[$source]['url'];
+        }
+
+        if (is_array($url)) {
+            if (isset($url[$language])) {
+                $url = $url[$language];
+            } else {
+                $url = reset($url);
+            }
+        }
+
         $params = [
-            'owner' => $this->config->{$source}->owner,
             'callno' => $callnumber,
             'collection' => $collection,
             'lang' => substr($language, 0, 2),
         ];
 
-        $url .= (strpos($url, '?') === false ? '?' : '&')
-            . http_build_query($params);
+        if (isset($this->config[$source]['owner'])) {
+            $params['owner'] = $this->config[$source]['owner'];
+        }
+
+        foreach ($params as $key => $val) {
+            $url = str_replace('{' . $key . '}', urlencode($val), $url);
+        }
 
         return [
            'url' => $url,
-           'modal' => isset($this->config->General->modal)
-              ? $this->config->General->modal : true,
-           'qr' => isset($this->config->General->qr_code)
-              ? $this->config->General->qr_code : false
+           'modal' => isset($this->config['General']['modal'])
+              ? $this->config['General']['modal'] : true,
+           'qr' => isset($this->config['General']['qr_code'])
+              ? $this->config['General']['qr_code'] : false
         ];
     }
 
@@ -104,7 +122,7 @@ class LocationService
      */
     public function useQrCode()
     {
-        return isset($this->config->General->qr_code)
-            && $this->config->General->qr_code;
+        return isset($this->config['General']['qr_code'])
+            && $this->config['General']['qr_code'];
     }
 }
