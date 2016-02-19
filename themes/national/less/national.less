@@ -4,7 +4,14 @@
         background-position: 30% 0%;
     }
 }
-
+@media (min-width: @screen-md-min) {
+    header .navbar {
+        max-width: 1170px;
+        & #loginOptions, .logoutOptions {
+            margin-right: -15px;
+        }
+    }
+}
 @media (min-width: @screen-sm-min) {
     .searchLayout .introduction {
         margin: 0px 0px 30px;
@@ -28,6 +35,7 @@
         }
     }
 }
+
 .home-1 {
     & .introduction p {
         font-weight: 400;
