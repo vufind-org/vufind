@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind2
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -33,6 +34,7 @@ namespace Finna\Controller;
  * @category VuFind2
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -75,16 +77,35 @@ trait SearchControllerTrait
         }
 
         $searchId = $combined[$this->searchClassId];
-        $manager
-            = $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
-
-        if (!$filters = $this->getTable('Search')->getSearchFilters(
-            $searchId, $manager
-        )) {
+        $search = $this->getTable('Search')->getRowByHash($searchId);
+        if (false === $search) {
             return;
         }
 
-        $this->getRequest()->getQuery()->set('filter', $filters);
+        $minSO = $search->getSearchObject();
+        $savedSearch = $minSO->deminify(
+            $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+        );
+        $params = $savedSearch->getUrlQuery()->getParamArray();
+        foreach ($params as $key => $value) {
+            if ($key == 'filter') {
+                $this->getRequest()->getQuery()->set('filter', $value);
+                // Check if we have a spatial date range filter and get its type too
+                $field = $savedSearch->getParams()->getSpatialDateRangeField();
+                foreach ($value as $filter) {
+                    if (strncmp($filter, $field, strlen($field)) == 0) {
+                        $filterInfo = $savedSearch->getParams()
+                            ->getSpatialDateRangeFilter();
+                        if (isset($filterInfo['type'])) {
+                            $this->getRequest()->getQuery()
+                                ->set($field . '_type', $filterInfo['type']);
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+        }
     }
 
     /**
