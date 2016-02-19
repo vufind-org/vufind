@@ -96,4 +96,15 @@ class LocationService
               ? $this->config->General->qr_code : false
         ];
     }
+
+    /**
+     * Check if QR-code option is enabled.
+     *
+     * @return boolean
+     */
+    public function useQrCode()
+    {
+        return isset($this->config->General->qr_code)
+            && $this->config->General->qr_code;
+    }
 }

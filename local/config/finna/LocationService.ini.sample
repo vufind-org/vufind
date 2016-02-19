@@ -3,7 +3,7 @@
 
 [General]
 enabled = false
-url = "http://kirjastokartta.kansalliskirjasto.fi/LocationHandler"
+url = "https://kirjastokartta.kansalliskirjasto.fi/LocationHandler"
 modal = true
 qr_code = false
 
