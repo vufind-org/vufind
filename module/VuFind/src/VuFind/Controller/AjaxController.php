@@ -323,6 +323,36 @@ class AjaxController extends AbstractBase
     }
 
     /**
+     * Reduce an array of service names to a human-readable string.
+     *
+     * @param array $services Names of available services.
+     *
+     * @return string
+     */
+    protected function reduceServices(array $services)
+    {
+        // Normalize, dedup and sort available services
+        $normalize = function ($in) {
+            return strtolower(preg_replace('/[^A-Za-z]/', '', $in));
+        };
+        $services = array_map($normalize, array_unique($services));
+        sort($services);
+
+        // Do we need to deal with a preferred service?
+        $config = $this->getConfig();
+        $preferred = isset($config->Item_Status->preferred_service)
+            ? $normalize($config->Item_Status->preferred_service) : false;
+        if (false !== $preferred && in_array($preferred, $services)) {
+            $services = [$preferred];
+        }
+
+        return $this->getViewRenderer()->render(
+            'ajax/status-available-services.phtml',
+            ['services' => $services]
+        );
+    }
+
+    /**
      * Support method for getItemStatuses() -- process a single bibliographic record
      * for location settings other than "group".
      *
@@ -376,18 +406,7 @@ class AjaxController extends AbstractBase
         );
 
         if (!empty($services)) {
-            // Normalize, dedup and sort available services
-            $normalize = function ($in) {
-                return strtolower(preg_replace('/[^A-Za-z]/', '', $in));
-            };
-            $services = array_map($normalize, array_unique($services));
-            sort($services);
-
-            $availability_message = $this->getViewRenderer()
-                ->render(
-                    'ajax/status-available-services.phtml',
-                    ['services' => $services]
-                );
+            $availability_message = $this->reduceServices($services);
         } else {
             $availability_message = $use_unknown_status
                 ? $messages['unknown']
