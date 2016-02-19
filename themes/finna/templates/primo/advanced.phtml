@@ -58,7 +58,7 @@
            $numRows = 3;
         }
       ?>
-        <div class="group well col-sm-7 col-md-10 col-lg-9" id="group<?=$i?>">
+        <div class="group well col-sm-10 col-lg-9" id="group<?=$i?>">
           <input type="hidden" name="bool<?=$i?>[]" value="AND" />
           <? for ($j = 0; $j < $numRows; $j++): ?>
             <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
@@ -77,12 +77,12 @@
           </div>
           <? endfor; ?>
           <a href="#" class="primo-add-search">
-             <i class="fa fa-plus-small"></i> Lisää hakukenttä
+             <i class="fa fa-plus-small"></i> <?=$this->transEsc("add_search")?>
           </a>
         </div>
       <? endfor; ?>
       <div class="row">
-        <div class="col-sm-12 col-md-10 col-lg-9"><button type="submit" class="btn btn-primary pull-right" name="submit" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Find")?></button></div>
+        <div class="col-sm-10 col-lg-9"><button type="submit" class="btn btn-primary pull-right" name="submit" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Find")?></button></div>
       </div>
       <? $lastSort = $this->searchMemory()->getLastSort($this->options->getSearchClassId()); ?>
       <? if (!empty($lastSort)): ?>
@@ -93,33 +93,30 @@
         <input type="hidden" name="dfApplied" value="1" />
       <? endif ?>
       <? if (!empty($searchFilters)): ?>
-        <h4><?=$this->transEsc("adv_search_filters")?></h4>
-        <ul class="list-group">
-          <li class="list-group-item">
-            <div class="checkbox">
-              <label>
-                <?=$this->transEsc("adv_search_select_all")?>
-                <input type="checkbox" checked="checked" class="checkbox-select-all" />
-              </label>
-            </div>
-          </li>
-        </ul>
-        <? foreach ($searchFilters as $field => $data): ?>
-          <div>
-            <ul class="list-group">
-              <li class="list-group-item title"><?=$this->transEsc($field)?></li>
+      <div class="row">
+        <div class="col-sm-6 applied-adv-search-filters sidebar">
+          <h4><?=$this->transEsc("adv_search_filters")?></h4>
+          <div class="col-xs-12">
+            <label>
+              <input type="checkbox" checked="checked" class="checkbox-select-all" />
+              <?=$this->transEsc("adv_search_select_all")?>
+            </label>
+            <br>
+            <br>
+          </div>
+          <div class="col-xs-12">
+            <? foreach ($searchFilters as $field => $data): ?>
               <? foreach ($data as $value): ?>
-                <li class="list-group-item">
-                  <div class="checkbox">
+                <div>
                     <label>
                       <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?>
                     </label>
-                  </div>
-                </li>
+                </div>
               <? endforeach; ?>
-            </ul>
+          <? endforeach; ?>
           </div>
-        <? endforeach; ?>
+        </div>
+      </div>
       <? endif; ?>
 </form>
 <!-- END of: finna - primo/advanced.phtml -->

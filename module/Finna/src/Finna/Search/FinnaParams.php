@@ -156,6 +156,25 @@ trait FinnaParams
     }
 
     /**
+     * Get information on the current state of the boolean checkbox facets.
+     *
+     * @return array
+     */
+    public function getCheckboxFacets()
+    {
+        $facets = parent::getCheckboxFacets();
+
+        // Hide checkboxfacets that are
+        // configured as SearchTabsFilters
+        foreach ($facets as $field => $details) {
+            if ($this->hasHiddenFilter($details['filter'])) {
+                unset($facets[$field]);
+            }
+        }
+        return $facets;
+    }
+
+    /**
      * Return index field name used in date range searches.
      *
      * @return string
@@ -203,6 +222,27 @@ trait FinnaParams
         } else {
             return $this->spatialDateRangeFilter;
         }
+    }
+
+    /**
+     * Does the object already contain the specified hidden filter?
+     *
+     * @param string $filter A filter string from url : "field:value"
+     *
+     * @return bool
+     */
+    public function hasHiddenFilter($filter)
+    {
+        // Extract field and value from URL string:
+        list($field, $value) = $this->parseFilter($filter);
+
+        if (isset($this->hiddenFilters[$field])
+            && in_array($value, $this->hiddenFilters[$field])
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
