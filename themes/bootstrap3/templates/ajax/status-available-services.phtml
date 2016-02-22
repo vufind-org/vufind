@@ -5,7 +5,7 @@ $defaultServiceStatusMessage = 'HoldingStatus::services_available_html';
 // generate serviceStatusMessage
 $serviceStatusMessage =
     count($services) == 1
-        ? $this->transEsc('HoldingStatus::service_available_'.$services[0],[],$defaultServiceStatusMessage)
+        ? $this->transEsc('HoldingStatus::service_available_' . $services[0], [], $defaultServiceStatusMessage)
         : $defaultServiceStatusMessage ;
 
 // build the translated serviceList for usage in defaultServiceStatusMessage
