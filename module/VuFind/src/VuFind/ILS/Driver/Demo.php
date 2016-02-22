@@ -197,7 +197,14 @@ class Demo extends AbstractBase
      */
     protected function getFakeServices()
     {
-        $services = ['loan', 'presentation', 'custom'];
+        // Load service configuration; return empty array if no services defined.
+        $services = isset($this->config['Records']['services'])
+            ? (array) $this->config['Records']['services']
+            : [];
+        if (empty($services)) {
+            return [];
+        }
+
         // Make it more likely we have a single service than many:
         $count = rand(1, 5) == 1 ? rand(1, count($services)) : 1;
         $keys = (array) array_rand($services, $count);
