@@ -57,12 +57,7 @@
         item.attr('data-index', i+0)
             .attr('data-value', data[i].val)
             .addClass('item')
-            .html(content)
-            .mouseover(function() {
-              $.fn.autocomplete.element.find('.item.selected').removeClass('selected');
-              $(this).addClass('selected');
-              input.data('selected', $(this).data('index'));
-            });
+            .html(content);
         if (typeof data[i].description !== 'undefined') {
           item.append($('<small/>').text(data[i].description));
         }
