@@ -1,0 +1,17 @@
+{
+  "name": "vufind",
+  "version": "3.0.0",
+  "description": "Dev tools to handle css preprocessing, js magic, and compression",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/vufind-org/vufind"
+  },
+  "bugs": {
+    "url": "https://vufind.org/jira"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-less": "^1.2.0",
+    "jit-grunt": "^0.9.1"
+  }
+}
