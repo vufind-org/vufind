@@ -522,6 +522,19 @@ finna.layout = (function() {
         });
     };
 
+    // There's one in record.js but this applies to holds made directly from the 
+    // holdings in the results list.
+    var initHoldRequestFeedback = function() {
+        Lightbox.addFormCallback('placeHold', function(html) {
+            Lightbox.checkForError(html, function(html) {
+                var divPattern = '<div class="alert alert-success">';
+                var fi = html.indexOf(divPattern);
+                var li = html.indexOf('</div>', fi+divPattern.length);
+                Lightbox.success(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
+            });
+        });
+    };
+
     var isPageRefreshNeeded = function() {
         return refreshPage;
     };
@@ -699,6 +712,7 @@ finna.layout = (function() {
             initPiwikPopularSearches();
             initAutoScrollTouch();
             initIpadCheck();
+            initHoldRequestFeedback();
         }
     };
 
