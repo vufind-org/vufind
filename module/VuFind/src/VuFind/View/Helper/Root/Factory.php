@@ -530,6 +530,28 @@ class Factory
     }
 
     /**
+     * Construct the LinkDisplay helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return LinkDisplayHelper
+     */
+    public static function getLinkDisplay(ServiceManager $sm)
+    {
+//        $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('permissionBehavior');
+
+        $ld = new LinkDisplay($config);
+        $ld->setAuthorizationService(
+            $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
+        );
+        //return new SystemEmail(
+        //    isset($config->Site->email) ? $config->Site->email : ''
+        //);
+        return $ld;
+    }
+
+    /**
      * Construct the UserTags helper.
      *
      * @param ServiceManager $sm Service manager.

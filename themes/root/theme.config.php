@@ -37,6 +37,7 @@ return array(
             'syndeticsplus' => 'VuFind\View\Helper\Root\Factory::getSyndeticsPlus',
             'systememail' => 'VuFind\View\Helper\Root\Factory::getSystemEmail',
             'userlist' => 'VuFind\View\Helper\Root\Factory::getUserList',
+            'linkdisplay' => 'VuFind\View\Helper\Root\Factory::getLinkDisplay',
             'usertags' => 'VuFind\View\Helper\Root\Factory::getUserTags',
         ),
         'invokables' => array(

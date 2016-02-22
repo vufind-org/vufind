@@ -156,8 +156,12 @@
       <? endif; ?>
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Add to favorites */ ?>
-        <i class="fa fa-fw fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+        <? $favSaveDisplayLogic = $this->linkdisplay()->getDisplayLogic('favorites.save'); ?>
+        <? if ($favSaveDisplayLogic[0] == 'showMessage'): ?>
+            <?=$this->transEsc($favSaveDisplayLogic[1])?>
+        <? elseif ($favSaveDisplayLogic[0] == 'showTemplate'): ?>
+            <?=$this->context($this)->renderInContext($favSaveDisplayLogic[1], $this->linkdisplay()->getDisplayLogicParameters('favorites.save'))?>
+        <? endif; ?>
 
         <? /* Saved lists */ ?>
         <div class="savedLists alert alert-info hidden">
