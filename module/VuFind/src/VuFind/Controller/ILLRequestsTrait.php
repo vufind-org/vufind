@@ -115,7 +115,7 @@ trait ILLRequestsTrait
                     'html' => true,
                     'msg' => 'ill_request_place_success',
                     'tokens' => [
-                        '%%url%%' => $this->url()->fromRoute('myresearch-holds')
+                        '%%url%%' => $this->url()->fromRoute('myresearch-illrequests')
                     ],
                 ];
                 $this->flashMessenger()->addMessage($msg, 'success');

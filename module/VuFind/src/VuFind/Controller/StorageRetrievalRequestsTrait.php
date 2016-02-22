@@ -116,7 +116,7 @@ trait StorageRetrievalRequestsTrait
                     'html' => true,
                     'msg' => 'storage_retrieval_request_place_success',
                     'tokens' => [
-                        '%%url%%' => $this->url()->fromRoute('myresearch-holds')
+                        '%%url%%' => $this->url()->fromRoute('myresearch-storageretrievalrequests')
                     ],
                 ];
                 $this->flashMessenger()->addMessage($msg, 'success');
