@@ -63,12 +63,15 @@ class Callnumber extends \Zend\View\Helper\AbstractHelper
      * @param string $callnumber Callnumber
      * @param string $collection Collection
      * @param string $language   Language
+     * @param string $page       Page (record|results)
      *
      * @return string
      */
-    public function callnumber($source, $callnumber, $collection, $language)
-    {
-        $params = ['callnumber' => $callnumber];
+    public function callnumber(
+        $source, $callnumber, $collection, $language, $page = 'record'
+    ) {
+        $params
+            = ['callnumber' => $callnumber, 'page' => $page, 'source' => $source];
         $config = $this->locationService->getConfig(
             $source, $callnumber, $collection, $language
         );
@@ -77,7 +80,8 @@ class Callnumber extends \Zend\View\Helper\AbstractHelper
             $params['collection'] = $collection;
             $params['locationServiceUrl'] = $config['url'];
             $params['locationServiceModal'] = $config['modal'];
-            $params['qrCode'] = $config['qr'];
+            $params['qrCode']
+                = $config[$page == 'results' ? 'qrCodeResults' : 'qrCodeRecord'];
         }
         return $this->getView()->render(
             'Helpers/holding-callnumber.phtml', $params

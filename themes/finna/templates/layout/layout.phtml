@@ -154,6 +154,11 @@
             . $this->KeepAlive());
           $this->headScript()->appendFile("keep_alive.js");
       }
+
+      // QR-code for National Library Location Service links
+      if ($this->callnumber()->useQrCode()) {
+         $this->headScript()->appendFile('vendor/jquery.qrcode.min.js');
+      }
     ?>
     <?
     if ($this->scriptSrc('custom.js')) {

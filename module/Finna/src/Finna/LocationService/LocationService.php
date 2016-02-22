@@ -109,8 +109,10 @@ class LocationService
            'url' => $url,
            'modal' => isset($this->config['General']['modal'])
               ? $this->config['General']['modal'] : true,
-           'qr' => isset($this->config['General']['qr_code'])
-              ? $this->config['General']['qr_code'] : false
+           'qrCodeRecord' => isset($this->config['General']['qr_code_record'])
+              ? $this->config['General']['qr_code_record'] : false,
+           'qrCodeResults' => isset($this->config['General']['qr_code_results'])
+              ? $this->config['General']['qr_code_results'] : false
         ];
     }
 
@@ -121,7 +123,7 @@ class LocationService
      */
     public function useQrCode()
     {
-        return isset($this->config['General']['qr_code'])
-            && $this->config['General']['qr_code'];
+        return !empty($this->config['General']['qr_code_record'])
+            || !empty($this->config['General']['qr_code_results']);
     }
 }
