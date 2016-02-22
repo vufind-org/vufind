@@ -58,13 +58,6 @@
             .attr('data-value', data[i].val)
             .addClass('item')
             .html(content);
-        if (!$.fn.autocomplete.options.disableMouse) {
-          item.mouseover(function() {
-            $.fn.autocomplete.element.find('.item.selected').removeClass('selected');
-            $(this).addClass('selected');
-            input.data('selected', $(this).data('index'));
-          });
-        }
         if (typeof data[i].description !== 'undefined') {
           item.append($('<small/>').text(data[i].description));
         }
@@ -272,7 +265,6 @@
     $.fn.autocomplete.options = {
       ajaxDelay: 200,
       cache: true,
-      disableMouse: false,
       hidingClass: 'hidden',
       highlight: true,
       loadingString: 'Loading...',
