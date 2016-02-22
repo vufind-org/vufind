@@ -3,7 +3,7 @@
 /**
  * Functions and event handlers specific to record pages.
  */
-function checkRequestIsValid(element, requestType, blockedClass) {
+function checkRequestIsValid(element, requestType) {
   var recordId = element.href.match(/\/Record\/([^\/]+)\//)[1];
   var vars = deparam(element.href);
   vars['id'] = recordId;
@@ -30,13 +30,13 @@ function checkRequestIsValid(element, requestType, blockedClass) {
 
 function setUpCheckRequest() {
   $('.checkRequest').each(function(i) {
-    checkRequestIsValid(this, 'Hold', 'holdBlocked');
+    checkRequestIsValid(this, 'Hold');
   });
   $('.checkStorageRetrievalRequest').each(function(i) {
-    checkRequestIsValid(this, 'StorageRetrievalRequest', 'StorageRetrievalRequestBlocked');
+    checkRequestIsValid(this, 'StorageRetrievalRequest');
   });
   $('.checkILLRequest').each(function(i) {
-    checkRequestIsValid(this, 'ILLRequest', 'ILLRequestBlocked');
+    checkRequestIsValid(this, 'ILLRequest');
   });
 }
 
