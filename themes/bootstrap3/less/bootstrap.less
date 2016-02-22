@@ -657,9 +657,9 @@ li.jstree-facet ul {padding-left: 20px;}
   }
 }
 
-.services-loan-presentation span::before {
+span[class^="services-"], span[class*=" services-"] span::before {
   content: ", ";
 }
-.services-loan-presentation span:first-of-type::before {
+span[class^="services-"], span[class*=" services-"] span:first-of-type::before {
   content: "";
 }
