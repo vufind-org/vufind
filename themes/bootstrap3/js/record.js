@@ -298,20 +298,17 @@ function recordDocReady() {
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.confirm(VuFind.translate('bulk_email_success'));
   });
-  Lightbox.addFormCallback('placeHold', function(html) {
+  function afterILSRequest(html) {
     Lightbox.checkForError(html, function(html) {
       var divPattern = '<div class="alert alert-success">';
       var fi = html.indexOf(divPattern);
       var li = html.indexOf('</div>', fi+divPattern.length);
       Lightbox.success(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
     });
-  });
-  Lightbox.addFormCallback('placeILLRequest', function() {
-    document.location.href = VuFind.getPath() + '/MyResearch/ILLRequests';
-  });
-  Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
-    document.location.href = VuFind.getPath() + '/MyResearch/StorageRetrievalRequests';
-  });
+  }
+  Lightbox.addFormCallback('placeHold', afterILSRequest);
+  Lightbox.addFormCallback('placeILLRequest', afterILSRequest);
+  Lightbox.addFormCallback('placeStorageRetrievalRequest', afterILSRequest);
   Lightbox.addFormCallback('saveRecord', function(html) {
     checkSaveStatuses();
     refreshTagList();
