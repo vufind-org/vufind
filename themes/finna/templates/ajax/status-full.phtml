@@ -70,13 +70,18 @@ if ($groupBranches) {
     if (!isset($statusItemsFiltered[$location])) {
         $statusItemsFiltered[$location] = $item;
     } else {
+        if (!empty($item['callnumber'])
+            && !empty($statusItemsFiltered[$location]['callnumber'])
+            && $item['callnumber'] != $statusItemsFiltered[$location]['callnumber']
+        ) {
+            $statusItemsFiltered[$location]['callnumbers'] = 'Multiple Locations';
+        }
         if ($item['availability'] > $statusItemsFiltered[$location]['availability']) {
             // Copy keys one by one so as to not overwrite callnumbers or any other existing field
             foreach (array_keys($item) as $key) {
                 $statusItemsFiltered[$location][$key] = $item[$key];
             }
         }
-        $statusItemsFiltered[$location]['callnumbers'] = 'Multiple Locations';
     }
   }
   $this->statusItems = array_values($statusItemsFiltered);

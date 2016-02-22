@@ -316,17 +316,33 @@ finna.layout = (function() {
           scrollTop: $('.recordProvidedBy').offset().top
         }, 500);
       });
-      var scroll = $(window).scrollTop();
       var modalContent = 0;
-      $(window).scroll(function (event) {
-        scroll = $(window).scrollTop();
-        if (scroll > 2000) {
-           $('.template-dir-record .back-to-up').removeClass('hidden');
-        }
-        else {
-          $('.template-dir-record .back-to-up').addClass('hidden');
-        }
-      });
+      if ($('.floating-feedback-btn').length) {
+        $(".floating-feedback-btn.modal-link").click(function() {
+          return Lightbox.get('Feedback','Home');
+        });
+        var feedbackBtnOffset = $('.floating-feedback-btn').offset().top;
+        $(window).scroll(function (event) {
+          scroll = $(window).scrollTop();
+          if (scroll > feedbackBtnOffset) {
+            $('.floating-feedback-btn').addClass('fixed');
+          }
+          else {
+            $('.floating-feedback-btn').removeClass('fixed');
+          }
+        });
+      }
+      if ($('.template-dir-record .back-to-up').length) {
+        $(window).scroll(function (event) {
+          scroll = $(window).scrollTop();
+          if (scroll > 2000) {
+            $('.template-dir-record .back-to-up').removeClass('hidden');
+          }
+          else {
+            $('.template-dir-record .back-to-up').addClass('hidden');
+          }
+        });
+      }
 
       $( "#modal" ).on('shown.bs.modal', function (e) {
         $('#hierarchyTree').scroll(function () {

@@ -77,7 +77,7 @@
       <div class="clearfix"></div>
     <? elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
-        <?=$this->translate("hold_profile_html", array('%%url%%' => $this->currentPath() . '?catalogLogin=true'))?>
+        <?=$this->translate("hold_profile_html", array('%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true'))?>
       </div>
     <? endif; ?>
   <? endif; ?>
@@ -223,7 +223,7 @@
     <div class="holdings-details col-sm-3 col-xs-6"><?=$holdingSummary ?></div>
     <div class="location-link col-sm-3 col-xs-12 text-right">
       <? foreach ($callnumbers as $data): ?>
-        <?=$this->callnumber($currentSource, $data['callNo'], $data['collection'], $this->layout()->userLang)?>
+        <?=$this->callnumber()->callnumber($currentSource, $data['callNo'], $data['collection'], $this->layout()->userLang)?>
       <? endforeach; ?>
       <? if ($holdsAllowed && isset($holdLinksLocation[$holding['location']])): ?>
       <a class="expandedCheckRequest inlineblock modal-link placehold btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($holdLinksLocation[$holding['location']])?>" title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . $dialogTitle); ?>"><?=$this->transEsc("request_place_text")?></a>

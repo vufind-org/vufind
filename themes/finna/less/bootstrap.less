@@ -98,7 +98,18 @@ section.main.template-dir-content.template-name-content .container-fluid.finna-m
 .navbar {
     max-width: 1300px; // dont fully scale the navigation bar text   
 }
-
+.floating-feedback-btn {
+    border-radius: 0;
+    border-bottom-left-radius: 10px;
+    position: absolute;
+    right: 0;
+    top: auto;
+    z-index: 30;
+    &.fixed {
+        position: fixed;
+        top: 0;
+    }
+}
 .searchLayout {
     #gradient.vertical(@background-start-color; @background-end-color; @background-start-percent; @background-end-percent);
     padding-bottom: 10px;
