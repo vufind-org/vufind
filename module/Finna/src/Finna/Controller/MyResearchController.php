@@ -283,6 +283,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
             $view->emailDays = $emailDays;
             $view->days = [1, 2, 3, 4, 5];
+            $view->profile = $profile;
         }
         $view->setTemplate('myresearch/change-messaging-settings');
         return $view;
