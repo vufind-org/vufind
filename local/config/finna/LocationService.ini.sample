@@ -27,4 +27,4 @@ url[en-gb] = "https://libapps.uef.fi/sijaintiopas/?infoViewMode=selSignum&langua
 url[fi] = "https://libapps.uef.fi/sijaintiopas/?infoViewMode=selSignum&language=suomi&fSignum={callno}"
 
 [haltia]
-url = "https://haltia.amkit.fi/vwebv/ui/fi_FI/htdocs/libmap/html/Libmap.html?callno={callno}16&collection={collection}&status=1&lang={lang}"
+url = "https://haltia.amkit.fi/vwebv/ui/fi_FI/htdocs/libmap/html/Libmap.html?callno={callno}&collection={collection}&status=1&lang={lang}"
