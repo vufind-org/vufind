@@ -1762,7 +1762,15 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $this->debug("$function Request for '$this->arenaMember'.'$id'");
 
         $startTime = microtime(true);
-        $result = $client->$function($params);
+        try {
+            $result = $client->$function($params);
+        } catch (\SoapFault $e) {
+            $this->error(
+                "$function Request for '$this->arenaMember'.'$id' failed: "
+                . $e->getMessage()
+            );
+            throw $e;
+        }
 
         if ($this->durationLogPrefix) {
             file_put_contents(
