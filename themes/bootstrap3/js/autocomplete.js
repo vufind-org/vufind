@@ -66,6 +66,10 @@
       $.fn.autocomplete.element.html(shell);
       $.fn.autocomplete.element.find('.item').mousedown(function() {
         populate($(this).attr('data-value'), input, {mouse: true});
+        setTimeout(function() {
+          input.focus();
+          hide();
+        }, 10);
       });
       align(input, $.fn.autocomplete.element);
     }
