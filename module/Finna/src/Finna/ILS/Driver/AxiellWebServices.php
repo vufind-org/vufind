@@ -1238,7 +1238,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'active' => false,
                 'type' => $this->translate("messaging_settings_type_$service")
             ];
-            if ($this->messagingSettings[$service]['method_none']) {
+            if (isset($this->messagingSettings[$service]['method_none'])) {
                 $data['sendMethods'] = [
                     'none' => ['active' => false, 'type' => 'none']
                 ];
@@ -1289,9 +1289,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                         $days =  $this->translate(
                             $numOfDays == 1
                             ? 'messaging_settings_num_of_days'
-                            : 'messaging_settings_num_of_days_plural'
+                            : 'messaging_settings_num_of_days_plural',
+                            ['%%days%%' => $numOfDays]
                         );
-                        $methodLabel = str_replace('%%days%%', $numOfDays, $days);
                     }
 
                     if (!$active) {
