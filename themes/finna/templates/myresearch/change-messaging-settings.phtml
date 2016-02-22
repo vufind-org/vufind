@@ -1,5 +1,11 @@
 <!-- START of: finna - myresearch/change-messaging-settings.phtml -->
 <?=$this->flashmessages()?>
+<? if (empty($profile['email'])): ?>
+<div class="alert alert-danger">
+  <?=$this->transEsc('no_email_address')?>
+  <?=$this->transEsc('no_email_address_text')?>
+</div>
+<? else: ?>
 <form method="post" action="<?=$this->url('home') . ('MyResearch/ChangeMessagingSettings')?>" class="messaging-settings-form profile-form">
   <table class="table useraccount-table">
     <? foreach ($this->services as $service=>$data): ?>
@@ -7,16 +13,14 @@
       <th><?=$data['type'] ?></th>
       <td>
         <select name="<?=$service ?>">
-          <? if ($service != 'overdueNotice'): ?>
-            <option value="none"><?=$this->transEsc('messaging_settings_method_none'); ?></option>
-          <? endif; ?>
+          <? foreach ($data['sendMethods'] as $method=>$methodData): ?>
+            <? if (!($service == 'dueDateAlert' && $method == 'email')): ?>
+              <option value="<?=$methodData['type'] ?>"<? if ($methodData['active']): ?> selected<? endif; ?>><?=$methodData['method'] ?></option>
+            <? endif; ?>
+          <? endforeach; ?>
           <? if ($service == 'dueDateAlert'): ?>
             <? foreach ($this->emailDays as $day=>$label): ?>
               <option value="<? $day+1 ?>"<? if ($data['numOfDays'] == $day+1): ?> selected<? endif; ?>><?=$label ?></option>
-            <? endforeach; ?>
-          <? else: ?>
-            <? foreach ($data['sendMethods'] as $method=>$methodData): ?>
-              <option value="<?=$methodData['type'] ?>"<? if ($methodData['active']): ?> selected<? endif; ?>><?=$methodData['method'] ?></option>
             <? endforeach; ?>
           <? endif; ?>
         </select>
@@ -33,4 +37,6 @@
 <span class="messaging-settings-change-description">
   <?=$this->transEsc('request_change_description') ?>
 </span>
+<?endif;?>
+
 <!-- END of: finna - myresearch/change-messaging-settings.phtml -->
