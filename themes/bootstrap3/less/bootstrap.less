@@ -158,10 +158,13 @@ label.list-group-item {
     border-bottom: 1px solid @list-group-border;
     cursor: pointer;
 
+    &:not(.loading):hover { background-color: lighten(@brand-primary, 50%); }
     &:last-child {border: 0;}
     &.selected {
-      background-color: @brand-primary;
-      color: #fff;
+      &,&:hover {
+        background-color: @brand-primary;
+        color: #fff;
+      }
     }
   }
 }
