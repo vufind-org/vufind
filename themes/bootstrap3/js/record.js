@@ -298,7 +298,7 @@ function recordDocReady() {
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.confirm(VuFind.translate('bulk_email_success'));
   });
-  function afterHold(html) {
+  function afterILSRequest(html) {
     Lightbox.checkForError(html, function(html) {
       var divPattern = '<div class="alert alert-success">';
       var fi = html.indexOf(divPattern);
@@ -306,9 +306,9 @@ function recordDocReady() {
       Lightbox.success(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
     });
   }
-  Lightbox.addFormCallback('placeHold', afterHold);
-  Lightbox.addFormCallback('placeILLRequest', afterHold);
-  Lightbox.addFormCallback('placeStorageRetrievalRequest', afterHold);
+  Lightbox.addFormCallback('placeHold', afterILSRequest);
+  Lightbox.addFormCallback('placeILLRequest', afterILSRequest);
+  Lightbox.addFormCallback('placeStorageRetrievalRequest', afterILSRequest);
   Lightbox.addFormCallback('saveRecord', function(html) {
     checkSaveStatuses();
     refreshTagList();
