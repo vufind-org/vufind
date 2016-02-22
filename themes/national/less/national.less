@@ -4,12 +4,52 @@
         background-position: 30% 0%;
     }
 }
-@media (min-width: @screen-md-min) {
-    header .navbar {
-        max-width: 1170px;
+// fine-tune tablet layout 
+@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+    body > header, body > section, body > footer {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    body > section.main {
+        // mostly all containers on pages but not main-container
+        & > .container-fluid {
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+        // element-specific adjustments
+        & .finna-main-header, .finna-main-tabs {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        & .record-view-header {
+            margin-left: -15px;
+            margin-right: -15px;
+        }
+        & .searchtools-background {
+            margin-left: -15px;
+        }
+    }
+}
+// remove fluidity from medium width layout
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+    body .container, header .navbar {
+        width: @container-md;
+    }
+}
+// fine-tune large layout top menu width
+@media (min-width: @screen-lg-min) {
+    header .navbar { 
+        max-width: (@screen-lg-min - @grid-gutter-width);
         & #loginOptions, .logoutOptions {
             margin-right: -15px;
         }
+    }
+}
+// fine-tune tablet and medium layouts 
+@media (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
+    .template-name-login > .main-content {
+        padding-left: 15px;
+        padding-right: 15px;
     }
 }
 @media (min-width: @screen-sm-min) {
