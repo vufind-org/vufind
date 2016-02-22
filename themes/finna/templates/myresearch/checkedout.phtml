@@ -146,7 +146,9 @@
               <? endif; ?>
               <br />
             <? endif; ?>
-
+            <? if (isset($ilsDetails['renewalCount'])):?>
+              <div><strong><?=$this->transEsc('Renewed')?>: </strong ><?=$ilsDetails['renewalCount']?> / <?=$ilsDetails['renewalLimit']?> <?=$this->transEsc('times')?></div>
+            <? endif;?>
             <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
               <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
               <? if (isset($renewDetails['success']) && $renewDetails['success']): ?>
