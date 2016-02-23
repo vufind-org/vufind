@@ -64,20 +64,44 @@ class LinkDisplay extends AbstractHelper
     }
 
     /**
-     * Get mode
+     * Get permission behavior
      *
      * @param string $context Context for the permission behavior
      *
      * @return string
      */
-    public function getPermissionBehavior($context)
+    protected function getPermissionBehavior($context)
     {
         return $this->config[$context];
     }
 
 
     /**
-     * Get display logic for a denied permission
+     * Get display logic
+     *
+     * @param string $context Context for the permission behavior
+     *
+     * @return array
+     */
+    protected function isAuthorized($context)
+    {
+        $authService = $this->getAuthorizationService();
+
+        // if no authorization service is available return false (or the value configured for a denied permission)
+        if (!$authService) {
+            return false;
+        }
+
+        // For a granted permission return the permissionGrantedDisplayLogic
+        if ($authService->isGranted($context)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get display logic
      *
      * @param string $context Context for the permission behavior
      *
@@ -85,19 +109,16 @@ class LinkDisplay extends AbstractHelper
      */
     public function getDisplayLogic($context)
     {
-        $authService = $this->getAuthorizationService();
+        $permResult = $this->isAuthorized($context);
 
-        // if no authorization service is available return false (or the value configured for a denied permission)
-        if (!$authService) {
-            return explode(':', $this->getPermissionBehavior($context)['permissionDeniedDisplayLogic']);
+        $permResultDisplayLogic = 'permissionDeniedDisplayLogic';
+
+        // For a granted permission return the permissionGrantedDisplayLogic
+        if ($permResult === true) {
+            $permResultDisplayLogic = 'permissionGrantedDisplayLogic';
         }
 
-        // For a granted permission always terurn true
-        if ($authService->isGranted($context)) {
-            return ($this->getPermissionBehavior($context)['permissionGrantedDisplayLogic']) ? explode(':', $this->getPermissionBehavior($context)['permissionGrantedDisplayLogic']) : [ 0 => 'showLink' ];
-        }
-
-        return explode(':', $this->getPermissionBehavior($context)['permissionDeniedDisplayLogic']);
+        return ($this->getPermissionBehavior($context)[$permResultDisplayLogic]) ? explode(':', $this->getPermissionBehavior($context)[$permResultDisplayLogic]) : [ ];
     }
 
     /**
@@ -109,7 +130,16 @@ class LinkDisplay extends AbstractHelper
      */
     public function getDisplayLogicParameters($context)
     {
-        $params = explode(':', $this->getPermissionBehavior($context)['permissionDeniedDisplayLogic']);
+        $permResult = $this->isAuthorized($context);
+
+        $permResultDisplayLogic = 'permissionDeniedDisplayLogic';
+
+        // For a granted permission return the permissionGrantedDisplayLogic
+        if ($permResult === true) {
+            $permResultDisplayLogic = 'permissionGrantedDisplayLogic';
+        }
+
+        $params = explode(':', $this->getPermissionBehavior($context)[$permResultDisplayLogic]);
 
         $p = [ ];
         if (count($params) > 2) {
@@ -125,5 +155,25 @@ class LinkDisplay extends AbstractHelper
         }
 
         return $p;
+    }
+
+    /**
+     * Get block to display
+     *
+     * @param string $context Context for the permission behavior
+     *
+     * @return string
+     */
+    public function getDisplayBlock($context, $tmpl)
+    {
+        $favSaveDisplayLogic = $this->getDisplayLogic($context);
+        $return = '';
+        if ($favSaveDisplayLogic[0] == 'showMessage') {
+            $return = $tmpl->transEsc($favSaveDisplayLogic[1]);
+        }
+        elseif ($favSaveDisplayLogic[0] == 'showTemplate') {
+            $return = $tmpl->context($tmpl)->renderInContext($favSaveDisplayLogic[1], $this->getDisplayLogicParameters($context));
+        }
+        return $return;
     }
 }

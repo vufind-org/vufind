@@ -156,12 +156,7 @@
       <? endif; ?>
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? $favSaveDisplayLogic = $this->linkdisplay()->getDisplayLogic('favorites.save'); ?>
-        <? if ($favSaveDisplayLogic[0] == 'showMessage'): ?>
-            <?=$this->transEsc($favSaveDisplayLogic[1])?>
-        <? elseif ($favSaveDisplayLogic[0] == 'showTemplate'): ?>
-            <?=$this->context($this)->renderInContext($favSaveDisplayLogic[1], $this->linkdisplay()->getDisplayLogicParameters('favorites.save'))?>
-        <? endif; ?>
+        <?=$this->linkdisplay()->getDisplayBlock('favorites.save', $this)?>
 
         <? /* Saved lists */ ?>
         <div class="savedLists alert alert-info hidden">
