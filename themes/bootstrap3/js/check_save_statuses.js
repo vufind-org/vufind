@@ -22,7 +22,7 @@ function checkSaveStatuses() {
     })
     .done(function(response) {
       for (var rn in response.data) {
-        var list = $('#result'+rn).find('.savedLists')
+        var list = $('#result'+rn).find('.savedLists');
         if (list.length == 0) {
           list = $('.savedLists');
         }
@@ -39,5 +39,5 @@ function checkSaveStatuses() {
 }
 
 $(document).ready(function() {
-  checkSaveStatuses()
+  checkSaveStatuses();
 });
