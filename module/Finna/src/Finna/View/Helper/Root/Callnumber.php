@@ -39,7 +39,7 @@ namespace Finna\View\Helper\Root;
 class Callnumber extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * National Library of Finland Location Service.
+     * Location Service.
      *
      * @var \Finna\LocationService
      */
@@ -48,7 +48,7 @@ class Callnumber extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \Finna\LocationService $locationService National Library 
+     * @param \Finna\LocationService $locationService Location Service 
      * of Finland Location Service
      */
     public function __construct($locationService)

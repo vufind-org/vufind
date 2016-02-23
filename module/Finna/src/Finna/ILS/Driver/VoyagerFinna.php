@@ -196,7 +196,7 @@ trait VoyagerFinna
     {
         $data = parent::getStatusData($sqlRows);
         foreach ($sqlRows as $row) {
-            if (isset($data[$row['ITEM_ID']]) && isset($row['LOCATION_CODE'])) {
+            if (isset($row['LOCATION_CODE'])) {
                 $data[$row['ITEM_ID']]['collection'] = $row['LOCATION_CODE'];
             }
         }
@@ -215,7 +215,7 @@ trait VoyagerFinna
     protected function getStatusSQL($id)
     {
         $sqlArray = parent::getStatusSQL($id);
-        $sqlArray['expressions'][] = "LOCATION_CODE";
+        $sqlArray['expressions'][] = "LOCATION.LOCATION_CODE";
 
         return $sqlArray;
     }

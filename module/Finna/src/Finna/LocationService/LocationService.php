@@ -1,6 +1,6 @@
 <?php
 /**
- * National Library of Finland Location Service.
+ * Location Service.
  *
  * PHP version 5
  *
@@ -28,7 +28,7 @@
 namespace Finna\LocationService;
 
 /**
- * National Library of Finland Location Service.
+ * Location Service.
  *
  * @category VuFind2
  * @package  Content
@@ -39,7 +39,7 @@ namespace Finna\LocationService;
 class LocationService
 {
     /**
-     * National Library of Finland Location service configuration.
+     * Location service configuration.
      *
      * @var \Zend\Config\Config
      */

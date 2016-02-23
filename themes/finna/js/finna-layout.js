@@ -71,7 +71,7 @@ finna.layout = (function() {
             modal.find('.modal-dialog').removeClass('modal-lg');
         };
 
-        holder.find('a.location-service').on('click', function(e) {
+        holder.find('a.location-service').click(function(e) {
             if ($(this).hasClass('location-service-modal')) {
                 var modal = $('#modal');
                 modal.addClass('location-service');
@@ -94,7 +94,7 @@ finna.layout = (function() {
             }
         });
 
-        holder.find('.location-service.fa-qrcode').on('click', function() {
+        holder.find('.location-service.fa-qrcode').click(function() {
             var modal = $('#modal');
             modal.addClass('location-service-qrcode');
             modal.find('.modal-title').html(VuFind.translate('location-service'));
