@@ -35,7 +35,7 @@ finna.record = (function() {
       return vars;
     }
     
-    checkRequestsAreValid = function(elements, requestType, blockedClass) {
+    checkRequestsAreValid = function(elements, requestType) {
       if (!elements[0]) {
         return;
       }
@@ -72,9 +72,9 @@ finna.record = (function() {
     }
     
     var setUpCheckRequest = function() {
-      checkRequestsAreValid($('.expandedCheckRequest').removeClass('expandedCheckRequest'), 'Hold', 'holdBlocked');
-      checkRequestsAreValid($('.expandedCheckStorageRetrievalRequest').removeClass('expandedCheckStorageRetrievalRequest'), 'StorageRetrievalRequest', 'StorageRetrievalRequestBlocked');
-      checkRequestsAreValid($('.expandedCheckILLRequest').removeClass('expandedCheckILLRequest'), 'ILLRequest', 'ILLRequestBlocked');
+      checkRequestsAreValid($('.expandedCheckRequest').removeClass('expandedCheckRequest'), 'Hold');
+      checkRequestsAreValid($('.expandedCheckStorageRetrievalRequest').removeClass('expandedCheckStorageRetrievalRequest'), 'StorageRetrievalRequest');
+      checkRequestsAreValid($('.expandedCheckILLRequest').removeClass('expandedCheckILLRequest'), 'ILLRequest');
     }
     
     var initHoldingsControls = function() {
