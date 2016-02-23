@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\Mailer;
 use VuFind\Mailer\Mailer;
+use Zend\Mail\Address;
 
 /**
  * Mailer Test Class
@@ -56,6 +57,27 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
+    }
+
+    /**
+     * Test sending an email using an address object for the From field.
+     *
+     * @return void
+     */
+    public function testSendWithAddressObject()
+    {
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return '<to@example.com>' == $message->getTo()->current()->toString()
+                && 'Sender TextName <from@example.com>' == $fromString
+                && 'body' == $message->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $address = new Address('from@example.com', 'Sender TextName');
+        $mailer = new Mailer($transport);
+        $mailer->send('to@example.com', $address, 'subject', 'body');
     }
 
     /**
@@ -116,6 +138,21 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'bad@bad', 'subject', 'body');
+    }
+
+    /**
+     * Test bad from address in Address object.
+     *
+     * @return void
+     *
+     * @expectedException        VuFind\Exception\Mail
+     * @expectedExceptionMessage Invalid Sender Email Address
+     */
+    public function testBadFromInAddressObject()
+    {
+        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $mailer = new Mailer($transport);
+        $mailer->send('to@example.com', new Address('bad@bad'), 'subject', 'body');
     }
 
     /**

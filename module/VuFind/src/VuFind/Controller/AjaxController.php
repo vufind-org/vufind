@@ -541,11 +541,15 @@ class AjaxController extends AbstractBase
             $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
             $data = $user->getSavedData($id, null, $source);
             if ($data && count($data) > 0) {
-                $result[$i] = [];
+                $selector = $source . '|' . $id;
+                $result[$selector] = [];
                 // if this item was saved, add it to the list of saved items.
                 foreach ($data as $list) {
-                    $result[$i][] = [
-                        'list_id' => $list->list_id,
+                    $result[$selector][] = [
+                        'list_url' => $this->url()->fromRoute(
+                            'userList',
+                            ['id' => $list->list_id]
+                        ),
                         'list_title' => $list->list_title
                     ];
                 }
