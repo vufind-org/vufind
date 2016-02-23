@@ -68,7 +68,7 @@ finna.autocomplete = (function() {
                         data: data,
                         dataType:'json',
                         success: function(json) {
-                            if (json.status == 'OK' && json.data.length > 0) {
+                            if (json.data.length > 0) {
                                 cb(json.data);
                             } else {
                                 cb([]);

@@ -53,7 +53,7 @@ trait VoyagerFinna
     protected function getHoldingItemsSQL($id)
     {
         $sqlArray = parent::getHoldingItemsSQL($id);
-        $sqlArray['expressions'][] = "LOCATION_CODE";
+        $sqlArray['expressions'][] = "LOCATION.LOCATION_CODE";
 
         return $sqlArray;
     }
@@ -254,7 +254,8 @@ trait VoyagerFinna
     {
         $data = parent::processHoldingRow($sqlRow);
 
-        $data['collection'] = $sqlRow['LOCATION_CODE'];
+        $data['collection'] = isset($sqlRow['LOCATION_CODE'])
+            ? $sqlRow['LOCATION_CODE'] : '';
 
         // Get purchase order information for holdings that don't have items
         if ($data['status'] == 'No information available'
