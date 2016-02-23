@@ -81,19 +81,12 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#search_lookfor0_3')->setValue('1883');
         $this->findCss($page, '#search_type0_3')->selectOption('year');
 
-        // Term removal
-        $session->executeScript("deleteSearch(0, 2)"); // search0_2 x click
-        $this->assertNull($page->findById('search0_3'));
-        // Terms collapsing up
-        $this->assertEquals('1883', $this->findCss($page, '#search_lookfor0_2')->getValue());
-        $this->assertEquals('year', $this->findCss($page, '#search_type0_2')->getValue());
-
         // Submit search form
         $this->findCss($page, '[type=submit]')->press();
 
         // Check for proper search
         $this->assertEquals(
-            '(All Fields:bride AND Title:tomb AND Year of Publication:1883)',
+            '(All Fields:bride AND Title:tomb AND All Fields:garbage AND Year of Publication:1883)',
             $this->findCss($page, '.adv_search_terms strong')->getHtml()
         );
 
@@ -110,7 +103,15 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals('bride', $this->findCss($page, '#search_lookfor0_0')->getValue());
         $this->assertEquals('tomb',  $this->findCss($page, '#search_lookfor0_1')->getValue());
         $this->assertEquals('Title', $this->findCss($page, '#search_type0_1')->getValue());
-        $this->assertEquals('1883',  $this->findCss($page, '#search_lookfor0_2')->getValue());
-        $this->assertEquals('year',  $this->findCss($page, '#search_type0_2')->getValue());
+        $this->assertEquals('garbage',  $this->findCss($page, '#search_lookfor0_2')->getValue());
+        $this->assertEquals('1883',  $this->findCss($page, '#search_lookfor0_3')->getValue());
+        $this->assertEquals('year',  $this->findCss($page, '#search_type0_3')->getValue());
+
+        // Term removal
+        $session->executeScript("deleteSearch(0, 2)"); // search0_2 x click
+        $this->assertNull($page->findById('search0_3'));
+        // Terms collapsing up
+        $this->assertEquals('1883', $this->findCss($page, '#search_lookfor0_2')->getValue());
+        $this->assertEquals('year', $this->findCss($page, '#search_type0_2')->getValue());
     }
 }
