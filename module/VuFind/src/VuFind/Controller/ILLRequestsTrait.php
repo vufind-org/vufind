@@ -113,7 +113,7 @@ trait ILLRequestsTrait
             if (isset($results['success']) && $results['success'] == true) {
                 $msg = [
                     'html' => true,
-                    'msg' => 'ill_request_place_success',
+                    'msg' => 'ill_request_place_success_html',
                     'tokens' => [
                         '%%url%%' => $this->url()
                             ->fromRoute('myresearch-illrequests')
