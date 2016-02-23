@@ -131,11 +131,12 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Send an email message.
      *
-     * @param string $to      Recipient email address (or delimited list)
-     * @param string $from    Sender email address
-     * @param string $subject Subject line for message
-     * @param string $body    Message body
-     * @param string $cc      CC recipient (null for none)
+     * @param string                    $to        Recipient email address 
+     * (or delimited list)
+     * @param string|\Zend\Mail\Address $from      Sender name and email address
+     * @param string                    $subject   Subject line for message
+     * @param string                    $body      Message body
+     * @param string                    $cc        CC recipient (null for none)
      *
      * @throws MailException
      * @return void
@@ -159,18 +160,27 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 throw new MailException('Invalid Recipient Email Address');
             }
         }
-        if (!$validator->isValid($from)) {
-            throw new MailException('Invalid Sender Email Address');
+        
+        if ($from instanceof \Zend\Mail\Address) {
+            $fromEmail = $from->getEmail();
+            $fromName = $from->getName();
+        } else {
+            $fromEmail = $from;
+            $fromName = null;
         }
 
+        if (!$validator->isValid($fromEmail)) {
+            throw new MailException('Invalid Sender Email Address');
+        }
         // Convert all exceptions thrown by mailer into MailException objects:
         try {
             // Send message
             $message = $this->getNewMessage()
-                ->addFrom($from)
-                ->addTo($recipients)
+                ->addTo($to)
                 ->setBody($body)
-                ->setSubject($subject);
+                ->setSubject($subject)
+                ->setReplyTo($from)
+                ->addFrom($fromEmail, $fromName);
             if ($cc !== null) {
                 $message->addCc($cc);
             }
@@ -184,7 +194,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * Send an email message representing a link.
      *
      * @param string                          $to      Recipient email address
-     * @param string                          $from    Sender email address
+     * @param string|\Zend\Mail\Address       $from    Sender name and email address
      * @param string                          $msg     User notes to include in
      * message
      * @param string                          $url     URL to share
@@ -225,7 +235,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * Send an email message representing a record.
      *
      * @param string                            $to      Recipient email address
-     * @param string                            $from    Sender email address
+     * @param string|\Zend\Mail\Address         $from    Sender name and email address
      * @param string                            $msg     User notes to include in
      * message
      * @param \VuFind\RecordDriver\AbstractBase $record  Record being emailed
