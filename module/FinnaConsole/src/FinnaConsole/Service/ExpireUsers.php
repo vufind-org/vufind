@@ -39,7 +39,7 @@ use Zend\Db\Sql\Select;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class ExpireUsers extends AbstractService implements ConsoleServiceInterface
+class ExpireUsers extends AbstractService
 {
     protected $table = null;
 
