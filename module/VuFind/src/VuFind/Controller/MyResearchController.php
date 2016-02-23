@@ -228,6 +228,11 @@ class MyResearchController extends AbstractBase
     {
         // Don't log in if already logged in!
         if ($this->getAuthManager()->isLoggedIn()) {
+            if ($this->inLightbox()) {
+                $response = $this->getResponse();
+                $response->setStatusCode(205);
+                return $response;
+            }
             return $this->redirect()->toRoute('home');
         }
         $this->clearFollowupUrl();
