@@ -114,7 +114,7 @@ trait StorageRetrievalRequestsTrait
             if (isset($results['success']) && $results['success'] == true) {
                 $msg = [
                     'html' => true,
-                    'msg' => 'storage_retrieval_request_place_success',
+                    'msg' => 'storage_retrieval_request_place_success_html',
                     'tokens' => [
                         '%%url%%' => $this->url()
                             ->fromRoute('myresearch-storageretrievalrequests')
