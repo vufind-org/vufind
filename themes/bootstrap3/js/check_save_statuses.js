@@ -32,7 +32,7 @@ function checkSaveStatuses() {
         var html = list.find('strong')[0].outerHTML+'<ul>';
         for (var i=0; i<response.data[sel].length; i++) {
           html += '<li><a href="' + response.data[sel][i].list_url + '">'
-                   + response.data[sel][i].list_title + '</a></li>';
+                   + htmlEncode(response.data[sel][i].list_title) + '</a></li>';
         }
         html += '</ul>';
         list.html(html).removeClass('hidden');
