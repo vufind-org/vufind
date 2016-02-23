@@ -203,7 +203,7 @@
     foreach ($this->tab->getUniqueCallNumbers($holding['items']) as $callNo) {
        $collection = null;
        foreach ($holding['items'] as $item) {
-          if ($item['callnumber'] === $callNo) {
+          if (isset($item['collection']) && $item['callnumber'] === $callNo) {
              $collection = $item['collection'];
              break;
           }
