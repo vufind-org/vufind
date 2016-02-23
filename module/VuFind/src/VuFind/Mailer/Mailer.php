@@ -131,16 +131,23 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Send an email message.
      *
-     * @param string $to      Recipient email address (or delimited list)
-     * @param string $from    Sender email address
-     * @param string $subject Subject line for message
-     * @param string $body    Message body
-     * @param string $cc      CC recipient (null for none)
+     * @param string $to        Recipient email address (or delimited list)
+     * @param string $from      Sender email address
+     * @param string $subject   Subject line for message
+     * @param string $body      Message body
+     * @param string $cc        CC recipient (null for none)
+     * @param string $fromName  From name
      *
      * @throws MailException
      * @return void
      */
-    public function send($to, $from, $subject, $body, $cc = null)
+    public function send(
+        $to,
+        $from,
+        $subject,
+        $body,
+        $cc = null,
+        $fromName = null)
     {
         $recipients = $this->stringToAddressList($to);
 
@@ -167,10 +174,15 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         try {
             // Send message
             $message = $this->getNewMessage()
-                ->addFrom($from)
                 ->addTo($recipients)
                 ->setBody($body)
-                ->setSubject($subject);
+                ->setSubject($subject)
+                ->setReplyTo($from);
+            if($fromName != null) {
+                $message->addFrom($from, $fromName);
+            } else {
+                $message->addFrom($from);
+            }
             if ($cc !== null) {
                 $message->addCc($cc);
             }
@@ -183,21 +195,22 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Send an email message representing a link.
      *
-     * @param string                          $to      Recipient email address
-     * @param string                          $from    Sender email address
-     * @param string                          $msg     User notes to include in
+     * @param string                          $to       Recipient email address
+     * @param string                          $from     Sender email address
+     * @param string                          $msg      User notes to include in
      * message
-     * @param string                          $url     URL to share
-     * @param \Zend\View\Renderer\PhpRenderer $view    View object (used to render
+     * @param string                          $url      URL to share
+     * @param \Zend\View\Renderer\PhpRenderer $view     View object (used to render
      * email templates)
-     * @param string                          $subject Subject for email (optional)
-     * @param string                          $cc      CC recipient (null for none)
+     * @param string                          $subject  Subject for email (optional)
+     * @param string                          $cc       CC recipient (null for none)
+     * @param string                          $fromName From name
      *
      * @throws MailException
      * @return void
      */
     public function sendLink($to, $from, $msg, $url, $view, $subject = null,
-        $cc = null
+        $cc = null, $fromName = null
     ) {
         if (null === $subject) {
             $subject = $this->getDefaultLinkSubject();
@@ -208,7 +221,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 'msgUrl' => $url, 'to' => $to, 'from' => $from, 'message' => $msg
             ]
         );
-        return $this->send($to, $from, $subject, $body, $cc);
+        return $this->send($to, $from, $subject, $body, $cc, $fromName);
     }
 
     /**
