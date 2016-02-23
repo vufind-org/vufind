@@ -199,12 +199,17 @@ finna.imagePopup = (function(finna) {
                         var summaryHolder = $(".imagepopup-holder .summary");
                         if (type == 'marc') {
                             var url = VuFind.getPath() + '/AJAX/JSON?method=getDescription&id=' + id;
-                            $.getJSON(url, function(response) {
-                                if (response.status === 'OK' && response.data.length > 0) {
+                            $.getJSON(url)
+                            .done(function(response) {
+                                if (response.data.length > 0) {
                                     summaryHolder.find("> div p").html(response.data);
                                     finna.layout.initTruncate(summaryHolder);
                                     summaryHolder.removeClass('loading');
                                 }
+                            })
+                            .fail(function(response, textStatus) {
+                                summaryHolder.removeClass('loading');
+                                console.log(response, textStatus);
                             });
                         } else {
                             finna.layout.initTruncate(summaryHolder);

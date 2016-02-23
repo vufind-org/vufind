@@ -62,37 +62,37 @@ finna.metalib = (function() {
         var parent = this;
         toggleLoading(holder, true);
 
-        var jqxhr = $.getJSON(url, function(response) {
+        var jqxhr = $.getJSON(url)
+        .done(function(response) {
             toggleLoading(holder, false);
             loading = false;
-            if (response.status == 'OK') {
-                var hash = response.data['searchHash'];
-                initTabNavigation(hash);
-                var html = '';
-                if (response.data['failed']) {
-                    html += response.data['failed'];
-                }
-                if (response.data['content']) {
-                    html += response.data['content'];
-                    if (response.data['paginationBottom']) {
-                        html += response.data['paginationBottom'];
-                    }
-                }
-                holder.find('.holder').html(html);
-
-                $('.search-controls .pagination > div').html(response.data['paginationTop']);
-                $('.searchtools-background').html(response.data['searchTools']);
-                $('.finna-main-header .container .row').html(response.data['header']);
-
-                initPagination();
-                initSearchTools();
-                finna.layout.init();
-                finna.openUrl.initLinks();
-                finna.layout.initMobileNarrowSearch();
-                scrollToRecord();
-            } else {
-                holder.find('.holder').addClass("alert alert-danger").html(response.data);
+            var hash = response.data['searchHash'];
+            initTabNavigation(hash);
+            var html = '';
+            if (response.data['failed']) {
+                html += response.data['failed'];
             }
+            if (response.data['content']) {
+                html += response.data['content'];
+                if (response.data['paginationBottom']) {
+                    html += response.data['paginationBottom'];
+                }
+            }
+            holder.find('.holder').html(html);
+
+            $('.search-controls .pagination > div').html(response.data['paginationTop']);
+            $('.searchtools-background').html(response.data['searchTools']);
+            $('.finna-main-header .container .row').html(response.data['header']);
+
+            initPagination();
+            initSearchTools();
+            finna.layout.init();
+            finna.openUrl.initLinks();
+            finna.layout.initMobileNarrowSearch();
+            scrollToRecord();
+        })
+        .fail(function(response) {
+            holder.find('.holder').addClass("alert alert-danger").html(response.responseJSON.data);
         });
 
         // Save history if supported

@@ -136,51 +136,54 @@ finna.dateRangeVis = (function() {
         holder.find('.content').addClass('loading');
         loading = true;
 
-        $.getJSON(url, function (data) {
+        $.getJSON(url)
+        .done(function (data) {
             loading = false;
             var vis = holder.find('.date-vis');
             vis.closest('.content').removeClass('loading');
-            if (data.status == 'OK') {
-                $.each(data['data'], function(key, val) {
-                    // Get data limits
-                    var dataMin = parseInt(val.min, 10);
-                    var dataMax = parseInt(val.max, 10);
+            $.each(data['data'], function(key, val) {
+                // Get data limits
+                var dataMin = parseInt(val.min, 10);
+                var dataMax = parseInt(val.max, 10);
 
-                    val['min'] = dataMin;
-                    val['max'] = dataMax;
+                val['min'] = dataMin;
+                val['max'] = dataMax;
 
-                    // Left & right limits have to be processed separately
-                    // depending on movement direction: when reaching the left limit while
-                    // zooming in or moving back, we use the max value for both
-                    if ((action == 'prev' || action == 'zoom-in') && val['min'] > val['max']) {
-                        val['max'] = val['min'];
-                        // Otherwise, we need the min value
-                    } else if (action == 'next' && val['min'] > val['max']) {
-                        val['min'] = val['max'];
+                // Left & right limits have to be processed separately
+                // depending on movement direction: when reaching the left limit while
+                // zooming in or moving back, we use the max value for both
+                if ((action == 'prev' || action == 'zoom-in') && val['min'] > val['max']) {
+                    val['max'] = val['min'];
+                    // Otherwise, we need the min value
+                } else if (action == 'next' && val['min'] > val['max']) {
+                    val['min'] = val['max'];
+                }
+
+                if (visDateStart === false) {
+                    visDateStart = dataMin;
+                }
+
+                if (visDateEnd === false) {
+                    visDateEnd = dataMax;
+                }
+
+                visDateEnd = Math.min(visDateEnd, new Date().getFullYear());
+
+                // Check for values outside the selected range and remove them
+                for (i=0; i<val['data'].length; i++) {
+                    if (val['data'][i][0] < visDateStart - 5 || val['data'][i][0] > visDateEnd + 5) {
+                        // Remove this
+                        val['data'].splice(i,1);
+                        i--;
                     }
-
-                    if (visDateStart === false) {
-                        visDateStart = dataMin;
-                    }
-
-                    if (visDateEnd === false) {
-                        visDateEnd = dataMax;
-                    }
-
-                    visDateEnd = Math.min(visDateEnd, new Date().getFullYear());
-
-                    // Check for values outside the selected range and remove them
-                    for (i=0; i<val['data'].length; i++) {
-                        if (val['data'][i][0] < visDateStart - 5 || val['data'][i][0] > visDateEnd + 5) {
-                            // Remove this
-                            val['data'].splice(i,1);
-                            i--;
-                        }
-                    }
-                    visData = val;
-                    plotData();
-                });
-            }
+                }
+                visData = val;
+                plotData();
+            });
+        })
+        .fail(function(response, textStatus) {
+          vis.closest('.content').removeClass('loading');
+          console.log(response, textStatus);
         });
     };
 
