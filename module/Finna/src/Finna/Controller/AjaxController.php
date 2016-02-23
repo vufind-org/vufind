@@ -1023,6 +1023,59 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Check one or more records to see if they are saved in one of the user's list.
+     *
+     * @return \Zend\Http\Response
+     *
+     * @todo This version exists only because upstream version was refactored to not
+     * include record_id's. Merge somehow.
+     */
+    protected function getSaveStatusesAjax()
+    {
+        $this->writeSession();  // avoid session write timing bug
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH,
+                401
+            );
+        }
+
+        // loop through each ID check if it is saved to any of the user's lists
+        $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id', []));
+        $sources = $this->params()->fromPost(
+            'source', $this->params()->fromQuery('source', [])
+        );
+        if (!is_array($ids) || !is_array($sources)) {
+            return $this->output(
+                $this->translate('Argument must be array.'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+        $result = [];
+        foreach ($ids as $i => $id) {
+            $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
+            $data = $user->getSavedData($id, null, $source);
+            if ($data && count($data) > 0) {
+                $result[$i] = [];
+                // if this item was saved, add it to the list of saved items.
+                foreach ($data as $list) {
+                    $result[$i][] = [
+                        'list_id' => $list->list_id,
+                        'list_title' => $list->list_title,
+                        'record_id' => $id,
+                        'record_source' => $source
+                    ];
+                }
+            }
+        }
+        return $this->output($result, self::STATUS_OK);
+    }
+
+    /**
      * Retrieve recommendations for results in other tabs
      *
      * @return \Zend\Http\Response
