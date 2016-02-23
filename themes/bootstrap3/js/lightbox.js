@@ -44,10 +44,14 @@ function Lightbox() {
       .done(function(html, status) {
         if ( // Close the lightbox after deliberate login
           obj.method                           // is a form
-          && obj.url.match(/MyResearch/)       // that matches login/create account
           && !html.match(/alert alert-danger/) // skip failed logins
+          && (obj.url.match(/MyResearch/)      // that matches login/create account
+          || obj.url.match(/catalogLogin/))    // catalog login for holds
         ) {
-          if (VuFind.lightbox.originalUrl.match(/UserLogin/)) {
+          if (
+            VuFind.lightbox.originalUrl.match(/UserLogin/)
+            || obj.url.match(/catalogLogin/)
+          ) {
             window.location.reload();
             return false;
           } else {
