@@ -309,7 +309,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Check for confirmation message
         $this->assertEquals(
             'Your item(s) were emailed',
-            $this->findCss($page, '.modal .alert-info')->getText()
+            $this->findCss($page, '.modal .alert-success')->getText()
         );
     }
 

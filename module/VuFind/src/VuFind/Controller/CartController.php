@@ -233,7 +233,7 @@ class CartController extends AbstractBase
                     $view->to, $view->from, $view->message,
                     $url, $this->getViewRenderer(), $view->subject, $cc
                 );
-                return $this->redirectToSource('success', 'email_success');
+                return $this->redirectToSource('success', 'bulk_email_success');
             } catch (MailException $e) {
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             }

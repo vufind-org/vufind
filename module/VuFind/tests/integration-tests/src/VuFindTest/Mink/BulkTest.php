@@ -140,8 +140,6 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
         $this->snooze();
-        $title = $this->findCss($page, '#modalTitle');
-        $this->assertEquals('Email Selected', $title->getText());
         $this->checkForLoginMessage($page);
 
         // Create an account.
@@ -186,8 +184,6 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
         $this->snooze();
-        $title = $this->findCss($page, '#modalTitle');
-        $this->assertEquals('Save Selected', $title->getText());
         $this->checkForLoginMessage($page);
 
         // Log in to account created in previous test.
@@ -233,8 +229,6 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
         $this->snooze();
-        $title = $this->findCss($page, '#modalTitle');
-        $this->assertEquals('Export Selected', $title->getText());
 
         // Select EndNote option
         $select = $this->findCss($page, '#format');
@@ -270,7 +264,8 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         list(, $params) = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
-            'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2', $params
+            'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
+            str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );
     }
 
