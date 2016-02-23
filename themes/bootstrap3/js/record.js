@@ -143,7 +143,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
   $.ajax({
     url: path + urlroot + '/AjaxTab',
     type: 'POST',
-    data: {tab: tabid},
+    data: {tab: tabid}
   })
   .done(function(data) {
     $newTab.html(data);
