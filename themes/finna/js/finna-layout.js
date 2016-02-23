@@ -618,20 +618,17 @@ finna.layout = (function() {
         }
         $container.find('.facet-load-indicator').removeClass('hidden');
         var query = window.location.href.split('?')[1];
-        $.getJSON(
-            VuFind.getPath() + '/AJAX/JSON?method=getSideFacets&' + query,
-            function(response) {
-                if (response.status == 'OK') {
-                    $container.replaceWith(response.data);
-                    finna.dateRangeVis.init();
-                    initToolTips($('.sidebar'));
-                    initMobileNarrowSearch();
-                } else {
-                    $container.find('.facet-load-indicator').addClass('hidden');
-                    $container.find('.facet-load-failed').removeClass('hidden');
-                }
-            }
-        );
+        $.getJSON(VuFind.getPath() + '/AJAX/JSON?method=getSideFacets&' + query)
+        .done(function(response) {
+            $container.replaceWith(response.data);
+            finna.dateRangeVis.init();
+            initToolTips($('.sidebar'));
+            initMobileNarrowSearch();
+        })
+        .fail(function() {
+            $container.find('.facet-load-indicator').addClass('hidden');
+            $container.find('.facet-load-failed').removeClass('hidden');
+        });
     }
 
     var initPiwikPopularSearches = function() {
@@ -640,17 +637,14 @@ finna.layout = (function() {
             return;
         }
         $container.find('.load-indicator').removeClass('hidden');
-        $.getJSON(
-            VuFind.getPath() + '/AJAX/JSON?method=getPiwikPopularSearches',
-            function(response) {
-                if (response.status == 'OK') {
-                    $container.html(response.data);
-                } else {
-                    $container.find('.load-indicator').addClass('hidden');
-                    $container.find('.load-failed').removeClass('hidden');
-                }
-            }
-        );
+        $.getJSON(VuFind.getPath() + '/AJAX/JSON?method=getPiwikPopularSearches')
+        .done(function(response) {
+            $container.html(response.data);
+        })
+        .fail(function() {
+            $container.find('.load-indicator').addClass('hidden');
+            $container.find('.load-failed').removeClass('hidden');
+        });
     }
 
     var initAutoScrollTouch = function() {

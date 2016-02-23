@@ -27,15 +27,15 @@ finna.persona = (function(finna) {
         $.ajax({
             type: "GET",
             dataType: "json",
-            url: VuFind.getPath() + "/AJAX/JSON?method=personaLogout",
-            success: function(response, status, xhr) {
-                // No reload to avoid POST request problems
-                window.location = getDestinationUrl(true);
-            },
-            error: function(xhr, status, err) {
-                alert("logout failure: " + err);
-                finna.persona.logoutInProgress = false;
-            }
+            url: VuFind.getPath() + "/AJAX/JSON?method=personaLogout"
+        })
+        .done(function(response) {
+            // No reload to avoid POST request problems
+            window.location = getDestinationUrl(true);
+        })
+        .fail(function(xhr, status, err) {
+            alert("logout failure: " + err);
+            finna.persona.logoutInProgress = false;
         });
     };
 
@@ -72,36 +72,30 @@ finna.persona = (function(finna) {
                     url: VuFind.getPath() + "/AJAX/JSON?method=personaLogin",
                     data: {
                         assertion: assertion
-                    },
-                    success: function(response, status, xhr) {
-                        if (response.status === "OK") {
-                            if (Lightbox.shown) {
-                                Lightbox.addCloseAction(refreshPageForLogin);
-                                // and we update the modal
-                                var params = deparam(Lightbox.lastURL);
-                                if (params['subaction'] == 'UserLogin') {
-                                    Lightbox.close();
-                                } else {
-                                    Lightbox.getByUrl(
-                                        Lightbox.lastURL,
-                                        Lightbox.lastPOST,
-                                        Lightbox.changeContent
-                                    );
-                                }
-                            } else {
-                                window.location.href = window.location.href;
-                            }
-                        } else {
-                            $('.persona-login i').removeClass('fa-spinner fa-spin');
-                            navigator.id.logout();
-                            alert("Login failed");
-                        }
-                    },
-                    error: function(xhr, status, err) {
-                        navigator.id.logout();
-                        $('.persona-login i').removeClass('fa-spinner fa-spin');
-                        alert("login failure: " + err);
                     }
+                })
+                .done(function(response, status, xhr) {
+                    if (Lightbox.shown) {
+                        Lightbox.addCloseAction(refreshPageForLogin);
+                        // and we update the modal
+                        var params = deparam(Lightbox.lastURL);
+                        if (params['subaction'] == 'UserLogin') {
+                            Lightbox.close();
+                        } else {
+                            Lightbox.getByUrl(
+                                Lightbox.lastURL,
+                                Lightbox.lastPOST,
+                                Lightbox.changeContent
+                            );
+                        }
+                    } else {
+                        window.location.href = window.location.href;
+                    }
+                })
+                .fail(function(response, textStatus, err) {
+                    navigator.id.logout();
+                    $('.persona-login i').removeClass('fa-spinner fa-spin');
+                    alert("Login failure: " + err);
                 });
             },
             onlogout: function() {
@@ -119,13 +113,16 @@ finna.persona = (function(finna) {
     var initPersona = function() {
         $.ajax({
             url: 'https://login.persona.org/include.js',
-            dataType: 'script',
-            success: function() {
-                mozillaPersonaSetup(
-                    mozillaPersonaCurrentUser ? mozillaPersonaCurrentUser : null,
-                    mozillaPersonaAutoLogout ? true : false
-                );
-            }
+            dataType: 'script'
+        })
+        .done(function() {
+            mozillaPersonaSetup(
+                mozillaPersonaCurrentUser ? mozillaPersonaCurrentUser : null,
+                mozillaPersonaAutoLogout ? true : false
+            );
+        })
+        .fail(function(response, textStatus) {
+            console.log(response, textStatus);    
         });
     };
 
