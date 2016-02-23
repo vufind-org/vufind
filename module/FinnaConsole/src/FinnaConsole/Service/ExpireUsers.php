@@ -62,8 +62,6 @@ class ExpireUsers extends AbstractService implements ConsoleServiceInterface
      */
     public function run($arguments)
     {
-        $this->initLogging();
-
         if (!isset($arguments[0]) || (int) $arguments[0] < 180) {
             echo "Usage:\n  php index.php util expire_users <days>\n\n"
                 . "  Anonymizes all user accounts that have not been logged into\n"

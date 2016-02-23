@@ -63,8 +63,6 @@ class ClearMetaLibSearch extends AbstractService implements ConsoleServiceInterf
      */
     public function run($arguments)
     {
-        $this->initLogging();
-
         if (!isset($arguments[0]) || (int) $arguments[0] < 1) {
             echo "Usage:\n  php index.php util clear_metalib_search <m>\n\n"
                 . "  Removes all metalib searches from the database that are older\n"
