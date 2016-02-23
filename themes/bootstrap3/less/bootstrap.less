@@ -659,3 +659,10 @@ li.jstree-facet ul {padding-left: 20px;}
     }
   }
 }
+
+span[class^="services-"], span[class*=" services-"] span::before {
+  content: ", ";
+}
+span[class^="services-"], span[class*=" services-"] span:first-of-type::before {
+  content: "";
+}

@@ -191,6 +191,35 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Generate fake services.
+     *
+     * @return array
+     */
+    protected function getFakeServices()
+    {
+        // Load service configuration; return empty array if no services defined.
+        $services = isset($this->config['Records']['services'])
+            ? (array) $this->config['Records']['services']
+            : [];
+        if (empty($services)) {
+            return [];
+        }
+
+        // Make it more likely we have a single service than many:
+        $count = rand(1, 5) == 1 ? rand(1, count($services)) : 1;
+        $keys = (array) array_rand($services, $count);
+        $fakeServices = [];
+
+        foreach ($keys as $key) {
+            if ($key !== null) {
+                $fakeServices[] = $services[$key];
+            }
+        }
+
+        return $fakeServices;
+    }
+
+    /**
      * Generate a fake status message.
      *
      * @return string
@@ -319,7 +348,8 @@ class Demo extends AbstractBase
                 : false,
             'ILLRequest'   => 'auto',
             'addILLRequestLink' => $patron
-                ? $this->checkILLRequestBlock() ? 'block' : 'check' : false
+                ? $this->checkILLRequestBlock() ? 'block' : 'check' : false,
+            'services'     => $status == 'Available' ? $this->getFakeServices() : []
         ];
     }
 
