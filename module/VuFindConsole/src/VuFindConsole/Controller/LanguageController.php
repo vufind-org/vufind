@@ -106,6 +106,101 @@ class LanguageController extends AbstractBase
     }
 
     /**
+     * Assemble a new language string by combining existing ones using a
+     * template.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function addusingtemplateAction()
+    {
+        // Display help message if parameters missing:
+        $argv = $this->consoleOpts->getRemainingArgs();
+        if (!isset($argv[1])) {
+            Console::writeLine(
+                "Usage: {$_SERVER['argv'][0]} [target] [template]"
+            );
+            Console::writeLine(
+                "\ttarget - the target key to add "
+                . "(may include 'textdomain::' prefix)\n"
+                . "\ttemplate - the template to build the string, using ||string||"
+                . " to import existing strings"
+            );
+            return $this->getFailureResponse();
+        }
+
+        // Make sure a valid target has been specified:
+        list($targetDomain, $targetKey) = $this->extractTextDomain($argv[0]);
+        if (!($targetDir = $this->getLangDir($targetDomain, true))) {
+            return $this->getFailureResponse();
+        }
+
+        // Extract required source values from template:
+        $template = $argv[1];
+        preg_match_all('/\|\|[^|]+\|\|/', $template, $matches);
+        $lookups = [];
+        foreach ($matches[0] as $current) {
+            $key = trim($current, '|');
+            list($sourceDomain, $sourceKey) = $this->extractTextDomain($key);
+            $lookups[$sourceDomain][$current] = [
+                'key' => $sourceKey,
+                'translations' => []
+            ];
+        }
+
+        // Look up translations of all references in template:
+        $reader = new ExtendedIniReader();
+        foreach ($lookups as $domain => & $tokens) {
+            $sourceDir = $this->getLangDir($domain, false);
+            if (!$sourceDir) {
+                return $this->getFailureResponse();
+            }
+            $sourceCallback = function ($full) use (
+                $domain, & $tokens, $reader
+            ) {
+                $strings = $reader->getTextDomain($full, false);
+                foreach ($tokens as & $current) {
+                    $sourceKey = $current['key'];
+                    if (isset($strings[$sourceKey])) {
+                        $current['translations'][basename($full)]
+                            = $strings[$sourceKey];
+                    }
+                }
+            };
+            $this->processDirectory($sourceDir, $sourceCallback, false);
+        }
+
+        // Fill in template, write results:
+        $normalizer = new ExtendedIniNormalizer();
+        $targetCallback = function ($full) use (
+            $template, $targetKey, $normalizer, $lookups
+        ) {
+            $lang = basename($full);
+            $in = $out = [];
+            foreach ($lookups as $domain => $tokens) {
+                foreach ($tokens as $token => $details) {
+                    if (isset($details['translations'][$lang])) {
+                        $in[] = $token;
+                        $out[] = $details['translations'][$lang];
+                    } else {
+                        Console::writeLine(
+                            'Skipping; no match for token: ' . $token
+                        );
+                        return;
+                    }
+                }
+            }
+            $fHandle = fopen($full, "a");
+            fputs(
+                $fHandle,
+                "\n$targetKey = \"" . str_replace($in, $out, $template) . "\"\n"
+            );
+            fclose($fHandle);
+            $normalizer->normalizeFile($full);
+        };
+        $this->processDirectory($targetDir, $targetCallback);
+    }
+
+    /**
      * Delete a language string to another
      *
      * @return \Zend\Console\Response
@@ -242,17 +337,20 @@ class LanguageController extends AbstractBase
     /**
      * Process a language directory.
      *
-     * @param object   $dir      Directory object from dir() to process
-     * @param Callable $callback Function to run on all .ini files in $dir
+     * @param object   $dir        Directory object from dir() to process
+     * @param Callable $callback   Function to run on all .ini files in $dir
+     * @param bool     $showStatus Should we display status messages?
      *
      * @return void
      */
-    protected function processDirectory($dir, $callback)
+    protected function processDirectory($dir, $callback, $showStatus = true)
     {
         while ($file = $dir->read()) {
             // Only process .ini files, and ignore native.ini special case file:
             if (substr($file, -4) == '.ini' && $file !== 'native.ini') {
-                Console::writeLine("Processing $file...");
+                if ($showStatus) {
+                    Console::writeLine("Processing $file...");
+                }
                 $callback($dir->path . '/' . $file);
             }
         }

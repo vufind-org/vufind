@@ -9,18 +9,18 @@ finna.metalibLinks = (function() {
     };
     var checkSearchLink = function(link) {
         var parent = link;
-        var jqxhr = $.getJSON(VuFind.getPath() + '/AJAX/JSON?method=metalibLinks', {id: [link.data('ird')]}, function(response) {
-            if (response.status == 'OK') {
-                $(response.data).each(function(ind, ird) {
-                    parent.find('.loading').remove();
-                    var link = parent.find("." + ird.status);
-                    if (link.length) {
-                        link.removeClass("hide");
-                    }
-                });
-            } else {
-                link.text("MetaLib link check failed.");
-            }
+        var jqxhr = $.getJSON(VuFind.getPath() + '/AJAX/JSON?method=metalibLinks', {id: [link.data('ird')]})
+        .done(function(response) {
+            $(response.data).each(function(ind, ird) {
+                parent.find('.loading').remove();
+                var link = parent.find("." + ird.status);
+                if (link.length) {
+                    link.removeClass("hide");
+                }
+            });
+        })
+        .fail(function() {
+            link.text("MetaLib link check failed.");
         });
     };
 

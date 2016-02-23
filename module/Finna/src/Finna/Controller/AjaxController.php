@@ -60,7 +60,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            return $this->output('Lists disabled', self::STATUS_ERROR);
+            return $this->output('Lists disabled', self::STATUS_ERROR, 400);
         }
 
         // User must be logged in to edit list:
@@ -77,7 +77,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         foreach ($required as $param) {
             if (!isset($params[$param])) {
                 return $this->output(
-                    "Missing parameter '$param'", self::STATUS_ERROR
+                    "Missing parameter '$param'", self::STATUS_ERROR, 400
                 );
             }
         }
@@ -90,7 +90,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $list = $table->getExisting($listId);
         if ($list->user_id !== $user->id) {
             return $this->output(
-                "Invalid list id", self::STATUS_ERROR
+                "Invalid list id", self::STATUS_ERROR, 400
             );
         }
 
@@ -102,8 +102,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 $driver->saveToFavorites(['list' => $listId], $user);
             } catch (\Exception $e) {
                 return $this->output(
-                    $this->translate('Failed'),
-                    self::STATUS_ERROR
+                    $this->translate('Failed'), self::STATUS_ERROR, 500
                 );
             }
         }
@@ -120,7 +119,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            return $this->output('Lists disabled', self::STATUS_ERROR);
+            return $this->output('Lists disabled', self::STATUS_ERROR, 400);
         }
 
         // User must be logged in to edit list:
@@ -128,7 +127,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
         if (!$user) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
 
@@ -137,7 +137,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         foreach ($required as $param) {
             if (!isset($params[$param])) {
                 return $this->output(
-                    "Missing parameter '$param'", self::STATUS_ERROR
+                    "Missing parameter '$param'", self::STATUS_ERROR, 400
                 );
             }
         }
@@ -168,7 +168,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            return $this->output('Lists disabled', self::STATUS_ERROR);
+            return $this->output('Lists disabled', self::STATUS_ERROR, 400);
         }
 
         // User must be logged in to edit list:
@@ -186,7 +186,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         foreach ($required as $param) {
             if (!isset($params[$param])) {
                 return $this->output(
-                    "Missing parameter '$param'", self::STATUS_ERROR
+                    "Missing parameter '$param'", self::STATUS_ERROR, 400
                 );
             }
         }
@@ -200,7 +200,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $resources = $user->getSavedData($params['id'], $listId, $source);
         if (empty($resources)) {
-            return $this->output("User resource not found", self::STATUS_ERROR);
+            return $this->output("User resource not found", self::STATUS_ERROR, 400);
         }
 
         $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
@@ -295,7 +295,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
         );
     }
 
@@ -322,7 +322,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
             $comment = $this->params()->fromPost('comment');
             if (empty($commentId) || empty($comment)) {
                 return $this->output(
-                    $this->translate('An error has occurred'), self::STATUS_ERROR
+                    $this->translate('An error has occurred'),
+                    self::STATUS_ERROR,
+                    500
                 );
             }
             $rating = $this->params()->fromPost('rating');
@@ -342,7 +344,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
             $comments = $table->getForResourceByUser($id, $user->id);
             if (count($comments)) {
                 return $this->output(
-                    $this->translate('An error has occurred'), self::STATUS_ERROR
+                    $this->translate('An error has occurred'),
+                    self::STATUS_ERROR,
+                    500
                 );
             }
         }
@@ -442,7 +446,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $config
             = $this->getServiceLocator()->get('VuFind\Config')->get($configFile);
         if (!isset($config->SpecialFacets->dateRangeVis)) {
-            return $this->output([], self::STATUS_ERROR);
+            return $this->output([], self::STATUS_ERROR, 400);
         }
 
         list($filterField, $facet)
@@ -484,7 +488,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $this->writeSession();  // avoid session write timing bug
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         if (!isset($config->bX['token'])) {
-            return $this->output('bX support not enabled', self::STATUS_ERROR);
+            return $this->output('bX support not enabled', self::STATUS_ERROR, 400);
         }
 
         $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
@@ -533,14 +537,16 @@ class AjaxController extends \VuFind\Controller\AjaxController
             if ($result->getStatusCode() != 200) {
                 return $this->output(
                     'bX request failed, response code ' . $result->getStatusCode(),
-                    self::STATUS_ERROR
+                    self::STATUS_ERROR,
+                    500
                 );
             }
         } else {
             return $this->output(
                 'bX request failed: ' . $result->getStatusCode()
                 . ': ' . $result->getReasonPhrase(),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                500
             );
         }
         $xml = simplexml_load_string($result->getBody());
@@ -568,7 +574,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     public function getDescriptionAjax()
     {
         if (!$id = $this->params()->fromQuery('id')) {
-            return $this->output('', self::STATUS_ERROR);
+            return $this->output('', self::STATUS_ERROR, 400);
         }
 
         $cacheDir = $this->getServiceLocator()->get('VuFind\CacheManager')
@@ -587,7 +593,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
             if (($content = file_get_contents($localFile)) !== false) {
                 return $this->output($content, self::STATUS_OK);
             } else {
-                return $this->output('', self::STATUS_ERROR);
+                return $this->output('', self::STATUS_ERROR, 500);
             }
         } else {
             // Get URL
@@ -628,7 +634,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     public function getFeedAjax()
     {
         if (!$id = $this->params()->fromQuery('id')) {
-            return $this->output('Missing feed id', self::STATUS_ERROR);
+            return $this->output('Missing feed id', self::STATUS_ERROR, 400);
         }
 
         $touchDevice = $this->params()->fromQuery('touch-device') !== null
@@ -638,16 +644,18 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('rss');
         if (!isset($config[$id])) {
-            return $this->output('Missing feed configuration', self::STATUS_ERROR);
+            return $this->output(
+                'Missing feed configuration', self::STATUS_ERROR, 400
+            );
         }
 
         $config = $config[$id];
         if (!$config->active) {
-            return $this->output('Feed inactive', self::STATUS_ERROR);
+            return $this->output('Feed inactive', self::STATUS_ERROR, 400);
         }
 
         if (!$url = $config->url) {
-            return $this->output('Missing feed URL', self::STATUS_ERROR);
+            return $this->output('Missing feed URL', self::STATUS_ERROR, 500);
         }
 
         $translator = $this->getServiceLocator()->get('VuFind\Translator');
@@ -657,7 +665,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         } else if (isset($url['*'])) {
             $url = trim($url['*']);
         } else {
-            return $this->output('Missing feed URL', self::STATUS_ERROR);
+            return $this->output('Missing feed URL', self::STATUS_ERROR, 500);
         }
 
         $type = $config->type;
@@ -702,7 +710,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 // Local file
                 if (!is_file($url)) {
                     return $this->output(
-                        "File $url could not be found", self::STATUS_ERROR
+                        "File $url could not be found", self::STATUS_ERROR, 500
                     );
                 }
                 $channel = Reader::importFile($url);
@@ -710,7 +718,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         if (!$channel) {
-            return $this->output('Parsing failed', self::STATUS_ERROR);
+            return $this->output('Parsing failed', self::STATUS_ERROR, 500);
         }
 
         if ($cacheEnabled) {
@@ -929,14 +937,15 @@ class AjaxController extends \VuFind\Controller\AjaxController
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            return $this->output('Lists disabled', self::STATUS_ERROR);
+            return $this->output('Lists disabled', self::STATUS_ERROR, 400);
         }
 
         $user = $this->getUser();
         if (!$user) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
 
@@ -969,7 +978,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
         if (!$pluginManager->has($resolverType)) {
             return $this->output(
                 $this->translate("Could not load driver for $resolverType"),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                500
             );
         }
         $resolver = new \VuFind\Resolver\Connection(
@@ -1023,6 +1033,59 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Check one or more records to see if they are saved in one of the user's list.
+     *
+     * @return \Zend\Http\Response
+     *
+     * @todo This version exists only because upstream version was refactored to not
+     * include record_id's. Merge somehow.
+     */
+    protected function getSaveStatusesAjax()
+    {
+        $this->writeSession();  // avoid session write timing bug
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH,
+                401
+            );
+        }
+
+        // loop through each ID check if it is saved to any of the user's lists
+        $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id', []));
+        $sources = $this->params()->fromPost(
+            'source', $this->params()->fromQuery('source', [])
+        );
+        if (!is_array($ids) || !is_array($sources)) {
+            return $this->output(
+                $this->translate('Argument must be array.'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+        $result = [];
+        foreach ($ids as $i => $id) {
+            $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
+            $data = $user->getSavedData($id, null, $source);
+            if ($data && count($data) > 0) {
+                $result[$i] = [];
+                // if this item was saved, add it to the list of saved items.
+                foreach ($data as $list) {
+                    $result[$i][] = [
+                        'list_id' => $list->list_id,
+                        'list_title' => $list->list_title,
+                        'record_id' => $id,
+                        'record_source' => $source
+                    ];
+                }
+            }
+        }
+        return $this->output($result, self::STATUS_OK);
+    }
+
+    /**
      * Retrieve recommendations for results in other tabs
      *
      * @return \Zend\Http\Response
@@ -1045,7 +1108,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $search = $table->get('Search')->select(['finna_search_id' => $id])
             ->current();
         if (empty($search)) {
-            return $this->output('Search not found', self::STATUS_ERROR);
+            return $this->output('Search not found', self::STATUS_ERROR, 400);
         }
 
         $minSO = $search->getSearchObject();
@@ -1169,7 +1232,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $results = $runner->run($request, 'Solr', $setupCallback);
 
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
-            return $this->output('', self::STATUS_ERROR);
+            return $this->output('', self::STATUS_ERROR, 500);
         }
 
         $recommend = $results->getRecommendations('side');
@@ -1196,13 +1259,15 @@ class AjaxController extends \VuFind\Controller\AjaxController
         if (!$comment = $query->get('comment')) {
             return $this->output(
                 $this->translate('Missing comment id'),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                400
             );
         }
         if (!$reason = $query->get('reason')) {
             return $this->output(
                 $this->translate('Missing reason'),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                400
             );
         }
         $table = $this->getTable('Comments');
@@ -1232,7 +1297,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
             $request->getPost()->set('auth_method', 'MozillaPersona');
             $user = $auth->login($request);
         } catch (Exception $e) {
-            return $this->output(false, self::STATUS_ERROR);
+            return $this->output(false, self::STATUS_ERROR, 500);
         }
 
         return $this->output(true, self::STATUS_OK);
@@ -1420,10 +1485,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $params = $this->getRequest()->getPost()->toArray();
         $res = $this->processPayment($params);
         $returnUrl = $this->url()->fromRoute('myresearch-fines');
-        return $this->output(
-            $returnUrl,
-            $res['success'] ? self::STATUS_OK : self::STATUS_ERROR
-        );
+        return $res['success']
+            ? $this->output($returnUrl, self::STATUS_OK)
+            : $this->output($returnUrl, self::STATUS_ERROR, 500);
     }
 
     /**
@@ -1453,7 +1517,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
             || !isset($config->Piwik->site_id)
             || !isset($config->Piwik->token_auth)
         ) {
-            return $this->output('', self::STATUS_ERROR);
+            return $this->output('', self::STATUS_ERROR, 400);
         }
 
         $params = [
@@ -1473,7 +1537,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $result = $client->send();
         if (!$result->isSuccess()) {
             $this->logError("Piwik request for popular searches failed, url $url");
-            return $this->output('', self::STATUS_ERROR);
+            return $this->output('', self::STATUS_ERROR, 500);
         }
 
         $response = json_decode($result->getBody(), true);
@@ -1482,7 +1546,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 "Piwik request for popular searches failed, url $url, message: "
                 . $response['message']
             );
-            return $this->output('', self::STATUS_ERROR);
+            return $this->output('', self::STATUS_ERROR, 500);
         }
         $searchPhrases = [];
         foreach ($response as $item) {
@@ -1546,7 +1610,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
             if (!isset($config[$type])) {
                 return $this->output(
                     "Missing configuration for browse action: $type",
-                    self::STATUS_ERROR
+                    self::STATUS_ERROR,
+                    500
                 );
             }
 

@@ -3,7 +3,7 @@
 
 [General]
 enabled = false
-url = "http://kirjastokartta.kansalliskirjasto.fi/LocationHandler"
+url = "https://kirjastokartta.kansalliskirjasto.fi/LocationHandler?callno={callno}&collection={collection}&lang={lang}&owner={owner}"
 modal = true
 qr_code = false
 
@@ -21,3 +21,8 @@ owner = "FI-HELKA"
 
 [oula]
 owner = "FI-OULU"
+
+[josku]
+url[en-gb] = "https://libapps.uef.fi/sijaintiopas/?infoViewMode=selSignum&language=english&fSignum={callno}"
+url[fi] = "https://libapps.uef.fi/sijaintiopas/?infoViewMode=selSignum&language=suomi&fSignum={callno}"
+

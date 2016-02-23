@@ -7,18 +7,19 @@ function getRecord(recordID)
 {
   $.ajax({
     url: VuFind.getPath() + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
-    dataType: 'html',
-    success: function(response) {
-      if (response) {
-        $('#hierarchyRecord').html(html_entity_decode(response));
-        // Remove the old path highlighting
-        $('#hierarchyTree a').removeClass("jstree-highlight");
-        // Add Current path highlighting
-        var jsTreeNode = $(":input[value='"+recordID+"']").parent();
-        jsTreeNode.children("a").addClass("jstree-highlight");
-        jsTreeNode.parents("li").children("a").addClass("jstree-highlight");
-      }
-    }
+    dataType: 'html'
+  })
+  .done(function(response) {
+    $('#hierarchyRecord').html(html_entity_decode(response));
+    // Remove the old path highlighting
+    $('#hierarchyTree a').removeClass("jstree-highlight");
+    // Add Current path highlighting
+    var jsTreeNode = $(":input[value='"+recordID+"']").parent();
+    jsTreeNode.children("a").addClass("jstree-highlight");
+    jsTreeNode.parents("li").children("a").addClass("jstree-highlight");
+  })
+  .fail(function(response, textStatus) {
+      console.log(response, textStatus);
   });
 }
 

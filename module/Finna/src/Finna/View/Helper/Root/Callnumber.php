@@ -66,7 +66,7 @@ class Callnumber extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function __invoke($source, $callnumber, $collection, $language)
+    public function callnumber($source, $callnumber, $collection, $language)
     {
         $params = ['callnumber' => $callnumber];
         $config = $this->locationService->getConfig(
@@ -82,5 +82,15 @@ class Callnumber extends \Zend\View\Helper\AbstractHelper
         return $this->getView()->render(
             'Helpers/holding-callnumber.phtml', $params
         );
+    }
+
+    /**
+     * Check if QR-code option is enabled.
+     *
+     * @return boolean
+     */
+    public function useQrCode()
+    {
+        return $this->locationService->useQrCode();
     }
 }

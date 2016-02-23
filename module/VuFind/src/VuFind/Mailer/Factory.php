@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Mailer;
+use Zend\Mail\Transport\InMemory;
 use Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -43,16 +44,18 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class Factory implements \Zend\ServiceManager\FactoryInterface
 {
     /**
-     * Create service
+     * Build the mail transport object.
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param \Zend\Config\Config $config Configuration
      *
-     * @return mixed
+     * @return InMemory|Smtp
      */
-    public function createService(ServiceLocatorInterface $sm)
+    protected function getTransport($config)
     {
-        // Load configurations:
-        $config = $sm->get('VuFind\Config')->get('config');
+        // In test mode? Return fake object:
+        if (isset($config->Mail->testOnly) && $config->Mail->testOnly) {
+            return new InMemory();
+        }
 
         // Create mail transport:
         $settings = [
@@ -76,10 +79,22 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
                 }
             }
         }
-        $transport = new Smtp();
-        $transport->setOptions(new SmtpOptions($settings));
+        return new Smtp(new SmtpOptions($settings));
+    }
+
+    /**
+     * Create service
+     *
+     * @param ServiceLocatorInterface $sm Service manager
+     *
+     * @return mixed
+     */
+    public function createService(ServiceLocatorInterface $sm)
+    {
+        // Load configurations:
+        $config = $sm->get('VuFind\Config')->get('config');
 
         // Create service:
-        return new \VuFind\Mailer\Mailer($transport);
+        return new \VuFind\Mailer\Mailer($this->getTransport($config));
     }
 }

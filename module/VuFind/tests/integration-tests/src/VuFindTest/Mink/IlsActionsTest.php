@@ -94,8 +94,11 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
                 'cancelHolds' => 0,
                 'cancelILLRequests' => 0,
                 'cancelStorageRetrievalRequests' => 0,
+                'checkILLRequestBlock' => 0,
                 'checkILLRequestIsValid' => 0,
+                'checkRequestBlock' => 0,
                 'checkRequestIsValid' => 0,
+                'checkStorageRetrievalRequestBlock' => 0,
                 'checkStorageRetrievalRequestIsValid' => 0,
                 'getDefaultRequestGroup' => 0,
                 'getHoldDefaultRequiredDate' => 0,
@@ -215,11 +218,13 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
 
+        // If successful, we should now have a link to review the hold:
+        $link = $this->findCss($page, '.modal-body a');
+        $this->assertEquals('Interlibrary Loan Requests', $link->getText());
+        $link->click();
+        $this->snooze();
+
         // Make sure we arrived where we expected to:
-        $this->assertEquals(
-            'Your request was successful',
-            $this->findCss($page, '.alert.alert-success')->getText()
-        );
         $this->assertEquals(
             'Interlibrary Loan Requests', $this->findCss($page, 'h2')->getText()
         );
@@ -238,11 +243,13 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
 
+        // If successful, we should now have a link to review the hold:
+        $link = $this->findCss($page, '.modal-body a');
+        $this->assertEquals('Storage Retrieval Requests', $link->getText());
+        $link->click();
+        $this->snooze();
+
         // Make sure we arrived where we expected to:
-        $this->assertEquals(
-            'Your request was successful',
-            $this->findCss($page, '.alert.alert-success')->getText()
-        );
         $this->assertEquals(
             'Storage Retrieval Requests', $this->findCss($page, 'h2')->getText()
         );

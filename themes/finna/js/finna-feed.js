@@ -74,13 +74,9 @@ finna.feed = (function() {
         var url = VuFind.getPath() + '/AJAX/JSON?method=getFeed&id=' + id;
         url += "&touch-device=" + (finna.layout.isTouchDevice() ? 1 : 0);
 
-        $.getJSON(url, function(response) {
-            if (response.status == 'ERROR') {
-                holder.html("<!-- Feed could not be loaded: " + response.data + " -->");
-                return;
-            }
-
-            if (response.status === 'OK' && response.data) {
+        $.getJSON(url)
+        .done(function(response) {
+            if (response.data) {
                 holder.html(response.data.html);
                 var settings = response.data.settings;
                 if (typeof settings['height'] == 'undefined') {
@@ -176,6 +172,10 @@ finna.feed = (function() {
                     obj.slickGoTo(0, true);
                 }
             }
+        })
+        .fail(function(response, textStatus, err) {
+            holder.html("<!-- Feed could not be loaded: " + response.responseJSON.data + " -->");
+            console.log("Feed '" + id + "' could not be loaded: " + response.responseJSON.data);
         });
     };
 

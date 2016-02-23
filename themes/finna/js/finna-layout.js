@@ -439,19 +439,19 @@ finna.layout = (function() {
         });
     };
 
+    // TODO: Make upstream check_save_statuses.js compatible and use it instead
     var checkSaveStatuses = function(holder) {
         // This function may be called directly or via redirection in finna.js
         if (typeof(holder) == "undefined") {
             holder = $("body");
         }
 
-        var data = $.map(holder.find('.result,.record'), function(i) {
-            if($(i).find('.hiddenId').length == 0 || $(i).find('.hiddenSource').length == 0) {
+        var data = $.map(holder.find('.result,.record'), function(record) {
+            if($(record).find('.hiddenId').length == 0 || $(record).find('.hiddenSource').length == 0) {
                 return false;
             }
-            return {'id':$(i).find('.hiddenId').val(), 'source':$(i).find('.hiddenSource')[0].value};
+            return {'id':$(record).find('.hiddenId').val(), 'source':$(record).find('.hiddenSource')[0].value};
         });
-
         if (data.length) {
             var ids = [];
             var srcs = [];
@@ -463,31 +463,29 @@ finna.layout = (function() {
                 dataType: 'json',
                 method: 'POST',
                 url: VuFind.getPath() + '/AJAX/JSON?method=getSaveStatuses',
-                data: {id:ids, 'source':srcs},
-                success: function(response) {
-                    if(response.status == 'OK') {
-                        holder.find('.savedLists ul').empty();
-                        $.each(response.data, function(i, result) {
-                            var $container = holder.find('input[value="' + result.record_id + '"]').closest(".result");
-                            if ($container.length) {
-                                $container = $container.find('.savedLists');
-                            }
-                            if ($container.length == 0) { // Record view
-                                $container = $('.savedLists');
-                            }
-                            var $ul = $container.find('ul:first');
-                            if ($ul.length == 0) {
-                                $container.append('<ul></ul>');
-                                $ul = $container.find('ul:first');
-                            }
-                            var html = '<li><a href="' + VuFind.getPath() + '/MyResearch/MyList/' + result.list_id + '">'
-                                + result.list_title + '</a></li>';
-                            $ul.append(html);
-                            $container.removeClass('hidden');
-                        });
+                data: {id:ids, 'source':srcs}
+            })
+            .done(function(response) {
+                for (var rn in response.data) {
+                    var $container = holder.find('input[value="' + response.data[rn][0].record_id + '"]').closest('.result');
+                    if ($container.length == 0) {
+                        $container = holder;
                     }
+
+                    var list = $container.find('#result'+rn).find('.savedLists')
+                    if (list.length == 0) {
+                        list = $container.find('.savedLists');
+                    }
+                    var html = list.find('strong')[0].outerHTML+'<ul>';
+                    for (var i=0; i<response.data[rn].length; i++) {
+                        html += '<li><a href="' + VuFind.getPath() + '/MyResearch/MyList/' + response.data[rn][i].list_id + '">'
+                            + response.data[rn][i].list_title + '</a></li>';
+                    }
+                    html += '</ul>';
+                    list.html(html).removeClass('hidden');
                 }
             });
+            
             initSaveRecordLinks(holder);
         }
     };
@@ -519,6 +517,19 @@ finna.layout = (function() {
             }
             $('#modal .modal-title').html(title);
             Lightbox.titleSet = true;
+        });
+    };
+
+    // There's one in record.js but this applies to holds made directly from the 
+    // holdings in the results list.
+    var initHoldRequestFeedback = function() {
+        Lightbox.addFormCallback('placeHold', function(html) {
+            Lightbox.checkForError(html, function(html) {
+                var divPattern = '<div class="alert alert-success">';
+                var fi = html.indexOf(divPattern);
+                var li = html.indexOf('</div>', fi+divPattern.length);
+                Lightbox.success(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
+            });
         });
     };
 
@@ -607,20 +618,17 @@ finna.layout = (function() {
         }
         $container.find('.facet-load-indicator').removeClass('hidden');
         var query = window.location.href.split('?')[1];
-        $.getJSON(
-            VuFind.getPath() + '/AJAX/JSON?method=getSideFacets&' + query,
-            function(response) {
-                if (response.status == 'OK') {
-                    $container.replaceWith(response.data);
-                    finna.dateRangeVis.init();
-                    initToolTips($('.sidebar'));
-                    initMobileNarrowSearch();
-                } else {
-                    $container.find('.facet-load-indicator').addClass('hidden');
-                    $container.find('.facet-load-failed').removeClass('hidden');
-                }
-            }
-        );
+        $.getJSON(VuFind.getPath() + '/AJAX/JSON?method=getSideFacets&' + query)
+        .done(function(response) {
+            $container.replaceWith(response.data);
+            finna.dateRangeVis.init();
+            initToolTips($('.sidebar'));
+            initMobileNarrowSearch();
+        })
+        .fail(function() {
+            $container.find('.facet-load-indicator').addClass('hidden');
+            $container.find('.facet-load-failed').removeClass('hidden');
+        });
     }
 
     var initPiwikPopularSearches = function() {
@@ -629,17 +637,14 @@ finna.layout = (function() {
             return;
         }
         $container.find('.load-indicator').removeClass('hidden');
-        $.getJSON(
-            VuFind.getPath() + '/AJAX/JSON?method=getPiwikPopularSearches',
-            function(response) {
-                if (response.status == 'OK') {
-                    $container.html(response.data);
-                } else {
-                    $container.find('.load-indicator').addClass('hidden');
-                    $container.find('.load-failed').removeClass('hidden');
-                }
-            }
-        );
+        $.getJSON(VuFind.getPath() + '/AJAX/JSON?method=getPiwikPopularSearches')
+        .done(function(response) {
+            $container.html(response.data);
+        })
+        .fail(function() {
+            $container.find('.load-indicator').addClass('hidden');
+            $container.find('.load-failed').removeClass('hidden');
+        });
     }
 
     var initAutoScrollTouch = function() {
@@ -699,6 +704,7 @@ finna.layout = (function() {
             initPiwikPopularSearches();
             initAutoScrollTouch();
             initIpadCheck();
+            initHoldRequestFeedback();
         }
     };
 

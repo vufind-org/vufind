@@ -5,14 +5,18 @@ finna.record = (function() {
         if (description.length) {
             var id = description.data('id');
             var url = VuFind.getPath() + '/AJAX/JSON?method=getDescription&id=' + id;
-            $.getJSON(url, function(response) {
-                if (response.status === 'OK' && response.data.length > 0) {
+            $.getJSON(url)
+            .done(function(response) {
+                if (response.data.length > 0) {
                     description.html(response.data);
                     description.wrapInner('<div class="truncate-field wide"><p class="summary"></p></div>');
                     finna.layout.initTruncate(description);
                 } else {
                     description.hide();
                 }
+            })
+            .fail(function() {
+                description.hide();
             });
         }
     }
@@ -31,7 +35,7 @@ finna.record = (function() {
       return vars;
     }
     
-    checkRequestsAreValid = function(elements, requestType, blockedClass) {
+    checkRequestsAreValid = function(elements, requestType) {
       if (!elements[0]) {
         return;
       }
@@ -49,29 +53,28 @@ finna.record = (function() {
         data: {id: recordId, requestType: requestType, data: vars},
         method: 'POST',
         cache: false,
-        url: url,
-        success: function(responses) {
-          if (responses.status == 'OK') {
-            $.each(responses.data, function(idx, response) {
-              var element = elements[idx];
-              if (response.status) {
-                $(element).removeClass('disabled')
-                  .html(response.msg);
-                } else {
-                  $(element).remove();
-                }
-            });
-          } else if (responses.status == 'NEED_AUTH') {
-            $(element).replaceWith('<span class="' + blockedClass + '">' + responses[0].msg + '</span>');
-          }
-        }
+        url: url
+      })
+      .done(function(responses) {
+        $.each(responses.data, function(idx, response) {
+          var element = elements[idx];
+          if (response.status) {
+            $(element).removeClass('disabled')
+              .html(response.msg);
+            } else {
+              $(element).remove();
+            }
+        });
+      })
+      .fail(function(response, textStatus) {
+        console.log(response, textStatus);
       });
     }
     
     var setUpCheckRequest = function() {
-      checkRequestsAreValid($('.expandedCheckRequest').removeClass('expandedCheckRequest'), 'Hold', 'holdBlocked');
-      checkRequestsAreValid($('.expandedCheckStorageRetrievalRequest').removeClass('expandedCheckStorageRetrievalRequest'), 'StorageRetrievalRequest', 'StorageRetrievalRequestBlocked');
-      checkRequestsAreValid($('.expandedCheckILLRequest').removeClass('expandedCheckILLRequest'), 'ILLRequest', 'ILLRequestBlocked');
+      checkRequestsAreValid($('.expandedCheckRequest').removeClass('expandedCheckRequest'), 'Hold');
+      checkRequestsAreValid($('.expandedCheckStorageRetrievalRequest').removeClass('expandedCheckStorageRetrievalRequest'), 'StorageRetrievalRequest');
+      checkRequestsAreValid($('.expandedCheckILLRequest').removeClass('expandedCheckILLRequest'), 'ILLRequest');
     }
     
     var initHoldingsControls = function() {
