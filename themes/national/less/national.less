@@ -1,3 +1,20 @@
+header {
+    & .navbar-brand {
+        padding-right: 10px;
+    }
+    & ul.navbar-nav > li > a {
+        padding: 0 11px;
+    }
+    & ul.navbar-nav.language:nth-child(3)::before {
+        border-left: 0;
+    }
+    & ul.navbar-nav.language:nth-child(3) > li > a {
+        padding-right: 9px;
+    }
+    & ul.navbar-nav.language:nth-child(4) > li > a {
+        padding-left: 9px;
+    }
+}
 @media (max-width: @screen-xs-max) {
     body {
         background-size: 260% auto;
@@ -52,7 +69,20 @@
         padding-right: 15px;
     }
 }
+// fine-tune tablet and larger layouts 
 @media (min-width: @screen-sm-min) {
+    header .navbar .dropdown .dropdown-menu { 
+        & li {
+            width: 270px;
+        }
+        & li div.description {
+            padding-top: 2px;
+        }
+        & li a {
+            white-space: initial;
+            padding: 9px 10px;
+        }
+    }
     .searchLayout .introduction {
         margin: 0px 0px 30px;
     }
@@ -75,7 +105,6 @@
         }
     }
 }
-
 .home-1 {
     & .introduction p {
         font-weight: 400;
