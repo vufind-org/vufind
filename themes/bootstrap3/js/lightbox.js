@@ -68,6 +68,16 @@ function Lightbox() {
     return this.xhr;
   };
 
+  // Present an alert
+  this.alert = function(message, type) {
+    if ('undefined' == typeof type) {
+      type = 'info';
+    }
+    this.html('<div class="alert alert-'+type+'">'+message+'</div>\
+    <button class="btn btn-default" data-dismiss="modal">close</button>');
+    this.modal.modal('show');
+  };
+
   // Update content
   this.update = function(html, link) {
     // Deframe HTML
@@ -78,12 +88,12 @@ function Lightbox() {
     var testDiv = $('<div>'+html+'</div>');
     var alerts = testDiv.find('.alert-success');
     if (alerts.length > 0) {
-      html = alerts[0].outerHTML + '<button class="btn btn-default" data-dismiss="modal">close</button>';
-      this.html(html);
+      this.alert(alerts[0].innerHTML, 'success');
       return;
     }
     // Fill HTML
     this.html(html);
+    this.modal.modal('show');
     // Attach capturing events
     this.modalBody.find('a').on('click', VuFind.lightbox.constrainLink);
     var forms = this.modalBody.find('form');
@@ -122,7 +132,7 @@ function Lightbox() {
   /**
    * Form data options
    *
-   * data-lightbox-onsubmit = on success, run named function
+   * data-lightbox-onsubmit = on submit, run named function
    * data-lightbox-onclose  = on close, run named function
    */
   this.formSubmit = function(event) {
@@ -143,23 +153,19 @@ function Lightbox() {
     }
     // Special handlers
     if ('undefined' !== typeof dataset) {
-      // Overwritten behavior
-      if("string" === typeof dataset.lightboxHandler) {
+      // On submit behavior
+      if("string" === typeof dataset.lightboxOnsubmit) {
         var ret = null;
-        if ("function" === typeof window[dataset.lightboxHandler]) {
-          ret = window[dataset.lightboxHandler](event, data);
+        if ("function" === typeof window[dataset.lightboxOnsubmit]) {
+          ret = window[dataset.lightboxOnsubmit](event, data);
         } else {
-          ret = eval('(function(event, data) {' + dataset.lightboxHandler + '}())');
+          ret = eval('(function(event, data) {' + dataset.lightboxOnsubmit + '}())'); // inline code
         }
         // return true or false to send that to the form
         // return null or anything else to continue to the ajax
         if (ret === false || ret === true) {
           return ret;
         }
-      }
-      // On submit behavior
-      if("string" === typeof dataset.lightboxOnsubmit && "function" === typeof window[dataset.lightboxOnsubmit]) {
-        window[dataset.lightboxOnsubmit]();
       }
       // onclose behavior
       if("string" === typeof dataset.lightboxOnclose && "function" === typeof window[dataset.lightboxOnclose]) {

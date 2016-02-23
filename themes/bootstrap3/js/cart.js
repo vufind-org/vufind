@@ -160,6 +160,8 @@ function registerUpdateCart($form) {
   }
 }
 
+// Building an array and checking indexes prevents a race situation
+// We want to prioritize empty over printing
 function cartFormHandler(event, data) {
   var keys = [];
   for (var i in data) {

@@ -10,7 +10,7 @@
 
 <?=$this->flashmessages()?>
 
-<form class="form-horizontal" method="post" action="<?=$this->url('cart-save')?>" name="bulkSave" data-lightbox-success="<?=$this->transEsc('bulk_save_success') ?>">
+<form class="form-horizontal" method="post" action="<?=$this->url('cart-save')?>" name="bulkSave">
   <? $idParams = array(); ?>
   <? foreach ($this->records as $current): ?>
     <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getSourceIdentifier() . '|' . $current->getUniqueId()) ?>

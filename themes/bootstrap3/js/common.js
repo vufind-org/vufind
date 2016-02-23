@@ -103,6 +103,18 @@ function refreshPageForLogin() {
     window.location.reload();
   }, false);
 }
+function bulkFormHandler(event, data) {
+  if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length == 0) {
+    VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
+    return false;
+  }
+  var keys = [];
+  for (var i in data) {
+    if ('print' == data[i].name) {
+      return true;
+    }
+  }
+}
 function newAccountHandler() {
   refreshPageForLogin();
   if (VuFind.lightbox.originalUrl.indexOf('UserLogin') > -1) {
