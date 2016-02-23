@@ -41,6 +41,11 @@ use Zend\Db\Sql\Select;
  */
 class ExpireUsers extends AbstractService
 {
+    /**
+     * Table for user accounts
+     *
+     * @var User
+     */
     protected $table = null;
 
     /**

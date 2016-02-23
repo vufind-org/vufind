@@ -42,6 +42,11 @@ use Zend\Db\Sql\Select;
  */
 class ClearMetaLibSearch extends AbstractService
 {
+    /**
+     * Table for MetaLib searches
+     *
+     * @var MetaLibSearch
+     */
     protected $table = null;
 
     /**
