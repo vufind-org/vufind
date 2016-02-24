@@ -35,7 +35,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
   -->
-  <luceneMatchVersion>5.4.1</luceneMatchVersion>
+  <luceneMatchVersion>5.5.0</luceneMatchVersion>
 
   <!-- <lib/> directives can be used to instruct Solr to load any Jars
        identified and use them to resolve any "plugins" specified in
@@ -145,27 +145,27 @@
   -->
   <codecFactory class="solr.SchemaCodecFactory"/>
 
-  <!-- To enable dynamic schema REST APIs, use the following for <schemaFactory>:
-  
-       <schemaFactory class="ManagedIndexSchemaFactory">
-         <bool name="mutable">true</bool>
-         <str name="managedSchemaResourceName">managed-schema</str>
-       </schemaFactory>
-       
-       When ManagedIndexSchemaFactory is specified, Solr will load the schema from
+  <!-- To disable dynamic schema REST APIs, use the following for <schemaFactory>:
+
+       <schemaFactory class="ClassicIndexSchemaFactory"/>
+
+       When ManagedIndexSchemaFactory is specified instead, Solr will load the schema from
        the resource named in 'managedSchemaResourceName', rather than from schema.xml.
        Note that the managed schema resource CANNOT be named schema.xml.  If the managed
        schema does not exist, Solr will create it after reading schema.xml, then rename
-       'schema.xml' to 'schema.xml.bak'. 
-       
+       'schema.xml' to 'schema.xml.bak'.
+
        Do NOT hand edit the managed schema - external modifications will be ignored and
        overwritten as a result of schema modification REST API calls.
 
        When ManagedIndexSchemaFactory is specified with mutable = true, schema
        modification REST API calls will be allowed; otherwise, error responses will be
-       sent back for these requests. 
+       sent back for these requests.
   -->
-  <schemaFactory class="ClassicIndexSchemaFactory"/>
+  <schemaFactory class="ManagedIndexSchemaFactory">
+    <bool name="mutable">true</bool>
+    <str name="managedSchemaResourceName">managed-schema</str>
+  </schemaFactory>
 
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
        Index Config - These settings control low-level behavior of indexing
@@ -205,23 +205,11 @@
          Even older versions of Lucene used LogDocMergePolicy.
       -->
     <!--
-        <mergePolicy class="org.apache.lucene.index.TieredMergePolicy">
+        <mergePolicyFactory class="solr.TieredMergePolicyFactory">
           <int name="maxMergeAtOnce">10</int>
           <int name="segmentsPerTier">10</int>
-        </mergePolicy>
-      -->
-       
-    <!-- Merge Factor
-         The merge factor controls how many segments will get merged at a time.
-         For TieredMergePolicy, mergeFactor is a convenience parameter which
-         will set both MaxMergeAtOnce and SegmentsPerTier at once.
-         For LogByteSizeMergePolicy, mergeFactor decides how many new segments
-         will be allowed before they are merged into one.
-         Default is 10 for both merge policies.
-      -->
-    <!-- 
-    <mergeFactor>10</mergeFactor>
-      -->
+        </mergePolicyFactory>
+     -->
 
     <!-- Expert: Merge Scheduler
          The Merge Scheduler in Lucene controls how merges are

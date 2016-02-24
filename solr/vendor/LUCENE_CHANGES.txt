@@ -4,34 +4,224 @@ For more information on past and future Lucene versions, please see:
 http://s.apache.org/luceneversions
 
 
-======================= Lucene 5.4.1 =======================
+======================= Lucene 5.5.0 =======================
+
+New Features
+
+* LUCENE-5868: JoinUtil.createJoinQuery(..,NumericType,..) query-time join 
+  for LONG and INT fields with NUMERIC and SORTED_NUMERIC doc values.
+  (Alexey Zelin via Mikhail Khludnev) 
+
+* LUCENE-6939: Add exponential reciprocal scoring to
+  BlendedInfixSuggester, to even more strongly favor suggestions that
+  match closer to the beginning (Arcadius Ahouansou via Mike McCandless)
+
+* LUCENE-6958: Improved CustomAnalyzer to take class references to factories
+  as alternative to their SPI name. This enables compile-time safety when
+  defining analyzer's components.  (Uwe Schindler, Shai Erera)
+
+* LUCENE-6818, LUCENE-6986: Add DFISimilarity implementing the divergence 
+  from independence model. (Ahmet Arslan via Robert Muir)
+
+* SOLR-4619: Added removeAllAttributes() to AttributeSource, which removes
+  all previously added attributes.
+  
+* LUCENE-7010: Added MergePolicyWrapper to allow easy wrapping of other policies.
+  (Shai Erera)
+
+API Changes
+
+* LUCENE-6997: refactor sandboxed GeoPointField and query classes to lucene-spatial
+  module under new lucene.spatial.geopoint package (Nick Knize)
+
+* LUCENE-6908: GeoUtils static relational methods have been refactored to new
+  GeoRelationUtils and now correctly handle large irregular rectangles, and
+  pole crossing distance queries. (Nick Knize)
+
+* LUCENE-6900: Grouping sortWithinGroup variables used to allow null to mean
+  Sort.RELEVANCE.  Null is no longer permitted.  (David Smiley)
+
+* LUCENE-6919: The Scorer class has been refactored to expose an iterator
+  instead of extending DocIdSetIterator. asTwoPhaseIterator() has been renamed
+  to twoPhaseIterator() for consistency. (Adrien Grand)
+
+* LUCENE-6973: TeeSinkTokenFilter no longer accepts a SinkFilter (the latter
+  has been removed). If you wish to filter the sinks, you can wrap them with
+  any other TokenFilter (e.g. a FilteringTokenFilter). Also, you can no longer
+  add a SinkTokenStream to an existing TeeSinkTokenFilter. If you need to
+  share multiple streams with a single sink, chain them with multiple
+  TeeSinkTokenFilters.
+  DateRecognizerSinkFilter was renamed to DateRecognizerFilter and moved under
+  analysis/common. TokenTypeSinkFilter was removed (use TypeTokenFilter instead).
+  TokenRangeSinkFilter was removed. (Shai Erera, Uwe Schindler)
+
+* LUCENE-6980: Default applyAllDeletes to true when opening
+  near-real-time readers (Mike McCandless)
+
+* LUCENE-6981: SpanQuery.getTermContexts() helper methods are now public, and
+  SpanScorer has a public getSpans() method. (Alan Woodward)
+
+* LUCENE-6932: IndexInput.seek implementations now throw EOFException
+  if you seek beyond the end of the file (Adrien Grand, Mike McCandless)
+
+* LUCENE-6988: IndexableField.tokenStream() no longer throws IOException
+  (Alan Woodward)
+
+* LUCENE-7028: Deprecate a duplicate method in NumericUtils.
+  (Uwe Schindler)
+
+Optimizations
+
+* LUCENE-6930: Decouple GeoPointField from NumericType by using a custom
+  and efficient GeoPointTokenStream and TermEnum designed for GeoPoint prefix
+  terms. (Nick Knize)
+
+* LUCENE-6951: Improve GeoPointInPolygonQuery using point orientation based
+  line crossing algorithm, and adding result for multi-value docs when least
+  1 point satisfies polygon criteria. (Nick Knize)
+
+* LUCENE-6889: BooleanQuery.rewrite now performs some query optimization, in
+  particular to rewrite queries that look like: "+*:* #filter" to a
+  "ConstantScore(filter)". (Adrien Grand)
+
+* LUCENE-6912: Grouping's Collectors now calculate a response to needsScores()
+  instead of always 'true'. (David Smiley)
+
+* LUCENE-6815: DisjunctionScorer now advances two-phased iterators lazily,
+  stopping to evaluate them as soon as a single one matches. The other iterators
+  will be confirmed lazily when computing score() or freq(). (Adrien Grand)
+
+* LUCENE-6926: MUST_NOT clauses now use the match cost API to run the slow bits
+  last whenever possible. (Adrien Grand)
+
+* LUCENE-6944: BooleanWeight no longer creates sub-scorers if BS1 is not
+  applicable. (Adrien Grand)
+
+* LUCENE-6940: MUST_NOT clauses execute faster, especially when they are sparse.
+  (Adrien Grand)
+
+* LUCENE-6470: Improve efficiency of TermsQuery constructors. (Robert Muir)
 
 Bug Fixes
 
-* LUCENE-6918: LRUQueryCache.onDocIdSetEviction is only called when at least
-  one DocIdSet is being evicted. (Adrien Grand)
+* LUCENE-6976: BytesRefTermAttributeImpl.copyTo NPE'ed if BytesRef was null.
+  Added equals & hashCode, and a new test for these things. (David Smiley)
 
-* LUCENE-6946: SortField.equals now takes the missingValue parameter into
-  account. (Adrien Grand)
+* LUCENE-6932: RAMDirectory's IndexInput was failing to throw
+  EOFException in some cases (Stéphane Campinas, Adrien Grand via Mike
+  McCandless)
 
-* SOLR-7865: BlendedInfixSuggester was returning too many results
-  (Arcadius Ahouansou via Mike McCandless)
+* LUCENE-6896: Don't treat the smallest possible norm value as an infinitely
+  long document in SimilarityBase or BM25Similarity. Add more warnings to sims
+  that will not work well with extreme tf values. (Ahmet Arslan, Robert Muir)
 
-* LUCENE-6929: Fix SpanNotQuery rewriting to not drop the pre/post parameters.
-  (Tim Allison via Adrien Grand)
+* LUCENE-6984: SpanMultiTermQueryWrapper no longer modifies its wrapped query.
+  (Alan Woodward, Adrien Grand)
+
+* LUCENE-6998: Fix a couple places to better detect truncated index files
+  as corruption.  (Robert Muir, Mike McCandless)
+
+* LUCENE-7002: Fixed MultiCollector to not throw a NPE if setScorer is called
+  after one of the sub collectors is done collecting. (John Wang, Adrien Grand)
+
+* LUCENE-7027: Fixed NumericTermAttribute to not throw IllegalArgumentException
+  after NumericTokenStream was exhausted.  (Uwe Schindler, Lee Hinman,
+  Mike McCandless)
+
+* LUCENE-7018: Fix GeoPointTermQueryConstantScoreWrapper to add document on
+  first GeoPointField match. (Nick Knize)
+
+* LUCENE-7019: Add two-phase iteration to GeoPointTermQueryConstantScoreWrapper.
+  (Robert Muir via Nick Knize)
+
+* LUCENE-6989: Improve MMapDirectory's unmapping checks to catch more non-working
+  cases. The unmap-hack does not yet work with recent Java 9. Official support
+  will come with Lucene 6.  (Uwe Schindler)
+
+Other
+
+* LUCENE-6924: Upgrade randomizedtesting to 2.3.2. (Dawid Weiss)
+
+* LUCENE-6920: Improve custom function checks in expressions module
+  to use MethodHandles and work without extra security privileges.
+  (Uwe Schindler, Robert Muir)
+
+* LUCENE-6921: Fix SPIClassIterator#isParentClassLoader to don't
+  require extra permissions.  (Uwe Schindler)
+
+* LUCENE-6923: Fix RamUsageEstimator to access private fields inside
+  AccessController block for computing size. (Robert Muir)
+
+* LUCENE-6907: make TestParser extendable, rename test/.../xml/
+  NumericRangeQueryQuery.xml to NumericRangeQuery.xml
+  (Christine Poerschke)
+
+* LUCENE-6925: add ForceMergePolicy class in test-framework
+  (Christine Poerschke)
+
+* LUCENE-6945: factor out TestCorePlus(Queries|Extensions)Parser from
+  TestParser, rename TestParser to TestCoreParser (Christine Poerschke)
+
+* LUCENE-6949: fix (potential) resource leak in SynonymFilterFactory
+  (https://scan.coverity.com/projects/5620 CID 120656)
+  (Christine Poerschke, Coverity Scan (via Rishabh Patel))
+
+* LUCENE-6961: Improve Exception handling in AnalysisFactories /
+  AnalysisSPILoader: Don't wrap exceptions occuring in factory's
+  ctor inside InvocationTargetException.  (Uwe Schindler)
+
+* LUCENE-6965: Expression's JavascriptCompiler now throw ParseException 
+  with bad function names or bad arity instead of IllegalArgumentException.
+  (Tomás Fernández Löbbe, Uwe Schindler, Ryan Ernst)
+
+* LUCENE-6964: String-based signatures in JavascriptCompiler replaced
+  with better compile-time-checked MethodType; generated class files
+  are no longer marked as synthetic.  (Uwe Schindler)
+
+* LUCENE-6978: Refactor several code places that lookup locales
+  by string name to use BCP47 locale tag instead. LuceneTestCase
+  now also prints locales on failing tests this way.
+  Locale#forLanguageTag() and Locale#toString() were placed on list
+  of forbidden signatures.  (Uwe Schindler, Robert Muir)
+
+* LUCENE-6988: You can now add IndexableFields directly to a MemoryIndex,
+  and create a MemoryIndex from a lucene Document.  (Alan Woodward)
+
+* LUCENE-7005: TieredMergePolicy tweaks (>= vs. >, @see get vs. set)
+  (Christine Poerschke)
+
+* LUCENE-7006: increase BaseMergePolicyTestCase use (TestNoMergePolicy and
+  TestSortingMergePolicy now extend it, TestUpgradeIndexMergePolicy added)
+  (Christine Poerschke)
+
+======================= Lucene 5.4.1 =======================
+
+Bug Fixes
 
 * LUCENE-6910: fix 'if ... > Integer.MAX_VALUE' check in
   (Binary|Numeric)DocValuesFieldUpdates.merge
   (https://scan.coverity.com/projects/5620 CID 119973 and CID 120081)
   (Christine Poerschke, Coverity Scan (via Rishabh Patel))
 
+* LUCENE-6946: SortField.equals now takes the missingValue parameter into
+  account. (Adrien Grand)
+
+* LUCENE-6918: LRUQueryCache.onDocIdSetEviction is only called when at least
+  one DocIdSet is being evicted. (Adrien Grand)
+
+* LUCENE-6929: Fix SpanNotQuery rewriting to not drop the pre/post parameters.
+  (Tim Allison via Adrien Grand)
+
 * LUCENE-6950: Fix FieldInfos handling of UninvertingReader, e.g. do not
-  hide the true docvalues update generation or other properties. 
+  hide the true docvalues update generation or other properties.
   (Ishan Chattopadhyaya via Robert Muir)
 
 * LUCENE-6948: Fix ArrayIndexOutOfBoundsException in PagedBytes$Reader.fill
   by removing an unnecessary long-to-int cast.
   (Michael Lawley via Christine Poerschke)
+
+* SOLR-7865: BlendedInfixSuggester was returning too many results
+  (Arcadius Ahouansou via Mike McCandless)
 
 * LUCENE-6970: Fixed off-by-one error in Lucene54DocValuesProducer that could
   potentially corrupt doc values. (Adrien Grand)
@@ -173,6 +363,10 @@ Optimizations
   be fully read from disk if the supplied StoredFieldVisitor doesn't want it.
   So put your largest text field value last to benefit. (David Smiley)
 
+* LUCENE-6909: Remove unnecessary synchronized from
+  FacetsConfig.getDimConfig for better concurrency (Sanne Grinovero
+  via Mike McCandless)
+  
 * SOLR-7730: Speed up SlowCompositeReaderWrapper.getSortedSetDocValues() by
   avoiding merging FieldInfos just to check doc value type.
   (Paul Vasilyev, Yuriy Pakhomov, Mikhail Khludnev, yonik)
@@ -367,6 +561,13 @@ Changes in Runtime Behavior
 
 * LUCENE-6305: BooleanQuery.equals and hashcode do not depend on the order of
   clauses anymore. (Adrien Grand)
+
+======================= Lucene 5.3.2 =======================
+
+Bug Fixes
+
+* SOLR-7865: BlendedInfixSuggester was returning too many results
+  (Arcadius Ahouansou via Mike McCandless)
 
 ======================= Lucene 5.3.1 =======================
 

@@ -10,6 +10,8 @@ org.apache.solr.handler.admin
 org.apache.solr.handler.component
 org.apache.solr.handler.loader
 org.apache.solr.highlight
+org.apache.solr.index
+org.apache.solr.index.hdfs
 org.apache.solr.internal.csv
 org.apache.solr.internal.csv.writer
 org.apache.solr.logging
