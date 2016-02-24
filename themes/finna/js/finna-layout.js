@@ -62,6 +62,58 @@ finna.layout = (function() {
       });
     };
 
+    var initLocationService = function(holder) {
+        if (typeof holder == 'undefined') {
+            holder = $(document);
+        }
+        var closeModalCallback = function(modal) {
+            modal.removeClass('location-service location-service-qrcode');
+            modal.find('.modal-dialog').removeClass('modal-lg');
+        };
+
+        holder.find('a.location-service').click(function(e) {
+            if ($(this).hasClass('location-service-modal')) {
+                var modal = $('#modal');
+                modal.addClass('location-service');
+                modal.find('.modal-dialog').addClass('modal-lg');
+                modal.find('.modal-title').html(VuFind.translate('location-service'));
+                Lightbox.titleSet = true;
+
+                $('#modal').one('hidden.bs.modal', function() {
+                    closeModalCallback($(this));
+                });
+                var params = {
+                    source: $(this).attr('data-source'),
+                    callnumber: $(this).attr('data-callnumber'),
+                    collection: $(this).attr('data-collection')
+                };
+                return Lightbox.get('LocationService', 'modal', params);
+            } else {
+                // Prevent holding collapse/uncollapse
+                e.stopPropagation();
+            }
+        });
+
+        holder.find('.location-service.fa-qrcode').click(function() {
+            var modal = $('#modal');
+            modal.addClass('location-service-qrcode');
+            modal.find('.modal-title').html(VuFind.translate('location-service'));
+            Lightbox.titleSet = true;
+            Lightbox.changeContent('');
+            modal.find('.modal-body').qrcode({
+                render: 'div',
+                size: $(window).width() < 768 ? 240 : 300,
+                text: $(this).prev('a.location-service').attr('href')
+            });
+            modal.modal();
+
+            $('#modal').one('hidden.bs.modal', function() {
+                closeModalCallback($(this));
+            });
+            return false;
+        });
+    };
+
     var initTruncate = function(holder) {
       if (typeof holder === 'undefined') {
           holder = $(document);
@@ -674,6 +726,7 @@ finna.layout = (function() {
         checkSaveStatuses: checkSaveStatuses,
         initSaveRecordLinks: initSaveRecordLinks,
         initLightbox: initLightbox,
+        initLocationService: initLocationService,
         initHierarchicalFacet: initHierarchicalFacet,
         initJumpMenus: initJumpMenus,
         initMobileNarrowSearch: initMobileNarrowSearch,
