@@ -122,7 +122,7 @@ class Factory extends \VuFind\Service\Factory
     }
 
     /**
-     * Construct the National Library of Finland Location Service.
+     * Construct the Location Service.
      *
      * @param ServiceManager $sm Service manager.
      *

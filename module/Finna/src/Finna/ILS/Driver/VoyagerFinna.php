@@ -53,7 +53,7 @@ trait VoyagerFinna
     protected function getHoldingItemsSQL($id)
     {
         $sqlArray = parent::getHoldingItemsSQL($id);
-        $sqlArray['expressions'][] = "LOCATION_CODE";
+        $sqlArray['expressions'][] = "LOCATION.LOCATION_CODE";
 
         return $sqlArray;
     }
@@ -185,6 +185,42 @@ trait VoyagerFinna
     }
 
     /**
+     * Protected support method for getStatus -- process rows returned by SQL
+     * lookup.
+     *
+     * @param array $sqlRows Sql Data
+     *
+     * @return array Keyed data
+     */
+    protected function getStatusData($sqlRows)
+    {
+        $data = parent::getStatusData($sqlRows);
+        foreach ($sqlRows as $row) {
+            if (isset($row['LOCATION_CODE'])) {
+                $data[$row['ITEM_ID']]['collection'] = $row['LOCATION_CODE'];
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Protected support method for getStatus -- get components required for standard
+     * status lookup SQL.
+     *
+     * @param array $id A Bibliographic id
+     *
+     * @return array Keyed data for use in an sql query
+     */
+    protected function getStatusSQL($id)
+    {
+        $sqlArray = parent::getStatusSQL($id);
+        $sqlArray['expressions'][] = "LOCATION.LOCATION_CODE";
+
+        return $sqlArray;
+    }
+
+    /**
      * Protected support method for getHolding.
      *
      * @param array  $data   Item Data
@@ -218,7 +254,8 @@ trait VoyagerFinna
     {
         $data = parent::processHoldingRow($sqlRow);
 
-        $data['collection'] = $sqlRow['LOCATION_CODE'];
+        $data['collection'] = isset($sqlRow['LOCATION_CODE'])
+            ? $sqlRow['LOCATION_CODE'] : '';
 
         // Get purchase order information for holdings that don't have items
         if ($data['status'] == 'No information available'

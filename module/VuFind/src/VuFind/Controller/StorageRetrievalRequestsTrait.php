@@ -112,15 +112,16 @@ trait StorageRetrievalRequestsTrait
 
             // Success: Go to Display Storage Retrieval Requests
             if (isset($results['success']) && $results['success'] == true) {
-                $this->flashMessenger()->addMessage(
-                    'storage_retrieval_request_place_success', 'success'
-                );
-                if ($this->inLightbox()) {
-                    return false;
-                }
-                return $this->redirect()->toRoute(
-                    'myresearch-storageretrievalrequests'
-                );
+                $msg = [
+                    'html' => true,
+                    'msg' => 'storage_retrieval_request_place_success',
+                    'tokens' => [
+                        '%%url%%' => $this->url()
+                            ->fromRoute('myresearch-storageretrievalrequests')
+                    ],
+                ];
+                $this->flashMessenger()->addMessage($msg, 'success');
+                return $this->redirectToRecord('#top');
             } else {
                 // Failure: use flash messenger to display messages, stay on
                 // the current form.

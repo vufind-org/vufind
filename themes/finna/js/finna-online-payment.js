@@ -7,12 +7,14 @@ finna.onlinePayment = (function() {
             type: 'POST',
             url:  url,
             data: jQuery.parseJSON(params),
-            dataType: 'json',
-            success: function(response) {
-                location.href = response.data;
-            },
+            dataType: 'json'
+        }).done(function(response) {
+            location.href = response.data;
+        })
+        .fail(function(response, textStatus) {
+            console.log(response, textStatus);
         });
-
+    
         return false;
     };
 

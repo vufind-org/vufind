@@ -91,21 +91,22 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
     protected function determineSourcePriority($recordSources)
     {
         $cookieManager = $this->serviceLocator->get('VuFind\CookieManager');
-        if (!($preferred = $cookieManager->get('preferredRecordSource'))) {
-            $authManager = $this->serviceLocator->get('VuFind\AuthManager');
-            if ($user = $authManager->isLoggedIn()) {
-                if ($user->cat_username) {
-                    list($preferred) = explode('.', $user->cat_username, 2);
+        if ($cookieManager) {
+            if (!($preferred = $cookieManager->get('preferredRecordSource'))) {
+                $authManager = $this->serviceLocator->get('VuFind\AuthManager');
+                if ($user = $authManager->isLoggedIn()) {
+                    if ($user->cat_username) {
+                        list($preferred) = explode('.', $user->cat_username, 2);
+                    }
                 }
             }
+            // array_search may return 0, but that's fine since it means the source
+            // already has highest priority
+            if ($preferred && $key = array_search($preferred, $recordSources)) {
+                unset($recordSources[$key]);
+                array_unshift($recordSources, $preferred);
+            }
         }
-        // array_search may return 0, but that's fine since it means the source
-        // already has highest priority
-        if ($preferred && $key = array_search($preferred, $recordSources)) {
-            unset($recordSources[$key]);
-            array_unshift($recordSources, $preferred);
-        }
-
         return array_flip($recordSources);
     }
 }

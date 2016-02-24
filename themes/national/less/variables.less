@@ -26,7 +26,6 @@
 @logo-color: #fff;
 
 //== Custom Finna styling
-@background-image-url: url('../images/background.jpg');
 @background-image-attachment: scroll;  // set to fixed or scroll (fixed doesnt scoll along with page) 
 @background-start-color: rgba(1,1,1,0.4); // gradient color for background image
 @background-end-color:  rgba(1,1,1,0.2); // gradient color for background image
@@ -75,6 +74,8 @@
 @display-checkbox-facet-amount: inline-block;    // set to none or inline-block
 
 //== Generated horizontal carousel styles
+    //== Carousel images background-color
+@carousel-slider-background: #000;
    //== Styling the header of carousel
 @carousel-header-background: #4D4D4D;
 @carousel-header-color: #fff;
@@ -362,7 +363,7 @@
 @grid-gutter-width:         30px;
 // Navbar collapse
 //** Point at which the navbar becomes uncollapsed.
-@grid-float-breakpoint:     @screen-sm-max;
+@grid-float-breakpoint:     @screen-md-min;
 //** Point at which the navbar begins collapsing.
 @grid-float-breakpoint-max: (@grid-float-breakpoint - 1);
 

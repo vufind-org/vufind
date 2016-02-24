@@ -61,19 +61,18 @@ finna.myList = (function() {
             type: 'POST',
             dataType: 'json',
             url: VuFind.getPath() + '/AJAX/JSON?method=editList',
-            data: {'params': listParams},
-            success: function(data, status, jqXHR) {
-                if (type != 'add-list' && spinner) {
-                    toggleSpinner(spinner, false);
-                }
-                if (status == 'success' && data.status == 'OK') {
-                    if (callback != null) {
-                        callback(data.data);
-                    }
-                } else {
-                    toggleErrorMessage(true);
-                }
+            data: {'params': listParams}
+        })
+        .done(function(data, status, jqXHR) {
+            if (type != 'add-list' && spinner) {
+                toggleSpinner(spinner, false);
             }
+            if (callback != null) {
+                callback(data.data);
+            }
+        })
+        .fail(function() {
+            toggleErrorMessage(true);
         });
     };
 
@@ -87,23 +86,22 @@ finna.myList = (function() {
             type: 'POST',
             dataType: 'json',
             url: VuFind.getPath() + '/AJAX/JSON?method=editListResource',
-            data: {'params': params},
-            success: function(data, status, jqXHR) {
-                if (spinner) {
-                    toggleSpinner(spinner, false);
-                }
-
-                if (status == 'success' && data.status == 'OK') {
-                    var hasNotes = params.notes != '';
-                    input.closest('.myresearch-notes').find('.note-info').toggleClass('hide', !hasNotes);
-                    input.data('empty', hasNotes == '' ? '1' : '0');
-                    if (!hasNotes) {
-                        input.text(VuFind.translate('add_note'));
-                    }
-                } else {
-                    toggleErrorMessage(true);
-                }
+            data: {'params': params}
+        })
+        .done(function(data) {
+            if (spinner) {
+                toggleSpinner(spinner, false);
             }
+
+            var hasNotes = params.notes != '';
+            input.closest('.myresearch-notes').find('.note-info').toggleClass('hide', !hasNotes);
+            input.data('empty', hasNotes == '' ? '1' : '0');
+            if (!hasNotes) {
+                input.text(VuFind.translate('add_note'));
+            }
+        })
+        .fail(function() {
+            toggleErrorMessage(true);
         });
     };
 
@@ -129,18 +127,17 @@ finna.myList = (function() {
             type: 'POST',
             dataType: 'json',
             url: VuFind.getPath() + '/AJAX/JSON?method=addToList',
-            data: {params: {'listId': listId, 'source': 'Solr', 'ids': ids}},
-            success: function(data, status, jqXHR) {
-                if (status == 'success' && data.status == 'OK') {
-                    // Don't reload to avoid trouble with POST requests
-                    location.href = location.href;
-                } else {
-                    toggleErrorMessage(true);
-                    $('#add-to-list-spinner').addClass('hidden');
-                    $('#add-to-list').removeAttr('disabled');
-                    $('#add-to-list').val('');
-                }
-            }
+            data: {params: {'listId': listId, 'source': 'Solr', 'ids': ids}}
+        })
+        .done(function(data) {
+            // Don't reload to avoid trouble with POST requests
+            location.href = location.href;
+        })
+        .fail(function() {
+            toggleErrorMessage(true);
+            $('#add-to-list-spinner').addClass('hidden');
+            $('#add-to-list').removeAttr('disabled');
+            $('#add-to-list').val('');
         });
     };
 
@@ -151,15 +148,14 @@ finna.myList = (function() {
             type: 'POST',
             dataType: 'json',
             url: VuFind.getPath() + '/AJAX/JSON?method=getMyLists',
-            data: {'active': getActiveListId()},
-            success: function(data, status, jqXHR) {
-                if (status == 'success' && data.status == 'OK') {
-                    $('.mylist-bar').html(data.data);
-                    initEditComponents();
-                } else {
-                    toggleErrorMessage(true);
-                }
-            }
+            data: {'active': getActiveListId()}
+        })
+        .done(function(data) {
+            $('.mylist-bar').html(data.data);
+            initEditComponents();
+        })
+        .fail(function() {
+            toggleErrorMessage(true);
         });
     };
 

@@ -28,18 +28,19 @@ finna.comments = (function() {
             $.ajax({
                 dataType: 'json',
                 url: url,
-                data: {recordId: recordId},
-                success: function(response) {
-                    if (response.status == 'OK') {
-                        requestRefreshComments();
-                        if ('rating' in response.data) {
-                            updateAverageRating(
-                                response.data.rating.average,
-                                response.data.rating.count
-                            );
-                        }
-                    }
+                data: {recordId: recordId}
+            })
+            .done(function(response) {
+                requestRefreshComments();
+                if ('rating' in response.data) {
+                    updateAverageRating(
+                        response.data.rating.average,
+                        response.data.rating.count
+                    );
                 }
+            })
+            .fail(function(response, textStatus) {
+                console.log(response, textStatus);
             });
         };
         
@@ -101,21 +102,20 @@ finna.comments = (function() {
                 type: 'POST',
                 url:  url,
                 data: data,
-                dataType: 'json',
-                success: function(response) {
-                    if (response.status == 'OK') {
-                        requestRefreshComments();
-                        if ('rating' in response.data) {
-                            updateAverageRating(
-                                response.data.rating.average,
-                                response.data.rating.count
-                            );
-                        }
-                        $(form).find('textarea[name="comment"]').val('');
-                    } else {
-                        Lightbox.displayError(response.data);
-                    }
+                dataType: 'json'
+            })
+            .done(function(response) {
+                requestRefreshComments();
+                if ('rating' in response.data) {
+                    updateAverageRating(
+                        response.data.rating.average,
+                        response.data.rating.count
+                    );
                 }
+                $(form).find('textarea[name="comment"]').val('');
+            })
+            .fail(function(response, textStatus) {
+                Lightbox.displayError(response.responseJSON.data);
             });
             return false;
         });
@@ -160,13 +160,14 @@ finna.comments = (function() {
                 dataType: 'json',
                 data: {comment: comment, reason: reason},
                 method: 'POST',
-                url: url,
-                success: function(response) {
-                    if (response.status == 'OK') {
-                        Lightbox.close();
-                        requestRefreshComments();
-                    }
-                }
+                url: url
+            })
+            .done(function(response) {
+                Lightbox.close();
+                requestRefreshComments();
+            })
+            .fail(function(response) {
+                Lightbox.displayError(response.responseJSON.data);
             });
             return false;
         });

@@ -1,6 +1,6 @@
 <?php
 /**
- * National Library of Finland Location Service Controller.
+ * Location Service Controller.
  *
  * PHP version 5
  *
@@ -28,7 +28,7 @@
 namespace Finna\Controller;
 
 /**
- * National Library of Finland Location Service Controller.
+ * Location Service Controller.
  *
  * @category VuFind2
  * @package  Controller
