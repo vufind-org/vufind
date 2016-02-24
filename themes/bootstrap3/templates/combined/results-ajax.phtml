@@ -15,13 +15,7 @@
 $(document).ready(function(){
     var url = VuFind.getPath() + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
     var container = $('$targetIdHtmlEscaped');
-    container.load(url, '', function(responseText) {
-        if (responseText.length == 0) {
-            container.hide();
-        } else {
-            setupCombinedResults(container);
-        }
-    });
+    setupCombinedResults(container, url);
 });
 JS;
 
