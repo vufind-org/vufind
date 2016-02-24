@@ -77,6 +77,13 @@ class CartController extends AbstractBase
         // when we're done:
         $this->session->url = $this->getLightboxAwareUrl('cart-home');
 
+        // If the cart is disabled, going to cart home is not going to help us;
+        // use the referer instead.
+        if (!$this->getCart()->isActive()) {
+            $this->session->url
+                = $this->getRequest()->getServer()->get('HTTP_REFERER');
+        }
+
         // Now forward to the requested action:
         if (strlen($this->params()->fromPost('email', '')) > 0) {
             $action = 'Email';
