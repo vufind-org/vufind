@@ -14,14 +14,13 @@
     $loadJs = <<<JS
 $(document).ready(function(){
     var url = VuFind.getPath() + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
-    $('$targetIdHtmlEscaped').load(url, '', function(responseText) {
+    var container = $('$targetIdHtmlEscaped');
+    container.load(url, '', function(responseText) {
         if (responseText.length == 0) {
-            $('$targetIdHtmlEscaped').hide();
+            container.hide();
+        } else {
+            setupCombinedResults(container);
         }
-        $('a.openUrlEmbed').click(function() {
-            embedOpenUrlLinks($(this));
-            return false;
-        });
     });
 });
 JS;
