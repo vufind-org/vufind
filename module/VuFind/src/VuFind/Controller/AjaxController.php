@@ -1115,6 +1115,7 @@ class AjaxController extends AbstractBase
     {
         $this->writeSession();  // avoid session write timing bug
         $openUrl = $this->params()->fromQuery('openurl', '');
+        $searchClassId = $this->params()->fromQuery('searchClassId', '');
 
         $config = $this->getConfig();
         $resolverType = isset($config->OpenURL->resolver)
@@ -1169,7 +1170,8 @@ class AjaxController extends AbstractBase
         // Render the links using the view:
         $view = [
             'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
-            'electronic' => $electronic, 'services' => $services
+            'electronic' => $electronic, 'services' => $services,
+            'searchClassId' => $searchClassId
         ];
         $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
 

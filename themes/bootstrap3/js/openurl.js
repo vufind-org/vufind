@@ -1,8 +1,8 @@
 /*global extractClassParams, VuFind */
 
-function loadResolverLinks($target, openUrl) {
+function loadResolverLinks($target, openUrl, searchClassId) {
   $target.addClass('ajax_availability');
-  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl});
+  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl,searchClassId:searchClassId});
   $.ajax({
     dataType: 'json',
     url: url
@@ -31,7 +31,7 @@ function embedOpenUrlLinks(element) {
   // If the target is already visible, a previous click has populated it;
   // don't waste time doing redundant work.
   if (target.hasClass('hidden')) {
-    loadResolverLinks(target.removeClass('hidden'), openUrl);
+    loadResolverLinks(target.removeClass('hidden'), openUrl, element.data('search-class-id'));
   }
 }
 
