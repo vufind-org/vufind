@@ -35,6 +35,22 @@ function embedOpenUrlLinks(element) {
   }
 }
 
+// This can be called with a container e.g. when combined results fetched with AJAX 
+// are loaded
+function setupEmbeddedOpenUrlLinks(container)
+{
+  if (typeof(container) == 'undefined') {
+    container = $('body');
+  }
+  // assign action to the openUrlEmbed link class
+  container.find('.openUrlEmbed a').click(function() {
+    embedOpenUrlLinks($(this));
+    return false;
+  });
+
+  container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
+}
+
 $(document).ready(function() {
   // assign action to the openUrlWindow link class
   $('a.openUrlWindow').click(function(){
@@ -43,12 +59,7 @@ $(document).ready(function() {
     window.open($(this).attr('href'), 'openurl', settings);
     return false;
   });
-
-  // assign action to the openUrlEmbed link class
-  $('.openUrlEmbed a').click(function() {
-    embedOpenUrlLinks($(this));
-    return false;
-  });
-
-  $('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger("click");
+  
+  setupEmbeddedOpenUrlLinks();
 });
+

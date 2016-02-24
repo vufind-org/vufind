@@ -1,13 +1,17 @@
 /*global VuFind */
 
-function checkSaveStatuses() {
+function checkSaveStatuses(container) {
+  if (typeof(container) == 'undefined') {
+    container = $('body');
+  }
+    
   var elements = {}
-  var data = $.map($('.result,.record'), function(record) {
-    if($(record).find('.hiddenId').length == 0 || $(record).find('.hiddenSource').length == 0) {
+  var data = $.map(container.find('.result,.record'), function(record) {
+    if ($(record).find('.hiddenId').length == 0 || $(record).find('.hiddenSource').length == 0) {
       return false;
     }
     var datum = {'id':$(record).find('.hiddenId').val(), 'source':$(record).find('.hiddenSource')[0].value};
-    elements[datum.source+"|"+datum.id] = $(record).find('.savedLists');
+    elements[datum.source+'|'+datum.id] = $(record).find('.savedLists');
     return datum;
   });
   if (data.length) {
@@ -32,7 +36,7 @@ function checkSaveStatuses() {
         var html = list.find('strong')[0].outerHTML+'<ul>';
         for (var i=0; i<response.data[sel].length; i++) {
           html += '<li><a href="' + response.data[sel][i].list_url + '">'
-                   + htmlEncode(response.data[sel][i].list_title) + '</a></li>';
+            + htmlEncode(response.data[sel][i].list_title) + '</a></li>';
         }
         html += '</ul>';
         list.html(html).removeClass('hidden');
