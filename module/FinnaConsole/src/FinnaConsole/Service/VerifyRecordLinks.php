@@ -1,6 +1,6 @@
 <?php
 /**
- * Console service for repairing links between comments and records.
+ * Console service for verifying record links.
  *
  * PHP version 5
  *
@@ -29,7 +29,7 @@ namespace FinnaConsole\Service;
 use Zend\Db\Sql\Select;
 
 /**
- * Console service for repairing links between comments and records.
+ * Console service for verifying record links.
  *
  * @category VuFind2
  * @package  Service

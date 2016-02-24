@@ -80,7 +80,7 @@ class Module
             'util clear_metalib_search' => 'Removes old metalib search entries',
             'util expire_users' => 'Anonymizes expired user accounts',
             'util scheduled_alerts' => 'Send scheduled alerts',
-            'util verify_record_links' => 'Repair links between comments and records'
+            'util verify_record_links' => 'Verify record links'
         ];
     }
 }
