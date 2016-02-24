@@ -12,7 +12,8 @@ $config = [
              'VuFind\HMAC' => 'VuFind\Service\Factory::getHMAC',
              'Finna\ClearMetalibSearch' => 'FinnaConsole\Service\Factory::getClearMetaLibSearch',
              'Finna\ExpireUsers' => 'FinnaConsole\Service\Factory::getExpireUsers',
-             'Finna\ScheduledAlerts' => 'FinnaConsole\Service\Factory::getScheduledAlerts'
+             'Finna\ScheduledAlerts' => 'FinnaConsole\Service\Factory::getScheduledAlerts',
+             'Finna\VerifyRecordLinks' => 'FinnaConsole\Service\Factory::getVerifyRecordLinks'
         ]
     ]
 ];

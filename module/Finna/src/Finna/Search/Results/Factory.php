@@ -28,6 +28,7 @@
 namespace Finna\Search\Results;
 use Finna\Search\UrlQueryHelper,
     \Finna\Search\Results\PluginFactory,
+    Zend\Console\Console,
     Zend\ServiceManager\ServiceManager;
 
 /**
@@ -135,6 +136,10 @@ class Factory extends \VuFind\Search\Results\Factory
     public static function initUrlQueryHelper(
         \VuFind\Search\Base\Results $results, $locator
     ) {
+        if (Console::isConsole()) {
+            return $results;
+        }
+
         $helper = new UrlQueryHelper($results->getParams());
         $savedSearches
             = $locator->get('Request')->getQuery('search');

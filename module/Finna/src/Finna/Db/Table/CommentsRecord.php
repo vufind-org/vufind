@@ -66,4 +66,38 @@ class CommentsRecord extends Gateway
             $row->save();
         }
     }
+
+    /**
+     * Verify links to records
+     *
+     * @param string $comment Comment id
+     * @param array  $records Array of record IDs
+     *
+     * @return boolean True if any links were fixed
+     */
+    public function verifyLinks($comment, $records)
+    {
+        $fixed = false;
+
+        // Remove any orphaned links
+        $links = $this->select(
+            ['comment_id' => $comment]
+        );
+        foreach ($links as $link) {
+            if (!in_array($link->record_id, $records)) {
+                $link->delete();
+                $fixed = true;
+            }
+        }
+
+        // Add missing links
+        foreach ($records as $recordId) {
+            $data = ['record_id' => $recordId, 'comment_id' => $comment];
+            if (empty($this->select($data)->current())) {
+                $this->insert($data);
+                $fixed = true;
+            }
+        }
+        return $fixed;
+    }
 }
