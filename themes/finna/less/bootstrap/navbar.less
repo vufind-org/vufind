@@ -241,7 +241,7 @@
     font-size: @navbar-font-size;
     font-weight: @navbar-font-weight;
   }
-  &.language:before {
+  &.lang-1:before {
     color: @navbar-default-link-color;
     content:'';
     border-left: solid 1px @navbar-default-link-color;
@@ -250,8 +250,12 @@
     float: left;
   }
   @media (max-width: @grid-float-breakpoint-max) {
-    &.language:before {
-      border-left: none;
+    &.lang-1 {
+      border-top: 1px solid #000;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+      &:before {
+        border-left: none;
+      }
     }
     // Dropdowns get custom display when collapsed
     .open:not(.logoutOptions) .dropdown-menu {
