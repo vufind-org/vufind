@@ -3,20 +3,13 @@
 // IE 9< console polyfill
 window.console = window.console || {log: function () {}};
 
-function VuFindNamespace(p, s, dsb) {
-  var defaultSearchBackend = dsb;
-  var path = p;
-  var strings = s;
+var VuFind = {
+  defaultSearchBackend: null,
+  path: null,
+  strings: null,
 
-  var getDefaultSearchBackend = function() { return defaultSearchBackend; };
-  var getPath = function() { return path; };
-  var translate = function(op) { return strings[op] || op; };
-
-  return {
-    getDefaultSearchBackend: getDefaultSearchBackend,
-    getPath: getPath,
-    translate: translate
-  };
+  setTranslations: function(s) { this.strings = s; },
+  translate: function(op) { return this.strings[op] || op; }
 }
 
 /* --- GLOBAL FUNCTIONS --- */
@@ -116,7 +109,7 @@ function bulkActionSubmit($form) {
   }
   if (submit == 'print') {
     //redirect page
-    var url = VuFind.getPath() + '/Records/Home?print=true';
+    var url = VuFind.path + '/Records/Home?print=true';
     for(var i=0;i<checks.length;i++) {
       url += '&id[]='+checks[i].value;
     }
@@ -198,7 +191,7 @@ function newAccountHandler(html) {
 // This is a full handler for the login form
 function ajaxLogin(form) {
   Lightbox.ajax({
-    url: VuFind.getPath() + '/AJAX/JSON?method=getSalt',
+    url: VuFind.path + '/AJAX/JSON?method=getSalt',
     dataType: 'json'
   })
   .done(function(response) {
@@ -224,7 +217,7 @@ function ajaxLogin(form) {
     // login via ajax
     Lightbox.ajax({
       type: 'POST',
-      url: VuFind.getPath() + '/AJAX/JSON?method=login',
+      url: VuFind.path + '/AJAX/JSON?method=login',
       dataType: 'json',
       data: params
     })
@@ -310,7 +303,7 @@ function setupAutocomplete() {
           hiddenFilters.push($(this).val());
         });
         $.fn.autocomplete.ajax({
-          url: VuFind.getPath() + '/AJAX/JSON',
+          url: VuFind.path + '/AJAX/JSON',
           data: {
             q:query,
             method:'getACSuggestions',
@@ -431,7 +424,7 @@ $(document).ready(function() {
       window.print();
     });
     // Make an ajax call to ensure that ajaxStop is triggered
-    $.getJSON(VuFind.getPath() + '/AJAX/JSON', {method: 'keepAlive'});
+    $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
   // Advanced facets

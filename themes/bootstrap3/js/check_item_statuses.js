@@ -12,7 +12,7 @@ function checkItemStatuses() {
   $.ajax({
     dataType: 'json',
     method: 'POST',
-    url: VuFind.getPath() + '/AJAX/JSON?method=getItemStatuses',
+    url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
     data: {id:id}
   })
   .done(function(response) {
