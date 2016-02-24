@@ -221,7 +221,16 @@ class MyResearchController extends AbstractBase
     {
         // Don't log in if already logged in!
         if ($this->getAuthManager()->isLoggedIn()) {
-            return $this->redirect()->toRoute('home');
+            // inLightbox (only instance)
+            if (
+                $this->getRequest()->getQuery('layout', 'no') === 'lightbox'
+                || 'layout/lightbox' == $this->layout()->getTemplate()
+            ) {
+                $response = $this->getResponse();
+                $response->setStatusCode(205);
+                return $response;
+            }
+            return $this->redirect()->toRoute(str_replace('/', '-', $this->layout()->getTemplate()));
         }
         $this->clearFollowupUrl();
         $this->setFollowupUrlToReferer();

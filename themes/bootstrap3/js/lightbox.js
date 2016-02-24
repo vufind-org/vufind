@@ -41,7 +41,12 @@ function Lightbox() {
       obj.url += parts.length < 2 ? '' : '#'+parts[1];
     }
     this.xhr = $.ajax(obj)
-      .done(function(html, status) {
+      .done(function(html, status, jqXHR) {
+        if (jqXHR.status == 205) {
+          // No reload since any post params would cause a prompt
+          window.location.href = window.location.href;
+          return;
+        }
         if ( // Close the lightbox after deliberate login
           obj.method                           // is a form
           && !html.match(/alert alert-danger/) // skip failed logins
