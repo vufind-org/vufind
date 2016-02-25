@@ -1569,7 +1569,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         arsort($searchPhrases);
 
         $html = $this->getViewRenderer()->render(
-            'ajax/piwik-popular-searches.phtml', [searches => $searchPhrases]
+            'ajax/piwik-popular-searches.phtml', ['searches' => $searchPhrases]
         );
         return $this->output($html, self::STATUS_OK);
     }
