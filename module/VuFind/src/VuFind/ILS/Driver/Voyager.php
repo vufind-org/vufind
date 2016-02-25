@@ -1887,7 +1887,7 @@ class Voyager extends AbstractBase
         $sql = $this->buildSqlFromArray($sqlArray);
         try {
             $sqlStmt = $this->db->prepare($sql['string']);
-            $this->debugsql(__FUNCTION__, $sql['string'], $sql['bind']);
+            $this->debugSQL(__FUNCTION__, $sql['string'], $sql['bind']);
             $sqlStmt->execute($sql['bind']);
             while ($sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $list[] = $this->processMyStorageRetrievalRequestsData($sqlRow);
