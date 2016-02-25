@@ -154,6 +154,9 @@ var Lightbox = {
   confirm: function(message) {
     this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
   },
+  success: function(message) {
+    this.changeContent('<div class="alert alert-success">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+  },
   /**
    * Regexes a piece of html to find an error alert
    * If one is found, display it

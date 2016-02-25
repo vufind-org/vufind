@@ -270,10 +270,10 @@ $(document).ready(function(){
   });
   Lightbox.addFormCallback('placeHold', function(html) {
     Lightbox.checkForError(html, function(html) {
-      var divPattern = '<div class="alert alert-info">';
+      var divPattern = '<div class="alert alert-success">';
       var fi = html.indexOf(divPattern);
       var li = html.indexOf('</div>', fi+divPattern.length);
-      Lightbox.confirm(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
+      Lightbox.success(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
     });
   });
   Lightbox.addFormCallback('placeILLRequest', function() {
