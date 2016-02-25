@@ -18,13 +18,22 @@ body {
     }
     background-color: @footer-background;
     background-repeat: no-repeat;
-    // make md and smaller layouts scale fluidly
-    .container {
-        @media (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
-        width: auto;   
+    // fine-tune tablet layout 
+    @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+        .container {
+            width: auto;
+        }
+        // element-specific adjustments
+        .main {
+            & .record-view-header {
+                margin-left: -15px;
+                margin-right: -15px;
+            }
+            & .searchtools-background {
+                 margin-left: -15px;
+            }
         }
     }
-
 }
 body > .main { 
     background: @body-bg;
