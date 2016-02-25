@@ -96,7 +96,7 @@ function registerAjaxCommentRecord() {
       $(form).find('input[type="submit"]').button('loading');
     })
     .fail(function(response, textStatus) {
-      if (textStatus == "abort") { return; }
+      if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
       Lightbox.displayError(response.responseJSON.data);
     });
     return false;
