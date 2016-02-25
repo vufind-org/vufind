@@ -5,27 +5,28 @@ $list = $this->results->getListObject();
 $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
 // Set up Finna Main Header:
 $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
-    'list/header.phtml', array(
-    'lookfor' => $list->title,
+    'list/header.phtml',
+    array(
+        'lookfor' => $list->title,
     )
 );
 $this->headScript()->appendFile("finna-item-status.js");
 $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1");
 ?>
-<?= $this->flashmessages() ?>
+<?=$this->flashmessages() ?>
 <div class="clearfix hidden-print">
     <div class="row public-list-row">
       <div class="row">
         <div class="col-sm-12 col-md-10 col-lg-9">
           <div class="public-list-desc col-xs-7 col-sm-8">
-            <div class="truncate-field" data-rows="5"><p><?= $this->escapeHtml($list->description) ?></p></div>
+            <div class="truncate-field" data-rows="5"><p><?=$this->escapeHtml($list->description) ?></p></div>
           </div>
           <div class="public-list-info col-xs-5 col-sm-4">
             <div>
               <?= $this->transEsc("collection_author"); ?>:
               <span class="public-list-username"><?=$this->escapeHtml(trim($this->userPublicName($this->list_username)))?></span>
             </div>
-            <div><?= $this->transEsc("modified"); ?>: <?= $this->DateTime()->convertToDisplayDate('Y-m-d H:i:s', $list->finna_updated ? $list->finna_updated : $list->created); ?></div>
+            <div><?= $this->transEsc("modified"); ?>: <?=$this->DateTime()->convertToDisplayDate('Y-m-d H:i:s', $list->finna_updated ? $list->finna_updated : $list->created); ?></div>
           </div>
         </div>
       </div>
@@ -34,7 +35,7 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
 <div class="row">
     <div class="col-sm-12 col-md-10 col-lg-9 search-controls">
         <div class="pull-left">
-            <?= $this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results)) ?>
+            <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results)) ?>
         </div>
         <div class="pull-right hidden-print">
           <?=$this->render('search/controls/view.phtml')?>
@@ -45,9 +46,9 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
 </div>
 <div class="row public-list-view">
     <form class="form-inline col-sm-12 col-md-10 col-lg-9" method="post" name="bulkActionForm" action="<?= $this->url('cart-home') ?>">
-        <?= $this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => '')) ?>
-        <?= $this->render('search/list-' . $this->params->getView() . '.phtml') ?>
-        <?= $this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_')) ?>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => '')) ?>
+        <?=$this->render('search/list-' . $this->params->getView() . '.phtml') ?>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_')) ?>
     </form>
 </div>
 </div>
