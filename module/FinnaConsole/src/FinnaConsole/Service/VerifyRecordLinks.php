@@ -118,13 +118,18 @@ class VerifyRecordLinks extends AbstractService implements ConsoleServiceInterfa
                     }
                 );
 
+                // This preserves the comment-record links for a comment when all
+                // links point to non-existent records. Dangling links have no
+                // effect in the UI. If a record was temporarily unavailable and
+                // gets re-added to the index with the same ID, the comment is shown
+                // in the UI again.
                 if (!$results instanceof \VuFind\Search\EmptySet\Results
                     && count($results->getResults())
                 ) {
                     $results = $results->getResults();
                     $ids = reset($results)->getLocalIds();
                     if ($this->commentsRecordTable->verifyLinks($commentId, $ids)) {
-                        $fixed++;
+                        ++$fixed;
                     }
                 }
             }

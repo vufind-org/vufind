@@ -78,6 +78,7 @@ class CommentsRecord extends Gateway
     public function verifyLinks($comment, $records)
     {
         $fixed = false;
+        $linkedRecordIds = [];
 
         // Remove any orphaned links
         $links = $this->select(
@@ -87,16 +88,17 @@ class CommentsRecord extends Gateway
             if (!in_array($link->record_id, $records)) {
                 $link->delete();
                 $fixed = true;
+            } else {
+                $linkedRecordIds[] = $link->record_id;
             }
         }
 
         // Add missing links
-        foreach ($records as $recordId) {
+        $missingRecordIds = array_diff($records, $linkedRecordIds);
+        foreach ($missingRecordIds as $recordId) {
             $data = ['record_id' => $recordId, 'comment_id' => $comment];
-            if (empty($this->select($data)->current())) {
-                $this->insert($data);
-                $fixed = true;
-            }
+            $this->insert($data);
+            $fixed = true;
         }
         return $fixed;
     }
