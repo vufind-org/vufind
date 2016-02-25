@@ -99,7 +99,11 @@
       $root = rtrim($this->url('home'), '/');
       $translations = $this->jsTranslations()->getJSON();
       $dsb = DEFAULT_SEARCH_BACKEND;
-      $setupJS = "var VuFind = new VuFindNamespace('{$root}', {$translations}, '{$dsb}');";
+      $setupJS = <<<JS
+VuFind.path = '{$root}';
+VuFind.defaultSearchBackend = '{$dsb}';
+VuFind.addTranslations({$translations});
+JS;
       $this->headScript()->appendScript($setupJS);
     ?>
     <?=$this->headScript()?>
