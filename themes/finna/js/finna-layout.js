@@ -679,7 +679,7 @@ finna.layout = (function() {
             initScrollLinks();
             initSearchboxFunctions();
             initCondensedList();
-            checkSaveStatuses();
+            if (typeof checkSaveStatuses !== 'undefined') { checkSaveStatuses(); }
             initAuthorizationNotification();
             initTouchDeviceGallery();
             initImageCheck();
