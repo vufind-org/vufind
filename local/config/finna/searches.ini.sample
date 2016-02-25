@@ -340,8 +340,8 @@ author = sort_author
 [AuthorModuleRecommendations]
 ;top[] = TopFacets:ResultsTop
 ;side[] = SideFacets:Results:CheckboxFacets
-top[] = AuthorInfo
-side[] = "ExpandFacets:Author"
+;top[] = AuthorInfo
+;side[] = "ExpandFacets:Author"
 
 
 ; These settings control the top and side recommendations within the special Collection
