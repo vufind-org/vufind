@@ -1,11 +1,12 @@
-; Location Service. 
+; Location Service.
 ; See https://wiki.helsinki.fi/display/kirjastokartta/About+the+Location+Service
 
 [General]
 enabled = false
 url = "https://kirjastokartta.kansalliskirjasto.fi/LocationHandler?callno={callno}&collection={collection}&lang={lang}&owner={owner}"
 modal = true
-qr_code = false
+qr_code_record = false
+qr_code_results = false
 
 [jykdok]
 owner = "FI-J"
@@ -27,4 +28,5 @@ url[en-gb] = "https://libapps.uef.fi/sijaintiopas/?infoViewMode=selSignum&langua
 url[fi] = "https://libapps.uef.fi/sijaintiopas/?infoViewMode=selSignum&language=suomi&fSignum={callno}"
 
 [haltia]
-url = "https://haltia.amkit.fi/vwebv/ui/fi_FI/htdocs/libmap/html/Libmap.html?callno={callno}&collection={collection}&status=1&lang={lang}"
+url[en-gb] = "https://haltia.amkit.fi/vwebv/ui/fi_FI/htdocs/libmap/html/Libmap.html?callno={callno}&collection={collection}&status=1&lang=english"
+url[fi] = "https://haltia.amkit.fi/vwebv/ui/fi_FI/htdocs/libmap/html/Libmap.html?callno={callno}&collection={collection}&status=1&lang=suomi"
