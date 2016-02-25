@@ -457,7 +457,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             return $locationsList;
         }
         $organisations
-            =  $this->objectToArray($result->$functionResult->organisations->organisation);
+            =  $this->objectToArray(
+                $result->$functionResult->organisations->organisation
+            );
 
         foreach ($organisations as $organisation) {
             if (!isset($organisation->branches->branch)) {
@@ -1175,7 +1177,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         ];
 
         if (isset($info->emailAddresses) && $info->emailAddresses->emailAddress) {
-            $emailAddresses =  $this->objectToArray($info->emailAddresses->emailAddress);
+            $emailAddresses
+                =  $this->objectToArray($info->emailAddresses->emailAddress);
 
             foreach ($emailAddresses as $emailAddress) {
                 if ($emailAddress->isActive == 'yes') {
