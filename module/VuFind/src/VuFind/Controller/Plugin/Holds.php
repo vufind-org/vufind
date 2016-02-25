@@ -60,9 +60,11 @@ class Holds extends AbstractRequestBase
                     = $catalog->getCancelHoldLink($ilsDetails);
             } else {
                 // Form Details
-                $ilsDetails['cancel_details']
-                    = $catalog->getCancelHoldDetails($ilsDetails);
-                $this->rememberValidId($ilsDetails['cancel_details']);
+                $cancelDetails = $catalog->getCancelHoldDetails($ilsDetails);
+                if ($cancelDetails !== '') {
+                    $ilsDetails['cancel_details'] = $cancelDetails;
+                    $this->rememberValidId($ilsDetails['cancel_details']);
+                }
             }
         }
 
