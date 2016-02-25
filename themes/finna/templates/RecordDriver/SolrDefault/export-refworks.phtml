@@ -8,29 +8,24 @@ $series = $this->driver->tryMethod('getSeries');
 if (is_array($series)) {
     foreach ($series as $current) {
         if (is_array($current)) {
-            echo 'T2 ' . $current['name'];
-            if (!empty($current['issn']) || !empty($current['number'])) {
-                echo ', ';
-            }
-            if (!empty($current['issn'])) {
-                echo 'ISSN ' . $current['issn'];
-                if (!empty($current['number'])) {
-                    echo '; ';
-                }
-            }
+            echo 'T2 ' . $current['name'] . "\n";
             if (!empty($current['number'])) {
-                echo $current['number'];
+                echo 'VO ' . $current['number'] . "\n";
             }
-            echo "\n";
         } else {
             echo "T2 $current\n";
         }
     }
 }
 
-$journalTitle = $this->driver->tryMethod('getContainerTitle');
-if (!empty($journalTitle)) {
-    echo "JF $journalTitle\n";
+$containerTitle = $this->driver->tryMethod('getContainerTitle');
+if (!empty($containerTitle)) {
+    $formats = $this->driver->getFormats();
+    if (end($formats) == '1/Book/BookSection/') {
+        echo "T2 $containerTitle\n";
+    } else {
+        echo "JF $containerTitle\n";
+    }
     $volume = $this->driver->tryMethod('getContainerVolume');
     if (!empty($volume)) {
         echo "VO $volume\n";
@@ -49,12 +44,21 @@ if (!empty($journalTitle)) {
     }
 }
 
-$author = $this->driver->tryMethod('getPrimaryAuthor');
+if ($extents = $this->driver->tryMethod('getExtent')) {
+    foreach ($extents as $extent) {
+        echo "OP $extent\n";
+    }
+}
+
+$author = $this->driver->tryMethod('getPrimaryAuthorForSearch');
+if (empty($author)) {
+    $author = $this->driver->tryMethod('getPrimaryAuthor');
+}
 if (!empty($author)) {
     echo "A1 $author\n";
 }
 
-$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
+$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors', [true]);
 if (is_array($secondaryAuthors)) {
     foreach ($secondaryAuthors as $current) {
         echo "A1 $current\n";
@@ -72,20 +76,20 @@ $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
 $pubDates = $this->driver->tryMethod('getPublicationDates');
 $pubNames = $this->driver->tryMethod('getPublishers');
 if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
-    $total = min(count($pubPlaces), count($pubDates), count($pubNames));
+    $total = max(count($pubPlaces), count($pubDates), count($pubNames));
     // if we have pub dates but no other details, we still want to export the year:
     if ($total == 0 && count($pubDates) > 0) {
         $total = 1;
     }
     for ($i = 0; $i < $total; $i++) {
-        if (isset($pubNames[$i]) && strstr($pubNames[$i], 'jakaja')) {
-            continue;
-        }
         if (isset($pubPlaces[$i])) {
             echo "PP " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ':, '). "\n";
         }
         if (isset($pubNames[$i])) {
-            echo "PB " . rtrim($pubNames[$i], ", ") . "\n";
+            $pubName = preg_replace('/\s*:[^;:]*\bjakaja\b[^;:]*/', '', $pubNames[$i]);
+            if ($pubName) {
+                echo "PB " . rtrim($pubName, ", ") . "\n";
+            }
         }
         $date = trim($pubDates[$i], '[]. ');
         if (strlen($date) > 4) {
