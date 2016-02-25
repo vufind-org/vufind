@@ -57,9 +57,13 @@ class ContentController extends \VuFind\Controller\AbstractBase
         $action     = "{$page}Action";
         $defaultLanguage = $this->getConfig()->Site->language;
 
-        // Redirecting aboutfinna from VuFind 1 to about_finna
+        // Redirect aboutfinna from VuFind 1 to about_finna (ALLI-4231)
         if ($page == 'aboutfinna') {
-            $page = 'about_finna';
+            $response = $this->redirect()
+                ->toRoute('content-page', ['page' => 'about_finna']);
+            // Mark this redirect permanent
+            $response->setStatusCode(301);
+            return $response;
         }
 
         // Try template with current language first and default language as a
