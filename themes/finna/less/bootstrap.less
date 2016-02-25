@@ -350,7 +350,7 @@ mark, .highlight {
     }
 }
 .result .save-record {
-    float:right;
+    float: right;
     font-size: medium;
     @media(max-width: @screen-xs-max) {
         font-size: 1em;
@@ -1159,6 +1159,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
+        }
+        & .save-record {
+            float: none;
+            font-size: inherit;
         }
         & .result .status {
             position: absolute;
