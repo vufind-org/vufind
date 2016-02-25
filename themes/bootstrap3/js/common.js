@@ -6,14 +6,14 @@ window.console = window.console || {log: function () {}};
 var VuFind = {
   defaultSearchBackend: null,
   path: null,
-  strings: [],
+  translations: [],
 
   addTranslations: function(s) {
     for (var i in s) {
-      this.strings[i] = s[i];
+      this.translations[i] = s[i];
     }
   },
-  translate: function(op) { return this.strings[op] || op; }
+  translate: function(op) { return this.translations[op] || op; }
 }
 
 /* --- GLOBAL FUNCTIONS --- */
