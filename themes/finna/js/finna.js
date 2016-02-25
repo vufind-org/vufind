@@ -43,7 +43,4 @@ $(document).ready(function() {
     if (typeof finnaCustomInit !== 'undefined') {
         finnaCustomInit();
     }
-    
-    // Override global checkSaveStatuses
-    checkSaveStatuses = finna.layout.checkSaveStatuses;
 });

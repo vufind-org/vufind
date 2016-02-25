@@ -1,4 +1,4 @@
-/*global VuFind*/
+/*global VuFind,checkSaveStatuses*/
 finna.layout = (function() {
     var refreshPage = false;
 
@@ -422,74 +422,6 @@ finna.layout = (function() {
         });
     };
 
-    var initSaveRecordLinks = function(holder) {
-        if (typeof(holder) == "undefined") {
-            holder = $("body");
-        }
-        holder.find('.save-record').click(function() {
-            var parts = this.href.split('/');
-            var id = $(this).attr('id');
-            if (!id) {
-                id = $(this).data('id');
-            }
-            if (!id) {
-                return;
-            }
-            return finna.layout.lightbox.get(parts[parts.length-3],'Save',{id:id});
-        });
-    };
-
-    // TODO: Make upstream check_save_statuses.js compatible and use it instead
-    var checkSaveStatuses = function(holder) {
-        // This function may be called directly or via redirection in finna.js
-        if (typeof(holder) == "undefined") {
-            holder = $("body");
-        }
-
-        var data = $.map(holder.find('.result,.record'), function(record) {
-            if($(record).find('.hiddenId').length == 0 || $(record).find('.hiddenSource').length == 0) {
-                return false;
-            }
-            return {'id':$(record).find('.hiddenId').val(), 'source':$(record).find('.hiddenSource')[0].value};
-        });
-        if (data.length) {
-            var ids = [];
-            var srcs = [];
-            for (var i = 0; i < data.length; i++) {
-                ids[i] = data[i].id;
-                srcs[i] = data[i].source;
-            }
-            $.ajax({
-                dataType: 'json',
-                method: 'POST',
-                url: VuFind.getPath() + '/AJAX/JSON?method=getSaveStatuses',
-                data: {id:ids, 'source':srcs}
-            })
-            .done(function(response) {
-                for (var rn in response.data) {
-                    var $container = holder.find('input[value="' + response.data[rn][0].record_id + '"]').closest('.result');
-                    if ($container.length == 0) {
-                        $container = holder;
-                    }
-
-                    var list = $container.find('#result'+rn).find('.savedLists')
-                    if (list.length == 0) {
-                        list = $container.find('.savedLists');
-                    }
-                    var html = list.find('strong')[0].outerHTML+'<ul>';
-                    for (var i=0; i<response.data[rn].length; i++) {
-                        html += '<li><a href="' + VuFind.getPath() + '/MyResearch/MyList/' + response.data[rn][i].list_id + '">'
-                            + response.data[rn][i].list_title + '</a></li>';
-                    }
-                    html += '</ul>';
-                    list.html(html).removeClass('hidden');
-                }
-            });
-            
-            initSaveRecordLinks(holder);
-        }
-    };
-
     var initAuthorizationNotification = function(holder) {
         if (typeof(holder) == "undefined") {
             holder = $("body");
@@ -671,8 +603,6 @@ finna.layout = (function() {
         initAuthorizationNotification: initAuthorizationNotification,
         initTruncate: initTruncate,
         lightbox: Lightbox,
-        checkSaveStatuses: checkSaveStatuses,
-        initSaveRecordLinks: initSaveRecordLinks,
         initLightbox: initLightbox,
         initHierarchicalFacet: initHierarchicalFacet,
         initJumpMenus: initJumpMenus,

@@ -63,6 +63,7 @@
   $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("check_save_statuses.js");
   $this->headScript()->appendFile("finna-search-tabs-recommendations.js");
   $this->headScript()->appendFile("finna-item-status.js");
   $this->headScript()->appendFile("finna-metalib-links.js");

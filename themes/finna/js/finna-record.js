@@ -1,4 +1,4 @@
-/*global VuFind*/
+/*global VuFind,checkSaveStatuses*/
 finna.record = (function() {
     var initDescription = function() {
         var description = $("#description_text");
