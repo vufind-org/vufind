@@ -208,6 +208,14 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected $excludedItemLocations;
 
     /**
+     * Whether it is allowed to cancel a request for an item that is available for
+     * pickup
+     *
+     * @var bool
+     */
+    protected $allowCancelingAvailableRequests;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -295,6 +303,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             = isset($this->config['Holds']['excludedItemLocations'])
             ? str_replace(':', ',', $this->config['Holds']['excludedItemLocations'])
             : '';
+        $this->allowCancelingAvailableRequests
+            = isset($this->config['Holds']['allowCancelingAvailableRequests'])
+            ? $this->config['Holds']['allowCancelingAvailableRequests'] : true;
 
         // Establish a namespace in the session for persisting cached data
         $this->session = new SessionContainer('VoyagerRestful_' . $this->dbName);
@@ -1816,7 +1827,7 @@ EOT;
 
         try {
             $sqlStmt = $this->db->prepare($outersql);
-            $this->debugLogSQL(__FUNCTION__, $outersql, $sql['bind']);
+            $this->debugSQL(__FUNCTION__, $outersql, $sql['bind']);
             $sqlStmt->execute($sql['bind']);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             return $sqlRow['CNT'] > 0;
@@ -2037,8 +2048,10 @@ EOT;
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        $cancelDetails = $holdDetails['item_id'] . "|" . $holdDetails['reqnum'];
-        return $cancelDetails;
+        if (!$this->allowCancelingAvailableRequests && $holdDetails['available']) {
+            return '';
+        }
+        return $holdDetails['item_id'] . '|' . $holdDetails['reqnum'];
     }
 
     /**
