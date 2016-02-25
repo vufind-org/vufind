@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Lutz Biedinger <vufind-tech@lists.sourceforge.net>
  * @author   Ronan McHugh <vufind-tech@lists.sourceforge.net>
@@ -40,7 +40,7 @@ use VuFindSearch\Backend\Exception\RequestErrorException,
  * Originally developed at the National Library of Ireland by Lutz
  * Biedinger and Ronan McHugh.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Lutz Biedinger <vufind-tech@lists.sourceforge.net>
  * @author   Ronan McHugh <vufind-tech@lists.sourceforge.net>

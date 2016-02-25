@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-3.0.php GNU General Public License
- * @link     http://vufind.org/wiki/
+ * @link     https://vufind.org/wiki/
  */
 namespace VuDL\Connection;
 use VuFindSearch\ParamBag;
@@ -31,11 +31,11 @@ use VuFindSearch\ParamBag;
 /**
  * VuDL-Fedora connection class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-3.0.php GNU General Public License
- * @link     http://vufind.org/wiki/
+ * @link     https://vufind.org/wiki/
  */
 class Solr extends AbstractBase
 {

@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -32,7 +32,7 @@ use VuFind\Db\Row\User, VuFind\Exception\Auth as AuthException;
 /**
  * Abstract authentication base class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Demian Katz <demian.katz@villanova.edu>

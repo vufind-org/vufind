@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_EIT
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -33,7 +33,7 @@ use VuFind\Search\Base\Params as BaseParams;
 /**
  * EBSCO Search Parameters
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_EIT
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
