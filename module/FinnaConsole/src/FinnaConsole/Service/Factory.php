@@ -83,4 +83,25 @@ class Factory
     {
         return new ScheduledAlerts($sm);
     }
+
+    /**
+     * Construct the console service for verifying record links.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \FinnaConsole\Service\ScheduledAlerts
+     */
+    public static function getVerifyRecordLinks(ServiceManager $sm)
+    {
+        $commentsTable = $sm->get('VuFind\DbTablePluginManager')
+            ->get('Comments');
+        $commentsRecordTable = $sm->get('VuFind\DbTablePluginManager')
+            ->get('CommentsRecord');
+
+        $searchRunner = $sm->get('VuFind\SearchRunner');
+
+        return new VerifyRecordLinks(
+            $commentsTable, $commentsRecordTable, $searchRunner
+        );
+    }
 }

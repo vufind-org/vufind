@@ -69,6 +69,16 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     }
 
     /**
+     * Verify record links.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function verifyRecordLinksAction()
+    {
+        return $this->runService('Finna\VerifyRecordLinks');
+    }
+
+    /**
      * Helper function for running a service.
      *
      * @param string $service Service name.
