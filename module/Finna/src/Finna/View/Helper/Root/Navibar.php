@@ -204,6 +204,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     protected function parseMenuConfig($lng)
     {
         $translator = $this->getView()->plugin('translate');
+        $translationEmpty = $this->getView()->plugin('translationEmpty');
 
         $parseUrl = function ($url) {
             $url = trim($url);
@@ -298,7 +299,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
                 }
 
                 $desc = 'menu_' . $itemKey . '_desc';
-                if ($translator->translate($desc, null, false) !== false) {
+                if (!$translationEmpty($desc)) {
                     $option['desc'] = $desc;
                 }
                 $options[] = $option;
