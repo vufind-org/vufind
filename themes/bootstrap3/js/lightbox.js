@@ -79,7 +79,7 @@ var Lightbox = {
     if(this.XHR) {
       this.XHR.abort();
     }
-    this.XHR = $.ajax(obj)
+    this.XHR = $.ajax(obj);
     this.XHR.then().fail(function(response, textStatus) {
       if (textStatus == "abort") { return; }
       if (response.responseJSON) {
@@ -243,7 +243,14 @@ var Lightbox = {
       url:url,
       data:post
     })
-    .done(callback)
+    .done(function(data, textStatus, jqXHR) {
+        if (jqXHR.status == 205) {
+            // No reload since any post params would cause a prompt
+            window.location.href = window.location.href;
+        } else {
+            callback(data, textStatus, jqXHR);
+        }
+    })
     .fail(function(response, textStatus) {
       console.log(response, textStatus); // Error reporting
       console.log(url, post);

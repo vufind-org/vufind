@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Tuan Nguyen <tuan@yorku.ca>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  * @link     http://www.jquery.com   jQuery Project Page
  */
 namespace VuFind\View\Helper\Root;
@@ -32,11 +32,11 @@ use Zend\View\Helper\AbstractHelper;
 /**
  * Print a formatted string so jquery metadata and validation plugins can understand.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Tuan Nguyen <tuan@yorku.ca>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  * @link     http://www.jquery.com   jQuery Project Page
  */
 class JqueryValidation extends AbstractHelper

@@ -24,12 +24,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Greg Pendlebury <vufind-tech@lists.sourceforge.net>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use ArrayObject, VuFind\Exception\Date as DateException,
@@ -40,12 +40,12 @@ use ArrayObject, VuFind\Exception\Date as DateException,
 /**
  * Advanced Dummy ILS Driver -- Returns sample values based on Solr index.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Greg Pendlebury <vufind-tech@lists.sourceforge.net>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Demo extends AbstractBase
 {
@@ -191,6 +191,35 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Generate fake services.
+     *
+     * @return array
+     */
+    protected function getFakeServices()
+    {
+        // Load service configuration; return empty array if no services defined.
+        $services = isset($this->config['Records']['services'])
+            ? (array) $this->config['Records']['services']
+            : [];
+        if (empty($services)) {
+            return [];
+        }
+
+        // Make it more likely we have a single service than many:
+        $count = rand(1, 5) == 1 ? rand(1, count($services)) : 1;
+        $keys = (array) array_rand($services, $count);
+        $fakeServices = [];
+
+        foreach ($keys as $key) {
+            if ($key !== null) {
+                $fakeServices[] = $services[$key];
+            }
+        }
+
+        return $fakeServices;
+    }
+
+    /**
      * Generate a fake status message.
      *
      * @return string
@@ -319,7 +348,8 @@ class Demo extends AbstractBase
                 : false,
             'ILLRequest'   => 'auto',
             'addILLRequestLink' => $patron
-                ? $this->checkILLRequestBlock() ? 'block' : 'check' : false
+                ? $this->checkILLRequestBlock() ? 'block' : 'check' : false,
+            'services'     => $status == 'Available' ? $this->getFakeServices() : []
         ];
     }
 
