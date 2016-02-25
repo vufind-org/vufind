@@ -1,68 +1,72 @@
 <!-- START of: finna - feedback/form.phtml -->
-<h3><?=$this->transEsc("Send us your feedback!")?></h3>
+
 <? if (!$this->translationEmpty('feedback_instructions')): ?>
   <p><?=$this->transEsc("feedback_instructions"); ?></p>
 <? endif; ?>
 
-<?=$this->flashmessages()?>
-
-<form class="form feedback-form" name="finna_feedback" method="post" action="<?=$this->url('feedback-email')?>">
-  <input type="hidden" id="feedbackSuccess" value="<?=$this->transEsc("Thank you for your feedback")?>"/>
-  <input type="hidden" id="feedbackFailure" value="<?=$this->transEsc("An error has occurred")?>"/>
-  <input type="hidden" id="feedbackMissing" value="<?=$this->transEsc("Fill mandatory fields")?>"/>
-  <div class="row">
-    <div class="form-group col-xs-12">
-      <label for="category" class="control-label" ><?=$this->transEsc("Subject")?>:</label>
-        <select name="category" id="category" class="form-control">
-          <option value="feedback_category_general" selected="selected"><?=$this->transEsc("feedback_category_general");?></option>
-          <option value="feedback_category_metadata"><?=$this->transEsc("feedback_category_metadata");?></option>
-          <option value="feedback_category_services"><?=$this->transEsc("feedback_category_services");?></option>
-          <option value="feedback_category_usability"><?=$this->transEsc("feedback_category_usability");?></option>
-          <option value="feedback_category_technical"><?=$this->transEsc("feedback_category_technical");?></option>
-        </select>
-    </div>
+<div class="row">
+  <div class="col-sm-6">
+    <?=$this->flashmessages()?>
+    <br>
+    <form class="form feedback-form" name="finna_feedback" method="post" action="<?=$this->url('feedback-email')?>">
+      <input type="hidden" id="feedbackSuccess" value="<?=$this->transEsc("Thank you for your feedback")?>"/>
+      <input type="hidden" id="feedbackFailure" value="<?=$this->transEsc("An error has occurred")?>"/>
+      <input type="hidden" id="feedbackMissing" value="<?=$this->transEsc("Fill mandatory fields")?>"/>
+      <div class="row">
+        <div class="form-group col-xs-12">
+          <label for="category" class="control-label" ><?=$this->transEsc("Subject")?>:</label>
+            <select name="category" id="category" class="form-control">
+              <option value="feedback_category_general" selected="selected"><?=$this->transEsc("feedback_category_general");?></option>
+              <option value="feedback_category_metadata"><?=$this->transEsc("feedback_category_metadata");?></option>
+              <option value="feedback_category_services"><?=$this->transEsc("feedback_category_services");?></option>
+              <option value="feedback_category_usability"><?=$this->transEsc("feedback_category_usability");?></option>
+              <option value="feedback_category_technical"><?=$this->transEsc("feedback_category_technical");?></option>
+            </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-xs-12">
+          <label for="comments" class="control-label">* <?=$this->transEsc("feedback_message")?>:</label>
+          <textarea cols="50" rows="8" id="comments" name="comments" class="form-control" required aria-required="true"></textarea>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-xs-12">
+          <label class="control-label" for="url"><?=$this->transEsc("feedback_url");?>:</label>
+          <input type="url" id="url" name="url" class="form-control" size="50" placeholder="http://..."/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 feedback-info">
+          <p><?=$this->transEsc("feedback_info");?></p>
+        </div>
+      </div>
+      <div class="clear-col"></div>
+      <div class="row">
+        <div class="form-group col-xs-12">
+          <label class="control-label" for="name"><?=$this->transEsc("feedback_name")?>:</label>
+          <input type="text" id="name" name="name" class="form-control" size="50" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-xs-12">
+          <label class="control-label" for="email"><?=$this->transEsc("feedback_email")?>:</label>
+            <input type="email" id="email" name="email" class="form-control" size="50" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-xs-12">
+          <label class="control-label captcha" for="captcha">* <?=$this->transEsc("feedback_captcha_question");?>:</label>
+          <input type="text" id="captcha" name="captcha" class="form-control" required aria-required="true" size="4"/>
+        </div>
+      </div>
+      <div class="clear-col"></div>
+      <div class="row">
+        <div class="form-group col-xs-12">
+            <input type="submit" class="btn btn-primary" value="<?=$this->transEsc("Send")?>" />
+        </div>
+      </div>
+    </form>
   </div>
-  <div class="row">
-    <div class="form-group col-xs-12">
-      <label for="comments" class="control-label">* <?=$this->transEsc("feedback_message")?>:</label>
-      <textarea cols="37" rows="10" id="comments" name="comments" class="form-control" required aria-required="true"></textarea>
-    </div>
-  </div>
-  <div class="row">
-    <div class="form-group col-xs-12">
-      <label class="control-label" for="url"><?=$this->transEsc("feedback_url");?>:</label>
-      <input type="url" id="url" name="url" class="form-control" size="35" placeholder="http://..."/>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-12 feedback-info">
-      <p><?=$this->transEsc("feedback_info");?></p>
-    </div>
-  </div>
-  <div class="clear-col"></div>
-  <div class="row">
-    <div class="form-group col-xs-12">
-      <label class="control-label" for="name"><?=$this->transEsc("feedback_name")?>:</label>
-      <input type="text" id="name" name="name" class="form-control" size="35" />
-    </div>
-  </div>
-  <div class="row">
-    <div class="form-group col-xs-12">
-      <label class="control-label" for="email"><?=$this->transEsc("feedback_email")?>:</label>
-        <input type="email" id="email" name="email" class="form-control" size="35" />
-    </div>
-  </div>
-  <div class="row">
-    <div class="form-group col-xs-12">
-      <label class="control-label captcha" for="captcha">* <?=$this->transEsc("feedback_captcha_question");?>:</label>
-      <input type="text" id="captcha" name="captcha" class="form-control" required aria-required="true" size="4"/>
-    </div>
-  </div>
-  <div class="clear-col"></div>
-  <div class="row">
-    <div class="form-group col-xs-12">
-        <input type="submit" class="btn btn-primary" value="<?=$this->transEsc("Send")?>" />
-    </div>
-  </div>
-</form>
+</div>
 <!-- END of: finna - feedback/form.phtml -->
