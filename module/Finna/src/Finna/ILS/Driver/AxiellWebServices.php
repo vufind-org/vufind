@@ -468,7 +468,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
             // TODO: Make it configurable whether organisation names
             // should be included in the location name
-            $branches = (array)$organisation->branches->branch;
 
             if (is_object($organisation->branches->branch)) {
                 $locationsList[] = [
@@ -1392,7 +1391,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'title' => $title,
                 'duedate' => $loan->loanDueDate,
                 'renewable' => (string)$loan->loanStatus->isRenewable == 'yes',
-                'message' => $this->mapStatus($loan->loanStatus->status),
                 'barcode' => $loan->id,
                 'renewalCount' => max(
                     [0,
@@ -1636,6 +1634,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 $this->loans_wsdl, $function, $functionResult, $username,
                 ['renewLoansRequest' => $conf]
             );
+
+            $statusAWS = $result->$functionResult->status;
 
             if ($statusAWS->type != 'ok') {
                 $message
