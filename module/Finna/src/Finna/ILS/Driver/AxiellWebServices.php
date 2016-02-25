@@ -457,7 +457,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             return $locationsList;
         }
         $organisations
-            = (array)$result->$functionResult->organisations->organisation;
+            =  $this->objectToArray(
+                $result->$functionResult->organisations->organisation
+            );
 
         foreach ($organisations as $organisation) {
             if (!isset($organisation->branches->branch)) {
@@ -1175,7 +1177,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         ];
 
         if (isset($info->emailAddresses) && $info->emailAddresses->emailAddress) {
-            $emailAddresses = (array)$info->emailAddresses->emailAddress;
+            $emailAddresses
+                =  $this->objectToArray($info->emailAddresses->emailAddress);
 
             foreach ($emailAddresses as $emailAddress) {
                 if ($emailAddress->isActive == 'yes') {
@@ -1188,7 +1191,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         if (isset($info->addresses)) {
-            $addresses = (array)$info->addresses->address;
+            $addresses = $this->objectToArray($info->addresses->address);
             foreach ($addresses as $address) {
                 if ($address->isActive == 'yes') {
                     $userCached['address1'] = isset($address->streetAddress)
@@ -1212,7 +1215,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         if (isset($info->phoneNumbers)) {
-            $phoneNumbers = (array)$info->phoneNumbers->phoneNumber;
+            $phoneNumbers =  $this->objectToArray($info->phoneNumbers->phoneNumber);
             foreach ($phoneNumbers as $phoneNumber) {
                 if ($phoneNumber->sms->useForSms == 'yes') {
                     $userCached['phone'] = isset($phoneNumber->areaCode)
@@ -1377,7 +1380,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         if (!isset($result->$functionResult->loans->loan)) {
             return $transList;
         }
-        $loans = (array)$result->$functionResult->loans->loan;
+        $loans =  $this->objectToArray($result->$functionResult->loans->loan);
 
         foreach ($loans as $loan) {
             $title = $loan->catalogueRecord->title;
@@ -1463,7 +1466,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         if (!isset($result->$functionResult->debts->debt)) {
             return $finesList;
         }
-        $debts = (array)$result->$functionResult->debts->debt;
+        $debts =  $this->objectToArray($result->$functionResult->debts->debt);
 
         foreach ($debts as $debt) {
             $fine = [
