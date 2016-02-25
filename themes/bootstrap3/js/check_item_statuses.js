@@ -80,9 +80,10 @@ function checkItemStatuses() {
     $(".ajax-availability").removeClass('ajax-availability');
   })
   .fail(function(response, textStatus) {
-    if (textStatus == "abort") { return; }
+    $('.ajax-availability').empty();
+    if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
     // display the error message on each of the ajax status place holder
-    $(".ajax-availability").empty().append(response.responseJSON.data).addClass('text-danger');
+    $('.ajax-availability').append(response.responseJSON.data).addClass('text-danger');
   });
 }
 
