@@ -22,13 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Oliver Goldschmidt <o.goldschmidt@tu-harburg.de>
  * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use DOMDocument, VuFind\Exception\ILS as ILSException,
@@ -38,13 +38,13 @@ use DOMDocument, VuFind\Exception\ILS as ILSException,
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Oliver Goldschmidt <o.goldschmidt@tu-harburg.de>
  * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class DAIA extends AbstractBase implements
     HttpServiceAwareInterface, LoggerAwareInterface

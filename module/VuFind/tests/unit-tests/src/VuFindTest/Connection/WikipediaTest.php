@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindTest\Connection;
 
@@ -36,11 +36,11 @@ use Zend\Http\Client as HttpClient;
 /**
  * Unit tests for Wikipedia connector.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class WikipediaTest extends \PHPUnit_Framework_TestCase
 {

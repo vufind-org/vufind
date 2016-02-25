@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  HierarchyTree_DataSource
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\TreeDataSource;
 use VuFind\Hierarchy\TreeDataFormatter\PluginManager as FormatterManager;
@@ -36,11 +36,11 @@ use VuFindSearch\ParamBag;
  *
  * This is a base helper class for producing hierarchy Trees.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  HierarchyTree_DataSource
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 class Solr extends AbstractBase
 {

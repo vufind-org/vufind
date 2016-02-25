@@ -96,7 +96,7 @@ function registerAjaxCommentRecord() {
       $(form).find('input[type="submit"]').button('loading');
     })
     .fail(function(response, textStatus) {
-      if (textStatus == "abort") { return; }
+      if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
       VuFind.lightbox.update(response.responseJSON.data);
     });
     return false;

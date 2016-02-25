@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
 /**
@@ -31,11 +31,11 @@
  * using an abbreviated name.  Unfortunately, the name does not comply with coding
  * standards, but we cannot easily change it due to legacy compatibility issues.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 // @codingStandardsIgnoreStart - lowercase class name
 class minSO extends \VuFind\Search\Minified
