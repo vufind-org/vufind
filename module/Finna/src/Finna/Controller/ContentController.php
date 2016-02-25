@@ -5,7 +5,7 @@
  * PHP Version 5
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -59,18 +59,24 @@ class ContentController extends \VuFind\Controller\AbstractBase
 
         // Try template with current language first and default language as a
         // fallback
-        if (!is_null(
+        if (null !==
             $themeInfo->findContainingTheme(
                 "templates/content/{$page}_$language.phtml"
             )
-        )) {
+        ) {
             $page = "{$page}_$language";
-        } elseif (!is_null(
+        } elseif (null !==
             $themeInfo->findContainingTheme(
                 "templates/content/{$page}_$defaultLanguage.phtml"
             )
-        )) {
+        ) {
             $page = "{$page}_$defaultLanguage";
+        }
+
+        if (empty($page) || null === $themeInfo->findContainingTheme(
+            "templates/content/$page.phtml"
+        )) {
+            return $this->notFoundAction($this->getResponse());
         }
 
         $view = $this->createViewModel(['page' => $page]);
@@ -88,11 +94,8 @@ class ContentController extends \VuFind\Controller\AbstractBase
     public function notFoundAction()
     {
         $response   = $this->response;
-        $event      = $this->getEvent();
-        $routeMatch = $event->getRouteMatch();
-        //$routeMatch->setParam('action', 'not-found');
 
-        if ($response instanceof HttpResponse) {
+        if ($response instanceof \Zend\Http\Response) {
             return $this->createHttpNotFoundModel($response);
         }
         return $this->createConsoleNotFoundModel($response);
