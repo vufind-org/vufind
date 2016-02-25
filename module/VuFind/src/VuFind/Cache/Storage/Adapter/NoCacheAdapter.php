@@ -24,7 +24,7 @@
  * @package  Cache
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Cache\Storage\Adapter;
 
@@ -37,7 +37,7 @@ use Zend\Cache\Storage\Adapter\AbstractAdapter;
  * @package  Cache
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */

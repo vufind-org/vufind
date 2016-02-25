@@ -23,7 +23,7 @@
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
 use VuFind\Search\UrlQueryHelper, Zend\Paginator\Paginator,
@@ -40,7 +40,7 @@ use VuFindSearch\Service as SearchService;
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 abstract class Results implements ServiceLocatorAwareInterface
 {

@@ -23,7 +23,7 @@
  * @package  Controller_Plugins
  * @author   Chris Hallberg <crhallberg@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
@@ -35,7 +35,7 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
  * @package  Controller_Plugins
  * @author   Chris Hallberg <crhallberg@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Recaptcha extends AbstractPlugin
 {

@@ -23,7 +23,7 @@
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Solr;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
@@ -38,7 +38,7 @@ use VuFindSearch\Query\QueryGroup;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Results extends \VuFind\Search\Base\Results
 {

@@ -26,7 +26,7 @@
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Role\PermissionProvider;
 use Zend\Http\PhpEnvironment\Request;
@@ -41,7 +41,7 @@ use VuFind\Net\IpAddressUtils;
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class IpRange implements PermissionProviderInterface
 {

@@ -23,7 +23,7 @@
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Date;
 use VuFind\Date\Converter, VuFind\Exception\Date as DateException,
@@ -36,7 +36,7 @@ use VuFind\Date\Converter, VuFind\Exception\Date as DateException,
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class ConverterTest extends \VuFindTest\Unit\TestCase
 {

@@ -24,7 +24,7 @@
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Recommend;
 
@@ -36,7 +36,7 @@ namespace VuFind\Recommend;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class FacetCloud extends ExpandFacets
 {

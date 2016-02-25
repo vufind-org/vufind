@@ -23,7 +23,7 @@
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
 use VuFind\Auth\MultiAuth, Zend\Config\Config;
@@ -35,7 +35,7 @@ use VuFind\Auth\MultiAuth, Zend\Config\Config;
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
 {

@@ -23,7 +23,7 @@
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindAdmin\Controller;
 use Zend\Mvc\MvcEvent;
@@ -35,7 +35,7 @@ use Zend\Mvc\MvcEvent;
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class AbstractAdmin extends \VuFind\Controller\AbstractBase
 {

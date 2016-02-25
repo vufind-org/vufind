@@ -23,7 +23,7 @@
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Role;
 use ZfcRbac\Role\RoleProviderInterface;
@@ -36,7 +36,7 @@ use Rbac\Role\Role;
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class DynamicRoleProvider implements RoleProviderInterface
 {

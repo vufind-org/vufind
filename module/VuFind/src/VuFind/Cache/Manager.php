@@ -23,7 +23,7 @@
  * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Cache;
 use Zend\Cache\StorageFactory, Zend\Config\Config;
@@ -37,7 +37,7 @@ use Zend\Cache\StorageFactory, Zend\Config\Config;
  * @package  Cache
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Manager
 {
