@@ -1,4 +1,4 @@
-/*global VuFind*/
+/*global VuFind,checkSaveStatuses,setupSaveRecordLinks*/
 finna.searchTabsRecommendations = (function() {
     var initSearchTabsRecommendations = function() {
         var holder = $('#search-tabs-recommendations-holder');
@@ -14,10 +14,10 @@ finna.searchTabsRecommendations = (function() {
             holder.html(response.data);
             finna.layout.initTruncate(holder);
             finna.openUrl.initLinks();
-            finna.layout.initSaveRecordLinks(holder);
+            setupSaveRecordLinks(holder);
             finna.itemStatus.initItemStatuses(holder);
             finna.itemStatus.initDedupRecordSelection(holder);
-            finna.layout.checkSaveStatuses(holder);
+            checkSaveStatuses(holder);
         })
         .fail(function(response, textStatus) {
             console.log(response, textStatus);

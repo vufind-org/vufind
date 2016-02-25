@@ -26,7 +26,6 @@
 @logo-color: #fff;
 
 //== Custom Finna styling
-@background-image-url: url('../images/background.jpg');
 @background-image-attachment: scroll;  // set to fixed or scroll (fixed doesnt scoll along with page) 
 @background-start-color: rgba(1,1,1,0.4); // gradient color for background image
 @background-end-color:  rgba(1,1,1,0.2); // gradient color for background image
@@ -326,7 +325,7 @@
 
 // Extra small screen / phone
 // Note: Deprecated @screen-xs and @screen-phone as of v3.0.1
-@screen-xs:                  480px;
+@screen-xs:                  1px;
 @screen-xs-min:              @screen-xs;
 @screen-phone:               @screen-xs-min;
 
@@ -364,7 +363,7 @@
 @grid-gutter-width:         30px;
 // Navbar collapse
 //** Point at which the navbar becomes uncollapsed.
-@grid-float-breakpoint:     @screen-md-min;
+@grid-float-breakpoint:     @screen-sm-min;
 //** Point at which the navbar begins collapsing.
 @grid-float-breakpoint-max: (@grid-float-breakpoint - 1);
 

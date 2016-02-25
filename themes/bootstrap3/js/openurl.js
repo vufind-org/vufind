@@ -1,8 +1,8 @@
 /*global extractClassParams, VuFind */
 
-function loadResolverLinks($target, openUrl) {
+function loadResolverLinks($target, openUrl, searchClassId) {
   $target.addClass('ajax_availability');
-  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl});
+  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl,searchClassId:searchClassId});
   $.ajax({
     dataType: 'json',
     url: url
@@ -31,8 +31,24 @@ function embedOpenUrlLinks(element) {
   // If the target is already visible, a previous click has populated it;
   // don't waste time doing redundant work.
   if (target.hasClass('hidden')) {
-    loadResolverLinks(target.removeClass('hidden'), openUrl);
+    loadResolverLinks(target.removeClass('hidden'), openUrl, element.data('search-class-id'));
   }
+}
+
+// This can be called with a container e.g. when combined results fetched with AJAX 
+// are loaded
+function setupEmbeddedOpenUrlLinks(container)
+{
+  if (typeof(container) == 'undefined') {
+    container = $('body');
+  }
+  // assign action to the openUrlEmbed link class
+  container.find('.openUrlEmbed a').click(function() {
+    embedOpenUrlLinks($(this));
+    return false;
+  });
+
+  container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
 }
 
 $(document).ready(function() {
@@ -43,12 +59,7 @@ $(document).ready(function() {
     window.open($(this).attr('href'), 'openurl', settings);
     return false;
   });
-
-  // assign action to the openUrlEmbed link class
-  $('.openUrlEmbed a').click(function() {
-    embedOpenUrlLinks($(this));
-    return false;
-  });
-
-  $('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger("click");
+  
+  setupEmbeddedOpenUrlLinks();
 });
+

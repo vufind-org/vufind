@@ -1,11 +1,18 @@
 /*global VuFind */
 
-function checkSaveStatuses() {
-  var data = $.map($('.result,.record'), function(record) {
-    if($(record).find('.hiddenId').length == 0 || $(record).find('.hiddenSource').length == 0) {
+function checkSaveStatuses(container) {
+  if (typeof(container) == 'undefined') {
+    container = $('body');
+  }
+    
+  var elements = {}
+  var data = $.map(container.find('.result,.record'), function(record) {
+    if ($(record).find('.hiddenId').length == 0 || $(record).find('.hiddenSource').length == 0) {
       return false;
     }
-    return {'id':$(record).find('.hiddenId').val(), 'source':$(record).find('.hiddenSource')[0].value};
+    var datum = {'id':$(record).find('.hiddenId').val(), 'source':$(record).find('.hiddenSource')[0].value};
+    elements[datum.source+'|'+datum.id] = $(record).find('.savedLists');
+    return datum;
   });
   if (data.length) {
     var ids = [];
@@ -21,15 +28,15 @@ function checkSaveStatuses() {
       data: {id:ids, 'source':srcs}
     })
     .done(function(response) {
-      for (var rn in response.data) {
-        var list = $('#result'+rn).find('.savedLists')
-        if (list.length == 0) {
+      for (var sel in response.data) {
+        var list = elements[sel];
+        if (!list) {
           list = $('.savedLists');
         }
         var html = list.find('strong')[0].outerHTML+'<ul>';
-        for (var i=0; i<response.data[rn].length; i++) {
-          html += '<li><a href="' + VuFind.getPath() + '/MyResearch/MyList/' + response.data[rn][i].list_id + '">'
-                   + response.data[rn][i].list_title + '</a></li>';
+        for (var i=0; i<response.data[sel].length; i++) {
+          html += '<li><a href="' + response.data[sel][i].list_url + '">'
+            + htmlEncode(response.data[sel][i].list_title) + '</a></li>';
         }
         html += '</ul>';
         list.html(html).removeClass('hidden');
@@ -39,5 +46,5 @@ function checkSaveStatuses() {
 }
 
 $(document).ready(function() {
-  checkSaveStatuses()
+  checkSaveStatuses();
 });

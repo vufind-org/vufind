@@ -1,5 +1,8 @@
 <!-- START of: finna - ajax/status-full.phtml -->
 <?
+$id = $this->statusItems[0]['id'];
+$driver = $this->record($id)->getDriver();
+$source = $driver->tryMethod('getDataSource');
 $locations = false;
 $holdings = $this->statusItems;
 $summary = array_pop($holdings);
@@ -152,7 +155,7 @@ foreach ($this->statusItems as $item):
           <? endif; ?>
         </span>
         <? endif; ?>
-      <span class="info text-right"><?=$this->escapeHtml($item['callnumber'])?></span>
+      <span class="info text-right"><?=$this->callnumber()->callnumber($source, $item['callnumber'], isset($item['collection']) ? $item['collection'] : null, $this->layout()->userLang, 'results')?></span>
     </div>
   <div class="holdings<?=$collapseBranches ? ' collapsible collapsed' : ''?>">
 <? endif; ?>
@@ -195,7 +198,7 @@ foreach ($this->statusItems as $item):
             <? if (!empty($item['callnumbers'])): ?>
               (<?=$this->transEsc($item['callnumbers'])?>)
             <? elseif (!empty($item['callnumber'])): ?>
-              (<span class="shelf"><?=$this->translate('shelf_location')?>: </span><?=$this->escapeHtml($item['callnumber'])?>)
+              <?=$this->callnumber()->callnumber($source, $item['callnumber'], isset($item['collection']) ? $item['collection'] : null, $this->layout()->userLang, 'results')?>
             <? endif; ?>
           </div>
         <? endif; ?>
@@ -214,9 +217,6 @@ foreach ($this->statusItems as $item):
 $holdingsLink = sprintf('%s%s/Holdings', $this->url('record'), $this->statusItems[0]['id']);
 
 if ($this->holdingsSettings()->showSearchResultsTitleHold()) {
-  $id = $this->statusItems[0]['id'];
-  $driver = $this->record($id)->getDriver();
-
   if ($driver && $driver->tryMethod('getHoldsAllowed')) {
     $account = $this->auth()->getManager();
     $offlineMode = $this->ils()->getOfflineMode();

@@ -20,6 +20,7 @@ finna.itemStatus = (function() {
     // Callback for AJAX loaded holdings item on search results page.
     var statusCallback =
        function (holder) {
+           finna.layout.initLocationService(holder);
            initTitleHolds(holder);
            holder.find('a.login').unbind('click').click(function() {
                var followUp = $(this).attr('href');

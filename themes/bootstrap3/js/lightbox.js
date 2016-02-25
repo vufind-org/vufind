@@ -79,7 +79,7 @@ var Lightbox = {
     if(this.XHR) {
       this.XHR.abort();
     }
-    this.XHR = $.ajax(obj)
+    this.XHR = $.ajax(obj);
     this.XHR.then().fail(function(response, textStatus) {
       if (textStatus == "abort") { return; }
       if (response.responseJSON) {
@@ -243,7 +243,14 @@ var Lightbox = {
       url:url,
       data:post
     })
-    .done(callback)
+    .done(function(data, textStatus, jqXHR) {
+        if (jqXHR.status == 205) {
+            // No reload since any post params would cause a prompt
+            window.location.href = window.location.href;
+        } else {
+            callback(data, textStatus, jqXHR);
+        }
+    })
     .fail(function(response, textStatus) {
       console.log(response, textStatus); // Error reporting
       console.log(url, post);
@@ -539,10 +546,5 @@ $(document).ready(function() {
   // Email search link
   $('.mailSearch').click(function() {
     return Lightbox.get('Search','Email',{url:document.URL});
-  });
-  // Save record links
-  $('.result .save-record').click(function() {
-    var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('data-id')});
   });
 });

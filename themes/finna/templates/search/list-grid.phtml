@@ -1,7 +1,7 @@
 <!-- START of: finna - search/list-grid.phtml -->
 <div class="row">
 <? $i = 0; foreach ($this->results->getResults() as $current): ?>
-  <div id="result<?=$i++ ?>" class="col-md-3 col-sm-4 col-xs-6 grid">
+  <div id="result<?=$i++ ?>" class="col-md-3 col-sm-4 col-xs-6 result grid">
     <?=$this->record($current)->getSearchResult('grid')?>
   </div>
 

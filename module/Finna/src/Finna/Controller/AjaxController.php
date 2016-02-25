@@ -959,133 +959,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
-     * Fetch Links from resolver given an OpenURL and format as HTML
-     * and output the HTML content in JSON object.
-     *
-     * @return \Zend\Http\Response
-     * @author Graham Seaman <Graham.Seaman@rhul.ac.uk>
-     */
-    public function getResolverLinksAjax()
-    {
-        $this->writeSession();  // avoid session write timing bug
-        $openUrl = $this->params()->fromQuery('openurl', '');
-
-        $config = $this->getConfig();
-        $resolverType = isset($config->OpenURL->resolver)
-            ? $config->OpenURL->resolver : 'other';
-        $pluginManager = $this->getServiceLocator()
-            ->get('VuFind\ResolverDriverPluginManager');
-        if (!$pluginManager->has($resolverType)) {
-            return $this->output(
-                $this->translate("Could not load driver for $resolverType"),
-                self::STATUS_ERROR,
-                500
-            );
-        }
-        $resolver = new \VuFind\Resolver\Connection(
-            $pluginManager->get($resolverType)
-        );
-        if (isset($config->OpenURL->resolver_cache)) {
-            $resolver->enableCache($config->OpenURL->resolver_cache);
-        }
-        $result = $resolver->fetchLinks($openUrl);
-
-        // Sort the returned links into categories based on service type:
-        $electronic = $print = $services = [];
-        foreach ($result as $link) {
-            switch (isset($link['service_type']) ? $link['service_type'] : '') {
-            case 'getHolding':
-                $print[] = $link;
-                break;
-            case 'getWebService':
-                $services[] = $link;
-                break;
-            case 'getDOI':
-                // Special case -- modify DOI text for special display:
-                $link['title'] = $this->translate('Get full text');
-                $link['coverage'] = '';
-            case 'getFullTxt':
-            default:
-                $electronic[] = $link;
-                break;
-            }
-        }
-
-        // Get the OpenURL base:
-        if (isset($config->OpenURL) && isset($config->OpenURL->url)) {
-            // Trim off any parameters (for legacy compatibility -- default config
-            // used to include extraneous parameters):
-            list($base) = explode('?', $config->OpenURL->url);
-        } else {
-            $base = false;
-        }
-
-        // Render the links using the view:
-        $view = [
-            'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
-            'electronic' => $electronic, 'services' => $services,
-            'searchClassId' => $this->params()->fromQuery('searchClassId', '')
-        ];
-        $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
-
-        // output HTML encoded in JSON object
-        return $this->output($html, self::STATUS_OK);
-    }
-
-    /**
-     * Check one or more records to see if they are saved in one of the user's list.
-     *
-     * @return \Zend\Http\Response
-     *
-     * @todo This version exists only because upstream version was refactored to not
-     * include record_id's. Merge somehow.
-     */
-    protected function getSaveStatusesAjax()
-    {
-        $this->writeSession();  // avoid session write timing bug
-        // check if user is logged in
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
-            );
-        }
-
-        // loop through each ID check if it is saved to any of the user's lists
-        $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id', []));
-        $sources = $this->params()->fromPost(
-            'source', $this->params()->fromQuery('source', [])
-        );
-        if (!is_array($ids) || !is_array($sources)) {
-            return $this->output(
-                $this->translate('Argument must be array.'),
-                self::STATUS_ERROR,
-                400
-            );
-        }
-        $result = [];
-        foreach ($ids as $i => $id) {
-            $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
-            $data = $user->getSavedData($id, null, $source);
-            if ($data && count($data) > 0) {
-                $result[$i] = [];
-                // if this item was saved, add it to the list of saved items.
-                foreach ($data as $list) {
-                    $result[$i][] = [
-                        'list_id' => $list->list_id,
-                        'list_title' => $list->list_title,
-                        'record_id' => $id,
-                        'record_source' => $source
-                    ];
-                }
-            }
-        }
-        return $this->output($result, self::STATUS_OK);
-    }
-
-    /**
      * Retrieve recommendations for results in other tabs
      *
      * @return \Zend\Http\Response
@@ -1569,7 +1442,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         arsort($searchPhrases);
 
         $html = $this->getViewRenderer()->render(
-            'ajax/piwik-popular-searches.phtml', [searches => $searchPhrases]
+            'ajax/piwik-popular-searches.phtml', ['searches' => $searchPhrases]
         );
         return $this->output($html, self::STATUS_OK);
     }
