@@ -68,17 +68,13 @@ class ContentController extends \VuFind\Controller\AbstractBase
 
         // Try template with current language first and default language as a
         // fallback
-        if (null !==
-            $themeInfo->findContainingTheme(
-                "templates/content/{$page}_$language.phtml"
-            )
-        ) {
+        if (null !== $themeInfo->findContainingTheme(
+            "templates/content/{$page}_$language.phtml"
+        )) {
             $page = "{$page}_$language";
-        } elseif (null !==
-            $themeInfo->findContainingTheme(
-                "templates/content/{$page}_$defaultLanguage.phtml"
-            )
-        ) {
+        } elseif (null !== $themeInfo->findContainingTheme(
+            "templates/content/{$page}_$defaultLanguage.phtml"
+        )) {
             $page = "{$page}_$defaultLanguage";
         }
 
