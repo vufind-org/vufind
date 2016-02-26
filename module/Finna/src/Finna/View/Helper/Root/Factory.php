@@ -369,6 +369,21 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the translation view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\View\Helper\Root\Translation
+     */
+    public static function getTranslation(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        return new Translation(
+            isset($config['Site']['language']) ? $config['Site']['language'] : 'en'
+        );
+    }
+
+    /**
      * Construct the PersonaAuth view helper.
      *
      * @param ServiceManager $sm Service manager.

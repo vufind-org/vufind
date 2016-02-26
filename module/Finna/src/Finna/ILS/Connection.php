@@ -7,7 +7,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -118,50 +118,143 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
-     * Check Email Update
+     * Check for updateAddress
      *
      * A support method for checkFunction(). This is responsible for checking
-     * the driver configuration to determine if the system supports updating
-     * the email address of the ILS.
+     * the driver configuration to determine if the system supports updating address.
      *
-     * @param array $functionConfig The email update configuration values
+     * @param array $functionConfig The configuration values
      * @param array $params         Patron data
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values of the configuration values.
-     * on failure, false.
+     * @return mixed On success, array of configuration data; on failure, false.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodupdateEmail($functionConfig, $params)
-    {
-        if ($this->checkCapability('updateEmail', [$params ?: []])) {
+    protected function checkMethodupdateAddress(
+        $functionConfig, $params
+    ) {
+        if (!isset($functionConfig['method'])) {
+            return false;
+        }
+        if ($functionConfig['method'] == 'email'
+            && !empty($functionConfig['emailAddress'])
+        ) {
             return $functionConfig;
         }
+        if ($functionConfig['method'] == 'url' && !empty($functionConfig['url'])) {
+            return $functionConfig;
+        }
+        if ($functionConfig['method'] == 'driver'
+            && $this->checkCapability('updateAddress', [$params ?: []])
+        ) {
+            return $functionConfig;
+        }
+
         return false;
     }
 
     /**
-     * Check Phone Update
+     * Check for updateEmail
      *
      * A support method for checkFunction(). This is responsible for checking
-     * the driver configuration to determine if the system supports updating
-     * the phone number of the ILS.
+     * the driver configuration to determine if the system supports updating email
+     * address.
      *
-     * @param array $functionConfig The phone update configuration values
+     * @param array $functionConfig The configuration values
      * @param array $params         Patron data
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values of the configuration values.
-     * on failure, false.
+     * @return mixed On success, array of configuration data; on failure, false.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodupdatePhone($functionConfig, $params)
-    {
-        if ($this->checkCapability('updatePhone', [$params ?: []])) {
+    protected function checkMethodupdateEmail($functionConfig, $params) {
+        if (!isset($functionConfig['method'])) {
+            return false;
+        }
+        if ($functionConfig['method'] == 'email'
+            && !empty($functionConfig['emailAddress'])
+        ) {
             return $functionConfig;
         }
+        if ($functionConfig['method'] == 'url' && !empty($functionConfig['url'])) {
+            return $functionConfig;
+        }
+        if ($functionConfig['method'] == 'driver'
+            && $this->checkCapability('updateEmail', [$params ?: []])
+        ) {
+            return $functionConfig;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check for updateMessagingSettings
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports updating
+     * messaging settings.
+     *
+     * @param array $functionConfig The configuration values
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, array of configuration data; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodupdateMessagingSettings($functionConfig, $params) {
+        if (!isset($functionConfig['method'])) {
+            return false;
+        }
+        if ($functionConfig['method'] == 'email'
+            && !empty($functionConfig['emailAddress'])
+        ) {
+            return $functionConfig;
+        }
+        if ($functionConfig['method'] == 'url' && !empty($functionConfig['url'])) {
+            return $functionConfig;
+        }
+        if ($functionConfig['method'] == 'driver'
+            && $this->checkCapability('updateMessagingSettings', [$params ?: []])
+        ) {
+            return $functionConfig;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check for updatePhone
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports updating phone
+     * number.
+     *
+     * @param array $functionConfig The configuration values
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, array of configuration data; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodupdatePhone($functionConfig, $params) {
+        if (!isset($functionConfig['method'])) {
+            return false;
+        }
+        if ($functionConfig['method'] == 'email'
+            && !empty($functionConfig['emailAddress'])
+        ) {
+            return $functionConfig;
+        }
+        if ($functionConfig['method'] == 'url' && !empty($functionConfig['url'])) {
+            return $functionConfig;
+        }
+        if ($functionConfig['method'] == 'driver'
+            && $this->checkCapability('updatePhone', [$params ?: []])
+        ) {
+            return $functionConfig;
+        }
+
         return false;
     }
 

@@ -17,13 +17,13 @@ finna.userProfile = (function () {
     
     var initProfile = function () {
         // My profile address change
-        $('.profile-library-info-address-update').click(function () {
+        $('.modal-link.profile-library-info-address-update').click(function () {
             var params = extractClassParams(this);
             return Lightbox.get(params.controller, 'ChangeProfileAddress');
         });
     
         // My profile messaging change
-        $('#profile-messaging-update').click(function () {
+        $('.modal-link.profile-messaging-update').click(function () {
             var params = extractClassParams(this);
             return Lightbox.get(params.controller, 'ChangeMessagingSettings');
         });
@@ -41,6 +41,12 @@ finna.userProfile = (function () {
         Lightbox.addFormCallback('deleteAccount', function (html) {
             Lightbox.changeContent(html);
             deleteAccountLogout();
+        });
+        Lightbox.addFormCallback('requestAddressChange', function(){
+            Lightbox.confirm(VuFind.translate('request_change_done'));
+        });
+        Lightbox.addFormCallback('changeMessagingSettings', function(){
+            Lightbox.confirm(VuFind.translate('request_change_done'));
         });
     };
     

@@ -18,9 +18,9 @@
     $user = $this->auth()->isLoggedIn();
     $cards = $user->getLibraryCards();
 
-    $updateAddress = ($config = $this->ils()->checkFunction('updateAddress')) && $config['method'] == 'email';
-    $updatePhone = ($config = $this->ils()->checkFunction('updatePhone')) && $config['method'] == 'driver';
-    $updateEmail = ($config = $this->ils()->checkFunction('updateEmail')) && $config['method'] == 'driver';
+    $updateAddress = $this->ils()->checkFunction('updateAddress');
+    $updatePhone = $this->ils()->checkFunction('updatePhone');
+    $updateEmail = $this->ils()->checkFunction('updateEmail');
 
     // Additional translations
     $this->jsTranslations()->addStrings(['new_password_success' => 'new_password_success']);
@@ -101,7 +101,11 @@
             <div class="clearfix visible-xs profile-xs"></div>
             <div class="col-sm-4 profile-long">
               <i class="fa fa-info-big"></i> <?=$this->transEsc('request_address_change_title') ?>
-              <a class="modal-link controller:MyResearch profile-library-info-address-update" href="<?=$this->url() ?>"><?=$this->transEsc('request_address_change') ?></a>
+              <? if ($updateAddress['method'] == 'email'): ?>
+                <a class="modal-link controller:MyResearch profile-library-info-address-update" href="<?=$this->url('myresearch-changeprofileaddress') ?>" title="<?=$this->escapeHtmlAttr($this->translate('request_address_change')) ?>"><?=$this->transEsc('request_address_change') ?></a>.
+              <? elseif ($updateAddress['method'] == 'url'): ?>
+                <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateAddress['url'])) ?>" target="_blank"><?=$this->transEsc('request_address_change') ?></a>.
+              <? endif; ?>
             </div>
             <div class="clearfix visible-xs  profile-xs"><br/></div>
           <? else: ?>
@@ -149,7 +153,11 @@
         <? endif; ?>
         <? if ($updateAddress): ?>
           <div class="col-xs-12">
-            <i class="fa fa-pen"></i> <a class="modal-link controller:MyResearch profile-library-info-address-update" href="<?=$this->url() ?>"><?=$this->transEsc('request_address_change') ?></a>
+          <? if ($updateAddress['method'] == 'email'): ?>
+            <i class="fa fa-pen"></i> <a class="modal-link controller:MyResearch profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->url('myresearch-changeprofileaddress')) ?>"><?=$this->transEsc('request_address_change') ?></a>
+          <? elseif ($updateAddress['method'] == 'url'): ?>
+            <i class="fa fa-external-link"></i> <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateAddress['url'])) ?>" target="_blank"><?=$this->transEsc('request_address_change') ?></a>
+          <? endif; ?>
           </div>
         <? endif; ?>
       </form>

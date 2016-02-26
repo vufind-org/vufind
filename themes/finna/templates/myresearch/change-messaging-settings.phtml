@@ -1,42 +1,50 @@
 <!-- START of: finna - myresearch/change-messaging-settings.phtml -->
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('request_messaging_settings_change'));
+
+    // Set up myresearch menu
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile']);
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
+?>
 <?=$this->flashmessages()?>
 <? if (empty($profile['email'])): ?>
-<div class="alert alert-danger">
-  <?=$this->transEsc('no_email_address')?>
-  <?=$this->transEsc('no_email_address_text')?>
-</div>
+  <div class="alert alert-danger">
+    <?=$this->transEsc('no_email_address')?>
+    <?=$this->transEsc('no_email_address_text')?>
+  </div>
 <? else: ?>
-<form method="post" action="<?=$this->url('home') . ('MyResearch/ChangeMessagingSettings')?>" class="messaging-settings-form profile-form">
-  <table class="table useraccount-table">
-    <? foreach ($this->services as $service=>$data): ?>
-    <tr>
-      <th><?=$data['type'] ?></th>
-      <td>
-        <select name="<?=$service ?>">
-          <? foreach ($data['sendMethods'] as $method=>$methodData): ?>
-            <? if (!($service == 'dueDateAlert' && $method == 'email')): ?>
-              <option value="<?=$methodData['type'] ?>"<? if ($methodData['active']): ?> selected<? endif; ?>><?=$methodData['method'] ?></option>
-            <? endif; ?>
-          <? endforeach; ?>
-          <? if ($service == 'dueDateAlert'): ?>
-            <? foreach ($this->emailDays as $day=>$label): ?>
-              <option value="<? $day+1 ?>"<? if ($data['numOfDays'] == $day+1): ?> selected<? endif; ?>><?=$label ?></option>
-            <? endforeach; ?>
-          <? endif; ?>
-        </select>
-      </td>
-    </tr>
-    <? endforeach; ?>
-    <tr>
-      <th>
-        <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" name="messaging_update_request" />
-      </th>
-    </tr>
-  </table>
-</form>
-<span class="messaging-settings-change-description">
-  <?=$this->transEsc('request_change_description') ?>
-</span>
-<?endif;?>
-
+  <? if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
+    <form name="changeMessagingSettings" method="post" action="<?=$this->url('myresearch-changemessagingsettings') ?>" class="form-horizontal messaging-settings-form profile-form">
+      <? foreach ($this->services as $service=>$data): ?>
+        <div class="form-group">
+          <label class="col-sm-4 control-label" for="change_address_line_1"><?=$this->escapeHtml($data['type']) ?></label>
+          <div class="col-sm-8">
+            <select name="<?=$service ?>" class="form-control">
+              <? foreach ($data['sendMethods'] as $method => $methodData): ?>
+                <? if (!($service == 'dueDateAlert' && $method == 'email')): ?>
+                  <option value="<?=$this->escapeHtmlAttr($methodData['type']) ?>"<? if ($methodData['active']): ?> selected<? endif; ?>><?=$this->escapeHtml($methodData['method']) ?></option>
+                <? endif; ?>
+              <? endforeach; ?>
+              <? if ($service == 'dueDateAlert'): ?>
+                <? foreach ($this->emailDays as $day => $label): ?>
+                  <option value="<?=$day+1 ?>"<? if ($data['numOfDays'] == $day+1): ?> selected<? endif; ?>><?=$this->escapeHtml($label) ?></option>
+                <? endforeach; ?>
+              <? endif; ?>
+            </select>
+          </div>
+        </div>
+      <? endforeach; ?>
+      <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+          <input name="messaging_update_request" class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" />
+        </div>
+      </div>
+    </form>
+  <? endif; ?>
+  <span class="messaging-settings-change-description">
+    <?=$this->transEsc('request_change_description') ?>
+  </span>
+<? endif; ?>
 <!-- END of: finna - myresearch/change-messaging-settings.phtml -->

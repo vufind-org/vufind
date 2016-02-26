@@ -1,24 +1,36 @@
 <!-- START of: finna - myresearch/change-address-settings.phtml -->
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('request_address_change'));
+
+    // Set up myresearch menu
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile']);
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
+?>
 <?=$this->flashmessages()?>
-<form method="post" action="<?=$this->url('home') . ('MyResearch/ChangeProfileAddress')?>" class="address-form profile-form">
-    <table class="table useraccount-table">
-        <tr>
-            <th><?=$this->transEsc('Address') ?></th>
-            <td><input type="text" name="change_address_line_1" value="<?=$this->profile['address1'] ?>"></input></td>
-        </tr>
-        <tr>
-            <th><?=$this->transEsc('Zip') ?></th>
-            <td><input type="text" name="change_address_zip" value="<?=$this->profile['zip'] ?>"></input></td>
-        </tr>
-        <tr>
-            <th>
-                <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" name="addess_change_request" />
-            </th>
-            <td><td>
-        </tr>
-    </table>
-</form>
-<span class="address-change-description">
-  <?=$this->transEsc('request_change_description') ?>
-</span>
+<? if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
+  <form  name="requestAddressChange" method="post" action="<?=$this->url('myresearch-changeprofileaddress')?>" class="form-horizontal address-form profile-form">
+    <div class="form-group">
+      <label class="col-sm-3 control-label" for="change_address_line_1"><?=$this->transEsc('Address') ?>:</label>
+      <div class="col-sm-9">
+        <input id="change_address_line_1" name="change_address_line_1" type="text" value="<?=$this->escapeHtmlAttr($this->profile['address1']) ?>" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label" for="change_address_zip"><?=$this->transEsc('Zip') ?>:</label>
+      <div class="col-sm-9">
+        <input id="change_address_zip" name="change_address_zip" type="text" value="<?=$this->escapeHtmlAttr($this->profile['zip']) ?>" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <input name="address_change_request" class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" />
+      </div>
+    </div>
+  </form>
+<? endif; ?>
+  <span class="address-change-description">
+    <?=$this->transEsc('request_change_description') ?>
+  </span>
 <!-- END of: finna - myresearch/change-address-settings.phtml -->

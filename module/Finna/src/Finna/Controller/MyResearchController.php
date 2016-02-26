@@ -236,12 +236,30 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
         $catalog = $this->getILS();
         $profile = $catalog->getMyProfile($patron);
+        $view = $this->createViewModel();
 
-        if ($this->formWasSubmitted('addess_change_request')) {
-            // ToDo: address request sent
+        if ($this->formWasSubmitted('address_change_request')) {
+            $data = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $data['old_address_line_1']
+                = isset($profile['address1']) ? $profile['address1'] : '';
+            $data['old_address_zip'] = isset($profile['zip']) ? $profile['zip'] : '';
+
+            $config = $this->getILS()->getConfig('updateAddress', $patron);
+            if (!isset($config['emailAddress'])) {
+                throw new \Exception(
+                    'Missing emailAddress in ILS updateAddress settings'
+                );
+            }
+            $recipient = $config['emailAddress'];
+
+            $this->sendChangeRequestEmail(
+                $patron, $data, $recipient, 'Osoitteenmuutospyyntö', 'change-address'
+            );
+            $this->flashMessenger()
+                ->addSuccessMessage('request_change_done');
+            $view->requestCompleted = true;
         }
 
-        $view = $this->createViewModel();
         $view->profile = $profile;
         $view->setTemplate('myresearch/change-address-settings');
         return $view;
@@ -259,12 +277,50 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
         $catalog = $this->getILS();
         $profile = $catalog->getMyProfile($patron);
+        $view = $this->createViewModel();
 
         if ($this->formWasSubmitted('messaging_update_request')) {
-            // ToDo: messaging update request send
-        }
+            $data = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
-        $view = $this->createViewModel();
+            $data['pickUpNotice'] = $this->translate(
+                'messaging_settings_method_' . $data['pickUpNotice'],
+                null,
+                $data['pickUpNotice']
+            );
+            $data['overdueNotice'] = $this->translate(
+                'messaging_settings_method_' . $data['overdueNotice'],
+                null,
+                $data['overdueNotice']
+            );
+            if ($data['dueDateAlert'] == 0) {
+                $data['dueDateAlert']
+                    = $this->translate('messaging_settings_method_none');
+            } elseif ($data['dueDateAlert'] == 1) {
+                $data['dueDateAlert']
+                    = $this->translate('messaging_settings_num_of_days');
+            } else {
+                $data['dueDateAlert'] = $this->translate(
+                    'messaging_settings_num_of_days_plural',
+                    ['%%days%%' => $data['dueDateAlert']]
+                );
+            }
+
+            $config = $this->getILS()->getConfig('updateMessagingSettings', $patron);
+            if (!isset($config['emailAddress'])) {
+                throw new \Exception(
+                    'Missing emailAddress in ILS updateMessagingSettings'
+                );
+            }
+            $recipient = $config['emailAddress'];
+
+            $this->sendChangeRequestEmail(
+                $patron, $data, $recipient, 'Viestiasetusten muutospyyntö',
+                'change-messaging-settings'
+            );
+            $this->flashMessenger()
+                ->addSuccessMessage('request_change_done');
+            $view->requestCompleted = true;
+        }
 
         if (isset($profile['messagingServices'])) {
             $view->services = $profile['messagingServices'];
@@ -641,6 +697,50 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 ->addMessage('delete_account_failure');
         }
         return $success;
+    }
+
+    /**
+     * Send a change request message (e.g. address change) to the library
+     *
+     * @param array  $patron    Patron
+     * @param array  $data      Change data
+     * @param string $recipient Email recipient
+     * @param string $subject   Email subject
+     * @param string $template  Email template
+     */
+    protected function sendChangeRequestEmail($patron, $data, $recipient, $subject,
+        $template
+    ) {
+        list($library, $username) = explode('.', $patron['cat_username']);
+        $library = $this->translate("source_$library", null, $library);
+        $name = trim(
+            (isset($patron['firstname']) ? $patron['firstname'] : '')
+            . ' '
+            . (isset($patron['lastname']) ? $patron['lastname'] : '')
+        );
+        $email = isset($patron['email']) ? $patron['email'] : '';
+        if (!$email) {
+            $user = $this->getUser();
+            if (!empty($user['email'])) {
+                $email = $user['email'];
+            }
+        }
+
+        $params = [
+            'library' => $library,
+            'username' => $patron['cat_username'],
+            'name' => $name,
+            'email' => $email,
+            'data' => $data
+        ];
+        $renderer = $this->getViewRenderer();
+        $message = $renderer->render("Email/$template.phtml", $params);
+        $subject = $this->getConfig()->Site->title . ": $subject";
+        $from = $this->getConfig()->Site->email;
+
+        $this->getServiceLocator()->get('VuFind\Mailer')->send(
+            $recipient, $from, $subject, $message
+        );
     }
 
     /**

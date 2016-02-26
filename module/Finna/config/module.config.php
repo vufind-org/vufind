@@ -57,6 +57,26 @@ $config = [
                     ]
                 ],
             ],
+            'myresearch-changemessagingsettings' => [
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/MyResearch/ChangeMessagingSettings',
+                    'defaults' => [
+                        'controller' => 'MyResearch',
+                        'action'     => 'ChangeMessagingSettings',
+                    ]
+                ],
+            ],
+            'myresearch-changeprofileaddress' => [
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/MyResearch/ChangeProfileAddress',
+                    'defaults' => [
+                        'controller' => 'MyResearch',
+                        'action'     => 'ChangeProfileAddress',
+                    ]
+                ],
+            ],
             'myresearch-unsubscribe' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
                 'options' => [

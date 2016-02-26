@@ -58,30 +58,45 @@ HMACKeys = id
 minLength = 4
 maxLength = 4
 
-; Uncomment the following lines to enable update Address
-; Select email method and add an emailAddress if you want them to be send via email
+; Uncomment the following lines to enable updating of address information.
+; Choose a method on how to update the address information (email or url).
 [updateAddress]
-method = email
-emailAddress = 
+;method = email
+; emailAddress is required for the url method
+;emailAddress =
+; url is required for the url method. url can be a single address or an array of 
+; language-specific addresses. First example is a single one:
+;url = http://address.of.change.form
+; Alternatively different links can be specified for each language:    
+;url[fi] = http://address.of.change.form/finnish
+;url[sv] = http://address.of.change.form/swedish
+;url[en-gb] = http://address.of.change.form/english
 
-; Uncomment the following lines to enable update email
-; Choose a method on how to update the email address (email/driver/url)
+; Uncomment the following lines to enable updating of email address.
+; Choose a method on how to update the email address.
+; Only 'driver' is currently supported.
 [updateEmail]
-method = driver
-;emailAddress =
+;method = driver
 
-; Uncomment the following lines to enable update phone
-; Choose a method on how to update the phone number (email/driver/url)
+; Uncomment the following lines to enable updating of phone number.
+; Choose a method on how to update the phone number.
+; Only 'driver' is currently supported.
 [updatePhone]
-method = driver
-;emailAddress =
+;method = driver
 
 ; Uncomment the following lines to enable update messaging settings
-; Choose a method on how to update the phone number (email/driver/url)
+; Choose a method on how to update the phone number (email, url or driver)
 [updateMessagingSettings]
-method = email
-emailAddress =
-
+;method = email
+; emailAddress is required for the url method
+;emailAddress =
+; url is required for the url method. url can be a single address or an array of 
+; language-specific addresses. First example is a single one:
+;url = http://address.of.change.form
+; Alternatively different links can be specified for each language:   
+;url[fi] = http://address.of.change.form/finnish
+;url[sv] = http://address.of.change.form/swedish
+;url[en-gb] = http://address.of.change.form/english
 
 ; Settings for messaging Settings
 [messagingSettings]
