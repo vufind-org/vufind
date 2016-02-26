@@ -1389,7 +1389,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             }
 
             $message = isset($loan->loanStatus->status)
-            ? $this->mapStatus($loan->loanStatus->status) : '';
+                ? $this->mapStatus($loan->loanStatus->status) : '';
 
             $trans = [
                 'id' => $loan->catalogueRecord->id,
@@ -1990,7 +1990,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $this->error("$function Request failed for '$this->arenaMember'.'$id'");
             $this->error("AWS error: '$message'");
             return $status[$message];
-        } return $this->mapStatus($message);
+        }
+        return $this->mapStatus($message);
     }
 
     /**
