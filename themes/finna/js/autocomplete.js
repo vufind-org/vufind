@@ -303,7 +303,7 @@
             input.keyup(function(event) {
                 // Ignore navigation keys
                 // - Ignore control functions
-                if (event.ctrlKey) {
+                if (event.ctrlKey || event.which === 17) {
                     return;
                 }
                 // - Function keys (F1 - F15)
@@ -334,6 +334,10 @@
                 }
             });
             input.keydown(function(event) {
+                // - Ignore control functions
+                if (event.ctrlKey || event.which === 17) {
+                  return;
+                }
                 var element = $.fn.autocomplete.element;
                 var position = $(this).data('selected');
                 switch (event.which) {
