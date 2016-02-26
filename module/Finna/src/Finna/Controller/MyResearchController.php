@@ -253,7 +253,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $recipient = $config['emailAddress'];
 
             $this->sendChangeRequestEmail(
-                $patron, $data, $recipient, 'Osoitteenmuutospyyntö', 'change-address'
+                $patron, $data, $recipient, 'Osoitteenmuutospyyntö',
+                'change-address'
             );
             $this->flashMessenger()
                 ->addSuccessMessage('request_change_done');
@@ -707,6 +708,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      * @param string $recipient Email recipient
      * @param string $subject   Email subject
      * @param string $template  Email template
+     *
+     * @return void
      */
     protected function sendChangeRequestEmail($patron, $data, $recipient, $subject,
         $template

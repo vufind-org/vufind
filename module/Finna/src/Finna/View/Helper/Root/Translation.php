@@ -51,9 +51,7 @@ class Translation extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param ipAddressUtils      $ipUtils     IP address utils
-     * @param \Zend\Config\Config $permissions Permissions configuration
-     * @param \Zend\Config\Config $config      VuFind configuration
+     * @param string $defaultLanguage Default language
      */
     public function __construct($defaultLanguage)
     {

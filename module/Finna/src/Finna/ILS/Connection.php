@@ -167,7 +167,8 @@ class Connection extends \VuFind\ILS\Connection
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodupdateEmail($functionConfig, $params) {
+    protected function checkMethodupdateEmail($functionConfig, $params)
+    {
         if (!isset($functionConfig['method'])) {
             return false;
         }
@@ -202,7 +203,8 @@ class Connection extends \VuFind\ILS\Connection
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodupdateMessagingSettings($functionConfig, $params) {
+    protected function checkMethodupdateMessagingSettings($functionConfig, $params)
+    {
         if (!isset($functionConfig['method'])) {
             return false;
         }
@@ -237,7 +239,8 @@ class Connection extends \VuFind\ILS\Connection
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodupdatePhone($functionConfig, $params) {
+    protected function checkMethodupdatePhone($functionConfig, $params)
+    {
         if (!isset($functionConfig['method'])) {
             return false;
         }
