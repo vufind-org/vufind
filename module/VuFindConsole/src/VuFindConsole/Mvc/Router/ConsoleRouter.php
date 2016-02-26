@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Mvc_Router
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFindConsole\Mvc\Router;
 use Zend\Mvc\Router\Http\RouteMatch,
@@ -33,11 +33,11 @@ use Zend\Mvc\Router\Console\SimpleRouteStack;
 /**
  * VuFind Console Router
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Mvc_Router
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class ConsoleRouter extends SimpleRouteStack
 {
