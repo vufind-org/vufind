@@ -13,14 +13,14 @@ finna.metalibLinks = (function() {
         .done(function(response) {
             $(response.data).each(function(ind, ird) {
                 parent.find('.loading').remove();
-                var link = parent.find("." + ird.status);
+                var link = parent.find('.' + ird.status);
                 if (link.length) {
-                    link.removeClass("hide");
+                    link.removeClass('hidden');
                 }
             });
         })
         .fail(function() {
-            link.text("MetaLib link check failed.");
+            link.text('MetaLib link check failed.');
         });
     };
 

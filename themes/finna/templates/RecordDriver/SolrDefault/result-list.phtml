@@ -128,12 +128,12 @@
     <?=$this->record($this->driver)->getOnlineUrls('results')?>
     <?
       $formats = $this->driver->tryMethod('getFormats');
-      if ($this->record($this->driver)->getFormatClass(end($formats)) === '0database'):
+      $metalib = $this->metalib()->isAvailable() && !empty($formats) && strstr($formats[0]->__toString(), '0/Database') !== false;
+      if ($metalib):
     ?>
        <?= $this->partial('RecordDriver/MetaLib/search-link.phtml', ['id' => $this->driver->getUniqueID()]); ?>
     <? endif; ?>
     <?=$this->record($this->driver)->getPreviews()?>
-
   </div>
   <div class="col-xs-3 <?= $combinedView ? 'col-sm-2 col-sm-pull-10' : 'col-sm-3 col-sm-pull-8 col-md-2 col-md-pull-9' ?> resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
