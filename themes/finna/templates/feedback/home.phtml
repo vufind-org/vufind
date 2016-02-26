@@ -1,0 +1,8 @@
+<?
+    // Set page title
+    $this->headTitle($this->translate('Feedback'));
+    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3>' . $this->transEsc('Feedback') . '</h3></div>';
+    // Get rid of the feedback tab since this uses the same variables
+    $this->layout()->feedbacktab = false;
+?>
+<?=$this->render('feedback/form.phtml');?>
