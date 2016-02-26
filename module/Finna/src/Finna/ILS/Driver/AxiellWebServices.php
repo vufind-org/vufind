@@ -1388,6 +1388,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 $title .= ' (' . $loan->note . ')';
             }
 
+            $message = isset($loan->loanStatus->status)
+            ? $this->mapStatus($loan->loanStatus->status) : '';
+
             $trans = [
                 'id' => $loan->catalogueRecord->id,
                 'item_id' => $loan->id,
@@ -1395,6 +1398,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'duedate' => $loan->loanDueDate,
                 'renewable' => (string)$loan->loanStatus->isRenewable == 'yes',
                 'barcode' => $loan->id,
+                'message' => $message,
                 'renewalCount' => max(
                     [0,
                         $this->config['Loans']['renewalLimit']
