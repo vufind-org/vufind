@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace Finna\Auth;
 
@@ -35,11 +35,11 @@ use VuFind\Exception\Auth as AuthException;
 /**
  * Wrapper class for handling logged-in user in session.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Manager extends \VuFind\Auth\Manager
 {

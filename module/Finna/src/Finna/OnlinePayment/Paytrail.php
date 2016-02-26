@@ -24,8 +24,8 @@
  * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
- * @link     http://docs.paytrail.com/ Paytrial API docoumentation
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
 namespace Finna\OnlinePayment;
 use Finna\Db\Row\Transaction,
@@ -43,8 +43,8 @@ require_once 'Paytrail_Module_Rest.php';
  * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
- * @link     http://docs.paytrail.com/ Paytrial API docoumentation
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
 class Paytrail implements OnlinePaymentHandlerInterface, LoggerAwareInterface
 {

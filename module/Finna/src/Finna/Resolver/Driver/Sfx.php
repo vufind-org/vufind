@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Resolver_Drivers
  * @author   Graham Seaman <Graham.Seaman@rhul.ac.uk>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
@@ -32,7 +32,7 @@ namespace Finna\Resolver\Driver;
 /**
  * SFX Link Resolver Driver
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Resolver_Drivers
  * @author   Graham Seaman <Graham.Seaman@rhul.ac.uk>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>

@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authorization
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Role\PermissionProvider;
 use Zend\ServiceManager\ServiceManager;
@@ -31,11 +31,11 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Permission Provider Factory Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authorization
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  *
  * @codeCoverageIgnore
  */
