@@ -104,7 +104,7 @@ finna.common = (function() {
             return;
         }
         $(window).keypress(function(e) {
-            if (e && (!$(e.target).is('input, textarea')) 
+            if (e && (!$(e.target).is('input, textarea, select')) 
                   && !$('#modal').is(':visible') 
                   && (e.which >= 48) // Start from normal input keys
                   && !(e.metaKey || e.ctrlKey || e.altKey)
