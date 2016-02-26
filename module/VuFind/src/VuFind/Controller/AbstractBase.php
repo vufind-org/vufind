@@ -29,6 +29,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Forbidden as ForbiddenException,
+    VuFind\PermissionManager,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\MvcEvent,
     Zend\View\Model\ViewModel,
@@ -61,6 +62,13 @@ class AbstractBase extends AbstractActionController
     protected $accessPermission = false;
 
     /**
+     * Permission Manager (false for none)
+     *
+     * @var PermissionManager|bool
+     */
+    protected $pm = false;
+
+    /**
      * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
@@ -69,16 +77,29 @@ class AbstractBase extends AbstractActionController
      */
     public function preDispatch(MvcEvent $e)
     {
+        $dl = $this->pm->getDisplayLogic($this->accessPermission);
         // Make sure the current user has permission to access the module:
-        if ($this->accessPermission
-            && !$this->getAuthorizationService()->isGranted($this->accessPermission)
-        ) {
-            if (!$this->getUser()) {
-                $e->setResponse($this->forceLogin(null, [], false));
-                return;
+        if ($this->accessPermission && isset($dl[0])) {
+            switch ($dl[0]) {
+                case 'promptlogin':
+                    $e->setResponse($this->forceLogin(null, [], false));
+                    break;
+                case 'showMessage':
+                    $this->flashMessenger()->addMessage($this->translate($dl[1]), 'error');
+                    $e->setResponse($this->redirect()->toRoute('error-permissiondenied'));
+                    break;
+                case 'showTemplate':
+                    // TODO: implement me
+                    break;
+                case 'exception':
+                    throw new ForbiddenException('Access denied.');
+                    break;
+                default:
+                    throw new ForbiddenException('Access denied.');
+                    break;
             }
-            throw new ForbiddenException('Access denied.');
         }
+        return;
     }
 
     /**
@@ -89,6 +110,11 @@ class AbstractBase extends AbstractActionController
     protected function attachDefaultListeners()
     {
         parent::attachDefaultListeners();
+        $this->pm = $this->getServiceLocator()->get('VuFind\PermissionManager');
+
+        if ($this->searchClassId && $this->pm->getConfigContext('access.'.$this->searchClassId) !== null) {
+            $this->accessPermission = 'access.'.$this->searchClassId;
+        }
         // Attach preDispatch event if we need to check permissions.
         if ($this->accessPermission) {
             $events = $this->getEventManager();

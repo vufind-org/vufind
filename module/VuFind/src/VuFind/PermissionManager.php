@@ -1,6 +1,6 @@
 <?php
 /**
- * Link display helper
+ * Permission Manager
  *
  * PHP version 5
  *
@@ -26,14 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace VuFind\View\Helper\Root;
-use Zend\View\Helper\AbstractHelper;
+namespace VuFind;
 
 use ZfcRbac\Service\AuthorizationServiceAwareInterface,
     ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
- * Link display helper
+ * Permission Manager
  *
  * @category VuFind2
  * @package  View_Helpers
@@ -42,7 +41,7 @@ use ZfcRbac\Service\AuthorizationServiceAwareInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class LinkDisplay extends AbstractHelper
+class PermissionManager
 {
     use AuthorizationServiceAwareTrait;
 
@@ -70,7 +69,7 @@ class LinkDisplay extends AbstractHelper
      *
      * @return bool
      */
-    protected function isAuthorized($context)
+    public function isAuthorized($context)
     {
         $authService = $this->getAuthorizationService();
 
@@ -78,6 +77,7 @@ class LinkDisplay extends AbstractHelper
         if (!$authService) {
             return false;
         }
+
 
         // For a granted permission return the permissionGrantedDisplayLogic
         if ($authService->isGranted($context)) {
@@ -88,20 +88,32 @@ class LinkDisplay extends AbstractHelper
     }
 
     /**
+     * Determine if the user is authorized in a certain context or not
+     *
+     * @param string $context Context for the permission behavior
+     *
+     * @return bool
+     */
+    public function getConfigContext($context)
+    {
+        return $this->config[$context];
+    }
+
+    /**
      * Get display logic
      *
      * @param string $context Context for the permission behavior
      *
      * @return array|bool
      */
-    protected function getDisplayLogic($context)
+    public function getDisplayLogic($context)
     {
         // if a permission is granted, return false as there is nothing the helper needs to do
         if ($this->isAuthorized($context) === true) {
             return false;
         }
 
-        return ($this->config[$context]['permissionDeniedDisplayLogic']) ? explode(':', $this->config[$context]['permissionDeniedDisplayLogic']) : false;
+        return ($this->config[$context]['permissionDeniedAction']) ? explode(':', $this->config[$context]['permissionDeniedAction']) : false;
     }
 
     /**
@@ -144,7 +156,7 @@ class LinkDisplay extends AbstractHelper
      *
      * @return string|bool
      */
-    public function getDisplayBlock($context, $tmpl)
+    public function getReaction($context)
     {
         $favSaveDisplayLogic = $this->getDisplayLogic($context);
         if ($favSaveDisplayLogic === false) {
@@ -158,9 +170,5 @@ class LinkDisplay extends AbstractHelper
             $return = $tmpl->context($tmpl)->renderInContext($favSaveDisplayLogic[1], $this->getDisplayLogicParameters($context));
         }
         return $return;
-    }
-
-    public function getTest() {
-        return 'Test';
     }
 }

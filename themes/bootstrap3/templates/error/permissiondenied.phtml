@@ -1,0 +1,26 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Permission Denied'));
+
+  // Disable top search box -- this page has a special layout.
+  $this->layout()->searchbox = false;
+
+  $this->layout()->breadcrumbs = '<li class="active">Error</li>';
+?>
+<?=$this->test?>
+<div class="alert alert-danger">
+  <h2><?=$this->transEsc('Permission Denied')?></h2>
+  <p>
+    <?=$this->transEsc('You have requested a page or action, but you have not the necessary permission for that')?>.
+    <?=$this->transEsc('Please do the following to get permission:')?>.
+  </p>
+  <p>
+    <?=$this->flashmessages()?>
+  </p>
+  <p>
+    <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
+    <br/>
+    <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+    <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
+  </p>
+</div>

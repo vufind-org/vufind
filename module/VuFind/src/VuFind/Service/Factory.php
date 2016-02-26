@@ -561,6 +561,20 @@ class Factory
     }
 
     /**
+     * Construct the record cache.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Record\Cache
+     */
+    public static function getPermissionManager(ServiceManager $sm)
+    {
+        return new \VuFind\PermissionManager(
+            $sm->get('VuFind\Config')->get('permissionBehavior')
+        );
+    }
+
+    /**
      * Construct the RecordDriver Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.

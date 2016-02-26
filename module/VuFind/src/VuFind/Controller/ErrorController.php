@@ -49,4 +49,15 @@ class ErrorController extends AbstractActionController
     {
         // no special action necessary
     }
+
+    /**
+     * Display permission denied message.
+     *
+     * @return mixed
+     */
+    public function permissionDeniedAction()
+    {
+        // no special action necessary
+    }
+
 }

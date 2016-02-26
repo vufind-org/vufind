@@ -17,7 +17,7 @@
 
   $this->layout()->breadcrumbs = false;
 ?>
-
+<?=$this->message?>
 <div class="searchHomeContent">
   <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
     <div class="alert alert-warning">
