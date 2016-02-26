@@ -65,7 +65,7 @@ class Translation extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    function getStringFromMixed($mixed)
+    public function getStringFromMixed($mixed)
     {
         if (is_string($mixed) || $mixed instanceof \VuFind\I18n\TranslatableString) {
             return $mixed;
