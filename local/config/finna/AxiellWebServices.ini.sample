@@ -1,0 +1,93 @@
+[Debug]
+Uncomment in order to log the response time of AWS
+;durationLogPrefix = path/to/file
+Uncomment in order to active verbose debug mode
+;verbose = true
+
+
+[Catalog]
+arena_member = XXXXXXXXXXX
+
+; Wsdl setting files for SOAP connection. Users should not need to change this setting.
+catalogue_wsdl = arena_2.7.1_catalogue.wsdl
+loans_wsdl = arena_2.7.1_loans.wsdl
+payments_wsdl = arena_2.7.1_payments.wsdl
+reservations_wsdl = arena_2.7.1_reservations.wsdl
+patron_wsdl = arena_2.7.1_patron.wsdl
+
+[Loans]
+; The renewal limit in order to display the remaining amount of renewals
+renewalLimit = 3
+
+[Holdings]
+; By default the holdings location list is sorted alphabetically. This setting can be
+; used to manually set the order by entering location IDs as a colon-separated list.
+;holdingsOrganisationOrder = 1
+;holdingsBranchOrder = 001:095:100:110:115:120:130:135:160:200:210:230:240:260:270:300
+
+[Holds]
+
+; HMACKeys - A list of hold form element names that will be analyzed for consistency
+; during hold form processing. Most users should not need to change this setting.
+HMACKeys = id:item_id:holdtype:level
+
+; defaultRequiredDate - A colon-separated list used to set the default "not required
+; after" date for holds in the format days:months:years
+; e.g. 0:1:0 will set a "not required after" date of 1 month from the current date
+defaultRequiredDate = 0:0:1
+
+; extraHoldFields - A colon-separated list used to display extra visible fields in the
+; place holds form. Supported values are "comments", "requiredByDate" and 
+; "pickUpLocation"  
+extraHoldFields = requiredByDate:pickUpLocation
+
+; A Pick Up Location Code used to pre-select the pick up location drop down list and
+; provide a default option if others are not available. Must correspond with one of 
+; the Location IDs returned by getPickUpLocations()
+defaultPickUpLocation = 1.001
+
+; By default item holds are enabled. Uncomment this setting to disable item holds.
+;enableItemHolds = false
+
+[cancelHolds]
+HMACKeys = id
+
+; Uncomment the following lines to enable password (PIN) change 
+[changePassword]
+; PIN change parameters.
+minLength = 4
+maxLength = 4
+
+; Uncomment the following lines to enable update Address
+; Select email method and add an emailAddress if you want them to be send via email
+[updateAddress]
+method = email
+emailAddress = 
+
+; Uncomment the following lines to enable update email
+; Choose a method on how to update the email address (email/driver/url)
+[updateEmail]
+method = driver
+;emailAddress =
+
+; Uncomment the following lines to enable update phone
+; Choose a method on how to update the phone number (email/driver/url)
+[updatePhone]
+method = driver
+;emailAddress =
+
+; Uncomment the following lines to enable update messaging settings
+; Choose a method on how to update the phone number (email/driver/url)
+[updateMessagingSettings]
+method = email
+emailAddress =
+
+
+; Settings for messaging Settings
+[messagingSettings]
+; Uncomment the corresponding lines of a service in order to hide "no notification" option 
+; for a certain notification settings change request. 
+; "no notification" is displayed by default
+;pickUpNoticeMethodNone = true
+;overdueNoticeMethodNone = true
+;dueDateAlertMethodNone = true
