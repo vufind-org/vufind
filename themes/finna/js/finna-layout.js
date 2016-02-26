@@ -370,9 +370,6 @@ finna.layout = (function() {
       });
       var modalContent = 0;
       if ($('.floating-feedback-btn').length) {
-        $(".floating-feedback-btn.modal-link").click(function() {
-          return Lightbox.get('Feedback','Home');
-        });
         var feedbackBtnOffset = $('.floating-feedback-btn').offset().top;
         $(window).scroll(function (event) {
           scroll = $(window).scrollTop();
@@ -504,7 +501,7 @@ finna.layout = (function() {
         });
     };
 
-    // There's one in record.js but this applies to holds made directly from the 
+    // There's one in record.js but this applies to holds made directly from the
     // holdings in the results list.
     var initHoldRequestFeedback = function() {
         Lightbox.addFormCallback('placeHold', function(html) {
