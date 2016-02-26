@@ -288,3 +288,17 @@ maxLength = 12
 ;enabled = true
 ; An optional colon-separated list of patron stat codes that are authorized.
 ;stat_codes = 'S:EA'
+
+; Uncomment the following lines to enable updating of address information.
+; Choose a method on how to update the address information (email or url).
+[updateAddress]
+;method = email
+; emailAddress is required for the url method
+;emailAddress =
+; url is required for the url method. url can be a single address or an array of 
+; language-specific addresses. First example is a single one:
+;url = http://address.of.change.form
+; Alternatively different links can be specified for each language:    
+;url[fi] = http://address.of.change.form/finnish
+;url[sv] = http://address.of.change.form/swedish
+;url[en-gb] = http://address.of.change.form/english
