@@ -20,14 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Exception\Date as DateException,
@@ -37,14 +37,14 @@ use PDO, PDOException, VuFind\Exception\Date as DateException,
 /**
  * Voyager Restful ILS Driver
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInterface
 {
@@ -208,6 +208,14 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected $excludedItemLocations;
 
     /**
+     * Whether it is allowed to cancel a request for an item that is available for
+     * pickup
+     *
+     * @var bool
+     */
+    protected $allowCancelingAvailableRequests;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -295,6 +303,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             = isset($this->config['Holds']['excludedItemLocations'])
             ? str_replace(':', ',', $this->config['Holds']['excludedItemLocations'])
             : '';
+        $this->allowCancelingAvailableRequests
+            = isset($this->config['Holds']['allowCancelingAvailableRequests'])
+            ? $this->config['Holds']['allowCancelingAvailableRequests'] : true;
 
         // Establish a namespace in the session for persisting cached data
         $this->session = new SessionContainer('VoyagerRestful_' . $this->dbName);
@@ -2037,8 +2048,10 @@ EOT;
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        $cancelDetails = $holdDetails['item_id'] . "|" . $holdDetails['reqnum'];
-        return $cancelDetails;
+        if (!$this->allowCancelingAvailableRequests && $holdDetails['available']) {
+            return '';
+        }
+        return $holdDetails['item_id'] . '|' . $holdDetails['reqnum'];
     }
 
     /**

@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Service
  * @author   Riikka Kalliomäki <riikka.kalliomaki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
@@ -32,7 +32,7 @@ use Zend\Db\Sql\Select;
 /**
  * Console service for anonymizing expired user accounts.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Service
  * @author   Riikka Kalliomäki <riikka.kalliomaki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>

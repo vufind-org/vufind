@@ -24,7 +24,7 @@
  * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\OnlinePayment;
 
@@ -36,7 +36,7 @@ namespace Finna\OnlinePayment;
  * @author   Leszek Manicki <leszek.z.manicki@helsinki.fi>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 interface OnlinePaymentHandlerInterface
 {

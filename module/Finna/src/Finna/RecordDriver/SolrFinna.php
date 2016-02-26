@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
@@ -31,7 +31,7 @@ namespace Finna\RecordDriver;
 /**
  * Additional functionality for Finna Solr records.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
@@ -439,7 +439,7 @@ trait SolrFinna
     {
         // OpenURL is supported only if we have an ISSN, ISBN or SFX Object ID.
         return $this->getCleanISSN() || $this->getCleanISBN()
-            || !$this->getSfxObjectId();
+            || $this->getSfxObjectId();
     }
 
     /**

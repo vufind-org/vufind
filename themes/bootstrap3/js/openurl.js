@@ -11,9 +11,9 @@ function loadResolverLinks($target, openUrl, searchClassId) {
     $target.removeClass('ajax_availability').empty().append(response.data);
   })
   .fail(function(response, textStatus) {
-    if (textStatus == "abort") { return; }
-    $target.removeClass('ajax_availability').addClass('text-danger')
-      .empty().append(response.responseJSON.data);
+    $target.removeClass('ajax_availability').addClass('text-danger').empty();
+    if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
+    $target.append(response.responseJSON.data);
   });
 }
 

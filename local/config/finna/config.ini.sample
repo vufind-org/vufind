@@ -251,6 +251,10 @@ title_level_holds_mode = "driver"
 ; Whether support for multiple library cards is enabled. Default is false.
 library_cards = true
 
+; The number of checked out items to display per page; 0 for no limit (may cause
+; memory problems for users with huge numbers of items). Default = 50.
+; N.B. Values other than 0 are not supported in the finna theme. 
+checked_out_page_size = 0
 
 ; This section allows you to determine how the users will authenticate.
 ; You can use an LDAP directory, the local ILS, the VuFind database (Database),

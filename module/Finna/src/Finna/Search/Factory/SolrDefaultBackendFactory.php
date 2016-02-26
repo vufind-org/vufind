@@ -21,7 +21,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
@@ -44,7 +44,7 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 /**
  * Abstract factory for SOLR backends.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>

@@ -21,7 +21,7 @@
  *
  * PHP version 5
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Josiah Knoll <jk1135@ship.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
@@ -34,7 +34,7 @@ use Zend\Mail as Mail;
 /**
  * Feedback Controller
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Josiah Knoll <jk1135@ship.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>

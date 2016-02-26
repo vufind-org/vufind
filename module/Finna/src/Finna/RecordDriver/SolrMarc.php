@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -30,7 +30,7 @@ namespace Finna\RecordDriver;
 /**
  * Model for MARC records in Solr.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -276,6 +276,31 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Get the end page of the item that contains this record.
+     *
+     * @return string
+     */
+    public function getContainerEndPage()
+    {
+        foreach ($this->getMarcRecord()->getFields('773') as $field) {
+            $subfield = $field->getSubfield('g');
+            if (!$subfield) {
+                continue;
+            }
+            $subfield = $subfield->getData();
+            if (preg_match('/,\s*\w\.?\s*([\d,\-]+)/', $subfield, $matches)
+                || preg_match('/^\w\.?\s*([\d,\-]+)/', $subfield, $matches)
+            ) {
+                $pages = explode('-', $matches[1]);
+                if (isset($pages[1])) {
+                    return $pages[1];
+                }
+            }
+        }
+        return '';
+    }
+
+    /**
      * Get the title of the item that contains this record (i.e. MARC 773s of a
      * journal).
      *
@@ -477,6 +502,22 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Get an array of all extent information.
+     *
+     * @return array
+     */
+    public function getExtent()
+    {
+        $results = [];
+        foreach ($this->getMarcRecord()->getFields('300') as $field) {
+            foreach ($field->getSubfields('a') as $extent) {
+                $results[] = $this->stripTrailingPunctuation($extent->getData());
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Return full record as filtered XML for public APIs.
      *
      * @return string
@@ -527,7 +568,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $isbn = array_merge(
                 $isbn,
                 $this->stripTrailingPunctuation(
-                    $this->getFieldArray($field, $subfields)
+                    $this->getFieldArray($field, $subfields), '-'
                 )
             );
         }
@@ -769,6 +810,27 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Get an array of all secondary authors (complementing getPrimaryAuthor()).
+     *
+     * @param bool $onlyPersonalNames Whether to return only personal names (700)
+     *
+     * @return array
+     */
+    public function getSecondaryAuthors($onlyPersonalNames = false)
+    {
+        if (!$onlyPersonalNames) {
+            return parent::getSecondaryAuthors();
+        }
+        $results = [];
+        foreach ($this->getMarcRecord()->getFields('700') as $field) {
+            if ($name = $field->getSubfield('a')) {
+                $results[] = $this->stripTrailingPunctuation($name->getData());
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Get an array of all series names containing the record.  Array entries may
      * be either the name string, or an associative array with 'name' and 'number'
      * keys.
@@ -785,19 +847,25 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             '800' => ['a', 'b', 'c', 'd', 'f', 'p', 'q', 't'],
             '830' => ['a', 'p', 'x']];
         $matches = $this->getSeriesFromMARC($primaryFields);
-        if (!empty($matches)) {
-            return $matches;
-        }
 
-        // Now check 490 and display it only if 440/800/830 were empty:
-        $secondaryFields = ['490' => ['a', 'x']];
-        $matches = $this->getSeriesFromMARC($secondaryFields);
-        if (!empty($matches)) {
-            return $matches;
+        if (empty($matches)) {
+            // Now check 490 and display it only if 440/800/830 were empty:
+            $secondaryFields = ['490' => ['a', 'x']];
+            $matches = $this->getSeriesFromMARC($secondaryFields);
         }
 
         // Still no results found?  Resort to the Solr-based method just in case!
-        return parent::getSeries();
+        if (empty($matches)) {
+            $matches = parent::getSeries();
+        }
+
+        foreach ($matches as &$match) {
+            if (isset($match['number'])) {
+                $match['number'] = $this->stripTrailingPunctuation($match['number']);
+            }
+        }
+
+        return $matches;
     }
 
     /**
