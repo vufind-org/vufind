@@ -93,6 +93,8 @@ class CartController extends AbstractBase
             $action = 'Save';
         } else if (strlen($this->params()->fromPost('export', '')) > 0) {
             $action = 'Export';
+        } else if (strlen($this->params()->fromPost('exportHTML', '')) > 0) {
+            $action = 'exportHTML';
         } else {
             // Check if the user is in the midst of a login process; if not,
             // default to cart home.
@@ -170,10 +172,49 @@ class CartController extends AbstractBase
             $action = 'Cart';
         } else if (strlen($this->params()->fromPost('export', '')) > 0) {
             $action = 'Export';
+        } else if (strlen($this->params()->fromPost('exportHTML', '')) > 0) {
+            $action = 'ExportHTML';
         } else {
             throw new \Exception('Unrecognized bulk action.');
         }
         return $this->forwardTo($controller, $action);
+    }
+    
+
+    public function exportHTMLAction()
+    {
+        // We use abbreviated parameters here to keep the URL short (there may
+        // be a long list of IDs, and we don't want to run out of room):
+        $ids = $this->params()->fromPost('ids', []);
+        $format = $this->params()->fromPost('format');
+
+        $format = 'HTML';
+        // Make sure we have IDs to export:
+        if (!is_array($ids) || empty($ids)) {
+            return $this->redirectToSource('error', 'bulk_noitems_advice');
+        }
+
+        // Send appropriate HTTP headers for requested format:
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaders($this->getExport()->getHeaders($format));
+
+        // Actually export the records
+        $records = $this->getRecordLoader()->loadBatch($ids);
+        $recordHelper = $this->getViewRenderer()->plugin('record');
+        $parts = [];
+        foreach ($records as $record) {
+            $parts[] = $recordHelper($record)->getExport($format);
+        }
+        
+        
+        $content = $this->getExport()->processGroup($format, $parts);
+        $content = '<!DOCTYPE html><html><body><pre>';
+        $content .= implode('', $parts);
+        $content .= '</pre></body></html>';
+
+        // Process and display the exported records
+        $response->setContent($content);
+        return $response;
     }
 
     /**

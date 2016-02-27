@@ -118,6 +118,13 @@ function bulkActionSubmit($form) {
       url += '&id[]='+checks[i].value;
     }
     document.location.href = url;
+  }
+  if (submit == 'exportHTML') {  
+    Lightbox.submit($form, function(data) {
+      var win = window.open();
+      $(win.document.body).html(data);
+      Lightbox.close();
+    })    
   } else {
     $('#modal .modal-title').html(button.attr('title'));
     Lightbox.titleSet = true;
