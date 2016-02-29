@@ -17,8 +17,9 @@ finna.layout = (function() {
     };
 
     var isTouchDevice = function() {
-        return !!('ontouchstart' in window)
-            || !!('onmsgesturechange' in window); // IE10
+        return (('ontouchstart' in window)
+              || (navigator.maxTouchPoints > 0)
+              || (navigator.msMaxTouchPoints > 0)); // IE10, IE11, Edge        
     };
 
     // Append current anchor (location.hash) to selected links
