@@ -137,4 +137,15 @@ class RecordCollection extends AbstractRecordCollection
 
         return $failed;
     }
+
+    /**
+     * Return databases where the search request was successful.
+     *
+     * @return array
+     */
+    public function getSuccessfulDatabases()
+    {
+        return $this->response['successDatabases'];
+    }
+
 }

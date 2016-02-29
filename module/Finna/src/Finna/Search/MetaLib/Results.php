@@ -48,6 +48,13 @@ class Results extends \VuFind\Search\Base\Results
     protected $backendId = 'MetaLib';
 
     /**
+     * Database where search was successful.
+     *
+     * @var array
+     */
+    protected $successful;
+
+    /**
      * Failed databases.
      *
      * @var array
@@ -75,6 +82,7 @@ class Results extends \VuFind\Search\Base\Results
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
+        $this->successful = $collection->getSuccessfulDatabases();
         $this->failed = $collection->getFailedDatabases();
     }
 
@@ -99,5 +107,15 @@ class Results extends \VuFind\Search\Base\Results
     public function getFailedDatabases()
     {
         return $this->failed;
+    }
+
+    /**
+     * Returns list of databases where search succeeded.
+     *
+     * @return array
+     */
+    public function getSuccessfulDatabases()
+    {
+        return $this->successful;
     }
 }

@@ -80,6 +80,10 @@ finna.metalib = (function() {
             }
             holder.find('.holder').html(html);
 
+            if (response.data['successful']) {
+                $('.sidebar .database-list').html(response.data['successful']);
+            }
+            
             $('.search-controls .pagination > div').html(response.data['paginationTop']);
             $('.searchtools-background').html(response.data['searchTools']);
             $('.finna-main-header .container .row').html(response.data['header']);

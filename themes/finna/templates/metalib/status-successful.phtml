@@ -1,0 +1,12 @@
+<!-- START of: finna - metalib/status-successful.phtml -->
+<? if (!empty($this->successful)): ?>
+<div class="metalib-successful-databases">
+  <h5><?=$this->translate('MetaLib Databases')?>:</h5>
+  <ul>
+    <? foreach ($this->successful as $database): ?>
+    <li><?=$this->escapeHtml($database) ?></li>
+    <? endforeach; ?>
+  </ul>
+</div>
+<? endif; ?>
+<!-- END of: finna - metalib/status-successful.phtml -->

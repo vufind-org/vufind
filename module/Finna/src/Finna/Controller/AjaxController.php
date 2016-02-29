@@ -1274,14 +1274,26 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 'metalib/search-tools.phtml', $viewParams
             );
 
+            $successful = $view->results->getSuccessfulDatabases();
             $errors = $view->results->getFailedDatabases();
             $failed = isset($errors['failed']) ? $errors['failed'] : [];
             $disallowed = isset($errors['disallowed']) ? $errors['disallowed'] : [];
 
+            if ($successful) {
+                $result['successful'] = $this->getViewRenderer()->render(
+                    'metalib/status-successful.phtml',
+                    [
+                        'successful' => $successful,
+                    ]
+                );
+            }
             if ($failed || $disallowed) {
                 $result['failed'] = $this->getViewRenderer()->render(
-                    'metalib/statuses.phtml',
-                    ['failed' => $failed, 'disallowed' => $disallowed]
+                    'metalib/status-failed.phtml',
+                    [
+                        'failed' => $failed,
+                        'disallowed' => $disallowed
+                    ]
                 );
             }
 

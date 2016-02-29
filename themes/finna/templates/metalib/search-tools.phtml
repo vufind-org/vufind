@@ -1,8 +1,9 @@
+<!-- START of: finna - metalib/search-tools.phtml -->
 <div class="container">
   <div class="row">
     <div class="searchtools hidden-print col-xs-12">
       <a href="<?=$this->url('search-email')?>" class="mailSearch modal-link" id="mailSearch<?= $this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><i class="fa fa-envelope"></i> <?=$this->transEsc('Email this Search')?></a>
-      
+
       <? if (is_numeric($this->results->getSearchId())): ?>
         <? if ($this->results->isSavedSearch()): ?>
         <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove"></i> <?=$this->transEsc('save_search_remove')?></a>
@@ -13,3 +14,4 @@
     </div>
   </div>
 </div>
+<!-- END of: finna - metalib/search-tools.phtml -->
