@@ -75,6 +75,13 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     protected $helper;
 
     /**
+     * prefix for permission names
+     *
+     * @var String
+     */
+    protected $permissionPrefix = 'access';
+
+    /**
      * Constructor
      *
      * @param PluginManager    $results Search results plugin manager
@@ -187,6 +194,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         return [
             'id' => $id,
             'class' => $class,
+            'permission' => $this->permissionPrefix.$class,
             'label' => $label,
             'selected' => true
         ];
@@ -240,6 +248,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         return [
             'id' => $id,
             'class' => $class,
+            'permission' => $this->permissionPrefix.$class,
             'label' => $label,
             'selected' => false,
             'url' => $newUrl
@@ -267,6 +276,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         return [
             'id' => $id,
             'class' => $class,
+            'permission' => $this->permissionPrefix.$class,
             'label' => $label,
             'selected' => false,
             'url' => $url
@@ -296,6 +306,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         return [
             'id' => $id,
             'class' => $class,
+            'permission' => $this->permissionPrefix.$class,
             'label' => $label,
             'selected' => false,
             'url' => $url
