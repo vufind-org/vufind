@@ -158,10 +158,13 @@ label.list-group-item {
     border-bottom: 1px solid @list-group-border;
     cursor: pointer;
 
+    &:not(.loading):hover { background-color: lighten(@brand-primary, 50%); }
     &:last-child {border: 0;}
     &.selected {
-      background-color: @brand-primary;
-      color: #fff;
+      &,&:hover {
+        background-color: @brand-primary;
+        color: #fff;
+      }
     }
   }
 }
@@ -655,4 +658,11 @@ li.jstree-facet ul {padding-left: 20px;}
               transition: all .25s ease-out;
     }
   }
+}
+
+span[class^="services-"], span[class*=" services-"] span::before {
+  content: ", ";
+}
+span[class^="services-"], span[class*=" services-"] span:first-of-type::before {
+  content: "";
 }

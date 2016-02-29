@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
 use Behat\Mink\Element\Element;
@@ -31,11 +31,11 @@ use Behat\Mink\Element\Element;
 /**
  * Mink ILS actions test class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
@@ -218,11 +218,13 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
 
+        // If successful, we should now have a link to review the hold:
+        $link = $this->findCss($page, '.modal-body a');
+        $this->assertEquals('Interlibrary Loan Requests', $link->getText());
+        $link->click();
+        $this->snooze();
+
         // Make sure we arrived where we expected to:
-        $this->assertEquals(
-            'Your request was successful',
-            $this->findCss($page, '.alert.alert-success')->getText()
-        );
         $this->assertEquals(
             'Interlibrary Loan Requests', $this->findCss($page, 'h2')->getText()
         );
@@ -241,11 +243,13 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
 
+        // If successful, we should now have a link to review the hold:
+        $link = $this->findCss($page, '.modal-body a');
+        $this->assertEquals('Storage Retrieval Requests', $link->getText());
+        $link->click();
+        $this->snooze();
+
         // Make sure we arrived where we expected to:
-        $this->assertEquals(
-            'Your request was successful',
-            $this->findCss($page, '.alert.alert-success')->getText()
-        );
         $this->assertEquals(
             'Storage Retrieval Requests', $this->findCss($page, 'h2')->getText()
         );

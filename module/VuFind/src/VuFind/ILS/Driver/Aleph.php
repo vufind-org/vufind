@@ -33,7 +33,7 @@
  * @author   Kun Lin <vufind-tech@lists.sourceforge.net>
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
@@ -46,7 +46,7 @@ use VuFind\Exception\Date as DateException;
  * @package  ILS_Drivers
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class AlephTranslator
 {
@@ -251,7 +251,7 @@ class AlephTranslator
  * @package  Exceptions
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class AlephRestfulException extends ILSException
 {
@@ -296,7 +296,7 @@ class AlephRestfulException extends ILSException
  * @author   Kun Lin <vufind-tech@lists.sourceforge.net>
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface

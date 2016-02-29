@@ -20,7 +20,7 @@ function getHTPreviews(skeys) {
     var bibkeys = skeys.split(/\s+/);
     // fetch 20 books at time if there are more than 20
     // since hathitrust only allows 20 at a time
-    // as per http://vufind.org/jira/browse/VUFIND-317
+    // as per https://vufind.org/jira/browse/VUFIND-317
     var batch = [];
     for(var i = 0; i < bibkeys.length; i++) {
         batch.push(bibkeys[i]);
