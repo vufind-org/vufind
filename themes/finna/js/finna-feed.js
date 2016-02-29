@@ -71,7 +71,7 @@ finna.feed = (function() {
         holder.append('<i class="fa fa-spin fa-spinner hide"></i>');
         holder.find(".fa-spin").delay(1000).fadeIn();
 
-        var url = VuFind.getPath() + '/AJAX/JSON?method=getFeed&id=' + id;
+        var url = VuFind.path + '/AJAX/JSON?method=getFeed&id=' + id;
         url += "&touch-device=" + (finna.layout.isTouchDevice() ? 1 : 0);
 
         $.getJSON(url)

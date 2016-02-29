@@ -64,7 +64,7 @@ finna.autocomplete = (function() {
                         data.tab = searcher['tab'];
                     }
                     $.fn.autocomplete.ajax({
-                        url: VuFind.getPath() + '/AJAX/JSON',
+                        url: VuFind.path + '/AJAX/JSON',
                         data: data,
                         dataType:'json',
                         success: function(json) {

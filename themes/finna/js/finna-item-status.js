@@ -36,7 +36,7 @@ finna.itemStatus = (function() {
     var xhr = $.ajax({
       dataType: 'json',
       method: 'POST',
-      url: VuFind.getPath() + '/AJAX/JSON?method=getItemStatuses',
+      url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
       data: {id:[id]}
     }).done(function(response) {
       $.each(response.data, function(i, result) {
@@ -134,7 +134,7 @@ finna.itemStatus = (function() {
         holder.find('.dedup-select').change(function() {
             var id = $(this).val();
             var source = $(this).find('option:selected').data('source');
-            $.cookie('preferredRecordSource', source, {path: VuFind.getPath()});
+            $.cookie('preferredRecordSource', source, {path: VuFind.path});
 
             var recordContainer = $(this).closest('.record-container');
             var oldRecordId = recordContainer.find('.hiddenId')[0].value;

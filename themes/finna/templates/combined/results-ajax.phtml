@@ -25,7 +25,7 @@
     $loadJs = <<<JS
 $(document).ready(function() {
     var holder = $('#combined_$searchClassIdHtmlEscaped');
-    var url = VuFind.getPath() + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded&type=$handlerEncoded$searchIds';
+    var url = VuFind.path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded&type=$handlerEncoded$searchIds';
     holder.load(url, '', function(responseText) {
         if (responseText.length == 0) {
             holder.hide();

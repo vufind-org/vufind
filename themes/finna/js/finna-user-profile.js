@@ -9,7 +9,7 @@ finna.userProfile = (function () {
                     navigator.id.logout();
                     finna.persona.personaLogout();
                 } else {
-                    window.location = VuFind.getPath() + "/MyResearch/Logout";
+                    window.location = VuFind.path + "/MyResearch/Logout";
                 }
             }, 2000);
         }

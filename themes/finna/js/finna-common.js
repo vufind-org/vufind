@@ -6,7 +6,7 @@ finna.common = (function() {
         if (Lightbox.lastURL) {
             var params = deparam(Lightbox.lastURL);
             if (typeof params['redirect'] !== 'undefined' && params['redirect']) {
-                window.location = VuFind.getPath() + '/MyResearch/Home?redirect=0';
+                window.location = VuFind.path + '/MyResearch/Home?redirect=0';
                 return;
             }
         } 
@@ -48,7 +48,7 @@ finna.common = (function() {
         $(form).find('div.alert').remove();
         $(form).find('input[type=submit]').after('<i class="fa fa-spinner fa-spin"></i>');
         $.ajax({
-            url: VuFind.getPath() + '/AJAX/JSON?method=getSalt',
+            url: VuFind.path + '/AJAX/JSON?method=getSalt',
             dataType: 'json'
         })
         .done(function(response) {
@@ -77,7 +77,7 @@ finna.common = (function() {
             // login via ajax
             $.ajax({
                 type: 'POST',
-                url: VuFind.getPath() + '/AJAX/JSON?method=login',
+                url: VuFind.path + '/AJAX/JSON?method=login',
                 dataType: 'json',
                 data: params
             }).done(function(response) {

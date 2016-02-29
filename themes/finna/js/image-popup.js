@@ -94,7 +94,7 @@ finna.imagePopup = (function(finna) {
                 var thumbInd = $(this).data('thumbInd');
                 var recordInd = $(this).data('recordInd');
                 var src =
-                    VuFind.getPath() + '/AJAX/JSON?method=getImagePopup&id=' + encodeURIComponent(id)
+                    VuFind.path + '/AJAX/JSON?method=getImagePopup&id=' + encodeURIComponent(id)
                     + '&index=' + thumbInd;
 
                 if (typeof(publicList) != 'undefined') {
@@ -198,7 +198,7 @@ finna.imagePopup = (function(finna) {
                         // Load book description
                         var summaryHolder = $(".imagepopup-holder .summary");
                         if (type == 'marc') {
-                            var url = VuFind.getPath() + '/AJAX/JSON?method=getDescription&id=' + id;
+                            var url = VuFind.path + '/AJAX/JSON?method=getDescription&id=' + id;
                             $.getJSON(url)
                             .done(function(response) {
                                 if (response.data.length > 0) {

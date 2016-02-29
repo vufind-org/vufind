@@ -6,7 +6,7 @@ var baseTreeSearchFullURL;
 function getRecord(recordID)
 {
   $.ajax({
-    url: VuFind.getPath() + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
+    url: VuFind.path + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
     dataType: 'html'
   })
   .done(function(response) {
@@ -63,7 +63,7 @@ function doTreeSearch()
       searchAjax.abort();
     }
     searchAjax = $.ajax({
-      "url" : VuFind.getPath() + '/Hierarchy/SearchTree?' + $.param({
+      "url" : VuFind.path + '/Hierarchy/SearchTree?' + $.param({
         'lookfor': keyword,
         'hierarchyID': hierarchyID,
         'type': $("#treeSearchType").val()
@@ -179,7 +179,7 @@ $(document).ready(function()
       'core' : {
         'data' : function (obj, cb) {
           $.ajax({
-            'url': VuFind.getPath() + '/Hierarchy/GetTreeJSON',
+            'url': VuFind.path + '/Hierarchy/GetTreeJSON',
             'data': {
               'hierarchyID': hierarchyID,
               'id': recordID

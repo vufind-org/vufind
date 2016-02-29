@@ -9,7 +9,7 @@ finna.metalibLinks = (function() {
     };
     var checkSearchLink = function(link) {
         var parent = link;
-        var jqxhr = $.getJSON(VuFind.getPath() + '/AJAX/JSON?method=metalibLinks', {id: [link.data('ird')]})
+        var jqxhr = $.getJSON(VuFind.path + '/AJAX/JSON?method=metalibLinks', {id: [link.data('ird')]})
         .done(function(response) {
             $(response.data).each(function(ind, ird) {
                 parent.find('.loading').remove();

@@ -60,7 +60,7 @@ finna.myList = (function() {
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            url: VuFind.getPath() + '/AJAX/JSON?method=editList',
+            url: VuFind.path + '/AJAX/JSON?method=editList',
             data: {'params': listParams}
         })
         .done(function(data, status, jqXHR) {
@@ -85,7 +85,7 @@ finna.myList = (function() {
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            url: VuFind.getPath() + '/AJAX/JSON?method=editListResource',
+            url: VuFind.path + '/AJAX/JSON?method=editListResource',
             data: {'params': params}
         })
         .done(function(data) {
@@ -126,7 +126,7 @@ finna.myList = (function() {
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            url: VuFind.getPath() + '/AJAX/JSON?method=addToList',
+            url: VuFind.path + '/AJAX/JSON?method=addToList',
             data: {params: {'listId': listId, 'source': 'Solr', 'ids': ids}}
         })
         .done(function(data) {
@@ -147,7 +147,7 @@ finna.myList = (function() {
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            url: VuFind.getPath() + '/AJAX/JSON?method=getMyLists',
+            url: VuFind.path + '/AJAX/JSON?method=getMyLists',
             data: {'active': getActiveListId()}
         })
         .done(function(data) {

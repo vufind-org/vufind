@@ -4,7 +4,7 @@ finna.record = (function() {
         var description = $("#description_text");
         if (description.length) {
             var id = description.data('id');
-            var url = VuFind.getPath() + '/AJAX/JSON?method=getDescription&id=' + id;
+            var url = VuFind.path + '/AJAX/JSON?method=getDescription&id=' + id;
             $.getJSON(url)
             .done(function(response) {
                 if (response.data.length > 0) {
@@ -47,7 +47,7 @@ finna.record = (function() {
       });
       
     
-      var url = VuFind.getPath() + '/AJAX/JSON?method=checkRequestsAreValid';
+      var url = VuFind.path + '/AJAX/JSON?method=checkRequestsAreValid';
       $.ajax({
         dataType: 'json',
         data: {id: recordId, requestType: requestType, data: vars},

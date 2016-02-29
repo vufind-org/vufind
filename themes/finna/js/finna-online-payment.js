@@ -2,7 +2,7 @@
 finna.onlinePayment = (function() {
 
     var registerPayment = function(params) {
-        var url = VuFind.getPath() + '/AJAX/registerOnlinePayment';
+        var url = VuFind.path + '/AJAX/registerOnlinePayment';
         $.ajax({
             type: 'POST',
             url:  url,

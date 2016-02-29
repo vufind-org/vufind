@@ -600,7 +600,7 @@ finna.layout = (function() {
         }
         $container.find('.facet-load-indicator').removeClass('hidden');
         var query = window.location.href.split('?')[1];
-        $.getJSON(VuFind.getPath() + '/AJAX/JSON?method=getSideFacets&' + query)
+        $.getJSON(VuFind.path + '/AJAX/JSON?method=getSideFacets&' + query)
         .done(function(response) {
             $container.replaceWith(response.data);
             finna.dateRangeVis.init();
@@ -619,7 +619,7 @@ finna.layout = (function() {
             return;
         }
         $container.find('.load-indicator').removeClass('hidden');
-        $.getJSON(VuFind.getPath() + '/AJAX/JSON?method=getPiwikPopularSearches')
+        $.getJSON(VuFind.path + '/AJAX/JSON?method=getPiwikPopularSearches')
         .done(function(response) {
             $container.html(response.data);
         })
