@@ -36,7 +36,7 @@ $config = [
                 'options' => [
                     'route'    => '/Content/[:page]',
                     'constraints' => [
-                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]+',
+                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ],
                     'defaults' => [
                         'controller' => 'Contentpage',
