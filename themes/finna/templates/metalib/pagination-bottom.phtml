@@ -2,11 +2,9 @@
 <? $pagination = $this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results)); ?>
 <? if (trim($pagination)): ?>
 <div class="container-fluid pagination-background">
-  <div class="container">
-    <div class="row">
-      <div class="text-center">
-        <?=$pagination ?>
-      </div>
+  <div class="row">
+    <div class="text-center">
+      <?=$pagination ?>
     </div>
   </div>
 </div>
