@@ -179,7 +179,7 @@ $config = [
             'VuFind\SearchSpecsReader' => 'VuFind\Service\Factory::getSearchSpecsReader',
             'VuFind\SearchStats' => 'VuFind\Service\Factory::getSearchStats',
             'VuFind\SearchTabsHelper' => 'VuFind\Service\Factory::getSearchTabsHelper',
-            'VuFind\SessionManager' => 'VuFind\Service\Factory::getSessionManager',
+            'VuFind\SessionManager' => 'VuFind\Session\ManagerFactory',
             'VuFind\Session\OnDemandContainerFactory' => 'VuFind\Service\Factory::getOnDemandContainerFactory',
             'VuFind\SessionPluginManager' => 'VuFind\Service\Factory::getSessionPluginManager',
             'VuFind\SMS' => 'VuFind\SMS\Factory',
@@ -192,7 +192,8 @@ $config = [
         'invokables' => [
             'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper',
             'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
-            'VuFind\Search'         => 'VuFindSearch\Service',
+            'VuFind\Search' => 'VuFindSearch\Service',
+            'VuFind\Session\Settings' => 'VuFind\Session\Settings',
         ],
         'initializers' => [
             'VuFind\ServiceManager\Initializer::initInstance',

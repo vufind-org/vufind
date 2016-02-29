@@ -803,60 +803,6 @@ class Factory
     }
 
     /**
-     * Construct the Session Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \Zend\Session\SessionManager
-     */
-    public static function getSessionManager(ServiceManager $sm)
-    {
-        // Load and validate session configuration:
-        $config = $sm->get('VuFind\Config')->get('config');
-        if (!isset($config->Session->type)) {
-            throw new \Exception('Cannot initialize session; configuration missing');
-        }
-
-        $cookieManager = $sm->get('VuFind\CookieManager');
-        $sessionConfig = new \Zend\Session\Config\SessionConfig();
-        $options = [
-            'cookie_path' => $cookieManager->getPath(),
-            'cookie_secure' => $cookieManager->isSecure()
-        ];
-        $domain = $cookieManager->getDomain();
-        if (!empty($domain)) {
-            $options['cookie_domain'] = $domain;
-        }
-
-        $sessionConfig->setOptions($options);
-
-        // Set up the session handler by retrieving all the pieces from the service
-        // manager and injecting appropriate dependencies:
-        $sessionManager = new \Zend\Session\SessionManager($sessionConfig);
-        $sessionPluginManager = $sm->get('VuFind\SessionPluginManager');
-        $sessionHandler = $sessionPluginManager->get($config->Session->type);
-        $sessionHandler->setConfig($config->Session);
-        $sessionManager->setSaveHandler($sessionHandler);
-
-        // Start up the session:
-        $sessionManager->start();
-
-        // According to the PHP manual, session_write_close should always be
-        // registered as a shutdown function when using an object as a session
-        // handler: http://us.php.net/manual/en/function.session-set-save-handler.php
-        register_shutdown_function(
-            function () use ($sessionManager) {
-                // If storage is immutable, the session is already closed:
-                if (!$sessionManager->getStorage()->isImmutable()) {
-                    $sessionManager->writeClose();
-                }
-            }
-        );
-
-        return $sessionManager;
-    }
-
-    /**
      * Construct the Session Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.

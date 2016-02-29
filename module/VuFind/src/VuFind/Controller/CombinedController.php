@@ -64,7 +64,7 @@ class CombinedController extends AbstractSearch
      */
     public function resultAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
 
         // Turn off search memory -- not relevant in this context:
         $this->getSearchMemory()->disable();
