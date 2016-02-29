@@ -43,7 +43,7 @@
           <?=$this->transEsc('Delete')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
-          <li><a id="cart-confirm-delete" onClick="$('#dropdown_value').attr('name', 'delete').val(1);$(this).closest('form').submit();" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a id="cart-confirm-delete" onClick="submitFormWithButton(this, 'delete')" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
           <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
         </ul>
       </div>
@@ -53,7 +53,7 @@
           <?=$this->transEsc('Empty Book Bag')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
-          <li><a id="cart-confirm-empty" onClick="$('#dropdown_value').attr('name', 'empty').val(1);$(this).closest('form').submit();" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a id="cart-confirm-empty" onClick="submitFormWithButton(this, 'empty')" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
           <li><a onClick="$('.fa.fa-spinner').remove()"><?=$this->transEsc('confirm_dialog_no')?></a></li>
         </ul>
       </div>
@@ -61,3 +61,13 @@
   <? endif; ?>
   <?=$this->render('cart/contents.phtml')?>
 </form>
+
+<?
+  $script = <<<JS
+  function submitFormWithButton(link, name) {
+    $('#dropdown_value').attr('name', name).val(1);
+    $(link).closest('form').submit();
+  }
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

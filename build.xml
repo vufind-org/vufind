@@ -123,7 +123,7 @@
   <target name="composer" description="Install dependencies with Composer">
     <httpget url="https://getcomposer.org/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
     <echo message="Installing dependencies..." />
-    <exec command="php ${srcdir}/composer.phar install" />
+    <exec command="php ${srcdir}/composer.phar install" passthru="true" checkreturn="true" />
   </target>
 
   <!-- Install and Activate VuFind -->

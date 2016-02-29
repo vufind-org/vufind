@@ -3,20 +3,17 @@
 // IE 9< console polyfill
 window.console = window.console || {log: function () {}};
 
-function VuFindNamespace(p, s, dsb) {
-  var defaultSearchBackend = dsb;
-  var path = p;
-  var strings = s;
+var VuFind = {
+  defaultSearchBackend: null,
+  path: null,
+  translations: {},
 
-  var getDefaultSearchBackend = function() { return defaultSearchBackend; };
-  var getPath = function() { return path; };
-  var translate = function(op) { return strings[op] || op; };
-
-  return {
-    getDefaultSearchBackend: getDefaultSearchBackend,
-    getPath: getPath,
-    translate: translate
-  };
+  addTranslations: function(s) {
+    for (var i in s) {
+      this.translations[i] = s[i];
+    }
+  },
+  translate: function(op) { return this.translations[op] || op; }
 }
 
 /* --- GLOBAL FUNCTIONS --- */
@@ -152,7 +149,7 @@ function ajaxLogin(form) {
     // login via ajax
     Lightbox.ajax({
       type: 'POST',
-      url: VuFind.getPath() + '/AJAX/JSON?method=login',
+      url: VuFind.path + '/AJAX/JSON?method=login',
       dataType: 'json',
       data: params
     })
@@ -232,7 +229,7 @@ function setupAutocomplete() {
           hiddenFilters.push($(this).val());
         });
         $.fn.autocomplete.ajax({
-          url: VuFind.getPath() + '/AJAX/JSON',
+          url: VuFind.path + '/AJAX/JSON',
           data: {
             q:query,
             method:'getACSuggestions',
@@ -353,7 +350,7 @@ $(document).ready(function() {
       window.print();
     });
     // Make an ajax call to ensure that ajaxStop is triggered
-    $.getJSON(VuFind.getPath() + '/AJAX/JSON', {method: 'keepAlive'});
+    $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
   // Advanced facets

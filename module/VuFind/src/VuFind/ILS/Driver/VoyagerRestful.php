@@ -2224,7 +2224,7 @@ EOT;
         if (isset($results->holds->institution)) {
             foreach ($results->holds->institution as $institution) {
                 // Only take remote holds
-                if ($this->isLocalInst($institution)) {
+                if ($this->isLocalInst((string)$institution->attributes()->id)) {
                     continue;
                 }
 
