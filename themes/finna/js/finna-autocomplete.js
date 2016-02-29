@@ -5,7 +5,9 @@ finna.autocomplete = (function() {
 
     var setupAutocomplete = function () {
         $('.searchForm').on('submit', function() {
-            $('.autocomplete-finna').autocomplete.element.hide();
+            if ($('.autocomplete-finna').autocomplete.element !== false) {
+                $('.autocomplete-finna').autocomplete.element.hide();
+            }
         });
 
         // Search autocomplete
