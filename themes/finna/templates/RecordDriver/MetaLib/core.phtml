@@ -213,7 +213,7 @@
       <? if ($source = $this->driver->getSource()): ?>
       <tr>
         <th><?=$this->transEsc('Source Collection')?>: </th>
-        <td><?=$source ?></td>
+        <td><?=$this->escapeHtml($source) ?></td>
       </tr>
       <? endif; ?>
 

@@ -96,6 +96,9 @@
         }?>
       </div>
       <? endif; ?>
+      <div class="record-source">
+        <?=$this->escapeHtml($this->driver->getSource()) ?>
+      </div>
 
       <div class="callnumAndLocation ajax-availability hidden">
         <? if ($this->driver->supportsAjaxStatus()): ?>
