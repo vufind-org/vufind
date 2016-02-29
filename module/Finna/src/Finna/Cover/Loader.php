@@ -181,11 +181,12 @@ class Loader extends \VuFind\Cover\Loader
     /**
      * Support method for fetchFromAPI() -- set the localFile property.
      *
-     * @param array $ids IDs returned by getIdentifiers() method
+     * @param array  $ids     IDs returned by getIdentifiers() method
+     * @param string $apiName Name of the API
      *
      * @return void
      */
-    protected function determineLocalFile($ids)
+    protected function determineLocalFile($ids, $apiName = 'default')
     {
         $keys = [];
 
@@ -209,7 +210,67 @@ class Loader extends \VuFind\Cover\Loader
         );
 
         $file = implode('-', $keys);
-        return $this->getCachePath('finna', $file);
+        return $this->getCachePath('finna', "$apiName-$file");
+    }
+
+    /**
+     * Load bookcover from cache or remote provider and display if possible.
+     *
+     * @return bool        True if image loaded, false on failure.
+     */
+    protected function fetchFromAPI()
+    {
+        // Check that we have at least one valid identifier:
+        $ids = $this->getIdentifiers();
+        if (empty($ids)) {
+            return false;
+        }
+
+        $providers = isset($this->config->Content->coverimages)
+            ? explode(',', $this->config->Content->coverimages) : [];
+
+        // Try to find provider-specific cache file
+        foreach ($providers as $provider) {
+            $provider = explode(':', trim($provider));
+            $apiName = strtolower(trim($provider[0]));
+            $localFile = $this->determineLocalFile($ids, $apiName);
+
+            if (is_readable($localFile)) {
+                // Load local cache if available
+                $this->contentType = 'image/jpeg';
+                $this->image = file_get_contents($localFile);
+                return true;
+            }
+        }
+        // Try to fetch from providers
+        foreach ($providers as $provider) {
+            $provider = explode(':', trim($provider));
+            $apiName = strtolower(trim($provider[0]));
+            // Set up local file path:
+            $this->localFile = $this->determineLocalFile($ids, $apiName);
+            $key = isset($provider[1]) ? trim($provider[1]) : null;
+            try {
+                $handler = $this->apiManager->get($apiName);
+
+                // Is the current provider appropriate for the available data?
+                if ($handler->supports($ids)) {
+                    if ($url = $handler->getUrl($key, $this->size, $ids)) {
+                        $success = $this->processImageURLForSource(
+                            $url, $handler->isCacheAllowed(), $apiName
+                        );
+                        if ($success) {
+                            return true;
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                $this->debug(
+                    get_class($e) . ' during processing of ' . $apiName
+                    . ': ' . $e->getMessage()
+                );
+            }
+        }
+        return false;
     }
 
     /**

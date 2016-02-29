@@ -534,7 +534,7 @@ email = SHIB_mail
 ; You can select Syndetics, LibraryThing, Summon, Amazon, Booksite, OpenLibrary,
 ; Contentcafe and/or Google Books.
 ;   Note: Summon service takes a Serials Solutions client key, NOT Summon API key!
-;coverimages     = Syndetics:MySyndeticsId,Amazon:MyAccessKeyId,Booksite,LibraryThing:MyLibraryThingId,Google,OpenLibrary,Summon:MySerialsSolutionsClientKey,Contentcafe:MyContentCafeID
+;coverimages     = Syndetics:MySyndeticsId,Amazon:MyAccessKeyId,Booksite,LibraryThing:MyLibraryThingId,Google,OpenLibrary,Summon:MySerialsSolutionsClientKey,Contentcafe:MyContentCafeID,NatLibFi,BookyFi
 coverimages     = NatLibFi,OpenLibrary
 
 ; This setting controls the image to display when no book cover is available.
