@@ -514,6 +514,9 @@ $config = [
                     'sfx' => 'VuFind\Resolver\Driver\Factory::getSfx',
                     'redi' => 'VuFind\Resolver\Driver\Factory::getRedi',
                 ],
+                'invokables' => [
+                    'demo' => 'VuFind\Resolver\Driver\Demo',
+                ],
                 'aliases' => [
                     'threesixtylink' => '360link',
                 ],

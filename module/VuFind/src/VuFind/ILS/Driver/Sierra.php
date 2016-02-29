@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sierra (III) ILS Driver for Vufind2
+ * Sierra (III) ILS Driver for VuFind
  *
  * PHP version 5
  *
@@ -20,11 +20,11 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @license  http://opensource.org/licenses/GPL-3.0 GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 
@@ -32,13 +32,13 @@ use VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
- * Sierra (III) ILS Driver for Vufind2
+ * Sierra (III) ILS Driver for VuFind
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @license  http://opensource.org/licenses/GPL-3.0 GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Sierra extends AbstractBase implements TranslatorAwareInterface
 {

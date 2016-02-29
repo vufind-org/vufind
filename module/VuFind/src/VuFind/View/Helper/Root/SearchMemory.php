@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 use VuFind\Search\Memory, Zend\View\Helper\AbstractHelper;
@@ -31,11 +31,11 @@ use VuFind\Search\Memory, Zend\View\Helper\AbstractHelper;
 /**
  * View helper for remembering recent user searches/parameters.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class SearchMemory extends AbstractHelper
 {
@@ -80,11 +80,13 @@ class SearchMemory extends AbstractHelper
     /**
      * Retrieve the last hidden filters used.
      *
+     * @param string $context Context of search (usually search class ID).
+     *
      * @return array
      */
-    public function getLastHiddenFilters()
+    public function getLastHiddenFilters($context)
     {
-        return $this->memory->retrieveLastSetting($context, 'hiddenFilters');
+        return $this->memory->retrieveLastSetting($context, 'hiddenFilters', []);
     }
 
     /**

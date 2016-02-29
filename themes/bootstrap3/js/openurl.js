@@ -1,20 +1,19 @@
 /*global extractClassParams, VuFind */
 
-function loadResolverLinks($target, openUrl) {
+function loadResolverLinks($target, openUrl, searchClassId) {
   $target.addClass('ajax_availability');
-  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl});
+  var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl,searchClassId:searchClassId});
   $.ajax({
     dataType: 'json',
-    url: url,
-    success: function(response) {
-      if (response.status == 'OK') {
-        $target.removeClass('ajax_availability')
-          .empty().append(response.data);
-      } else {
-        $target.removeClass('ajax_availability').addClass('error')
-          .empty().append(response.data);
-      }
-    }
+    url: url
+  })
+  .done(function(response) {
+    $target.removeClass('ajax_availability').empty().append(response.data);
+  })
+  .fail(function(response, textStatus) {
+    $target.removeClass('ajax_availability').addClass('text-danger').empty();
+    if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
+    $target.append(response.responseJSON.data);
   });
 }
 
@@ -32,7 +31,7 @@ function embedOpenUrlLinks(element) {
   // If the target is already visible, a previous click has populated it;
   // don't waste time doing redundant work.
   if (target.hasClass('hidden')) {
-    loadResolverLinks(target.removeClass('hidden'), openUrl);
+    loadResolverLinks(target.removeClass('hidden'), openUrl, element.data('search-class-id'));
   }
 }
 
