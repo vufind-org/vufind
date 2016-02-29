@@ -271,7 +271,7 @@ var Lightbox = {
    */
   get: function(controller, action, get, post, callback) {
     // Build URL
-    var url = VuFind.getPath()+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
+    var url = VuFind.path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
     if(typeof get !== "undefined" && get !== {}) {
       url += '&'+$.param(get);
     }
@@ -394,7 +394,7 @@ var Lightbox = {
     var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
     if($form.attr('action')) {
       // Parse action location
-      var path = VuFind.getPath();
+      var path = VuFind.path;
       var action = $form.attr('action').substring($form.attr('action').indexOf(path)+path.length+1);
       var params = action.split('?');
       action = action.split('/');
@@ -420,7 +420,7 @@ function getListUrlFromHTML(html) {
   if (typeof listUrl === 'undefined') {
     var listID = fakePage.find('[name="listID"]');
     if(listID.length > 0) {
-      listUrl = VuFind.getPath() + '/MyResearch/MyList/'+listID.val();
+      listUrl = VuFind.path + '/MyResearch/MyList/'+listID.val();
     }
   }
   var message = VuFind.translate('bulk_save_success');
@@ -484,7 +484,7 @@ $(document).ready(function() {
 
   Lightbox.addFormHandler('exportForm', function(evt) {
     Lightbox.ajax({
-      url: VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
+      url: VuFind.path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
       dataType:'json',
       data:Lightbox.getFormData($(evt.target))
