@@ -97,7 +97,7 @@ function registerAjaxCommentRecord() {
     })
     .fail(function(response, textStatus) {
       if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
-      VuFind.lightbox.update(response.responseJSON.data);
+      VuFind.lightbox.alert(response.responseJSON.data, 'danger');
     });
     return false;
   });
