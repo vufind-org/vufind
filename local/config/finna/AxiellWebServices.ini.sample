@@ -100,9 +100,8 @@ maxLength = 4
 
 ; Settings for messaging Settings
 [messagingSettings]
-; Uncomment the corresponding lines of a service in order to hide "no notification" option 
+; Uncomment the corresponding lines of a service in order to show "no notification" option 
 ; for a certain notification settings change request. 
-; "no notification" is displayed by default
 ;pickUpNoticeMethodNone = true
 ;overdueNoticeMethodNone = true
 ;dueDateAlertMethodNone = true
