@@ -96,10 +96,10 @@
   <div class="place-hold-wrapper text-right hidden-print">
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn(), 'label' => 'Library Card')); ?>
   <? if ($illRequestLink): ?>
-    <a class="expandedCheckILLRequest modal-link placeILLRequest btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>" title="<?=$this->transEsc("ill_request_check_text")?>"><?=$this->transEsc("ill_request_check_text")?></a>
+    <a class="expandedCheckILLRequest modal-link placeILLRequest btn btn-primary hidden-print" href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>" title="<?=$this->escapeHtmlAttr($this->translate('ill_request_place_text') . ': ' . $this->driver->getTitle()) ?>"><?=$this->transEsc("ill_request_check_text")?></a>
   <? endif; ?>
   <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
-    <a class="placehold modal-link btn btn-primary hidden-print" title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . ': ' . $this->driver->getTitle()); ?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
+    <a class="placehold modal-link btn btn-primary hidden-print" title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . ': ' . $this->driver->getTitle()) ?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
   <? elseif ($user): ?>
     <? $patron = $ilsLoginAvailable && $user->cat_username ? $this->ils()->patronLogin($user->cat_username, $user->getCatPassword()) : null; if ($patron): ?>
       <? if ($profile = $this->ils()->getMyProfile($patron)): ?>
