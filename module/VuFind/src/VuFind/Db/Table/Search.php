@@ -181,15 +181,16 @@ class Search extends Gateway
 
         // If we got this far, we didn't find a saved duplicate, so we should
         // save the new search:
-        $data = [
-            'session_id' => $sessionId,
-            'created' => date('Y-m-d'),
-        ];
-        $this->insert($data);
+        $this->insert(['created' => date('Y-m-d')]);
         $row = $this->getRowById($this->getLastInsertValue());
 
         // Chicken and egg... We didn't know the id before insert
         $newSearch->updateSaveStatus($row);
+
+        // Don't set session ID until this stage, because we don't want to risk
+        // ever having a row that's associated with a session but which has no
+        // search object data attached to it; this could cause problems!
+        $row->session_id = $sessionId;
         $row->search_object = serialize(new minSO($newSearch));
         $row->save();
     }
