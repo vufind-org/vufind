@@ -6,6 +6,7 @@ VuFind.combinedSearch = (function() {
         container.hide();
       } else {
         setupOpenUrlLinks(container);
+        checkItemStatuses(container);
         checkSaveStatuses(container);
         setupSaveRecordLinks(container);
       }
