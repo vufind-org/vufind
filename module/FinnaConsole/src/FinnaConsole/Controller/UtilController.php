@@ -59,6 +59,16 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     }
 
     /**
+     * Process unregistered online paymenets.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function onlinePaymentMonitorAction()
+    {
+        return $this->runService('Finna\OnlinePaymentMonitor');
+    }
+
+    /**
      * Send scheduled alerts.
      *
      * @return \Zend\Console\Response
