@@ -8,7 +8,7 @@ function checkRequestIsValid(element, requestType) {
   var vars = deparam(element.href);
   vars['id'] = recordId;
 
-  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
+  var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
   $.ajax({
     dataType: 'json',
     cache: false,
@@ -41,7 +41,7 @@ function setUpCheckRequest() {
 }
 
 function deleteRecordComment(element, recordId, recordSource, commentId) {
-  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
+  var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
   $.ajax({
     dataType: 'json',
     url: url
@@ -52,7 +52,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
 }
 
 function refreshCommentList($target, recordId, recordSource) {
-  var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
+  var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
   $.ajax({
     dataType: 'json',
     url: url
@@ -77,7 +77,7 @@ function registerAjaxCommentRecord() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
-    var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+    var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
     var data = {
       comment:form.comment.value,
       id:id,
@@ -96,7 +96,7 @@ function registerAjaxCommentRecord() {
       $(form).find('input[type="submit"]').button('loading');
     })
     .fail(function(response, textStatus) {
-      if (textStatus == "abort") { return; }
+      if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
       Lightbox.displayError(response.responseJSON.data);
     });
     return false;
@@ -134,7 +134,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
   // Parse out the base URL for the current record:
   var urlParts = document.URL.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
-  var path = VuFind.getPath();
+  var path = VuFind.path;
   var urlroot = null;
   if (path === '') {
     // special case -- VuFind installed at site root:
@@ -175,7 +175,7 @@ function refreshTagList(target, loggedin) {
   var recordSource = $(target).find('.hiddenSource').val();
   var $tagList = $(target).find('.tagList');
   if ($tagList.length > 0) {
-    var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
     $.ajax({
       dataType: 'html',
       url: url
@@ -203,7 +203,7 @@ function ajaxTagUpdate(link, tag, remove) {
   var recordId = $target.find('.hiddenId').val();
   var recordSource = $target.find('.hiddenSource').val();
   $.ajax({
-    url:VuFind.getPath() + '/AJAX/JSON?method=tagRecord',
+    url:VuFind.path + '/AJAX/JSON?method=tagRecord',
     method:'POST',
     data:{
       tag:'"'+tag.replace(/\+/g, ' ')+'"',

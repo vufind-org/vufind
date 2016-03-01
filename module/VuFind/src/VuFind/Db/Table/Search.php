@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
 use minSO;
@@ -31,11 +31,11 @@ use minSO;
 /**
  * Table Definition for search
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Search extends Gateway
 {
@@ -181,15 +181,16 @@ class Search extends Gateway
 
         // If we got this far, we didn't find a saved duplicate, so we should
         // save the new search:
-        $data = [
-            'session_id' => $sessionId,
-            'created' => date('Y-m-d'),
-        ];
-        $this->insert($data);
+        $this->insert(['created' => date('Y-m-d')]);
         $row = $this->getRowById($this->getLastInsertValue());
 
         // Chicken and egg... We didn't know the id before insert
         $newSearch->updateSaveStatus($row);
+
+        // Don't set session ID until this stage, because we don't want to risk
+        // ever having a row that's associated with a session but which has no
+        // search object data attached to it; this could cause problems!
+        $row->session_id = $sessionId;
         $row->search_object = serialize(new minSO($newSearch));
         $row->save();
     }

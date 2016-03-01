@@ -17,7 +17,7 @@ function setUpHoldRequestForm(recordId) {
       data: params,
       dataType: 'json',
       cache: false,
-      url: VuFind.getPath() + '/AJAX/JSON'
+      url: VuFind.path + '/AJAX/JSON'
     })
     .done(function(response) {
       var defaultValue = $('#pickUpLocation').data('default');

@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
 
 /**
  * Zend action helper to perform holds-related actions
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Holds extends AbstractRequestBase
 {
@@ -60,9 +60,11 @@ class Holds extends AbstractRequestBase
                     = $catalog->getCancelHoldLink($ilsDetails);
             } else {
                 // Form Details
-                $ilsDetails['cancel_details']
-                    = $catalog->getCancelHoldDetails($ilsDetails);
-                $this->rememberValidId($ilsDetails['cancel_details']);
+                $cancelDetails = $catalog->getCancelHoldDetails($ilsDetails);
+                if ($cancelDetails !== '') {
+                    $ilsDetails['cancel_details'] = $cancelDetails;
+                    $this->rememberValidId($ilsDetails['cancel_details']);
+                }
             }
         }
 

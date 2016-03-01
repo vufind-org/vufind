@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Connection
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     https://vufind.org/wiki/development:architecture Wiki
  */
 namespace VuFindSearch\Backend\EIT;
 
@@ -36,11 +36,11 @@ use Zend\Http\Request;
 /**
  * Central class for connecting to EIT resources used by VuFind.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Connection
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     https://vufind.org/wiki/development:architecture Wiki
  */
 class Connector implements \Zend\Log\LoggerAwareInterface
 {

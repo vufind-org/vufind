@@ -123,7 +123,7 @@
   <target name="composer" description="Install dependencies with Composer">
     <httpget url="https://getcomposer.org/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
     <echo message="Installing dependencies..." />
-    <exec command="php ${srcdir}/composer.phar install" />
+    <exec command="php ${srcdir}/composer.phar install" passthru="true" checkreturn="true" />
   </target>
 
   <!-- Install and Activate VuFind -->
@@ -170,7 +170,7 @@
         <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
+        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
       </then>
       <else>
         <!-- build database -->
@@ -181,9 +181,15 @@
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
+        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
       </else>
     </if>
+
+    <!-- Turn on exception logging -->
+    <exec command="sed -e &quot;s!;file           = /var/log/vufind.log:alert,error,notice,debug!file = ${srcdir}/vufind-exception.log:alert-5,error-5!&quot; ${srcdir}/local/config/vufind/config.ini.tmp &gt; ${srcdir}/local/config/vufind/config.ini" />
+    <delete file="${srcdir}/local/config/vufind/config.ini.tmp" />
+    <exec command="touch ${srcdir}/vufind-exception.log" />
+    <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
     <!-- start Solr (use restart in case of old PID files) -->
     <exec command="touch ${srcdir}/local/vufindtest.pid" />
@@ -251,6 +257,7 @@
     <delete dir="${srcdir}/solr" includeemptydirs="true" failonerror="true" />
     <delete file="${srcdir}/composer.lock" failonerror="false" />
     <delete file="${srcdir}/composer.phar" failonerror="false" />
+    <delete file="${srcdir}/vufind-exception.log" failonerror="false" />
     <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
     <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
     <exec command="git reset --hard" />
