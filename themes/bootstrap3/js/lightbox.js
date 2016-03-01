@@ -3,6 +3,7 @@ function Lightbox() {
   // State
   this.originalUrl = false;
   this.currentUrl = false;
+  this.refreshOnClose = false;
   // Elements
   this.modal = $('#modal');
   this.modalBody = this.modal.find('.modal-body');
@@ -60,7 +61,7 @@ function Lightbox() {
             window.location.reload();
             return false;
           } else {
-            refreshPageForLogin();
+            VuFind.lightbox.refreshOnClose = true;
           }
         }
         VuFind.lightbox.update(html);
@@ -195,6 +196,9 @@ function Lightbox() {
   // Ready actions
   this.bind();
   this.modal.on('hide.bs.modal', function() {
+    if (VuFind.lightbox.refreshOnClose) {
+      window.location.reload();
+    }
     document.dispatchEvent(new Event('VuFind.lightbox.closing'));
   });
   this.modal.on('hidden.bs.modal', function() {

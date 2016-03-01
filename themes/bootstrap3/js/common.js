@@ -95,11 +95,6 @@ function phoneNumberFormHandler(numID, regionCode) {
   }
 }
 
-function refreshPageForLogin() {
-  document.addEventListener('VuFind.lightbox.closing', function() {
-    window.location.reload();
-  }, false);
-}
 function bulkFormHandler(event, data) {
   if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length == 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
@@ -113,7 +108,7 @@ function bulkFormHandler(event, data) {
   }
 }
 function newAccountHandler() {
-  refreshPageForLogin();
+  VuFind.lightbox.refreshOnClose = true;
   if (VuFind.lightbox.originalUrl.indexOf('UserLogin') > -1) {
     VuFind.modal('hide');
   }
