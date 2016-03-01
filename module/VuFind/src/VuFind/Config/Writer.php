@@ -69,7 +69,7 @@ class Writer
         $this->filename = $filename;
         if (null === $content) {
             $this->content = file_get_contents($filename);
-            if (!$this->content) {
+            if (false === $this->content) {
                 throw new \Exception('Could not read ' . $filename);
             }
         } else if (is_array($content)) {
