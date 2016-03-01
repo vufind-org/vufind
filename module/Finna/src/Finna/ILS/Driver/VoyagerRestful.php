@@ -253,7 +253,7 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
      */
     protected function getAllowedUBPickupLocationIDs($patron)
     {
-        if (!$config = $this->getPatronDriverConfig($patron)) {
+        if (!($config = $this->getPatronDriverConfig($patron))) {
             return false;
         }
 
@@ -279,7 +279,10 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
         ) {
             $source = substr($patron['cat_username'], 0, $pos);
 
-            $config = $this->configReader->get($source);
+            $config = $this->configReader->get("VoyagerRestful_$source");
+            if (!is_object($config) || $config->count() == 0) {
+                $config = $this->configReader->get($source);
+            }
             return is_object($config) ? $config->toArray() : [];
         }
 
