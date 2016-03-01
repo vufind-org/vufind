@@ -20,13 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @author   Ulf Seltmann <seltmann@ub.uni-leipzig.de>
  * @author   Gregor Gawol <gawol@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface,
@@ -36,14 +36,14 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface,
  * Model for MARC records without a fullrecord in Solr. The fullrecord is being
  * retrieved from an external source.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @author   Ulf Seltmann <seltmann@ub.uni-leipzig.de>
  * @author   Gregor Gawol <gawol@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
- * @link     https://vufind.org/wiki/remote_marc_records
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/configuration:remote_marc_records
  */
 class SolrMarcRemote extends SolrMarc implements
     HttpServiceAwareInterface, LoggerAwareInterface

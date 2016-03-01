@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 namespace VuFind\Db\Table;
 
 /**
  * Database table plugin factory
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {

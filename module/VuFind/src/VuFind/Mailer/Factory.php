@@ -19,40 +19,43 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Mailer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Mailer;
+use Zend\Mail\Transport\InMemory;
 use Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for instantiating Mailer objects
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Mailer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  *
  * @codeCoverageIgnore
  */
 class Factory implements \Zend\ServiceManager\FactoryInterface
 {
     /**
-     * Create service
+     * Build the mail transport object.
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param \Zend\Config\Config $config Configuration
      *
-     * @return mixed
+     * @return InMemory|Smtp
      */
-    public function createService(ServiceLocatorInterface $sm)
+    protected function getTransport($config)
     {
-        // Load configurations:
-        $config = $sm->get('VuFind\Config')->get('config');
+        // In test mode? Return fake object:
+        if (isset($config->Mail->testOnly) && $config->Mail->testOnly) {
+            return new InMemory();
+        }
 
         // Create mail transport:
         $settings = [
@@ -76,10 +79,22 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
                 }
             }
         }
-        $transport = new Smtp();
-        $transport->setOptions(new SmtpOptions($settings));
+        return new Smtp(new SmtpOptions($settings));
+    }
+
+    /**
+     * Create service
+     *
+     * @param ServiceLocatorInterface $sm Service manager
+     *
+     * @return mixed
+     */
+    public function createService(ServiceLocatorInterface $sm)
+    {
+        // Load configurations:
+        $config = $sm->get('VuFind\Config')->get('config');
 
         // Create service:
-        return new \VuFind\Mailer\Mailer($transport);
+        return new \VuFind\Mailer\Mailer($this->getTransport($config));
     }
 }

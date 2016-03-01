@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
 use Behat\Mink\Element\Element;
@@ -31,11 +31,11 @@ use Behat\Mink\Element\Element;
 /**
  * Mink cart test class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class CartTest extends \VuFindTest\Unit\MinkTestCase
 {
@@ -133,7 +133,10 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Activate the cart:
         $this->changeConfigs(
             ['config' =>
-                ['Site' => ['showBookBag' => true, 'theme' => 'bootprint3']]
+                [
+                    'Site' => ['showBookBag' => true, 'theme' => 'bootprint3'],
+                    'Mail' => ['testOnly' => 1],
+                ],
             ]
         );
 
@@ -297,9 +300,17 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
 
-        // Test that we now have an email form.
-        $toField = $this->findCss($page, '#email_to');
-        $this->assertNotNull($toField);
+        $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
+        $this->findCss($page, '.modal #email_message')->setValue('message');
+        $this->findCss($page, '.modal #email_to')
+            ->setValue('demian.katz@villanova.edu');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+        // Check for confirmation message
+        $this->assertEquals(
+            'Your item(s) were emailed',
+            $this->findCss($page, '.modal .alert-info')->getText()
+        );
     }
 
     /**

@@ -36,7 +36,7 @@ function getFullCartItems() {
 
 function addItemToCart(id,source) {
   if(!source) {
-    source = VuFind.getDefaultSearchBackend();
+    source = VuFind.defaultSearchBackend;
   }
   var cartItems = getCartItems();
   var cartSources = getCartSources();

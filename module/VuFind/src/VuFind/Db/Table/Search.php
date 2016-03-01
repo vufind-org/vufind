@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
 use minSO;
@@ -31,11 +31,11 @@ use minSO;
 /**
  * Table Definition for search
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Search extends Gateway
 {
@@ -159,11 +159,8 @@ class Search extends Gateway
         // Duplicate elimination
         $newUrl = $newSearch->getUrlQuery()->getParams();
         foreach ($searchHistory as $oldSearch) {
-            // Deminify the old search (note that if we have a resource, we need
-            // to grab the contents -- this is necessary for PostgreSQL compatibility
-            // although MySQL returns a plain string).
-            $minSO = $oldSearch->getSearchObject();
-            $dupSearch = $minSO->deminify($manager);
+            // Deminify the old search:
+            $dupSearch = $oldSearch->getSearchObject()->deminify($manager);
             // See if the classes and urls match
             $oldUrl = $dupSearch->getUrlQuery()->getParams();
             if (get_class($dupSearch) == get_class($newSearch)
@@ -187,7 +184,6 @@ class Search extends Gateway
         $data = [
             'session_id' => $sessionId,
             'created' => date('Y-m-d'),
-            'search_object' => serialize(new minSO($newSearch))
         ];
         $this->insert($data);
         $row = $this->getRowById($this->getLastInsertValue());
