@@ -122,7 +122,7 @@ class Shibboleth extends AbstractBase
         }
 
         // Save credentials if applicable:
-        if (!empty($user->cat_username)) {
+        if (!empty($user->cat_username) && !empty($catPassword)) {
             $user->saveCredentials($user->cat_username, $catPassword);
         }
 
