@@ -94,6 +94,14 @@ class AbstractBase extends AbstractActionController
                     break;
             }
         }
+        else if ($this->accessPermission
+            && !$this->getAuthorizationService()->isGranted($this->accessPermission)
+        ) {
+            // if permission is necessary, but denied and we have no behavior rules,
+            // prompt for login as a default behavior
+            $e->setResponse($this->forceLogin(null, [], false));
+            throw new ForbiddenException('Access denied.');
+        }
         return;
     }
 
