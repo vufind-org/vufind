@@ -7,7 +7,7 @@ return array(
         //'bootstrap-custom.css',
         'compiled.css',
         'vendor/font-awesome.min.css',
-        'vendor/bootstrap-slider.css',
+        'vendor/bootstrap-slider.min.css',
         'print.css:print',
     ),
     'js' => array(
@@ -15,11 +15,11 @@ return array(
         'vendor/jquery.min.js',
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
+        'vendor/validator.min.js',
+        'vendor/rc4.js',
         //'vendor/bootlint.min.js',*/
         'vendor.min.js',
         'autocomplete.js',
-        'vendor/validator.min.js',
-        'vendor/rc4.js',
         'common.js',
         'lightbox.js',
     ),

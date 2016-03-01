@@ -26,7 +26,8 @@ module.exports = function(grunt) {
             'themes/bootstrap3/js/vendor/jquery.min.js',
             'themes/bootstrap3/js/vendor/bootstrap.min.js',
             'themes/bootstrap3/js/vendor/*.js',
-            '!themes/bootstrap3/js/vendor/bootlint.min.js',
+            '!themes/bootstrap3/js/vendor/bootlint.min.js',     // un-comment to lint bootstrap syntax
+            '!themes/bootstrap3/js/vendor/bootstrap-slider.js', // not "use strict" compatible
             'themes/bootstrap3/js/autocomplete.js'
           ]
         }
