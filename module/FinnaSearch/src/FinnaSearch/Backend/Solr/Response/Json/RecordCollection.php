@@ -44,6 +44,16 @@ class RecordCollection
     extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
 {
     /**
+     * Get query debug information
+     *
+     * @return array
+     */
+    public function getDebugInformation()
+    {
+        return isset($this->response['debug']) ? $this->response['debug'] : [];
+    }
+
+    /**
      * Extract the best matching Spellcheck query from the raw Solr input parameters.
      *
      * @return string

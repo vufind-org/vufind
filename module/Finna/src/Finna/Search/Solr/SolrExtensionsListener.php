@@ -114,6 +114,26 @@ class SolrExtensionsListener
         SharedEventManagerInterface $manager
     ) {
         $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
+    }
+
+    /**
+     * Customize Solr response.
+     *
+     * @param EventInterface $event Event
+     *
+     * @return EventInterface
+     */
+    public function onSearchPost(EventInterface $event)
+    {
+        $backend = $event->getParam('backend');
+        if ($backend != $this->backend->getIdentifier()) {
+            return $event;
+        }
+
+        if ($event->getParam('context') == 'search') {
+            $this->displayDebugInfo($event);
+        }
     }
 
     /**
@@ -186,6 +206,89 @@ class SolrExtensionsListener
                 $params->add('fq', '-hidden_component_boolean:true');
             }
         }
+    }
+
+    /**
+     * Display debug information about the query
+     *
+     * @param EventInterface $event Event
+     *
+     * @return void
+     */
+    protected function displayDebugInfo(EventInterface $event)
+    {
+        $params = $event->getParam('params');
+        if (!$params->get('debugQuery')) {
+            return;
+        }
+        $collection = $event->getTarget();
+        $debugInfo = $collection->getDebugInformation();
+        echo "<!--\n";
+        echo 'Raw query string: ' . $debugInfo['rawquerystring'] . "\n\n";
+        echo 'Query string: ' . $debugInfo['querystring'] . "\n\n";
+        echo 'Parsed query: ' . $debugInfo['parsedquery'] . "\n\n";
+        echo 'Query parser: ' . $debugInfo['QParser'] . "\n\n";
+        echo 'Alt query string: ' . $debugInfo['altquerystring'] . "\n\n";
+        echo "Boost functions:\n";
+        if ($debugInfo['boostfuncs']) {
+            echo '  ' . implode("\n  ", $debugInfo['boostfuncs']);
+        }
+        echo "\n\n";
+        echo "Filter queries:\n";
+        if ($debugInfo['filter_queries']) {
+            echo '  ' . implode("\n  ", $debugInfo['filter_queries']);
+        }
+        echo "\n\n";
+        echo "Parsed filter queries:\n";
+        if ($debugInfo['parsed_filter_queries']) {
+            echo '  ' . implode("\n  ", $debugInfo['parsed_filter_queries']);
+        }
+        echo "\n\n";
+        echo "Timing:\n";
+        echo "  Total: " . $debugInfo['timing']['time'] . "\n";
+        echo "  Prepare:\n";
+        foreach ($debugInfo['timing']['prepare'] as $key => $value) {
+            echo "    $key: ";
+            echo is_array($value) ? $value['time'] : $value;
+            echo "\n";
+        }
+        echo "  Process:\n";
+        foreach ($debugInfo['timing']['process'] as $key => $value) {
+            echo "    $key: ";
+            echo is_array($value) ? $value['time'] : $value;
+            echo "\n";
+        }
+
+        echo "\n\n";
+
+        if (!empty($debugInfo['explain'])) {
+            echo "Record weights:\n\n";
+            $explain = array_values($debugInfo['explain']);
+            $i = -1;
+            foreach ($collection->getRecords() as $record) {
+                ++$i;
+                $id = $record->getUniqueID();
+                echo "$id";
+                $dedupData = $record->getDedupData();
+                if ($dedupData) {
+                    echo ' (duplicates: ';
+                    $ids = [];
+                    foreach ($dedupData as $item) {
+                        if ($item['id'] != $id) {
+                            $ids[] = $item['id'];
+                        }
+                    }
+                    echo implode(', ', $ids) . ')';
+                }
+                echo ':';
+                if (isset($explain[$i])) {
+                    print_r($explain[$i]);
+                }
+
+                echo "\n";
+            }
+        }
+        echo "-->\n";
     }
 
     /**

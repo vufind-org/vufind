@@ -64,6 +64,13 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected $newItemsFacets = [];
 
+    /**
+     * Query debug flag
+     *
+     * @var bool
+     */
+    protected $debugQuery = false;
+
     // Date range index field
     const SPATIAL_DATERANGE_FIELD = 'search_daterange_mv';
 
@@ -185,6 +192,22 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
+     * Create search backend parameters for advanced features.
+     *
+     * @return ParamBag
+     */
+    public function getBackendParameters()
+    {
+        $result = parent::getBackendParameters();
+
+        if ($this->debugQuery) {
+            $result->add('debugQuery', 'true');
+        }
+
+        return $result;
+    }
+
+    /**
      * Return current facet configurations.
      * Add checkbox facets to list.
      *
@@ -200,6 +223,21 @@ class Params extends \VuFind\Search\Solr\Params
             }
         }
         return $facetSet;
+    }
+
+    /**
+     * Pull the search parameters
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    public function initFromRequest($request)
+    {
+        parent::initFromRequest($request);
+
+        $this->setDebugQuery($request->get('debugSolrQuery', false));
     }
 
     /**
@@ -277,6 +315,28 @@ class Params extends \VuFind\Search\Solr\Params
         $this->spatialDateRangeFilter = $dateFilter;
 
         parent::addFilter($dateFilter['query']);
+    }
+
+    /**
+     * Get query debug flag status
+     *
+     * @return bool
+     */
+    public function getDebugQuery()
+    {
+        return $this->debugQuery;
+    }
+
+    /**
+     * Enable or disable query debugging
+     *
+     * @param bool $value Whether to enable debugging
+     *
+     * @return void
+     */
+    public function setDebugQuery($value)
+    {
+        $this->debugQuery = $value;
     }
 
     /**
