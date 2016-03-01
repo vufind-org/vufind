@@ -79,6 +79,29 @@ class Factory
      *
      * @return \FinnaConsole\Service\ScheduledAlerts
      */
+    public static function getOnlinePaymentMonitor(ServiceManager $sm)
+    {
+        $catalog = \Finna\Service\Factory::getILSConnection($sm);
+        $tableManager = $sm->get('VuFind\DbTablePluginManager');
+        $transactionTable = $tableManager->get('transaction');
+        $userTable = $tableManager->get('user');
+        $configReader = $sm->get('VuFind\Config');
+        $mailer = $sm->get('VuFind\Mailer');
+        $viewManager = $sm->get('viewmanager');
+
+        return new OnlinePaymentMonitor(
+            $catalog, $transactionTable, $userTable,
+            $configReader, $mailer, $viewManager
+        );
+    }
+
+    /**
+     * Construct the console service for sending scheduled alerts.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \FinnaConsole\Service\ScheduledAlerts
+     */
     public static function getScheduledAlerts(ServiceManager $sm)
     {
         return new ScheduledAlerts($sm);

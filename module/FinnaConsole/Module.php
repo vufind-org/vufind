@@ -79,6 +79,7 @@ class Module
         return [
             'util clear_metalib_search' => 'Removes old metalib search entries',
             'util expire_users' => 'Anonymizes expired user accounts',
+            'util online_payment_monitor' => 'Process unregistered online payments',
             'util scheduled_alerts' => 'Send scheduled alerts',
             'util verify_record_links' => 'Verify record links'
         ];
