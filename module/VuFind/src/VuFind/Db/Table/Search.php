@@ -27,6 +27,8 @@
  */
 namespace VuFind\Db\Table;
 use minSO;
+use Zend\Db\Adapter\ParameterContainer;
+use Zend\Db\TableGateway\Feature;
 
 /**
  * Table Definition for search
@@ -45,6 +47,53 @@ class Search extends Gateway
     public function __construct()
     {
         parent::__construct('search', 'VuFind\Db\Row\Search');
+    }
+
+    /**
+     * Initialize
+     *
+     * @return void
+     */
+    public function initialize()
+    {
+        if ($this->isInitialized) {
+            return;
+        }
+
+        // Special case for PostgreSQL inserts -- we need to provide an extra
+        // clue so that the database knows how to write bytea data correctly:
+        if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
+            if (!is_object($this->featureSet)) {
+                $this->featureSet = new Feature\FeatureSet();
+            }
+            $eventFeature = new Feature\EventFeature();
+            $eventFeature->getEventManager()->attach(
+                Feature\EventFeature::EVENT_PRE_INSERT, [$this, 'onPreInsert']
+            );
+            $this->featureSet->addFeature($eventFeature);
+        }
+
+        parent::initialize();
+    }
+
+    /**
+     * Customize the Insert object to include extra metadata about the
+     * search_object field so that it will be written correctly. This is
+     * triggered only when we're interacting with PostgreSQL; MySQL works fine
+     * without the extra hint.
+     *
+     * @param object $event Event object
+     *
+     * @return void
+     */
+    public function onPreInsert($event)
+    {
+        $driver = $event->getTarget()->getAdapter()->getDriver();
+        $statement = $driver->createStatement();
+        $params = new ParameterContainer();
+        $params->offsetSetErrata('search_object', ParameterContainer::TYPE_LOB);
+        $statement->setParameterContainer($params);
+        $driver->registerStatementPrototype($statement);
     }
 
     /**
