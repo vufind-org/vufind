@@ -219,15 +219,26 @@
         }
     }
     #renewals .toolbar {
+        @media (max-width:@screen-xs-max) { 
+            margin-left: -15px;
+        }
         & .checkboxFilter.mylist-select-all {
-            margin-right: 0;   
+            margin-right: 0;
+            margin-top: 3px;
+            float: none;
+            & span {
+                font-size: 11px;
+                top: 4px;
+                left: ~"-webkit-calc(50% + 10px)";
+                left: ~"-moz-calc(50% + 10px)";
+                left: ~"calc(50% + 10px)";
+                position: absolute;
+                width: 70px;
+            }
         }
         & .checkboxFilter .checkbox label {
             line-height: auto;
             font-size: 13px;
-            @media (min-width: @screen-sm-min) {
-                margin-left: 10px;   
-            }
         }
     }
     & .myresearch-notes {
