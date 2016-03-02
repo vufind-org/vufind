@@ -1,4 +1,4 @@
-/*global VuFind, setupOpenUrlLinks, checkSaveStatuses, setupSaveRecordLinks */
+/*global VuFind, setupOpenUrlLinks, checkItemStatuses, checkSaveStatuses, setupSaveRecordLinks */
 VuFind.combinedSearch = (function() {
   var init = function(container, url) {
     container.load(url, '', function(responseText) {
