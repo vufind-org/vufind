@@ -123,7 +123,19 @@ class Shibboleth extends AbstractBase
 
         // Save credentials if applicable:
         if (!empty($user->cat_username)) {
-            $user->saveCredentials($user->cat_username, $catPassword);
+            // As we initially only check whether $user->cat_username is empty (to
+            // allow ILS login without password - see also
+            // https://github.com/vufind-org/vufind/pull/532) $catPassword could be
+            // empty too and would overwrite an already stored password if this empty
+            // $catPassword is written to the DB straight away. Therefore we check
+            // just before saving the credentials and fallback to the retrieved
+            // $user->cat_password. This will render saving empty passwords
+            // impossible. (for further information see also discussion in
+            // https://github.com/vufind-org/vufind/pull/612)
+            $user->saveCredentials(
+                $user->cat_username,
+                (!empty($catPassword) ? $catPassword : $user->cat_password)
+            );
         }
 
         // Save and return the user object:
