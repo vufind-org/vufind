@@ -224,7 +224,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param string                 $titleHoldsMode Title holds mode setting
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        StorageInterface $cache, $holdsMode = 'disabled',
+        StorageInterface $cache = null, $holdsMode = 'disabled',
         $titleHoldsMode = 'disabled'
     ) {
         parent::__construct($dateConverter);
@@ -344,6 +344,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function getCachedData($id)
     {
+        if (null === $this->cache) {
+            return null;
+        }
+
         $id = "VoyagerRestful-$id";
         $item = $this->cache->getItem($id);
         if (null !== $item) {
@@ -367,7 +371,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function putCachedData($id, $entry)
     {
+        if (null === $this->cache) {
+            return null;
+        }
+
         $id = "VoyagerRestful-$id";
+
         $item = [
             'time' => time(),
             'entry' => $entry
