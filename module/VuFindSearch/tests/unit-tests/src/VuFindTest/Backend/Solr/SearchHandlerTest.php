@@ -51,7 +51,7 @@ class SearchHandlerTest extends PHPUnit_Framework_TestCase
     {
         $spec = ['DismaxParams' => [['foo', 'bar']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec);
-        $this->assertEquals('(_query_:"{!dismax qf=\"field1 field2\" foo=\\\'bar\\\'}foobar")', $hndl->createSimpleQueryString('foobar'));
+        $this->assertEquals('(_query_:"{!dismax qf=\"field1 field2\" foo=\\\'bar\\\' mm=\\\'100%\\\'}foobar")', $hndl->createSimpleQueryString('foobar'));
     }
 
     /**
@@ -72,7 +72,7 @@ class SearchHandlerTest extends PHPUnit_Framework_TestCase
      */
     public function testToArray()
     {
-        $spec = ['DismaxParams' => [['foo', 'bar']], 'DismaxFields' => ['field1', 'field2']];
+        $spec = ['DismaxParams' => [['foo', 'bar'], ['mm', '100%']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec);
         $defaults = ['CustomMunge' => [], 'DismaxHandler' => 'dismax', 'QueryFields' => [], 'FilterQuery' => []];
         $this->assertEquals($spec + $defaults, $hndl->toArray());
@@ -87,7 +87,7 @@ class SearchHandlerTest extends PHPUnit_Framework_TestCase
     {
         $spec = ['DismaxParams' => [['foo', 'bar']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec, 'edismax');
-        $this->assertEquals('(_query_:"{!edismax qf=\"field1 field2\" foo=\\\'bar\\\'}foobar")', $hndl->createSimpleQueryString('foobar'));
+        $this->assertEquals('(_query_:"{!edismax qf=\"field1 field2\" foo=\\\'bar\\\' mm=\\\'0%\\\'}foobar")', $hndl->createSimpleQueryString('foobar'));
     }
 
     /**
