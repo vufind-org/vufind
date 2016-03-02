@@ -7,7 +7,7 @@
   <h4 class="record-organisation-header">
     <? if ($mergedData && count($mergedData['records']) > 1): ?>
       <?=$this->transEsc('material_provided_by_multiple', ['%%count%%' => count($mergedData['records'])])?>
-    <? elseif  (!in_array($this->driver->getRecordType(), ['ead','lido','qdc'])): ?>
+    <? else: ?>
       <?=$this->transEsc('material_provided_by_single')?>
     <? endif; ?>
   </h4>
