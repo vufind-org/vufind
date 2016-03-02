@@ -270,6 +270,21 @@ abstract class MinkTestCase extends DbTestCase
     }
 
     /**
+     * Retrieve a link and assert that it exists before returning it.
+     *
+     * @param Element $page Page element
+     * @param string  $text Link text to match
+     *
+     * @return mixed
+     */
+    protected function findAndAssertLink(Element $page, $text)
+    {
+        $link = $page->findLink($text);
+        $this->assertTrue(is_object($link));
+        return $link;
+    }
+
+    /**
      * Check whether an element containing the specified text exists.
      *
      * @param Element $page     Page element
