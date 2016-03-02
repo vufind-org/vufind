@@ -299,7 +299,7 @@ $(document).ready(function() {
   // Setup search autocomplete
   setupAutocomplete();
   // Setup highlighting of backlinks
-  setupBacklinks() ;
+  setupBacklinks();
   // Off canvas
   setupOffcanvas();
   // Keyboard shortcuts in detail view

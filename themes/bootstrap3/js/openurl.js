@@ -35,20 +35,32 @@ function embedOpenUrlLinks(element) {
   }
 }
 
-$(document).ready(function() {
-  // assign action to the openUrlWindow link class
-  $('a.openUrlWindow').click(function(){
+// Assign actions to the OpenURL links. This can be called with a container e.g. when 
+// combined results fetched with AJAX are loaded.
+function setupOpenUrlLinks(container)
+{
+  if (typeof(container) == 'undefined') {
+    container = $('body');
+  }
+  
+   // assign action to the openUrlWindow link class
+  container.find('a.openUrlWindow').click(function() {
     var params = extractClassParams(this);
     var settings = params.window_settings;
     window.open($(this).attr('href'), 'openurl', settings);
     return false;
   });
-
+ 
   // assign action to the openUrlEmbed link class
-  $('.openUrlEmbed a').click(function() {
+  container.find('.openUrlEmbed a').click(function() {
     embedOpenUrlLinks($(this));
     return false;
   });
 
-  $('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger("click");
+  container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
+}
+
+$(document).ready(function() {
+  setupOpenUrlLinks();
 });
+
