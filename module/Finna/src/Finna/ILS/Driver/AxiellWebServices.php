@@ -201,6 +201,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
+     * @param StorageInterface       $cache         Cache storage interface
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
         StorageInterface $cache
