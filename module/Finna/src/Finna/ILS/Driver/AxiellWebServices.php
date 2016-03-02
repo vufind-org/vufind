@@ -33,7 +33,7 @@ use SoapClient, SoapFault, SoapHeader, File_MARC, PDO, PDOException, DOMDocument
     VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface as TranslatorAwareInterface,
     Zend\Validator\EmailAddress as EmailAddressValidator,
-    Zend\Session\Container as SessionContainer;
+    Zend\Cache\Storage\StorageInterface;
 use VuFind\Exception\Date;
 use Zend\Db\Sql\Ddl\Column\Boolean;
 use VuFind\Config\Locator;
@@ -59,13 +59,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
-
-    /**
-     * Configuration Reader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configReader;
 
     /**
      * Date formatting object
@@ -178,14 +171,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      ];
 
     /**
-     * Container for storing cached ILS data.
+     * Cache for storing ILS data.
      *
-     * @var SessionContainer
+     * @var StorageInterface
      */
-    protected $session;
+    protected $cache;
 
     /**
-     * Container for storing cached ILS data.
+     * SOAP Options
      *
      * @var array
      */
@@ -209,9 +202,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter)
-    {
+    public function __construct(\VuFind\Date\Converter $dateConverter,
+        StorageInterface $cache
+    ) {
         $this->dateFormat = $dateConverter;
+        $this->cache = $cache;
     }
 
     /**
@@ -245,7 +240,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $this->debug("getMyProfile called");
 
         $username = $patron['cat_username'];
-        $cacheId = "patron_" . $username;
+        $cacheId = md5("{$this->arenaMember}|patron|$username");
 
         $userCached = $this->getCachedData($cacheId);
 
@@ -360,10 +355,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $this->messagingSettings['dueDateAlert']['method_none']
                 = $this->config['messagingSettings']['dueDateAlertMethodNone'];
         }
-
-        // Establish a namespace in the session for persisting cached data
-        $this->session
-            = new SessionContainer('AxiellWebServices_' . $this->arenaMember);
     }
 
     /**
@@ -377,12 +368,13 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     protected function getCachedData($id)
     {
-        if (isset($this->session->cache[$id])) {
-            $item = $this->session->cache[$id];
+        $id = "AxiellWebServices-$id";
+        $item = $this->cache->getItem($id);
+        if (null !== $item) {
             if (time() - $item['time'] < 30) {
                 return $item['entry'];
             }
-            unset($this->session->cache[$id]);
+            $this->cache->removeItem($id);
         }
         return null;
     }
@@ -399,13 +391,18 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     protected function putCachedData($id, $entry)
     {
-        if (!isset($this->session->cache)) {
-            $this->session->cache = [];
+        $id = "AxiellWebServices-$id";
+
+        if (null === $entry) {
+            $this->cache->removeItem($id);
+            return;
         }
-        $this->session->cache[$id] = [
+
+        $item = [
             'time' => time(),
             'entry' => $entry
         ];
+        $this->cache->addItem($id, $item);
     }
 
     /**
@@ -1115,12 +1112,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     public function patronLogin($username, $password)
     {
-        $arenaMember = $this->arenaMember;
-        $cacheId = "patron_" . $username;
+        $cacheId = md5("{$this->arenaMember}|patron|$username");
         $function = 'getPatronInformation';
         $functionResult = 'patronInformationResult';
         $conf = [
-            'arenaMember' => $arenaMember,
+            'arenaMember' => $this->arenaMember,
             'user' => $username,
             'password' => $password,
             'language' => $this->getLanguage()
@@ -1736,8 +1732,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         // Clear patron cache
-        $cacheId = "patron_" . $username;
-        unset($this->session->cache[$cacheId]);
+        $cacheId = md5("{$this->arenaMember}|patron|$username");
+        $this->putCachedData($cacheId, null);
 
         return [
                 'success' => true,
@@ -1807,8 +1803,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         // Clear patron cache
-        $cacheId = "patron_" . $username;
-        unset($this->session->cache[$cacheId]);
+        $cacheId = md5("{$this->arenaMember}|patron|$username");
+        $this->putCachedData($cacheId, null);
 
         return [
                 'success' => true,
@@ -1859,8 +1855,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         // Clear patron cache
-        $cacheId = "patron_" . $username;
-        unset($this->session->cache[$cacheId]);
+        $cacheId = md5("{$this->arenaMember}|patron|$username");
+        $this->putCachedData($cacheId, null);
 
         return  [
                 'success' => true,

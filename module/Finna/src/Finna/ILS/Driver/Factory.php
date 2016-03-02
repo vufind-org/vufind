@@ -111,10 +111,11 @@ class Factory
     public static function getAxiellWebServices(ServiceManager $sm)
     {
         $ils = $sm->getServiceLocator()->get('VuFind\ILSHoldSettings');
-        $configReader = $sm->getServiceLocator()->get('Vufind\Config');
+        $cache = $sm->getServiceLocator()->get('VuFind\CacheManager')
+            ->getCache('object');
         return new AxiellWebServices(
             $sm->getServiceLocator()->get('VuFind\DateConverter'),
-            $configReader
+            $cache
         );
     }
 }
