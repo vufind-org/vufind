@@ -3,18 +3,29 @@
 // IE 9< console polyfill
 window.console = window.console || {log: function () {}};
 
-var VuFind = {
-  defaultSearchBackend: null,
-  path: null,
-  translations: {},
+var VuFind = (function() {
+  var defaultSearchBackend = null;
+  var path = null;
+  var _translations = {};
 
-  addTranslations: function(s) {
+  var addTranslations = function(s) {
     for (var i in s) {
-      this.translations[i] = s[i];
+      _translations[i] = s[i];
     }
-  },
-  translate: function(op) { return this.translations[op] || op; }
-}
+  };
+  var translate = function(op) {
+    return _translations[op] || op;
+  };
+
+  //Reveal
+  return {
+    defaultSearchBackend: defaultSearchBackend,
+    path: path,
+
+    addTranslations: addTranslations,
+    translate: translate
+  };
+})();
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value) {
@@ -381,14 +392,14 @@ function keyboardShortcuts() {
     }
 }
 
-// This can be called with a container e.g. when combined results fetched with AJAX 
+// This can be called with a container e.g. when combined results fetched with AJAX
 // are loaded
 function setupSaveRecordLinks(container)
 {
   if (typeof(container) == 'undefined') {
     container = $('body');
   }
-    
+
    // Save record links
   container.find('.result .save-record').click(function() {
     var parts = this.href.split('/');
@@ -407,7 +418,7 @@ $(document).ready(function() {
   keyboardShortcuts();
   // Save record links
   setupSaveRecordLinks();
-  
+
   // support "jump menu" dropdown boxes
   $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
 
