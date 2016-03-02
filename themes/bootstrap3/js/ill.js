@@ -3,7 +3,7 @@ function setUpILLRequestForm(recordId) {
   $("#ILLRequestForm #pickupLibrary").change(function() {
     $("#ILLRequestForm #pickupLibraryLocation option").remove();
     $("#ILLRequestForm #pickupLibraryLocationLabel i").addClass("fa fa-spinner icon-spin");
-    var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({
+    var url = VuFind.path + '/AJAX/JSON?' + $.param({
       id: recordId,
       method:'getLibraryPickupLocations',
       pickupLib: $("#ILLRequestForm #pickupLibrary").val()

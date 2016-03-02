@@ -19,14 +19,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Bernd Oberknapp <bo@ub.uni-freiburg.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
 use VuFind\Exception\Auth as AuthException;
@@ -34,14 +34,14 @@ use VuFind\Exception\Auth as AuthException;
 /**
  * Shibboleth authentication module.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Bernd Oberknapp <bo@ub.uni-freiburg.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Shibboleth extends AbstractBase
 {
@@ -121,9 +121,22 @@ class Shibboleth extends AbstractBase
             }
         }
 
-        // Save credentials if applicable:
+        // Save credentials if applicable. Note that if $catPassword is empty,
+        // we'll pass through the existing password already in the database;
+        // otherwise, when users log out, their passwords may be cleared from
+        // the database. We can't simply skip saving credentials when the password
+        // is empty, because in some scenarios, an empty password is normal
+        // (see https://github.com/vufind-org/vufind/pull/532 for details).
+        // Note that this leaves an edge case where, if a user changes their
+        // password from something to nothing, VuFind will not properly clear it
+        // out. This seems unlikely, but if it is encountered, we may need to
+        // add more logic here. See https://github.com/vufind-org/vufind/pull/612
+        // for related discussion.
         if (!empty($user->cat_username)) {
-            $user->saveCredentials($user->cat_username, $catPassword);
+            $user->saveCredentials(
+                $user->cat_username,
+                empty($catPassword) ? $user->cat_password : $catPassword
+            );
         }
 
         // Save and return the user object:

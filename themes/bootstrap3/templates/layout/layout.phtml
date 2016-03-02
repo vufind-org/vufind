@@ -52,13 +52,13 @@
         // Add libphonenumber.js strings
         $this->jsTranslations()->addStrings(
           array(
-            "'Phone number invalid'" => 'libphonenumber_invalid',
-            "'Invalid country calling code'" => 'libphonenumber_invalidcountry',
-            "'Invalid region code'" => 'libphonenumber_invalidregion',
-            "'The string supplied did not seem to be a phone number'" => 'libphonenumber_notanumber',
-            "'The string supplied is too long to be a phone number'" => 'libphonenumber_toolong',
-            "'The string supplied is too short to be a phone number'" => 'libphonenumber_tooshort',
-            "'Phone number too short after IDD'" => 'libphonenumber_tooshortidd'
+            "Phone number invalid" => 'libphonenumber_invalid',
+            "Invalid country calling code" => 'libphonenumber_invalidcountry',
+            "Invalid region code" => 'libphonenumber_invalidregion',
+            "The string supplied did not seem to be a phone number" => 'libphonenumber_notanumber',
+            "The string supplied is too long to be a phone number" => 'libphonenumber_toolong',
+            "The string supplied is too short to be a phone number" => 'libphonenumber_tooshort',
+            "Phone number too short after IDD" => 'libphonenumber_tooshortidd'
           )
         );
         // Deal with cart stuff:
@@ -101,7 +101,11 @@
       $root = rtrim($this->url('home'), '/');
       $translations = $this->jsTranslations()->getJSON();
       $dsb = DEFAULT_SEARCH_BACKEND;
-      $setupJS = "var VuFind = new VuFindNamespace('{$root}', {$translations}, '{$dsb}');";
+      $setupJS = <<<JS
+VuFind.path = '{$root}';
+VuFind.defaultSearchBackend = '{$dsb}';
+VuFind.addTranslations({$translations});
+JS;
       $this->headScript()->appendScript($setupJS);
     ?>
     <?=$this->headScript()?>

@@ -31,9 +31,12 @@
       <? endif ?>
 
     <div class="resultItemLine1">
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>">
+      <? $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
+      <? if (!$missing): ?>
+        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>">
+      <? endif; ?>
         <?=$this->record($this->driver)->getTitleHtml()?>
-      </a>
+      <? if (!$missing): ?></a><? endif; ?>
     </div>
 
     <div class="resultItemLine2">
@@ -103,7 +106,7 @@
     <? if (count($this->lists) > 0): ?>
         <strong><?=$this->transEsc('Saved in')?>:</strong>
         <? $i=0;foreach($this->lists as $current): ?>
-            <a href="<?=$this->url('userList', array('id' => $current->id))?>"><?=$current->title?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
+            <a href="<?=$this->url('userList', array('id' => $current->id))?>"><?=$this->escapeHtml($current->title)?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
         <? endforeach; ?>
         <br/>
     <? endif; ?>

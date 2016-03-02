@@ -79,7 +79,7 @@ var Lightbox = {
     if(this.XHR) {
       this.XHR.abort();
     }
-    this.XHR = $.ajax(obj)
+    this.XHR = $.ajax(obj);
     this.XHR.then().fail(function(response, textStatus) {
       if (textStatus == "abort") { return; }
       if (response.responseJSON) {
@@ -243,7 +243,14 @@ var Lightbox = {
       url:url,
       data:post
     })
-    .done(callback)
+    .done(function(data, textStatus, jqXHR) {
+        if (jqXHR.status == 205) {
+            // No reload since any post params would cause a prompt
+            window.location.href = window.location.href;
+        } else {
+            callback(data, textStatus, jqXHR);
+        }
+    })
     .fail(function(response, textStatus) {
       console.log(response, textStatus); // Error reporting
       console.log(url, post);
@@ -264,7 +271,7 @@ var Lightbox = {
    */
   get: function(controller, action, get, post, callback) {
     // Build URL
-    var url = VuFind.getPath()+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
+    var url = VuFind.path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
     if(typeof get !== "undefined" && get !== {}) {
       url += '&'+$.param(get);
     }
@@ -387,7 +394,7 @@ var Lightbox = {
     var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
     if($form.attr('action')) {
       // Parse action location
-      var path = VuFind.getPath();
+      var path = VuFind.path;
       var action = $form.attr('action').substring($form.attr('action').indexOf(path)+path.length+1);
       var params = action.split('?');
       action = action.split('/');
@@ -427,7 +434,7 @@ function getListUrlFromHTML(html) {
   if (typeof listUrl === 'undefined') {
     var listID = fakePage.find('[name="listID"]');
     if(listID.length > 0) {
-      listUrl = VuFind.getPath() + '/MyResearch/MyList/'+listID.val();
+      listUrl = VuFind.path + '/MyResearch/MyList/'+listID.val();
     }
   }
   var message = VuFind.translate('bulk_save_success');
@@ -484,7 +491,7 @@ $(document).ready(function() {
 
   Lightbox.addFormHandler('exportForm', function(evt) {
     Lightbox.ajax({
-      url: VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
+      url: VuFind.path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
       dataType:'json',
       data:Lightbox.getFormData($(evt.target))
@@ -546,10 +553,5 @@ $(document).ready(function() {
   // Email search link
   $('.mailSearch').click(function() {
     return Lightbox.get('Search','Email',{url:document.URL});
-  });
-  // Save record links
-  $('.result .save-record').click(function() {
-    var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('data-id')});
   });
 });
