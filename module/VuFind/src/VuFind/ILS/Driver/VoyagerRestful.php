@@ -132,7 +132,14 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @var StorageInterface
      */
-    protected $cache;
+    protected $cache = null;
+
+    /**
+     * Lifetime of cache (in seconds).
+     *
+     * @var int
+     */
+    protected $cacheLifetime = 30;
 
     /**
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
@@ -219,17 +226,26 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
-     * @param StorageInterface       $cache          Cache storage interface
      * @param string                 $holdsMode      Holds mode setting
      * @param string                 $titleHoldsMode Title holds mode setting
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        StorageInterface $cache = null, $holdsMode = 'disabled',
-        $titleHoldsMode = 'disabled'
+        $holdsMode = 'disabled', $titleHoldsMode = 'disabled'
     ) {
         parent::__construct($dateConverter);
         $this->holdsMode = $holdsMode;
         $this->titleHoldsMode = $titleHoldsMode;
+    }
+
+    /**
+     * Set a cache storage object.
+     *
+     * @param StorageInterface $cache Cache storage interface
+     *
+     * @return void
+     */
+    public function setCacheStorage(StorageInterface $cache = null)
+    {
         $this->cache = $cache;
     }
 
@@ -334,6 +350,20 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
+     * Add instance-specific context to a cache key suffix (to ensure that
+     * multiple Voyager drivers don't accidentally share values in the cache.
+     *
+     * @param string $key Cache key suffix
+     *
+     * @return string
+     */
+    protected function formatCacheKey($key)
+    {
+        return 'VoyagerRestful-'
+            . md5("{$this->ws_host}|{$this->ws_dbKey}|$key");
+    }
+
+    /**
      * Helper function for fetching cached data.
      * Data is cached for up to 30 seconds so that it would be faster to process
      * e.g. requests where multiple calls to the backend are made.
@@ -344,17 +374,20 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function getCachedData($id)
     {
+        // No cache object, no cached results!
         if (null === $this->cache) {
             return null;
         }
 
-        $id = "VoyagerRestful-$id";
-        $item = $this->cache->getItem($id);
+        $fullKey = $this->formatCacheKey($id);
+        $item = $this->cache->getItem($fullKey);
         if (null !== $item) {
-            if (time() - $item['time'] < 30) {
+            // Return value if still valid:
+            if (time() - $item['time'] < $this->cacheLifetime) {
                 return $item['entry'];
             }
-            $this->cache->removeItem($id);
+            // Clear expired item from cache:
+            $this->cache->removeItem($fullKey);
         }
         return null;
     }
@@ -371,17 +404,15 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function putCachedData($id, $entry)
     {
+        // Don't write to cache if we don't have a cache!
         if (null === $this->cache) {
-            return null;
+            return;
         }
-
-        $id = "VoyagerRestful-$id";
-
         $item = [
             'time' => time(),
             'entry' => $entry
         ];
-        $this->cache->addItem($id, $item);
+        $this->cache->addItem($this->formatCacheKey($id), $item);
     }
 
     /**
@@ -1234,7 +1265,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function checkAccountBlocks($patronId)
     {
-        $cacheId = md5("{$this->ws_host}|{$this->ws_dbKey}|blocks|$patronId");
+        $cacheId = "blocks|$patronId";
         $blockReason = $this->getCachedData($cacheId);
         if (null === $blockReason) {
             // Build Hierarchy
@@ -2566,7 +2597,7 @@ EOT;
      */
     protected function getUBRequestDetails($id, $patron)
     {
-        $cacheId = md5("{$this->ws_host}|{$this->ws_dbKey}|ub|$id|{$patron['id']}");
+        $cacheId = "ub|$id|{$patron['id']}";
         $data = $this->getCachedData($cacheId);
         if (!empty($data)) {
             return $data;
@@ -2624,10 +2655,6 @@ EOT;
         );
 
         if ($response === false) {
-            $this->session->UBDetails[$requestId] = [
-                'time' => time(),
-                'data' => false
-            ];
             $this->putCachedData($cacheId, false);
             return false;
         }
