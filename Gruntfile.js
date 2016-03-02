@@ -4,7 +4,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     // less
     less: {
-      development: {
+      compile: {
         options: {
           paths: ["themes/bootprint3/less", "themes/bootstrap3/less"],
           compress: true
@@ -16,9 +16,15 @@ module.exports = function(grunt) {
       }
     },
     sass: {
-      dist: {
+      compile: {
+        options: {
+          loadPath: ["themes/bootprint3/sass", "themes/bootstrap3/sass"],
+          sourcemap: 'none',
+          style: 'compressed'
+        },
         files: {
-          'themes/bootstrap3/css/compiled-sass.css': 'themes/bootstrap3/sass/bootstrap.scss'
+          'themes/bootstrap3/css/compiled.css': 'themes/bootstrap3/sass/bootstrap.scss',
+          'themes/bootprint3/css/compiled.css': 'themes/bootprint3/sass/bootprint.scss'
         }
       }
     },
@@ -43,11 +49,8 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
   grunt.registerTask('default', ['less', 'uglify']);
-  grunt.registerTask('less', ['less']);
-  grunt.registerTask('sass', ['sass']);
   grunt.registerTask('js', ['uglify']);
 };

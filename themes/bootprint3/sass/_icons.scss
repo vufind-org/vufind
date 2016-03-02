@@ -1,0 +1,123 @@
+@mixin file-format-icon($img) {
+  display:inline-block;
+  width:16px;
+  height:16px;
+  margin:0;
+  padding:0;
+  vertical-align:text-bottom;
+  color:transparent;
+  background-image:url('../images/icons/#{$img}.png');
+  background-position:center center;
+  background-repeat:no-repeat;
+  content:'';
+  text-shadow:none;
+}
+.fa-x { @include file-format-icon('page_white'); }
+i.fa-archive { @include file-format-icon('package'); }
+i.fa-asterisk { @include file-format-icon('list'); }
+i.fa-atlas { @include file-format-icon('map'); }
+i.fa-bell { @include file-format-icon('bell'); }
+i.fa-book { @include file-format-icon('book'); }
+i.fa-bookbag-add { @include file-format-icon('bookbag_add'); }
+i.fa-bookbag-delete { @include file-format-icon('bookbag_delete'); }
+i.fa-bookbag-empty { @include file-format-icon('bookbag_empty'); }
+i.fa-bookmark { @include file-format-icon('bookmark_add'); }
+i.fa-braille { @include file-format-icon('page_red'); }
+i.fa-cancel-all-holds { @include file-format-icon('holdCancelAll'); }
+i.fa-cancel-all-storage-retrieval-requests { @include file-format-icon('holdCancelAll'); }
+i.fa-cancel-holds { @include file-format-icon('holdCancel'); }
+i.fa-cancel-storage-retrieval-requests { @include file-format-icon('holdCancel'); }
+i.fa-cdrom { @include file-format-icon('cd'); }
+i.fa-chart { @include file-format-icon('chart_bar'); }
+i.fa-chipcartridge { @include file-format-icon('server'); }
+i.fa-collage { @include file-format-icon('pictures'); }
+i.fa-close { @include file-format-icon('cross'); }
+i.fa-disccartridge { @include file-format-icon('cd'); }
+i.fa-drawing { @include file-format-icon('photo'); }
+i.fa-ebook { @include file-format-icon('book_addresses'); }
+i.fa-edit { @include file-format-icon('edit'); }
+i.fa-electronic { @include file-format-icon('mouse'); }
+i.fa-email,
+i.fa-envelope,
+i.fa-envelope-o { @include file-format-icon('email'); }
+i.fa-exchange { @include file-format-icon('arrow_refresh'); }
+i.fa-external-link { @include file-format-icon('link_go'); }
+i.fa-filmstrip { @include file-format-icon('film'); }
+i.fa-flag { @include file-format-icon('flag_red'); }
+i.fa-flashcard { @include file-format-icon('table_lightening'); }
+i.fa-floppydisk { @include file-format-icon('disk'); }
+i.fa-globe { @include file-format-icon('world'); }
+i.fa-grid { @include file-format-icon('view_grid'); }
+i.fa-heart { @include file-format-icon('heart'); }
+i.fa-home { @include file-format-icon('house'); }
+i.fa-inbox { @include file-format-icon('box'); }
+i.fa-journal { @include file-format-icon('book'); }
+i.fa-kit { @include file-format-icon('briefcase'); }
+i.fa-leaf,.fa-sitemap { @include file-format-icon('treeCurrent'); }
+i.fa-list { @include file-format-icon('view_list'); }
+i.fa-list-alt,i.fa-export { @include file-format-icon('application_add'); }
+i.fa-lock { @include file-format-icon('lock'); }
+i.fa-manuscript { @include file-format-icon('script'); }
+i.fa-map { @include file-format-icon('map'); }
+i.fa-microfilm { @include file-format-icon('film'); }
+i.fa-minus-circle,i.fa-minus-sign { @include file-format-icon('delete'); }
+i.fa-mobile { @include file-format-icon('phone'); }
+i.fa-motionpicture { @include file-format-icon('television'); }
+i.fa-musicalscore { @include file-format-icon('music'); }
+i.fa-musicrecording { @include file-format-icon('music'); }
+i.fa-newspaper { @include file-format-icon('newspaper'); }
+i.fa-ok { @include file-format-icon('tick'); }
+i.fa-online { @include file-format-icon('computer'); }
+i.fa-painting { @include file-format-icon('paintbrush'); }
+i.fa-photo { @include file-format-icon('photo'); }
+i.fa-photonegative { @include file-format-icon('film'); }
+i.fa-physicalobject { @include file-format-icon('box'); }
+i.fa-plus { @include file-format-icon('add'); }
+i.fa-plus-circle { @include file-format-icon('add'); }
+i.fa-print { @include file-format-icon('printer'); }
+i.fa-qrcode { @include file-format-icon('qrcode'); }
+i.fa-remove { @include file-format-icon('delete'); }
+i.fa-renew { @include file-format-icon('renew'); }
+i.fa-renew-all { @include file-format-icon('renewAll'); }
+i.fa-report { @include file-format-icon('report'); }
+i.fa-rss { @include file-format-icon('feed'); }
+i.fa-save { @include file-format-icon('disk'); }
+i.fa-search { @include file-format-icon('magnifier'); }
+i.fa-sensorimage { @include file-format-icon('photo'); }
+i.fa-serial { @include file-format-icon('page_white_stack'); }
+i.fa-shopping-cart { @include file-format-icon('cart'); }
+i.fa-sign-in { @include file-format-icon('door_in'); }
+i.fa-sign-out { @include file-format-icon('door_out'); }
+i.fa-slide { @include file-format-icon('film'); }
+i.fa-software { @include file-format-icon('drive_cd'); }
+i.fa-soundcassette { @include file-format-icon('sound'); }
+i.fa-sounddisc { @include file-format-icon('cd'); }
+i.fa-soundrecording { @include file-format-icon('sound'); }
+i.fa-spinner { @include file-format-icon('ajax_loading.gif'); }
+i.fa-star { @include file-format-icon('star'); }
+i.fa-status-unknown { @include file-format-icon('bullet_orange'); }
+i.fa-suitcase { @include file-format-icon('bookbag'); }
+i.fa-tapecartridge { @include file-format-icon('drive'); }
+i.fa-tapecassette { @include file-format-icon('drive'); }
+i.fa-tapereel { @include file-format-icon('film'); }
+i.fa-transparency { @include file-format-icon('film'); }
+i.fa-trash,
+i.fa-trash-o { @include file-format-icon('bin'); }
+i.fa-tree { @include file-format-icon('treeCurrent'); }
+i.fa-tree-muted { @include file-format-icon('treeMuted'); }
+i.fa-unknown { @include file-format-icon('page_white'); }
+i.fa-usd { @include file-format-icon('money_dollar'); }
+i.fa-user { @include file-format-icon('user'); }
+i.fa-video{ @include file-format-icon('television'); }
+i.fa-videocartridge { @include file-format-icon('television'); }
+i.fa-videocassette{ @include file-format-icon('television'); }
+i.fa-videodisc{ @include file-format-icon('cd'); }
+i.fa-videoreel{ @include file-format-icon('film'); }
+i.fa-visual { @include file-format-icon('view_visual'); }
+
+body.rtl {
+  i.fa-external-link { @include file-format-icon('link_go_rtl.png');}
+  i.fa-flag { @include file-format-icon('flag_red_rtl.png');}
+}
+
+#cart-empty-label i.fa-close { @include file-format-icon('briefcase'); }
