@@ -172,9 +172,11 @@ class Factory
     public static function getVoyagerRestful(ServiceManager $sm)
     {
         $ils = $sm->getServiceLocator()->get('VuFind\ILSHoldSettings');
+        $cache = $sm->getServiceLocator()->get('VuFind\CacheManager')
+            ->getCache('object');
         return new VoyagerRestful(
             $sm->getServiceLocator()->get('VuFind\DateConverter'),
-            $ils->getHoldsMode(), $ils->getTitleHoldsMode()
+            $cache, $ils->getHoldsMode(), $ils->getTitleHoldsMode()
         );
     }
 }
