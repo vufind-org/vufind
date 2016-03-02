@@ -19,4 +19,4 @@ VuFind.combinedSearch = (function() {
 
   return my;
 
-})(VuFind);
+})();
