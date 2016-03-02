@@ -125,7 +125,8 @@ class Shibboleth extends AbstractBase
         // we'll pass through the existing password already in the database;
         // otherwise, when users log out, their passwords may be cleared from
         // the database. We can't simply skip saving credentials when the password
-        // is empty, because in some scenarios, an empty password is normal.
+        // is empty, because in some scenarios, an empty password is normal
+        // (see https://github.com/vufind-org/vufind/pull/532 for details).
         // Note that this leaves an edge case where, if a user changes their
         // password from something to nothing, VuFind will not properly clear it
         // out. This seems unlikely, but if it is encountered, we may need to
