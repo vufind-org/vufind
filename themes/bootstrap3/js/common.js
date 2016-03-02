@@ -1,19 +1,19 @@
 /*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape, VuFind */
 
-function VuFindNamespace(p, s, dsb) {
-  var defaultSearchBackend = dsb;
-  var path = p;
-  var strings = s;
+// IE 9< console polyfill
+window.console = window.console || {log: function () {}};
 
-  var getDefaultSearchBackend = function() { return defaultSearchBackend; };
-  var getPath = function() { return path; };
-  var translate = function(op) { return strings[op] || op; };
+var VuFind = {
+  defaultSearchBackend: null,
+  path: null,
+  translations: {},
 
-  return {
-    getDefaultSearchBackend: getDefaultSearchBackend,
-    getPath: getPath,
-    translate: translate
-  };
+  addTranslations: function(s) {
+    for (var i in s) {
+      this.translations[i] = s[i];
+    }
+  },
+  translate: function(op) { return this.translations[op] || op; }
 }
 
 /* --- GLOBAL FUNCTIONS --- */
@@ -113,7 +113,7 @@ function bulkActionSubmit($form) {
   }
   if (submit == 'print') {
     //redirect page
-    var url = VuFind.getPath() + '/Records/Home?print=true';
+    var url = VuFind.path + '/Records/Home?print=true';
     for(var i=0;i<checks.length;i++) {
       url += '&id[]='+checks[i].value;
     }
@@ -195,58 +195,50 @@ function newAccountHandler(html) {
 // This is a full handler for the login form
 function ajaxLogin(form) {
   Lightbox.ajax({
-    url: VuFind.getPath() + '/AJAX/JSON?method=getSalt',
-    dataType: 'json',
-    success: function(response) {
-      if (response.status == 'OK') {
-        var salt = response.data;
+    url: VuFind.path + '/AJAX/JSON?method=getSalt',
+    dataType: 'json'
+  })
+  .done(function(response) {
+    var salt = response.data;
 
-        // extract form values
-        var params = {};
-        for (var i = 0; i < form.length; i++) {
-          // special handling for password
-          if (form.elements[i].name == 'password') {
-            // base-64 encode the password (to allow support for Unicode)
-            // and then encrypt the password with the salt
-            var password = rc4Encrypt(
-                salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
-            );
-            // hex encode the encrypted password
-            params[form.elements[i].name] = hexEncode(password);
-          } else {
-            params[form.elements[i].name] = form.elements[i].value;
-          }
-        }
-
-        // login via ajax
-        Lightbox.ajax({
-          type: 'POST',
-          url: VuFind.getPath() + '/AJAX/JSON?method=login',
-          dataType: 'json',
-          data: params,
-          success: function(response) {
-            if (response.status == 'OK') {
-              Lightbox.addCloseAction(refreshPageForLogin);
-              // and we update the modal
-              var params = deparam(Lightbox.lastURL);
-              if (params['subaction'] == 'UserLogin') {
-                Lightbox.close();
-              } else {
-                Lightbox.getByUrl(
-                  Lightbox.lastURL,
-                  Lightbox.lastPOST,
-                  Lightbox.changeContent
-                );
-              }
-            } else {
-              Lightbox.displayError(response.data);
-            }
-          }
-        });
+    // extract form values
+    var params = {};
+    for (var i = 0; i < form.length; i++) {
+      // special handling for password
+      if (form.elements[i].name == 'password') {
+        // base-64 encode the password (to allow support for Unicode)
+        // and then encrypt the password with the salt
+        var password = rc4Encrypt(
+            salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
+        );
+        // hex encode the encrypted password
+        params[form.elements[i].name] = hexEncode(password);
       } else {
-        Lightbox.displayError(response.data);
+        params[form.elements[i].name] = form.elements[i].value;
       }
     }
+
+    // login via ajax
+    Lightbox.ajax({
+      type: 'POST',
+      url: VuFind.path + '/AJAX/JSON?method=login',
+      dataType: 'json',
+      data: params
+    })
+    .done(function(response) {
+      Lightbox.addCloseAction(refreshPageForLogin);
+      // and we update the modal
+      var params = deparam(Lightbox.lastURL);
+      if (params['subaction'] == 'UserLogin') {
+        Lightbox.close();
+      } else {
+        Lightbox.getByUrl(
+          Lightbox.lastURL,
+          Lightbox.lastPOST,
+          Lightbox.changeContent
+        );
+      }
+    });
   });
 }
 
@@ -315,7 +307,7 @@ function setupAutocomplete() {
           hiddenFilters.push($(this).val());
         });
         $.fn.autocomplete.ajax({
-          url: VuFind.getPath() + '/AJAX/JSON',
+          url: VuFind.path + '/AJAX/JSON',
           data: {
             q:query,
             method:'getACSuggestions',
@@ -325,7 +317,7 @@ function setupAutocomplete() {
           },
           dataType:'json',
           success: function(json) {
-            if (json.status == 'OK' && json.data.length > 0) {
+            if (json.data.length > 0) {
               var datums = [];
               for (var i=0;i<json.data.length;i++) {
                 datums.push(json.data[i]);
@@ -389,16 +381,33 @@ function keyboardShortcuts() {
     }
 }
 
+// This can be called with a container e.g. when combined results fetched with AJAX 
+// are loaded
+function setupSaveRecordLinks(container)
+{
+  if (typeof(container) == 'undefined') {
+    container = $('body');
+  }
+    
+   // Save record links
+  container.find('.result .save-record').click(function() {
+    var parts = this.href.split('/');
+    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('data-id')});
+  });
+}
+
 $(document).ready(function() {
   // Setup search autocomplete
   setupAutocomplete();
   // Setup highlighting of backlinks
-  setupBacklinks() ;
+  setupBacklinks();
   // Off canvas
   setupOffcanvas();
   // Keyboard shortcuts in detail view
   keyboardShortcuts();
-
+  // Save record links
+  setupSaveRecordLinks();
+  
   // support "jump menu" dropdown boxes
   $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
 
@@ -436,7 +445,7 @@ $(document).ready(function() {
       window.print();
     });
     // Make an ajax call to ensure that ajaxStop is triggered
-    $.getJSON(VuFind.getPath() + '/AJAX/JSON', {method: 'keepAlive'});
+    $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
   // Advanced facets

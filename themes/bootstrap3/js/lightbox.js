@@ -80,6 +80,20 @@ var Lightbox = {
       this.XHR.abort();
     }
     this.XHR = $.ajax(obj);
+    this.XHR.then().fail(function(response, textStatus) {
+      if (textStatus == "abort") { return; }
+      if (response.responseJSON) {
+        Lightbox.displayError(response.responseJSON.data);
+      } else {
+        var json = JSON.parse(response.responseText);
+        if (json.data) {
+          Lightbox.displayError(json.data);
+        } else {
+          Lightbox.displayError(response.responseText);
+        }
+      }
+    });
+    return this.XHR;
   },
   /**********************************/
   /* ====== LIGHTBOX ACTIONS ====== */
@@ -227,24 +241,19 @@ var Lightbox = {
     this.ajax({
       type:'POST',
       url:url,
-      data:post,
-      success:function(html) { // Success!
-        callback(html);
-      },
-      error:function(d,e) {
-        if (d.status == 200) {
-          try {
-            var data = JSON.parse(d.responseText);
-            Lightbox.changeContent('<p class="alert alert-danger">'+data.data+'</p>');
-          } catch(error) {
-            Lightbox.changeContent('<p class="alert alert-danger">'+d.responseText+'</p>');
-          }
-        } else if(d.status > 0) {
-          Lightbox.changeContent('<p class="alert alert-danger">'+d.statusText+' ('+d.status+')</p>');
+      data:post
+    })
+    .done(function(data, textStatus, jqXHR) {
+        if (jqXHR.status == 205) {
+            // No reload since any post params would cause a prompt
+            window.location.href = window.location.href;
+        } else {
+            callback(data, textStatus, jqXHR);
         }
-        console.log(e,d); // Error reporting
-        console.log(url,post);
-      }
+    })
+    .fail(function(response, textStatus) {
+      console.log(response, textStatus); // Error reporting
+      console.log(url, post);
     });
     // Store current "page" context for empty targets
     if(this.openingURL === false) {
@@ -262,7 +271,7 @@ var Lightbox = {
    */
   get: function(controller, action, get, post, callback) {
     // Build URL
-    var url = VuFind.getPath()+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
+    var url = VuFind.path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
     if(typeof get !== "undefined" && get !== {}) {
       url += '&'+$.param(get);
     }
@@ -385,7 +394,7 @@ var Lightbox = {
     var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
     if($form.attr('action')) {
       // Parse action location
-      var path = VuFind.getPath();
+      var path = VuFind.path;
       var action = $form.attr('action').substring($form.attr('action').indexOf(path)+path.length+1);
       var params = action.split('?');
       action = action.split('/');
@@ -411,7 +420,7 @@ function getListUrlFromHTML(html) {
   if (typeof listUrl === 'undefined') {
     var listID = fakePage.find('[name="listID"]');
     if(listID.length > 0) {
-      listUrl = VuFind.getPath() + '/MyResearch/MyList/'+listID.val();
+      listUrl = VuFind.path + '/MyResearch/MyList/'+listID.val();
     }
   }
   var message = VuFind.translate('bulk_save_success');
@@ -474,22 +483,19 @@ $(document).ready(function() {
   });
 
   Lightbox.addFormHandler('exportForm', function(evt) {
-    $.ajax({
-      url: VuFind.getPath() + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
+    Lightbox.ajax({
+      url: VuFind.path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
       dataType:'json',
-      data:Lightbox.getFormData($(evt.target)),
-      success:function(data) {
-        if(data.data.export_type == 'download' || data.data.needs_redirect) {
-          document.location.href = data.data.result_url;
-          Lightbox.close();
-          return false;
-        } else {
-          Lightbox.changeContent(data.data.result_additional);
-        }
-      },
-      error:function(d,e) {
-        //console.log(d,e); // Error reporting
+      data:Lightbox.getFormData($(evt.target))
+    })
+    .done(function(data) {
+      if(data.data.export_type == 'download' || data.data.needs_redirect) {
+        document.location.href = data.data.result_url;
+        Lightbox.close();
+        return false;
+      } else {
+        Lightbox.changeContent(data.data.result_additional);
       }
     });
     return false;
@@ -540,10 +546,5 @@ $(document).ready(function() {
   // Email search link
   $('.mailSearch').click(function() {
     return Lightbox.get('Search','Email',{url:document.URL});
-  });
-  // Save record links
-  $('.result .save-record').click(function() {
-    var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('data-id')});
   });
 });

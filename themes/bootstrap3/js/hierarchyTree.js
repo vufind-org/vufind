@@ -26,19 +26,17 @@ function html_entity_decode(string, quote_style) {
 
 function getRecord(recordID) {
   $.ajax({
-    url: VuFind.getPath() + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
-    dataType: 'html',
-    success: function(response) {
-      if (response) {
-        $('#hierarchyRecord').html(html_entity_decode(response));
-        // Remove the old path highlighting
-        $('#hierarchyTree a').removeClass("jstree-highlight");
-        // Add Current path highlighting
-        var jsTreeNode = $(":input[value='"+recordID+"']").parent();
-        jsTreeNode.children("a").addClass("jstree-highlight");
-        jsTreeNode.parents("li").children("a").addClass("jstree-highlight");
-      }
-    }
+    url: VuFind.path + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
+    dataType: 'html'
+  })
+  .done(function(response) {
+    $('#hierarchyRecord').html(html_entity_decode(response));
+    // Remove the old path highlighting
+    $('#hierarchyTree a').removeClass("jstree-highlight");
+    // Add Current path highlighting
+    var jsTreeNode = $(":input[value='"+recordID+"']").parent();
+    jsTreeNode.children("a").addClass("jstree-highlight");
+    jsTreeNode.parents("li").children("a").addClass("jstree-highlight");
   });
 }
 
@@ -74,31 +72,31 @@ function doTreeSearch() {
       searchAjax.abort();
     }
     searchAjax = $.ajax({
-      "url" : VuFind.getPath() + '/Hierarchy/SearchTree?' + $.param({
+      "url" : VuFind.path + '/Hierarchy/SearchTree?' + $.param({
         'lookfor': keyword,
         'hierarchyID': hierarchyID,
         'type': $("#treeSearchType").val()
-      }) + "&format=true",
-      'success': function(data) {
-        if(data.results.length > 0) {
-          $('#hierarchyTree').find('.jstree-search').removeClass('jstree-search');
-          var tree = $('#hierarchyTree').jstree(true);
-          tree.close_all();
-          for(var i=data.results.length;i--;) {
-            var id = htmlEncodeId(data.results[i]);
-            tree._open_to(id);
-          }
-          for(i=data.results.length;i--;) {
-            var tid = htmlEncodeId(data.results[i]);
-            $('#hierarchyTree').find('#'+tid).addClass('jstree-search');
-          }
-          changeNoResultLabel(false);
-          changeLimitReachedLabel(data.limitReached);
-        } else {
-          changeNoResultLabel(true);
+      }) + "&format=true"
+    })
+    .done(function(data) {
+      if(data.results.length > 0) {
+        $('#hierarchyTree').find('.jstree-search').removeClass('jstree-search');
+        var tree = $('#hierarchyTree').jstree(true);
+        tree.close_all();
+        for(var i=data.results.length;i--;) {
+          var id = htmlEncodeId(data.results[i]);
+          tree._open_to(id);
         }
-        $('#treeSearchLoadingImg').addClass('hidden');
+        for(i=data.results.length;i--;) {
+          var tid = htmlEncodeId(data.results[i]);
+          $('#hierarchyTree').find('#'+tid).addClass('jstree-search');
+        }
+        changeNoResultLabel(false);
+        changeLimitReachedLabel(data.limitReached);
+      } else {
+        changeNoResultLabel(true);
       }
+      $('#treeSearchLoadingImg').addClass('hidden');
     });
   }
 }
@@ -127,17 +125,18 @@ function buildJSONNodes(xml) {
 }
 
 function buildTreeWithXml(cb) {
-  $.ajax({'url': VuFind.getPath() + '/Hierarchy/GetTree',
+  $.ajax({
+    'url': VuFind.path + '/Hierarchy/GetTree',
     'data': {
       'hierarchyID': hierarchyID,
       'id': recordID,
       'context': hierarchyContext,
       'mode': 'Tree'
-    },
-    'success': function(xml) {
-      var nodes = buildJSONNodes($(xml).find('root'));
-      cb.call(this, nodes);
     }
+  })
+  .done(function(xml) {
+    var nodes = buildJSONNodes($(xml).find('root'));
+    cb.call(this, nodes);
   });
 }
 
@@ -189,7 +188,7 @@ $(document).ready(function() {
       'core' : {
         'data' : function (obj, cb) {
           $.ajax({
-            'url': VuFind.getPath() + '/Hierarchy/GetTreeJSON',
+            'url': VuFind.path + '/Hierarchy/GetTreeJSON',
             'data': {
               'hierarchyID': hierarchyID,
               'id': recordID

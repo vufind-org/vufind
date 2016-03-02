@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Mail as MailException,
@@ -32,11 +32,11 @@ use VuFind\Exception\Mail as MailException,
 /**
  * Book Bag / Bulk Action Controller
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class CartController extends AbstractBase
 {
@@ -76,6 +76,13 @@ class CartController extends AbstractBase
         // We came in from the cart -- let's remember this we can redirect there
         // when we're done:
         $this->session->url = $this->getLightboxAwareUrl('cart-home');
+
+        // If the cart is disabled, going to cart home is not going to help us;
+        // use the referer instead.
+        if (!$this->getCart()->isActive()) {
+            $this->session->url
+                = $this->getRequest()->getServer()->get('HTTP_REFERER');
+        }
 
         // Now forward to the requested action:
         if (strlen($this->params()->fromPost('email', '')) > 0) {

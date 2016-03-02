@@ -19,23 +19,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
 use minSO;
+use Zend\Db\Adapter\ParameterContainer;
+use Zend\Db\TableGateway\Feature;
 
 /**
  * Table Definition for search
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Search extends Gateway
 {
@@ -45,6 +47,53 @@ class Search extends Gateway
     public function __construct()
     {
         parent::__construct('search', 'VuFind\Db\Row\Search');
+    }
+
+    /**
+     * Initialize
+     *
+     * @return void
+     */
+    public function initialize()
+    {
+        if ($this->isInitialized) {
+            return;
+        }
+
+        // Special case for PostgreSQL inserts -- we need to provide an extra
+        // clue so that the database knows how to write bytea data correctly:
+        if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
+            if (!is_object($this->featureSet)) {
+                $this->featureSet = new Feature\FeatureSet();
+            }
+            $eventFeature = new Feature\EventFeature();
+            $eventFeature->getEventManager()->attach(
+                Feature\EventFeature::EVENT_PRE_INSERT, [$this, 'onPreInsert']
+            );
+            $this->featureSet->addFeature($eventFeature);
+        }
+
+        parent::initialize();
+    }
+
+    /**
+     * Customize the Insert object to include extra metadata about the
+     * search_object field so that it will be written correctly. This is
+     * triggered only when we're interacting with PostgreSQL; MySQL works fine
+     * without the extra hint.
+     *
+     * @param object $event Event object
+     *
+     * @return void
+     */
+    public function onPreInsert($event)
+    {
+        $driver = $event->getTarget()->getAdapter()->getDriver();
+        $statement = $driver->createStatement();
+        $params = new ParameterContainer();
+        $params->offsetSetErrata('search_object', ParameterContainer::TYPE_LOB);
+        $statement->setParameterContainer($params);
+        $driver->registerStatementPrototype($statement);
     }
 
     /**
@@ -159,11 +208,8 @@ class Search extends Gateway
         // Duplicate elimination
         $newUrl = $newSearch->getUrlQuery()->getParams();
         foreach ($searchHistory as $oldSearch) {
-            // Deminify the old search (note that if we have a resource, we need
-            // to grab the contents -- this is necessary for PostgreSQL compatibility
-            // although MySQL returns a plain string).
-            $minSO = $oldSearch->getSearchObject();
-            $dupSearch = $minSO->deminify($manager);
+            // Deminify the old search:
+            $dupSearch = $oldSearch->getSearchObject()->deminify($manager);
             // See if the classes and urls match
             $oldUrl = $dupSearch->getUrlQuery()->getParams();
             if (get_class($dupSearch) == get_class($newSearch)
@@ -184,16 +230,16 @@ class Search extends Gateway
 
         // If we got this far, we didn't find a saved duplicate, so we should
         // save the new search:
-        $data = [
-            'session_id' => $sessionId,
-            'created' => date('Y-m-d'),
-            'search_object' => serialize(new minSO($newSearch))
-        ];
-        $this->insert($data);
+        $this->insert(['created' => date('Y-m-d')]);
         $row = $this->getRowById($this->getLastInsertValue());
 
         // Chicken and egg... We didn't know the id before insert
         $newSearch->updateSaveStatus($row);
+
+        // Don't set session ID until this stage, because we don't want to risk
+        // ever having a row that's associated with a session but which has no
+        // search object data attached to it; this could cause problems!
+        $row->session_id = $sessionId;
         $row->search_object = serialize(new minSO($newSearch));
         $row->save();
     }

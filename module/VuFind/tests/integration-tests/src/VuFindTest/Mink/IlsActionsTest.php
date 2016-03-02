@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
 use Behat\Mink\Element\Element;
@@ -31,11 +31,11 @@ use Behat\Mink\Element\Element;
 /**
  * Mink ILS actions test class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
@@ -94,8 +94,11 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
                 'cancelHolds' => 0,
                 'cancelILLRequests' => 0,
                 'cancelStorageRetrievalRequests' => 0,
+                'checkILLRequestBlock' => 0,
                 'checkILLRequestIsValid' => 0,
+                'checkRequestBlock' => 0,
                 'checkRequestIsValid' => 0,
+                'checkStorageRetrievalRequestBlock' => 0,
                 'checkStorageRetrievalRequestIsValid' => 0,
                 'getDefaultRequestGroup' => 0,
                 'getHoldDefaultRequiredDate' => 0,
@@ -215,11 +218,13 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
 
+        // If successful, we should now have a link to review the hold:
+        $link = $this->findCss($page, '.modal-body a');
+        $this->assertEquals('Interlibrary Loan Requests', $link->getText());
+        $link->click();
+        $this->snooze();
+
         // Make sure we arrived where we expected to:
-        $this->assertEquals(
-            'Your request was successful',
-            $this->findCss($page, '.alert.alert-success')->getText()
-        );
         $this->assertEquals(
             'Interlibrary Loan Requests', $this->findCss($page, 'h2')->getText()
         );
@@ -238,11 +243,13 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
 
+        // If successful, we should now have a link to review the hold:
+        $link = $this->findCss($page, '.modal-body a');
+        $this->assertEquals('Storage Retrieval Requests', $link->getText());
+        $link->click();
+        $this->snooze();
+
         // Make sure we arrived where we expected to:
-        $this->assertEquals(
-            'Your request was successful',
-            $this->findCss($page, '.alert.alert-success')->getText()
-        );
         $this->assertEquals(
             'Storage Retrieval Requests', $this->findCss($page, 'h2')->getText()
         );
@@ -354,16 +361,6 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
             $this->findCss($page, 'a.title')->getText()
         );
 
-        /* TODO: uncomment this test when Bootstrap bug stops making it fail...
-         * Specifically, at the time of this writing, if you click the dropdown
-         * menu to get "Yes" and "No" options, then click "No," then the next
-         * time you attempt to pop down the dropdown, it quickly closes itself
-         * before "Yes" can be clicked. This appears to be a bug on the Bootstrap
-         * side affecting Firefox only. Once it is resolved, we should add this
-         * check to the test to prevent regressions... but for now better to leave
-         * this commented out so a bug beyond our control does not break VuFind's
-         * test suite.
-         * 
         // Click cancel but bail out with no... item should still be there.
         $this->findCss($page, '#cancelAll')->click();
         $this->clickButtonGroupLink($page, 'No');
@@ -373,7 +370,6 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCss($page, 'a.title')->getText()
         );
-         */
 
         // Now cancel for real:
         $this->findCss($page, '#cancelAll')->click();
