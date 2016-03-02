@@ -18,7 +18,7 @@ function ajaxFLLoadTab(tabid, reload) {
   var id = $record.find(".hiddenId")[0].value;
   var source = $record.find(".hiddenSource")[0].value;
   var urlroot;
-  if (source == VuFind.getDefaultSearchBackend()) {
+  if (source == VuFind.defaultSearchBackend) {
     urlroot = 'Record';
   } else {
     urlroot = source + 'record';
@@ -29,7 +29,7 @@ function ajaxFLLoadTab(tabid, reload) {
     showhideTabs(tabid);
     $('#'+tabid+'-tab').html('<i class="fa fa-spinner fa-spin"></i> '+VuFind.translate('loading')+'...');
     $.ajax({
-      url: VuFind.getPath() + '/' + urlroot + '/' + id + '/AjaxTab',
+      url: VuFind.path + '/' + urlroot + '/' + id + '/AjaxTab',
       type: 'POST',
       data: {tab: tab},
       success: function(data) {
@@ -91,7 +91,7 @@ function toggleDataView() {
     // AJAX for information
     if (longNode.is(':empty')) {
       loadingNode.removeClass("hidden");
-      var url = VuFind.getPath() + '/AJAX/JSON?' + $.param({
+      var url = VuFind.path + '/AJAX/JSON?' + $.param({
         method:'getRecordDetails',
         id:div_id,
         type:viewType,
