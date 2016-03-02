@@ -11,7 +11,8 @@
     if (!empty($images)
       && !$this->record($this->driver)->containsNonImageURL($urls, $images)
       && !$this->record($this->driver)->containsNonImageURL($onlineURLs, $images)
-      && !empty($mergedData['urls']) && !$this->record($this->driver)->containsNonImageURL($mergedData['urls'], $images)
+      && (empty($mergedData['urls']) || !$this->record($this->driver)->containsNonImageURL($mergedData['urls'], $images))
+      && !$openUrlActive
     ) {
        // All online URLs are record images that are handled by image-popup
        return;
@@ -19,7 +20,7 @@
   ?>
   <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
     <div class="available-online-links">
-      <strong class="available-online-header <?=(!empty($onlineURLs) || !empty($mergedData['urls']) || !empty($urls)) ? '' : 'hidden'; ?>"><?=$this->transEsc('Available Online') ?>:</strong>
+      <strong class="available-online-header <?=(!empty($onlineURLs) || !empty($mergedData['urls']) || !empty($urls) || $openUrlActive) ? '' : 'hidden'; ?>"><?=$this->transEsc('Available Online') ?>:</strong>
       <div class="truncate-field">
       <? $renderedURLs = []; ?>
       <? if (!empty($urls)): ?>
