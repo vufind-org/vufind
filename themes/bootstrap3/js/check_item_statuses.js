@@ -8,7 +8,7 @@ function checkItemStatuses(container) {
   var elements = {};    
   var data = $.map(container.find('.ajaxItem'), function(record) {
     if ($(record).find('.hiddenId').length == 0) {
-      return false;
+      return null;
     }
     var datum = $(record).find('.hiddenId').val();
     if (typeof elements[datum] === 'undefined') {

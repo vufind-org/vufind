@@ -8,7 +8,7 @@ function checkSaveStatuses(container) {
   var elements = {};
   var data = $.map(container.find('.result,.record'), function(record) {
     if ($(record).find('.hiddenId').length == 0 || $(record).find('.hiddenSource').length == 0) {
-      return false;
+      return null;
     }
     var datum = {'id':$(record).find('.hiddenId').val(), 'source':$(record).find('.hiddenSource')[0].value};
     var key = datum.source+'|'+datum.id;
