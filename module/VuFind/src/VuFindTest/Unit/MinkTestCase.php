@@ -279,9 +279,9 @@ abstract class MinkTestCase extends DbTestCase
      */
     protected function findAndAssertLink(Element $page, $text)
     {
-       $link = $page->findLink($text);
-       $this->assertTrue(is_object($link));
-       return $link;
+        $link = $page->findLink($text);
+        $this->assertTrue(is_object($link));
+        return $link;
     }
 
     /**
