@@ -15,6 +15,13 @@ module.exports = function(grunt) {
         }
       }
     },
+    sass: {
+      dist: {
+        files: {
+          'themes/bootstrap3/css/compiled-sass.css': 'themes/bootstrap3/sass/bootstrap.scss'
+        }
+      }
+    },
     // JS compression
     uglify: {
       options: {
@@ -36,6 +43,7 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
   grunt.registerTask('default', ['less', 'uglify']);
