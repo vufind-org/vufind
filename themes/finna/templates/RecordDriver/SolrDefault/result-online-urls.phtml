@@ -11,7 +11,8 @@
     if (!empty($images)
       && !$this->record($this->driver)->containsNonImageURL($urls, $images)
       && !$this->record($this->driver)->containsNonImageURL($onlineURLs, $images)
-      && !empty($mergedData['urls']) && !$this->record($this->driver)->containsNonImageURL($mergedData['urls'], $images)
+      && (empty($mergedData['urls']) || !$this->record($this->driver)->containsNonImageURL($mergedData['urls'], $images))
+      && !$openUrlActive
     ) {
        // All online URLs are record images that are handled by image-popup
        return;

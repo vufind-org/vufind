@@ -41,7 +41,7 @@ use VuFind\Search\QueryAdapter;
 trait FinnaParams
 {
     /**
-     * Current data range filter
+     * Current date range filter
      *
      * @var array
      */
@@ -246,13 +246,13 @@ trait FinnaParams
     }
 
     /**
-     * Remove data range filter from the given list of filters.
+     * Remove date range filter from the given list of filters.
      *
      * @param array $filters Filters
      *
      * @return array
      */
-    public function removeDatarangeFilter($filters)
+    public function removeDaterangeFilter($filters)
     {
         $daterangeField = $this->getSpatialDateRangeField();
         $filterList = $this->getFilterList();

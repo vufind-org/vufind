@@ -93,9 +93,11 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
                 || $attributes->bundle == 'THUMBNAIL' && $size != 'large'
             ) {
                 $mimes = ['image/jpeg', 'image/png'];
-                $url = (string)$node;
+                $url = isset($attributes->href)
+                    ? (string)$attributes->href : (string)$node;
+
                 if ($size == 'large') {
-                    if ($attributes->type) {
+                    if (isset($attributes->type)) {
                         if (!in_array($attributes->type, $mimes)) {
                             continue;
                         }

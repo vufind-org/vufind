@@ -83,6 +83,9 @@ class AuthenticationStrategy implements PermissionProviderInterface
             $connection = $this->serviceLocator->get('VuFind\ILSConnection');
             $ilsAuth = $this->serviceLocator->get('VuFind\ILSAuthenticator');
             $patron = $ilsAuth->storedCatalogLogin();
+            if (!$patron) {
+                return [];
+            }
             if (!$connection->checkFunction('getPatronAuthorizationStatus', $patron)
                 || $connection->getPatronAuthorizationStatus($patron)
             ) {

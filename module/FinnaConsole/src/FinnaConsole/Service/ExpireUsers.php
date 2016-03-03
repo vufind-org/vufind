@@ -44,16 +44,16 @@ class ExpireUsers extends AbstractService
     /**
      * Table for user accounts
      *
-     * @var User
+     * @var \VuFind\Db\Table\User
      */
     protected $table = null;
 
     /**
      * Constructor
      *
-     * @param VuFind\Db\Table $table User table.
+     * @param \VuFind\Db\Table\User $table User table.
      */
-    public function __construct($table)
+    public function __construct(\VuFind\Db\Table\User $table)
     {
         $this->table = $table;
     }
