@@ -18,6 +18,7 @@
 <div class="row">
   <div class="col-md-10 col-lg-9">
     <?=$this->flashmessages()?>
+    <? if (!$this->translationEmpty('library_cards_instructions')): ?><p class="no-content-message"><?=$this->translate('library_cards_instructions')?></p><? endif; ?>
     <h2><?=$this->transEsc('Library Cards Connected To My Account')?></h2>
     <? if ($this->libraryCards->count() == 0): ?>
       <h4><?=$this->transEsc('You do not have any library cards')?></h4>
