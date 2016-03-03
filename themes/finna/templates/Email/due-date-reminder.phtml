@@ -1,0 +1,19 @@
+<?= sprintf('%s %d %s', $this->translate('due_date_email_prefix'), count($this->loans), $this->translate('due_date_email_suffix' . (count($this->loans) == 1 ? '_singular' : ''))) ?>
+
+
+<? foreach ($this->loans as $loan): ?>
+<?= isset($loan['title']) ? $loan['title'] : $this->translate('Title not available') ?>
+
+<?= $this->translate('Due Date') . ': ' . $loan['dueDateFormatted'] ?>
+
+
+<? endforeach; ?>
+
+<?= $this->translate('due_date_email_link_title') ?>
+
+<?= $this->url ?>
+
+
+<?= $this->translate('unsubscribe_description') ?>
+
+<?= $this->unsubscribeUrl ?>

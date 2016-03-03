@@ -49,6 +49,16 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     }
 
     /**
+     * Sends due date reminders.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function dueDateRemindersAction()
+    {
+        return $this->runService('Finna\DueDateReminders');
+    }
+
+    /**
      * Anonymizes all the expired user accounts.
      *
      * @return \Zend\Console\Response

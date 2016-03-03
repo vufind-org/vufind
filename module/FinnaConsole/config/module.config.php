@@ -11,6 +11,7 @@ $config = [
         'factories' => [
              'VuFind\HMAC' => 'VuFind\Service\Factory::getHMAC',
              'Finna\ClearMetalibSearch' => 'FinnaConsole\Service\Factory::getClearMetaLibSearch',
+             'Finna\DueDateReminders' => 'FinnaConsole\Service\Factory::getDueDateReminders',
              'Finna\ExpireUsers' => 'FinnaConsole\Service\Factory::getExpireUsers',
              'Finna\OnlinePaymentMonitor' => 'FinnaConsole\Service\Factory::getOnlinePaymentMonitor',
              'Finna\ScheduledAlerts' => 'FinnaConsole\Service\Factory::getScheduledAlerts',
