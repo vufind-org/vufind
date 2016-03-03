@@ -47,7 +47,7 @@
     $searchFilters = $this->saved->getParams()->getFilterList();
     // Remove date range filter (search_daterange_mv) so that it does not get included
     // in the  list of active filters
-    $searchFilters = $this->saved->getParams()->removeDatarangeFilter($searchFilters);
+    $searchFilters = $this->saved->getParams()->removeDaterangeFilter($searchFilters);
     $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
   } else {
     $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;

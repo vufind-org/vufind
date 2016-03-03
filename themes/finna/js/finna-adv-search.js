@@ -24,7 +24,7 @@ finna.advSearch = (function() {
                     return;
                 } 
             }
-            // Convert data range from/to fields into a "[from TO to]" query
+            // Convert date range from/to fields into a "[from TO to]" query
             container.find('input[type="hidden"]').attr('disabled', 'disabled');
             var from = fromField.val() || '*';
             var to = toField.val() || '*';

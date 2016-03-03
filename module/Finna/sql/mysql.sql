@@ -32,10 +32,10 @@ ALTER TABLE search ADD INDEX `finna_schedule_base_url` (`finna_schedule_base_url
 --
 -- Additional columns for user
 --
-ALTER TABLE user ADD COLUMN `finna_language` varchar(30) NOT NULL DEFAULT '';
-ALTER TABLE `user` ADD `finna_due_date_reminder` int(11) NOT NULL DEFAULT '0';
-ALTER TABLE `user` ADD `finna_last_login` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
-ALTER TABLE `user` ADD `finna_auth_method` varchar(50) DEFAULT NULL;
+ALTER TABLE `user` ADD COLUMN `finna_language` varchar(30) NOT NULL DEFAULT '';
+ALTER TABLE `user` ADD COLUMN `finna_due_date_reminder` int(11) NOT NULL DEFAULT 0;
+ALTER TABLE `user` ADD COLUMN `finna_last_login` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
+ALTER TABLE `user` ADD COLUMN `finna_auth_method` varchar(50) DEFAULT NULL;
 CREATE INDEX `finna_user_due_date_reminder_key` ON user (`finna_due_date_reminder`);
 --
 -- Additional columns for user_list
@@ -43,6 +43,8 @@ CREATE INDEX `finna_user_due_date_reminder_key` ON user (`finna_due_date_reminde
 ALTER TABLE user_list ADD COLUMN `finna_updated` datetime DEFAULT NULL;
 
 
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `finna_comments_record` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `record_id` varchar(255) NOT NULL,
@@ -52,30 +54,6 @@ CREATE TABLE `finna_comments_record` (
   KEY `key_record_id` (`record_id`),
   CONSTRAINT `comments_record_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `finna_metalib_search` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `finna_search_id` char(32) DEFAULT '',
-  `search_object` longtext,
-  PRIMARY KEY (`id`),
-  KEY `finna_search_id` (`finna_search_id`),
-  KEY `created` (`created`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `finna_comments` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `comment_id` int(11) NOT NULL DEFAULT '0',
-  `visible` tinyint(1) DEFAULT '1',
-  `rating` float DEFAULT NULL,
-  `type` tinyint(1) NOT NULL,
-  `updated` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `comment_id` (`comment_id`),
-  CONSTRAINT `finna_comments_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -83,30 +61,13 @@ CREATE TABLE `finna_comments` (
 CREATE TABLE `finna_comments_inappropriate` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
-  `comment_id` int(11) NOT NULL DEFAULT '0',
+  `comment_id` int(11) NOT NULL,
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `reason` varchar(1000) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `comment_id` (`comment_id`),
   CONSTRAINT `finna_comments_inappropriate_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `finna_fee` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `transaction_id` int(11) NOT NULL,
-  `title` varchar(255) NOT NULL DEFAULT '',
-  `type` varchar(255) NOT NULL DEFAULT '',
-  `amount` float NOT NULL DEFAULT '0',
-  `currency` varchar(3) NOT NULL DEFAULT 'EUR',
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `fee_ibfk1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fee_ibfk2` FOREIGN KEY (`transaction_id`) REFERENCES `finna_transaction` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -135,6 +96,38 @@ CREATE TABLE `finna_transaction` (
   CONSTRAINT `finna_transactions_ibfk1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `finna_fee` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `transaction_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `type` varchar(255) NOT NULL DEFAULT '',
+  `amount` float NOT NULL DEFAULT '0',
+  `currency` varchar(3) NOT NULL DEFAULT 'EUR',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `finna_fee_ibfk1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `finna_fee_ibfk2` FOREIGN KEY (`transaction_id`) REFERENCES `finna_transaction` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `finna_metalib_search` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `finna_search_id` char(32) DEFAULT '',
+  `search_object` longtext,
+  PRIMARY KEY (`id`),
+  KEY `finna_search_id` (`finna_search_id`),
+  KEY `created` (`created`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

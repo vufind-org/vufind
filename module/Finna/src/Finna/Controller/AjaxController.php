@@ -430,7 +430,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
-     * Return data for data range visualization module in JSON format.
+     * Return data for date range visualization module in JSON format.
      *
      * @return mixed
      */
