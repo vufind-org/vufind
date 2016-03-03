@@ -166,7 +166,7 @@ class CombinedController extends AbstractSearch
             // Calculate a unique DOM id for this section of the search results;
             // $searchClassId may contain colons, which must be converted.
             $combinedResults[$current]['domId']
-                = 'combined_' . str_replace(':', '____', $searchClassId);
+                = 'combined_' . str_replace(':', '____', $current);
 
             $combinedResults[$current]['view']
                 = (!isset($settings['ajax']) || !$settings['ajax'])
