@@ -87,7 +87,8 @@ class AuthenticationStrategy implements PermissionProviderInterface
                 return [];
             }
             if (!$connection->checkFunction('getPatronAuthorizationStatus', $patron)
-                || $connection->getPatronAuthorizationStatus($patron)) {
+                || $connection->getPatronAuthorizationStatus($patron)
+            ) {
                 return ['loggedin'];
             }
         }
