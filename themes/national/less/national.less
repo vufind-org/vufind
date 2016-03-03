@@ -5,14 +5,17 @@ header {
     & ul.navbar-nav > li > a {
         padding: 0 11px;
     }
-    & ul.navbar-nav.language:nth-child(3)::before {
-        border-left: 0;
-    }
     & ul.navbar-nav.language:nth-child(3) > li > a {
         padding-right: 9px;
     }
     & ul.navbar-nav.language:nth-child(4) > li > a {
         padding-left: 9px;
+    }
+    // reset finna margin
+    @media (min-width: @grid-float-breakpoint) {
+        & ul.navbar-nav.language.lang-1 {
+            margin-left: 0;
+        }
     }
 }
 @media (max-width: @screen-xs-max) {

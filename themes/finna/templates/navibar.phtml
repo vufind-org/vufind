@@ -62,14 +62,17 @@
         </li>
       <? endif; ?>
     </ul>
+
     <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+      <? $i = 1;?>
       <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
       <? if ($this->layout()->userLang != $langCode): ?>
-      <ul role="menubar" class="nav navbar-nav language">
+      <ul role="menubar" class="nav navbar-nav language lang-<?=$i;?>">
         <li role="menuitem">
           <a class="preserve-anchor" href="<?=$this->escapeHtmlAttr($this->navibar()->getLanguageUrl($langCode))?>"><?=$this->displayLanguageOption($langName)?></a>
         </li>
       </ul>
+      <? $i++; ?>
       <? endif ?>
       <? endforeach; ?>
     <? endif; ?>
@@ -79,6 +82,7 @@
       <?=$this->render($template)?>
     </ul>
     <? endif; ?>
+
   </div>
 
   <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
