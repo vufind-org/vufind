@@ -292,12 +292,12 @@ maxLength = 12
 ; Uncomment the following lines to enable updating of address information.
 ; Choose a method on how to update the address information (email or url).
 [updateAddress]
-;method = email
-; emailAddress is required for the url method
+;method = url
+; emailAddress is required for the email method
 ;emailAddress =
 ; url is required for the url method. url can be a single address or an array of 
 ; language-specific addresses. First example is a single one:
-;url = http://address.of.change.form
+;url = "http://address.of.change.form"
 ; Alternatively different links can be specified for each language:    
 ;url[fi] = http://address.of.change.form/finnish
 ;url[sv] = http://address.of.change.form/swedish

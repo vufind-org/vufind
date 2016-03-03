@@ -88,11 +88,11 @@ maxLength = 4
 ; Choose a method on how to update the phone number (email, url or driver)
 [updateMessagingSettings]
 ;method = email
-; emailAddress is required for the url method
+; emailAddress is required for the email method
 ;emailAddress =
 ; url is required for the url method. url can be a single address or an array of 
 ; language-specific addresses. First example is a single one:
-;url = http://address.of.change.form
+;url = "http://address.of.change.form"
 ; Alternatively different links can be specified for each language:   
 ;url[fi] = http://address.of.change.form/finnish
 ;url[sv] = http://address.of.change.form/swedish
