@@ -69,4 +69,3 @@ class RecordsController extends AbstractSearch
         return $this->resultsAction();
     }
 }
-

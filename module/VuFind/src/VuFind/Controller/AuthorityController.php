@@ -93,4 +93,3 @@ class AuthorityController extends AbstractSearch
         return $this->resultsAction();
     }
 }
-

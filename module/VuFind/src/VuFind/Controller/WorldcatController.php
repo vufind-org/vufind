@@ -80,4 +80,3 @@ class WorldcatController extends AbstractSearch
         return $this->resultsAction();
     }
 }
-

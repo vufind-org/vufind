@@ -117,4 +117,3 @@ class QRCodeController extends AbstractBase
         return $response;
     }
 }
-
