@@ -31,8 +31,7 @@
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    Zend\Cache\Storage\StorageInterface;
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * Voyager Restful ILS Driver
@@ -128,20 +127,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected $titleHoldsMode;
 
     /**
-     * Cache for storing ILS data.
-     *
-     * @var StorageInterface
-     */
-    protected $cache = null;
-
-    /**
-     * Lifetime of cache (in seconds).
-     *
-     * @var int
-     */
-    protected $cacheLifetime = 30;
-
-    /**
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
      * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew
      *
@@ -235,18 +220,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         parent::__construct($dateConverter);
         $this->holdsMode = $holdsMode;
         $this->titleHoldsMode = $titleHoldsMode;
-    }
-
-    /**
-     * Set a cache storage object.
-     *
-     * @param StorageInterface $cache Cache storage interface
-     *
-     * @return void
-     */
-    public function setCacheStorage(StorageInterface $cache = null)
-    {
-        $this->cache = $cache;
     }
 
     /**
@@ -351,7 +324,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
     /**
      * Add instance-specific context to a cache key suffix (to ensure that
-     * multiple Voyager drivers don't accidentally share values in the cache.
+     * multiple drivers don't accidentally share values in the cache.
      *
      * @param string $key Cache key suffix
      *
@@ -361,58 +334,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     {
         return 'VoyagerRestful-'
             . md5("{$this->ws_host}|{$this->ws_dbKey}|$key");
-    }
-
-    /**
-     * Helper function for fetching cached data.
-     * Data is cached for up to 30 seconds so that it would be faster to process
-     * e.g. requests where multiple calls to the backend are made.
-     *
-     * @param string $id Cache entry id
-     *
-     * @return mixed|null Cached entry or null if not cached or expired
-     */
-    protected function getCachedData($id)
-    {
-        // No cache object, no cached results!
-        if (null === $this->cache) {
-            return null;
-        }
-
-        $fullKey = $this->formatCacheKey($id);
-        $item = $this->cache->getItem($fullKey);
-        if (null !== $item) {
-            // Return value if still valid:
-            if (time() - $item['time'] < $this->cacheLifetime) {
-                return $item['entry'];
-            }
-            // Clear expired item from cache:
-            $this->cache->removeItem($fullKey);
-        }
-        return null;
-    }
-
-    /**
-     * Helper function for storing cached data.
-     * Data is cached for up to 30 seconds so that it would be faster to process
-     * e.g. requests where multiple calls to the backend are made.
-     *
-     * @param string $id    Cache entry id
-     * @param mixed  $entry Entry to be cached
-     *
-     * @return void
-     */
-    protected function putCachedData($id, $entry)
-    {
-        // Don't write to cache if we don't have a cache!
-        if (null === $this->cache) {
-            return;
-        }
-        $item = [
-            'time' => time(),
-            'entry' => $entry
-        ];
-        $this->cache->addItem($this->formatCacheKey($id), $item);
     }
 
     /**
