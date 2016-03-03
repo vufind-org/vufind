@@ -20,7 +20,7 @@
   ?>
   <? if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
     <div class="available-online-links">
-      <strong class="available-online-header <?=(!empty($onlineURLs) || !empty($mergedData['urls']) || !empty($urls) || $openUrlActive) ? '' : 'hidden'; ?>"><?=$this->transEsc('Available Online') ?>:</strong>
+      <strong class="available-online-header <?=(!empty($onlineURLs) || !empty($mergedData['urls']) || !empty($urls)) ? '' : 'hidden'; ?>"><?=$this->transEsc('Available Online') ?>:</strong>
       <div class="truncate-field">
       <? $renderedURLs = []; ?>
       <? if (!empty($urls)): ?>
