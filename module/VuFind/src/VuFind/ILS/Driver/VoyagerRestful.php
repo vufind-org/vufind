@@ -215,8 +215,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param string                 $titleHoldsMode Title holds mode setting
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        SessionManager $sessionManager, $holdsMode = 'disabled',
-        $titleHoldsMode = 'disabled'
+        $holdsMode = 'disabled', $titleHoldsMode = 'disabled'
     ) {
         parent::__construct($dateConverter);
         $this->holdsMode = $holdsMode;
