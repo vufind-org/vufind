@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2007.
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,8 +31,7 @@
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    Zend\Session\Container as SessionContainer;
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * Voyager Restful ILS Driver
@@ -126,13 +125,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @var string
      */
     protected $titleHoldsMode;
-
-    /**
-     * Container for storing cached ILS data.
-     *
-     * @var SessionContainer
-     */
-    protected $session;
 
     /**
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
@@ -306,9 +298,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $this->allowCancelingAvailableRequests
             = isset($this->config['Holds']['allowCancelingAvailableRequests'])
             ? $this->config['Holds']['allowCancelingAvailableRequests'] : true;
-
-        // Establish a namespace in the session for persisting cached data
-        $this->session = new SessionContainer('VoyagerRestful_' . $this->dbName);
     }
 
     /**
@@ -334,45 +323,17 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
-     * Helper function for fetching cached data.
-     * Data is cached for up to 30 seconds so that it would be faster to process
-     * e.g. requests where multiple calls to the backend are made.
+     * Add instance-specific context to a cache key suffix (to ensure that
+     * multiple drivers don't accidentally share values in the cache.
      *
-     * @param string $id Cache entry id
+     * @param string $key Cache key suffix
      *
-     * @return mixed|null Cached entry or null if not cached or expired
+     * @return string
      */
-    protected function getCachedData($id)
+    protected function formatCacheKey($key)
     {
-        if (isset($this->session->cache[$id])) {
-            $item = $this->session->cache[$id];
-            if (time() - $item['time'] < 30) {
-                return $item['entry'];
-            }
-            unset($this->session->cache[$id]);
-        }
-        return null;
-    }
-
-    /**
-     * Helper function for storing cached data.
-     * Data is cached for up to 30 seconds so that it would be faster to process
-     * e.g. requests where multiple calls to the backend are made.
-     *
-     * @param string $id    Cache entry id
-     * @param mixed  $entry Entry to be cached
-     *
-     * @return void
-     */
-    protected function putCachedData($id, $entry)
-    {
-        if (!isset($this->session->cache)) {
-            $this->session->cache = [];
-        }
-        $this->session->cache[$id] = [
-            'time' => time(),
-            'entry' => $entry
-        ];
+        return 'VoyagerRestful-'
+            . md5("{$this->ws_host}|{$this->ws_dbKey}|$key");
     }
 
     /**
@@ -1225,7 +1186,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function checkAccountBlocks($patronId)
     {
-        $cacheId = "blocks_$patronId";
+        $cacheId = "blocks|$patronId";
         $blockReason = $this->getCachedData($cacheId);
         if (null === $blockReason) {
             // Build Hierarchy
@@ -2557,8 +2518,8 @@ EOT;
      */
     protected function getUBRequestDetails($id, $patron)
     {
-        $requestId = "ub_{$id}_" . $patron['id'];
-        $data = $this->getCachedData($requestId);
+        $cacheId = "ub|$id|{$patron['id']}";
+        $data = $this->getCachedData($cacheId);
         if (!empty($data)) {
             return $data;
         }
@@ -2567,13 +2528,13 @@ EOT;
             $this->debug(
                 "getUBRequestDetails: no prefix in patron id '{$patron['id']}'"
             );
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
         list($source, $patronId) = explode('.', $patron['id'], 2);
         if (!isset($this->config['ILLRequestSources'][$source])) {
             $this->debug("getUBRequestDetails: source '$source' unknown");
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
 
@@ -2615,11 +2576,7 @@ EOT;
         );
 
         if ($response === false) {
-            $this->session->UBDetails[$requestId] = [
-                'time' => time(),
-                'data' => false
-            ];
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
         // Process
@@ -2631,7 +2588,7 @@ EOT;
         );
         foreach ($response->xpath('//ser:message') as $message) {
             // Any message means a problem, right?
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
         $requestCount = count(
@@ -2639,7 +2596,7 @@ EOT;
         );
         if ($requestCount == 0) {
             // UB request not available
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
 
@@ -2676,7 +2633,7 @@ EOT;
         );
 
         if ($response === false) {
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
         // Process
@@ -2688,7 +2645,7 @@ EOT;
         );
         foreach ($response->xpath('//ser:message') as $message) {
             // Any message means a problem, right?
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
         $items = [];
@@ -2737,7 +2694,7 @@ EOT;
             'locations' => $locations,
             'requiredBy' => $requiredByDate
         ];
-        $this->putCachedData($requestId, $results);
+        $this->putCachedData($cacheId, $results);
         return $results;
     }
 
