@@ -12,8 +12,10 @@ header {
         padding-left: 9px;
     }
     // reset finna margin
-    & ul.navbar-nav.language.lang-1 {
-        margin-left: 0;  
+    @media (min-width: @grid-float-breakpoint) {
+        & ul.navbar-nav.language.lang-1 {
+            margin-left: 0;
+        }
     }
 }
 @media (max-width: @screen-xs-max) {
