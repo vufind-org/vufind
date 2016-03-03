@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -55,6 +55,23 @@ class Factory
             ->get('metalibSearch');
 
         return new ClearMetaLibSearch($table);
+    }
+
+    /**
+     * Construct the console service for encrypting catalog passwords.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \FinnaConsole\Service\EncryptCatalogPasswords
+     */
+    public static function getEncryptCatalogPasswords(ServiceManager $sm)
+    {
+        $table = $sm->get('VuFind\DbTablePluginManager')
+            ->get('User');
+        $config = $sm->get('VuFind\Config')->get('config');
+
+
+        return new EncryptCatalogPasswords($table, $config);
     }
 
     /**
