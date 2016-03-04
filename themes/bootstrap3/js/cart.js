@@ -1,4 +1,4 @@
-/*global bulkActionSubmit, cartCookieDomain, Cookies, newAccountHandler, Lightbox, refreshPageForLogin, VuFind */
+/*global bulkActionSubmit, cartCookieDomain, Cookies, Lightbox, refreshPageForLogin, VuFind */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';

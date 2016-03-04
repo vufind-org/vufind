@@ -118,57 +118,6 @@ function bulkFormHandler(event, data) {
     }
   }
 }
-function newAccountHandler() {
-  VuFind.lightbox.refreshOnClose = true;
-  if (VuFind.lightbox.originalUrl.indexOf('UserLogin') > -1) {
-    VuFind.modal('hide');
-  }
-  return true;
-}
-
-// This is a full handler for the login form
-function ajaxLogin(form) {
-  $.ajax({
-    url: VuFind.getPath() + '/AJAX/JSON?method=getSalt',
-    dataType: 'json'
-  })
-  .done(function(response) {
-    var salt = response.data;
-
-    // extract form values
-    var params = {};
-    for (var i = 0; i < form.length; i++) {
-      // special handling for password
-      if (form.elements[i].name == 'password') {
-        // base-64 encode the password (to allow support for Unicode)
-        // and then encrypt the password with the salt
-        var password = rc4Encrypt(
-            salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
-        );
-        // hex encode the encrypted password
-        params[form.elements[i].name] = hexEncode(password);
-      } else {
-        params[form.elements[i].name] = form.elements[i].value;
-      }
-    }
-
-    // login via ajax
-    Lightbox.ajax({
-      type: 'POST',
-      url: VuFind.path + '/AJAX/JSON?method=login',
-      dataType: 'json',
-      data: params
-    })
-    .fail(function(response) {
-      $('#modal .modal-body .alert,.fa.fa-spinner').remove();
-      $('#modal .modal-body h2:first-child').after($('<div>').html(response.responseJSON.data).addClass('alert alert-danger'));
-    });
-  })
-  .fail(function(response) {
-    $('#modal .modal-body .alert,.fa.fa-spinner').remove();
-    $('#modal .modal-body h2:first-child').after($('<div>').html(response.responseJSON.data).addClass('alert alert-danger'));
-  });
-}
 
 // Ready functions
 function setupOffcanvas() {
