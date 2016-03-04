@@ -273,6 +273,7 @@
       border: 0;
       box-shadow: none;
       transition: background-color 0.2s ease-in-out;
+      padding: 0;
       > li > a,
       .dropdown-header {
         padding: 5px 15px 5px 25px;
@@ -280,8 +281,8 @@
       > li {
         border-bottom: none;   
         &:first-child, &:last-child, &:first-child > a, &:last-child > a {
-            .border-top-radius(none);
-            .border-bottom-radius(none);
+            .border-top-radius(0px);
+            .border-bottom-radius(0px);
         }
       }
       > li > a {
