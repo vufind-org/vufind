@@ -1,4 +1,4 @@
-/*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape, VuFind */
+/*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape */
 
 // IE 9< console polyfill
 window.console = window.console || {log: function () {}};
