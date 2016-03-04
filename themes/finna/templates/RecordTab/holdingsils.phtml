@@ -219,6 +219,9 @@
   <div class="holdings-container-heading row">
     <div class="location col-sm-6 col-xs-6">
       <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>"></i> <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
+      <? if ($this->holdingsSettings()->showDetailsAfterLocationGroup()): ?>
+      <div class="details"><?=$this->partial('RecordTab/holdings-details.phtml', ['holding' => $holding, 'heading' => true]);?></div>
+      <? endif; ?>
     </div>
     <div class="holdings-details col-sm-3 col-xs-6"><?=$holdingSummary ?></div>
     <div class="location-link col-sm-3 col-xs-12 text-right">
@@ -230,17 +233,9 @@
       <? endif; ?>
     </div>
   </div>
-  <? if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
-  <div class="copy-details <?=$holdingsDetails?> row">
-    <? // Translation for summary is a special case for backwards-compatibility ?>
-    <div class="col-sm-3 col-xs-6"><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</div>
-    <div class="col-sm-3 col-xs-6">
-    <? foreach ($textFields as $current): ?>
-      <?=$this->escapeHtml($current)?><br/>
-    <? endforeach; ?>
-    </div>
-  </div>
-  <? endforeach; endif; ?>
+  <? if (!$this->holdingsSettings()->showDetailsAfterLocationGroup()): ?>
+  <?=$this->partial('RecordTab/holdings-details.phtml', ['holding' => $holding, 'mode' => $holdingsDetails]);?>
+  <? endif; ?>
   <? $formats = $this->driver->getFormats(); ?>
   <? if (!empty($holding['items'][0]['order_statuses']) && !in_array(end($formats), ['1/Book/eBook/', '1/Journal/eJournal/', '1/Journal/eArticle/'])): ?>
   <div class="copy-details <?=$holdingsDetails?> row">

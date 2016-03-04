@@ -6,6 +6,7 @@
   <form method="post" class="form-vertical" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
     <?=$this->auth()->getLoginFields()?>
     <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
+    <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash(true))?>" />
     <div class="form-group">
       <div class="col-sm-9">
         <? if ($account->supportsCreation()): ?>

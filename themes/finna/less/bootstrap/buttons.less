@@ -364,10 +364,7 @@ button.multiselect {
     @media(max-width:@screen-xs-max) {
         margin-top: -5px;
         & > div {
-            text-align: left;
-            & > div:first-child .dropdown > a {
-                border-left: 1px solid @gray-lighter; 
-            }
+            text-align: center;
         }
 
     }
@@ -422,24 +419,7 @@ button.multiselect {
         @media(max-width:@screen-xs-max) {
             margin-right: 0;
             margin-bottom: 10px;
-            color: @body-bg;
-            & .dropdown {
-                
-                & > a {
-                background: none;
-                border-radius: 0px;
-                border-right: 1px solid @gray-lighter;
-                padding: 4px 8px;
-                color: @gray;
-                    &:hover, &:focus {
-                       background: none; 
-                    }
-                    
-                }
-                & i {
-                    color: @gray;   
-                }
-            }
+
         }
         & .dropdown-menu {
             @media(max-width:@screen-sm-max) {

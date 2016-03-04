@@ -13,7 +13,7 @@
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
-    <? if (!$this->translationEmpty('holds_instructions')): ?><p class="no-content-message"><?=$this->transEsc('holds_instructions')?></p><? endif; ?>
+    <? if (!$this->translationEmpty('holds_instructions_html')): ?><p class="no-content-message"><?=$this->translate('holds_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
     <div class="useraccount-header"><?=$this->transEsc('Your Holds and Recalls') ?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>

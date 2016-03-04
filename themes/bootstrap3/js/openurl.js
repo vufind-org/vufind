@@ -35,13 +35,22 @@ function embedOpenUrlLinks(element) {
   }
 }
 
-// This can be called with a container e.g. when combined results fetched with AJAX 
-// are loaded
-function setupEmbeddedOpenUrlLinks(container)
+// Assign actions to the OpenURL links. This can be called with a container e.g. when 
+// combined results fetched with AJAX are loaded.
+function setupOpenUrlLinks(container)
 {
   if (typeof(container) == 'undefined') {
     container = $('body');
   }
+  
+   // assign action to the openUrlWindow link class
+  container.find('a.openUrlWindow').click(function() {
+    var params = extractClassParams(this);
+    var settings = params.window_settings;
+    window.open($(this).attr('href'), 'openurl', settings);
+    return false;
+  });
+ 
   // assign action to the openUrlEmbed link class
   container.find('.openUrlEmbed a').click(function() {
     embedOpenUrlLinks($(this));
@@ -52,14 +61,6 @@ function setupEmbeddedOpenUrlLinks(container)
 }
 
 $(document).ready(function() {
-  // assign action to the openUrlWindow link class
-  $('a.openUrlWindow').click(function(){
-    var params = extractClassParams(this);
-    var settings = params.window_settings;
-    window.open($(this).attr('href'), 'openurl', settings);
-    return false;
-  });
-  
-  setupEmbeddedOpenUrlLinks();
+  setupOpenUrlLinks();
 });
 

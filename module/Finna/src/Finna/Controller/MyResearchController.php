@@ -511,26 +511,43 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     {
         $id = $this->params()->fromQuery('id', false);
         $key = $this->params()->fromQuery('key', false);
+        $type = $this->params()->fromQuery('type', false);
 
-        if ($id === false || $key === false) {
+        if ($id === false || $key === false || $type === false) {
             throw new \Exception('Missing parameters.');
         }
 
         $view = $this->createViewModel();
 
         if ($this->params()->fromQuery('confirm', false) == 1) {
-            $search = $this->getTable('Search')->select(['id' => $id])->current();
-            if (!$search) {
-                throw new \Exception('Invalid parameters.');
-            }
-            $user = $this->getTable('User')->getById($search->user_id);
+            if ($type == 'alert') {
+                $search
+                    = $this->getTable('Search')->select(['id' => $id])->current();
+                if (!$search) {
+                    throw new \Exception('Invalid parameters.');
+                }
+                $user = $this->getTable('User')->getById($search->user_id);
 
-            if ($key !== $search->getUnsubscribeSecret(
-                $this->getServiceLocator()->get('VuFind\HMAC'), $user
-            )) {
-                throw new \Exception('Invalid parameters.');
+                if ($key !== $search->getUnsubscribeSecret(
+                    $this->getServiceLocator()->get('VuFind\HMAC'), $user
+                )) {
+                    throw new \Exception('Invalid parameters.');
+                }
+                $search->setSchedule(0);
+            } else if ($type == 'reminder') {
+                $user = $this->getTable('User')->select(['id' => $id])->current();
+                if (!$user) {
+                    throw new \Exception('Invalid parameters.');
+                }
+                $dueDateTable = $this->getTable('due-date-reminder');
+                if ($key !== $dueDateTable->getUnsubscribeSecret(
+                    $this->getServiceLocator()->get('VuFind\HMAC'), $user, $user->id
+                )) {
+                    throw new \Exception('Invalid parameters.');
+                }
+                $user->finna_due_date_reminder = 0;
+                $user->save();
             }
-            $search->setSchedule(0);
             $view->success = true;
         } else {
             $view->unsubscribeUrl

@@ -22,7 +22,7 @@
       <? endif; ?>
     <? endif; ?>
 
-    <? if (!$this->translationEmpty('fines_instructions')): ?><p class="no-content-message"><?=$this->transEsc('fines_instructions')?></p><? endif; ?>
+    <? if (!$this->translationEmpty('fines_instructions_html')): ?><p class="no-content-message"><?=$this->translate('fines_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
     <div class="useraccount-header"><?=$this->transEsc('Your Fines')?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
