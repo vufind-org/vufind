@@ -139,10 +139,9 @@ VuFind.lightbox = (function() {
     // Add submit button information
     var clicked = $(form).find('[type=submit]:focus');
     if(clicked.length > 0) {
-      clicked = $(form).find('[type=submit]');
+      var name = clicked.attr('name') ? clicked.attr('name') : 'submit';
+      data.push({'name':name, 'value':clicked.attr('value') || 1});
     }
-    var name = clicked.attr('name') ? clicked.attr('name') : 'submit';
-    data.push({'name':name, 'value':clicked.attr('value') || 1});
     // Special handlers
     if ('undefined' !== typeof dataset) {
       // On submit behavior

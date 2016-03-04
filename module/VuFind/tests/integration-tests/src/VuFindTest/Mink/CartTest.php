@@ -405,6 +405,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Now do it for real -- we should get redirected.
         $this->selectAllItemsInCart($page);
         $button->click();
+        $this->snooze();
         list(, $params) = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
