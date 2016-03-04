@@ -62,13 +62,6 @@ use Zend\Stdlib\Parameters;
 class ScheduledAlerts extends AbstractService
 {
     /**
-     * Symbolic link name for institution default view
-     *
-     * @var string
-     */
-    protected $defaultPath = 'default';
-
-    /**
      * Local configuration directory name
      *
      * @var string
@@ -237,7 +230,7 @@ class ScheduledAlerts extends AbstractService
                 $this->err("Skipping alerts for view $url");
                 continue;
             }
-            $this->switchInstitution($path, $url);
+            $this->switchInstitution("$path/{$this->confDir}", $url);
         }
     }
 
@@ -527,37 +520,6 @@ class ScheduledAlerts extends AbstractService
                 $this->msg('Error updating last_executed date for search ' . $s->id);
             }
         }
-    }
-
-    /**
-     * Resolve path to the view directory.
-     *
-     * @param string $institution Institution
-     * @param string $view        View
-     *
-     * @return string|boolean view path or false on error
-     */
-    protected function resolveViewPath($institution, $view = false)
-    {
-        if (!$view) {
-            $view = $this->defaultPath;
-            if (isset($this->datasourceConfig[$institution]['mainView'])) {
-                list($institution, $view)
-                    = explode(
-                        '/',
-                        $this->datasourceConfig[$institution]['mainView'], 2
-                    );
-            }
-        }
-        $path = "{$this->viewBaseDir}/$institution/$view";
-
-        // Assume that view is functional if index.php exists.
-        if (!is_file("$path/public/index.php")) {
-            $this->err("Could not resolve view path for $institution/$view");
-            return false;
-        }
-
-        return "$path/{$this->confDir}";
     }
 
     /**
