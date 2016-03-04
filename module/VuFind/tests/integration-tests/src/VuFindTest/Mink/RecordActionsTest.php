@@ -96,10 +96,11 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Click add comment without logging in
         // TODO Rewrite for comment and login coming
         $this->findCss($page, '.record-tabs .usercomments')->click();
+        $this->snooze();
         $this->findCss($page, '.comment-form');
         $this->assertEquals(// Can Comment?
             'You must be logged in first',
-            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
+            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getText()
         );
         $this->findCss($page, 'form.comment-form .btn-primary')->click();
         $this->findCss($page, '.modal.in'); // Lightbox open
@@ -174,7 +175,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal #addtag_tag')->setValue('one 2 "three 4" five');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
-        $success = $this->findCss($page, '.modal-body .alert-info');
+        $success = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals('Tags Saved', $success->getText());
         $this->findCss($page, '.modal .close')->click();
         // Count tags
@@ -272,21 +273,13 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal #email_to')->setValue('blargarsaurus');
         $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
         $this->findCss($page, '.modal #email_message')->setValue('message');
-        // Make sure form cannot submit
-        /* TODO: Not working with validator
-        $this->getMinkSession()->executeScript('$(".modal form").validator();');
-        $forms = $page->findAll('css', '.modal-body .form-group');
-        foreach ($forms as $f) {
-            var_dump($f->getHtml());
-        }
-        $this->findCss($page, '.modal .disabled');
-        */
         // Send text to false email
+        $this->snooze();
         $this->findCss($page, '.modal #email_to')->setValue('asdf@vufind.org');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
         // Check for confirmation message
-        $this->findCss($page, '.modal .alert-info');
+        $this->findCss($page, '.modal .alert-success');
         // Logout
         $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
     }
@@ -338,12 +331,13 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->assertNull($page->find('css', '.modal .sms-error'));
         // Send text to false number
+        $this->findCss($page, '.modal #sms_to')->setValue('(800) 555-5555');
         $optionElement = $this->findCss($page, '.modal #sms_provider option');
         $page->selectFieldOption('sms_provider', 'verizon');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
         // Check for confirmation message
-        $this->findCss($page, '.modal .alert-info');
+        $this->findCss($page, '.modal .alert-success');
     }
 
     /**

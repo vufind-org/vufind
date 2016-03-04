@@ -146,10 +146,7 @@ class MyResearchController extends AbstractBase
             return $this->forwardTo('MyResearch', 'Home');
         }
 
-        // We may have come in from a lightbox.  In this case, a prior module
-        // will not have set the followup information.  We should grab the referer
-        // so the user doesn't get lost.
-        // i.e. if there's already a followup url, keep it; otherwise set one.
+        // If there's already a followup url, keep it; otherwise set one.
         if (!$this->getFollowupUrl()) {
             $this->setFollowupUrlToReferer();
         }
@@ -198,12 +195,8 @@ class MyResearchController extends AbstractBase
             // Also don't attempt to process a login that hasn't happened yet;
             // if we've just been forced here from another page, we need the user
             // to click the session initiator link before anything can happen.
-            //
-            // Finally, we don't want to auto-forward if we're in a lightbox, since
-            // it may cause weird behavior -- better to display an error there!
             if (!$this->params()->fromPost('processLogin', false)
                 && !$this->params()->fromPost('forcingLogin', false)
-                && !$this->inLightbox()
             ) {
                 $this->getRequest()->getPost()->set('processLogin', true);
                 return $this->forwardTo('MyResearch', 'Home');
@@ -228,7 +221,10 @@ class MyResearchController extends AbstractBase
     {
         // Don't log in if already logged in!
         if ($this->getAuthManager()->isLoggedIn()) {
-            if ($this->inLightbox()) {
+            // inLightbox (only instance)
+            if ($this->getRequest()->getQuery('layout', 'no') === 'lightbox'
+                || 'layout/lightbox' == $this->layout()->getTemplate()
+            ) {
                 $response = $this->getResponse();
                 $response->setStatusCode(205);
                 return $response;
@@ -734,8 +730,9 @@ class MyResearchController extends AbstractBase
                 $details = $this->getRecordRouter()->getActionRouteDetails(
                     $recordSource . '|' . $recordId, 'Save'
                 );
-                return $this
-                    ->lightboxAwareRedirect($details['route'], $details['params']);
+                return $this->redirect()->toRoute(
+                    $details['route'], $details['params']
+                );
             }
 
             // Similarly, if the user is in the process of bulk-saving records,
@@ -748,13 +745,13 @@ class MyResearchController extends AbstractBase
                 foreach ($bulkIds as $id) {
                     $params[] = urlencode('ids[]') . '=' . urlencode($id);
                 }
-                $saveUrl = $this->getLightboxAwareUrl('cart-save');
+                $saveUrl = $this->url()->fromRoute('cart-save');
                 $saveUrl .= (strpos($saveUrl, '?') === false) ? '?' : '&';
                 return $this->redirect()
                     ->toUrl($saveUrl . implode('&', $params));
             }
 
-            return $this->lightboxAwareRedirect('userList', ['id' => $finalId]);
+            return $this->redirect()->toRoute('userList', ['id' => $finalId]);
         } catch (\Exception $e) {
             switch(get_class($e)) {
             case 'VuFind\Exception\ListPermission':

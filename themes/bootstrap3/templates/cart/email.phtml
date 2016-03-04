@@ -7,8 +7,9 @@
     . '<li><a href="' .$this->url('cart-home'). '">' .$this->transEsc('Cart'). '</a></li> '
     . '<li class="active">' . $this->transEsc('email_selected_favorites') . '</li>';
 ?>
+<h2><?=$this->transEsc('bookbag_email_selected') ?></h2>
 <?=$this->flashmessages()?>
-<form class="form-horizontal" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
+<form class="form-horizontal" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail" data-lightbox-success="<?=$this->transEsc('bulk_email_success') ?>">
   <? foreach ($this->records as $current): ?>
     <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>" />
   <? endforeach; ?>
