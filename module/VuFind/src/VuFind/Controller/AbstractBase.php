@@ -70,37 +70,53 @@ class AbstractBase extends AbstractActionController
      */
     public function preDispatch(MvcEvent $e)
     {
-        $pm = $this->getServiceLocator()->get('VuFind\PermissionManager');
-
-        $dl = $pm->getDisplayLogic($this->accessPermission);
-        // Make sure the current user has permission to access the module:
-        if ($this->accessPermission && isset($dl[0])) {
-            switch ($dl[0]) {
-                case 'promptlogin':
-                    $e->setResponse($this->forceLogin(null, [], false));
-                    break;
-                case 'showMessage':
-                    $this->flashMessenger()->addMessage($this->translate($dl[1]), 'error');
-                    $e->setResponse($this->redirect()->toRoute('error-permissiondenied'));
-                    break;
-                case 'showTemplate':
-                    // TODO: implement me
-                    break;
-                case 'exception':
-                    throw new ForbiddenException('Access denied.');
-                    break;
-                default:
-                    throw new ForbiddenException('Access denied.');
-                    break;
+        if ($this->accessPermission) {
+            $exceptionDescription = 'Access denied.';
+            $pm = $this->getPermissionManager();
+            $dl = $pm->getDisplayLogic($this->accessPermission);
+            // Make sure the current user has permission to access the module:
+            if (isset($dl[0])) {
+                switch ($dl[0]) {
+                    case 'promptlogin':
+                        $e->setResponse($this->forceLogin(null, [], false));
+                        break;
+                    case 'showMessage':
+                        $this->flashMessenger()->addMessage(
+                            $this->translate($dl[1]), 'error'
+                        );
+                        $e->setResponse(
+                            $this->redirect()->toRoute('error-permissiondenied')
+                        );
+                        break;
+                    case 'showTemplate':
+                        // TODO: implement me
+                        break;
+                    case 'exception':
+                        if (isset($dl[2])) {
+                            $exceptionDescription = $dl[2];
+                        }
+                        if (
+                            isset($dl[1])
+                            && class_exists($dl[1])
+                            && is_subclass_of($dl[1], 'Exception')
+                        ) {
+                            throw new $dl[1]($exceptionDescription);
+                        }
+                        // Do not break; if the if-clause is not true,
+                        // just continue with default section
+                    default:
+                        throw new ForbiddenException($exceptionDescription);
+                        break;
+                }
             }
-        }
-        else if ($this->accessPermission
-            && !$this->getAuthorizationService()->isGranted($this->accessPermission)
-        ) {
-            // if permission is necessary, but denied and we have no behavior rules,
-            // prompt for login as a default behavior
-            $e->setResponse($this->forceLogin(null, [], false));
-            throw new ForbiddenException('Access denied.');
+            else if (
+                !$this->getAuthorizationService()->isGranted($this->accessPermission)
+            ) {
+                // if permission is necessary, but denied and we have no
+                // behavior rules, prompt for login as a default behavior
+                $e->setResponse($this->forceLogin(null, [], false));
+                throw new ForbiddenException($exceptionDescription);
+            }
         }
         return;
     }
@@ -113,11 +129,7 @@ class AbstractBase extends AbstractActionController
     protected function attachDefaultListeners()
     {
         parent::attachDefaultListeners();
-        $pm = $this->getServiceLocator()->get('VuFind\PermissionManager');
 
-        if ($this->searchClassId && $pm->getConfigContext('access.'.$this->searchClassId) !== null) {
-            $this->accessPermission = 'access.'.$this->searchClassId;
-        }
         // Attach preDispatch event if we need to check permissions.
         if ($this->accessPermission) {
             $events = $this->getEventManager();
