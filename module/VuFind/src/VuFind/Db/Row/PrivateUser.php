@@ -39,6 +39,13 @@ namespace VuFind\Db\Row;
 class PrivateUser extends User
 {
     /**
+     * Session container for account information.
+     *
+     * @var \Zend\Session\Container
+     */
+    protected $session = null;
+
+    /**
      * __get
      *
      * @param string $name Field to retrieve.
@@ -70,8 +77,22 @@ class PrivateUser extends User
     {
         $this->initialize();
         $this->id = -1; // fake ID
-        $session = new \Zend\Session\Container('Account');
-        $session->userDetails = $this->toArray();
+        if (null === $this->session) {
+            throw new \Exception('Expected session container missing.');
+        }
+        $this->session->userDetails = $this->toArray();
         return 1;
+    }
+
+    /**
+     * Set session container
+     *
+     * @param \Zend\Session\Container $session Session container
+     *
+     * @return void
+     */
+    public function setSession(\Zend\Session\Container $session)
+    {
+        $this->session = $session;
     }
 }
