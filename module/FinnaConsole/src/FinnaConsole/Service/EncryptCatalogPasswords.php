@@ -92,7 +92,6 @@ class EncryptCatalogPasswords extends AbstractService
             return false;
         }
 
-
         $users = $this->table->select();
         $count = 0;
         $usersChanged = 0;

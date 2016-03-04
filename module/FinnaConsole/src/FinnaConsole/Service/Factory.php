@@ -70,7 +70,6 @@ class Factory
             ->get('User');
         $config = $sm->get('VuFind\Config')->get('config');
 
-
         return new EncryptCatalogPasswords($table, $config);
     }
 
