@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -41,8 +41,6 @@ class Params extends \VuFind\Search\Base\Params
 {
     use \Finna\Search\FinnaParams;
 
-    const SPATIAL_DATERANGE_FIELD = null;
-
     /**
      * MetaLib Search set IRDs
      *
@@ -51,17 +49,17 @@ class Params extends \VuFind\Search\Base\Params
     protected $irds;
 
     /**
-     * Pull the search parameters
+     * Add filters to the object based on values found in the request object.
      *
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest($request)
+    protected function initFilters($request)
     {
-        parent::initFromRequest($request);
-        $this->metalibSearchSet = $request->get('set');
+        parent::initFilters($request);
+        $this->addFilter('metalib_set:' . $request->get('set', ''));
     }
 
     /**
@@ -93,21 +91,10 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getMetaLibSearchSet()
     {
-        return $this->metalibSearchSet;
-    }
-
-    /**
-     * Restore settings from a minified object found in the database.
-     *
-     * @param \VuFind\Search\Minified $minified Minified Search Object
-     *
-     * @return void
-     */
-    public function deminifyFinnaSearch($minified)
-    {
-        if (isset($minified->f_mset)) {
-            $this->metalibSearchSet = $minified->f_mset;
+        if (!empty($this->filterList['metalib_set'][0])) {
+            return $this->filterList['metalib_set'][0];
         }
+        return '';
     }
 
     /**
@@ -125,7 +112,7 @@ class Params extends \VuFind\Search\Base\Params
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
         $backendParams->set('filterList', []);
-        $backendParams->set('searchSet', $this->metalibSearchSet);
+        $backendParams->set('searchSet', $this->getMetalibSearchSet());
         return $backendParams;
     }
 }

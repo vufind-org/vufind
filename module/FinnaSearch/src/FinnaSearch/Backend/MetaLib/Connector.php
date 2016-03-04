@@ -217,7 +217,8 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         }
 
         $authorized = $this->auth->isGranted('finna.authorized');
-        $irdList = $args['searchSet'];
+        $irdList = !empty($args['searchSet'])
+            ? $args['searchSet'] : '';
 
         if (strncmp($irdList, '_ird:', 5) != 0) {
             if (array_key_exists($irdList, $this->sets)) {

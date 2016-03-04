@@ -23,7 +23,6 @@ ALTER TABLE comments ADD INDEX `finna_rating` (`finna_rating`);
 --
 ALTER TABLE search ADD COLUMN `finna_search_id` char(32) DEFAULT '';
 ALTER TABLE search ADD COLUMN `finna_schedule` int(1) NOT NULL DEFAULT '0';
-ALTER TABLE search ADD COLUMN `finna_search_object` blob;
 ALTER TABLE search ADD COLUMN `finna_last_executed` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
 ALTER TABLE search ADD COLUMN `finna_schedule_base_url` varchar(255) NOT NULL DEFAULT '';
 ALTER TABLE search ADD INDEX `finna_search_id` (`finna_search_id`);

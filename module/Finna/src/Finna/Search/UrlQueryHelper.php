@@ -134,23 +134,4 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
             return '?' . $this->buildQueryString($params, false);
         }
     }
-
-    /**
-     * Get an array of URL parameters.
-     *
-     * @return array
-     */
-    public function getParamArray()
-    {
-        $params = parent::getParamArray();
-        $filter = $this->params->getSpatialDateRangeFilter();
-        if ($filter && isset($filter['type']) && isset($filter['query'])) {
-            $field = $this->params->getSpatialDateRangeField() . '_type';
-            $params[$field] = $filter['type'];
-        }
-        if ($set = $this->params->getMetaLibSearchSet()) {
-            $params['set'] = $set;
-        }
-        return $params;
-    }
 }

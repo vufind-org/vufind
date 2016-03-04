@@ -63,12 +63,14 @@ class SearchController extends \VuFind\Controller\SearchController
 
         $range = [
             'type' => 'date',
-            'field' => \Finna\Search\Solr\Params::SPATIAL_DATERANGE_FIELD,
+            'field' => $view->saved->getParams()->getDateRangeSearchField()
         ];
 
         if ($view->saved
-            && $filter = $view->saved->getParams()->getSpatialDateRangeFilter()
+            && $filter = $view->saved->getParams()->getDateRangeFilter()
         ) {
+            $filter = $view->saved->getParams()
+                ->parseDateRangeFilter($filter['value']);
             if (isset($filter['from']) && isset($filter['to'])) {
                 $range['values'] = [$filter['from'], $filter['to']];
                 $range['rangeType'] = $filter['type'];
@@ -479,7 +481,7 @@ class SearchController extends \VuFind\Controller\SearchController
     protected function restoreAdvancedSearch($searchId)
     {
         $savedSearch = parent::restoreAdvancedSearch($searchId);
-        if ($savedSearch) {
+/*        if ($savedSearch) {
             if ($filter = $savedSearch->getParams()->getSpatialDateRangeFilter(true)
             ) {
                 $req = new \Zend\Stdlib\Parameters();
@@ -488,11 +490,11 @@ class SearchController extends \VuFind\Controller\SearchController
                     [$filter['field'] . ':"' . $filter['value'] . '"']
                 );
                 if (isset($filter['type'])) {
-                    $req->set('search_sdaterange_mvtype', $filter['type']);
+                    $req->set('search_daterange_mv_type', $filter['type']);
                 }
                 $savedSearch->getParams()->initSpatialDateRangeFilter($req);
             }
-        }
+        }*/
         return $savedSearch;
     }
 

@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library 2015.
+ * Copyright (C) The National Library 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Search;
-use Finna\Solr\Utils;
 use VuFind\Search\QueryAdapter;
 
 /**
@@ -40,33 +39,6 @@ use VuFind\Search\QueryAdapter;
 */
 trait FinnaParams
 {
-    /**
-     * Current date range filter
-     *
-     * @var array
-     */
-    protected $spatialDateRangeFilter = null;
-
-    /**
-     * MetaLib search set
-     *
-     * @var string
-     */
-    protected $metalibSearchSet = null;
-
-    /**
-     * Add filters to the object based on values found in the request object.
-     *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
-     * request.
-     *
-     * @return void
-     */
-    public function initDateFilters($request)
-    {
-        return parent::initDateFilters($request);
-    }
-
     /**
      * Build a string for onscreen display showing the
      *   query used in the search (not the filters).
@@ -84,75 +56,6 @@ trait FinnaParams
 
         // Build display query:
         return QueryAdapter::display($this->getQuery(), $translate, $showField);
-    }
-
-    /**
-     * Return the current filters as an array of strings ['field:filter']
-     *
-     * @return array $filterQuery
-     */
-    public function getFilterSettings()
-    {
-        $filters = parent::getFilterSettings();
-        if ($this->spatialDateRangeFilter) {
-            foreach ($filters as &$filter) {
-                $regex = '/[}]*' . self::SPATIAL_DATERANGE_FIELD . ':.*$/';
-                if (preg_match($regex, $filter)) {
-                    $from = $this->spatialDateRangeFilter['from'];
-                    $to = $this->spatialDateRangeFilter['to'];
-                    $type = $this->spatialDateRangeFilter['type'];
-                    $field = $this->spatialDateRangeFilter['field'];
-                    $filter
-                        = Utils::buildSpatialDateRangeQuery(
-                            $from, $to, $type, $field
-                        );
-                    break;
-                }
-            }
-        }
-        return $filters;
-    }
-
-    /**
-     * Format a single filter for use in getFilterList().
-     *
-     * @param string $field     Field name
-     * @param string $value     Field value
-     * @param string $operator  Operator (AND/OR/NOT)
-     * @param bool   $translate Should we translate the label?
-     *
-     * @return array
-     */
-    protected function formatFilterListEntry($field, $value, $operator, $translate)
-    {
-        $res = parent::formatFilterListEntry($field, $value, $operator, $translate);
-        if ($this->spatialDateRangeFilter
-            && isset($this->spatialDateRangeFilter['field'])
-            && $this->spatialDateRangeFilter['field'] == $field
-        ) {
-            $filter = $this->spatialDateRangeFilter['val'];
-            $type = isset($this->spatialDateRangeFilter['type'])
-                ? $this->spatialDateRangeFilter['type']
-                : null
-            ;
-
-            $range = Utils::parseSpatialDateRange($filter, $type, true);
-            if ($range) {
-                $display = '';
-                $from = $range['from'];
-                $to = $range['to'];
-
-                if ($from != '*') {
-                    $display .= $from;
-                }
-                $display .= '–';
-                if ($to != '*') {
-                    $display .= $to;
-                }
-                $res['displayText'] = $display;
-            }
-        }
-        return $res;
     }
 
     /**
@@ -175,53 +78,16 @@ trait FinnaParams
     }
 
     /**
-     * Return index field name used in date range searches.
+     * Get the date range field from options, if available
      *
      * @return string
      */
-    public function getSpatialDateRangeField()
+    public function getDateRangeSearchField()
     {
-        return self::SPATIAL_DATERANGE_FIELD;
-    }
-
-    /**
-     * Return current MetaLib search set
-     *
-     * @return string
-     */
-    public function getMetaLibSearchSet()
-    {
-        return $this->metalibSearchSet;
-    }
-
-    /**
-     * Return current date range filter.
-     *
-     * @param boolean $fromFilterList False if date range filter is already
-     * inited from the request object (see initSpatialDateRangeFilter).
-     * True if date range filter should be resolved from the list of active filters.
-     *
-     * @return mixed false|array Filter
-     */
-    public function getSpatialDateRangeFilter($fromFilterList = false)
-    {
-        if ($fromFilterList) {
-            $daterangeField = $this->getSpatialDateRangeField();
-            $filterList = $this->getFilterList();
-            foreach ($filterList as $facet => $filters) {
-                foreach ($filters as $filter) {
-                    if ($filter['field'] ==  $daterangeField) {
-                        if ($current = $this->getSpatialDateRangeFilter()) {
-                            $filter['type'] = $current['type'];
-                        }
-                        return $filter;
-                    }
-                }
-            }
-            return false;
-        } else {
-            return $this->spatialDateRangeFilter;
+        if (!is_callable([$this->getOptions(), 'getDateRangeSearchField'])) {
+            return '';
         }
+        return $this->getOptions()->getDateRangeSearchField();
     }
 
     /**
@@ -248,30 +114,19 @@ trait FinnaParams
     /**
      * Remove date range filter from the given list of filters.
      *
-     * @param array $filters Filters
+     * @param array $filterList Filters
      *
      * @return array
      */
-    public function removeDaterangeFilter($filters)
+    public function removeDateRangeFilter($filterList)
     {
-        $daterangeField = $this->getSpatialDateRangeField();
-        $filterList = $this->getFilterList();
-        foreach ($filterList as $field => &$filters) {
-            $filters
-                = array_filter(
-                    $filters,
-                    function ($f) use ($daterangeField) {
-                        return $f['field'] != $daterangeField;
-                    }
-                );
+        $dateRangeField = $this->getDateRangeSearchField();
+        if ($dateRangeField) {
+            $label = $this->getFacetLabel($dateRangeField);
+            if (isset($filterList[$label])) {
+                unset($filterList[$label]);
+            }
         }
-        $filterList
-            = array_filter(
-                $filterList,
-                function ($filters) {
-                    return count($filters) > 0;
-                }
-            );
         return $filterList;
     }
 
@@ -283,5 +138,133 @@ trait FinnaParams
     public function removeHiddenFilters()
     {
         $this->hiddenFilters = [];
+    }
+
+    /**
+     * Parse "from" and "to" values out of a spatial date range
+     * filter (or return false if the filter is not a range).
+     *
+     * @param string $filter Solr filter to parse.
+     *
+     * @return array|bool   Array with 'from', 'to' and 'type' (if available) values
+     * extracted from the range or false if the provided query is not a range.
+     */
+    public function parseDateRangeFilter($filter)
+    {
+        // VuFind2 initialized date range:
+        // search_daterange_mv:(Intersects|Within)|[1900 TO 2000]
+        $regex = '/(\w+)\|\[([\d-]+|\*)\s+TO\s+([\d-]+|\*)\]/';
+        if (preg_match($regex, $filter, $matches)) {
+            return [
+                'from' => $matches[2], 'to' => $matches[3], 'type' => $matches[1]
+            ];
+        }
+
+        // VuFind2 uninitialized or generic date range:
+        // search_daterange_mv:[1900 TO 2000]
+        $regex = '/\[([\d-]+|\*)\s+TO\s+([\d-]+|\*)\]/';
+        if (preg_match($regex, $filter, $matches)) {
+            return [
+                'from' => $matches[1], 'to' => $matches[2]
+            ];
+        }
+
+        // VuFind1 overlap
+        $regex
+            = '/[\(\[]\"*[\d-]+\s+([\d-]+)\"*[\s\w]+\"*([\d-]+)\s+[\d-]+\"*[\)\]]/';
+
+        if (preg_match($regex, $filter, $matches)) {
+            $from = $matches[1];
+            $to = $matches[2];
+            $type = 'overlap';
+        } else {
+            // VuFind1 within
+            $regex
+    // @codingStandardsIgnoreLine - long regex
+                = '/[\(\[]\"*([\d-]+\.?\d*)\s+[\d-]+\"*[\s\w]+\"*[\d-]+\s+([\d-]+\.?\d*)\"*[\)\]]/';
+
+            if (!preg_match($regex, $filter, $matches)) {
+                return false;
+            }
+
+            $from = $matches[1];
+            $to = $matches[2];
+            $type = 'within';
+            // Adjust date range end points to match original search query
+            $from += 0.5;
+            $to -= 0.5;
+        }
+        $from = $from * 86400;
+        $from = new \DateTime("@{$from}");
+        $from = $from->format('Y');
+
+        $to = $to * 86400;
+        $to = new \DateTime("@{$to}");
+        $to = $to->format('Y');
+
+        return ['from' => $from, 'to' => $to, 'type' => $type];
+    }
+
+    /**
+     * Format a single filter for use in getFilterList().
+     *
+     * @param string $field     Field name
+     * @param string $value     Field value
+     * @param string $operator  Operator (AND/OR/NOT)
+     * @param bool   $translate Should we translate the label?
+     *
+     * @return array
+     */
+    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    {
+        $res = parent::formatFilterListEntry($field, $value, $operator, $translate);
+        return $this->formatDateRangeFilterListEntry($res, $field, $value);
+    }
+
+    /**
+     * Format a single filter for use in getFilterList().
+     *
+     * @param array  $entry List entry
+     * @param string $field Field name
+     * @param string $value Field value
+     *
+     * @return array
+     */
+    protected function formatDateRangeFilterListEntry($listEntry, $field, $value)
+    {
+        if ($this->isDateRangeFilter($field)) {
+            $range = $this->parseDateRangeFilter($value);
+            if ($range) {
+                $display = '';
+                $from = $range['from'];
+                $to = $range['to'];
+
+                if ($from != '*') {
+                    $display .= $from;
+                }
+                $ndash = html_entity_decode('&#x2013;', ENT_NOQUOTES, 'UTF-8');
+                $display .= $ndash;
+                if ($to != '*') {
+                    $display .= $to;
+                }
+                $listEntry['displayText'] = $display;
+            }
+        }
+        return $listEntry;
+    }
+
+    /**
+     * Check if the given filter is a date range filter
+     *
+     * @param string $field Filter field
+     *
+     * @return boolean
+     */
+    protected function isDateRangeFilter($field)
+    {
+        if (!($dateRangeField = $this->getDateRangeSearchField())) {
+            return false;
+        }
+        return $field == $dateRangeField;
     }
 }

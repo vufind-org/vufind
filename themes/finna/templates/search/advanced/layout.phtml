@@ -24,30 +24,10 @@
     }
     $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
 
-    // Handle range filters:
-    //   1. search_daterange_mv is editable with a slider in the UI
-    //   2. Possible other range filters are displayed (without sliders)
-    //      in the list of other active filters and can only be toggled off
-
-    // Build a request object of range filters and init params
-    $req = new \Zend\Stdlib\Parameters();
-    $reqRanges = [];
-    foreach ($ranges as $range) {
-       if (!isset($range['values']) || $range['values'][0] == '' || $range['values'][1] == '') {
-          continue;
-       }
-       $field = $range['field'];
-       $reqRanges[] = $field;
-       $req->set("{$field}from", $range['values'][0]);
-       $req->set("{$field}to", $range['values'][1]);
-    }
-    $req->set('daterange', $reqRanges);
-    $this->saved->getParams()->initDateFilters($req);
-
     $searchFilters = $this->saved->getParams()->getFilterList();
     // Remove date range filter (search_daterange_mv) so that it does not get included
     // in the  list of active filters
-    $searchFilters = $this->saved->getParams()->removeDaterangeFilter($searchFilters);
+    $searchFilters = $this->saved->getParams()->removeDateRangeFilter($searchFilters);
     $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
   } else {
     $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
