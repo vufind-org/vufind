@@ -307,7 +307,10 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function initSpatialDateRangeFilter($request)
     {
-        $dateRangeField = $this->getOptions()->getDateRangeSearchField();
+        $dateRangeField = $this->getDateRangeSearchField();
+        if (!$dateRangeField) {
+            return;
+        }
         $type = $request->get("{$dateRangeField}_type");
         if (!$type) {
             // VuFind 1
