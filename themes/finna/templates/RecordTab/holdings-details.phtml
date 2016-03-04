@@ -1,0 +1,15 @@
+<? if (isset($holding['textfields'])): ?>
+  <? foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+  <div class="copy-details <?=isset($heading) ? 'group-heading' : "row $mode"?>">
+    <? // Translation for summary is a special case for backwards-compatibility ?>
+    <? if (isset($mode)): ?>
+    <div class="col-sm-3 col-xs-6"><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</div>
+    <? endif;?>
+    <div <?= !isset($heading) ? ' class="col-sm-3 col-xs-6"' : ''?>>
+    <? foreach ($textFields as $current): ?>
+      <?=$this->escapeHtml($current)?><br/>
+    <? endforeach; ?>
+    </div>
+  </div>
+  <? endforeach; ?>
+<? endif; ?>
