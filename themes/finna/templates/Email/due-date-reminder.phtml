@@ -1,4 +1,4 @@
-<?= sprintf('%s %d %s', $this->translate('due_date_email_prefix'), count($this->loans), $this->translate('due_date_email_suffix' . (count($this->loans) == 1 ? '_singular' : ''))) ?>
+<?= str_replace('%%loancount%%', count($this->loans), $this->translate('due_date_email_txt' . (count($this->loans) == 1 ? '_singular' : ''))) ?>
 
 
 <? foreach ($this->loans as $loan): ?>
