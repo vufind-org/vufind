@@ -404,12 +404,13 @@ class Wikipedia implements TranslatorAwareInterface
             $page = array_shift($page['revisions']);
             // Check for redirection
             $as_lines = explode("\n", $page['*']);
-            if (stristr($as_lines[0], '#REDIRECT')) {
-                preg_match('/\[\[(.*)\]\]/', $as_lines[0], $matches);
-                $redirectTo = $matches[1];
-            } else {
-                $redirectTo = false;
-                break;
+            $redirectTo = false;
+            foreach(['#REDIRECT', '#WEITERLEITUNG', '#Redirect', '#redirect', '#OMDIRIGERING'] as $redirectToken) {
+                if (stristr($as_lines[0], $redirectToken)) {
+                    preg_match('/\[\[(.*)\]\]/', $as_lines[0], $matches);
+                    $redirectTo = $matches[1];
+                    break;
+                }
             }
         }
 
