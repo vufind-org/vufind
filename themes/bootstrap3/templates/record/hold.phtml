@@ -12,9 +12,9 @@
 <p class="helptext"><?=$this->helpText?></p>
 <? endif; ?>
 
-<?=$this->flashmessages()?>
 <div class="hold-form">
   <form class="form-horizontal" method="post" name="placeHold">
+    <?=$this->flashmessages()?>
     <? if (in_array("comments", $this->extraHoldFields)): ?>
       <div class="form-group">
         <label class="col-sm-3 control-label"><?=$this->transEsc("Comments")?>:</label>

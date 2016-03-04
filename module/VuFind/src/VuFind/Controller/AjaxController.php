@@ -132,25 +132,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Get the contents of a lightbox; note that unlike most methods, this
-     * one actually returns HTML rather than JSON.
-     *
-     * @return mixed
-     */
-    protected function getLightboxAjax()
-    {
-        // Turn layouts on for this action since we want to render the
-        // page inside a lightbox:
-        $this->layout()->setTemplate('layout/lightbox');
-
-        // Call the requested action:
-        return $this->forwardTo(
-            $this->params()->fromQuery('submodule'),
-            $this->params()->fromQuery('subaction')
-        );
-    }
-
-    /**
      * Support method for getItemStatuses() -- filter suppressed locations from the
      * array of item information for a particular bib record.
      *
@@ -734,7 +715,7 @@ class AjaxController extends AbstractBase
             ];
         }
 
-        // Set layout to render the page inside a lightbox:
+        // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
         $view = $this->createViewModel(
             [
@@ -794,7 +775,7 @@ class AjaxController extends AbstractBase
     public function resultgooglemapinfoAction()
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        // Set layout to render the page inside a lightbox:
+        // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
 
         $results = $this->getResultsManager()->get('Solr');

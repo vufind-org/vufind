@@ -254,6 +254,7 @@ class AbstractRecord extends AbstractBase
     public function ajaxtabAction()
     {
         $this->loadRecord();
+        // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
         return $this->showTab(
             $this->params()->fromPost('tab', $this->getDefaultTab()), true
@@ -574,7 +575,7 @@ class AbstractRecord extends AbstractBase
     {
         $details = $this->getRecordRouter()
             ->getTabRouteDetails($this->loadRecord(), $tab);
-        $target = $this->getLightboxAwareUrl($details['route'], $details['params']);
+        $target = $this->url()->fromRoute($details['route'], $details['params']);
 
         // Special case: don't use anchors in jquerymobile theme, since they
         // mess things up!

@@ -113,6 +113,11 @@ class AbstractBase extends AbstractActionController
      */
     protected function createViewModel($params = null)
     {
+        if ('lightbox' === $this->params()->fromPost(
+            'layout', $this->params()->fromQuery('layout', false)
+        )) {
+            $this->layout()->setTemplate('layout/lightbox');
+        }
         return new ViewModel($params);
     }
 
@@ -241,128 +246,6 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
-     * Are we running in a lightbox?
-     *
-     * @return bool
-     */
-    public function inLightbox()
-    {
-        return ($this->layout()->getTemplate() == 'layout/lightbox');
-    }
-
-    /**
-     * Get a URL for a route with lightbox awareness.
-     *
-     * @param string $route              Route name
-     * @param array  $params             Route parameters
-     * @param array  $options            RouteInterface-specific options to use in
-     * url generation, if any
-     * @param bool   $reuseMatchedParams Whether to reuse matched parameters
-     *
-     * @return string
-     */
-    public function getLightboxAwareUrl($route, $params = [],
-        $options = [], $reuseMatchedParams = false
-    ) {
-        // Rearrange the parameters if we're in a lightbox:
-        if ($this->inLightbox()) {
-            // Make sure we have a query:
-            $options['query'] = isset($options['query'])
-                ? $options['query'] : [];
-
-            // Map ID route parameter into a GET parameter if necessary:
-            if (isset($params['id'])) {
-                $options['query']['id'] = $params['id'];
-            }
-
-            // Change the current route into submodule/subaction lightbox params:
-            $parts = explode('-', $route);
-            $options['query']['submodule'] = $parts[0];
-            $options['query']['subaction'] = isset($parts[1]) ? $parts[1] : 'home';
-            $options['query']['method'] = 'getLightbox';
-
-            // Override the current route with the lightbox action:
-            $route = 'default';
-            $params['controller'] = 'AJAX';
-            $params['action'] = 'JSON';
-        }
-
-        // Build the URL:
-        return $this->url()
-            ->fromRoute($route, $params, $options, $reuseMatchedParams);
-    }
-
-    /**
-     * Lightbox-aware redirect -- if we're in a lightbox, go to a route that
-     * keeps us there; otherwise, go to the normal route.
-     *
-     * @param string $route              Route name
-     * @param array  $params             Route parameters
-     * @param array  $options            RouteInterface-specific options to use in
-     * url generation, if any
-     * @param bool   $reuseMatchedParams Whether to reuse matched parameters
-     *
-     * @return \Zend\Http\Response
-     */
-    public function lightboxAwareRedirect($route, $params = [],
-        $options = [], $reuseMatchedParams = false
-    ) {
-        return $this->redirect()->toUrl(
-            $this->getLightboxAwareUrl(
-                $route, $params, $options, $reuseMatchedParams
-            )
-        );
-    }
-
-    /**
-     * Support method for forceLogin() -- convert a lightbox URL to a non-lightbox
-     * URL.
-     *
-     * @param string $url URL to convert
-     *
-     * @return string
-     */
-    protected function delightboxURL($url)
-    {
-        // If this isn't a lightbox URL, we don't want to mess with it!
-        $parts = parse_url($url);
-        parse_str($parts['query'], $query);
-        if (false === strpos($parts['path'], '/AJAX/JSON')) {
-            return $url;
-        }
-
-        // Build the route name:
-        $routeName = strtolower($query['submodule']) . '-'
-            . strtolower($query['subaction']);
-
-        // Eliminate lightbox-specific parameters that might confuse the router:
-        unset($query['method'], $query['subaction'], $query['submodule']);
-
-        // Get a preliminary URL that we'll need to analyze in order to build
-        // the final URL:
-        $url = $this->url()->fromRoute($routeName, $query);
-
-        // Using the URL generated above, figure out which parameters are route
-        // params and which are GET params:
-        $request = new \Zend\Http\Request();
-        $request->setUri($url);
-        $router = $this->getEvent()->getRouter();
-        $matched = $router->match($request)->getParams();
-        $getParams = $routeParams = [];
-        foreach ($query as $current => $val) {
-            if (isset($matched[$current])) {
-                $routeParams[$current] = $val;
-            } else {
-                $getParams[$current] = $val;
-            }
-        }
-
-        // Now build the final URL:
-        return $this->url()
-            ->fromRoute($routeName, $routeParams, ['query' => $getParams]);
-    }
-
-    /**
      * Redirect the user to the login screen.
      *
      * @param string $msg     Flash message to display on login screen
@@ -378,22 +261,19 @@ class AbstractBase extends AbstractActionController
             $msg = 'You must be logged in first';
         }
 
-        // Store the current URL as a login followup action unless we are in a
-        // lightbox (since lightboxes use a different followup mechanism).
-        if (!$this->inLightbox()) {
-            $this->followup()->store($extras);
-        } else {
-            // If we're in a lightbox and using an authentication method
-            // with a session initiator, the user will be redirected outside
-            // of VuFind and then redirected back. Thus, we need to store a
-            // followup URL to avoid losing context, but we don't want to
-            // store the AJAX request URL that populated the lightbox. The
-            // delightboxURL() routine will remap the URL appropriately.
-            // We can set this whether or not there's a session initiator
-            // because it will be cleared when needed.
-            $url = $this->delightboxURL($this->getServerUrl());
-            $this->followup()->store($extras, $url);
+        // If we're doing off-site login requests,
+        // we don't want to return to the lightbox
+        $serverUrl = $this->getServerUrl();
+        if ($this->getAuthManager()->getSessionInitiator($serverUrl)) {
+            $serverUrl = str_replace(
+                ['?layout=lightbox', '&layout=lightbox'],
+                ['?', '&'],
+                $serverUrl
+            );
         }
+
+        // Store the current URL as a login followup action
+        $this->followup()->store($extras, $serverUrl);
         if (!empty($msg)) {
             $this->flashMessenger()->addMessage($msg, 'error');
         }
@@ -493,7 +373,7 @@ class AbstractBase extends AbstractActionController
     {
         return $this->getServiceLocator()->get('VuFind\RecordCache');
     }
-    
+
     /**
      * Get the record router.
      *
@@ -670,8 +550,13 @@ class AbstractBase extends AbstractActionController
      */
     protected function setFollowupUrlToReferer()
     {
+        // lbreferer is the stored current url of the lightbox
+        // which overrides the url from the server request when present
+        $referer = $this->getRequest()->getQuery()->get(
+            'lbreferer',
+            $this->getRequest()->getServer()->get('HTTP_REFERER', null)
+        );
         // Get the referer -- if it's empty, there's nothing to store!
-        $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         if (empty($referer)) {
             return;
         }
@@ -721,8 +606,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getFollowupUrl()
     {
-        // followups aren't used in lightboxes.
-        return ($this->inLightbox()) ? '' : $this->followup()->retrieve('url', '');
+        return $this->followup()->retrieve('url', '');
     }
 
     /**
