@@ -224,9 +224,9 @@ trait FinnaParams
     /**
      * Format a single filter for use in getFilterList().
      *
-     * @param array  $entry List entry
-     * @param string $field Field name
-     * @param string $value Field value
+     * @param array  $listEntry List entry
+     * @param string $field     Field name
+     * @param string $value     Field value
      *
      * @return array
      */

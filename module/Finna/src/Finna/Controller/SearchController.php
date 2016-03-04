@@ -471,34 +471,6 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
-     * Either assign the requested search object to the view or display a flash
-     * message indicating why the operation failed.
-     *
-     * @param string $searchId ID value of a saved advanced search.
-     *
-     * @return bool|object     Restored search object if found, false otherwise.
-     */
-    protected function restoreAdvancedSearch($searchId)
-    {
-        $savedSearch = parent::restoreAdvancedSearch($searchId);
-/*        if ($savedSearch) {
-            if ($filter = $savedSearch->getParams()->getSpatialDateRangeFilter(true)
-            ) {
-                $req = new \Zend\Stdlib\Parameters();
-                $req->set(
-                    'filter',
-                    [$filter['field'] . ':"' . $filter['value'] . '"']
-                );
-                if (isset($filter['type'])) {
-                    $req->set('search_daterange_mv_type', $filter['type']);
-                }
-                $savedSearch->getParams()->initSpatialDateRangeFilter($req);
-            }
-        }*/
-        return $savedSearch;
-    }
-
-    /**
      * Try a search and return results if found
      *
      * @param \VuFind\Search\SearchRunner $runner Search runner
