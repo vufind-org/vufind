@@ -147,7 +147,9 @@ class Params extends \VuFind\Search\Solr\Params
         // Extract field and value from URL string:
         list($field, $value) = $this->parseFilter($filter);
 
-        if ($field == $this->getDateRangeSearchField()) {
+        if ($field == $this->getDateRangeSearchField()
+            || $field == self::SPATIAL_DATERANGE_FIELD_VF1
+        ) {
             // Date range filters are processed
             // separately (see initSpatialDateRangeFilter)
             return;
