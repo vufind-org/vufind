@@ -60,4 +60,3 @@ class TagController extends AbstractSearch
         return $this->resultsAction();
     }
 }
-

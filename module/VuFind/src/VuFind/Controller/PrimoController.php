@@ -79,4 +79,3 @@ class PrimoController extends AbstractSearch
         return $this->resultsAction();
     }
 }
-
