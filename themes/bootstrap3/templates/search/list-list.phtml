@@ -1,29 +1,17 @@
-<?
-  $dataView = $this->params->getOptions()->getListViewOption();
-
-  if (!isset($this->indexStart)) {
-    $this->indexStart = 0;
-  }
-  $showCheckboxes = (isset($this->showCartControls) && $this->showCartControls)
-                || (isset($this->showBulkOptions) && $this->showBulkOptions);
-
-  $i = $this->indexStart;
-  foreach ($this->results->getResults() as $current):
-    $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart;
-?>
-  <div id="result<?=$i++ ?>" class="row result">
-    <input type="hidden" value="<?=$current->getUniqueId() ?>" class="hiddenId" />
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($current->getResourceSource())?>" class="hiddenSource" />
-    <div class="col-xs-1">
-      <div class="checkbox">
-        <label>
-          <?=$this->record($current)->getCheckbox() ?>
-          <?=$recordNumber ?>
-        </label>
-      </div>
+<? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
+<? $showCheckboxes = (isset($this->showCartControls) && $this->showCartControls)
+  || (isset($this->showBulkOptions) && $this->showBulkOptions); ?>
+<? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
+  $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
+  <div id="result<?=$i++ ?>" class="row result clearfix">
+    <div class="col-xs-1 hidden-print<? if ($showCheckboxes): ?> checkbox<? endif; ?>">
+      <label>
+        <? if ($showCheckboxes): ?>
+          <?=$this->record($current)->getCheckbox()?>
+        <? endif; ?>
+        <?=$recordNumber?>
+      </label>
     </div>
-    <div class="col-xs-11">
-      <?=$this->record($current)->getSearchResult('list')?>
-    </div>
+    <?=$this->record($current)->getSearchResult('list')?>
   </div>
 <? endforeach; ?>
