@@ -56,6 +56,23 @@ class Factory
     }
 
     /**
+     * Construct the CartController.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return BrowseController
+     */
+    public static function getCartController(ServiceManager $sm)
+    {
+        return new CartController(
+            new \Zend\Session\Container(
+                'cart_followup',
+                $sm->getServiceLocator()->get('VuFind\SessionManager')
+            )
+        );
+    }
+
+    /**
      * Construct the CollectionController.
      *
      * @param ServiceManager $sm Service manager.
@@ -107,7 +124,10 @@ class Factory
     public static function getUpgradeController(ServiceManager $sm)
     {
         return new UpgradeController(
-            $sm->getServiceLocator()->get('VuFind\CookieManager')
+            $sm->getServiceLocator()->get('VuFind\CookieManager'),
+            new \Zend\Session\Container(
+                'upgrade', $sm->getServiceLocator()->get('VuFind\SessionManager')
+            )
         );
     }
 }
