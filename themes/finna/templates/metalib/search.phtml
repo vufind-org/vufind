@@ -108,7 +108,7 @@
 $script = '
 $(document).ready(function() {
   finna.metalib.init("'
-. $this->escapeJs($currentSet) . '",'
+. $this->escapeJs($this->currentSet) . '",'
 . "'" . $this->qs . "'"
 . ');});';
 ?>

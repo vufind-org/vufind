@@ -59,7 +59,10 @@ class Params extends \VuFind\Search\Base\Params
     protected function initFilters($request)
     {
         parent::initFilters($request);
-        $this->addFilter('metalib_set:' . $request->get('set', ''));
+        if ($set = $request->get('set', '')) {
+            $this->removeAllFilters();
+            $this->addFilter('metalib_set:' . $request->get('set', ''));
+        }
     }
 
     /**

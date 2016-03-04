@@ -1238,14 +1238,13 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $this->getRequest()->getQuery()->set('ajax', 1);
 
-        $configLoader = $this->getServiceLocator()->get('VuFind\Config');
-        $options = new \Finna\Search\MetaLib\Options($configLoader);
-        $params = new \Finna\Search\MetaLib\Params($options, $configLoader);
+        $metalib = $this->getResultsManager()->get('MetaLib');
+        $params = $metalib->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
 
         $result = [];
         list($isIRD, $set)
-            = $this->getMetaLibSet($this->getRequest()->getQuery()->get('set'));
+            = $this->getMetaLibSet($params->getMetaLibSearchSet());
         if ($irds = $this->getMetaLibIrds($set)) {
             $params->setIrds($irds);
             $view = $this->forwardTo('MetaLib', 'Search');

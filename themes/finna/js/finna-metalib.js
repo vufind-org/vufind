@@ -13,9 +13,9 @@ finna.metalib = (function() {
         loading = true;
         var historySupport = window.history && window.history.pushState;
         var useAJAXLoad =  !inited || historySupport;
-        var replace = {};
-        replace.set = encodeURIComponent(searchSet);
-        replace.method = 'metalib';
+        var replace = {
+          'method': 'metalib'
+        };
 
         // Tranform current url into an 'Ajaxified' version.
         // Update url parameters 'page' and 'set' if needed.
@@ -26,11 +26,28 @@ finna.metalib = (function() {
         }
 
         page = 1;
+        var set = '';
         for (var i=0; i<parts.length; i++) {
             var param = parts[i].split('=');
             var key = param[0];
             var val = param[1];
 
+            // remove old filters
+            if (decodeURIComponent(key) == 'filter[]') {
+                console.log(val.substr(0, 12));
+                if (decodeURIComponent(val).substr(0, 12) == 'metalib_set:') {
+                    set = decodeURIComponent(val).substr(12);
+                    set = set.replace(new RegExp(/"/, 'g'), '');
+                }
+                continue;
+            }
+            
+            // take set out
+            if (key == 'set') {
+                set = decodeURIComponent(val);
+                continue;
+            }
+            
             if (key == 'page') {
                 page = val;
             }
@@ -44,10 +61,11 @@ finna.metalib = (function() {
         $.each(replace, function(key, val) {
             url += '&' + key + '=' + val;
         });
+        url += '&set=' + encodeURIComponent(set);
+        
         if (window.location.hash) {
             url += window.location.hash;
         }
-
         currentPath = url;
 
         if (!useAJAXLoad) {
