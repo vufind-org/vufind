@@ -88,16 +88,16 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Get current MetaLib search set
+     * Get a user-friendly string to describe the provided facet field.
      *
-     * @return string
+     * @param string $field Facet field name.
+     *
+     * @return string       Human-readable description of field.
      */
-    public function getMetaLibSearchSet()
+    public function getFacetLabel($field)
     {
-        if (!empty($this->filterList['metalib_set'][0])) {
-            return $this->filterList['metalib_set'][0];
-        }
-        return '';
+        return $field == 'metalib_set'
+            ? 'metalib_set' : 'unrecognized_facet_label';
     }
 
     /**
@@ -117,5 +117,18 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams->set('filterList', []);
         $backendParams->set('searchSet', $this->getMetalibSearchSet());
         return $backendParams;
+    }
+
+    /**
+     * Get current MetaLib search set
+     *
+     * @return string
+     */
+    public function getMetaLibSearchSet()
+    {
+        if (!empty($this->filterList['metalib_set'][0])) {
+            return $this->filterList['metalib_set'][0];
+        }
+        return '';
     }
 }
