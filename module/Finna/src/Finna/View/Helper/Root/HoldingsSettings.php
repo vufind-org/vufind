@@ -83,6 +83,20 @@ class HoldingsSettings extends AbstractHelper
     }
 
     /**
+     * Return configured setting for showing holdings details after the location 
+     * group title so that they can be seen without "expanding" the group.
+     * This only affects record page holdings.
+     *
+     * @return boolean
+     */
+    public function showDetailsAfterLocationGroup()
+    {
+        return empty($this->config->Item_Status->show_details_after_location_group)
+            ? false
+            : (boolean)$this->config->Item_Status->show_details_after_location_group;
+    }
+
+    /**
      * Return configured option for showing
      * link to record page in search results holdings.
      *
