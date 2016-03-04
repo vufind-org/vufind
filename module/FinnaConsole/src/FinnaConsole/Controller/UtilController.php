@@ -59,6 +59,16 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     }
 
     /**
+     * Encypt catalog passwords.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function encryptCatalogPasswordsAction()
+    {
+        return $this->runService('Finna\EncryptCatalogPasswords');
+    }
+
+    /**
      * Anonymizes all the expired user accounts.
      *
      * @return \Zend\Console\Response

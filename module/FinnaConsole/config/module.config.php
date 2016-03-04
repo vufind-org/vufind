@@ -9,13 +9,14 @@ $config = [
     ],
     'service_manager' => [
         'factories' => [
-             'VuFind\HMAC' => 'VuFind\Service\Factory::getHMAC',
-             'Finna\ClearMetalibSearch' => 'FinnaConsole\Service\Factory::getClearMetaLibSearch',
-             'Finna\DueDateReminders' => 'FinnaConsole\Service\Factory::getDueDateReminders',
-             'Finna\ExpireUsers' => 'FinnaConsole\Service\Factory::getExpireUsers',
-             'Finna\OnlinePaymentMonitor' => 'FinnaConsole\Service\Factory::getOnlinePaymentMonitor',
-             'Finna\ScheduledAlerts' => 'FinnaConsole\Service\Factory::getScheduledAlerts',
-             'Finna\VerifyRecordLinks' => 'FinnaConsole\Service\Factory::getVerifyRecordLinks'
+            'VuFind\HMAC' => 'VuFind\Service\Factory::getHMAC',
+            'Finna\ClearMetalibSearch' => 'FinnaConsole\Service\Factory::getClearMetaLibSearch',
+            'Finna\DueDateReminders' => 'FinnaConsole\Service\Factory::getDueDateReminders',
+            'Finna\EncryptCatalogPasswords' => 'FinnaConsole\Service\Factory::getEncryptCatalogPasswords',
+            'Finna\ExpireUsers' => 'FinnaConsole\Service\Factory::getExpireUsers',
+            'Finna\OnlinePaymentMonitor' => 'FinnaConsole\Service\Factory::getOnlinePaymentMonitor',
+            'Finna\ScheduledAlerts' => 'FinnaConsole\Service\Factory::getScheduledAlerts',
+            'Finna\VerifyRecordLinks' => 'FinnaConsole\Service\Factory::getVerifyRecordLinks'
         ]
     ]
 ];
