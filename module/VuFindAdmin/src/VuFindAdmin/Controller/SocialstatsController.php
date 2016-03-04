@@ -53,4 +53,3 @@ class SocialstatsController extends AbstractAdmin
         return $view;
     }
 }
-
