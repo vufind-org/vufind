@@ -92,4 +92,3 @@ class PrimoController extends \VuFind\Controller\PrimoController
         return $view;
     }
 }
-
