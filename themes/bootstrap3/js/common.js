@@ -118,12 +118,18 @@ function bulkFormHandler(event, data) {
     }
   }
 }
+function newAccountHandler() {
+  VuFind.lightbox.refreshOnClose = true;
+  if (VuFind.lightbox.originalUrl.indexOf('UserLogin') > -1) {
+    VuFind.modal('hide');
+  }
+  return true;
+}
 
 // This is a full handler for the login form
-function ajaxLogin(event) {
-  var form = event.target;
+function ajaxLogin(form) {
   $.ajax({
-    url: VuFind.path + '/AJAX/JSON?method=getSalt',
+    url: VuFind.getPath() + '/AJAX/JSON?method=getSalt',
     dataType: 'json'
   })
   .done(function(response) {
@@ -147,24 +153,21 @@ function ajaxLogin(event) {
     }
 
     // login via ajax
-    var xhr = VuFind.lightbox.ajax({
+    Lightbox.ajax({
       type: 'POST',
       url: VuFind.path + '/AJAX/JSON?method=login',
       dataType: 'json',
       data: params
     })
-    .done(function() {
-      VuFind.lightbox.refreshOnClose = true;
-      VuFind.lightbox.reload();
-    })
     .fail(function(response) {
-      VuFind.lightbox.flashMessage(response.responseJSON.data, 'danger');
+      $('#modal .modal-body .alert,.fa.fa-spinner').remove();
+      $('#modal .modal-body h2:first-child').after($('<div>').html(response.responseJSON.data).addClass('alert alert-danger'));
     });
   })
   .fail(function(response) {
-    VuFind.lightbox.flashMessage(response.responseJSON.data, 'danger');
+    $('#modal .modal-body .alert,.fa.fa-spinner').remove();
+    $('#modal .modal-body h2:first-child').after($('<div>').html(response.responseJSON.data).addClass('alert alert-danger'));
   });
-  return false;
 }
 
 // Ready functions
