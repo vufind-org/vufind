@@ -480,6 +480,18 @@ class Factory
     }
 
     /**
+     * Construct the on-demand session container factory.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Session\OnDemandContainerFactory
+     */
+    public static function getOnDemandContainerFactory(ServiceManager $sm)
+    {
+        return new \VuFind\Session\OnDemandContainerFactory($sm);
+    }
+
+    /**
      * Construct the ProxyManager configuration.
      *
      * @param ServiceManager $sm Service manager.
@@ -676,6 +688,20 @@ class Factory
     }
 
     /**
+     * Construct the search memory helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\Memory
+     */
+    public static function getSearchMemory(ServiceManager $sm)
+    {
+        return new \VuFind\Search\Memory(
+            new \Zend\Session\Container('Search', $sm->get('VuFind\SessionManager'))
+        );
+    }
+
+    /**
      * Construct the Search\Options Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -774,31 +800,6 @@ class Factory
             $tabConfig, $filterConfig,
             $sm->get('Application')->getRequest()
         );
-    }
-
-    /**
-     * Construct the Session Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \Zend\Session\SessionManager
-     */
-    public static function getSessionManager(ServiceManager $sm)
-    {
-        $cookieManager = $sm->get('VuFind\CookieManager');
-        $sessionConfig = new \Zend\Session\Config\SessionConfig();
-        $options = [
-            'cookie_path' => $cookieManager->getPath(),
-            'cookie_secure' => $cookieManager->isSecure()
-        ];
-        $domain = $cookieManager->getDomain();
-        if (!empty($domain)) {
-            $options['cookie_domain'] = $domain;
-        }
-
-        $sessionConfig->setOptions($options);
-
-        return new \Zend\Session\SessionManager($sessionConfig);
     }
 
     /**

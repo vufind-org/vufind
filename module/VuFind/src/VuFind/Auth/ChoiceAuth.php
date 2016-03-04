@@ -75,11 +75,14 @@ class ChoiceAuth extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param \Zend\Session\Container $container Session container for retaining
+     * user choices.
      */
-    public function __construct()
+    public function __construct(\Zend\Session\Container $container)
     {
         // Set up session container and load cached strategy (if found):
-        $this->session = new \Zend\Session\Container('ChoiceAuth');
+        $this->session = $container;
         $this->strategy = isset($this->session->auth_method)
             ? $this->session->auth_method : false;
     }

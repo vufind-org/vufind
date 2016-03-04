@@ -48,10 +48,7 @@ use VuFind\Exception\Forbidden as ForbiddenException,
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class AbstractBase extends AbstractActionController
-    implements AuthorizationServiceAwareInterface
 {
-    use AuthorizationServiceAwareTrait;
-
     /**
      * Permission that must be granted to access this module (false for no
      * restriction)
@@ -203,6 +200,19 @@ class AbstractBase extends AbstractActionController
     protected function getAuthManager()
     {
         return $this->getServiceLocator()->get('VuFind\AuthManager');
+    }
+
+    /**
+     * Get the authorization service (note that we're doing this on-demand
+     * rather than through injection with the AuthorizationServiceAwareInterface
+     * to minimize expensive initialization when authorization is not needed.
+     *
+     * @return \ZfcRbac\Service\AuthorizationService
+     */
+    protected function getAuthorizationService()
+    {
+        return $this->getServiceLocator()
+            ->get('ZfcRbac\Service\AuthorizationService');
     }
 
     /**
@@ -485,16 +495,16 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
-     * Write the session -- this is designed to be called prior to time-consuming
-     * AJAX operations.  This should help reduce the odds of a timing-related bug
+     * Prevent session writes -- this is designed to be called prior to time-
+     * consuming AJAX operations to help reduce the odds of a timing-related bug
      * that causes the wrong version of session data to be written to disk (see
      * VUFIND-716 for more details).
      *
      * @return void
      */
-    protected function writeSession()
+    protected function disableSessionWrites()
     {
-        $this->getServiceLocator()->get('VuFind\SessionManager')->writeClose();
+        $this->getServiceLocator()->get('VuFind\Session\Settings')->disableWrite();
     }
 
     /**

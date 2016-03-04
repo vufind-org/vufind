@@ -58,10 +58,9 @@ class Memory
      *
      * @param Container $session Session container for storing URLs (optional)
      */
-    public function __construct($session = null)
+    public function __construct(Container $session)
     {
-        $this->session = (null === $session)
-            ? new Container('Search') : $session;
+        $this->session = $session;
     }
 
     /**

@@ -26,8 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Mail as MailException,
-    Zend\Session\Container as SessionContainer;
+use VuFind\Exception\Mail as MailException;
 
 /**
  * Book Bag / Bulk Action Controller
@@ -43,17 +42,19 @@ class CartController extends AbstractBase
     /**
      * Session container
      *
-     * @var SessionContainer
+     * @var \Zend\Session\Container
      */
     protected $session;
 
     /**
      * Constructor
+     *
+     * @param \Zend\Session\Container $container Session container
      */
-    public function __construct()
+    public function __construct(\Zend\Session\Container $container)
     {
         parent::__construct();
-        $this->session = new SessionContainer('cart_followup');
+        $this->session = $container;
     }
 
     /**

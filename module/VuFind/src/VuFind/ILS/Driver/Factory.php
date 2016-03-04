@@ -79,9 +79,11 @@ class Factory
      */
     public static function getDemo(ServiceManager $sm)
     {
+        $session = $sm->getServiceLocator()
+            ->get('VuFind\Session\OnDemandContainerFactory')->get('DemoDriver');
         return new Demo(
             $sm->getServiceLocator()->get('VuFind\DateConverter'),
-            $sm->getServiceLocator()->get('VuFind\Search')
+            $sm->getServiceLocator()->get('VuFind\Search'), $session
         );
     }
 
