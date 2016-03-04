@@ -55,7 +55,7 @@ class PermissionManager
     /**
      * Constructor
      *
-     * @param string $mode List mode (enabled or disabled)
+     * @param array $config configuration
      */
     public function __construct($config)
     {
@@ -73,13 +73,11 @@ class PermissionManager
     {
         $authService = $this->getAuthorizationService();
 
-        // if no authorization service is available return false (or the value configured for a denied permission)
+        // if no authorization service is available return false
         if (!$authService) {
             return false;
         }
 
-
-        // For a granted permission return the permissionGrantedDisplayLogic
         if ($authService->isGranted($context)) {
             return true;
         }
@@ -88,7 +86,7 @@ class PermissionManager
     }
 
     /**
-     * Determine if the user is authorized in a certain context or not
+     * Gets configuration for the given context
      *
      * @param string $context Context for the permission behavior
      *
@@ -108,7 +106,7 @@ class PermissionManager
      */
     public function getDisplayLogic($context)
     {
-        // if a permission is granted, return false as there is nothing the helper needs to do
+        // if a permission is granted, return false as there is nothing the manager needs to do
         if ($this->isAuthorized($context) === true) {
             return false;
         }
@@ -123,11 +121,11 @@ class PermissionManager
      *
      * @return array|bool
      */
-    protected function getDisplayLogicParameters($context)
+    public function getDisplayLogicParameters($context)
     {
         $params = $this->getDisplayLogic($context);
 
-        // if a permission is granted or if no permissionDeniedDisplayLogic has been configured for this context, 
+        // if a permission is granted or if no permissionDeniedDisplayLogic has been configured for this context,
         // return false as there is nothing the helper needs to do
         if ($this->isAuthorized($context) === true || $params === false) {
             return false;
@@ -147,28 +145,5 @@ class PermissionManager
         }
 
         return $p;
-    }
-
-    /**
-     * Get block to display
-     *
-     * @param string $context Context for the permission behavior
-     *
-     * @return string|bool
-     */
-    public function getReaction($context)
-    {
-        $favSaveDisplayLogic = $this->getDisplayLogic($context);
-        if ($favSaveDisplayLogic === false) {
-            return false;
-        }
-        $return = '';
-        if ($favSaveDisplayLogic[0] == 'showMessage') {
-            $return = $tmpl->transEsc($favSaveDisplayLogic[1]);
-        }
-        elseif ($favSaveDisplayLogic[0] == 'showTemplate') {
-            $return = $tmpl->context($tmpl)->renderInContext($favSaveDisplayLogic[1], $this->getDisplayLogicParameters($context));
-        }
-        return $return;
     }
 }
