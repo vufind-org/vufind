@@ -106,10 +106,7 @@ VuFind.lightbox = (function() {
   /**
    * Modal link data options
    *
-   * data-lightbox-close  = close lightbox after form success
-   * data-lightbox-href   = overwrite href with this value in lightbox
    * data-lightbox-ignore = do not open this link in lightbox
-   * data-lightbox-post   = post json for link ajax
    */
   var _constrainLink = function(event) {
     if (typeof this.dataset.lightboxIgnore != 'undefined') {
