@@ -30,6 +30,7 @@ namespace VuFindTest\Controller\Plugin;
 
 use VuFind\Controller\Plugin\Followup;
 use VuFindTest\Unit\TestCase as TestCase;
+use Zend\Session\Container;
 
 /**
  * Followup controller plugin tests.
@@ -49,7 +50,7 @@ class FollowupTest extends TestCase
      */
     public function testClear()
     {
-        $f = new Followup();
+        $f = new Followup(new Container('test'));
         $f->setController($this->getMockController());
         $this->assertFalse($f->clear('url'));  // nothing to clear yet
         $f->store();
@@ -64,7 +65,7 @@ class FollowupTest extends TestCase
      */
     public function testRetrieve()
     {
-        $f = new Followup();
+        $f = new Followup(new Container('test'));
         $f->setController($this->getMockController());
         $f->store();
         // standard controller-provided URL retrieval:
@@ -82,7 +83,7 @@ class FollowupTest extends TestCase
      */
     public function testRetrieveAndClear()
     {
-        $f = new Followup();
+        $f = new Followup(new Container('test'));
         $f->store(['foo' => 'bar'], 'baz');
         $this->assertEquals('bar', $f->retrieveAndClear('foo'));
         $this->assertEquals('baz', $f->retrieveAndClear('url'));

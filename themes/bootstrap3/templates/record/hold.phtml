@@ -12,9 +12,9 @@
 <p class="helptext"><?=$this->helpText?></p>
 <? endif; ?>
 
-<?=$this->flashmessages()?>
 <div class="hold-form">
   <form class="form-horizontal" method="post" name="placeHold">
+    <?=$this->flashmessages()?>
     <label class="col-sm-3 control-label"><?=$this->transEsc('Title')?></label>
     <div class="col-sm-9">
       <p class="form-control-static"><?=$this->driver->getBreadcrumb() ?></p>

@@ -475,8 +475,15 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $userArray->append($user);
         $table->expects($this->once())->method('select')->with($this->equalTo(['id' => 'foo']))->will($this->returnValue($userArray->getIterator()));
         $manager = $this->getManager([], $table);
-        $session = $this->getProperty($manager, 'session');
-        $session->userId = 'foo';
+
+        // Fake the session inside the manager:
+        $mockSession = $this->getMockBuilder('Zend\Session\Container')
+            ->setMethods(['__get', '__isset', '__set', '__unset'])
+            ->disableOriginalConstructor()->getMock();
+        $mockSession->expects($this->any())->method('__isset')->with($this->equalTo('userId'))->will($this->returnValue(true));
+        $mockSession->expects($this->any())->method('__get')->with($this->equalTo('userId'))->will($this->returnValue('foo'));
+        $this->setProperty($manager, 'session', $mockSession);
+
         $this->assertEquals($user, $manager->isLoggedIn());
     }
 
