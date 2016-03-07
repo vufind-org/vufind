@@ -1296,8 +1296,8 @@ class Demo extends AbstractBase
                     $old = $transactions[$i]['duedate'];
                     $transactions[$i]['duedate']
                         = $this->dateConverter->convertToDisplayDate(
-                        'U', strtotime($old . " + 7 days")
-                    );
+                            'U', strtotime($old . " + 7 days")
+                        );
                     $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
                     $transactions[$i]['renewable']
                         = $transactions[$i]['renew']
