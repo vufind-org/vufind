@@ -878,8 +878,9 @@ class Demo extends AbstractBase
                     // maintain separate display vs. raw due dates (the raw
                     // one is used for renewals, in case the user display
                     // format is incompatible with date math).
-                    'duedate' => $this->dateConverter
-                        ->convertToDisplayDate('U', $rawDueDate),
+                    'duedate' => $this->dateConverter->convertToDisplayDate(
+                        'U', $rawDueDate
+                    ),
                     'rawduedate' => $rawDueDate,
                     'dueStatus' => $dueStatus,
                     'barcode' => sprintf("%08d", rand() % 50000),
