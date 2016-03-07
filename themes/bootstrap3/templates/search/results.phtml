@@ -99,7 +99,7 @@
         <? endif; ?>
       <? endforeach; ?>
     <? else: ?>
-      <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+      <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-bulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
         <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
