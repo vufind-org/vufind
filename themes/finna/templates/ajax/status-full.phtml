@@ -88,7 +88,7 @@ if ($groupBranches) {
     }
   }
   $this->statusItems = array_values($statusItemsFiltered);
-  if ($overrideSort = $this->holdingsSettings()->overrideVoyagerSortOrder()) {
+  if ($this->holdingsSettings()->overrideVoyagerSortOrder()) {
      $items = $this->statusItems;
      usort($items, function ($a, $b) {
         if ($a['availability'] != $b['availability']) {
