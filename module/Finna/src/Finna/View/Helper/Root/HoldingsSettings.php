@@ -136,21 +136,22 @@ class HoldingsSettings extends AbstractHelper
     }
 
     /**
-     * Return configured setting for overriding Voyager holdings ordering and 
+     * Return configured setting for overriding holdings ordering and
      * re-sorting holdings by availability and location name. This only affects 
-     * search results holdings.
+     * non-Axiell search results holdings.
      *
      * @return boolean
      */
-    public function overrideVoyagerSortOrder()
+    public function overrideSortOrder()
     {
-        return empty($this->config->Item_Status->override_voyager_sort_order)
+        return empty($this->config->Item_Status->override_sort_order)
             ? false
-            : (boolean)$this->config->Item_Status->override_voyager_sort_order;
+            : (boolean)$this->config->Item_Status->override_sort_order;
     }
 
     /**
-     * Return configured limit for truncating holdings.
+     * Return configured limit for truncating holdings. This only affects non-Axiell
+     * search results holdings.
      *
      * @return boolean
      */
