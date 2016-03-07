@@ -155,7 +155,7 @@ class HoldingsSettings extends AbstractHelper
      * @return boolean
      */
     public function getTruncateLimit()
-    {        
+    {
         return !isset($this->config->Item_Status->truncate_limit)
             ? false
             : $this->config->Item_Status->truncate_limit;
