@@ -295,6 +295,17 @@ maxLength = 12
 ;method = url
 ; emailAddress is required for the email method
 ;emailAddress =
+; Uncomment the following lines to change which fields are included in the form
+; when using the email method. Format for the fields is label:profile_field  
+; Default is address, zip, city and country. Available are also phone and email, and 
+; also custom fields can be defined.  
+;fields[] = Address:address1
+;fields[] = Zip:zip
+;fields[] = City:city
+;fields[] = Country:country
+;fields[] = Phone:phone
+;fields[] = Email:email
+;fields[] = Additional info:info
 ; url is required for the url method. url can be a single address or an array of 
 ; language-specific addresses. First example is a single one:
 ;url = "http://address.of.change.form"
