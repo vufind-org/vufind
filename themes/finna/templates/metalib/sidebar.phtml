@@ -2,7 +2,9 @@
 <?
 $queryHandler = 'AllFields';
 if (isset($results) && $results->getParams()->getSearchType() == 'basic') {
-  $queryHandler = $results->getParams()->getQuery()->getHandler();
+  if ($handler = $results->getParams()->getQuery()->getHandler()) {
+     $queryHandler = $handler;
+  }
 }
 $customQueryHandler = $queryHandler != 'AllFields';
 ?>
