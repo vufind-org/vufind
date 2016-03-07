@@ -849,16 +849,12 @@ class Demo extends AbstractBase
                 // Due date
                 $dueStatus = false;
                 if ($due_relative >= 0) {
-                    $due_date = $this->dateConverter->convertToDisplayDate(
-                        'U', strtotime("now +$due_relative days")
-                    );
+                    $rawDueDate = strtotime("now +$due_relative days");
                     if ($due_relative == 0) {
                         $dueStatus = 'due';
                     }
                 } else {
-                    $due_date = $this->dateConverter->convertToDisplayDate(
-                        'U', strtotime("now $due_relative days")
-                    );
+                    $rawDueDate = strtotime("now $due_relative days");
                     $dueStatus = 'overdue';
                 }
 
@@ -877,18 +873,26 @@ class Demo extends AbstractBase
                     $req = 0;
                 }
 
+                // Create a generic transaction:
+                $transList[] = $this->getRandomItemIdentifier() + [
+                    // maintain separate display vs. raw due dates (the raw
+                    // one is used for renewals, in case the user display
+                    // format is incompatible with date math).
+                    'duedate' => $this->dateConverter
+                        ->convertToDisplayDate('U', $rawDueDate),
+                    'rawduedate' => $rawDueDate,
+                    'dueStatus' => $dueStatus,
+                    'barcode' => sprintf("%08d", rand() % 50000),
+                    'renew'   => $renew,
+                    'renewLimit' => $renewLimit,
+                    'request' => $req,
+                    'item_id' => $i,
+                    'renewable' => $renew < $renewLimit,
+                ];
                 if ($i == 2 || rand() % 5 == 1) {
                     // Mimic an ILL loan
-                    $transList[] = $this->getRandomItemIdentifier() + [
-                        'duedate' => $due_date,
-                        'dueStatus' => $dueStatus,
-                        'barcode' => sprintf("%08d", rand() % 50000),
-                        'renew'   => $renew,
-                        'renewLimit' => $renewLimit,
-                        'request' => $req,
+                    $transList[$i] += [
                         'id'      => "ill_institution_$i",
-                        'item_id' => $i,
-                        'renewable' => $renew < $renewLimit,
                         'title'   => "ILL Loan Title $i",
                         'institution_id' => 'ill_institution',
                         'institution_name' => 'ILL Library',
@@ -896,17 +900,7 @@ class Demo extends AbstractBase
                         'borrowingLocation' => 'ILL Service Desk'
                     ];
                 } else {
-                    $transList[] = $this->getRandomItemIdentifier() + [
-                        'duedate' => $due_date,
-                        'dueStatus' => $dueStatus,
-                        'barcode' => sprintf("%08d", rand() % 50000),
-                        'renew'   => $renew,
-                        'renewLimit' => $renewLimit,
-                        'request' => $req,
-                        'item_id' => $i,
-                        'renewable' => $renew < $renewLimit,
-                        'borrowingLocation' => $this->getFakeLoc()
-                    ];
+                    $transList[$i]['borrowingLocation'] = $this->getFakeLoc();
                     if ($this->idsInMyResearch) {
                         $transList[$i]['id'] = $this->getRandomBibId();
                         $transList[$i]['source'] = $this->getRecordSource();
@@ -1328,10 +1322,10 @@ class Demo extends AbstractBase
             // Only renew requested items:
             if (in_array($current['item_id'], $renewDetails['details'])) {
                 if (!$this->isFailing(__METHOD__, 50)) {
-                    $old = $transactions[$i]['duedate'];
+                    $transactions[$i]['rawduedate'] += 7 * 24 * 60 * 60;
                     $transactions[$i]['duedate']
                         = $this->dateConverter->convertToDisplayDate(
-                            'U', strtotime($old . " + 7 days")
+                            'U', $transactions[$i]['rawduedate']
                         );
                     $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
                     $transactions[$i]['renewable']
