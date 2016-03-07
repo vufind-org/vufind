@@ -36,7 +36,7 @@ finna.metalib = (function() {
             if (decodeURIComponent(key) == 'filter[]') {
                 if (decodeURIComponent(val).substr(0, 12) == 'metalib_set:') {
                     set = decodeURIComponent(val).substr(12);
-                    set = set.replace(new RegExp(/"/, 'g'), '');
+                    set = set.replace(new RegExp('"', 'g'), '');
                 }
                 continue;
             }
