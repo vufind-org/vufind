@@ -27,6 +27,8 @@
  */
 namespace Finna\Db\Table;
 
+use Zend\Db\Sql\Select;
+
 /**
  * Table Definition for user
  *
@@ -104,5 +106,20 @@ class User extends \VuFind\Db\Table\User
         }
         $row = $this->select(['id' => $id])->current();
         return (empty($row)) ? false : $row;
+    }
+
+    /**
+     * Get users with due date reminders.
+     *
+     * @return array
+     */
+    public function getUsersWithDueDateReminders()
+    {
+        return $this->select(
+            function (Select $select) {
+                $select->where->greaterThan('finna_due_date_reminder', 0);
+                $select->order('username desc');
+            }
+        );
     }
 }

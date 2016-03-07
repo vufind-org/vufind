@@ -178,6 +178,7 @@ $config = [
                     'comments' => 'Finna\Db\Table\Comments',
                     'comments-inappropriate' => 'Finna\Db\Table\CommentsInappropriate',
                     'comments-record' => 'Finna\Db\Table\CommentsRecord',
+                    'due-date-reminder' => 'Finna\Db\Table\DueDateReminder',
                     'fee' => 'Finna\Db\Table\Fee',
                     'metalibSearch' => 'Finna\Db\Table\MetaLibSearch',
                     'search' => 'Finna\Db\Table\Search',

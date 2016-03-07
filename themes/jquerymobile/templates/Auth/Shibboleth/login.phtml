@@ -1,3 +1,0 @@
-<? $account = $this->auth()->getManager(); ?>
-<? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
-<a rel="external" href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>

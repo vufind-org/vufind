@@ -8,11 +8,20 @@ Nimi: <?=$this->name ?>
 Sähköpostiosoite: <?=$this->email ?>
 
 
-Uusi osoite: <?=$this->data['change_address_line_1'] ?>
 
-Uusi postitoimipaikka: <?=$this->data['change_address_zip'] ?>
+Uudet tiedot:
+
+<? foreach ($this->fields as $field => $fieldData): ?>
+<?=$this->translate($fieldData['label']) ?>: <?=isset($this->data[$field]) ? $this->data[$field] : ''; ?>
+
+<? endforeach; ?>
 
 
-Vanha osoite: <?=$this->data['old_address_line_1'] ?>
+Vanhat tiedot:
 
-Vanha postitoimipaikka: <?=$this->data['old_address_zip'] ?>
+<? foreach ($this->fields as $field => $fieldData): ?>
+<? if (isset($this->profile[$field])): ?>
+<?=$this->translate($fieldData['label']) ?>: <?=$this->profile[$field]; ?>
+
+<? endif; ?>
+<? endforeach; ?>
