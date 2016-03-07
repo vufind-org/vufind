@@ -39,18 +39,30 @@
               </div>
             </div>
           </div>
-          <div class="col-xs-6 col-xs-push-2 col-sm-push-1 col-sm-8">
-            <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+          <div class="col-xs-8 col-xs-push-2 col-sm-push-1 col-sm-7">
+            <input type="submit" class="btn btn-primary renew-button" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
           </div>
-          <div class="col-sm-3 text-right hidden-xs">
+          <div class="col-xs-12 col-sm-3 col-sm-push-1 text-right">
+            <?=$this->render('search/controls/sort.phtml')?>
+          </div>
+        </div>
+      <? else: ?>
+        <div class="toolbar row">
+          <div class="col-xs-8 col-sm-7">
+            <p><?=$this->transEsc('cannot renew any checked out items')?></p>
+          </div>
+          <div class="col-xs-2 col-sm-1">
+          </div>
+          <div class="col-xs-12 col-sm-3 col-sm-push-1 text-right">
+            <?=$this->render('search/controls/sort.phtml')?>
+          </div>
+        </div>
+      <? endif; ?>
+        <div class="toolbar row">
+          <div class="col-sm-12 pull-right hidden-xs">
             <span class="myresearch-count"><?=$this->transEsc('total_borrowed_items', ['%%count%%' => count($this->transactions)]);?></span>
           </div>
         </div>
-        <? else: ?>
-        <div class="toolbar">
-          <p><?=$this->transEsc('cannot renew any checked out items')?> <span class="myresearch-count no-buttons"><?=$this->transEsc('total_borrowed_items', ['%%count%%' => count($this->transactions)]);?></span></p>
-        </div>
-      <? endif; ?>
       <? $i = 0; foreach ($this->transactions as $resource): ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row myresearch-row">

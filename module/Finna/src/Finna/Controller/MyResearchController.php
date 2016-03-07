@@ -125,6 +125,59 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     $flashMsg->setNamespace('error')->addMessage($msg);
                 }
             }
+            // Handle sorting
+            $currentSort = $this->getRequest()->getQuery('sort', 'duedate');
+            $view->sortList = [
+                'duedate' => [
+                    'desc' => 'Due Date',
+                    'url' => '?sort=duedate',
+                    'selected' => $currentSort == 'duedate'
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'url' => '?sort=title',
+                    'selected' => $currentSort == 'title'
+                ]
+            ];
+
+            $date = $this->getServiceLocator()->get('VuFind\DateConverter');
+            $sortFunc = function ($a, $b) use ($currentSort, $date) {
+                $aDetails = $a->getExtraDetail('ils_details');
+                $bDetails = $b->getExtraDetail('ils_details');
+                if ($currentSort == 'title') {
+                    $aTitle = is_a($a, 'VuFind\\RecordDriver\\SolrDefault')
+                         && !is_a($a, 'VuFind\\RecordDriver\\Missing')
+                         ? $a->getSortTitle() : '';
+                    if (!$aTitle) {
+                        $aTitle = isset($aDetails['title'])
+                            ? $aDetails['title'] : '';
+                    }
+                    $bTitle = is_a($b, 'VuFind\\RecordDriver\\SolrDefault')
+                         && !is_a($b, 'VuFind\\RecordDriver\\Missing')
+                         ? $b->getSortTitle() : '';
+                    if (!$bTitle) {
+                        $bTitle = isset($bDetails['title'])
+                            ? $bDetails['title'] : '';
+                    }
+                    $result = strcmp($aTitle, $bTitle);
+                    if ($result != 0) {
+                        return $result;
+                    }
+                }
+
+                $aDate = isset($aDetails['duedate'])
+                    ? $date->convertFromDisplayDate('U', $aDetails['duedate'])
+                    : 0;
+                $bDate = isset($bDetails['duedate'])
+                    ? $date->convertFromDisplayDate('U', $bDetails['duedate'])
+                    : 0;
+
+                return $aDate - $bDate;
+            };
+
+            $transactions = $view->transactions;
+            usort($transactions, $sortFunc);
+            $view->transactions = $transactions;
         }
         return $view;
     }
