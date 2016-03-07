@@ -88,6 +88,17 @@ if ($groupBranches) {
     }
   }
   $this->statusItems = array_values($statusItemsFiltered);
+  if ($this->holdingsSettings()->overrideVoyagerSortOrder()) {
+     $items = $this->statusItems;
+     usort($items, function ($a, $b) {
+        if ($a['availability'] != $b['availability']) {
+           return $a['availability'] ? -1 : 1;
+        } else {
+           return strcasecmp($a['location'], $b['location']);
+        }
+     });
+     $this->statusItems = $items;
+  }
 }
 ?>
 
@@ -117,7 +128,8 @@ if ($groupBranches) {
     <? if (isset($availableTotal) && $availableTotal > 0): ?>
     <div class="available-total"><i class="fa fa-ok"></i><span><?=$availableTotal?> <?=$this->translate('axiell_available')?></span></div>
     <? endif; ?>
-    <div class="holdings truncate-field" data-rows="5">
+    <? $truncateLimit = $this->holdingsSettings()->getTruncateLimit(); ?>
+    <div class="holdings<?= !empty($truncateLimit) ? (' truncate-field" data-rows="' . $truncateLimit . '"') : '"'?>>
 <? endif; ?>
 
 <?
