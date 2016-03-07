@@ -579,9 +579,9 @@ class Factory
      *
      * @return \VuFind\Record\Cache
      */
-    public static function getPermissionManager(ServiceManager $sm)
+    public static function getPermissionDeniedManager(ServiceManager $sm)
     {
-        return new \VuFind\PermissionManager(
+        return new \VuFind\PermissionDeniedManager(
             $sm->get('VuFind\Config')->get('permissionBehavior')
         );
     }

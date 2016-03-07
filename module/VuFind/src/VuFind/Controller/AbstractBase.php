@@ -69,17 +69,17 @@ class AbstractBase extends AbstractActionController
     {
         if ($this->accessPermission) {
             $exceptionDescription = 'Access denied.';
-            $pm = $this->getPermissionManager();
-            $dl = $pm->getDisplayLogic($this->accessPermission);
+            $pm = $this->getPermissionDeniedManager();
+            $dl = $pm->getActionLogic($this->accessPermission);
             // Make sure the current user has permission to access the module:
-            if (isset($dl[0])) {
-                switch ($dl[0]) {
+            if (isset($dl['action'])) {
+                switch ($dl['action']) {
                     case 'promptlogin':
                         $e->setResponse($this->forceLogin(null, [], false));
                         break;
                     case 'showMessage':
                         $this->flashMessenger()->addMessage(
-                            $this->translate($dl[1]), 'error'
+                            $this->translate($dl['value']), 'error'
                         );
                         $e->setResponse(
                             $this->redirect()->toRoute('error-permissiondenied')
@@ -89,15 +89,15 @@ class AbstractBase extends AbstractActionController
                         // TODO: implement me
                         break;
                     case 'exception':
-                        if (isset($dl[2])) {
-                            $exceptionDescription = $dl[2];
+                        if (isset($dl['exceptionMessage'])) {
+                            $exceptionDescription = $dl['exceptionMessage'];
                         }
                         if (
-                            isset($dl[1])
-                            && class_exists($dl[1])
-                            && is_subclass_of($dl[1], 'Exception')
+                            isset($dl['value'])
+                            && class_exists($dl['value'])
+                            && is_subclass_of($dl['value'], 'Exception')
                         ) {
-                            throw new $dl[1]($exceptionDescription);
+                            throw new $dl['value']($exceptionDescription);
                         }
                         // Do not break; if the if-clause is not true,
                         // just continue with default section
@@ -106,9 +106,7 @@ class AbstractBase extends AbstractActionController
                         break;
                 }
             }
-            else if (
-                !$this->getAuthorizationService()->isGranted($this->accessPermission)
-            ) {
+            else if ($dl === false) {
                 // if permission is necessary, but denied and we have no
                 // behavior rules, prompt for login as a default behavior
                 $e->setResponse($this->forceLogin(null, [], false));
@@ -267,13 +265,13 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
-     * Get the PermissionManager
+     * Get the PermissionDeniedManager
      *
-     * @return \VuFind\PermissionManager
+     * @return \VuFind\PermissionDeniedManager
      */
-    protected function getPermissionManager()
+    protected function getPermissionDeniedManager()
     {
-        return $this->getServiceLocator()->get('VuFind\PermissionManager');
+        return $this->getServiceLocator()->get('VuFind\PermissionDeniedManager');
     }
 
     /**
