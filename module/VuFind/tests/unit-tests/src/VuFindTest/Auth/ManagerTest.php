@@ -324,9 +324,43 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())->method('authenticate')->with($request)->will($this->returnValue($user));
         $manager = $this->getManager([], null, null, $pm);
+        $request->getPost()->set('csrf', $manager->getCsrfHash());
         $this->assertFalse($manager->isLoggedIn());
         $this->assertEquals($user, $manager->login($request));
         $this->assertEquals($user, $manager->isLoggedIn());
+    }
+
+    /**
+     * Test CSRF failure (same setup as successful login, but minus token)
+     *
+     * @return void
+     * @expectedException        \VuFind\Exception\Auth
+     * @expectedExceptionMessage authentication_error_technical
+     */
+    public function testMissingCsrf()
+    {
+        $user = $this->getMockUser();
+        $request = $this->getMockRequest();
+        $pm = $this->getMockPluginManager();
+        $manager = $this->getManager([], null, null, $pm);
+        $manager->login($request);
+    }
+
+    /**
+     * Test CSRF failure (same setup as successful login, but with bad token)
+     *
+     * @return void
+     * @expectedException        \VuFind\Exception\Auth
+     * @expectedExceptionMessage authentication_error_technical
+     */
+    public function testIncorrectCsrf()
+    {
+        $user = $this->getMockUser();
+        $request = $this->getMockRequest();
+        $pm = $this->getMockPluginManager();
+        $manager = $this->getManager([], null, null, $pm);
+        $request->getPost()->set('csrf', 'junk');
+        $manager->login($request);
     }
 
     /**
@@ -345,6 +379,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
         $manager = $this->getManager([], null, null, $pm);
+        $request->getPost()->set('csrf', $manager->getCsrfHash());
         $manager->login($request);
     }
 
@@ -364,6 +399,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
         $manager = $this->getManager([], null, null, $pm);
+        $request->getPost()->set('csrf', $manager->getCsrfHash());
         $manager->login($request);
     }
 
@@ -383,6 +419,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
         $manager = $this->getManager([], null, null, $pm);
+        $request->getPost()->set('csrf', $manager->getCsrfHash());
         $manager->login($request);
     }
 
@@ -438,8 +475,15 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $userArray->append($user);
         $table->expects($this->once())->method('select')->with($this->equalTo(['id' => 'foo']))->will($this->returnValue($userArray->getIterator()));
         $manager = $this->getManager([], $table);
-        $session = $this->getProperty($manager, 'session');
-        $session->userId = 'foo';
+
+        // Fake the session inside the manager:
+        $mockSession = $this->getMockBuilder('Zend\Session\Container')
+            ->setMethods(['__get', '__isset', '__set', '__unset'])
+            ->disableOriginalConstructor()->getMock();
+        $mockSession->expects($this->any())->method('__isset')->with($this->equalTo('userId'))->will($this->returnValue(true));
+        $mockSession->expects($this->any())->method('__get')->with($this->equalTo('userId'))->will($this->returnValue('foo'));
+        $this->setProperty($manager, 'session', $mockSession);
+
         $this->assertEquals($user, $manager->isLoggedIn());
     }
 
@@ -460,7 +504,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
             $userTable = $this->getMockUserTable();
         }
         if (null === $sessionManager) {
-            $sessionManager = $this->getMockSessionManager();
+            $sessionManager = new SessionManager();
         }
         if (null === $pm) {
             $pm = $this->getMockPluginManager();
@@ -540,8 +584,12 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockRequest()
     {
-        return $this->getMockBuilder('Zend\Http\PhpEnvironment\Request')
+        $mock = $this->getMockBuilder('Zend\Http\PhpEnvironment\Request')
             ->disableOriginalConstructor()
             ->getMock();
+        $post = new \Zend\Stdlib\Parameters();
+        $mock->expects($this->any())->method('getPost')
+            ->will($this->returnValue($post));
+        return $mock;
     }
 }

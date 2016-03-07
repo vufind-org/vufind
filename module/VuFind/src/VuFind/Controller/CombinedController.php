@@ -64,7 +64,7 @@ class CombinedController extends AbstractSearch
      */
     public function resultAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
 
         // Turn off search memory -- not relevant in this context:
         $this->getSearchMemory()->disable();
@@ -166,7 +166,7 @@ class CombinedController extends AbstractSearch
             // Calculate a unique DOM id for this section of the search results;
             // $searchClassId may contain colons, which must be converted.
             $combinedResults[$current]['domId']
-                = 'combined_' . str_replace(':', '____', $searchClassId);
+                = 'combined_' . str_replace(':', '____', $current);
 
             $combinedResults[$current]['view']
                 = (!isset($settings['ajax']) || !$settings['ajax'])

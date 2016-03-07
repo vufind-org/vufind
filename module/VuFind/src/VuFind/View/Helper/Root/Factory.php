@@ -525,8 +525,10 @@ class Factory
      */
     public static function getUserList(ServiceManager $sm)
     {
+        $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+        $session = new \Zend\Session\Container('List', $sessionManager);
         $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
-        return new UserList($capabilities->getListSetting());
+        return new UserList($session, $capabilities->getListSetting());
     }
 
     /**

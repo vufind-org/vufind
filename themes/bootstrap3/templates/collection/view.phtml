@@ -4,7 +4,7 @@
   $this->headScript()->appendFile("check_save_statuses.js");
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
-    echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+    $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
   }
 
   // Add RDF header link if applicable:

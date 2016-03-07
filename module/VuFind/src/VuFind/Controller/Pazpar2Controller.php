@@ -68,4 +68,3 @@ class Pazpar2Controller extends AbstractSearch
         return $this->resultsAction();
     }
 }
-

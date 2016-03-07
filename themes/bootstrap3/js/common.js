@@ -1,20 +1,31 @@
-/*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape, VuFind */
+/*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape */
 
 // IE 9< console polyfill
 window.console = window.console || {log: function () {}};
 
-var VuFind = {
-  defaultSearchBackend: null,
-  path: null,
-  translations: {},
+var VuFind = (function() {
+  var defaultSearchBackend = null;
+  var path = null;
+  var _translations = {};
 
-  addTranslations: function(s) {
+  var addTranslations = function(s) {
     for (var i in s) {
-      this.translations[i] = s[i];
+      _translations[i] = s[i];
     }
-  },
-  translate: function(op) { return this.translations[op] || op; }
-}
+  };
+  var translate = function(op) {
+    return _translations[op] || op;
+  };
+
+  //Reveal
+  return {
+    defaultSearchBackend: defaultSearchBackend,
+    path: path,
+
+    addTranslations: addTranslations,
+    translate: translate
+  };
+})();
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value) {
@@ -92,154 +103,20 @@ function phoneNumberFormHandler(numID, regionCode) {
   } else {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
-    return true;
   }
 }
 
-// Lightbox
-/*
- * This function adds jQuery events to elements in the lightbox
- *
- * This is a default open action, so it runs every time changeContent
- * is called and the 'shown' lightbox event is triggered
- */
-function bulkActionSubmit($form) {
-  var button = $form.find('[type="submit"][clicked=true]');
-  var submit = button.attr('name');
-  var checks = $form.find('input.checkbox-select-item:checked');
-  if(checks.length == 0 && submit != 'empty') {
-    Lightbox.displayError(VuFind.translate('bulk_noitems_advice'));
+function bulkFormHandler(event, data) {
+  if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length == 0) {
+    VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
-  if (submit == 'print') {
-    //redirect page
-    var url = VuFind.path + '/Records/Home?print=true';
-    for(var i=0;i<checks.length;i++) {
-      url += '&id[]='+checks[i].value;
+  var keys = [];
+  for (var i in data) {
+    if ('print' == data[i].name) {
+      return true;
     }
-    document.location.href = url;
-  } else {
-    $('#modal .modal-title').html(button.attr('title'));
-    Lightbox.titleSet = true;
-    Lightbox.submit($form, Lightbox.changeContent);
   }
-  return false;
-}
-
-function registerLightboxEvents() {
-  var modal = $("#modal");
-  // New list
-  $('#make-list').click(function() {
-    var get = deparam(this.href);
-    get['id'] = 'NEW';
-    return Lightbox.get('MyResearch', 'EditList', get);
-  });
-  // New account link handler
-  $('.createAccountLink').click(function() {
-    var get = deparam(this.href);
-    return Lightbox.get('MyResearch', 'Account', get);
-  });
-  $('.back-to-login').click(function() {
-    Lightbox.getByUrl(Lightbox.openingURL);
-    return false;
-  });
-  // Select all checkboxes
-  $(modal).find('.checkbox-select-all').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
-  });
-  $(modal).find('.checkbox-select-item').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
-  });
-  // Highlight which submit button clicked
-  $(modal).find("form [type=submit]").click(function() {
-    // Abort requests triggered by the lightbox
-    $('#modal .fa-spinner').remove();
-    // Remove other clicks
-    $(modal).find('[type="submit"][clicked=true]').attr('clicked', false);
-    // Add useful information
-    $(this).attr("clicked", "true");
-    // Add prettiness
-    if($(modal).find('.has-error,.sms-error').length == 0 && !$(this).hasClass('dropdown-toggle')) {
-      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
-    }
-  });
-  /**
-   * Hide the header in the lightbox content
-   * if it matches the title bar of the lightbox
-   */
-  var header = $('#modal .modal-title').html();
-  var contentHeader = $('#modal .modal-body h2');
-  contentHeader.each(function(i,op) {
-    if (op.innerHTML == header) {
-      $(op).hide();
-    }
-  });
-}
-
-function refreshPageForLogin() {
-  window.location.reload();
-}
-
-function newAccountHandler(html) {
-  Lightbox.addCloseAction(refreshPageForLogin);
-  var params = deparam(Lightbox.openingURL);
-  if (params['subaction'] == 'UserLogin') {
-    Lightbox.close();
-  } else {
-    Lightbox.getByUrl(Lightbox.openingURL);
-    Lightbox.openingURL = false;
-  }
-  return false;
-}
-
-// This is a full handler for the login form
-function ajaxLogin(form) {
-  Lightbox.ajax({
-    url: VuFind.path + '/AJAX/JSON?method=getSalt',
-    dataType: 'json'
-  })
-  .done(function(response) {
-    var salt = response.data;
-
-    // extract form values
-    var params = {};
-    for (var i = 0; i < form.length; i++) {
-      // special handling for password
-      if (form.elements[i].name == 'password') {
-        // base-64 encode the password (to allow support for Unicode)
-        // and then encrypt the password with the salt
-        var password = rc4Encrypt(
-            salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
-        );
-        // hex encode the encrypted password
-        params[form.elements[i].name] = hexEncode(password);
-      } else {
-        params[form.elements[i].name] = form.elements[i].value;
-      }
-    }
-
-    // login via ajax
-    Lightbox.ajax({
-      type: 'POST',
-      url: VuFind.path + '/AJAX/JSON?method=login',
-      dataType: 'json',
-      data: params
-    })
-    .done(function(response) {
-      Lightbox.addCloseAction(refreshPageForLogin);
-      // and we update the modal
-      var params = deparam(Lightbox.lastURL);
-      if (params['subaction'] == 'UserLogin') {
-        Lightbox.close();
-      } else {
-        Lightbox.getByUrl(
-          Lightbox.lastURL,
-          Lightbox.lastPOST,
-          Lightbox.changeContent
-        );
-      }
-    });
-  });
 }
 
 // Ready functions
@@ -385,7 +262,7 @@ $(document).ready(function() {
   // Setup search autocomplete
   setupAutocomplete();
   // Setup highlighting of backlinks
-  setupBacklinks() ;
+  setupBacklinks();
   // Off canvas
   setupOffcanvas();
   // Keyboard shortcuts in detail view
@@ -435,17 +312,5 @@ $(document).ready(function() {
   $('.facetOR').click(function() {
     $(this).closest('.collapse').html('<div class="list-group-item">'+VuFind.translate('loading')+'...</div>');
     window.location.assign($(this).attr('href'));
-  });
-
-  $('[name=bulkActionForm]').submit(function() {
-    return bulkActionSubmit($(this));
-  });
-  $('[name=bulkActionForm]').find("[type=submit]").click(function() {
-    // Abort requests triggered by the lightbox
-    $('#modal .fa-spinner').remove();
-    // Remove other clicks
-    $(this).closest('form').find('[type="submit"][clicked=true]').attr('clicked', false);
-    // Add useful information
-    $(this).attr("clicked", "true");
   });
 });

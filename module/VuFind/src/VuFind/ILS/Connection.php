@@ -459,6 +459,10 @@ class Connection implements TranslatorAwareInterface
             && isset($functionConfig['HMACKeys'])
         ) {
             $response = ['function' => 'placeILLRequest'];
+            if (isset($functionConfig['defaultRequiredDate'])) {
+                $response['defaultRequiredDate']
+                    = $functionConfig['defaultRequiredDate'];
+            }
             $response['HMACKeys'] = explode(':', $functionConfig['HMACKeys']);
             if (isset($functionConfig['extraFields'])) {
                 $response['extraFields'] = $functionConfig['extraFields'];

@@ -106,7 +106,7 @@ class AjaxController extends AbstractBase
      */
     public function recommendAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
@@ -129,25 +129,6 @@ class AjaxController extends AbstractBase
         $recommend = $this->getViewRenderer()->plugin('recommend');
         $response->setContent($recommend($module));
         return $response;
-    }
-
-    /**
-     * Get the contents of a lightbox; note that unlike most methods, this
-     * one actually returns HTML rather than JSON.
-     *
-     * @return mixed
-     */
-    protected function getLightboxAjax()
-    {
-        // Turn layouts on for this action since we want to render the
-        // page inside a lightbox:
-        $this->layout()->setTemplate('layout/lightbox');
-
-        // Call the requested action:
-        return $this->forwardTo(
-            $this->params()->fromQuery('submodule'),
-            $this->params()->fromQuery('subaction')
-        );
     }
 
     /**
@@ -187,7 +168,7 @@ class AjaxController extends AbstractBase
      */
     protected function getItemStatusesAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $catalog = $this->getILS();
         $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
         $results = $catalog->getStatuses($ids);
@@ -513,7 +494,7 @@ class AjaxController extends AbstractBase
      */
     protected function getSaveStatusesAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         // check if user is logged in
         $user = $this->getUser();
         if (!$user) {
@@ -734,7 +715,7 @@ class AjaxController extends AbstractBase
             ];
         }
 
-        // Set layout to render the page inside a lightbox:
+        // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
         $view = $this->createViewModel(
             [
@@ -758,7 +739,7 @@ class AjaxController extends AbstractBase
      */
     protected function getMapDataAjax($fields = ['long_lat'])
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $results = $this->getResultsManager()->get('Solr');
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
@@ -793,8 +774,8 @@ class AjaxController extends AbstractBase
      */
     public function resultgooglemapinfoAction()
     {
-        $this->writeSession();  // avoid session write timing bug
-        // Set layout to render the page inside a lightbox:
+        $this->disableSessionWrites();  // avoid session write timing bug
+        // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
 
         $results = $this->getResultsManager()->get('Solr');
@@ -823,7 +804,7 @@ class AjaxController extends AbstractBase
      */
     protected function getVisDataAjax($fields = ['publishDate'])
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $results = $this->getResultsManager()->get('Solr');
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
@@ -916,7 +897,7 @@ class AjaxController extends AbstractBase
      */
     protected function getACSuggestionsAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $query = $this->getRequest()->getQuery();
         $autocompleteManager = $this->getServiceLocator()
             ->get('VuFind\AutocompletePluginManager');
@@ -932,7 +913,7 @@ class AjaxController extends AbstractBase
      */
     protected function checkRequestIsValidAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $data = $this->params()->fromQuery('data');
         $requestType = $this->params()->fromQuery('requestType');
@@ -1113,7 +1094,7 @@ class AjaxController extends AbstractBase
      */
     protected function getResolverLinksAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $openUrl = $this->params()->fromQuery('openurl', '');
         $searchClassId = $this->params()->fromQuery('searchClassId', '');
 
@@ -1199,7 +1180,7 @@ class AjaxController extends AbstractBase
      */
     protected function getLibraryPickupLocationsAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $pickupLib = $this->params()->fromQuery('pickupLib');
         if (empty($id) || empty($pickupLib)) {
@@ -1251,7 +1232,7 @@ class AjaxController extends AbstractBase
      */
     protected function getRequestGroupPickupLocationsAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $requestGroupId = $this->params()->fromQuery('requestGroupId');
         if (empty($id) || empty($requestGroupId)) {
@@ -1314,7 +1295,7 @@ class AjaxController extends AbstractBase
      */
     protected function getFacetDataAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
 
         $facet = $this->params()->fromQuery('facetName');
         $sort = $this->params()->fromQuery('facetSort');

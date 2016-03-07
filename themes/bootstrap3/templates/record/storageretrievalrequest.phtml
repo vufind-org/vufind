@@ -12,9 +12,9 @@
 <p class="helptext"><?=$this->helpText?></p>
 <? endif; ?>
 
-<?=$this->flashmessages()?>
 <div class="storage-retrieval-request-form">
   <form name="placeStorageRetrievalRequest" class="form-horizontal" method="post">
+    <?=$this->flashmessages()?>
     <? if (in_array("item-issue", $this->extraFields)): ?>
       <div class="form-group">
         <div class="col-sm-3 controls">

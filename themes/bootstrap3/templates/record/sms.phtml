@@ -8,8 +8,9 @@
     . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
 ?>
-<?=$this->flashmessages()?>
-<form method="post" name="smsRecord" class="form-horizontal"<? if(isset($this->validation) && !empty($this->validation)):?> onsubmit="return phoneNumberFormHandler('sms_to', '<?=$this->validation ?>')"<? endif; ?>>
+<h2><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
+<form method="post" name="smsRecord" class="form-horizontal"<? if(isset($this->validation) && !empty($this->validation)):?> data-lightbox-onsubmit="return phoneNumberFormHandler('sms_to', '<?=$this->validation ?>')"<? endif; ?>>
+  <?=$this->flashmessages()?>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
   <div class="form-group">

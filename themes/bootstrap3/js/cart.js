@@ -1,4 +1,4 @@
-/*global bulkActionSubmit, cartCookieDomain, Cookies, newAccountHandler, Lightbox, refreshPageForLogin, VuFind */
+/*global bulkActionSubmit, cartCookieDomain, Cookies, Lightbox, refreshPageForLogin, VuFind */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -7,6 +7,10 @@ var _CART_COOKIE_DELIM = "\t";
 var currentId,currentSource;
 var lastCartSubmit = false;
 
+function updateCartCount() {
+  var items = getCartItems();
+  $('#cartItems strong').html(items.length);
+}
 function getCartItems() {
   var items = Cookies.getItem(_CART_COOKIE);
   if(items) {
@@ -50,7 +54,7 @@ function addItemToCart(id,source) {
     cartItems[cartItems.length] = String.fromCharCode(65+sIndex) + id;
   }
   Cookies.setItem(_CART_COOKIE, $.unique(cartItems).join(_CART_COOKIE_DELIM), false, '/', cartCookieDomain);
-  $('#cartItems strong').html(parseInt($('#cartItems strong').html(), 10)+1);
+  updateCartCount();
   return true;
 }
 function uniqueArray(op) {
@@ -100,11 +104,12 @@ function removeItemFromCart(id,source) {
       Cookies.removeItem(_CART_COOKIE, '/', cartCookieDomain);
       Cookies.removeItem(_CART_COOKIE_SOURCES, '/', cartCookieDomain);
     }
-    $('#cartItems strong').html(parseInt($('#cartItems strong').html(), 10)-1);
+    updateCartCount();
     return true;
   }
   return false;
 }
+
 var cartNotificationTimeout = false;
 function registerUpdateCart($form) {
   if($form) {
@@ -155,6 +160,23 @@ function registerUpdateCart($form) {
   }
 }
 
+// Building an array and checking indexes prevents a race situation
+// We want to prioritize empty over printing
+function cartFormHandler(event, data) {
+  var keys = [];
+  for (var i in data) {
+    keys.push(data[i].name);
+  }
+  if (keys.indexOf('ids[]') === -1) {
+    return null;
+  }
+  if (keys.indexOf('print') > -1) {
+    return true;
+  }
+}
+
+document.addEventListener('VuFind.lightbox.closed', updateCartCount, false);
+
 $(document).ready(function() {
   // Record buttons
   var $cartId = $('.cartId');
@@ -180,46 +202,4 @@ $(document).ready(function() {
     registerUpdateCart($form);
   }
   $("#updateCart, #bottom_updateCart").popover({content:'', html:true, trigger:'manual'});
-
-  // Setup lightbox behavior
-  // Cart lightbox
-  $('#cartItems').click(function() {
-    return Lightbox.get('Cart','Cart');
-  });
-  // Overwrite
-  Lightbox.addFormCallback('accountForm', function(html) {
-    Lightbox.addCloseAction(refreshPageForLogin);
-    if (lastCartSubmit !== false) {
-      bulkActionSubmit(lastCartSubmit);
-      lastCartSubmit = false;
-    } else {
-      newAccountHandler(html);
-    }
-  });
-  Lightbox.addFormHandler('cartForm', function(evt) {
-    lastCartSubmit = $(evt.target);
-    bulkActionSubmit($(evt.target));
-    return false;
-  });
-  Lightbox.addFormCallback('bulkEmail', function(html) {
-    Lightbox.confirm(VuFind.translate('bulk_email_success'));
-  });
-  $('#modal').on('hidden.bs.modal', function() {
-    // Update cart items (add to cart, remove from cart, cart lightbox interface)
-    var cartCount = $('#cartItems strong');
-    if(cartCount.length > 0) {
-      var cart = getFullCartItems();
-      var id = $('#cartId');
-      if(id.length > 0) {
-        id = id.val();
-        $('#cart-add,#cart-remove').addClass('hidden');
-        if(cart.indexOf(id) > -1) {
-          $('#cart-remove').removeClass('hidden');
-        } else {
-          $('#cart-add').removeClass('hidden');
-        }
-      }
-      cartCount.html(cart.length);
-    }
-  });
 });
