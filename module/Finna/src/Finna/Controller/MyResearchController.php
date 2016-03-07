@@ -257,6 +257,13 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 'city' => ['label' => 'City'],
                 'country' => ['label' => 'Country']
             ];
+
+            if (false === $catalog->checkFunction('updateEmail', $patron)) {
+                $fields['email'] = ['label' => 'Email'];
+            }
+            if (false === $catalog->checkFunction('updatePhone', $patron)) {
+                $fields['phone'] = ['label' => 'Phone'];
+            }
         }
 
         $view = $this->createViewModel();

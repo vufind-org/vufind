@@ -297,8 +297,9 @@ maxLength = 12
 ;emailAddress =
 ; Uncomment the following lines to change which fields are included in the form
 ; when using the email method. Format for the fields is label:profile_field  
-; Default is address, zip, city and country. Available are also phone and email, and 
-; also custom fields can be defined.  
+; Default is address, zip, city and country. Email and phone are included unless
+; they have their own sections [updateEmail] or [updatePhone] defined. Also custom 
+; fields can be defined.  
 ;fields[] = Address:address1
 ;fields[] = Zip:zip
 ;fields[] = City:city
