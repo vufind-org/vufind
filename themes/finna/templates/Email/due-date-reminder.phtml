@@ -1,4 +1,4 @@
-<?= str_replace('%%loancount%%', count($this->loans), $this->translate('due_date_email_txt' . (count($this->loans) == 1 ? '_singular' : ''))) ?>
+<?= $this->translate('due_date_email_txt' . (count($this->loans) == 1 ? '_singular' : ''), ['%%loancount%%' => count($loans)]) ?>
 
 
 <? foreach ($this->loans as $loan): ?>
