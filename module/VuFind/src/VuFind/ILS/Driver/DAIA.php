@@ -190,7 +190,9 @@ class DAIA extends AbstractBase implements
      */
     public function getHoldLink($id, $details)
     {
-        return ($details['ilslink'] != '') ? $details['ilslink'] : null;
+        return (isset($details['ilslink']) && $details['ilslink'] != '')
+            ? $details['ilslink']
+            : null;
     }
 
     /**

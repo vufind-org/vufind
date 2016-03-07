@@ -53,10 +53,13 @@ class Facebook extends AbstractBase implements
 
     /**
      * Constructor
+     *
+     * @param \Zend\Session\Container $container Session container for persisting
+     * state information.
      */
-    public function __construct()
+    public function __construct(\Zend\Session\Container $container)
     {
-        $this->session = new \Zend\Session\Container('Facebook');
+        $this->session = $container;
     }
 
     /**

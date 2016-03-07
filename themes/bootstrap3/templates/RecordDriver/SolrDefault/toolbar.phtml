@@ -12,10 +12,10 @@
 ?>
 <ul class="nav nav-pills hidden-print">
   <? if (count($this->driver->getCitationFormats()) > 0): ?>
-    <li><a class="cite-record modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite')?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><i class="fa fa-asterisk"></i> <?=$this->transEsc('Cite this')?></a></li>
+    <li><a class="cite-record <?=$controllerClass?>" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite')?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><i class="fa fa-asterisk"></i> <?=$this->transEsc('Cite this')?></a></li>
   <? endif; ?>
-  <li><a class="sms-record modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'SMS')?>" title="<?=$this->transEsc('Text this')?>" rel="nofollow"><i class="fa fa-mobile"></i> <?=$this->transEsc('Text this')?></a></li>
-  <li><a class="mail-record modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope"></i> <?=$this->transEsc('Email this')?></a></li>
+  <li><a class="sms-record <?=$controllerClass?>" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'SMS')?>" title="<?=$this->transEsc('Text this')?>" rel="nofollow"><i class="fa fa-mobile"></i> <?=$this->transEsc('Text this')?></a></li>
+  <li><a class="mail-record <?=$controllerClass?>" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope"></i> <?=$this->transEsc('Email this')?></a></li>
 
   <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
   <? if(count($exportFormats) > 0): ?>
@@ -30,7 +30,7 @@
   <? endif; ?>
 
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-    <li><a class="save-record modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-star"></i> <?=$this->transEsc('Add to favorites')?></a></li>
+    <li><a class="save-record <?=$controllerClass?>" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-star"></i> <?=$this->transEsc('Add to favorites')?></a></li>
   <? endif; ?>
   <? if (!empty($addThis)): ?>
     <li><a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>"><i class="fa fa-bookmark"></i> <?=$this->transEsc('Bookmark')?></a></li>
