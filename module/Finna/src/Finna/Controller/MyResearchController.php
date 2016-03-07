@@ -752,6 +752,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      * @param array  $patron    Patron
      * @param array  $profile   Patron profile
      * @param array  $data      Change data
+     * @param array  $fields    Form fields for address change request
      * @param string $recipient Email recipient
      * @param string $subject   Email subject
      * @param string $template  Email template
