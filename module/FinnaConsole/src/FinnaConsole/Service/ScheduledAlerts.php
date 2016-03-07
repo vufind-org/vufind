@@ -219,7 +219,7 @@ class ScheduledAlerts extends AbstractService
         $this->msg('  ' . implode(', ', $baseDirs));
         foreach ($baseDirs as $url) {
             $parts = parse_url($url);
-            list($institution, $rest) = explode('.', $parts['host']);
+            list($institution) = explode('.', $parts['host']);
             if ($institution == 'www') {
                 // Special case for www.finna.fi
                 $institution = 'national';
