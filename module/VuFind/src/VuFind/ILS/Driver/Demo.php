@@ -393,8 +393,12 @@ class Demo extends AbstractBase
             $randDays = rand() % 10;
             $currentItem = [
                 "location" => $location,
-                "create"   => date("j-M-y", strtotime("now - {$randDays} days")),
-                "expire"   => date("j-M-y", strtotime("now + 30 days")),
+                "create"   => $this->dateConverter->convertToDisplayDate(
+                    'U', strtotime("now - {$randDays} days")
+                ),
+                "expire"   => $this->dateConverter->convertToDisplayDate(
+                    'U', strtotime("now + 30 days")
+                ),
                 "reqnum"   => sprintf("%06d", $i),
                 "item_id" => $i,
                 "reqnum" => $i
@@ -431,7 +435,7 @@ class Demo extends AbstractBase
                 $currentItem['available'] = $status == 1;
                 $currentItem['canceled'] = $status == 2;
                 $currentItem['processed'] = ($status == 1 || rand(1, 3) == 3)
-                    ? date("j-M-y")
+                    ? $this->dateConverter->convertToDisplayDate('U', time())
                     : '';
                 if ($requestType == 'ILLRequests') {
                     $transit = rand() % 2;
@@ -702,13 +706,16 @@ class Demo extends AbstractBase
 
                 $fineList[] = [
                     "amount"   => $fine * 100,
-                    "checkout" => date("j-M-y", $checkout),
+                    "checkout" => $this->dateConverter->convertToDisplayDate(
+                        'U', $checkout
+                    ),
                     // After 20 days it becomes 'Long Overdue'
                     "fine"     => $day_overdue > 20 ? "Long Overdue" : "Overdue",
                     // 50% chance they've paid half of it
                     "balance"  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
-                    "duedate"  =>
-                        date("j-M-y", strtotime("now - $day_overdue days"))
+                    "duedate"  => $this->dateConverter->convertToDisplayDate(
+                        'U', strtotime("now - $day_overdue days")
+                    )
                 ];
                 // Some fines will have no id or title:
                 if (rand() % 3 != 1) {
@@ -810,12 +817,16 @@ class Demo extends AbstractBase
                 // Due date
                 $dueStatus = false;
                 if ($due_relative >= 0) {
-                    $due_date = date("j-M-y", strtotime("now +$due_relative days"));
+                    $due_date = $this->dateConverter->convertToDisplayDate(
+                        'U', strtotime("now +$due_relative days")
+                    );
                     if ($due_relative == 0) {
                         $dueStatus = 'due';
                     }
                 } else {
-                    $due_date = date("j-M-y", strtotime("now $due_relative days"));
+                    $due_date = $this->dateConverter->convertToDisplayDate(
+                        'U', strtotime("now $due_relative days")
+                    );
                     $dueStatus = 'overdue';
                 }
 
@@ -1284,7 +1295,9 @@ class Demo extends AbstractBase
                 if (!$this->isFailing(__METHOD__, 50)) {
                     $old = $transactions[$i]['duedate'];
                     $transactions[$i]['duedate']
-                        = date("j-M-y", strtotime($old . " + 7 days"));
+                        = $this->dateConverter->convertToDisplayDate(
+                        'U', strtotime($old . " + 7 days")
+                    );
                     $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
                     $transactions[$i]['renewable']
                         = $transactions[$i]['renew']
@@ -1418,8 +1431,10 @@ class Demo extends AbstractBase
                 'id'       => $holdDetails['id'],
                 'source'   => $this->getRecordSource(),
                 'location' => $holdDetails['pickUpLocation'],
-                'expire'   => date('j-M-y', $expire),
-                'create'   => date('j-M-y'),
+                'expire'   =>
+                    $this->dateConverter->convertToDisplayDate('U', $expire),
+                'create'   =>
+                    $this->dateConverter->convertToDisplayDate('U', time()),
                 'reqnum'   => sprintf('%06d', $nextId),
                 'item_id' => $nextId,
                 'volume' => '',
@@ -1519,9 +1534,12 @@ class Demo extends AbstractBase
                 'id'       => $details['id'],
                 'source'   => $this->getRecordSource(),
                 'location' => $details['pickUpLocation'],
-                'expire'   => date('j-M-y', $expire),
-                'create'  => date('j-M-y'),
-                'processed' => rand() % 3 == 0 ? date('j-M-y', $expire) : '',
+                'expire'   =>
+                    $this->dateConverter->convertToDisplayDate('U', $expire),
+                'create'   =>
+                    $this->dateConverter->convertToDisplayDate('U', time()),
+                'processed' => rand() % 3 == 0
+                    ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
                 'reqnum'   => sprintf('%06d', $nextId),
                 'item_id'  => $nextId
             ]
@@ -1638,9 +1656,12 @@ class Demo extends AbstractBase
                 'id'       => $details['id'],
                 'source'   => $this->getRecordSource(),
                 'location' => $pickupLocation,
-                'expire'   => date('j-M-y', $expire),
-                'create'  => date('j-M-y'),
-                'processed' => rand() % 3 == 0 ? date('j-M-y', $expire) : '',
+                'expire'   =>
+                    $this->dateConverter->convertToDisplayDate('U', $expire),
+                'create'   =>
+                    $this->dateConverter->convertToDisplayDate('U', time()),
+                'processed' => rand() % 3 == 0
+                    ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
                 'reqnum'   => sprintf('%06d', $nextId),
                 'item_id'  => $nextId
             ]
