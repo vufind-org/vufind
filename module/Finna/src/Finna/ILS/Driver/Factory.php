@@ -93,12 +93,15 @@ class Factory
     public static function getVoyagerRestful(ServiceManager $sm)
     {
         $ils = $sm->getServiceLocator()->get('VuFind\ILSHoldSettings');
-        $configReader = $sm->getServiceLocator()->get('VuFind\Config');
-        return new VoyagerRestful(
+        $vr = new VoyagerRestful(
             $sm->getServiceLocator()->get('VuFind\DateConverter'),
-            $ils->getHoldsMode(), $ils->getTitleHoldsMode(),
-            $configReader
+            $ils->getHoldsMode(), $ils->getTitleHoldsMode()
         );
+        $vr->setConfigReader($sm->getServiceLocator()->get('VuFind\Config'));
+        $vr->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+        return $vr;
     }
 
     /**
@@ -110,12 +113,12 @@ class Factory
      */
     public static function getAxiellWebServices(ServiceManager $sm)
     {
-        $ils = $sm->getServiceLocator()->get('VuFind\ILSHoldSettings');
-        $cache = $sm->getServiceLocator()->get('VuFind\CacheManager')
-            ->getCache('object');
-        return new AxiellWebServices(
-            $sm->getServiceLocator()->get('VuFind\DateConverter'),
-            $cache
+        $aws = new AxiellWebServices(
+            $sm->getServiceLocator()->get('VuFind\DateConverter')
         );
+        $aws->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+        return $aws;
     }
 }
