@@ -199,8 +199,7 @@ class PermissionDeniedManager
                 $pArray = explode('=', $params[$n]);
                 if (count($pArray) == 2) {
                     $p[$pArray[0]] = $pArray[1];
-                }
-                else {
+                } else {
                     $p[] = $params[$n];
                 }
             }
