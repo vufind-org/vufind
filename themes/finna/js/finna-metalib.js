@@ -172,9 +172,11 @@ finna.metalib = (function() {
     };
 
     var initTabNavigation = function(hash) {
-        $(".nav-tabs li a").click(function() {
+        $(".nav-tabs li:not(.active) a").click(function() {
             var href = $(this).attr('href');
-            href += ('&search[]=MetaLib:' + hash);
+            href += href.indexOf('?') == -1
+               ? '?' : '&';
+            href += ('search[]=MetaLib:' + hash);
             $(this).attr('href', href);
         });
     };
