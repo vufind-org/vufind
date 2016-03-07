@@ -1165,6 +1165,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'emailId' => '',
             'address1' => '',
             'zip' => '',
+            'city' => '',
+            'country' => '',
             'phone' => '',
             'phoneId' => '',
             'phoneLocalCode' => '',
@@ -1195,18 +1197,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                         ? $address->streetAddress : '';
                     $userCached['zip'] = isset($address->zipCode)
                         ? $address->zipCode : '';
-                    if (isset($address->city)) {
-                        if ($userCached['zip']) {
-                            $userCached['zip'] .= ', ';
-                        }
-                        $userCached['zip'] .= $address->city;
-                    }
-                    if (isset($address->country)) {
-                        if ($userCached['zip']) {
-                            $userCached['zip'] .= ', ';
-                        }
-                        $userCached['zip'] .= $address->country;
-                    }
+                    $userCached['city'] = isset($address->city)
+                        ? $address->city : '';
+                    $userCached['country'] = isset($address->country)
+                        ? $address->country : '';
                 }
             }
         }
