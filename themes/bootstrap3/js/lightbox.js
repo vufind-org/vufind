@@ -141,10 +141,11 @@ VuFind.lightbox = (function() {
     var data = $(form).serializeArray();
     data.push({'name':'layout', 'value':'lightbox'}); // Return in lightbox, please
     // Add submit button information
-    var clicked = $(form).find('[type=submit]:focus');
-    if(clicked.length > 0) {
-      var name = clicked.attr('name') ? clicked.attr('name') : 'submit';
-      data.push({'name':name, 'value':clicked.attr('value') || 1});
+    var submit = $(form).find('[type=submit]');
+    if (submit.length > 0) {
+      submit.attr('disabled', 'disabled');
+      var name = submit.attr('name') ? submit.attr('name') : 'submit';
+      data.push({'name':name, 'value':submit.attr('value') || 1});
     }
     // Special handlers
     if ('undefined' !== typeof dataset) {
