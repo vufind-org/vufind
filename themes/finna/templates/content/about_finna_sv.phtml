@@ -29,117 +29,17 @@
         <p>Finna är en helhet av söktjänster, med många organisationsspecifika webbsidor utöver den nationella webbplatsen finna.fi. Sökningen på de olika organisationernas webbsidor begränsar sig i huvudsak till den aktuella organisationens material.</p>
       </div>
     </div>
+    <?=$this->render('content/aboutfinna_sites.phtml') ?>
     <div class="row">
-      <div class="col-md-11 col-lg-9">
-        <h4>Allmänna bibliotek</h4>
-        <div class="row">
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://vaski.finna.fi"><img src="<?=$this->imageLink('vaski.jpg')?>" alt="vaski.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Vaski-biblioteken</p><p class="organisation-list-url"><a href="https://vaski.finna.fi">vaski.finna.fi</a></p>
-          </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-11">
+          <p><strong>Yrkeshögskole- och universitetsbibliotekens Finna-söktjänster</strong> innehåller internationellt, vetenskapligt och elektroniskt material som en utomstående aktör sammanställer och erbjuder biblioteken mot en avgift. Merparten av materialet får endast användas av högskolans studenter och anställda.</p>
+          <p>&nbsp;</p>
         </div>
       </div>
     </div>
-    
-    <div class="row">
-      <div class="col-md-11 col-lg-9">
-        <h4>Museer</h4>
-        <div class="row">
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://hkm.finna.fi"><img src="<?=$this->imageLink('hkm.jpg')?>" alt="hkm.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Helsingfors stadsmuseum</p><p class="organisation-list-url"><a href="https://hkm.finna.fi">hkm.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://hrm.finna.fi"><img src="<?=$this->imageLink('hrm.jpg')?>" alt="hrm.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Hotell- och restaurangsmuseet</p><p class="organisation-list-url"><a href="https://hrm.finna.fi">hrm.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://lelumuseohevosenkenka.finna.fi/"><img src="<?=$this->imageLink('lelumuseohevosenkenka.jpg')?>" alt="lelumuseohevosenkenkä.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Finlands Leksaksmuseum Hevosenkenkä</p><p class="organisation-list-url"><a href="https://lelumuseohevosenkenka.finna.fi/">lelumuseohevosenkenka.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://museot.finna.fi/"><img src="<?=$this->imageLink('museot.jpg')?>" alt="museot.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Museernas Finna (Museiverket)</p><p class="organisation-list-url"><a href="https://museot.finna.fi/">museot.finna.fi</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-md-11 col-lg-9">
-        <h4>Yrkeshögskolornas bibliotek</h4>
-        <div class="row">
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://masto.finna.fi"><img src="<?=$this->imageLink('masto.jpg')?>" alt="masto.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Lahtis YH</p><p class="organisation-list-url"><a href="https://masto.finna.fi">masto.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://samk.finna.fi"><img src="<?=$this->imageLink('samk.jpg')?>" alt="samk.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Satakuntas YH</p><p class="organisation-list-url"><a href="https://samk.finna.fi">samk.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://oamk.finna.fi"><img src="<?=$this->imageLink('oamk.jpg')?>" alt="oamk.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Uleåborgs YH</p><p class="organisation-list-url"><a href="https://oamk.finna.fi">oamk.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://hamk.finna.fi"><img src="<?=$this->imageLink('hamk.jpg')?>" alt="hamk.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Tavastlands YH</p><p class="organisation-list-url"><a href="https://hamk.finna.fi">hamk.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://janet.finna.fi"><img src="<?=$this->imageLink('janet.jpg')?>" alt="janet.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Jyväskyläs YH</p><p class="organisation-list-url"><a href="https://janet.finna.fi">janet.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://kaakkuri.finna.fi"><img src="<?=$this->imageLink('kaakkuri.jpg')?>" alt="kaakkuri.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Sydöstra Finlands YH</p><p class="organisation-list-url"><a href="https://kaakkuri.finna.fi">kaakkuri.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://laurea.finna.fi"><img src="<?=$this->imageLink('laurea.jpg')?>" alt="laurea.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Laurea-biblioteket</p><p class="organisation-list-url"><a href="https://laurea.finna.fi">laurea.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://metropolia.finna.fi"><img src="<?=$this->imageLink('metropolia.jpg')?>" alt="metropolia.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Metropolia YH</p><p class="organisation-list-url"><a href="https://metropolia.finna.fi">metropolia.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://seamk.finna.fi"><img src="<?=$this->imageLink('seamk.jpg')?>" alt="seamk.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Seinäjoki akademiska biblioteket</p><p class="organisation-list-url"><a href="https://seamk.finna.fi">seamk.finna.fi</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-md-11 col-lg-9">
-        <h4>Universitetens bibliotek</h4>
-        <div class="row">
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://jyu.finna.fi"><img src="<?=$this->imageLink('jyu.jpg')?>" alt="jyu.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Jyväskylä universitet</p><p class="organisation-list-url"><a href="https://jyu.finna.fi">jyu.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://kansalliskirjasto.finna.fi"><img src="<?=$this->imageLink('kansalliskirjasto.jpg')?>" alt="kansalliskirjasto.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Nationalbiblioteket</p><p class="organisation-list-url"><a href="https://kansalliskirjasto.finna.fi">kansalliskirjasto.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://aalto.finna.fi"><img src="<?=$this->imageLink('aalto.jpg')?>" alt="aalto.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Aalto-universitetets biblioteket</p><p class="organisation-list-url"><a href="https://aalto.finna.fi">aalto.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://hanken.finna.fi"><img src="<?=$this->imageLink('hanken.jpg')?>" alt="hanken.finna.fi skärmbild" /></a>
-            <p class="organisation-list-header">Svenska handelshögskolan</p><p class="organisation-list-url"><a href="https://hanken.finna.fi">hanken.finna.fi</a></p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-12 col-sm-11">
-              <p><strong>Yrkeshögskole- och universitetsbibliotekens Finna-söktjänster</strong> innehåller internationellt, vetenskapligt och elektroniskt material som en utomstående aktör sammanställer och erbjuder biblioteken mot en avgift. Merparten av materialet får endast användas av högskolans studenter och anställda.</p>
-            <p>&nbsp;</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-  </div> <!-- close container -->
+  </div>
+</div> <!-- close container -->
 </div>  <!-- close container-fluid -->
 <div class="container-fluid">
   <div class="container">
@@ -149,7 +49,7 @@
         <h2>Finna är mer än en söktjänst</h2>
         <p>Med Finna kan du inte bara hitta, utan också använda material. I Finna kan man bl.a. reservera material och förnya lån från följande <strong>bibliotek:</strong></p>
         <? if (isset($loginTargets)): ?>
-        <?= $this->partial('about_finna-login.phtml', ['loginTargets' => $loginTargets]) ?>
+          <?= $this->partial('about_finna-login.phtml', ['loginTargets' => $loginTargets]) ?>
         <? endif ?>
         <p>Om du har det aktuella bibliotekets lånekort kan du använda tjänsterna genom att <a href="https://www.finna.fi/MyResearch/Home?lng=sv">logga in på Finna.</a></p>
         <p>Man kan ansöka om behörighet till vissa <strong>arkivmaterial</strong> via länkarna i posten.</p>
@@ -172,7 +72,7 @@
         <h4>Finnas ansvariga parter</h4>
         <p>Nationalbiblioteket ansvarar för utvecklingen och administrationen av Finna, men tjänsten utvecklas tillsammans med Finnas samarbetspartner. De <a href="https://www.finna.fi/Content/Organisations?lng=sv">arkiv, bibliotek och museer</a> som medverkar i Finna ansvarar för innehållet. Finna är en del av undervisnings- och kulturministeriets projekt <a href="http://www.kdk.fi/sv/information-om-projektet">Det nationella digitala biblioteket (NDL).</a></p>
         <h4>Finnas program</h4>
-        <p>Finna har skapats med hjälp av VuFind och andra program med öppen källkod, och Finnas källkod får användas fritt.  <a href="http://www.kdk.fi/fi/asiakasliittyma/ohjelmiston-kehittaeminen">Läs mer om utvecklingen av programmet.</a></p>
+        <p>Finna har skapats med hjälp av VuFind och andra program med öppen källkod, och Finnas källkod får användas fritt. <a href="http://www.kdk.fi/fi/asiakasliittyma/ohjelmiston-kehittaeminen">Läs mer om utvecklingen av programmet.</a></p>
         <p>&nbsp;</p>
       </div>
     </div>
@@ -181,5 +81,5 @@
 <div class="container-fluid">
   <div class="container">
     <div class="row">
-    <!-- open closed divs for valid HTML -->
-<!-- END of: finna - content/about_finna_sv.phtml -->
+    <!-- open closed divs for valid HTML --> 
+<!-- END of: finna - content/about_finna_sv.phtml --> 
