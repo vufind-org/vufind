@@ -17,7 +17,7 @@ VuFind.lightbox = (function() {
       type = 'info';
     }
     _html('<div class="alert alert-'+type+'">'+message+'</div>\
-    <button class="btn btn-default" data-dismiss="modal">close</button>');
+    <button class="btn btn-default" data-dismiss="modal">' + VuFind.translate('close') + '</button>');
     _modal.modal('show');
   };
   var flashMessage = function(message, type) {
