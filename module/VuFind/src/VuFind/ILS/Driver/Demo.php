@@ -68,7 +68,14 @@ class Demo extends AbstractBase
      *
      * @var SessionContainer
      */
-    protected $session;
+    protected $session = null;
+
+    /**
+     * Factory function for constructing the SessionContainer.
+     *
+     * @var Callable
+     */
+    protected $sessionFactory;
 
     /**
      * Should we return bib IDs in MyResearch responses?
@@ -108,17 +115,21 @@ class Demo extends AbstractBase
     /**
      * Constructor
      *
-     * @param \VuFind\Date\Converter $dateConverter Date converter object
-     * @param SearchService          $ss            Search service
-     * @param SessionContainer       $session       Session container for persisting
+     * @param \VuFind\Date\Converter $dateConverter  Date converter object
+     * @param SearchService          $ss             Search service
+     * @param Callable               $sessionFactory Factory function returning
+     * SessionContainer object
      * fake data to simulate consistency and reduce Solr hits
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        SearchService $ss, SessionContainer $session
+        SearchService $ss, $sessionFactory
     ) {
         $this->dateConverter = $dateConverter;
         $this->searchService = $ss;
-        $this->session = $session;
+        if (!is_callable($sessionFactory)) {
+            throw new \Exception('Invalid session factory passed to constructor.');
+        }
+        $this->sessionFactory = $sessionFactory;
     }
 
     /**
@@ -393,8 +404,12 @@ class Demo extends AbstractBase
             $randDays = rand() % 10;
             $currentItem = [
                 "location" => $location,
-                "create"   => date("j-M-y", strtotime("now - {$randDays} days")),
-                "expire"   => date("j-M-y", strtotime("now + 30 days")),
+                "create"   => $this->dateConverter->convertToDisplayDate(
+                    'U', strtotime("now - {$randDays} days")
+                ),
+                "expire"   => $this->dateConverter->convertToDisplayDate(
+                    'U', strtotime("now + 30 days")
+                ),
                 "reqnum"   => sprintf("%06d", $i),
                 "item_id" => $i,
                 "reqnum" => $i
@@ -431,7 +446,7 @@ class Demo extends AbstractBase
                 $currentItem['available'] = $status == 1;
                 $currentItem['canceled'] = $status == 2;
                 $currentItem['processed'] = ($status == 1 || rand(1, 3) == 3)
-                    ? date("j-M-y")
+                    ? $this->dateConverter->convertToDisplayDate('U', time())
                     : '';
                 if ($requestType == 'ILLRequests') {
                     $transit = rand() % 2;
@@ -468,6 +483,21 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Get the session container (constructing it on demand if not already present)
+     *
+     * @return SessionContainer
+     */
+    protected function getSession()
+    {
+        // SessionContainer not defined yet? Build it now:
+        if (null === $this->session) {
+            $factory = $this->sessionFactory;
+            $this->session = $factory();
+        }
+        return $this->session;
+    }
+
+    /**
      * Get Simulated Status (support method for getStatus/getHolding)
      *
      * This is responsible for retrieving the status information of a certain
@@ -484,8 +514,9 @@ class Demo extends AbstractBase
         $id = (string) $id;
 
         // Do we have a fake status persisted in the session?
-        if (isset($this->session->statuses[$id])) {
-            return $this->session->statuses[$id];
+        $session = $this->getSession();
+        if (isset($session->statuses[$id])) {
+            return $session->statuses[$id];
         }
 
         // Create fake entries for a random number of items
@@ -511,23 +542,24 @@ class Demo extends AbstractBase
     protected function setStatus($id, $holding = [], $append = true)
     {
         $id = (string)$id;
-        $i = isset($this->session->statuses[$id])
-            ? count($this->session->statuses[$id]) + 1 : 1;
+        $session = $this->getSession();
+        $i = isset($session->statuses[$id])
+            ? count($session->statuses[$id]) + 1 : 1;
         $holding = array_merge($this->getRandomHolding($id, $i), $holding);
 
         // if statuses is already stored
-        if ($this->session->statuses) {
+        if ($session->statuses) {
             // and this id is part of it
-            if ($append && isset($this->session->statuses[$id])) {
+            if ($append && isset($session->statuses[$id])) {
                 // add to the array
-                $this->session->statuses[$id][] = $holding;
+                $session->statuses[$id][] = $holding;
             } else {
                 // if we're over-writing or if there's nothing stored for this id
-                $this->session->statuses[$id] = [$holding];
+                $session->statuses[$id] = [$holding];
             }
         } else {
             // brand new status storage!
-            $this->session->statuses = [$id => [$holding]];
+            $session->statuses = [$id => [$holding]];
         }
         return $holding;
     }
@@ -686,7 +718,8 @@ class Demo extends AbstractBase
      */
     public function getMyFines($patron)
     {
-        if (!isset($this->session->fines)) {
+        $session = $this->getSession();
+        if (!isset($session->fines)) {
             // How many items are there? %20 - 2 = 10% chance of none,
             // 90% of 1-18 (give or take some odd maths)
             $fines = rand() % 20 - 2;
@@ -702,13 +735,16 @@ class Demo extends AbstractBase
 
                 $fineList[] = [
                     "amount"   => $fine * 100,
-                    "checkout" => date("j-M-y", $checkout),
+                    "checkout" => $this->dateConverter->convertToDisplayDate(
+                        'U', $checkout
+                    ),
                     // After 20 days it becomes 'Long Overdue'
                     "fine"     => $day_overdue > 20 ? "Long Overdue" : "Overdue",
                     // 50% chance they've paid half of it
                     "balance"  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
-                    "duedate"  =>
-                        date("j-M-y", strtotime("now - $day_overdue days"))
+                    "duedate"  => $this->dateConverter->convertToDisplayDate(
+                        'U', strtotime("now - $day_overdue days")
+                    )
                 ];
                 // Some fines will have no id or title:
                 if (rand() % 3 != 1) {
@@ -720,9 +756,9 @@ class Demo extends AbstractBase
                     }
                 }
             }
-            $this->session->fines = $fineList;
+            $session->fines = $fineList;
         }
-        return $this->session->fines;
+        return $session->fines;
     }
 
     /**
@@ -738,10 +774,11 @@ class Demo extends AbstractBase
      */
     public function getMyHolds($patron)
     {
-        if (!isset($this->session->holds)) {
-            $this->session->holds = $this->createRequestList('Holds');
+        $session = $this->getSession();
+        if (!isset($session->holds)) {
+            $session->holds = $this->createRequestList('Holds');
         }
-        return $this->session->holds;
+        return $session->holds;
     }
 
     /**
@@ -757,11 +794,12 @@ class Demo extends AbstractBase
      */
     public function getMyStorageRetrievalRequests($patron)
     {
-        if (!isset($this->session->storageRetrievalRequests)) {
-            $this->session->storageRetrievalRequests
+        $session = $this->getSession();
+        if (!isset($session->storageRetrievalRequests)) {
+            $session->storageRetrievalRequests
                 = $this->createRequestList('StorageRetrievalRequests');
         }
-        return $this->session->storageRetrievalRequests;
+        return $session->storageRetrievalRequests;
     }
 
     /**
@@ -777,11 +815,11 @@ class Demo extends AbstractBase
      */
     public function getMyILLRequests($patron)
     {
-        if (!isset($this->session->ILLRequests)) {
-            $this->session->ILLRequests
-                = $this->createRequestList('ILLRequests');
+        $session = $this->getSession();
+        if (!isset($session->ILLRequests)) {
+            $session->ILLRequests = $this->createRequestList('ILLRequests');
         }
-        return $this->session->ILLRequests;
+        return $session->ILLRequests;
     }
 
     /**
@@ -798,7 +836,8 @@ class Demo extends AbstractBase
      */
     public function getMyTransactions($patron)
     {
-        if (!isset($this->session->transactions)) {
+        $session = $this->getSession();
+        if (!isset($session->transactions)) {
             // How many items are there?  %10 - 1 = 10% chance of none,
             // 90% of 1-9 (give or take some odd maths)
             $trans = rand() % 10 - 1;
@@ -810,12 +849,12 @@ class Demo extends AbstractBase
                 // Due date
                 $dueStatus = false;
                 if ($due_relative >= 0) {
-                    $due_date = date("j-M-y", strtotime("now +$due_relative days"));
+                    $rawDueDate = strtotime("now +$due_relative days");
                     if ($due_relative == 0) {
                         $dueStatus = 'due';
                     }
                 } else {
-                    $due_date = date("j-M-y", strtotime("now $due_relative days"));
+                    $rawDueDate = strtotime("now $due_relative days");
                     $dueStatus = 'overdue';
                 }
 
@@ -834,18 +873,27 @@ class Demo extends AbstractBase
                     $req = 0;
                 }
 
+                // Create a generic transaction:
+                $transList[] = $this->getRandomItemIdentifier() + [
+                    // maintain separate display vs. raw due dates (the raw
+                    // one is used for renewals, in case the user display
+                    // format is incompatible with date math).
+                    'duedate' => $this->dateConverter->convertToDisplayDate(
+                        'U', $rawDueDate
+                    ),
+                    'rawduedate' => $rawDueDate,
+                    'dueStatus' => $dueStatus,
+                    'barcode' => sprintf("%08d", rand() % 50000),
+                    'renew'   => $renew,
+                    'renewLimit' => $renewLimit,
+                    'request' => $req,
+                    'item_id' => $i,
+                    'renewable' => $renew < $renewLimit,
+                ];
                 if ($i == 2 || rand() % 5 == 1) {
                     // Mimic an ILL loan
-                    $transList[] = $this->getRandomItemIdentifier() + [
-                        'duedate' => $due_date,
-                        'dueStatus' => $dueStatus,
-                        'barcode' => sprintf("%08d", rand() % 50000),
-                        'renew'   => $renew,
-                        'renewLimit' => $renewLimit,
-                        'request' => $req,
+                    $transList[$i] += [
                         'id'      => "ill_institution_$i",
-                        'item_id' => $i,
-                        'renewable' => $renew < $renewLimit,
                         'title'   => "ILL Loan Title $i",
                         'institution_id' => 'ill_institution',
                         'institution_name' => 'ILL Library',
@@ -853,17 +901,7 @@ class Demo extends AbstractBase
                         'borrowingLocation' => 'ILL Service Desk'
                     ];
                 } else {
-                    $transList[] = $this->getRandomItemIdentifier() + [
-                        'duedate' => $due_date,
-                        'dueStatus' => $dueStatus,
-                        'barcode' => sprintf("%08d", rand() % 50000),
-                        'renew'   => $renew,
-                        'renewLimit' => $renewLimit,
-                        'request' => $req,
-                        'item_id' => $i,
-                        'renewable' => $renew < $renewLimit,
-                        'borrowingLocation' => $this->getFakeLoc()
-                    ];
+                    $transList[$i]['borrowingLocation'] = $this->getFakeLoc();
                     if ($this->idsInMyResearch) {
                         $transList[$i]['id'] = $this->getRandomBibId();
                         $transList[$i]['source'] = $this->getRecordSource();
@@ -872,9 +910,9 @@ class Demo extends AbstractBase
                     }
                 }
             }
-            $this->session->transactions = $transList;
+            $session->transactions = $transList;
         }
-        return $this->session->transactions;
+        return $session->transactions;
     }
 
     /**
@@ -1144,7 +1182,8 @@ class Demo extends AbstractBase
         // cancel.
         $newHolds = new ArrayObject();
         $retVal = ['count' => 0, 'items' => []];
-        foreach ($this->session->holds as $current) {
+        $session = $this->getSession();
+        foreach ($session->holds as $current) {
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newHolds->append($current);
             } else {
@@ -1167,7 +1206,7 @@ class Demo extends AbstractBase
             }
         }
 
-        $this->session->holds = $newHolds;
+        $session->holds = $newHolds;
         return $retVal;
     }
 
@@ -1206,7 +1245,8 @@ class Demo extends AbstractBase
         // cancel.
         $newRequests = new ArrayObject();
         $retVal = ['count' => 0, 'items' => []];
-        foreach ($this->session->storageRetrievalRequests as $current) {
+        $session = $this->getSession();
+        foreach ($session->storageRetrievalRequests as $current) {
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newRequests->append($current);
             } else {
@@ -1229,7 +1269,7 @@ class Demo extends AbstractBase
             }
         }
 
-        $this->session->storageRetrievalRequests = $newRequests;
+        $session->storageRetrievalRequests = $newRequests;
         return $retVal;
     }
 
@@ -1277,14 +1317,17 @@ class Demo extends AbstractBase
         $finalResult = ['blocks' => false, 'details' => []];
 
         // Grab transactions from session so we can modify them:
-        $transactions = $this->session->transactions;
+        $session = $this->getSession();
+        $transactions = $session->transactions;
         foreach ($transactions as $i => $current) {
             // Only renew requested items:
             if (in_array($current['item_id'], $renewDetails['details'])) {
                 if (!$this->isFailing(__METHOD__, 50)) {
-                    $old = $transactions[$i]['duedate'];
+                    $transactions[$i]['rawduedate'] += 7 * 24 * 60 * 60;
                     $transactions[$i]['duedate']
-                        = date("j-M-y", strtotime($old . " + 7 days"));
+                        = $this->dateConverter->convertToDisplayDate(
+                            'U', $transactions[$i]['rawduedate']
+                        );
                     $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
                     $transactions[$i]['renewable']
                         = $transactions[$i]['renew']
@@ -1311,7 +1354,7 @@ class Demo extends AbstractBase
 
         // Write modified transactions back to session; in-place changes do not
         // work due to ArrayObject eccentricities:
-        $this->session->transactions = $transactions;
+        $session->transactions = $transactions;
 
         return $finalResult;
     }
@@ -1374,12 +1417,13 @@ class Demo extends AbstractBase
             ];
         }
 
-        if (!isset($this->session->holds)) {
-            $this->session->holds = new ArrayObject();
+        $session = $this->getSession();
+        if (!isset($session->holds)) {
+            $session->holds = new ArrayObject();
         }
-        $lastHold = count($this->session->holds) - 1;
+        $lastHold = count($session->holds) - 1;
         $nextId = $lastHold >= 0
-            ? $this->session->holds[$lastHold]['item_id'] + 1 : 0;
+            ? $session->holds[$lastHold]['item_id'] + 1 : 0;
 
         // Figure out appropriate expiration date:
         if (!isset($holdDetails['requiredBy'])
@@ -1413,13 +1457,15 @@ class Demo extends AbstractBase
                 break;
             }
         }
-        $this->session->holds->append(
+        $session->holds->append(
             [
                 'id'       => $holdDetails['id'],
                 'source'   => $this->getRecordSource(),
                 'location' => $holdDetails['pickUpLocation'],
-                'expire'   => date('j-M-y', $expire),
-                'create'   => date('j-M-y'),
+                'expire'   =>
+                    $this->dateConverter->convertToDisplayDate('U', $expire),
+                'create'   =>
+                    $this->dateConverter->convertToDisplayDate('U', time()),
                 'reqnum'   => sprintf('%06d', $nextId),
                 'item_id' => $nextId,
                 'volume' => '',
@@ -1481,12 +1527,13 @@ class Demo extends AbstractBase
             ];
         }
 
-        if (!isset($this->session->storageRetrievalRequests)) {
-            $this->session->storageRetrievalRequests = new ArrayObject();
+        $session = $this->getSession();
+        if (!isset($session->storageRetrievalRequests)) {
+            $session->storageRetrievalRequests = new ArrayObject();
         }
-        $lastRequest = count($this->session->storageRetrievalRequests) - 1;
+        $lastRequest = count($session->storageRetrievalRequests) - 1;
         $nextId = $lastRequest >= 0
-            ? $this->session->storageRetrievalRequests[$lastRequest]['item_id'] + 1
+            ? $session->storageRetrievalRequests[$lastRequest]['item_id'] + 1
             : 0;
 
         // Figure out appropriate expiration date:
@@ -1514,14 +1561,17 @@ class Demo extends AbstractBase
             ];
         }
 
-        $this->session->storageRetrievalRequests->append(
+        $session->storageRetrievalRequests->append(
             [
                 'id'       => $details['id'],
                 'source'   => $this->getRecordSource(),
                 'location' => $details['pickUpLocation'],
-                'expire'   => date('j-M-y', $expire),
-                'create'  => date('j-M-y'),
-                'processed' => rand() % 3 == 0 ? date('j-M-y', $expire) : '',
+                'expire'   =>
+                    $this->dateConverter->convertToDisplayDate('U', $expire),
+                'create'   =>
+                    $this->dateConverter->convertToDisplayDate('U', time()),
+                'processed' => rand() % 3 == 0
+                    ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
                 'reqnum'   => sprintf('%06d', $nextId),
                 'item_id'  => $nextId
             ]
@@ -1580,12 +1630,13 @@ class Demo extends AbstractBase
             ];
         }
 
-        if (!isset($this->session->ILLRequests)) {
-            $this->session->ILLRequests = new ArrayObject();
+        $session = $this->getSession();
+        if (!isset($session->ILLRequests)) {
+            $session->ILLRequests = new ArrayObject();
         }
-        $lastRequest = count($this->session->ILLRequests) - 1;
+        $lastRequest = count($session->ILLRequests) - 1;
         $nextId = $lastRequest >= 0
-            ? $this->session->ILLRequests[$lastRequest]['item_id'] + 1
+            ? $session->ILLRequests[$lastRequest]['item_id'] + 1
             : 0;
 
         // Figure out appropriate expiration date:
@@ -1633,14 +1684,17 @@ class Demo extends AbstractBase
             ];
         }
 
-        $this->session->ILLRequests->append(
+        $session->ILLRequests->append(
             [
                 'id'       => $details['id'],
                 'source'   => $this->getRecordSource(),
                 'location' => $pickupLocation,
-                'expire'   => date('j-M-y', $expire),
-                'create'  => date('j-M-y'),
-                'processed' => rand() % 3 == 0 ? date('j-M-y', $expire) : '',
+                'expire'   =>
+                    $this->dateConverter->convertToDisplayDate('U', $expire),
+                'create'   =>
+                    $this->dateConverter->convertToDisplayDate('U', time()),
+                'processed' => rand() % 3 == 0
+                    ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
                 'reqnum'   => sprintf('%06d', $nextId),
                 'item_id'  => $nextId
             ]
@@ -1749,7 +1803,8 @@ class Demo extends AbstractBase
         // cancel.
         $newRequests = new ArrayObject();
         $retVal = ['count' => 0, 'items' => []];
-        foreach ($this->session->ILLRequests as $current) {
+        $session = $this->getSession();
+        foreach ($session->ILLRequests as $current) {
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newRequests->append($current);
             } else {
@@ -1772,7 +1827,7 @@ class Demo extends AbstractBase
             }
         }
 
-        $this->session->ILLRequests = $newRequests;
+        $session->ILLRequests = $newRequests;
         return $retVal;
     }
 

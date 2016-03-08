@@ -2511,7 +2511,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             [
                 new \VuFind\Date\Converter(),
                 $this->getMock('VuFindSearch\Service'),
-                $session
+                function () use ($session) { return $session; }
             ]
         );
     }

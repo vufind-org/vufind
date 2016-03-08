@@ -7,7 +7,7 @@
 ?>
 <h2><?=$this->transEsc('Book Bag') ?></h2>
 <?=$this->flashmessages()?>
-<form class="form-inline" action="<?=$this->url('cart-home')?>" method="post"  name="cartForm" data-lightbox-onsubmit="cartFormHandler">
+<form class="form-inline" action="<?=$this->url('cart-form')?>" method="post"  name="cartForm" data-lightbox-onsubmit="cartFormHandler">
   <input type="hidden" id="dropdown_value"/>
   <? if (!$this->cart()->isEmpty()): ?>
     <div class="cart-controls clearfix">

@@ -106,10 +106,9 @@ VuFind.lightbox = (function() {
   /**
    * Modal link data options
    *
-   * data-lightbox-close  = close lightbox after form success
-   * data-lightbox-href   = overwrite href with this value in lightbox
+   * data-lightbox-href = go to this url instead
    * data-lightbox-ignore = do not open this link in lightbox
-   * data-lightbox-post   = post json for link ajax
+   * data-lightbox-post = post data
    */
   var _constrainLink = function(event) {
     if (typeof this.dataset.lightboxIgnore != 'undefined') {
@@ -117,7 +116,12 @@ VuFind.lightbox = (function() {
     }
     if (this.href.length > 1) {
       event.preventDefault();
-      ajax({url: this.href});
+      var obj = {url: this.dataset.lightboxHref || this.href};
+      if("string" === typeof this.dataset.lightboxPost) {
+        obj.type = 'POST';
+        obj.data = this.dataset.lightboxPost;
+      }
+      ajax(obj);
       _currentUrl = this.href;
       VuFind.modal('show');
       return false;
