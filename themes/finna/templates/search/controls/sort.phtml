@@ -2,7 +2,7 @@
 <? $list = $this->sortList ? $this->sortList : $this->params->getSortList(); if (!empty($list)): ?>
   <span class="hidden-sm hidden-xs button-label"><?=$this->transEsc('Sort')?></span>
   <span class="sr-only hidden-lg hidden-md"><?=$this->transEsc('Sort')?></span>
-<div class="sort-button"> 
+<div class="sort-button">
   <div class="dropdown">
     <? foreach ($list as $sortType => $sortData): ?>
       <? if ($sortData['selected']): ?>
@@ -14,7 +14,7 @@
     <ul class="dropdown-menu" role="menu">
       <? foreach ($list as $sortType => $sortData): ?>
       <li role="menuitem">
-        <a href="<?=$this->results->getUrlQuery()->setSort($sortType)?>"><?=$this->transEsc($sortData['desc'])?></a>
+        <a href="<?=isset($sortData['url']) ? $this->escapeHtmlAttr($sortData['url']) : $this->results->getUrlQuery()->setSort($sortType)?>"><?=$this->transEsc($sortData['desc'])?></a>
       <? endforeach; ?>
       </li>
     </ul>

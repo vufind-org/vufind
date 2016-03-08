@@ -1,10 +1,10 @@
 <?php
 /**
- * Row Definition for search
+ * Table Definition for due date reminders.
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,66 +20,49 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Db_Table
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Page
  */
-namespace Finna\Db\Row;
+namespace Finna\Db\Table;
 use VuFind\Crypt\HMAC;
 
 /**
- * Row Definition for search
+ * Table Definition for due date reminders.
  *
  * @category VuFind
- * @package  Db_Row
+ * @package  Db_Table
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Search extends \VuFind\Db\Row\Search
+class DueDateReminder extends \VuFind\Db\Table\Gateway
 {
     /**
-     * Set last executed time for scheduled alert.
-     *
-     * @param DateTime $time Time.
-     *
-     * @return mixed
+     * Constructor
      */
-    public function setLastExecuted($time)
+    public function __construct()
     {
-        $this->finna_last_executed = $time;
-        return $this->save();
-    }
-
-    /**
-     * Set schedule for scheduled alert.
-     *
-     * @param int    $schedule Schedule.
-     * @param string $url      Site base URL
-     *
-     * @return mixed
-     */
-    public function setSchedule($schedule, $url)
-    {
-        $this->finna_schedule = $schedule;
-        $this->finna_schedule_base_url = $url;
-        return $this->save();
+        parent::__construct(
+            'finna_due_date_reminder', 'Finna\Db\Row\DueDateReminder'
+        );
     }
 
     /**
      * Utility function for generating a token for unsubscribing a
-     * saved search.
+     * due date alert.
      *
      * @param VuFind\Crypt\HMAC $hmac HMAC hash generator
      * @param object            $user User object
+     * @param int               $id   ID
      *
      * @return string token
      */
-    public function getUnsubscribeSecret(HMAC $hmac, $user)
+    public function getUnsubscribeSecret(HMAC $hmac, $user, $id)
     {
         $data = [
-            'id' => $this->id,
+            'id' => $id,
             'user_id' => $user->id,
             'created' => $user->created
         ];

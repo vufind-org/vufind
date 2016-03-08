@@ -2,7 +2,7 @@ finna.metalib = (function() {
     var page = 1;
     var loading = false;
     var inited = false;
-    var originalPath = currentPath = null;
+    var currentPath = null;
     var searchSet = null;
 
     var search = function(fullPath, saveHistory) {
@@ -13,9 +13,9 @@ finna.metalib = (function() {
         loading = true;
         var historySupport = window.history && window.history.pushState;
         var useAJAXLoad =  !inited || historySupport;
-        var replace = {};
-        replace.set = encodeURIComponent(searchSet);
-        replace.method = 'metalib';
+        var replace = {
+          'method': 'metalib'
+        };
 
         // Tranform current url into an 'Ajaxified' version.
         // Update url parameters 'page' and 'set' if needed.
@@ -26,11 +26,27 @@ finna.metalib = (function() {
         }
 
         page = 1;
+        var set = '';
         for (var i=0; i<parts.length; i++) {
             var param = parts[i].split('=');
             var key = param[0];
             var val = param[1];
 
+            // remove old filters
+            if (decodeURIComponent(key) == 'filter[]') {
+                if (decodeURIComponent(val).substr(0, 12) == 'metalib_set:') {
+                    set = decodeURIComponent(val).substr(12);
+                    set = set.replace(new RegExp('"', 'g'), '');
+                }
+                continue;
+            }
+            
+            // take set out
+            if (key == 'set') {
+                set = decodeURIComponent(val);
+                continue;
+            }
+            
             if (key == 'page') {
                 page = val;
             }
@@ -44,10 +60,11 @@ finna.metalib = (function() {
         $.each(replace, function(key, val) {
             url += '&' + key + '=' + val;
         });
+        url += '&set=' + encodeURIComponent(set);
+        
         if (window.location.hash) {
             url += window.location.hash;
         }
-
         currentPath = url;
 
         if (!useAJAXLoad) {
@@ -124,18 +141,18 @@ finna.metalib = (function() {
     var initPagination = function() {
         $('ul.pagination a, ul.paginationSimple a').click(function() {
             if (!loading) {
-                search($(this).attr("href"), true);
+                search($(this).attr('href'), true);
             }
             return false;
         });
     };
 
     var initSetChange = function(home) {
-        $(".search-sets input").on("click", function() {
+        $(".search-sets input").click(function() {
             if (home) {
                 updateSearchForm();
             } else {
-                var parts = originalPath.split('&');
+                var parts = currentPath.split('&');
                 var url = parts.shift();
                 for (var i=0; i<parts.length; i++) {
                     var param = parts[i].split('=');
@@ -146,8 +163,9 @@ finna.metalib = (function() {
                     }
                     url += '&' + key + '=' + val;
                 }
-                url += originalPath.indexOf("?") == -1 ? "?" : "&";
+                url += currentPath.indexOf('?') == -1 ? '?' : '&';
                 url += 'set=' + $(this).val();
+                url = url.replace('/AJAX/JSON?', '/MetaLib/Search?');
                 location = url;
             }
         });
@@ -172,9 +190,11 @@ finna.metalib = (function() {
     };
 
     var initTabNavigation = function(hash) {
-        $(".nav-tabs li a").click(function() {
+        $(".nav-tabs li:not(.active) a").click(function() {
             var href = $(this).attr('href');
-            href += ('&search[]=MetaLib:' + hash);
+            href += href.indexOf('?') == -1
+               ? '?' : '&';
+            href += ('search[]=MetaLib:' + hash);
             $(this).attr('href', href);
         });
     };
@@ -200,7 +220,6 @@ finna.metalib = (function() {
     var my = {
         init: function(set, path) {
             searchSet = set;
-            originalPath = path;
 
             initSetChange();
             initHistoryNavigation();

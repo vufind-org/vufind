@@ -74,7 +74,6 @@ trait MetaLibIrdTrait
     protected function getMetaLibSet($set = false)
     {
         $allowedSets = $this->getMetaLibSets();
-        //$currentSet = $this->getRequest()->getQuery()->get('set');
         if ($set && strncmp($set, '_ird:', 5) == 0) {
             $ird = substr($set, 5);
             if (!preg_match('/\W/', $ird)) {

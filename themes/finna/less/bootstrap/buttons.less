@@ -368,65 +368,6 @@ button.multiselect {
         }
 
     }
-    & .view-button, & .sort-button, & .results-per-page-button {
-        color: @body-bg;
-        display: inline-block;
-        font-weight: normal;
-        & .dropdown {
-            border-radius: 10px;
-            
-        }
-        & .dropdown > a {
-            background: @link-color;
-            color: @body-bg;
-            border-radius: @finna-button-radius;
-            padding: 7px 10px;
-            display: block;
-            & span {
-                padding-right: 20px;   
-            }
-            &:hover, &:focus {
-                text-decoration: none;
-                background: darken(@link-color, 10%);
-                transition: background 0.2s linear;
-            }
-        }
-        & i {
-            font-size: 18px;
-            vertical-align: middle;
-            color: #fff;
-            margin-top: -3px;
-            margin-right: 3px;
-            border-radius: @finna-button-radius;
-        }
-        & i.fa-arrow-down {
-            font-size: 1em;
-            margin-left: -14px;
-        }
-        & .dropdown-menu > li > a {
-            text-align: left;
-            color: @gray;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            & i {
-                color: @gray;   
-            }
-            & i.fa-available {
-                font-size: 1em;
-                float: right;
-            }
-        }
-        @media(max-width:@screen-xs-max) {
-            margin-right: 0;
-            margin-bottom: 10px;
-
-        }
-        & .dropdown-menu {
-            @media(max-width:@screen-sm-max) {
-                font-size: 1.1em;
-            }
-        }
-    }
     @media (max-width: 399px) {
         & .view-button, & .sort-button {
             &  .dropdown > a span {
@@ -442,6 +383,66 @@ button.multiselect {
         }
     }
 }
+.view-button, .sort-button, .results-per-page-button {
+    color: @body-bg;
+    display: inline-block;
+    font-weight: normal;
+    & .dropdown {
+        border-radius: 10px;
+        
+    }
+    & .dropdown > a {
+        background: @link-color;
+        color: @body-bg;
+        border-radius: @finna-button-radius;
+        padding: 7px 10px;
+        display: block;
+        & span {
+            padding-right: 20px;   
+        }
+        &:hover, &:focus {
+            text-decoration: none;
+            background: darken(@link-color, 10%);
+            transition: background 0.2s linear;
+        }
+    }
+    & i {
+        font-size: 18px;
+        vertical-align: middle;
+        color: #fff;
+        margin-top: -3px;
+        margin-right: 3px;
+        border-radius: @finna-button-radius;
+    }
+    & i.fa-arrow-down {
+        font-size: 1em;
+        margin-left: -14px;
+    }
+    & .dropdown-menu > li > a {
+        text-align: left;
+        color: @gray;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        & i {
+            color: @gray;   
+        }
+        & i.fa-available {
+            font-size: 1em;
+            float: right;
+        }
+    }
+    @media(max-width:@screen-xs-max) {
+        margin-right: 0;
+        margin-bottom: 10px;
+
+    }
+    & .dropdown-menu {
+        @media(max-width:@screen-sm-max) {
+            font-size: 1.1em;
+        }
+    }
+}
+
 .dropdown.form-control.type-dropdown {
     border: none;
     display: inline-block;

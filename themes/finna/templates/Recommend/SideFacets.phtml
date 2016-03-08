@@ -26,7 +26,7 @@
   $html = '';
   $shown = 0;
   foreach ($checkboxFilters as $current) {
-    $availCount = $current['selected'] ? '' : $this->checkboxFacetCounts($current, $results);
+    $availCount = $current['selected'] ? -1 : $this->checkboxFacetCounts($current, $results);
     $availableRecords = $availCount < 0 ? '' : $this->localizedNumber($availCount);
     $html .= '<div class="checkbox';
     if ($current['selected']) {
@@ -56,12 +56,15 @@
 <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
 <? $module = $this->layout()->templateDir; ?>
 <?
-   $daterangeFacetField = null;
-   if (null === $module || in_array($module, ['search', 'primo'])) {
-     $params = $results->getParams();
-     $daterangeFacetField = $params->getSpatialDateRangeField();
-     $plotFrom = null;
-   }
+  $plotFrom = null;
+  $daterangeFacetField = null;
+  if (null === $module || in_array($module, ['search', 'primo'])) {
+    $options = $results->getOptions();
+    if (is_callable([$options, 'getDateRangeSearchField'])) {
+        $daterangeFacetField = $options->getDateRangeSearchField();
+    }
+    $dateRangeFilter = $params->getDateRangeFilter();
+  }
 ?>
 <?
     $queryHandler = 'AllFields';
@@ -127,10 +130,9 @@
             $paramArray = $queryHelper->getParamArray();
             unset($paramArray["{$daterangeFacetField}_type"]);
             $searchParams = $formParams = '?' . $queryHelper->buildQueryString($paramArray, false);
-            if ($spatialFilter = $params->getSpatialDateRangeFilter()) {
-              if (isset($spatialFilter['val'])) {
-                $formParams = $queryHelper->removeFacet($spatialFilter['field'], $spatialFilter['val'], false, 'AND', $paramArray);
-              }
+            if ($dateRangeFilter) {
+              $formParams = $queryHelper->removeFacet($dateRangeFilter['field'], $dateRangeFilter['value'], false, 'AND', $paramArray);
+              $spatialFilter = $results->getParams()->parseDateRangeFilter($dateRangeFilter['value']);
               $from = isset($spatialFilter['from']) ? $spatialFilter['from'] : null;
               $to = isset($spatialFilter['to']) ? $spatialFilter['to'] : null;
               $fromVal = $from != '*' ? $from : '';

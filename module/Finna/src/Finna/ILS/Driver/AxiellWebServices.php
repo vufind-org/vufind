@@ -32,8 +32,7 @@ use SoapClient, SoapFault, SoapHeader, File_MARC, PDO, PDOException, DOMDocument
     VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface as TranslatorAwareInterface,
-    Zend\Validator\EmailAddress as EmailAddressValidator,
-    Zend\Cache\Storage\StorageInterface;
+    Zend\Validator\EmailAddress as EmailAddressValidator;
 use VuFind\Exception\Date;
 use Zend\Db\Sql\Ddl\Column\Boolean;
 use VuFind\Config\Locator;
@@ -171,13 +170,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      ];
 
     /**
-     * Cache for storing ILS data.
-     *
-     * @var StorageInterface
-     */
-    protected $cache;
-
-    /**
      * SOAP Options
      *
      * @var array
@@ -201,13 +193,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
-     * @param StorageInterface       $cache         Cache storage interface
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter,
-        StorageInterface $cache
+    public function __construct(\VuFind\Date\Converter $dateConverter
     ) {
         $this->dateFormat = $dateConverter;
-        $this->cache = $cache;
     }
 
     /**
@@ -241,13 +230,13 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $this->debug("getMyProfile called");
 
         $username = $patron['cat_username'];
-        $cacheId = md5("{$this->arenaMember}|patron|$username");
+        $cacheKey = "patron|$username";
 
-        $userCached = $this->getCachedData($cacheId);
+        $userCached = $this->getCachedData($cacheKey);
 
         if (null === $userCached) {
             $this->patronLogin($username, $patron['cat_password']);
-            return $this->getCachedData($cacheId);
+            return $this->getCachedData($cacheKey);
         }
 
         return $userCached;
@@ -356,54 +345,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $this->messagingSettings['dueDateAlert']['method_none']
                 = $this->config['messagingSettings']['dueDateAlertMethodNone'];
         }
-    }
-
-    /**
-     * Helper function for fetching cached data.
-     * Data is cached for up to 30 seconds so that it would be faster to process
-     * e.g. requests where multiple calls to the backend are made.
-     *
-     * @param string $id Cache entry id
-     *
-     * @return mixed|null Cached entry or null if not cached or expired
-     */
-    protected function getCachedData($id)
-    {
-        $id = "AxiellWebServices-$id";
-        $item = $this->cache->getItem($id);
-        if (null !== $item) {
-            if (time() - $item['time'] < 30) {
-                return $item['entry'];
-            }
-            $this->cache->removeItem($id);
-        }
-        return null;
-    }
-
-    /**
-     * Helper function for storing cached data.
-     * Data is cached for up to 30 seconds so that it would be faster to process
-     * e.g. requests where multiple calls to the backend are made.
-     *
-     * @param string $id    Cache entry id
-     * @param mixed  $entry Entry to be cached
-     *
-     * @return void
-     */
-    protected function putCachedData($id, $entry)
-    {
-        $id = "AxiellWebServices-$id";
-
-        if (null === $entry) {
-            $this->cache->removeItem($id);
-            return;
-        }
-
-        $item = [
-            'time' => time(),
-            'entry' => $entry
-        ];
-        $this->cache->addItem($id, $item);
     }
 
     /**
@@ -1113,7 +1054,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     public function patronLogin($username, $password)
     {
-        $cacheId = md5("{$this->arenaMember}|patron|$username");
+        $cacheKey = "patron|$username";
         $function = 'getPatronInformation';
         $functionResult = 'patronInformationResult';
         $conf = [
@@ -1165,6 +1106,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'emailId' => '',
             'address1' => '',
             'zip' => '',
+            'city' => '',
+            'country' => '',
             'phone' => '',
             'phoneId' => '',
             'phoneLocalCode' => '',
@@ -1195,18 +1138,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                         ? $address->streetAddress : '';
                     $userCached['zip'] = isset($address->zipCode)
                         ? $address->zipCode : '';
-                    if (isset($address->city)) {
-                        if ($userCached['zip']) {
-                            $userCached['zip'] .= ', ';
-                        }
-                        $userCached['zip'] .= $address->city;
-                    }
-                    if (isset($address->country)) {
-                        if ($userCached['zip']) {
-                            $userCached['zip'] .= ', ';
-                        }
-                        $userCached['zip'] .= $address->country;
-                    }
+                    $userCached['city'] = isset($address->city)
+                        ? $address->city : '';
+                    $userCached['country'] = isset($address->country)
+                        ? $address->country : '';
                 }
             }
         }
@@ -1311,7 +1246,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             }
         }
 
-        $this->putCachedData($cacheId, $userCached);
+        $this->putCachedData($cacheKey, $userCached);
 
         return $user;
     }
@@ -1733,8 +1668,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         // Clear patron cache
-        $cacheId = md5("{$this->arenaMember}|patron|$username");
-        $this->putCachedData($cacheId, null);
+        $cacheKey = "patron|$username";
+        $this->putCachedData($cacheKey, null);
 
         return [
                 'success' => true,
@@ -1804,8 +1739,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         // Clear patron cache
-        $cacheId = md5("{$this->arenaMember}|patron|$username");
-        $this->putCachedData($cacheId, null);
+        $cacheKey = "patron|$username";
+        $this->putCachedData($cacheKey, null);
 
         return [
                 'success' => true,
@@ -1856,8 +1791,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         // Clear patron cache
-        $cacheId = md5("{$this->arenaMember}|patron|$username");
-        $this->putCachedData($cacheId, null);
+        $cacheKey = "patron|$username";
+        $this->putCachedData($cacheKey, null);
 
         return  [
                 'success' => true,
@@ -2196,6 +2131,21 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $object = [$object];
         }
         return $object;
+    }
+
+    /**
+     * Add instance-specific context to a cache key suffix to ensure that
+     * multiple drivers don't accidentally share values in the cache.
+     * This implementation works anywhere but can be overridden with something more
+     * performant.
+     *
+     * @param string $key Cache key suffix
+     *
+     * @return string
+     */
+    protected function formatCacheKey($key)
+    {
+        return 'AxiellWebServices' . '-' . md5($this->arenaMember . "|$key");
     }
 
     /**

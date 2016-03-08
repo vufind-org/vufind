@@ -29,9 +29,11 @@
           <? endforeach; ?>
         </ul>
       </li>
-      <? else: ?>
-      <? $val = $val['items'][0]; ?>
-      <li><a href="<?= $this->navibar()->getMenuItemUrl($val) ?>"><i class="fa fa-nav-<?= $val['label'] ?>"></i><?= $this->transEsc($val['label']) ?></a></li>
+      <? else:
+        $val = $val['items'][0];
+        $target = isset($val['target']) ? $val['target'] : null;
+      ?>
+      <li><a<?= isset($target) ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?= $this->navibar()->getMenuItemUrl($val) ?>"><i class="fa fa-nav-<?= $val['label'] ?>"></i><?= $this->transEsc($val['label']) ?></a></li>
       <? endif; ?>
       <? endforeach; ?>
     </ul>

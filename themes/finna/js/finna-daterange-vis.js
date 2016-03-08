@@ -182,7 +182,7 @@ finna.dateRangeVis = (function() {
             });
         })
         .fail(function(response, textStatus) {
-          vis.closest('.content').removeClass('loading');
+          holder.find('.date-vis').closest('.content').removeClass('loading');
           console.log(response, textStatus);
         });
     };
@@ -218,6 +218,9 @@ finna.dateRangeVis = (function() {
                 graph.setSelection({ x1: year , x2: year+1});
                 fromElement.val(year);
                 toElement.val(year);
+                // Trigger change event to update limits 
+                fromElement.change();
+                toElement.change();
             }
             visRangeSelected = false;
         });
@@ -234,6 +237,9 @@ finna.dateRangeVis = (function() {
             if (to != '-9999') {
                 toElement.val(to);
             }
+            // Trigger change event to update limits 
+            fromElement.change();
+            toElement.change();
 
             visRangeSelected = true;
             if (event.type == 'plotselected') {

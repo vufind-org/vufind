@@ -121,6 +121,14 @@
           <div class="col-sm-4 profile-title"><?=$this->transEsc('Zip') ?>:</div>
           <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['zip']) ?></div>
         <? endif; ?>
+        <? if (isset($this->profile['city'])): ?>
+          <div class="col-sm-4 profile-title"><?=$this->transEsc('City') ?>:</div>
+          <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['city']) ?></div>
+        <? endif; ?>
+        <? if (!empty($this->profile['country'])): ?>
+          <div class="col-sm-4 profile-title"><?=$this->transEsc('Country') ?>:</div>
+          <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['country']) ?></div>
+        <? endif; ?>
         <? if (isset($this->profile['phone'])): ?>
           <? if ($updatePhone): ?>
             <div class="col-sm-4 profile-title"><?=$this->transEsc('Phone') ?>:</div>

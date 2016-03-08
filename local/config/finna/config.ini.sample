@@ -959,14 +959,20 @@ show_full_status = true
 show_title_hold = false
 ; Show link to record page holdings-tab
 show_link_to_record_page = false
-; Threshold for collapsing locations and branches 
+; Axiell only: Threshold for collapsing locations and branches.
 collapse_threshold[location] = 5
 collapse_threshold[branch] = 20
+; Non-Axiell only: Override holdings ordering and re-sort holdings by availability and
+; location name.
+override_sort_order = false
 ; Show holdings summary on record page
 show_holdings_summary = false
 ; Show holdings details after the location group title so that they
 ; can be seen without "expanding" the group
 show_details_after_location_group = false
+; Non-Axiell only: How many holdings items should be displayed before truncating.
+; Set this to false (or comment out) to disable truncating.
+truncate_limit = 5
 
 ; This section controls the behavior of the Record module.
 [Record]

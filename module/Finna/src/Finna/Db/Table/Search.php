@@ -27,7 +27,6 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Db\Table;
-use fminSO;
 
 /**
  * Table Definition for search
@@ -166,9 +165,8 @@ class Search extends \VuFind\Db\Table\Search
         if (empty($row)) {
             return false;
         }
-        $row['finna_search_object'] = serialize(new fminSO($newSearch));
         if (!$hash) {
-            $hash = md5(md5($row->search_object) . md5($row->finna_search_object));
+            $hash = md5($row->search_object);
         }
         $row->finna_search_id = $hash;
         $row->save();

@@ -45,20 +45,17 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
      *
      * @var \VuFind\Config\PluginManager
      */
-    protected $configReader;
+    protected $configReader = null;
 
     /**
-     * Constructor
+     * Set the config reader
      *
-     * @param \VuFind\Date\Converter       $dateConverter  Date converter object
-     * @param string                       $holdsMode      Holds mode setting
-     * @param string                       $titleHoldsMode Title holds mode setting
-     * @param \VuFind\Config\PluginManager $configReader   Configuration reader
+     * @param \VuFind\Config\PluginManager $configReader Configuration reader
+     *
+     * @return void
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter,
-        $holdsMode, $titleHoldsMode, \VuFind\Config\PluginManager $configReader
-    ) {
-        parent::__construct($dateConverter, $holdsMode, $titleHoldsMode);
+    public function setConfigReader(\VuFind\Config\PluginManager $configReader)
+    {
         $this->configReader = $configReader;
     }
 
@@ -116,8 +113,8 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
      */
     protected function checkAccountBlocks($patronId)
     {
-        $cacheId = "blocks_$patronId";
-        $blockReason = $this->getCachedData($cacheId);
+        $cacheKey = "blocks_$patronId";
+        $blockReason = $this->getCachedData($cacheKey);
         if (null === $blockReason) {
             // Build Hierarchy
             $hierarchy = [
@@ -158,7 +155,7 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
                     }
                 }
             }
-            $this->putCachedData($cacheId, $blockReason);
+            $this->putCachedData($cacheKey, $blockReason);
         }
         return empty($blockReason) ? false : $blockReason;
     }
@@ -274,6 +271,9 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
      */
     protected function getPatronDriverConfig($patron)
     {
+        if (null === $this->configReader) {
+            return false;
+        }
         if (isset($patron['cat_username'])
             && ($pos = strpos($patron['cat_username'], '.')) > 0
         ) {

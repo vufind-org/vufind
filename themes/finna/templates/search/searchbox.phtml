@@ -20,19 +20,6 @@
     $advSearch = $module != 'combined' ? $options->getAdvancedSearchAction() : 'search-advanced';
     $lastSort = $browse ? null: $this->searchMemory()->getLastSort($this->searchClassId);
     $lastLimit = $browse ? null: $this->searchMemory()->getLastLimit($this->searchClassId);
-    $daterange
-       = $this->params && method_exists($this->params, 'getSpatialDateRangeFilter')
-       ? $this->params->getSpatialDateRangeFilter()
-       : null
-    ;
-    $metalibSet = $this->metalibSet;
-    if (!isset($metalibSet)) {
-      $metalibSet
-         = $this->params && method_exists($this->params, 'getMetaLibSearchSet')
-            ? $this->params->getMetaLibSearchSet()
-            : null
-      ;
-    }
     $defaultSortApplied = !isset($this->params) || $lastSort == $options->getDefaultSortByHandler($this->params->getSearchHandler());
 
     $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
@@ -180,13 +167,6 @@
       if (!empty($lastSort)) {
         echo '<input type="hidden" name="sort" value="' . ($defaultFilterState ? $this->escapeHtmlAttr($lastSort) : '') . '" data-value="' . $this->escapeHtmlAttr($lastSort) . '" />';
       }
-      if ($daterange && isset($daterange['field']) && isset($daterange['type'])) {
-        echo '<input class="hidden applied-filter daterange" type="checkbox"' . $defaultFilterState . ' name="' . $daterange['field'] . '_type" value="' . $this->escapeHtmlAttr($daterange['type']) . '" />';
-      }
-      if ($metalibSet) {
-        echo '<input class="hidden applied-filter" type="checkbox"' . $defaultFilterState . ' name="set" value="' . $this->escapeHtmlAttr($metalibSet) . '" />';
-      }
-
     ?>
   </form>
   <? if ($advSearch): ?>

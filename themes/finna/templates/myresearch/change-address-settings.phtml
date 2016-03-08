@@ -11,18 +11,14 @@
 <?=$this->flashmessages()?>
 <? if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
   <form  name="requestAddressChange" method="post" action="<?=$this->url('myresearch-changeprofileaddress')?>" class="form-horizontal address-form profile-form">
-    <div class="form-group">
-      <label class="col-sm-3 control-label" for="change_address_line_1"><?=$this->transEsc('Address') ?>:</label>
-      <div class="col-sm-9">
-        <input id="change_address_line_1" name="change_address_line_1" type="text" value="<?=$this->escapeHtmlAttr($this->profile['address1']) ?>" class="form-control"/>
+    <? foreach ($this->fields as $field => $data): ?>
+      <div class="form-group">
+        <label class="col-sm-3 control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
+        <div class="col-sm-9">
+          <input id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" type="text" value="<?=$this->escapeHtmlAttr(isset($this->profile[$field]) ? $this->profile[$field] : '') ?>" class="form-control"/>
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <label class="col-sm-3 control-label" for="change_address_zip"><?=$this->transEsc('Zip') ?>:</label>
-      <div class="col-sm-9">
-        <input id="change_address_zip" name="change_address_zip" type="text" value="<?=$this->escapeHtmlAttr($this->profile['zip']) ?>" class="form-control"/>
-      </div>
-    </div>
+    <? endforeach; ?>
     <div class="form-group">
       <div class="col-sm-offset-3 col-sm-9">
         <input name="address_change_request" class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" />
@@ -31,6 +27,6 @@
   </form>
 <? endif; ?>
   <span class="address-change-description">
-    <?=$this->transEsc('request_change_description') ?>
+    <?=$this->translate('request_change_description_html') ?>
   </span>
 <!-- END of: finna - myresearch/change-address-settings.phtml -->

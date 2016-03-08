@@ -23,7 +23,6 @@ ALTER TABLE comments ADD INDEX `finna_rating` (`finna_rating`);
 --
 ALTER TABLE search ADD COLUMN `finna_search_id` char(32) DEFAULT '';
 ALTER TABLE search ADD COLUMN `finna_schedule` int(1) NOT NULL DEFAULT '0';
-ALTER TABLE search ADD COLUMN `finna_search_object` blob;
 ALTER TABLE search ADD COLUMN `finna_last_executed` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
 ALTER TABLE search ADD COLUMN `finna_schedule_base_url` varchar(255) NOT NULL DEFAULT '';
 ALTER TABLE search ADD INDEX `finna_search_id` (`finna_search_id`);
@@ -70,6 +69,17 @@ CREATE TABLE `finna_comments_inappropriate` (
   CONSTRAINT `finna_comments_inappropriate_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `finna_due_date_reminder` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `loan_id` varchar(255) NOT NULL,
+  `due_date` datetime NOT NULL,
+  `notification_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_loan` (`user_id`,`loan_id`),
+  CONSTRAINT `due_date_reminder_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

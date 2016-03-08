@@ -57,7 +57,7 @@ class CoverController extends \VuFind\Controller\CoverController
         if ($id = $this->params()->fromQuery('id')) {
             $driver = $this->getRecordLoader()->load($id, 'Solr');
             $index = $this->params()->fromQuery('index');
-            
+
             $this->getLoader()->loadRecordImage($driver, $index ? $index : 0);
             return parent::displayImage();
         } else {
@@ -91,4 +91,3 @@ class CoverController extends \VuFind\Controller\CoverController
         return $this->loader;
     }
 }
-

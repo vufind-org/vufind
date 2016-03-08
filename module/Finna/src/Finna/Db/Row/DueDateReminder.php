@@ -1,10 +1,10 @@
 <?php
 /**
- * VuFind Minified Search Object
+ * Row Definition for due date reminder.
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,25 +20,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  Db_Row
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org   Main Site
  */
+namespace Finna\Db\Row;
 
 /**
- * This non-namespaced class exists to keep serialized search objects small by
- * using an abbreviated name.  Unfortunately, the name does not comply with coding
- * standards, but we cannot easily change it due to legacy compatibility issues.
+ * Row Definition for due date reminder.
  *
  * @category VuFind
- * @package  Search
+ * @package  Db_Row
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     http://vufind.org   Main Site
  */
-// @codingStandardsIgnoreStart - lowercase class name
-class fminSO extends \Finna\Search\Minified
+class DueDateReminder extends \VuFind\Db\Row\RowGateway
 {
+    /**
+     * Constructor
+     *
+     * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
+     */
+    public function __construct($adapter)
+    {
+        parent::__construct('id', 'finna_due_date_reminder', $adapter);
+    }
 }
-// @codingStandardsIgnoreEnd

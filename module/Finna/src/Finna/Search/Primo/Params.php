@@ -26,7 +26,6 @@
  * @link     https://vufind.org Main Page
  */
 namespace Finna\Search\Primo;
-use Finna\Primo\Utils;
 
 /**
  * Primo Central Search Parameters
@@ -41,32 +40,6 @@ class Params extends \VuFind\Search\Primo\Params
 {
     use \Finna\Search\FinnaParams;
 
-    const SPATIAL_DATERANGE_FIELD = 'creationdate';
-
-    /**
-     * Restore settings from a minified object found in the database.
-     *
-     * @param \VuFind\Search\Minified $minified Minified Search Object
-     *
-     * @return void
-     */
-    public function deminifyFinnaSearch($minified)
-    {
-    }
-
-    /**
-     * Add filters to the object based on values found in the request object.
-     *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
-     * request.
-     *
-     * @return void
-     */
-    protected function initFilters($request)
-    {
-        parent::initFilters($request);
-        $this->initSpatialDateRangeFilter($request);
-    }
     /**
      * Add a checkbox facet.  When the checkbox is checked, the specified filter
      * will be applied to the search.  When the checkbox is not checked, no filter
@@ -135,30 +108,21 @@ class Params extends \VuFind\Search\Primo\Params
     }
 
     /**
-     * Initialize date range filter (search_daterange_mv)
+     * Return current date range filter.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
-     * request.
-     *
-     * @return void
+     * @return mixed false|array Filter
      */
-    protected function initSpatialDateRangeFilter($request)
+    public function getDateRangeFilter()
     {
-        $filters = $this->getFilters();
-        if (isset($filters[self::SPATIAL_DATERANGE_FIELD])) {
-            $dateFilter = [];
-            $filter = $filters[self::SPATIAL_DATERANGE_FIELD][0];
-
-            $dateFilter['query'] = self::SPATIAL_DATERANGE_FIELD . ":\"$filter\"";
-            $dateFilter['field'] = self::SPATIAL_DATERANGE_FIELD;
-            $dateFilter['val'] = $filter;
-
-            if ($range = Utils::parseSpatialDateRange($filter)) {
-                $dateFilter['from'] = $range['from'];
-                $dateFilter['to'] = $range['to'];
-                $this->spatialDateRangeFilter = $dateFilter;
-                $this->addFilter($dateFilter['query']);
+        $field = $this->getDateRangeSearchField();
+        $filterList = $this->getFilterList();
+        foreach ($filterList as $facet => $filters) {
+            foreach ($filters as $filter) {
+                if ($filter['field'] == $field) {
+                    return $filter;
+                }
             }
         }
+        return false;
     }
 }
