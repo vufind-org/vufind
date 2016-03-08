@@ -165,12 +165,16 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     }
                 }
 
-                $aDate = isset($aDetails['duedate'])
-                    ? $date->convertFromDisplayDate('U', $aDetails['duedate'])
-                    : 0;
-                $bDate = isset($bDetails['duedate'])
-                    ? $date->convertFromDisplayDate('U', $bDetails['duedate'])
-                    : 0;
+                try {
+                    $aDate = isset($aDetails['duedate'])
+                        ? $date->convertFromDisplayDate('U', $aDetails['duedate'])
+                        : 0;
+                    $bDate = isset($bDetails['duedate'])
+                        ? $date->convertFromDisplayDate('U', $bDetails['duedate'])
+                        : 0;
+                } catch (Exception $e) {
+                    return 0;
+                }
 
                 return $aDate - $bDate;
             };
