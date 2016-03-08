@@ -17,6 +17,11 @@ if (isset($summary['total'])) {
 } else {
   $holdings[] = $summary;
 }
+
+foreach ($holdings as &$holding) {
+  $holding['location']
+     = $this->transEsc('location_' . $holding['location'], [], $holding['location']); 
+}
 $this->statusItems = $holdings;
 
 $groupBranches = isset($this->statusItems[0]['branch']);
