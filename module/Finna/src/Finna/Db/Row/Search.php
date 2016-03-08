@@ -85,32 +85,4 @@ class Search extends \VuFind\Db\Row\Search
         ];
         return $hmac->generate(array_keys($data), $data);
     }
-
-    /**
-     * Get the search object from the row
-     *
-     * @param boolean $parent True to return search_object (VuFind)
-     * even when finna_search_object is available.
-     *
-     * @return \VuFind\Search\Minified
-     */
-    public function getSearchObject($parent = false)
-    {
-        $parentSO = parent::getSearchObject();
-        if ($parent) {
-            return $parentSO;
-        }
-
-        // Resource check for PostgreSQL compatibility:
-        $raw = is_resource($this->finna_search_object)
-            ? stream_get_contents($this->finna_search_object)
-            : $this->finna_search_object;
-        if ($raw) {
-            $so = unserialize($raw);
-            $so->setParentSO($parentSO);
-            return $so;
-        } else {
-            return $parentSO;
-        }
-    }
 }

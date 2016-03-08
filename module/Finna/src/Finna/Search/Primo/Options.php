@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Search_Primo
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -33,11 +34,19 @@ namespace Finna\Search\Primo;
  * @category VuFind
  * @package  Search_Primo
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 class Options extends \VuFind\Search\Primo\Options
 {
+    /**
+     * Date range visualization settings
+     *
+     * @var string
+     */
+    protected $dateRangeVis = '';
+
     /**
      * Constructor
      *
@@ -52,5 +61,31 @@ class Options extends \VuFind\Search\Primo\Options
         if (isset($searchSettings->Autocomplete->enabled)) {
             $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
         }
+        $facetSettings = $configLoader->get($this->facetsIni);
+        if (isset($facetSettings->SpecialFacets->dateRangeVis)) {
+            $this->dateRangeVis = $facetSettings->SpecialFacets->dateRangeVis;
+        }
+    }
+
+    /**
+     * Get the field used for date range search
+     *
+     * @return string
+     */
+    public function getDateRangeSearchField()
+    {
+        list($field) = explode(':', $this->dateRangeVis);
+        return $field;
+    }
+
+    /**
+     * Get the field used for date range visualization
+     *
+     * @return string
+     */
+    public function getDateRangeVisualizationField()
+    {
+        $fields = explode(':', $this->dateRangeVis);
+        return isset($fields[1]) ? $fields[1] : '';
     }
 }

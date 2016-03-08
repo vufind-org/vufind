@@ -26,9 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\View\Helper\Root;
-use Finna\Search\Solr\Params as SolrParams,
-    Finna\Search\Primo\Params as PrimoParams,
-    Finna\Search\Results\PluginManager;
+use Finna\Search\Results\PluginManager;
 use VuFind\Search\SearchTabsHelper;
 use Zend\View\Helper\Url;
 
@@ -132,9 +130,13 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
 
                 // Remove search index specific URL parameters
                 $dropParams = [
-                   SolrParams::SPATIAL_DATERANGE_FIELD . '_type',
                    'page', 'set', 'sort'
                 ];
+                $dateRangeField = $this->results->get($this->activeSearchClass)
+                    ->getParams()->getDateRangeSearchField();
+                if ($dateRangeField) {
+                    $dropParams[] = "{$dateRangeField}_type";
+                }
                 $params = array_diff_key($params, array_flip($dropParams));
 
                 $filterQuery = false;
@@ -286,23 +288,6 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
             $settings = [];
             if (isset($params['filter'])) {
                 $settings['filters'] = $params['filter'];
-                $params = $savedSearch->getParams();
-                if ($daterange = $params->getSpatialDateRangeFilter()) {
-                    $daterangeField = $params->getSpatialDateRangeField();
-                    foreach ($settings['filters'] as $filter) {
-                        list($field, $val) = explode(':', $filter, 2);
-                        if ($field == $daterangeField) {
-                            $type = $daterange['type'];
-                            $settings['params']
-                                = ["{$daterangeField}_type" => $type];
-                            break;
-                        }
-                    }
-                }
-            }
-            $params = $savedSearch->getParams();
-            if ($set = $params->getMetaLibSearchSet()) {
-                $settings['params'] = ['set' => $set];
             }
 
             return $settings;

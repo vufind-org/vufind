@@ -73,7 +73,10 @@ class MetaLibController extends \VuFind\Controller\AbstractSearch
         $this->layout()->searchClassId = $this->searchClassId;
         $query = new Query();
         $view = $this->initSets($view, $query);
-        $this->layout()->metalibSet = $this->getRequest()->getQuery()->get('set');
+        $metalib = $this->getResultsManager()->get($this->searchClassId);
+        $params = $metalib->getParams();
+        $params->initFromRequest($this->getRequest()->getQuery());
+        $this->layout()->metalibSet = $params->getMetaLibSearchSet();
         $view->browseDatabase = $this->isBrowseDatabaseAvailable();
         return $view;
     }
@@ -93,24 +96,20 @@ class MetaLibController extends \VuFind\Controller\AbstractSearch
         if ($query->get('ajax') || $query->get('view') == 'rss') {
             $view = parent::resultsAction();
         } else {
-            $configLoader = $this->getServiceLocator()->get('VuFind\Config');
-            $options = new Options($configLoader);
-            $params = new Params($options, $configLoader);
-            $params->initFromRequest($query);
+            $metalib = $this->getResultsManager()->get($this->searchClassId);
+            $params = $metalib->getParams();
+            $params->initFromRequest($this->getRequest()->getQuery());
+
             list($isIRD, $set)
-                = $this->getMetaLibSet($this->getRequest()->getQuery()->get('set'));
+                = $this->getMetaLibSet($params->getMetaLibSearchSet());
             if ($irds = $this->getMetaLibIrds($set)) {
                 $params->setIrds($irds);
             }
-            $results = new Results($params);
-            $results
-                = Factory::initUrlQueryHelper(
-                    $results, $this->getServiceLocator()
-                );
+
             $view = $this->createViewModel();
             $view->qs = $this->getRequest()->getUriString();
             $view->params = $params;
-            $view->results = $results;
+            $view->results = $metalib;
             $view->disablePiwik = true;
             $view = $this->initSets($view, $params->getQuery());
             $view->browseDatabase = $this->isBrowseDatabaseAvailable();
@@ -151,13 +150,16 @@ class MetaLibController extends \VuFind\Controller\AbstractSearch
             $sets[$key] = $set['name'];
         }
         $view->sets = $sets;
-        list($isIrd, $set) = $this->getMetaLibSet(
-            $this->getRequest()->getQuery()->get('set')
-        );
+
+        $metalib = $this->getResultsManager()->get($this->searchClassId);
+        $params = $metalib->getParams();
+        $params->initFromRequest($this->getRequest()->getQuery());
+
+        list($isIrd, $set) = $this->getMetaLibSet($params->getMetaLibSearchSet());
         $view->currentSet = $set;
         $session = new SessionContainer('MetaLib');
         if ($isIrd) {
-            $metalib = $this->getServiceLocator()->get('VuFind\Search');
+            $metalib = $this->getResultsManager()->get($this->searchClassId);
             $backendParams = new ParamBag();
             $backendParams->add('irdInfo', explode(',', substr($set, 5)));
             $result
