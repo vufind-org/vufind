@@ -120,7 +120,7 @@ trait VoyagerFinna
         ) {
             $statuses = array_map(
                 function ($s) {
-                    return "'" . preg_replace('/[^\w\/]*/', '', $s) . "'";
+                    return "'" . preg_replace('/[^\w\s\/]*/', '', $s) . "'";
                 },
                 explode(':', $this->config['Holdings']['order_statuses'])
             );
