@@ -76,8 +76,8 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         // These settings are set in the feedback settion of your config.ini
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         $feedback = isset($config->Feedback) ? $config->Feedback : null;
-        $recipient_email = isset($feedback->recipient_email)
-            ? $feedback->recipient_email : null;
+        $recipient_email = !empty($feedback->recipient_email)
+            ? $feedback->recipient_email : $config->Site->email;
         $recipient_name = isset($feedback->recipient_name)
             ? $feedback->recipient_name : 'Your Library';
         $email_subject = isset($feedback->email_subject)
@@ -115,7 +115,15 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         $headers->removeHeader('Content-Type');
         $headers->addHeaderLine('Content-Type', 'text/plain; charset=UTF-8');
 
-        $this->getServiceLocator()->get('VuFind\Mailer')->getTransport()
-            ->send($mail);
+        $success = true;
+        try {
+            $this->getServiceLocator()->get('VuFind\Mailer')->getTransport()
+                ->send($mail);
+        } catch (\Exception $e) {
+            $success = false;
+        }
+        $view = $this->createViewModel();
+        $view->success = $success;
+        return $view;
     }
 }
