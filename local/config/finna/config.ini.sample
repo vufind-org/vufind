@@ -44,7 +44,7 @@ theme           = finna
 ; alternate_themes above.  When commented out, no drop-down theme list will display.
 ;selectable_themes = "standard:Standard Theme,mobile:Mobile Theme"
 ; Use the browser language setting to set the VuFind language.
-browserDetectLanguage = true
+browserDetectLanguage = false
 language        = fi    ; default -- more options available in [Languages] below.
 locale          = fi_FI
 ; Find valid timezone values here:
