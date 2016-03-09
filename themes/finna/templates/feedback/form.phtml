@@ -9,9 +9,6 @@
     <?=$this->flashmessages()?>
     <br>
     <form class="form feedback-form" name="finna_feedback" method="post" action="<?=$this->url('feedback-email')?>">
-      <input type="hidden" id="feedbackSuccess" value="<?=$this->transEsc("Thank you for your feedback")?>"/>
-      <input type="hidden" id="feedbackFailure" value="<?=$this->transEsc("An error has occurred")?>"/>
-      <input type="hidden" id="feedbackMissing" value="<?=$this->transEsc("Fill mandatory fields")?>"/>
       <div class="row">
         <div class="form-group col-xs-12">
           <label for="category" class="control-label" ><?=$this->transEsc("Subject")?>:</label>

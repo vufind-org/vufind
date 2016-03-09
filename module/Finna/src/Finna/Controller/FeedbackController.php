@@ -62,6 +62,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             || $captcha != $this->translate('feedback_captcha_answer')
         ) {
             $view = $this->createViewModel();
+            $view->setTemplate('feedback/home');
             $view->category = $category;
             $view->name = $name;
             $view->email = $users_email;
