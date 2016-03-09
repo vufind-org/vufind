@@ -98,7 +98,14 @@ VuFind.lightbox = (function() {
           || obj.url.match(/catalogLogin/))    // catalog login for holds
         ) {
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
-            window.location.reload();
+            var event = new CustomEvent('VuFind.lightbox.login', {
+                bubbles: true,
+                cancelable: true
+            });
+              
+            if (document.dispatchEvent(event)) {
+                window.location.reload();
+            }
             return false;
           } else {
             VuFind.lightbox.refreshOnClose = true;
