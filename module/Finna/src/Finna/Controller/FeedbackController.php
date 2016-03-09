@@ -62,6 +62,11 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             || $captcha != $this->translate('feedback_captcha_answer')
         ) {
             $view = $this->createViewModel();
+            $view->category = $category;
+            $view->name = $name;
+            $view->email = $users_email;
+            $view->comments = $comments;
+            $view->url = $url;
             $this->flashMessenger()->addErrorMessage('feedback_captcha_error');
             return $view;
         }
@@ -115,15 +120,14 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         $headers->removeHeader('Content-Type');
         $headers->addHeaderLine('Content-Type', 'text/plain; charset=UTF-8');
 
-        $success = true;
+        $view = $this->createViewModel();
         try {
             $this->getServiceLocator()->get('VuFind\Mailer')->getTransport()
                 ->send($mail);
+            $view->setTemplate('feedback/response');
         } catch (\Exception $e) {
-            $success = false;
+            $this->flashMessenger()->addErrorMessage('feedback_error');
         }
-        $view = $this->createViewModel();
-        $view->success = $success;
         return $view;
     }
 }
