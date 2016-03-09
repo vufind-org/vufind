@@ -62,6 +62,12 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             || $captcha != $this->translate('feedback_captcha_answer')
         ) {
             $view = $this->createViewModel();
+            $view->setTemplate('feedback/home');
+            $view->category = $category;
+            $view->name = $name;
+            $view->email = $users_email;
+            $view->comments = $comments;
+            $view->url = $url;
             $this->flashMessenger()->addErrorMessage('feedback_captcha_error');
             return $view;
         }
@@ -76,8 +82,8 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         // These settings are set in the feedback settion of your config.ini
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         $feedback = isset($config->Feedback) ? $config->Feedback : null;
-        $recipient_email = isset($feedback->recipient_email)
-            ? $feedback->recipient_email : null;
+        $recipient_email = !empty($feedback->recipient_email)
+            ? $feedback->recipient_email : $config->Site->email;
         $recipient_name = isset($feedback->recipient_name)
             ? $feedback->recipient_name : 'Your Library';
         $email_subject = isset($feedback->email_subject)
@@ -115,7 +121,14 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
         $headers->removeHeader('Content-Type');
         $headers->addHeaderLine('Content-Type', 'text/plain; charset=UTF-8');
 
-        $this->getServiceLocator()->get('VuFind\Mailer')->getTransport()
-            ->send($mail);
+        $view = $this->createViewModel();
+        try {
+            $this->getServiceLocator()->get('VuFind\Mailer')->getTransport()
+                ->send($mail);
+            $view->setTemplate('feedback/response');
+        } catch (\Exception $e) {
+            $this->flashMessenger()->addErrorMessage('feedback_error');
+        }
+        return $view;
     }
 }

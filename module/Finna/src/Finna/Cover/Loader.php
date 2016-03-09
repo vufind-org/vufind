@@ -128,7 +128,7 @@ class Loader extends \VuFind\Cover\Loader
             && !$this->fetchFromContentType()
         ) {
             if (isset($this->config->Content->makeDynamicCovers)
-                && false !== $this->config->Content->makeDynamicCovers
+                && $this->config->Content->makeDynamicCovers
             ) {
                 $this->image = $this->getCoverGenerator()->generate(
                     $settings['title'], $settings['author'], $settings['callnumber']

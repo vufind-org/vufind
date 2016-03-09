@@ -613,3 +613,19 @@ hierarchy_parent_id:
   QueryFields:
     hierarchy_parent_id:
       - [or, ~]
+
+Holdings:
+  DismaxFields:
+    - holdings_txtP_mv^100
+  QueryFields:
+    holdings_txtP_mv:
+      - [and, 100]
+      - [or, ~]
+      
+PublicationPlace:
+  DismaxFields:
+    - publication_place_txt_mv^100
+  QueryFields:
+    publication_place_txt_mv:
+      - [and, 100]
+      - [or, ~]
