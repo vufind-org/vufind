@@ -45,6 +45,15 @@ VuFind.lightbox = (function() {
     _modal.modal('show');
     // Attach capturing events
     _modalBody.find('a').on('click', _constrainLink);
+    // Handle submit buttons attached to a form as well as those in a form. Store 
+    // information about which button was clicked here as checking focused button 
+    // doesn't work on all browsers and platforms.
+    _modalBody.find('[type=submit]').click(function() {
+      var form = $(this).prop('form') || $(this).closest('form')[0];
+      $(form.elements).filter('[type=submit]').removeAttr('clicked');
+      $(this).attr('clicked', true);
+    });    
+    
     var forms = _modalBody.find('form');
     for(var i=0;i<forms.length;i++) {
       $(forms[i]).on('submit', _formSubmit);
@@ -141,7 +150,7 @@ VuFind.lightbox = (function() {
     var data = $(form).serializeArray();
     data.push({'name':'layout', 'value':'lightbox'}); // Return in lightbox, please
     // Add submit button information
-    var submit = $(form).find('[type=submit]');
+    var submit = $(form).find('[type=submit][clicked]');
     if (submit.length > 0) {
       submit.attr('disabled', 'disabled');
       var name = submit.attr('name') ? submit.attr('name') : 'submit';
