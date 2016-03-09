@@ -61,67 +61,69 @@
           }
       }
     ?>
-    <table class="table table-striped useraccount-table<?=$this->onlinePayment ? ' online-payment' : ''?>">
-    <tr class="headers">
-      <th class="user-account-table-title <? if ($hideTitle): ?> hidden<? endif; ?>"><?=$this->transEsc('Title')?></th>
-      <th<? if ($hideCheckout): ?> class="hidden"<? endif; ?>><?=$this->transEsc('fine_checkout_date')?></th>
-      <th<? if ($hideDueDate): ?> class="hidden"<? endif; ?>><?=$this->transEsc('Due Date')?></th>
-      <th><?=$this->transEsc('fine_description')?></th>
-      <th<? if ($hideFineCreationDate): ?> class="hidden"<? endif; ?>><?=$this->transEsc('fine_creation_date')?></th>
-      <th<? if ($hideAmount): ?> class="hidden"<? endif; ?>><?=$this->transEsc('Fee')?></th>
-      <th class="balance"><?=$this->transEsc('Balance')?></th>
-    </tr>
-    <? $totalDue = 0; ?>
-    <? foreach ($this->fines as $record): ?>
-    <?
-      $showNonPayable = $this->onlinePayment && !$record['payableOnline'];
-      $fine = null;
-      if (isset($record['fine'])) {
-        $fine = $record['fine'];
-        if (!$this->translationEmpty("status_$fine")) {
-          $fine = "status_$fine";
+    <div class="table-responsive">
+      <table class="table table-striped useraccount-table<?=$this->onlinePayment ? ' online-payment' : ''?>">
+      <tr class="headers">
+        <th class="user-account-table-title <? if ($hideTitle): ?> hidden<? endif; ?>"><?=$this->transEsc('Title')?></th>
+        <th<? if ($hideCheckout): ?> class="hidden"<? endif; ?>><?=$this->transEsc('fine_checkout_date')?></th>
+        <th<? if ($hideDueDate): ?> class="hidden"<? endif; ?>><?=$this->transEsc('Due Date')?></th>
+        <th><?=$this->transEsc('fine_description')?></th>
+        <th<? if ($hideFineCreationDate): ?> class="hidden"<? endif; ?>><?=$this->transEsc('fine_creation_date')?></th>
+        <th<? if ($hideAmount): ?> class="hidden"<? endif; ?>><?=$this->transEsc('Fee')?></th>
+        <th class="balance"><?=$this->transEsc('Balance')?></th>
+      </tr>
+      <? $totalDue = 0; ?>
+      <? foreach ($this->fines as $record): ?>
+      <?
+        $showNonPayable = $this->onlinePayment && !$record['payableOnline'];
+        $fine = null;
+        if (isset($record['fine'])) {
+          $fine = $record['fine'];
+          if (!$this->translationEmpty("status_$fine")) {
+            $fine = "status_$fine";
+          }
         }
-      }
-    ?>
-    <tr>
-      <td class="user-account-table-title<? if ($hideTitle): ?> hidden<? endif; ?>">
-        <? if (empty($record['title'])): ?>
-          <?=$this->transEsc('not_applicable')?>
-        <? elseif (!is_object($record['driver'])): ?>
-          <?=$this->escapeHtml(trim($record['title'], '/:'))?>
-        <? else: ?>
-          <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
-        <? endif; ?>
-      <td<? if ($hideCheckout): ?> class="hidden"<? endif; ?>>
-        <?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?>
-      </td>
-      <td<? if ($hideDueDate): ?> class="hidden"<? endif; ?>>
-        <?=isset($record['duedate']) ? $this->escapeHtml($record['duedate']) : ''?>
-      </td>
-      <td><?=isset($fine) ? $this->transEsc($fine) : ''?></td>
-      <td<? if ($hideFineCreationDate): ?> class="hidden"<? endif; ?>>
-        <?=isset($record['createdate']) ? $this->escapeHtml($record['createdate']) : ''?>
-      </td>
-      <td<? if ($hideAmount): ?> class="hidden"<? endif; ?>><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount']/100.00) : ''?></td>
-      <td class="balance">
-        <? if ($showNonPayable): ?>
-        <span class="online-payment-nonpayable">
-        <? endif; ?>
-        <?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance']/100.00) : ''?>
-        <? if ($showNonPayable): ?>
-        </span>
-        <? endif; ?>
-        <? if ($showNonPayable): ?>
-        <div class="online-payment-remark"><?=$this->translate('online_payment_nonpayable_fees');?></div>
-        <? endif; ?>
-      </td>
-    </tr>
-      <? $totalDue += $record['balance']; ?>
-    <? endforeach; ?>
-    <tr>
-      <td colspan="7" class="total-balance"><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>): <span class="amount"><?=$this->safeMoneyFormat($totalDue/100.00) ?></span></td>
-    </tr>
-  </table>
+      ?>
+      <tr>
+        <td class="user-account-table-title<? if ($hideTitle): ?> hidden<? endif; ?>">
+          <? if (empty($record['title'])): ?>
+            <?=$this->transEsc('not_applicable')?>
+          <? elseif (!is_object($record['driver'])): ?>
+            <?=$this->escapeHtml(trim($record['title'], '/:'))?>
+          <? else: ?>
+            <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
+          <? endif; ?>
+        <td<? if ($hideCheckout): ?> class="hidden"<? endif; ?>>
+          <?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?>
+        </td>
+        <td<? if ($hideDueDate): ?> class="hidden"<? endif; ?>>
+          <?=isset($record['duedate']) ? $this->escapeHtml($record['duedate']) : ''?>
+        </td>
+        <td><?=isset($fine) ? $this->transEsc($fine) : ''?></td>
+        <td<? if ($hideFineCreationDate): ?> class="hidden"<? endif; ?>>
+          <?=isset($record['createdate']) ? $this->escapeHtml($record['createdate']) : ''?>
+        </td>
+        <td<? if ($hideAmount): ?> class="hidden"<? endif; ?>><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount']/100.00) : ''?></td>
+        <td class="balance">
+          <? if ($showNonPayable): ?>
+          <span class="online-payment-nonpayable">
+          <? endif; ?>
+          <?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance']/100.00) : ''?>
+          <? if ($showNonPayable): ?>
+          </span>
+          <? endif; ?>
+          <? if ($showNonPayable): ?>
+          <div class="online-payment-remark"><?=$this->translate('online_payment_nonpayable_fees');?></div>
+          <? endif; ?>
+        </td>
+      </tr>
+        <? $totalDue += $record['balance']; ?>
+      <? endforeach; ?>
+      <tr>
+        <td colspan="7" class="total-balance"><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>): <span class="amount"><?=$this->safeMoneyFormat($totalDue/100.00) ?></span></td>
+      </tr>
+    </table>
+  </div>
   <div class="row">
       <? if ($this->onlinePayment): ?>
         <div class="col-sm-6 col-sm-push-6 text-right online-payment-data">

@@ -61,16 +61,18 @@ class SearchController extends \VuFind\Controller\SearchController
         }
         $rangeEnd = date('Y', strtotime('+1 year'));
 
+        $results = $this->getResultsManager()->get($this->searchClassId);
+        $params = $results->getParams();
+
         $range = [
             'type' => 'date',
-            'field' => $view->saved->getParams()->getDateRangeSearchField()
+            'field' => $params->getDateRangeSearchField()
         ];
 
         if ($view->saved
             && $filter = $view->saved->getParams()->getDateRangeFilter()
         ) {
-            $filter = $view->saved->getParams()
-                ->parseDateRangeFilter($filter['value']);
+            $filter = $params->parseDateRangeFilter($filter['value']);
             if (isset($filter['from']) && isset($filter['to'])) {
                 $range['values'] = [$filter['from'], $filter['to']];
                 $range['rangeType'] = $filter['type'];

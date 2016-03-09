@@ -291,10 +291,12 @@ class DueDateReminders extends AbstractService
                     if (isset($loan['id'])) {
                         try {
                             $record = $this->recordLoader->load($loan['id'], 'Solr');
-                            if ($record && isset($record['title'])) {
-                                $title = $record['title'];
+                            if ($record) {
+                                $title = $record->getTitle();
                             }
                         } catch (\Exception $e) {
+                            $this->err('Error loading record ' . $loan['id']);
+                            $this->err('  ' . $e->getMessage());
                         }
                     }
 
