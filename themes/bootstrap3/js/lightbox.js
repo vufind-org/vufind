@@ -29,16 +29,16 @@ VuFind.lightbox = (function() {
   // Update content
   var _update = function(html) {
     if (!html.match) return;
-    // Deframe HTML
-    if(html.match('<!DOCTYPE html>')) {
-      html = $('<div>'+html+'</div>').find('.main > .container').html();
-    }
     // Isolate successes
-    var testDiv = $('<div>'+html+'</div>');
-    var alerts = testDiv.find('.alert-success');
+    var htmlDiv = $('<div>'+html+'</div>');
+    var alerts = htmlDiv.find('.alert-success');
     if (alerts.length > 0) {
       showAlert(alerts[0].innerHTML, 'success');
       return;
+    }
+    // Deframe HTML
+    if(html.match('<!DOCTYPE html>')) {
+      html = htmlDiv.find('.main > .container').html();
     }
     // Fill HTML
     _html(html);
