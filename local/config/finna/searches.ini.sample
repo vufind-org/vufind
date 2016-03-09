@@ -109,14 +109,15 @@ Title               = adv_search_title
 ;JournalTitle        = adv_search_journaltitle
 Author              = adv_search_author
 Subject             = adv_search_subject
-CallNumber          = adv_search_callnumber
+;CallNumber          = adv_search_callnumber
+Holdings            = adv_search_callnumber
 Classification      = adv_search_classification
 ISN                 = adv_search_isn
 publisher           = adv_search_publisher
 Series              = adv_search_series
 year                = adv_search_year
 toc                 = adv_search_toc
-publication_place_txt_mv = adv_search_publication_place
+PublicationPlace    = adv_search_publication_place
 
 ; This section defines the sort options available on standard search results.
 ; Values on the left of the equal sign are either the reserved term "relevance"
