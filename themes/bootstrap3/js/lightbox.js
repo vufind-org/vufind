@@ -180,10 +180,16 @@ VuFind.lightbox = (function() {
         }
       }
       // onclose behavior
-      if("string" === typeof dataset.lightboxOnclose && "function" === typeof window[dataset.lightboxOnclose]) {
-        document.addEventListener('VuFind.lightbox.closed', function() {
-          window[dataset.lightboxOnclose]();
-        }, false);
+      if("string" === typeof dataset.lightboxOnclose) {
+        if ("function" === typeof window[dataset.lightboxOnclose]) {
+          document.addEventListener('VuFind.lightbox.closed', function() {
+            window[dataset.lightboxOnclose]();
+          }, false);
+        } else {
+          document.addEventListener('VuFind.lightbox.closed', function() {
+            eval('(function(event, data) {' + dataset.lightboxOnclose + '}())'); // inline code  
+          });
+        }
       }
     }
     // Loading
