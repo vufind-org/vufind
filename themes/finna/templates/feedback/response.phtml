@@ -1,0 +1,15 @@
+<!-- START of: finna - feedback/response.phtml -->
+<?
+    // Set page title
+    $this->headTitle($this->translate('Feedback'));
+    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3>' . $this->transEsc('Feedback') . '</h3></div>';
+    // Get rid of the feedback tab since this uses the same variables
+    $this->layout()->feedbacktab = false;
+?>
+
+<div class="row">
+  <div class="col-sm-6">
+    <?= $this->translate('feedback_thankyou'); ?>
+  </div>
+</div>
+<!-- END of: finna - feedback/response.phtml -->
