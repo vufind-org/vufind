@@ -2,7 +2,7 @@
 <? if (count($searchTabs) > 0): ?>
   <ul class="nav nav-tabs">
     <? foreach ($searchTabs as $tab): ?>
-        <? $block = $this->linkdisplay()->getDisplayBlock($tab['permission'], $this); ?>
+        <? $block = $this->linkdisplay()->getDisplayBlock($tab['permission']); ?>
         <? if ($block !== false): ?>
             <?=$block?>
         <? else: ?>

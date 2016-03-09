@@ -220,6 +220,21 @@ class Factory
     }
 
     /**
+     * Construct the LinkDisplay helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return LinkDisplayHelper
+     */
+    public static function getLinkDisplay(ServiceManager $sm)
+    {
+        $pdm = $sm->getServiceLocator()->get('VuFind\PermissionDeniedManager');
+
+        $ld = new LinkDisplay($pdm);
+        return $ld;
+    }
+
+    /**
      * Construct the Piwik helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -529,28 +544,6 @@ class Factory
         $session = new \Zend\Session\Container('List', $sessionManager);
         $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
         return new UserList($session, $capabilities->getListSetting());
-    }
-
-    /**
-     * Construct the LinkDisplay helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return LinkDisplayHelper
-     */
-    public static function getLinkDisplay(ServiceManager $sm)
-    {
-//        $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('permissionBehavior');
-
-        $ld = new LinkDisplay($config);
-        $ld->setAuthorizationService(
-            $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
-        );
-        //return new SystemEmail(
-        //    isset($config->Site->email) ? $config->Site->email : ''
-        //);
-        return $ld;
     }
 
     /**

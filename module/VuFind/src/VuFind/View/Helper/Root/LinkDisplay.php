@@ -27,10 +27,8 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
+use VuFind\PermissionDeniedManager as PermissionDeniedManager;
 use Zend\View\Helper\AbstractHelper;
-
-use ZfcRbac\Service\AuthorizationServiceAwareInterface,
-    ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Link display helper
@@ -44,123 +42,50 @@ use ZfcRbac\Service\AuthorizationServiceAwareInterface,
  */
 class LinkDisplay extends AbstractHelper
 {
-    use AuthorizationServiceAwareTrait;
-
     /**
-     * List config
+     * PermissionDenied manager for behavior on denied permissions
      *
-     * @var array
+     * @var PermissionDeniedManager
      */
-    protected $config;
+    protected $permissionDeniedManager;
 
     /**
      * Constructor
      *
-     * @param string $mode List mode (enabled or disabled)
+     * @param PermissionsDeniedManager $permissionDeniedManager Search options
+     *                                                          plugin manager
      */
-    public function __construct($config)
-    {
-        $this->config = $config;
-    }
-
-    /**
-     * Determine if the user is authorized in a certain context or not
-     *
-     * @param string $context Context for the permission behavior
-     *
-     * @return bool
-     */
-    protected function isAuthorized($context)
-    {
-        $authService = $this->getAuthorizationService();
-
-        // if no authorization service is available return false (or the value configured for a denied permission)
-        if (!$authService) {
-            return false;
-        }
-
-        // For a granted permission return the permissionGrantedDisplayLogic
-        if ($authService->isGranted($context)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Get display logic
-     *
-     * @param string $context Context for the permission behavior
-     *
-     * @return array|bool
-     */
-    protected function getDisplayLogic($context)
-    {
-        // if a permission is granted, return false as there is nothing the helper needs to do
-        if ($this->isAuthorized($context) === true) {
-            return false;
-        }
-
-        return ($this->config[$context]['permissionDeniedDisplayLogic']) ? explode(':', $this->config[$context]['permissionDeniedDisplayLogic']) : false;
-    }
-
-    /**
-     * Get display logic parameters
-     *
-     * @param string $context Context for the permission behavior
-     *
-     * @return array|bool
-     */
-    protected function getDisplayLogicParameters($context)
-    {
-        $params = $this->getDisplayLogic($context);
-
-        // if a permission is granted or if no permissionDeniedDisplayLogic has been configured for this context, 
-        // return false as there is nothing the helper needs to do
-        if ($this->isAuthorized($context) === true || $params === false) {
-            return false;
-        }
-
-        $p = [ ];
-        if (count($params) > 2) {
-            for ($n = 2; isset($params[$n]) === true; $n++) {
-                $pArray = explode('=', $params[$n]);
-                if (count($pArray) == 2) {
-                    $p[$pArray[0]] = $pArray[1];
-                }
-                else {
-                    $p[] = $params[$n];
-                }
-            }
-        }
-
-        return $p;
+    public function __construct(
+        PermissionDeniedManager $permissionDeniedManager
+    ) {
+        $this->permissionDeniedManager = $permissionDeniedManager;
     }
 
     /**
      * Get block to display
      *
-     * @param string $context Context for the permission behavior
+     * @param string                         $context Context for the permission
+     *                                                behavior
      *
      * @return string|bool
      */
-    public function getDisplayBlock($context, $tmpl)
+    public function getDisplayBlock($context)
     {
-        $favSaveDisplayLogic = $this->getDisplayLogic($context);
+        $favSaveDisplayLogic = $this->permissionDeniedManager
+            ->getDisplayLogic($context);
         if ($favSaveDisplayLogic === false) {
             return false;
         }
         $return = '';
-        if ($favSaveDisplayLogic[0] == 'showMessage') {
-            $return = $tmpl->transEsc($favSaveDisplayLogic[1]);
+        if ($favSaveDisplayLogic['action'] == 'showMessage') {
+            $return = $this->view->translate($favSaveDisplayLogic['value']);
         }
-        elseif ($favSaveDisplayLogic[0] == 'showTemplate') {
-            $return = $tmpl->context($tmpl)->renderInContext($favSaveDisplayLogic[1], $this->getDisplayLogicParameters($context));
+        elseif ($favSaveDisplayLogic['action'] == 'showTemplate') {
+            $return = $this->view->context($this->view)->renderInContext(
+                $favSaveDisplayLogic['value'],
+                $this->permissionDeniedManager->getDisplayLogicParameters($context)
+            );
         }
         return $return;
-    }
-
-    public function getTest() {
-        return 'Test';
     }
 }

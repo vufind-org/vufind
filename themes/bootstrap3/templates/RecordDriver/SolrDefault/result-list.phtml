@@ -156,7 +156,7 @@
       <? endif; ?>
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? $block = $this->linkdisplay()->getDisplayBlock('favorites.save', $this); ?>
+        <? $block = $this->linkdisplay()->getDisplayBlock('favorites.save'); ?>
         <? if ($block !== false): ?>
             <?=$block?>
         <? else: ?>

@@ -21,6 +21,7 @@ return array(
             'ils' => 'VuFind\View\Helper\Root\Factory::getIls',
             'jstranslations' => 'VuFind\View\Helper\Root\Factory::getJsTranslations',
             'keepalive' => 'VuFind\View\Helper\Root\Factory::getKeepAlive',
+            'linkdisplay' => 'VuFind\View\Helper\Root\Factory::getLinkDisplay',
             'proxyurl' => 'VuFind\View\Helper\Root\Factory::getProxyUrl',
             'openurl' => 'VuFind\View\Helper\Root\Factory::getOpenUrl',
             'piwik' => 'VuFind\View\Helper\Root\Factory::getPiwik',
@@ -37,7 +38,6 @@ return array(
             'syndeticsplus' => 'VuFind\View\Helper\Root\Factory::getSyndeticsPlus',
             'systememail' => 'VuFind\View\Helper\Root\Factory::getSystemEmail',
             'userlist' => 'VuFind\View\Helper\Root\Factory::getUserList',
-            'linkdisplay' => 'VuFind\View\Helper\Root\Factory::getLinkDisplay',
             'usertags' => 'VuFind\View\Helper\Root\Factory::getUserTags',
         ),
         'invokables' => array(
