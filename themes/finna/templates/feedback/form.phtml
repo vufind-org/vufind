@@ -6,18 +6,19 @@
 
 <div class="row">
   <div class="col-sm-6">
-    <?=$this->flashmessages()?>
     <br>
+    <?=$this->flashmessages()?>
     <form class="form feedback-form" name="finna_feedback" method="post" action="<?=$this->url('feedback-email')?>">
       <div class="row">
         <div class="form-group col-xs-12">
           <label for="category" class="control-label" ><?=$this->transEsc("Subject")?>:</label>
             <select name="category" id="category" class="form-control">
-              <option value="feedback_category_general"<?= !empty($this->category) && $category == 'feedback_category_general' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_general");?></option>
-              <option value="feedback_category_metadata"<?= !empty($this->category) && $category == 'feedback_category_metadata' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_metadata");?></option>
-              <option value="feedback_category_services"<?= !empty($this->category) && $category == 'feedback_category_services' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_services");?></option>
-              <option value="feedback_category_usability"<?= !empty($this->category) && $category == 'feedback_category_usability' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_usability");?></option>
-              <option value="feedback_category_technical"<?= !empty($this->category) && $category == 'feedback_category_technical' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_technical");?></option>
+              <? $cat = isset($this->category) ? $this->category : ''; ?>
+              <option value="feedback_category_general"<?= $cat == 'feedback_category_general' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_general");?></option>
+              <option value="feedback_category_metadata"<?= $cat == 'feedback_category_metadata' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_metadata");?></option>
+              <option value="feedback_category_services"<?= $cat == 'feedback_category_services' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_services");?></option>
+              <option value="feedback_category_usability"<?= $cat == 'feedback_category_usability' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_usability");?></option>
+              <option value="feedback_category_technical"<?= $cat == 'feedback_category_technical' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_technical");?></option>
             </select>
         </div>
       </div>
