@@ -20,11 +20,11 @@ body {
     background-repeat: no-repeat;
     // fine-tune tablet layout 
     @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-        .container {
+        & .container {
             width: auto;
         }
         // element-specific adjustments
-        .main {
+        & .main {
             & .record-view-header {
                 margin-left: -15px;
                 margin-right: -15px;
@@ -1045,6 +1045,26 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
     & .list-group-item i.fa.fa-square-o, .list-group-item i.fa.fa-check-square-o {
         vertical-align: middle;
+    }
+
+    & .list-group-item.usage-rights-info {
+        margin-top: 5px;
+        margin-left: 20px;
+        & .fa {
+            font-size: 1.1em;
+            float: left;
+            margin-left: -20px;
+            color: @brand-primary;
+        }
+        & .info {
+            margin-left: 5px;
+            margin-top: -3px;
+        }
+        & .more-info {
+            text-align: right;
+            display: block;
+            margin-top: 3px;
+        }
     }
 }
 
