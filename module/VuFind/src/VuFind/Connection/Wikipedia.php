@@ -405,7 +405,9 @@ class Wikipedia implements TranslatorAwareInterface
             // Check for redirection
             $as_lines = explode("\n", $page['*']);
             $redirectTo = false;
-            foreach(['#REDIRECT', '#WEITERLEITUNG', '#Redirect', '#redirect', '#OMDIRIGERING'] as $redirectToken) {
+                    $redirectTokens = ['#REDIRECT', '#WEITERLEITUNG', 
+                '#Redirect', '#redirect', '#OMDIRIGERING'] ;
+            foreach ($redirectTokens as $redirectToken) {
                 if (stristr($as_lines[0], $redirectToken)) {
                     preg_match('/\[\[(.*)\]\]/', $as_lines[0], $matches);
                     $redirectTo = $matches[1];
