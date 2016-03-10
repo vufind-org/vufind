@@ -10,7 +10,7 @@ VuFind.lightbox = (function() {
   var _html = function(html) {
     _modalBody.html(html);
     _modal.modal('handleUpdate');
-  }
+  };
   // Public: Present an alert
   var showAlert = function(message, type) {
     if ('undefined' == typeof type) {
@@ -26,7 +26,13 @@ VuFind.lightbox = (function() {
       .after('<div class="alert alert-'+type+'">'+message+'</div>');
   };
 
-  // Update content
+  /**
+   * Update content
+   * 
+   * Form data options:
+   *
+   * data-lightbox-ignore = do not submit this form in lightbox
+   */
   var _update = function(html) {
     if (!html.match) return;
     // Isolate successes
@@ -44,17 +50,13 @@ VuFind.lightbox = (function() {
     _html(html);
     _modal.modal('show');
     // Attach capturing events
-    _modalBody.find('a').on('click', _constrainLink);
+    _modalBody.find('a').click(_constrainLink);
     // Handle submit buttons attached to a form as well as those in a form. Store 
     // information about which button was clicked here as checking focused button 
     // doesn't work on all browsers and platforms.
-    _modalBody.find('[type=submit]').click(function() {
-      var form = $(this).prop('form') || $(this).closest('form')[0];
-      $(form.elements).filter('[type=submit]').removeAttr('clicked');
-      $(this).attr('clicked', true);
-    });    
+    _modalBody.find('[type=submit]').click(_storeClickedStatus);
     
-    var forms = _modalBody.find('form');
+    var forms = _modalBody.find('form:not([data-lightbox-ignore])');
     for(var i=0;i<forms.length;i++) {
       $(forms[i]).on('submit', _formSubmit);
     }
@@ -65,8 +67,14 @@ VuFind.lightbox = (function() {
     $('#modal').find('.checkbox-select-item').change(function() {
       $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
     });
-  }
+  };
 
+  var _storeClickedStatus = function() {
+    var form = $(this).prop('form') || $(this).closest('form')[0];
+    $(form.elements).filter('[type=submit]').removeAttr('clicked');
+    $(this).attr('clicked', true);
+  };    
+  
   var _xhr = false;
   // Public: Handle AJAX in the Lightbox
   var ajax = function(obj) {
@@ -147,13 +155,19 @@ VuFind.lightbox = (function() {
       VuFind.modal('show');
       return false;
     }
-  }
+  };
 
   /**
-   * Form data options
+   * Handle form submission.
+   * 
+   * Form data options:
    *
    * data-lightbox-onsubmit = on submit, run named function
    * data-lightbox-onclose  = on close, run named function
+   * 
+   * Submit button data options:
+   * 
+   * data-lightbox-ignore = do not handle clicking this button in lightbox
    */
   var _formSubmit = function(event) {
     // Gather data
@@ -164,7 +178,13 @@ VuFind.lightbox = (function() {
     // Add submit button information
     var submit = $(form).find('[type=submit][clicked]');
     if (submit.length > 0) {
-      submit.attr('disabled', 'disabled');
+      if (typeof submit.data('lightbox-ignore') !== 'undefined') {
+        return true;  
+      }
+      // Prevent multiple submission of submit button in lightbox
+      if (submit.closest(_modal).length > 0) {
+        submit.attr('disabled', 'disabled');
+      }
       var name = submit.attr('name') ? submit.attr('name') : 'submit';
       data.push({'name':name, 'value':submit.attr('value') || 1});
     }
@@ -208,7 +228,7 @@ VuFind.lightbox = (function() {
 
     VuFind.modal('show');
     return false;
-  }
+  };
 
   /**
    * Reload the page without causing trouble with POST parameters while keeping hash
@@ -224,7 +244,7 @@ VuFind.lightbox = (function() {
       href += new Date().getTime() + '#' + parts[1];
       window.location.href = href;
     }
-  }
+  };
   
   // Public: Attach listeners to the page
   var bind = function(target) {
@@ -237,6 +257,11 @@ VuFind.lightbox = (function() {
     $(target).find('form[data-lightbox]')
       .unbind('submit', _formSubmit)
       .on('submit', _formSubmit);
+    
+    // Handle submit buttons attached to a form as well as those in a form. Store 
+    // information about which button was clicked here as checking focused button 
+    // doesn't work on all browsers and platforms.
+    $('form[data-lightbox] [type=submit]').click(_storeClickedStatus);
   };
 
   // Reveal
@@ -271,7 +296,7 @@ VuFind.lightbox = (function() {
         VuFind.lightbox.reset();
       });
 
-      VuFind.modal = function(cmd) { _modal.modal(cmd); }
+      VuFind.modal = function(cmd) { _modal.modal(cmd); };
       bind();
     }
   };
