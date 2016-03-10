@@ -60,9 +60,6 @@ header {
 @media (min-width: @screen-lg-min) {
     header .navbar { 
         max-width: (@screen-lg-min - @grid-gutter-width);
-        & #loginOptions, .logoutOptions {
-            margin-right: -15px;
-        }
     }
 }
 // fine-tune tablet and medium layouts 
@@ -74,16 +71,22 @@ header {
 }
 // fine-tune tablet and larger layouts 
 @media (min-width: @screen-sm-min) {
+    header .navbar { 
+        & #loginOptions, .logoutOptions {
+            margin-right: -15px;
+        }
+    }
     header .navbar .dropdown .dropdown-menu { 
         & li {
-            width: 280px;
-        }
-        & li div.description {
-            padding-top: 2px;
+            min-width: 260px;
+            max-width: 280px;
         }
         & li a {
             white-space: initial;
             padding: 9px 10px;
+        }
+        & li div.description {
+            padding-top: 2px;
         }
     }
     .searchLayout .introduction {
