@@ -99,12 +99,12 @@ VuFind.lightbox = (function() {
         ) {
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
             var event = new CustomEvent('VuFind.lightbox.login', {
-                bubbles: true,
-                cancelable: true
+              bubbles: true,
+              cancelable: true
             });
-              
             if (document.dispatchEvent(event)) {
-                window.location.reload();
+              // No reload since any post params would cause a prompt
+              window.location.href = window.location.href;
             }
             return false;
           } else {
@@ -241,7 +241,8 @@ VuFind.lightbox = (function() {
       _modalBody = _modal.find('.modal-body');
       _modal.on('hide.bs.modal', function() {
         if (VuFind.lightbox.refreshOnClose) {
-          window.location.reload();
+          // No reload since any post params would cause a prompt
+          window.location.href = window.location.href;
         }
         document.dispatchEvent(new Event('VuFind.lightbox.closing'));
       });
