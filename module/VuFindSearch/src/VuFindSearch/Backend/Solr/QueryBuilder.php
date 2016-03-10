@@ -309,7 +309,12 @@ class QueryBuilder implements QueryBuilderInterface
                 [$this, 'reduceQueryGroupComponents'], $component->getQueries()
             );
             $searchString = $component->isNegated() ? 'NOT ' : '';
-            $reduced = array_filter($reduced, function ($s) { return '' !== $s; });
+            $reduced = array_filter(
+                $reduced,
+                function ($s) {
+                    return '' !== $s;
+                }
+            );
             if ($reduced) {
                 $searchString .= sprintf(
                     '(%s)', implode(" {$component->getOperator()} ", $reduced)
