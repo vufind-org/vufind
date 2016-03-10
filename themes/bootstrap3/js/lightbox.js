@@ -99,6 +99,10 @@ VuFind.lightbox = (function() {
         ) {
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
             var event = new CustomEvent('VuFind.lightbox.login', {
+              detail: {
+                originalUrl: _originalUrl,
+                formUrl: obj.url
+              },
               bubbles: true,
               cancelable: true
             });
