@@ -43,7 +43,7 @@ VuFind.lightbox = (function() {
       return;
     }
     // Deframe HTML
-    if(html.match('<!DOCTYPE html>')) {
+    if (html.match('<!DOCTYPE html>')) {
       html = htmlDiv.find('.main > .container').html();
     }
     // Fill HTML
@@ -57,7 +57,7 @@ VuFind.lightbox = (function() {
     _modalBody.find('[type=submit]').click(_storeClickedStatus);
     
     var forms = _modalBody.find('form:not([data-lightbox-ignore])');
-    for(var i=0;i<forms.length;i++) {
+    for (var i=0;i<forms.length;i++) {
       $(forms[i]).on('submit', _formSubmit);
     }
     // Select all checkboxes
@@ -191,7 +191,7 @@ VuFind.lightbox = (function() {
     // Special handlers
     if ('undefined' !== typeof dataset) {
       // On submit behavior
-      if("string" === typeof dataset.lightboxOnsubmit) {
+      if ('string' === typeof dataset.lightboxOnsubmit) {
         var ret = null;
         if ("function" === typeof window[dataset.lightboxOnsubmit]) {
           ret = window[dataset.lightboxOnsubmit](event, data);
@@ -205,7 +205,7 @@ VuFind.lightbox = (function() {
         }
       }
       // onclose behavior
-      if("string" === typeof dataset.lightboxOnclose) {
+      if ('string' === typeof dataset.lightboxOnclose) {
         if ("function" === typeof window[dataset.lightboxOnclose]) {
           document.addEventListener('VuFind.lightbox.closed', function() {
             window[dataset.lightboxOnclose]();
