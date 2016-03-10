@@ -2,14 +2,14 @@
 finna.combinedResults = (function() {
 
     var my = {
-        init: function(holder) {
+        init: function(container) {
             finna.layout.initTruncate();
-            finna.layout.initAuthorizationNotification(holder);
-            finna.openUrl.initLinks(holder);
-            finna.layout.initLightbox(holder);
-            finna.itemStatus.initItemStatuses(holder);
-            checkSaveStatuses(holder);
-            setupSaveRecordLinks(holder);
+            finna.layout.initAuthorizationNotification(container);
+            finna.openUrl.initLinks(container);
+            finna.itemStatus.initItemStatuses(container);
+            VuFind.lightbox.bind(container);
+            checkSaveStatuses(container);
+            setupSaveRecordLinks(container);
         },
     };
 

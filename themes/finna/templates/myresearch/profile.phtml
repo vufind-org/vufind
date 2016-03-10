@@ -3,10 +3,6 @@
     // Set up page title:
     $this->headTitle($this->translate('My Profile'));
 
-    // Set up additional JS:
-    $this->headScript()->appendFile("finna-user-profile.js");
-    $this->headScript()->appendFile("finna-library-cards.js");
-
     // Set up myresearch menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile']);
     // Set up breadcrumbs:
@@ -76,7 +72,7 @@
         </div>
         <div class="col-xs-12">
           <span class="change-password-link">
-            <a class="modal-link" href="<?=$this->url('newLibraryCardPassword') ?>?id=<?=$this->escapeHtmlAttr($selectedCard['id']) ?>" title="<?=$this->transEsc('Change Password')?>"><?=$this->transEsc('change_password_link') ?></a>
+            <a href="<?=$this->url('newLibraryCardPassword') ?>?id=<?=$this->escapeHtmlAttr($selectedCard['id']) ?>" data-lightbox title="<?=$this->transEsc('Change Password')?>"><?=$this->transEsc('change_password_link') ?></a>
           </span>
         </div>
       <? endif; ?>
@@ -102,7 +98,7 @@
             <div class="col-sm-4 profile-long">
               <i class="fa fa-info-big"></i> <?=$this->transEsc('request_address_change_title') ?>
               <? if ($updateAddress['method'] == 'email'): ?>
-                <a class="modal-link controller:MyResearch profile-library-info-address-update" href="<?=$this->url('myresearch-changeprofileaddress') ?>" title="<?=$this->escapeHtmlAttr($this->translate('request_address_change')) ?>"><?=$this->transEsc('request_address_change') ?></a>.
+                <a class="profile-library-info-address-update" href="<?=$this->url('myresearch-changeprofileaddress') ?>" data-lightbox title="<?=$this->escapeHtmlAttr($this->translate('request_address_change')) ?>"><?=$this->transEsc('request_address_change') ?></a>.
               <? elseif ($updateAddress['method'] == 'url'): ?>
                 <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateAddress['url'])) ?>" target="_blank"><?=$this->transEsc('request_address_change') ?></a>.
               <? endif; ?>
@@ -162,7 +158,7 @@
         <? if ($updateAddress): ?>
           <div class="col-xs-12">
           <? if ($updateAddress['method'] == 'email'): ?>
-            <i class="fa fa-pen"></i> <a class="modal-link controller:MyResearch profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->url('myresearch-changeprofileaddress')) ?>"><?=$this->transEsc('request_address_change') ?></a>
+            <i class="fa fa-pen"></i> <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->url('myresearch-changeprofileaddress')) ?>" data-lightbox><?=$this->transEsc('request_address_change') ?></a>
           <? elseif ($updateAddress['method'] == 'url'): ?>
             <i class="fa fa-external-link"></i> <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateAddress['url'])) ?>" target="_blank"><?=$this->transEsc('request_address_change') ?></a>
           <? endif; ?>
@@ -176,7 +172,7 @@
 <div class="row">
   <div class="col-md-10 col-lg-9">
     <div id="delete-account" class="text-right">
-      <button class="btn btn-primary modal-link controller:MyResearch"><i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?></button>
+      <a class="btn btn-primary" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox><i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?></a>
     </div>
   </div>
 </div>

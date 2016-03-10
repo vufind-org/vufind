@@ -59,7 +59,7 @@ class Connection extends \VuFind\ILS\Connection
     {
         if (!$this->checkCapability('changePassword', compact('details'))) {
             throw new ILSException(
-                'Cannot call method: ' . $this->getDriverClass() . '::patronLogin'
+                'Cannot call method: ' . $this->getDriverClass() . '::changePassword'
             );
         }
 
@@ -75,46 +75,6 @@ class Connection extends \VuFind\ILS\Connection
         }
 
         return $this->getDriver()->changePassword($details);
-    }
-
-    /**
-     * Patron Login with a cache
-     *
-     * This is a wrapper to ILS drivers' patronLogin() with a session-based cache
-     *
-     * @param string $username  The patron user id or barcode
-     * @param string $password  The patron password
-     * @param string $secondary Optional secondary login field
-     *
-     * @return mixed           Associative array of patron info on successful login,
-     * null on unsuccessful login.
-     */
-    public function patronLogin($username, $password, $secondary = null)
-    {
-        $session = new \Zend\Session\Container('Finna\ILS\Connection\PatronCache');
-        $hash = md5("$username\t$password");
-        // Use a cached result if available and at most 60 seconds old
-        if (isset($session->$hash)
-            && $session->{$hash}['timestamp'] >= time() - 60
-        ) {
-            return $session->{$hash}['data'];
-        }
-
-        if ($this->checkCapability('patronLogin', compact('username', 'password'))) {
-            $result = $this->getDriver()->patronLogin(
-                $username, $password, $secondary
-            );
-            if (is_array($result)) {
-                $session->$hash = [
-                    'timestamp' => time(),
-                    'data' => $result
-                ];
-            }
-            return $result;
-        }
-        throw new ILSException(
-            'Cannot call method: ' . $this->getDriverClass() . '::patronLogin'
-        );
     }
 
     /**

@@ -1,7 +1,5 @@
 /*global VuFind,checkSaveStatuses*/
 finna.layout = (function() {
-    var refreshPage = false;
-
     var initResizeListener = function() {
         var intervalId = false;
         $(window).on("resize", function(e) {
@@ -72,45 +70,16 @@ finna.layout = (function() {
             modal.find('.modal-dialog').removeClass('modal-lg');
         };
 
-        holder.find('a.location-service').click(function(e) {
-            if ($(this).hasClass('location-service-modal')) {
-                var modal = $('#modal');
-                modal.addClass('location-service');
-                modal.find('.modal-dialog').addClass('modal-lg');
-                modal.find('.modal-title').html(VuFind.translate('location-service'));
-                Lightbox.titleSet = true;
-
-                $('#modal').one('hidden.bs.modal', function() {
-                    closeModalCallback($(this));
-                });
-                var params = {
-                    source: $(this).attr('data-source'),
-                    callnumber: $(this).attr('data-callnumber'),
-                    collection: $(this).attr('data-collection')
-                };
-                return Lightbox.get('LocationService', 'modal', params);
-            } else {
-                // Prevent holding collapse/uncollapse
-                e.stopPropagation();
-            }
-        });
-
-        holder.find('.location-service.fa-qrcode').click(function() {
+        holder.find('a.location-service.location-service-modal').click(function(e) {
             var modal = $('#modal');
-            modal.addClass('location-service-qrcode');
-            modal.find('.modal-title').html(VuFind.translate('location-service'));
-            Lightbox.titleSet = true;
-            Lightbox.changeContent('');
-            modal.find('.modal-body').qrcode({
-                render: 'div',
-                size: $(window).width() < 768 ? 240 : 300,
-                text: $(this).prev('a.location-service').attr('href')
-            });
-            modal.modal();
-
+            modal.addClass('location-service');
+            modal.find('.modal-dialog').addClass('modal-lg');
+            
             $('#modal').one('hidden.bs.modal', function() {
                 closeModalCallback($(this));
             });
+            modal.find('.modal-body').load($(this).data('lightbox-href') + '&layout=lightbox');
+            modal.modal();
             return false;
         });
     };
@@ -472,53 +441,6 @@ finna.layout = (function() {
         });
     };
 
-    var initAuthorizationNotification = function(holder) {
-        if (typeof(holder) == "undefined") {
-            holder = $("body");
-        }
-        holder.find(".authorization-notification .modal-link").click(function() {
-            refreshPage = true;
-            return Lightbox.get('MyResearch','UserLogin');
-        });
-    };
-
-    var initLightbox = function(holder) {
-        if (typeof(holder) == "undefined") {
-            // This must be called with a holder. Defaults are done in lightbox.js.
-            return;
-        }
-        // This part copied from lightbox.js. TODO: refactor
-        /**
-         * If a link with the class .modal-link triggers the lightbox,
-         * look for a title="" to use as our lightbox title.
-         */
-        holder.find('.modal-link,.help-link').click(function() {
-            var title = $(this).attr('title');
-            if(typeof title === "undefined") {
-                title = $(this).html();
-            }
-            $('#modal .modal-title').html(title);
-            Lightbox.titleSet = true;
-        });
-    };
-
-    // There's one in record.js but this applies to holds made directly from the
-    // holdings in the results list.
-    var initHoldRequestFeedback = function() {
-        Lightbox.addFormCallback('placeHold', function(html) {
-            Lightbox.checkForError(html, function(html) {
-                var divPattern = '<div class="alert alert-success">';
-                var fi = html.indexOf(divPattern);
-                var li = html.indexOf('</div>', fi+divPattern.length);
-                Lightbox.success(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
-            });
-        });
-    };
-
-    var isPageRefreshNeeded = function() {
-        return refreshPage;
-    };
-
     var initTouchDeviceGallery = function () {
         if ($('.result-view-grid')[0] != null && isTouchDevice()) {
             $('.result-view-grid').addClass('touch-device');
@@ -581,18 +503,6 @@ finna.layout = (function() {
         }).change();
     }
 
-    var initRecordFeedbackForm = function() {
-        var id = $('.hiddenId')[0].value;
-        $('#feedback-record').click(function() {
-          var params = extractClassParams(this);
-          return Lightbox.get(params.controller, 'Feedback', {id:id});
-        });
-
-        Lightbox.addFormCallback('feedbackRecord', function(html) {
-            Lightbox.confirm(VuFind.translate('feedback_success'));
-        });
-    };
-
     var initSideFacets = function() {
         var $container = $('.side-facets-container');
         if ($container.length === 0) {
@@ -647,19 +557,23 @@ finna.layout = (function() {
       }
     };
 
+    var initLoginRedirect = function() {
+      document.addEventListener('VuFind.lightbox.login', function(e) {
+        if (!e.detail.formUrl.match(/catalogLogin/)) {          
+          window.location.href = VuFind.path + '/MyResearch/Home'; 
+          e.preventDefault();
+        }
+      });
+    }
+    
     var my = {
-        isPageRefreshNeeded: isPageRefreshNeeded,
         isTouchDevice: isTouchDevice,
-        initAuthorizationNotification: initAuthorizationNotification,
         initTruncate: initTruncate,
-        lightbox: Lightbox,
-        initLightbox: initLightbox,
         initLocationService: initLocationService,
         initHierarchicalFacet: initHierarchicalFacet,
         initJumpMenus: initJumpMenus,
         initMobileNarrowSearch: initMobileNarrowSearch,
         initSecondaryLoginField: initSecondaryLoginField,
-        initRecordFeedbackForm: initRecordFeedbackForm,
         init: function() {
             initJumpMenus();
             initAnchorNavigationLinks();
@@ -678,14 +592,13 @@ finna.layout = (function() {
             initSearchboxFunctions();
             initCondensedList();
             if (typeof checkSaveStatuses !== 'undefined') { checkSaveStatuses(); }
-            initAuthorizationNotification();
             initTouchDeviceGallery();
             initImageCheck();
             initSideFacets();
             initPiwikPopularSearches();
             initAutoScrollTouch();
             initIpadCheck();
-            initHoldRequestFeedback();
+            initLoginRedirect();
         }
     };
 

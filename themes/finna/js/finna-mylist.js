@@ -355,9 +355,11 @@ finna.myList = (function() {
     };
 
     var toggleErrorMessage = function(mode) {
-        $('.alert-danger').toggleClass('hide', !mode);
+        var $msg = $('.mylist-error');
+        $msg.addClass('alert alert-danger');
+        $msg.toggleClass('hidden', !mode);
         if (mode) {
-            $("html, body").animate({ scrollTop: 0 }, 'fast');
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
         }
     };
 

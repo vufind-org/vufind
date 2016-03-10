@@ -1,9 +1,10 @@
 <?php
 /**
- * Table Definition for user_list
+ * Fake database row to represent a user in privacy mode.
  *
  * PHP version 5
  *
+ * Copyright (C) Villanova University 2015.
  * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,36 +21,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind
- * @package  Db_Table
+ * @package  Db_Row
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org Main Site
  */
-namespace Finna\Db\Table;
-use VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Db\Sql\Expression;
+namespace Finna\Db\Row;
 
 /**
- * Table Definition for user_list
+ * Fake database row to represent a user in privacy mode.
  *
  * @category VuFind
- * @package  Db_Table
+ * @package  Db_Row
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org Main Site
  */
-class UserList extends \VuFind\Db\Table\UserList
+class PrivateUser extends \VuFind\Db\Row\PrivateUser
 {
-    /**
-     * Constructor
-     *
-     * @param \Zend\Session\Container $session Session container (must use same
-     * namespace as container provided to \VuFind\View\Helper\Root\UserList).
-     */
-    public function __construct(\Zend\Session\Container $session)
-    {
-        parent::__construct($session);
-        $this->rowClass = 'Finna\Db\Row\UserList';
-    }
+    use FinnaUserTrait;
 }

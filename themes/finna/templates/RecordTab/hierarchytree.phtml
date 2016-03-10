@@ -18,6 +18,9 @@
   $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
   echo $this->inlineScript();
 ?>
+<? if ($this->layout()->getTemplate() == 'layout/lightbox'): ?>
+  <h2><?=$this->transEsc('hierarchy_tree') ?></h2>
+<? endif; ?>
 <? if (count($hierarchyTreeList) > 1): ?>
   <div id="treeSelector">
     <? foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>

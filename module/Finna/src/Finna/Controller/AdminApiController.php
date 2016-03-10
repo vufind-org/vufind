@@ -48,7 +48,7 @@ class AdminApiController extends \VuFind\Controller\AbstractBase
      */
     public function clearCacheAction()
     {
-        $this->writeSession();
+        $this->disableSessionWrites();
         $this->determineOutputMode();
 
         $auth = $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService');

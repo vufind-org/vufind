@@ -78,7 +78,10 @@ finna.record = (function() {
     }
     
     var initHoldingsControls = function() {
-        $('.holdings-container-heading').click(function () {
+        $('.holdings-container-heading').click(function (e) {
+            if ($(e.target).hasClass('location-service') || $(e.target).parents().hasClass('location-service')) {
+                return;
+            }
             $(this).nextUntil('.holdings-container-heading').toggleClass('collapsed');
             if ($('.location .fa', this).hasClass('fa-arrow-down')) {
                 $('.location .fa', this).removeClass('fa-arrow-down');
@@ -93,54 +96,19 @@ finna.record = (function() {
                 checkRequestsAreValid(rows.find('.collapsedCheckILLRequest').removeClass('collapsedCheckILLRequest'), 'ILLRequest', 'ILLRequestBlocked');
             }
         });
-        // Login link
-        $('a.login-link').click(function() {
-          return Lightbox.get('MyResearch','UserLogin');
-        });
     };
 
-    var initMobileModals = function() {
-      var id = $('.hiddenId')[0].value;
-      $('.cite-record-mobile').click(function() {
-        var params = extractClassParams(this);
-        return Lightbox.get(params['controller'], 'Cite', {id:id});
-      });
-      // Mail lightbox
-      $('.mail-record-mobile').click(function() {
-        var params = extractClassParams(this);
-        return Lightbox.get(params['controller'], 'Email', {id:id});
-      });
-      // Save lightbox
-      $('.save-record-mobile').click(function() {
-        var params = extractClassParams(this);
-        return Lightbox.get(params['controller'], 'Save', {id:id});
-      });
-    };
-
-    // Override recordDocReady so that we can hook up our own saveRecord callback
-    var origRecordDocReady = recordDocReady;
-    recordDocReady = function() {
-      origRecordDocReady();
-      Lightbox.addFormCallback('saveRecord', function(html) {
-        Lightbox.close();
-        checkSaveStatuses();
-        refreshTagList();
-      });
-    }
-    
     var my = {
         checkRequestsAreValid: checkRequestsAreValid,
         init: function() {
             initDescription();
-            finna.layout.initRecordFeedbackForm();
-            initMobileModals();
         },
         setupHoldingsTab: function() {
             initHoldingsControls();
             setUpCheckRequest();
             finna.layout.initLocationService();
             finna.layout.initJumpMenus($('.holdings-tab'));
-            finna.layout.initLightbox($('.holdings-tab'));
+            VuFind.lightbox.bind($('.holdings-tab'));
         }
     };
 
