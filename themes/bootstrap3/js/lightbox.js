@@ -87,8 +87,7 @@ VuFind.lightbox = (function() {
     _xhr.always(function() { _xhr = false; })
       .done(function(html, status, jq_xhr) {
         if (jq_xhr.status == 205) {
-          // No reload since any post params would cause a prompt
-          window.location.href = window.location.href;
+          _refreshPage();
           return;
         }
         if ( // Close the lightbox after deliberate login
@@ -107,8 +106,7 @@ VuFind.lightbox = (function() {
               cancelable: true
             });
             if (document.dispatchEvent(event)) {
-              // No reload since any post params would cause a prompt
-              window.location.href = window.location.href;
+              _refreshPage();
             }
             return false;
           } else {
@@ -209,6 +207,22 @@ VuFind.lightbox = (function() {
     return false;
   }
 
+  /**
+   * Reload the page without causing trouble with POST parameters while keeping hash
+   */
+  var _refreshPage = function() {
+    var parts = window.location.href.split('#');
+    if (typeof parts[1] === 'undefined') {
+      window.location.href = window.location.href;  
+    } else {
+      var href = parts[0];
+      // Force reload with a timestamp
+      href += href.indexOf('?') == -1 ? '?_=' : '&_=';
+      href += new Date().getTime() + '#' + parts[1];
+      window.location.href = href;
+    }
+  }
+  
   // Public: Attach listeners to the page
   var bind = function(target) {
     if ('undefined' === typeof target) {
@@ -245,8 +259,7 @@ VuFind.lightbox = (function() {
       _modalBody = _modal.find('.modal-body');
       _modal.on('hide.bs.modal', function() {
         if (VuFind.lightbox.refreshOnClose) {
-          // No reload since any post params would cause a prompt
-          window.location.href = window.location.href;
+          _refreshPage();
         }
         document.dispatchEvent(new Event('VuFind.lightbox.closing'));
       });
