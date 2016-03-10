@@ -352,7 +352,7 @@ JS;
           <? if ($i > 5): ?><a class="list-group-item <?=$moreClass ?> less-narrow-toggle" href="javascript:lessFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('less')?>...<i class="fa fa-handle-close"></i></a><? endif; ?>
           <? if ($title == 'usage_rights_str_mv'): ?>
             <div class="list-group-item usage-rights-info">
-              <i class="fa fa-info-big"></i><div class="info"><?=$this->translate('Usage Rights Info')?></div><a class="more-info" href="<?=$this->url('content-page', ['page' => 'terms_conditions'])?>#terms"><?=$this->translate('Usage Rights Info More')?></a>
+              <i class="fa fa-info-big"></i><div class="info"><?=$this->translate('usage_rights_info')?></div><a class="more-info" href="<?=$this->url('content-page', ['page' => 'terms_conditions'])?>#terms"><?=$this->translate('usage_rights_info_more')?></a>
             </div>
           <? endif; ?>
         <? endif; ?>
