@@ -114,6 +114,9 @@ VuFind.lightbox = (function() {
           }
         }
         _update(html);
+      })
+      .fail(function() {
+        showAlert(VuFind.translate('error_occurred'), 'danger');  
       });
     return _xhr;
   };
