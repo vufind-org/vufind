@@ -1,39 +1,37 @@
 <!-- START of: finna - feedback/form.phtml -->
 
-<? if (!$this->translationEmpty('feedback_instructions')): ?>
-  <p><?=$this->transEsc("feedback_instructions"); ?></p>
+<? if (!$this->translationEmpty('feedback_instructions_html')): ?>
+  <p><?=$this->translate("feedback_instructions_html"); ?></p>
 <? endif; ?>
 
 <div class="row">
   <div class="col-sm-6">
-    <?=$this->flashmessages()?>
     <br>
+    <?=$this->flashmessages()?>
     <form class="form feedback-form" name="finna_feedback" method="post" action="<?=$this->url('feedback-email')?>">
-      <input type="hidden" id="feedbackSuccess" value="<?=$this->transEsc("Thank you for your feedback")?>"/>
-      <input type="hidden" id="feedbackFailure" value="<?=$this->transEsc("An error has occurred")?>"/>
-      <input type="hidden" id="feedbackMissing" value="<?=$this->transEsc("Fill mandatory fields")?>"/>
       <div class="row">
         <div class="form-group col-xs-12">
           <label for="category" class="control-label" ><?=$this->transEsc("Subject")?>:</label>
             <select name="category" id="category" class="form-control">
-              <option value="feedback_category_general" selected="selected"><?=$this->transEsc("feedback_category_general");?></option>
-              <option value="feedback_category_metadata"><?=$this->transEsc("feedback_category_metadata");?></option>
-              <option value="feedback_category_services"><?=$this->transEsc("feedback_category_services");?></option>
-              <option value="feedback_category_usability"><?=$this->transEsc("feedback_category_usability");?></option>
-              <option value="feedback_category_technical"><?=$this->transEsc("feedback_category_technical");?></option>
+              <? $cat = isset($this->category) ? $this->category : ''; ?>
+              <option value="feedback_category_general"<?= $cat == 'feedback_category_general' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_general");?></option>
+              <option value="feedback_category_metadata"<?= $cat == 'feedback_category_metadata' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_metadata");?></option>
+              <option value="feedback_category_services"<?= $cat == 'feedback_category_services' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_services");?></option>
+              <option value="feedback_category_usability"<?= $cat == 'feedback_category_usability' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_usability");?></option>
+              <option value="feedback_category_technical"<?= $cat == 'feedback_category_technical' ? ' selected="selected"' : '' ?>><?=$this->transEsc("feedback_category_technical");?></option>
             </select>
         </div>
       </div>
       <div class="row">
         <div class="form-group col-xs-12">
           <label for="comments" class="control-label">* <?=$this->transEsc("feedback_message")?>:</label>
-          <textarea cols="50" rows="8" id="comments" name="comments" class="form-control" required aria-required="true"></textarea>
+          <textarea cols="50" rows="8" id="comments" name="comments" class="form-control" required aria-required="true"><?= !empty($this->comments) ? $this->escapeHtmlAttr($this->comments) : '' ?></textarea>
         </div>
       </div>
       <div class="row">
         <div class="form-group col-xs-12">
           <label class="control-label" for="url"><?=$this->transEsc("feedback_url");?>:</label>
-          <input type="url" id="url" name="url" class="form-control" size="50" placeholder="http://..."/>
+          <input type="url" id="url" name="url" class="form-control" size="50" placeholder="http://..."<?= !empty($this->url) ? (' value="' . $this->escapeHtmlAttr($this->url) . '"') : '' ?> />
         </div>
       </div>
       <div class="row">
@@ -45,13 +43,13 @@
       <div class="row">
         <div class="form-group col-xs-12">
           <label class="control-label" for="name"><?=$this->transEsc("feedback_name")?>:</label>
-          <input type="text" id="name" name="name" class="form-control" size="50" />
+          <input type="text" id="name" name="name" class="form-control" size="50"<?= !empty($this->name) ? (' value="' . $this->escapeHtmlAttr($this->name) . '"') : '' ?> />
         </div>
       </div>
       <div class="row">
         <div class="form-group col-xs-12">
           <label class="control-label" for="email"><?=$this->transEsc("feedback_email")?>:</label>
-            <input type="email" id="email" name="email" class="form-control" size="50" />
+            <input type="email" id="email" name="email" class="form-control" size="50"<?= !empty($this->email) ? (' value="' . $this->escapeHtmlAttr($this->email) . '"') : '' ?> />
         </div>
       </div>
       <div class="row">

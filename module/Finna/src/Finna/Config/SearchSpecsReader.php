@@ -86,8 +86,10 @@ class SearchSpecsReader extends \VuFind\Config\SearchSpecsReader
                 }
                 if (!empty($local)) {
                     $localResults = Yaml::parse(file_get_contents($local));
-                    foreach ($localResults as $key => $value) {
-                        $results[$key] = $value;
+                    if (!empty($localResults)) {
+                        foreach ($localResults as $key => $value) {
+                            $results[$key] = $value;
+                        }
                     }
                 }
                 if ($cache !== false) {
