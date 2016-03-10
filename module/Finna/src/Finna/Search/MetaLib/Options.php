@@ -57,6 +57,8 @@ class Options extends \VuFind\Search\Base\Options
         $this->searchIni = 'MetaLib';
         $searchSettings = $configLoader->get($this->searchIni);
 
+        $this->translatedFacets = ['metalib_set'];
+
         // Set up limit preferences
         if (isset($searchSettings->General->default_limit)) {
             $this->defaultLimit = $searchSettings->General->default_limit;

@@ -134,4 +134,31 @@ class HoldingsSettings extends AbstractHelper
             ? false
             : (boolean)$this->config->Item_Status->show_holdings_summary;
     }
+
+    /**
+     * Return configured setting for overriding holdings ordering and
+     * re-sorting holdings by availability and location name. This only affects 
+     * non-Axiell search results holdings.
+     *
+     * @return boolean
+     */
+    public function overrideSortOrder()
+    {
+        return empty($this->config->Item_Status->override_sort_order)
+            ? false
+            : (boolean)$this->config->Item_Status->override_sort_order;
+    }
+
+    /**
+     * Return configured limit for truncating holdings. This only affects non-Axiell
+     * search results holdings.
+     *
+     * @return boolean
+     */
+    public function getTruncateLimit()
+    {
+        return !isset($this->config->Item_Status->truncate_limit)
+            ? false
+            : $this->config->Item_Status->truncate_limit;
+    }
 }

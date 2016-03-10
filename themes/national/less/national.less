@@ -60,9 +60,6 @@ header {
 @media (min-width: @screen-lg-min) {
     header .navbar { 
         max-width: (@screen-lg-min - @grid-gutter-width);
-        & #loginOptions, .logoutOptions {
-            margin-right: -15px;
-        }
     }
 }
 // fine-tune tablet and medium layouts 
@@ -74,37 +71,56 @@ header {
 }
 // fine-tune tablet and larger layouts 
 @media (min-width: @screen-sm-min) {
+    header .navbar { 
+        & #loginOptions, .logoutOptions {
+            margin-right: -15px;
+        }
+    }
     header .navbar .dropdown .dropdown-menu { 
         & li {
-            width: 280px;
-        }
-        & li div.description {
-            padding-top: 2px;
+            min-width: 260px;
+            max-width: 280px;
         }
         & li a {
             white-space: initial;
             padding: 9px 10px;
+        }
+        & li div.description {
+            padding-top: 2px;
         }
     }
     .searchLayout .introduction {
         margin: 0px 0px 30px;
     }
 }
-.introduction h1 {
-    @media (max-width: @screen-xs-max) {
-        background: rgba(1,1,1,0.35);
+.introduction {
+    & .fa-info.open-btn {
+        color: @gray;
+        padding: 5px;
+        margin-right: 2px;
     }
-    & span {
-        display: inline;
-        background: rgba(1,1,1,0.35);
-        padding: 3px 6px;
-        line-height:1.6em;
-        & em {
-            color: #addfdb;   
-        }
+    & h1 {
+        padding-left: 0;
         @media (max-width: @screen-xs-max) {
-            background: none;
-            padding: 0;
+            background: rgba(1,1,1,0.35);
+            padding-left: 7px;
+            box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+        }
+        & span {
+            display: inline;
+            background: rgba(1,1,1,0.45);
+            box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+            text-shadow: none;
+            padding: 3px 6px;
+            line-height:1.6em;
+            & em {
+                color: #addfdb;   
+            }
+            @media (max-width: @screen-xs-max) {
+                background: none;
+                padding: 0;
+                box-shadow: none;
+            }
         }
     }
 }

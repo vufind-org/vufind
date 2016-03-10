@@ -1,5 +1,5 @@
 <!-- START of: finna - content/terms_conditions_fi.phtml -->
-<? $this->content()->setHeading('Tietosuoja ja käyttöehdot'); ?>
+<? $this->headTitle($this->translate('Tietosuoja ja käyttöehdot')); $this->content()->setHeading($this->translate('Tietosuoja ja käyttöehdot')); ?>
 
 <div class="row">
  <div class="col-sm-9 col-md-8 col-lg-6">
@@ -62,18 +62,16 @@
      
      <p>Käyttäjätietojen käsittelystä on laadittu <a href="register_details">rekisteriseloste.</a></p>
      
-     <h2>Käyttöehdot</h2>
-     
-     <p>Finnan käyttäjät voivat hakea tietoa arkistojen, kirjastojen ja museoiden aineistoista. Aineistojen käyttöä koskevat seuraavat ehdot:</p>
-     
+     <h2><a name="terms">Käyttöehdot</a></h2>
+
+     <p>Aineistojen käyttöä koskevat seuraavat ehdot:</p>
+
      <ul class="list-bullets">
-         <li><strong>Kuvailutiedot:</strong> Hakutulosten yhteydessä esitettäviä kuvailutietoja voivat kaikki käyttää vapaasti.</li>
+         <li><strong id="image_rights">Kuvat:</strong> Joidenkin aineistojen kohdalla Finnassa on kuva esimerkiksi museoesineestä, taideteoksesta tai valokuvasta. Jos haluat julkaista tällaisen kuvan tai käyttää kuvaa julkisessa yhteydessä, noudata kuvan yhteydessä ilmoitettuja käyttöehtoja. Jos käytät kuvaa julkisesti, kuvan tekijä ja lähde on yleensä mainittava. Ota yhteys aineiston Finnaan tarjonneeseen organisaatioon, jos tieto kuvan käyttöoikeuksista puuttuu tai olet epävarma oikeudestasi käyttää kuvaa. Jos haluat käyttää kirjan kansikuvaa, lähetä tiedustelu Finnan <a href="<?=$this->url('feedback-home')?>">yleisellä palautelomakkeella</a>.</li>
          <li><strong>Digitaaliset aineistot:</strong> Digitaalisten aineistojen kohdalla Finnassa on linkki aineistoa hallinnoivan organisaation sivustolle. 
              Näillä sivustoilla oleviin aineistoihin voi liittyä lakiin tai sopimuksiin liittyviä oikeuksia tai rajoituksia. Oikeuksista ja 
              rajoituksista kerrotaan sisältöjä hallinnoivien organisaatioiden sivustoilla.</li>
-         <li><strong id="image_rights">Kuvat:</strong> Joidenkin aineistojen kohdalla Finnassa on kuva esimerkiksi museoesineestä, taideteoksesta, valokuvasta tai kirjan kannesta. 
-             Näihin ns. esikatselukuviin voi liittyä käytön rajoituksia samalla tavalla kuin aineistoja hallinnoivien organisaatioiden sivustoilla 
-             oleviin aineistoihin.</li>
+         <li><strong>Kuvailutiedot:</strong> Hakutulosten yhteydessä esitettäviä kuvailutietoja voi pääsääntöisesti käyttää vapaasti. Poikkeuksen muodostavat kuvailutietoihin sisältyvät tiivistelmätekstit, kirjojen takakansitekstit ja Finnan käyttäjien tuottamat kuvailutiedot, joihin voi kohdistua kolmansien osapuolten tekijänoikeuksia.</li>
      </ul>
      
      

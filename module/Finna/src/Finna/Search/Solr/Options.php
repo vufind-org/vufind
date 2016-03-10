@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Search_Solr
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -33,6 +34,7 @@ namespace Finna\Search\Solr;
  * @category VuFind
  * @package  Search_Solr
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -46,6 +48,28 @@ class Options extends \VuFind\Search\Solr\Options
     protected $browseAction = null;
 
     /**
+     * Date range visualization settings
+     *
+     * @var string
+     */
+    protected $dateRangeVis = '';
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     */
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    {
+        parent::__construct($configLoader);
+
+        $facetSettings = $configLoader->get($this->facetsIni);
+        if (isset($facetSettings->SpecialFacets->dateRangeVis)) {
+            $this->dateRangeVis = $facetSettings->SpecialFacets->dateRangeVis;
+        }
+    }
+
+    /**
      * Set the route name for the browse action.
      *
      * @param string $action Route
@@ -55,6 +79,28 @@ class Options extends \VuFind\Search\Solr\Options
     public function setBrowseAction($action)
     {
         $this->browseAction = $action;
+    }
+
+    /**
+     * Get the field used for date range search
+     *
+     * @return string
+     */
+    public function getDateRangeSearchField()
+    {
+        list($field) = explode(':', $this->dateRangeVis);
+        return $field;
+    }
+
+    /**
+     * Get the field used for date range visualization
+     *
+     * @return string
+     */
+    public function getDateRangeVisualizationField()
+    {
+        $fields = explode(':', $this->dateRangeVis);
+        return isset($fields[1]) ? $fields[1] : '';
     }
 
     /**

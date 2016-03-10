@@ -51,6 +51,8 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
      * Set the config reader
      *
      * @param \VuFind\Config\PluginManager $configReader Configuration reader
+     *
+     * @return void
      */
     public function setConfigReader(\VuFind\Config\PluginManager $configReader)
     {

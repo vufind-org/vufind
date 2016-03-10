@@ -90,19 +90,6 @@ trait SearchControllerTrait
         foreach ($params as $key => $value) {
             if ($key == 'filter') {
                 $this->getRequest()->getQuery()->set('filter', $value);
-                // Check if we have a spatial date range filter and get its type too
-                $field = $savedSearch->getParams()->getSpatialDateRangeField();
-                foreach ($value as $filter) {
-                    if (strncmp($filter, $field, strlen($field)) == 0) {
-                        $filterInfo = $savedSearch->getParams()
-                            ->getSpatialDateRangeFilter();
-                        if (isset($filterInfo['type'])) {
-                            $this->getRequest()->getQuery()
-                                ->set($field . '_type', $filterInfo['type']);
-                        }
-                        break;
-                    }
-                }
                 break;
             }
         }

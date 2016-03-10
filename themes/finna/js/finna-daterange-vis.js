@@ -182,7 +182,7 @@ finna.dateRangeVis = (function() {
             });
         })
         .fail(function(response, textStatus) {
-          vis.closest('.content').removeClass('loading');
+          holder.find('.date-vis').closest('.content').removeClass('loading');
           console.log(response, textStatus);
         });
     };
