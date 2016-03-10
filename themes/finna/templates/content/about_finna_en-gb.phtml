@@ -7,7 +7,7 @@
 </div>
 <div class="row">
   <div class="col-sm-5 col-md-4">
-    <a href="https://www.finna.fi?lng=en-gb"><img src="<?=$this->imageLink('finnafi.jpg')?>" alt="finna.fi screenshot" /></a>
+    <a href="https://www.finna.fi?lng=en-gb"><img src="<?=$this->imageLink('finnafi.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'finna.fi'])); ?>" /></a>
     <p>&nbsp;</p>
   </div>
   <div class="col-sm-7 col-md-6">
@@ -29,107 +29,11 @@
         <p>Finna is a search service entity containing several sites in addition to the nationwide finna.fi site. The content of organisation-specific sites is usually limited to the material of those individual organisations.</p>
       </div>
     </div>
-    <div class="row">
-      <div class="col-md-11 col-lg-9">
-        <h4>Public libraries</h4>
-        <div class="row">
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://vaski.finna.fi"><img src="<?=$this->imageLink('vaski.jpg')?>" alt="vaski.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Vaski-libraries</p><p class="organisation-list-url"><a href="https://vaski.finna.fi">vaski.finna.fi</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
+
+    <?=$this->render('content/about_finna_sites.phtml') ?>
     
     <div class="row">
       <div class="col-md-11 col-lg-9">
-        <h4>Museums</h4>
-        <div class="row">
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://hkm.finna.fi"><img src="<?=$this->imageLink('hkm.jpg')?>" alt="hkm.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Helsinki City Museum</p><p class="organisation-list-url"><a href="https://hkm.finna.fi">hkm.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://hrm.finna.fi"><img src="<?=$this->imageLink('hrm.jpg')?>" alt="hrm.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">The Hotel and Restaurant Museum</p><p class="organisation-list-url"><a href="https://hrm.finna.fi">hrm.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://lelumuseohevosenkenka.finna.fi/"><img src="<?=$this->imageLink('lelumuseohevosenkenka.jpg')?>" alt="lelumuseohevosenkenka.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Finnish Toy Museum</p><p class="organisation-list-url"><a href="https://lelumuseohevosenkenka.finna.fi/">lelumuseohevosenkenka.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://museot.finna.fi/"><img src="<?=$this->imageLink('museot.jpg')?>" alt="museot.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Museums (National Board of Antiquities)</p><p class="organisation-list-url"><a href="https://museot.finna.fi/">museot.finna.fi</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-md-11 col-lg-9">
-        <h4>University of applied sciences libraries</h4>
-        <div class="row">
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://masto.finna.fi"><img src="<?=$this->imageLink('masto.jpg')?>" alt="masto.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Lahti UAS</p><p class="organisation-list-url"><a href="https://masto.finna.fi">masto.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://samk.finna.fi"><img src="<?=$this->imageLink('samk.jpg')?>" alt="samk.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Satakunta UAS</p><p class="organisation-list-url"><a href="https://samk.finna.fi">samk.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://oamk.finna.fi"><img src="<?=$this->imageLink('oamk.jpg')?>" alt="oamk.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Oulu UAS</p><p class="organisation-list-url"><a href="https://oamk.finna.fi">oamk.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://hamk.finna.fi"><img src="<?=$this->imageLink('hamk.jpg')?>" alt="hamk.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Häme UAS</p><p class="organisation-list-url"><a href="https://hamk.finna.fi">hamk.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://janet.finna.fi"><img src="<?=$this->imageLink('janet.jpg')?>" alt="janet.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Jyväskylä UAS</p><p class="organisation-list-url"><a href="https://janet.finna.fi">janet.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://kaakkuri.finna.fi"><img src="<?=$this->imageLink('kaakkuri.jpg')?>" alt="kaakkuri.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">South-Eastern Finland UAS</p><p class="organisation-list-url"><a href="https://kaakkuri.finna.fi">kaakkuri.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://laurea.finna.fi"><img src="<?=$this->imageLink('laurea.jpg')?>" alt="laurea.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Laurea Library</p><p class="organisation-list-url"><a href="https://laurea.finna.fi">laurea.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://metropolia.finna.fi"><img src="<?=$this->imageLink('metropolia.jpg')?>" alt="metropolia.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Metropolia UAS</p><p class="organisation-list-url"><a href="https://metropolia.finna.fi">metropolia.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://seamk.finna.fi"><img src="<?=$this->imageLink('seamk.jpg')?>" alt="seamk.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Seinäjoki Academic Library</p><p class="organisation-list-url"><a href="https://seamk.finna.fi">seamk.finna.fi</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-md-11 col-lg-9">
-        <h4>University libraries</h4>
-        <div class="row">
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://jyu.finna.fi"><img src="<?=$this->imageLink('jyu.jpg')?>" alt="jyu.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">University of Jyväskylä</p><p class="organisation-list-url"><a href="https://jyu.finna.fi">jyu.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://kansalliskirjasto.finna.fi"><img src="<?=$this->imageLink('kansalliskirjasto.jpg')?>" alt="kansalliskirjasto.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">The National Library of Finland</p><p class="organisation-list-url"><a href="https://kansalliskirjasto.finna.fi">kansalliskirjasto.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://aalto.finna.fi"><img src="<?=$this->imageLink('aalto.jpg')?>" alt="aalto.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">The Aalto University Library</p><p class="organisation-list-url"><a href="https://aalto.finna.fi">aalto.finna.fi</a></p>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="https://hanken.finna.fi"><img src="<?=$this->imageLink('hanken.jpg')?>" alt="hanken.finna.fi screenshot" /></a>
-            <p class="organisation-list-header">Hanken School of Economics Library</p><p class="organisation-list-url"><a href="https://hanken.finna.fi">hanken.finna.fi</a></p>
-          </div>
-        </div>
         <div class="row">
           <div class="col-xs-12 col-sm-11">
             <p><strong>The university of applied sciences and university library Finna sites</strong> contain international, scientific and electronic library material compiled and provided by an outsourced party for a fee. Most of this material is limited to students and staff at the institute of higher education in question. ovat maksullisia kirjastoille.</p>
