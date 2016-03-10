@@ -7,7 +7,7 @@
 </div>
 <div class="row">
   <div class="col-sm-5 col-md-4">
-    <a href="https://www.finna.fi?lng=sv"><img src="<?=$this->imageLink('finnafi.jpg')?>" alt="finna.fi skärmbild" /></a>
+    <a href="https://www.finna.fi?lng=sv"><img src="<?=$this->imageLink('finnafi.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'finna.fi'])); ?>" /></a>
     <p>&nbsp;</p>
   </div>
   <div class="col-sm-7 col-md-6">
@@ -29,7 +29,7 @@
         <p>Finna är en helhet av söktjänster, med många organisationsspecifika webbsidor utöver den nationella webbplatsen finna.fi. Sökningen på de olika organisationernas webbsidor begränsar sig i huvudsak till den aktuella organisationens material.</p>
       </div>
     </div>
-    <?=$this->render('content/aboutfinna_sites.phtml') ?>
+    <?=$this->render('content/about_finna_sites.phtml') ?>
     <div class="row">
       <div class="row">
         <div class="col-xs-12 col-sm-11">
