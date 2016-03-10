@@ -1,0 +1,165 @@
+// Finna Facet styling
+
+.list-group.filters {
+    background: #f5f5f5;
+    padding: 10px 0px;
+    & .list-group-item.title, .list-group-item.active {
+        padding: 5px 12px;
+        background: none;
+        color:@gray;
+        transition: background 0.2s ease-in-out;
+        &:hover {
+            background: @gray-lighter;
+            text-decoration: line-through;
+        }
+    }   
+}
+
+.list-group.facet {
+        background: #f5f5f5;
+        // style Finna facet headers
+        & .list-group-item.title {
+            font-size:@font-size-h4;
+            margin-bottom: 5px;
+            cursor:pointer;
+            padding-right: 25px;
+            &.collapsed {
+                border-radius:none;
+                &:after {
+                    font-family:'icomoon';
+                    content:'\e613';
+                }
+            }
+            &:after {
+                font-family:'icomoon';
+                content:'\e612';
+                float: right;
+                position: absolute;
+                right: 8px;
+            }
+        }
+    & .collapse, .collapsing {
+        .list-group-item {
+          border-top-left-radius:0px;
+          border-top-right-radius:0px;
+        }
+    }
+    // defines all facet paddings between lines
+    & ul.jstree-container-ul > li.jstree-node, .list-group-item:not(.title) {
+        padding: 3px 10px 3px 8px;
+        @media(max-width:@screen-xs-max) {
+            font-size: 1.15em;
+            padding: 6px 10px 3px 14px;
+        }
+        .jstree-children li {
+            padding-bottom: 2px;
+            padding-top: 2px;
+        }
+    }
+    
+    /* adjust hierarchical facet list styling */
+    .jstree-facet ul:not(.jstree-container-ul) {
+        padding-left: 14px;
+    }
+    .jstree-facet li span.main {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding-left: 1px; /* Fix Firefox cutting the checkboxes */
+    }
+    
+    .jstree-facet .jstree-container-ul .jstree-icon {
+      color: @gray-light;       
+    }
+    
+    
+    & a {
+        color: @link-color; 
+        &:hover {
+            text-decoration: underline;   
+        }
+        &.more-narrow-toggle, &.less-narrow-toggle {
+            color: @gray;
+            border-radius: 0px;
+            & i {
+                float: right;
+                font-size: 1.3em;
+                font-weight: bold;
+                margin-top: 2px;
+            }
+        }
+    }
+    & .list-group-item i.fa.fa-square-o, .list-group-item i.fa.fa-check-square-o {
+        vertical-align: middle;
+    }
+    
+    & .jstree-node.active, & .list-group-item.active { 
+        background: @brand-primary;
+        color: #fff;
+        & a,
+        & .badge,
+        & .jstree-icon.jstree-ocl {
+            color: #fff;
+        }
+        & .badge {
+            padding-right: 3px   
+        }
+    }
+    & .jstree-container-ul .jstree-node.active > a, & a.list-group-item.active {
+        &:hover {
+            text-decoration: line-through;
+        }
+    }
+    // jstree and facet content icons
+    & .collapse, .jstree-container-ul {
+        & .jstree-icon {
+            height: 20px;
+            display: block;
+            float: left;
+        }   
+    }
+    & .jstree-ocl:before {
+    font-family: 'icomoon';
+    float: left;
+    speak: none;
+    font-weight: normal;
+    font-style: normal;
+    text-decoration: inherit;
+    cursor: pointer;
+    padding: 0;
+    }
+    & .jstree-open > .jstree-ocl:before {
+        content: "\e027";
+    }
+    & .jstree-closed > .jstree-ocl:before {
+        content: "\e025";
+    }
+    & .jstree-leaf > .jstree-ocl:before {
+        content: " ";
+    }
+    
+    // tablet & mobile facet adjustments
+    @media (max-width: @screen-sm-max) {
+        .datepicker.datepicker-dropdown {
+            font-size: 1.4em;
+        }
+        .jstree-facet .jstree-container-ul .jstree-icon {
+            font-size: 1.2em;
+            margin-left: -5px;
+            margin-top: -3px;
+            @media(max-width: @screen-xs-max) {
+                margin-left: -26px;
+                margin-top: -5px;
+                font-size: 1.3em;
+            }
+        }
+    }
+    
+}
+
+#side-collapse-publishDate .list-group-item {
+    padding: 10px 15px;
+    border-bottom-left-radius:@border-radius-base;
+    border-bottom-right-radius:@border-radius-base;
+}

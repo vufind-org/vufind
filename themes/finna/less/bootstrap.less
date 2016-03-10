@@ -992,61 +992,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
 }
 
-/* --- Sidebar --- */
-.sidebar {
-    .list-group:not(.filters) .title {
-        margin-bottom: 5px;
-        cursor:pointer;
-        padding-right: 25px;
-        &.collapsed {
-            border-radius:none;
-            &:after {
-                font-family:'icomoon';
-                content:'\e613';
-            }
-        }
-        &:after {
-            font-family:'icomoon';
-            content:'\e612';
-            float: right;
-            position: absolute;
-            right: 8px;
-        }
-    }
-    .collapse,.collapsing {
-        .list-group-item {
-          border-top-left-radius:0px;
-          border-top-right-radius:0px;
-        }
-    }
-    #side-collapse-publishDate .list-group-item {
-        border-bottom-left-radius:@border-radius-base;
-        border-bottom-right-radius:@border-radius-base;
-    }
-
-    .list-group-item, .badge {
-        i.fa {
-            cursor:inherit;
-        }
-    }
-    & .facet a {
-        text-decoration: none;
-        &.more-narrow-toggle, &.less-narrow-toggle {
-            color: @gray;
-            border-radius: 0px;
-            & i {
-                float: right;
-                font-size: 1.3em;
-                font-weight: bold;
-                margin-top: 2px;
-            }
-        }
-    }
-    & .list-group-item i.fa.fa-square-o, .list-group-item i.fa.fa-check-square-o {
-        vertical-align: middle;
-    }
-}
-
 
 /* --- Slider accessibility --- */
 .slider {
@@ -1289,108 +1234,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
 }
 
-/* --- Hierarchical facets --- */
-/* jsTree arrows */
-.list-group.facet {
-    div a.list-group-item.facetOR, div a.list-group-item.facetAND {
-        background: whitesmoke;   
-    }
-    & .list-group-item.active .badge {
-        color: @body-bg;   
-    }
-    #side-collapse-creationdate, #side-collapse-publishDate {
-        & .list-group-item {
-            background: whitesmoke;  
-        }
-    }
-    & .collapse, .jstree-container-ul {
-        background: whitesmoke;
-        & li, a.list-group-item {
-            background: whitesmoke;
-        }
-        & .jstree-children li {
-            background: transparent;
-        }
-        & > li {
-            padding: 3px 10px 3px 0px;
-        }
-        & .jstree-icon {
-            height: 20px;
-            display: block;
-            float: left;
-            margin-left: -17px;
-            @media(max-width: @screen-xs-max) {
-                  margin-left: -26px;   
-            }
-        }   
-    }
-}
-.facet a {
-    color: @link-color;   
-}
-.facet .jstree-ocl:before {
-  font-family: 'icomoon';
-  float: left;
-  speak: none;
-  font-weight: normal;
-  font-style: normal;
-  text-decoration: inherit;
-  cursor: pointer;
-  padding: 0;
-  @media(max-width:@screen-xs-max) {
-    margin-top:-3px;
-    font-size: 1.3em;
-  }
-}
-.facet .jstree-default .jstree-open > .jstree-ocl:before {
-  content: "\e027";
-}
-.facet .jstree-default .jstree-closed > .jstree-ocl:before {
-  content: "\e025";
-}
-.facet .jstree-default .jstree-leaf > .jstree-ocl:before {
-  content: " ";
-}
-/* facet list styling */
-.jstree-facet ul {
-  padding-left: 14px;
-}
-.jstree-facet li span.main {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-left: 1px; /* Fix Firefox cutting the checkboxes */
-}
-div.jstree-facet, li.jstree-node {
-  list-style: none;
-}
-ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(.title) {
-  padding: 3px 10px 3px 18px;
-  @media(max-width:@screen-xs-max) {
-    font-size: 1.15em;
-    padding: 6px 10px 3px 14px;
-  }
-  .jstree-children li {
-    padding-bottom: 2px;
-    padding-top: 3px;
-  }
-}
-.jstree-facet .jstree-container-ul {
-  padding: 0;
-}
-.jstree-facet .jstree-container-ul .jstree-icon {
-  color: @gray-light;       
-}
-.main.applied, .jstree-facet .jstree-container-ul > li.active, .jstree-facet .jstree-container-ul > li.active a.jstree-anchor, .jstree-facet .jstree-container-ul > li.active .jstree-ocl, .jstree-facet .jstree-container-ul>li.active, .sidebar .list-group.facet a.list-group-item.active {
-  background: @brand-primary !important;
-  color: #fff;
-}
-.list-group.facet #side-collapse-publishDate {
-    .list-group-item {
-        padding: 10px 15px;
-    }
-}
 /* --- Hierarchy tree --- */
 /* jsTree arrows */
 .hierarchy-tree {
@@ -1448,16 +1291,6 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     }
 }
 
-// styling of selected OR facet
-
-.list-group-item.active.facetOR.applied {
-    background: @brand-primary;
-    color: @body-bg;
-}
-.list-group-item .badge a:hover {
-  cursor: pointer;
-  text-decoration: line-through;
-}
 //== PCI
 
 .summary {
@@ -1778,17 +1611,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         margin-top: -340px;   
     }
 }
-// tablet & mobile facet adjustments
-@media (max-width: @screen-sm-max) {
-    .datepicker.datepicker-dropdown {
-        font-size: 1.4em;
-    }
-    .jstree-facet .jstree-container-ul .jstree-icon {
-        font-size: 1.2em;
-        margin-left: -20px;
-        margin-top: -2px;
-    }
-}
+
 
 // Content page styles
 .main.template-dir-content.template-name-content {
