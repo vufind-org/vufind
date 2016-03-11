@@ -3,6 +3,19 @@
 @import "vendor/bootstrap";
 @import "vendor/bootstrap-accessibility";
 
+@import "components/advanced-search";
+@import "components/alphabrowse";
+@import "components/autocomplete";
+@import "components/icons";
+@import "components/js-tree";
+@import "components/lightbox";
+@import "components/offcanvas";
+@import "components/record";
+@import "components/search";
+@import "components/sidebar";
+@import "components/similar-carousel";
+@import "components/sliders";
+
 .alert.alert-info a {text-decoration: underline;}
 .btn.disabled {
   &:active,
