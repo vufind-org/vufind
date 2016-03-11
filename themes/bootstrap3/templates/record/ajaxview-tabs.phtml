@@ -34,14 +34,14 @@
         if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
       ?>
       <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-        <a id="<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>"><?=$this->transEsc($desc)?></a>
+        <a id="<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab"><?=$this->transEsc($desc)?></a>
       </li>
     <? endforeach; ?>
 
     <? $toolbar = trim($this->record($this->driver)->getToolbar()); ?>
     <? if (!empty($toolbar)): ?>
       <li<? if($this->defaultTab === 'tools'): ?> class="active"<? endif; ?>>
-        <a id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toggle="tab" data-target="#tools-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="noajax">
+        <a id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toggle="tab" data-target="#tools_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab" class="noajax">
         <?=$this->translate('ajaxview_label_tools') ?>
         </a>
       </li>
@@ -50,7 +50,7 @@
     <? $list = $this->related()->getList($this->driver); ?>
     <? if (!empty($list)): ?>
       <li<? if($this->defaultTab === 'related'): ?> class="active"<? endif; ?>>
-        <a id="related_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toggle="tab" data-target="#related-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="noajax">
+        <a id="related_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toggle="tab" data-target="#related_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab" class="noajax">
           <?=$this->transEsc("Related Items")?>
         </a>
       </li>
