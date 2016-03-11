@@ -66,10 +66,11 @@ id SERIAL,
 user_id int NOT NULL DEFAULT '0',
 session_id varchar(128),
 folder_id int DEFAULT NULL,
-created date NOT NULL DEFAULT '1970-01-01',
+created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 title varchar(20) DEFAULT NULL,
 saved int NOT NULL DEFAULT '0',
 search_object bytea,
+checksum int DEFAULT NULL,
 PRIMARY KEY (id)
 );
 CREATE INDEX search_user_id_idx ON search (user_id);
