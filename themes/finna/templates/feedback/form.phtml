@@ -1,13 +1,12 @@
 <!-- START of: finna - feedback/form.phtml -->
 
-<? if (!$this->translationEmpty('feedback_instructions_html')): ?>
-  <p><?=$this->translate("feedback_instructions_html"); ?></p>
-<? endif; ?>
-
 <div class="row">
   <div class="col-sm-6">
     <br>
     <?=$this->flashmessages()?>
+    <? if (!$this->translationEmpty('feedback_instructions_html')): ?>
+    <p><?=$this->translate("feedback_instructions_html"); ?></p>
+    <? endif; ?>
     <form class="form feedback-form" name="finna_feedback" method="post" action="<?=$this->url('feedback-email')?>">
       <div class="row">
         <div class="form-group col-xs-12">
