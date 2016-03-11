@@ -1,0 +1,33 @@
+.citation .pace-car {
+  th,
+  td {
+    border: 0;
+    padding: 0;
+  }
+}
+.citation th {text-align: right;}
+.item-notes ul { padding-left: 2rem; }
+.recordcover {max-height: 300px;}
+.tagList {
+  .tag {
+    @include button-size($padding-base-vertical, $padding-base-vertical, $font-size-base, $line-height-base, $border-radius-base);
+
+    display: inline-block;
+    margin: 0 1px 1px;
+    border-radius: 4px;
+    &.selected {
+      background-color: $btn-primary-bg;
+      a {color: #fff;}
+      .badge {
+        color: $gray-darker;
+        background-color: #fff;
+        &:hover {color: #a94442;}
+      }
+    }
+
+    .badge .fa {width: 12px;}
+  }
+  button {border: 0;}
+  .tag-form {display: inline;}
+}
+.tagList.loggedin .tag:not(.selected) .badge:hover {background-color: $brand-success;}

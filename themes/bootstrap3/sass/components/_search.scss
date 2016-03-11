@@ -1,0 +1,27 @@
+.bulkActionButtons label {display: inline-block;}
+.bulkActionButtons label input {margin-top: 2px;}
+.grid { @media (max-width: 767px) {min-height: 250px;} }
+.result {
+  a.title {font-weight: bold;}
+  .left {
+    text-align: center;
+    img {max-width: 100%;}
+  }
+  @media (max-width: 767px) {
+    a {text-decoration: underline;}
+    .middle,
+    .right {padding: 0;}
+  }
+  @media (max-width: 530px) {
+    .checkbox {display: none !important;}
+    .left {width: 40%;}
+    .middle {width: 60%;}
+    .right {display: none;}
+  }
+}
+.search-controls .alert {margin-bottom: 0;}
+.searchtools a {padding: 0 .5em;}
+.title-in-heading {
+  font-size: inherit;
+  font-style: italic;
+}

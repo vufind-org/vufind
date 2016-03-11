@@ -1,0 +1,26 @@
+.autocomplete-results {
+  margin-top: 2px;
+  border: 1px solid $list-group-border;
+  background-color: #fff;
+  border-radius: $border-radius-base;
+  overflow: hidden;
+
+  .item {
+    display: block;
+    padding-top: .75rem;
+    padding-right: 1rem;
+    padding-bottom: .75rem;
+    padding-left: 1.25rem;
+    border-bottom: 1px solid $list-group-border;
+    cursor: pointer;
+
+    &:not(.loading):hover { background-color: lighten($brand-primary, 50%); }
+    &:last-child {border: 0;}
+    &.selected {
+      &,&:hover {
+        background-color: $brand-primary;
+        color: #fff;
+      }
+    }
+  }
+}
