@@ -112,24 +112,7 @@ function toggleDataView() {
               ajaxFLLoadTab($firstTab.attr('id'));
             }
             // Add events to record toolbar
-            setupRecordToolbar(longNode, div_id);
-            setupModalLinkTitles(longNode);
-            // Lightbox handler for tagRecord
-            Lightbox.addFormCallback('tagRecord', function() {
-              refreshTagList(true, longNode);
-              Lightbox.confirm(VuFind.translate('add_tag_success'));
-            });
-            longNode.find('.search_tabs .recordTabs a').click(function() {
-              return ajaxFLLoadTab($(this).attr('id'));
-            });
-            longNode.find('.panel.noajax .accordion-toggle').click(function() {
-              window.location.href = $(this).attr('data-href');
-            });
-            longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(function() {
-              return registerAjaxCommentRecord(
-                longNode.find('[id^=usercomment]').find('input[type=submit]').closest('form')
-              );
-            });
+            VuFind.lightbox.bind(longNode);
             checkSaveStatuses(shortNode.closest('.result,.record'));
           }
         }
