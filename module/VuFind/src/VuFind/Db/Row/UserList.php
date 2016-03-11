@@ -27,8 +27,7 @@
  */
 namespace VuFind\Db\Row;
 use VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Exception\MissingField as MissingFieldException,
-    Zend\Session\Container as SessionContainer;
+    VuFind\Exception\MissingField as MissingFieldException;
 
 /**
  * Row Definition for user_list
@@ -42,6 +41,13 @@ use VuFind\Exception\ListPermission as ListPermissionException,
 class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
+
+    /**
+     * Session container for last list information.
+     *
+     * @var \Zend\Session\Container
+     */
+    protected $session = null;
 
     /**
      * Constructor
@@ -131,6 +137,18 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
+     * Set session container
+     *
+     * @param \Zend\Session\Container $session Session container
+     *
+     * @return void
+     */
+    public function setSession(\Zend\Session\Container $session)
+    {
+        $this->session = $session;
+    }
+
+    /**
      * Remember that this list was used so that it can become the default in
      * dialog boxes.
      *
@@ -138,19 +156,9 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function rememberLastUsed()
     {
-        $session = new SessionContainer('List');
-        $session->lastUsed = $this->id;
-    }
-
-    /**
-     * Retrieve the ID of the last list that was accessed, if any.
-     *
-     * @return mixed User_list ID (if set) or null (if not available).
-     */
-    public static function getLastUsed()
-    {
-        $session = new SessionContainer('List');
-        return isset($session->lastUsed) ? $session->lastUsed : null;
+        if (null !== $this->session) {
+            $this->session->lastUsed = $this->id;
+        }
     }
 
     /**

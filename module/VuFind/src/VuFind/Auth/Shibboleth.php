@@ -121,9 +121,19 @@ class Shibboleth extends AbstractBase
             }
         }
 
-        // Save credentials if applicable:
+        // Save credentials if applicable. Note that we want to allow empty
+        // passwords (see https://github.com/vufind-org/vufind/pull/532), but
+        // we also want to be careful not to replace a non-blank password with a
+        // blank one in case the auth mechanism fails to provide a password on
+        // an occasion after the user has manually stored one. (For discussion,
+        // see https://github.com/vufind-org/vufind/pull/612). Note that in the
+        // (unlikely) scenario that a password can actually change from non-blank
+        // to blank, additional work may need to be done here.
         if (!empty($user->cat_username)) {
-            $user->saveCredentials($user->cat_username, $catPassword);
+            $user->saveCredentials(
+                $user->cat_username,
+                empty($catPassword) ? $user->getCatPassword() : $catPassword
+            );
         }
 
         // Save and return the user object:

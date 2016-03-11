@@ -911,4 +911,3 @@ class InstallController extends AbstractBase
         return $this->createViewModel(['checks' => $checks]);
     }
 }
-

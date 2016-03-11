@@ -42,11 +42,22 @@ use VuFind\Exception\LoginRequired as LoginRequiredException,
 class UserList extends Gateway
 {
     /**
-     * Constructor
+     * Session container for last list information.
+     *
+     * @var \Zend\Session\Container
      */
-    public function __construct()
+    protected $session;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Session\Container $session Session container (must use same
+     * namespace as container provided to \VuFind\View\Helper\Root\UserList).
+     */
+    public function __construct(\Zend\Session\Container $session)
     {
         parent::__construct('user_list', 'VuFind\Db\Row\UserList');
+        $this->session = $session;
     }
 
     /**
@@ -126,5 +137,17 @@ class UserList extends Gateway
             }
         };
         return $this->select($callback);
+    }
+
+    /**
+     * Construct the prototype for rows.
+     *
+     * @return object
+     */
+    protected function initializeRowPrototype()
+    {
+        $prototype = parent::initializeRowPrototype();
+        $prototype->setSession($this->session);
+        return $prototype;
     }
 }

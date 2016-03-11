@@ -12,10 +12,9 @@
 <p class="helptext"><?=$this->helpText?></p>
 <? endif; ?>
 
-<?=$this->flashmessages()?>
 <div id="ILLRequestForm" class="storage-retrieval-request-form">
   <form name="placeILLRequest" class="form-horizontal" method="post">
-
+    <?=$this->flashmessages()?>
     <? if (in_array("itemId", $this->extraFields)): ?>
       <div class="form-group">
         <label class="col-sm-3 control-label"><?=$this->transEsc('ill_request_item')?>:</label>

@@ -1704,4 +1704,3 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         return $ret;
     }
 }
-

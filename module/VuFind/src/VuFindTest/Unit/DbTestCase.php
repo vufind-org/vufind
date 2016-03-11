@@ -63,12 +63,17 @@ abstract class DbTestCase extends TestCase
                         'factories' => [
                             'resource' => 'VuFind\Db\Table\Factory::getResource',
                             'user' => 'VuFind\Db\Table\Factory::getUser',
+                            'userlist' => 'VuFind\Db\Table\Factory::getUserList',
                         ]
                     ]
                 )
             );
             $factory->setServiceLocator($sm);
             $sm->setService('VuFind\DbTablePluginManager', $factory);
+            $sm->setService(
+                'VuFind\SessionManager',
+                $this->getMock('Zend\Session\SessionManager')
+            );
 
             // Override the configuration so PostgreSQL tests can work:
             $sm->setAllowOverride(true);
