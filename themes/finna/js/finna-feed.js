@@ -6,21 +6,21 @@ finna.feed = (function() {
 
     // Horizontal carousel:
     var centerImages = function(holder) {
-        holder.find(".carousel-feed:not(.slick-vertical) .slick-slide .wrapper img").each (function() {
+        holder.find('.carousel-feed:not(.slick-vertical) .slick-slide .wrapper img').each (function() {
             centerImage($(this));
         });
     };
 
     var centerImage = function(img) {
-        var offset = img.width() - img.closest(".slick-slide").width();
-        img.css("margin-left", offset > 0 ? "-" + offset/2 + "px" : "auto");
+        var offset = img.width() - img.closest('.slick-slide').width();
+        img.css('margin-left', offset > 0 ? '-' + offset/2 + 'px' : 'auto');
     };
 
     var adjustWidth = function(holder) {
-        holder.find(".carousel-slide-header p, .carousel-text")
-            .width(holder.find(".slick-slide").width()-20);
+        holder.find('.carousel-slide-header p, .carousel-text')
+            .width(holder.find('.slick-slide').width()-20);
 
-        holder.find(".slick-slide .wrapper img").each (function() {
+        holder.find('.slick-slide .wrapper img').each (function() {
             centerImage($(this));
         });
     };
@@ -28,32 +28,32 @@ finna.feed = (function() {
     var adjustTitles = function(holder) {
         // Move title field below image
         var maxH = 0;
-        holder.find(".carousel-feed .slick-slide .carousel-slide-header p").each(function() {
+        holder.find('.carousel-feed .slick-slide .carousel-slide-header p').each(function() {
             maxH = Math.max(maxH, $(this).innerHeight());
-            $(this).addClass("title-bottom");
+            $(this).addClass('title-bottom');
         });
-        holder.find(".carousel-feed .slick-list").css("padding-bottom", maxH + "px");
-        holder.find(".carousel-feed .slick-slide .carousel-text").addClass("text-bottom");
+        holder.find('.carousel-feed .slick-list').css('padding-bottom', maxH + 'px');
+        holder.find('.carousel-feed .slick-slide .carousel-text').addClass('text-bottom');
     };
 
     // Vertical carousel:
     var adjustTextFields = function(holder) {
-        holder.find(".carousel-feed .slick-slide").each(function() {
+        holder.find('.carousel-feed .slick-slide').each(function() {
             adjustTextField($(this));
         });
     };
 
     var adjustTextField = function(slide) {
-        var imgH = slide.find(".wrapper").height();
-        var titleH = slide.find(".carousel-slide-header p").height();
-        var textF = slide.find(".carousel-text");
+        var imgH = slide.find('.wrapper').height();
+        var titleH = slide.find('.carousel-slide-header p').height();
+        var textF = slide.find('.carousel-text');
         var pos = titleH+10;
-        textF.css("margin-top", pos + "px");
+        textF.css('margin-top', pos + 'px');
         var h = imgH-pos-10;
         if (h < 0) {
             return;
         }
-        if (lineH = textF.css("line-height")) {
+        if (lineH = textF.css('line-height')) {
             lineH = Math.floor(parseInt(lineH.replace('px', '')));
             var dif = h/lineH;
             h -= (dif-2);
@@ -63,16 +63,16 @@ finna.feed = (function() {
 
     var loadFeed = function(holder) {
         var id = holder.data('feed');
-        if (typeof id == "undefined") {
+        if (typeof id == 'undefined') {
             return;
         }
 
         // Append spinner
         holder.append('<i class="fa fa-spin fa-spinner hide"></i>');
-        holder.find(".fa-spin").delay(1000).fadeIn();
+        holder.find('.fa-spin').delay(1000).fadeIn();
 
         var url = VuFind.path + '/AJAX/JSON?method=getFeed&id=' + id;
-        url += "&touch-device=" + (finna.layout.isTouchDevice() ? 1 : 0);
+        url += '&touch-device=' + (finna.layout.isTouchDevice() ? 1 : 0);
 
         $.getJSON(url)
         .done(function(response) {
@@ -85,13 +85,13 @@ finna.feed = (function() {
                 var type = settings['type'];
 
                 var carousel =
-                    type == "carousel" || type == "carousel-vertical";
+                    type == 'carousel' || type == 'carousel-vertical';
 
                 if (carousel) {
                     var vertical = type == 'carousel-vertical';
                     settings['vertical'] = vertical;
 
-                    var obj = holder.find(".carousel-feed")
+                    var obj = holder.find('.carousel-feed')
                         .slick(getCarouselSettings(settings));
 
                     var titleBottom =
@@ -131,22 +131,22 @@ finna.feed = (function() {
                             holder.find('.carousel-hover-title').hide();
                         }
 
-                        holder.find(".slick-slide")
-                            .css("max-height", settings['height'] + "px")
+                        holder.find('.slick-slide')
+                            .css('max-height', settings['height'] + 'px')
                             .addClass('adjusted-height')
-                            .find(".wrapper img").css("height", settings['height'] + "px")
-                            .find(".slick-track, .slick-slide .wrapper").css("max-height", settings['height'] + "px");
+                            .find('.wrapper img').css('height', settings['height'] + 'px')
+                            .find('.slick-track, .slick-slide .wrapper').css('max-height', settings['height'] + 'px');
                     } else {
-                        holder.find(".slick-track, .slick-slide .wrapper").css("height", settings['height'] + "px");
+                        holder.find('.slick-track, .slick-slide .wrapper').css('height', settings['height'] + 'px');
                     }
 
                     // Carousel image onload-listeners
-                    holder.find(".carousel-feed .slick-slide .wrapper img").each (function() {
-                        $(this).on("load", function() {
+                    holder.find('.carousel-feed .slick-slide .wrapper img').each (function() {
+                        $(this).on('load', function() {
                             if (!vertical) {
                                 centerImage($(this));
                             } else {
-                                adjustTextField($(this).closest(".slick-slide"));
+                                adjustTextField($(this).closest('.slick-slide'));
                             }
                         });
                     });
@@ -155,9 +155,9 @@ finna.feed = (function() {
                     if (finna.layout.isTouchDevice()
                         && typeof settings['linkText'] == 'undefined'
                     ) {
-                        holder.find(".slick-slide a").click(function(event) {
-                            if (!$(this).closest(".slick-slide").hasClass("clicked")) {
-                                $(this).closest(".slick-slide").addClass("clicked");
+                        holder.find('.slick-slide a').click(function(event) {
+                            if (!$(this).closest('.slick-slide').hasClass('clicked')) {
+                                $(this).closest('.slick-slide').addClass('clicked');
                                 return false;
                             }
                         });
@@ -166,15 +166,16 @@ finna.feed = (function() {
                             $(this).toggleClass('ie-mobile-tap');
                           });
                         }
+                    } else {
+                        holder.find('.carousel').addClass('carousel-non-touch-device');
                     }
-
                     // Force refresh to make sure that the layout is ok
                     obj.slickGoTo(0, true);
                 }
             }
         })
         .fail(function(response, textStatus, err) {
-            holder.html("<!-- Feed could not be loaded: " + response.responseJSON.data + " -->");
+            holder.html('<!-- Feed could not be loaded: ' + response.responseJSON.data + ' -->');
             console.log("Feed '" + id + "' could not be loaded: " + response.responseJSON.data);
         });
     };
@@ -217,11 +218,11 @@ finna.feed = (function() {
                     }
                 }
             ]
-        }
+        };
     };
 
     var initComponents = function() {
-        $(".feed-container").each(function() {
+        $('.feed-container').each(function() {
             loadFeed($(this));
         });
     };
