@@ -94,6 +94,9 @@ class Params extends \VuFind\Search\Primo\Params
         $res = [];
         foreach ($this->checkboxFacets as $field => $facets) {
             foreach ($facets as $facet) {
+                if ($this->hasHiddenFilter($facet['filter'])) {
+                    continue;
+                }
                 $facet['selected'] = $this->hasFilter($facet['filter']);
 
                 // Is this checkbox always visible, even if non-selected on the
