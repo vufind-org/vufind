@@ -398,7 +398,7 @@
         font-size: 16px;
         margin-bottom: 5px;
         margin-top: 0;
-        transition: background,margin-left 0.2s linear;
+        transition: background 0.2s linear;
         &:hover {
             background: @gray-light;
             cursor: pointer;
@@ -408,12 +408,22 @@
         &.attached {
             position: fixed;
             top: 0px;
-            transition: all 0.5s linear;
+        }
+    }
+
+    @media (min-width:@screen-lg-min) {
+        &.attached {
+            width: 262px;
+        }
+    }
+    @media (min-width:@screen-md-min) and (max-width: @screen-md-max) {
+        &.attached {
+            width: 212px;
         }
     }
     @media (min-width:@screen-sm-min) and (max-width: @screen-sm-max) {
         &.attached {
-            max-width: 150px;
+            max-width: 22%;
         }
     }
 }
