@@ -197,10 +197,10 @@ class Search extends Gateway
     /**
      * Add a search into the search table (history)
      *
-     * @param \VuFind\Search\Results\PluginManager $manager       Search manager
-     * @param \VuFind\Search\Base\Results          $newSearch     Search to save
-     * @param string                               $sessionId     Current session ID
-     * @param int|null                             $userId        Current user ID
+     * @param \VuFind\Search\Results\PluginManager $manager   Search manager
+     * @param \VuFind\Search\Base\Results          $newSearch Search to save
+     * @param string                               $sessionId Current session ID
+     * @param int|null                             $userId    Current user ID
      *
      * @return void
      */
