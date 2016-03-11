@@ -21,7 +21,7 @@
         <? $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList() as $field => $filters): ?>
           <? foreach ($filters as $i => $filter): ?>
             <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?>
-            <strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?><br/>
+            <strong><?=$this->transEsc($field)?></strong><? if (!empty($filter['displayText'])): ?>: <?=$this->escapeHtml($filter['displayText'])?><? endif; ?><br/>
           <? endforeach; ?>
         <? endforeach; ?>
       </td>
