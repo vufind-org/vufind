@@ -15,7 +15,7 @@
     <? $coreMetadata = trim($this->record($this->driver)->getCoreMetadata()); ?>
     <? if (!empty($coreMetadata)): ?>
       <li<? if($this->defaultTab === 'information'): ?> class="active"<? endif; ?>>
-        <a id="information_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toggle="tab" data-target="#information-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="noajax">
+        <a id="information_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toggle="tab" data-target="#information_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab" class="noajax">
           <?=$this->translate('ajaxview_label_information') ?>
         </a>
       </li>

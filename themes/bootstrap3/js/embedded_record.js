@@ -111,6 +111,18 @@ function toggleDataView() {
             if ($firstTab.length > 0) {
               ajaxFLLoadTab($firstTab.attr('id'));
             }
+            // Bind tab clicks
+            longNode.find('.search_tabs .recordTabs a').click(function() {
+              return ajaxFLLoadTab(this.id);
+            });
+            longNode.find('.panel.noajax .accordion-toggle').click(function() {
+              window.location.href = $(this).attr('data-href');
+            });
+            longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(function() {
+              return registerAjaxCommentRecord(
+                longNode.find('[id^=usercomment]').find('input[type=submit]').closest('form')
+              );
+            });
             // Add events to record toolbar
             VuFind.lightbox.bind(longNode);
             checkSaveStatuses(shortNode.closest('.result,.record'));
