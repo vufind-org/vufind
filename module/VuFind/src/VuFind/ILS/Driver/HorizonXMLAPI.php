@@ -699,7 +699,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
 
         $requestDetails = [
             'bibId'          => $bibId,
-            'pickuplocation' => $pickUpLocationID,
+            'pickuplocation' => strtoupper($pickUpLocationID),
             'notify'         => $notify
         ];
 

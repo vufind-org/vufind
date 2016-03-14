@@ -153,6 +153,6 @@ abstract class AbstractBase implements DriverInterface
             'time' => time(),
             'entry' => $entry
         ];
-        $this->cache->addItem($this->formatCacheKey($key), $item);
+        $this->cache->setItem($this->formatCacheKey($key), $item);
     }
 }
