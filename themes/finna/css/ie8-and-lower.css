@@ -1,0 +1,18 @@
+/* remove customized dropdown icons arrows for ie9 and lower since we cannot hide them */
+header {
+	background: #3A3A3A;	
+}
+
+/* reset colors as rgba colors don't work */
+.navbar-nav > li > a {
+	color: #fff !imporartant;	
+}
+.logo .finnalogo {
+	 background: url('../../finna/images/finnafi-logo.png');
+}
+.checkboxFilter .checkbox label input {
+	display: block;	
+}
+.checkboxFilter .checkbox label:before, .checkboxFilter .checkbox.checked label:before {
+	content: '';	
+}

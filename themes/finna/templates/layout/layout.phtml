@@ -23,6 +23,10 @@
 
       // IE-specific stylesheet
       $this->headLink()->appendStylesheet('ie9-and-lower.css', 'screen', 'lte IE 9');
+      $this->headLink()->appendStylesheet('ie8-and-lower.css', 'screen', 'lt IE 9');
+      $this->headScript()->appendFile('vendor/html5shiv.js', 'text/javascript', ['conditional' => 'lt IE 9']);
+      $this->headScript()->appendFile('vendor/respond.js', 'text/javascript', ['conditional' => 'lt IE 9']);
+
     ?>
     <?=$this->headLink()?>
     <?=$this->headStyle()?>
@@ -194,6 +198,15 @@ JS;
       }
     ?>
     <header role="banner" class="hidden-print">
+      <? if(preg_match('/(?i)msie [5-8]/',$_SERVER['HTTP_USER_AGENT'])): ?>
+      <div class="container-fluid system-messages">
+        <div class="row">
+          <div class="col-xs-12">
+            <?=$this->translate(outdated_browser_message_html);?>
+          </div>
+        </div>
+      </div>
+      <? endif; ?>
       <? if ($messages = $this->systemMessages()): ?>
       <div class="container-fluid system-messages">
         <? foreach ($messages as $message): ?>
