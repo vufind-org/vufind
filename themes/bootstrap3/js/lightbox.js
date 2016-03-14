@@ -5,7 +5,7 @@ VuFind.lightbox = (function() {
   var _currentUrl = false;
   var refreshOnClose = false;
   // Elements
-  var _modal, _modalBody;
+  var _modal, _modalBody, _clickedButton = null;
   // Utilities
   var _html = function(html) {
     _modalBody.html(html);
@@ -70,9 +70,7 @@ VuFind.lightbox = (function() {
   };
 
   var _storeClickedStatus = function() {
-    var form = $(this).prop('form') || $(this).closest('form')[0];
-    $(form.elements).filter('[type=submit]').removeAttr('clicked');
-    $(this).attr('clicked', true);
+    _clickedButton = this;
   };    
   
   var _xhr = false;
@@ -176,7 +174,8 @@ VuFind.lightbox = (function() {
     var data = $(form).serializeArray();
     data.push({'name':'layout', 'value':'lightbox'}); // Return in lightbox, please
     // Add submit button information
-    var submit = $(form).find('[type=submit][clicked]');
+    var submit = $(_clickedButton);
+    _clickedButton = null;
     if (submit.length > 0) {
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
         return true;  
