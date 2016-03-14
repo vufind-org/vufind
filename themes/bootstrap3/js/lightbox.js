@@ -98,8 +98,8 @@ VuFind.lightbox = (function() {
         if ( // Close the lightbox after deliberate login
           obj.method                           // is a form
           && !html.match(/alert alert-danger/) // skip failed logins
-          && (obj.url.match(/MyResearch/)      // that matches login/create account
-          || obj.url.match(/catalogLogin/))    // catalog login for holds
+          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/)) // that matches login/create account
+            || obj.url.match(/catalogLogin/))     // catalog login for holds
         ) {
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
             var event = new CustomEvent('VuFind.lightbox.login', {
