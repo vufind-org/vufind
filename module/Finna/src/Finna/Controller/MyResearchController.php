@@ -445,15 +445,22 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         $view = $this->createViewModel();
+        $view->accountDeleted = false;
+        $view->token = $this->getSecret($this->getUser());
         if ($this->formWasSubmitted('submit')) {
-            $view->success = $this->processDeleteAccount();
+            $success = $this->processDeleteAccount();
+            if ($success) {
+                $view->accountDeleted = true;
+                $view->redirectUrl = $this->getAuthManager()->logout(
+                    $this->getServerUrl('home')
+                );
+            }
         } elseif ($this->formWasSubmitted('reset')) {
             return $this->redirect()->toRoute(
                 'default', ['controller' => 'MyResearch', 'action' => 'Profile']
             );
         }
         $view->setTemplate('myresearch/delete-account');
-        $view->token = $this->getSecret($this->getUser());
         return $view;
     }
 

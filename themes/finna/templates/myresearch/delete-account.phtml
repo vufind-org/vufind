@@ -1,23 +1,24 @@
 <!-- START of: finna - myresearch/delete-account.phtml -->
+<h2><?=$this->transEsc('delete_account_title') ?></h2>
 <?=$this->flashmessages();?>
-<form id="delete-account" method="post" action="<?=$this->url('home') . ('MyResearch/DeleteAccount')?>" name="deleteAccount" class="<?=$this->success ? 'hide': '' ?>">
+<? if ($this->accountDeleted): ?>
+<div id="delete-account-note" class="success">
+    <?=$this->translate('delete_account_success_html'); ?>
+    <?
+    // Logout redirect with inline script to make it lightbox compatible
+    $script = <<<JS
+setTimeout(function() { window.location = '{$this->redirectUrl}'; }, 2000);
+JS;
+    ?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+</div>
+<? else: ?>
+<form id="delete-account" method="post" action="<?=$this->url('myresearch-deleteaccount') ?>" name="deleteAccount" class="<?=$this->success ? 'hide': '' ?>">
     <h3><?= $this->transEsc('delete_account_heading'); ?></h3>
     <p><?= $this->transEsc('delete_account_text'); ?></p>
     <input type="hidden" id="token" value="<?php echo $this->token ?>" name="token" />
-    <input id="delete-account-cancel" class="btn btn-primary" type="submit" name="reset" value="<?= $this->transEsc('confirm_dialog_cancel'); ?>"/>
-    <input id="delete-account-button" class="btn btn-primary" type="submit" name="submit" value="<?= $this->transEsc('Delete'); ?>"/>
+    <input id="delete-account-cancel" class="btn btn-primary" type="submit" name="reset" data-dismiss="modal" value="<?=$this->transEsc('confirm_dialog_cancel'); ?>"/>
+    <input id="delete-account-button" class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Delete'); ?>"/>
 </form>
-<div id="delete-account-note" class="success<?=$this->success ? ' process-logout': ' hide' ?>">
-    <?= $this->translate('delete_account_success_html'); ?>
-
-    <? if (!($this->layout()->getTemplate() == 'layout/lightbox')): ?>
-      <? // If someone does the delete own account from the normal
-         // page, make sure that the logout also happens. ?>
-      <script>
-      $(document).ready(function () {
-        finna.userProfile.deleteAccountLogout();
-      });
-      </script>
-    <? endif; ?>
-</div>
+<? endif; ?>
 <!-- END of: finna - myresearch/delete-account.phtml -->
