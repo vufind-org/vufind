@@ -28,7 +28,7 @@ VuFind.lightbox = (function() {
 
   /**
    * Update content
-   * 
+   *
    * Form data options:
    *
    * data-lightbox-ignore = do not submit this form in lightbox
@@ -51,11 +51,11 @@ VuFind.lightbox = (function() {
     _modal.modal('show');
     // Attach capturing events
     _modalBody.find('a').click(_constrainLink);
-    // Handle submit buttons attached to a form as well as those in a form. Store 
-    // information about which button was clicked here as checking focused button 
+    // Handle submit buttons attached to a form as well as those in a form. Store
+    // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
     _modalBody.find('[type=submit]').click(_storeClickedStatus);
-    
+
     var forms = _modalBody.find('form:not([data-lightbox-ignore])');
     for (var i=0;i<forms.length;i++) {
       $(forms[i]).on('submit', _formSubmit);
@@ -71,8 +71,8 @@ VuFind.lightbox = (function() {
 
   var _storeClickedStatus = function() {
     _clickedButton = this;
-  };    
-  
+  };
+
   var _xhr = false;
   // Public: Handle AJAX in the Lightbox
   var ajax = function(obj) {
@@ -122,7 +122,7 @@ VuFind.lightbox = (function() {
         _update(html);
       })
       .fail(function() {
-        showAlert(VuFind.translate('error_occurred'), 'danger');  
+        showAlert(VuFind.translate('error_occurred'), 'danger');
       });
     return _xhr;
   };
@@ -157,14 +157,14 @@ VuFind.lightbox = (function() {
 
   /**
    * Handle form submission.
-   * 
+   *
    * Form data options:
    *
    * data-lightbox-onsubmit = on submit, run named function
    * data-lightbox-onclose  = on close, run named function
-   * 
+   *
    * Submit button data options:
-   * 
+   *
    * data-lightbox-ignore = do not handle clicking this button in lightbox
    */
   var _formSubmit = function(event) {
@@ -178,7 +178,7 @@ VuFind.lightbox = (function() {
     _clickedButton = null;
     if (submit.length > 0) {
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
-        return true;  
+        return true;
       }
       // Prevent multiple submission of submit button in lightbox
       if (submit.closest(_modal).length > 0) {
@@ -201,7 +201,7 @@ VuFind.lightbox = (function() {
       // onclose behavior
       if ('string' === typeof dataset.lightboxOnclose) {
         document.addEventListener('VuFind.lightbox.closed', function(event) {
-          _evalCallback(dataset.lightboxOnclose, event);  
+          _evalCallback(dataset.lightboxOnclose, event);
         }, false);
       }
     }
@@ -219,23 +219,23 @@ VuFind.lightbox = (function() {
   };
 
   /**
-   * Evaluate a callback 
+   * Evaluate a callback
    */
   var _evalCallback = function(callback, event, data) {
     if ('function' === typeof window[callback]) {
       return window[callback](event, data);
     } else {
-      return eval('(function(event, data) {' + callback + '}())'); // inline code  
+      return eval('(function(event, data) {' + callback + '}())'); // inline code
     }
   };
-  
+
   /**
    * Reload the page without causing trouble with POST parameters while keeping hash
    */
   var _refreshPage = function() {
     var parts = window.location.href.split('#');
     if (typeof parts[1] === 'undefined') {
-      window.location.href = window.location.href;  
+      window.location.href = window.location.href;
     } else {
       var href = parts[0];
       // Force reload with a timestamp
@@ -244,7 +244,7 @@ VuFind.lightbox = (function() {
       window.location.href = href;
     }
   };
-  
+
   // Public: Attach listeners to the page
   var bind = function(target) {
     if ('undefined' === typeof target) {
@@ -256,9 +256,9 @@ VuFind.lightbox = (function() {
     $(target).find('form[data-lightbox]')
       .unbind('submit', _formSubmit)
       .on('submit', _formSubmit);
-    
-    // Handle submit buttons attached to a form as well as those in a form. Store 
-    // information about which button was clicked here as checking focused button 
+
+    // Handle submit buttons attached to a form as well as those in a form. Store
+    // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
     $('form[data-lightbox] [type=submit]').click(_storeClickedStatus);
   };
