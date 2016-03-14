@@ -176,6 +176,7 @@ VuFind.lightbox = (function() {
     // Add submit button information
     var submit = $(_clickedButton);
     _clickedButton = null;
+    var buttonData = {'name':name, 'value':1};
     if (submit.length > 0) {
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
         return true;
@@ -184,9 +185,10 @@ VuFind.lightbox = (function() {
       if (submit.closest(_modal).length > 0) {
         submit.attr('disabled', 'disabled');
       }
-      var name = submit.attr('name') ? submit.attr('name') : 'submit';
-      data.push({'name':name, 'value':submit.attr('value') || 1});
+      buttonData.name = submit.attr('name') || 'submit';
+      buttonData.value = submit.attr('value') || 1;
     }
+    data.push(buttonData);
     // Special handlers
     if ('undefined' !== typeof dataset) {
       // On submit behavior
