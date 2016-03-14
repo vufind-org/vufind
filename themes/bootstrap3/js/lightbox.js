@@ -181,10 +181,6 @@ VuFind.lightbox = (function() {
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
         return true;
       }
-      // Prevent multiple submission of submit button in lightbox
-      if (submit.closest(_modal).length > 0) {
-        submit.attr('disabled', 'disabled');
-      }
       buttonData.name = submit.attr('name') || 'submit';
       buttonData.value = submit.attr('value') || 1;
     }
@@ -209,6 +205,10 @@ VuFind.lightbox = (function() {
     }
     // Loading
     _modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right"></i>');
+    // Prevent multiple submission of submit button in lightbox
+    if (submit.closest(_modal).length > 0) {
+      submit.attr('disabled', 'disabled');
+    }
     // Get Lightbox content
     ajax({
       url: form.action || _currentUrl,
