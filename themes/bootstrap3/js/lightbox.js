@@ -191,7 +191,7 @@ VuFind.lightbox = (function() {
     if ('undefined' !== typeof dataset) {
       // On submit behavior
       if ('string' === typeof dataset.lightboxOnsubmit) {
-        var ret = _evalCallback(dataset.lightboxOnsubmit)
+        var ret = _evalCallback(dataset.lightboxOnsubmit, event, data);
         // return true or false to send that to the form
         // return null or anything else to continue to the ajax
         if (ret === false || ret === true) {
@@ -221,9 +221,9 @@ VuFind.lightbox = (function() {
   /**
    * Evaluate a callback 
    */
-  var _evalCallback = function(callback, event) {
+  var _evalCallback = function(callback, event, data) {
     if ('function' === typeof window[callback]) {
-      return window[callback](event);
+      return window[callback](event, data);
     } else {
       return eval('(function(event, data) {' + callback + '}())'); // inline code  
     }
