@@ -265,37 +265,35 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
         if (isset($this->config['Catalog']['catalogue_wsdl'])) {
             $this->catalogue_wsdl
-                = Locator::getConfigPath($this->config['Catalog']['catalogue_wsdl']);
+                = $this->getWsdlPath($this->config['Catalog']['catalogue_wsdl']);
         } else {
             throw new ILSException('catalogue_wsdl configuration needs to be set.');
         }
 
         if (isset($this->config['Catalog']['patron_wsdl'])) {
             $this->patron_wsdl
-                = Locator::getConfigPath($this->config['Catalog']['patron_wsdl']);
+                = $this->getWsdlPath($this->config['Catalog']['patron_wsdl']);
         } else {
             throw new ILSException('patron_wsdl configuration needs to be set.');
         }
 
         if (isset($this->config['Catalog']['loans_wsdl'])) {
             $this->loans_wsdl
-                = Locator::getConfigPath($this->config['Catalog']['loans_wsdl']);
+                = $this->getWsdlPath($this->config['Catalog']['loans_wsdl']);
         } else {
             throw new ILSException('loans_wsdl configuration needs to be set.');
         }
 
         if (isset($this->config['Catalog']['payments_wsdl'])) {
             $this->payments_wsdl
-                = Locator::getConfigPath($this->config['Catalog']['payments_wsdl']);
+                = $this->getWsdlPath($this->config['Catalog']['payments_wsdl']);
         } else {
             throw new ILSException('payments_wsdl configuration needs to be set.');
         }
 
         if (isset($this->config['Catalog']['reservations_wsdl'])) {
             $this->reservations_wsdl
-                = Locator::getConfigPath(
-                    $this->config['Catalog']['reservations_wsdl']
-                );
+                = $this->getWsdlPath($this->config['Catalog']['reservations_wsdl']);
         } else {
             throw new
                 ILSException('reservations_wsdl configuration needs to be set.');
@@ -2167,5 +2165,21 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             return isset($this->config['changePassword']);
         }
         return is_callable([$this, $method]);
+    }
+
+    /**
+     * Get path to a WSDL file taking inheritance into account
+     *
+     * @param string $wsdl WSDL file name
+     *
+     * @return string
+     */
+    protected function getWsdlPath($wsdl)
+    {
+        $file = Locator::getConfigPath($wsdl);
+        if (!file_exists($file)) {
+            $file = Locator::getConfigPath($wsdl, 'config/finna');
+        }
+        return $file;
     }
 }
