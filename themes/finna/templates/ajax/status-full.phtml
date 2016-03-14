@@ -20,7 +20,7 @@ if (isset($summary['total'])) {
 
 foreach ($holdings as &$holding) {
   $holding['location']
-     = $this->transEsc('location_' . $holding['location'], [], $holding['location']); 
+     = $this->transEsc('location_' . $holding['location'], [], $holding['location']);
 }
 $this->statusItems = $holdings;
 
@@ -245,7 +245,7 @@ if ($this->holdingsSettings()->showSearchResultsTitleHold()) {
       $logged = $account->isLoggedIn();
       $link = null;
       if (!$logged) {
-          $link = $this->url('myresearch-login');
+          $link = $holdingsLink . '?login=true&amp;catalogLogin=true';
       } elseif ($journal) {
         $link = $holdingsLink;
       } else {
