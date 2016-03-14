@@ -33,11 +33,13 @@
 
       <? if ($this->primo()->isAvailable()) : ?>
       <td class="history-search-index">
-      <? $searchindex = $info->getOptions()->getSearchAction(); ?>
-      <? if (0 === strpos($searchindex, 'primo')): ?>
-      <?=$this->transEsc('tabs_pci')?>
+      <? $searchClass = $info->getParams()->getSearchClassId(); ?>
+      <? if ($searchClass == 'Primo'): ?>
+        <?=$this->transEsc('tabs_pci')?>
+      <? elseif ($searchClass == 'MetaLib'): ?>
+        <?=$this->transEsc('tabs_metalib')?>
       <? else: ?>
-      <?=$this->transEsc('tabs_local')?>
+        <?=$this->transEsc('tabs_local')?>
       <? endif; ?>
       </td>
       <? endif; ?>
