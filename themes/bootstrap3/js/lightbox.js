@@ -191,12 +191,7 @@ VuFind.lightbox = (function() {
     if ('undefined' !== typeof dataset) {
       // On submit behavior
       if ('string' === typeof dataset.lightboxOnsubmit) {
-        var ret = null;
-        if ("function" === typeof window[dataset.lightboxOnsubmit]) {
-          ret = window[dataset.lightboxOnsubmit](event, data);
-        } else {
-          ret = eval('(function(event, data) {' + dataset.lightboxOnsubmit + '}())'); // inline code
-        }
+        var ret = _evalCallback(dataset.lightboxOnsubmit)
         // return true or false to send that to the form
         // return null or anything else to continue to the ajax
         if (ret === false || ret === true) {
@@ -205,15 +200,9 @@ VuFind.lightbox = (function() {
       }
       // onclose behavior
       if ('string' === typeof dataset.lightboxOnclose) {
-        if ("function" === typeof window[dataset.lightboxOnclose]) {
-          document.addEventListener('VuFind.lightbox.closed', function() {
-            window[dataset.lightboxOnclose]();
-          }, false);
-        } else {
-          document.addEventListener('VuFind.lightbox.closed', function() {
-            eval('(function(event, data) {' + dataset.lightboxOnclose + '}())'); // inline code  
-          });
-        }
+        document.addEventListener('VuFind.lightbox.closed', function(event) {
+          _evalCallback(dataset.lightboxOnclose, event);  
+        }, false);
       }
     }
     // Loading
@@ -229,6 +218,17 @@ VuFind.lightbox = (function() {
     return false;
   };
 
+  /**
+   * Evaluate a callback 
+   */
+  var _evalCallback = function(callback, event) {
+    if ('function' === typeof window[callback]) {
+      return window[callback](event);
+    } else {
+      return eval('(function(event, data) {' + callback + '}())'); // inline code  
+    }
+  };
+  
   /**
    * Reload the page without causing trouble with POST parameters while keeping hash
    */
