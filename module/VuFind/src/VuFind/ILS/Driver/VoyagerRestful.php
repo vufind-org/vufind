@@ -618,10 +618,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        if (!isset($this->config['StorageRetrievalRequests'])) {
-            return false;
-        }
-        if ($this->checkAccountBlocks($patron['id'])) {
+        if (!isset($this->config['StorageRetrievalRequests'])
+            || $this->checkAccountBlocks($patron['id'])
+        ) {
             return false;
         }
 
@@ -629,13 +628,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $itemID = ($level != 'title' && isset($data['item_id']))
             ? $data['item_id']
             : false;
-        $result = $this->checkItemRequests(
-            $patron['id'], 'callslip', $id, $itemID
-        );
-        if (!$result || $result == 'block') {
-            return $result;
-        }
-        return true;
+        return $this->checkItemRequests($patron['id'], 'callslip', $id, $itemID);
     }
 
     /**
