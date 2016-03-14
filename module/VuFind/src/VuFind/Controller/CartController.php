@@ -91,18 +91,18 @@ class CartController extends AbstractBase
     }
 
     /**
-     * Process requests for bulk actions.
+     * Process requests for bulk actions from search results.
      *
      * @return mixed
      */
-    public function bulkAction()
+    public function searchresultsbulkAction()
     {
         // We came in from a search, so let's remember that context so we can
         // return to it later. However, if we came in from a previous instance
         // of the bulk action (for example, because of a login screen), we should
         // ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
-        $bulk = $this->url()->fromRoute('cart-bulk');
+        $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
         if (substr($referer, -strlen($bulk)) != $bulk) {
             $this->session->url = $referer;
         }
@@ -116,7 +116,7 @@ class CartController extends AbstractBase
      *
      * @return mixed
      */
-    public function formAction()
+    public function processorAction()
     {
         // We came in from the cart -- let's remember this we can redirect there
         // when we're done:
