@@ -46,11 +46,18 @@ INSERT INTO search (id, user_id, session_id, folder_id, created, title, saved, s
   SELECT id, user_id, session_id, folder_id, created, title, saved, search_object, schedule, last_executed, schedule_base_url
     FROM vufind.search
     WHERE saved=1;
+
+-- Add class to Solr searches     
 UPDATE search SET search_object=CONCAT('O:5:"minSO":9', SUBSTRING(search_object, 14, LENGTH(search_object)-14), 's:2:"cl";s:4:"Solr";', '}')
   WHERE search_object like '%s:2:"ty";s:5:"basic"%' OR search_object like '%s:2:"ty";s:8:"advanced"%';    
 
+-- Add class to Primo searches     
 UPDATE search SET search_object=CONCAT('O:5:"minSO":9', SUBSTRING(search_object, 14, INSTR(search_object, 's:2:"ty";s:3:"PCI";')-14), 's:2:"ty";s:5:"basic";s:2:"cl";s:5:"Primo";', SUBSTRING(search_object, INSTR(search_object, 's:2:"ty";s:3:"PCI";')+19))
   WHERE search_object like '%s:2:"ty";s:3:"PCI"%';    
+                  
+-- Add class to MetaLib searches     
+UPDATE search SET search_object=CONCAT('O:5:"minSO":9', SUBSTRING(search_object, 14, INSTR(search_object, 's:2:"ty";s:7:"MetaLib";')-14), 's:2:"ty";s:5:"basic";s:2:"cl";s:7:"MetaLib";', SUBSTRING(search_object, INSTR(search_object, 's:2:"ty";s:7:"MetaLib";')+23))
+  WHERE search_object like '%s:2:"ty";s:7:"MetaLib"%';    
                   
 INSERT INTO resource (id, record_id, title, author, source)
   SELECT id, record_id, title, author_sort, CASE WHEN source='VuFind' THEN 'Solr' WHEN source='PCI' THEN 'Primo' ELSE source END
