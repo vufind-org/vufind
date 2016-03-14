@@ -192,13 +192,13 @@
         <th><?=$this->transEsc('Subjects')?>: </th>
         <td>
           <? foreach ($subjects as $field): ?>
-          <div class="subjectLine" property="keywords">
+          <div class="subject-line" property="keywords">
             <? $subject = ''; ?>
             <? if(count($field) == 1) $field = explode('--', $field[0]); ?>
             <? $i = 0; foreach ($field as $subfield): ?>
               <?=($i++ == 0) ? '' : ' &gt; '?>
               <? $subject = trim($subject . ' ' . $subfield); ?>
-              <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" rel="nofollow"><?=trim($this->escapeHtml($subfield))?></a>
+              <a title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" rel="nofollow"><?=trim($this->escapeHtml($subfield))?></a>
             <? endforeach; ?>
           </div>
           <? endforeach; ?>
@@ -260,7 +260,7 @@
         <tr>
           <th><?=$this->transEsc('Tags')?>: </th>
           <td>
-            <a class="tag-record btn btn-link pull-right flip" href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" title="<?=$this->transEsc('Add Tag')?>">
+            <a class="tag-record btn btn-link pull-right flip" href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" data-lightbox title="<?=$this->transEsc('Add Tag')?>">
               <i class="fa fa-plus"></i> <?=$this->transEsc('Add Tag')?>
             </a>
             <?=$this->context($this)->renderInContext('record/taglist', array('tagList'=>$tagList, 'loggedin'=>$loggedin)) ?>

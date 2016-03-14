@@ -37,7 +37,7 @@
   <?=$this->recommend($current)?>
 <? endforeach; ?>
 
-<div class="alert alert-danger hide"><?= $this->translate('An error has occurred'); ?></div>
+<div class="mylist-error hidden"><?=$this->translate('An error has occurred'); ?></div>
 <div class="row">
   <? if (isset($list)): ?>
   <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />
@@ -74,7 +74,7 @@
   </div>
   <div class="row">
     <div class="col-xs-12">
-      <form class="form" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>">
+      <form class="form" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox>
         <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account, 'lists' => $lists))?>
         <? foreach ($this->results->getResults() as $i=>$current): ?>
           <?=$this->record($current)->getListEntry($list, $user)?>

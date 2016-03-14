@@ -8,6 +8,7 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
 ?>
+<h2><?=$this->transEsc('request_address_change') ?></h2>
 <?=$this->flashmessages()?>
 <? if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
   <form  name="requestAddressChange" method="post" action="<?=$this->url('myresearch-changeprofileaddress')?>" class="form-horizontal address-form profile-form">

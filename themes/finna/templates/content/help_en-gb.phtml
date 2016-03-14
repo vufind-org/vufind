@@ -24,7 +24,7 @@
       <h4>Year filter and timeline</h4>
       <p>You can specify the year(s) of production by entering a range of years or using the visual timeline tool.<p>
       <p>By clicking on the arrow, you can display the locations or formats (e.g., compilation, archive series, DVD) of a lower hierarchical level</p>
-      <p>You can delete criteria under the <strong>Narrow Search</strong> menu.</p>   
+      <p>You can delete criteria under the <strong>Narrow Search</strong> menu.</p>
       <h4>Retain filters</h4>
       <p>This feature retains your filters for new search.  If you wish to carry out a new search applying the criteria, enable this function</p>
     </div>
@@ -36,7 +36,7 @@
       <h4>Match drop-down</h4>
       <p>he match dropdown defines how to handle a query with several search fields: </p>
       <ul>
-        <li><strong>ALL Terms (AND)</strong> – Searches for records that match the content of all search fields. 
+        <li><strong>ALL Terms (AND)</strong> – Searches for records that match the content of all search fields.
         </li>
         <li><strong>ANY Terms (OR)</strong> – Searches for records that match the content of one or more search fields. </li>
         <li><strong>NO Terms (NOT)</strong> – Searches for records which do not feature the content of any of the search fields.</li>
@@ -59,7 +59,7 @@
       <p>You can log in to Finna by clicking on <a href="<?=$this->url()?>../MyResearch/Home">Login</a> at the top of the page and choosing one of the following three options:</p>
       <ul>
         <li>
-          All users can create a <strong>Mozilla Persona account. </strong>You can also add your library card to the account if the library participates in Finna.   
+          All users can create a <strong>Mozilla Persona account. </strong>You can also add your library card to the account if the library participates in Finna.
         </li>
         <li>
           Students and staff of Finnish institutions of higher education can use the <strong>Haka institutional login.</strong> You can add your library card to the service if the library participates in Finna. This can be done after logging in.
@@ -70,7 +70,7 @@
         </li>
       </ul>
       <h4><i class="fa fa-heart"></i> <i>Favourites</i></h4>
-      <p>You can add records to your favourites using the heart-shaped button on the search results page or the record page. You can sort selected records into lists of favourites, export records to Refworks, email records or print them in MARC format.</p> 
+      <p>You can add records to your favourites using the heart-shaped button on the search results page or the record page. You can sort selected records into lists of favourites, export records to Refworks, email records or print them in MARC format.</p>
       <h4><em>Saved searches, search history and new entries alert</em></h4>
       <p>You can save your latest searches either on the search results page or by selecting Save in the latest searches under your saved searches. </p>
       <p>Saved searches appear at the top. You can use the new entries alert to receive emails about new records either weekly or daily.</p>
@@ -86,10 +86,10 @@
       <p>You can change your email address, set a due date reminder or select the library to which your reservations and inter-library loans are sent.</p>
       <p> Contact your library to change its contact information.</p>
       <h4><em>Changing your PIN code or password</em></h4>
-      <p>You can change your password or PIN code under My information.</p>     
+      <p>You can change your password or PIN code under My information.</p>
     </div>
     <div id="contactus" class="content-section"><h2><i class="fa fa-envelope"></i> Feedback</h2>
-      <p>You can send feedback on Finna (e.g., concerning the user interface and technical issues) using the general <a class="modal-link" href="<?=$this->url('feedback-home')?>">feedback form.</a> Your feedback will be sent to the National Library of Finland, where it will be forwarded to the responsible individual. </p>
+      <p>You can send feedback on Finna (e.g., concerning the user interface and technical issues) using the general <a href="<?=$this->url('feedback-home')?>">feedback form.</a> Your feedback will be sent to the National Library of Finland, where it will be forwarded to the responsible individual. </p>
       <p>If you have feedback on the content of Finna or on metadata relating to material in the service, click on <strong>Send Feedback</strong> on the webpage of the relevant record. This feedback will be sent to the organisation that submitted the material to Finna.</p>
     </div>
     <div id="booleanoperators" class="content-section"><h2>Logical search operators</h2>
@@ -124,7 +124,7 @@
       <pre class="code">"keskiajan historia"</pre>
       <p>Phrase search can also be used for single word. Search is then exact match of a search word without any other conjugations.</p>
     </div>
-      
+
     <div id="wildcardsearches" class="content-section"><h2>Wildcard characters</h2>
       <p><strong class="helpTerm">?</strong> korvaa yhden merkin hakutermistä.</p>
       <p>For example, the terms “text” and “test” can be searched for using the same query:</p>
@@ -135,7 +135,7 @@
       <p>Jokerimerkkejä voi käyttää myös hakutermin keskellä:</p>
       <pre class="code">te*t</pre>
       <p>NB! The wildcards ? and * cannot replace the first character in a search term. </p>
-    </div>   
+    </div>
     <div id="fuzzysearches"  class="content-section"><h2>Fuzzy searches</h2>
       <p>A fuzzy search generates results in which words similar to the actual search word also appear. </p>
       <p>~ carries out a fuzzy search when used as the last character in a single-term search. </p>
@@ -146,14 +146,14 @@
       <pre class="code">roam~0.8</pre>
       <p>The default value of the parameter is 0.5 if it is not separately defined for a fuzzy search. </p>
     </div>
-  
+
     <div id="proxitimitysearches" class="content-section"><h2>Proximity searches</h2>
       <p>Proximity searches look for documents in which the search terms are within a specified distance, but not necessarily one after the other.  </p>
       <p>~ performs a proximity search at the end of a multi-term search phrase when combined with a proximity value.  </p>
-      <p>For example, to search for the terms “economics” and “Keynes” when they appear within a distance of no more than ten terms from each other: </p>   
+      <p>For example, to search for the terms “economics” and “Keynes” when they appear within a distance of no more than ten terms from each other: </p>
       <pre class="code">"economics Keynes"~10</pre>
     </div>
-    
+
     <div id="rangesearches"class="content-section"><h2>Range searches</h2>
       <p>Range searches can be conducted using either curvy brackets { } or square brackets [ ]. When using curvy brackets, the search takes into account only the values between the terms entered, excluding the terms itself. Square brackets, in contrast, also include the terms entered in the range searched for.  </p>
       <p>For example, to search for a term that begins with the letter B or C using the query: </p>
@@ -162,7 +162,7 @@
       <pre class="code">[2002 TO 2003]</pre>
       <p>NB! The word TO between the values must be typed in CAPITAL LETTERS.</p>
     </div>
-  
+
     <div id="boostingaterm" class="content-section"><h2>Weighted search terms</h2>
       <p>^ assigns a weight to the search term in a query.</p>
       <p>For example, to assign added weight to the search term “Keynes”:</p>

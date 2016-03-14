@@ -255,7 +255,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         }
         $user->updateHash();
 
-        $this->flashMessenger()->addMessage('new_password_success', 'info');
+        $this->flashMessenger()->addSuccessMessage('new_password_success');
 
         return $this->redirect()->toRoute('librarycards-home');
     }

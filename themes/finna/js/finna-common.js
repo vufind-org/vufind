@@ -1,45 +1,11 @@
 /*global VuFind*/
 finna.common = (function() {
 
-    var redirectAfterLogin = function() {
-        // Check if the login attempt comes from the normal login dialog
-        if (Lightbox.lastURL) {
-            var params = deparam(Lightbox.lastURL);
-            if (typeof params['redirect'] !== 'undefined' && params['redirect']) {
-                window.location = VuFind.path + '/MyResearch/Home?redirect=0';
-                return;
-            }
-        } 
-        
-        // No reload since any post params would cause a prompt
-        window.location.href = window.location.href;
-    };
-
     var loginSetup = function() {
-        // Override the bootstrap3 theme function in common.js
-        refreshPageForLogin = redirectAfterLogin;
-        
-        // Modal window focus set to username input field.
-        $('#modal').on('shown.bs.modal', function(e) {
-            setTimeout(function() { $('#login_MultiILS_username').focus(); }, 0);
-        });
-
         // Standalone login form
         $('#loginForm').submit(function(evt) { 
             evt.preventDefault();
             standaloneAjaxLogin(evt.target);
-        });
-        
-        // Login link
-        $('#loginOptions a.modal-link').unbind('click').click(function() {
-            // Since we unbind the original handler, we need to handle the title here
-            var title = $(this).attr('title');
-            if(typeof title === "undefined") {
-              title = $(this).html();
-            }
-            $('#modal .modal-title').html(title);
-            Lightbox.titleSet = true;
-            return Lightbox.get('MyResearch', 'UserLogin', { redirect: 1 });
         });
     };
     
@@ -92,12 +58,6 @@ finna.common = (function() {
         });
     };    
     
-    var initFeedbackForm = function() {
-        Lightbox.addFormCallback('finna_feedback', function(html) {
-            Lightbox.confirm(VuFind.translate('feedback_success'));
-        });
-    };
-    
     var initSearchInputListener = function() {
         var searchInput = $('.searchForm_lookfor:visible');
         if (searchInput.length == 0) {
@@ -134,7 +94,6 @@ finna.common = (function() {
     var my = {
         init: function() {
             loginSetup();
-            initFeedbackForm();
             initSearchInputListener();
         }
     };

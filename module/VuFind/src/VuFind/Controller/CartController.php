@@ -26,8 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Mail as MailException,
-    Zend\Session\Container as SessionContainer;
+use VuFind\Exception\Mail as MailException;
 
 /**
  * Book Bag / Bulk Action Controller
@@ -43,17 +42,19 @@ class CartController extends AbstractBase
     /**
      * Session container
      *
-     * @var SessionContainer
+     * @var \Zend\Session\Container
      */
     protected $session;
 
     /**
      * Constructor
+     *
+     * @param \Zend\Session\Container $container Session container
      */
-    public function __construct()
+    public function __construct(\Zend\Session\Container $container)
     {
         parent::__construct();
-        $this->session = new SessionContainer('cart_followup');
+        $this->session = $container;
     }
 
     /**
@@ -67,38 +68,62 @@ class CartController extends AbstractBase
     }
 
     /**
+     * Figure out an action from the request....
+     *
+     * @param string $default Default action if none can be determined.
+     *
+     * @return string
+     */
+    protected function getCartActionFromRequest($default = 'Home')
+    {
+        if (strlen($this->params()->fromPost('email', '')) > 0) {
+            return 'Email';
+        } else if (strlen($this->params()->fromPost('print', '')) > 0) {
+            return 'PrintCart';
+        } else if (strlen($this->params()->fromPost('saveCart', '')) > 0) {
+            return 'Save';
+        } else if (strlen($this->params()->fromPost('export', '')) > 0) {
+            return 'Export';
+        }
+        // Check if the user is in the midst of a login process; if not,
+        // use the provided default.
+        return $this->followup()->retrieveAndClear('cartAction', $default);
+    }
+
+    /**
+     * Process requests for bulk actions.
+     *
+     * @return mixed
+     */
+    public function bulkAction()
+    {
+        // We came in from a search, so let's remember that context so we can
+        // return to it later. However, if we came in from a previous instance
+        // of the bulk action (for example, because of a login screen), we should
+        // ignore that!
+        $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
+        $bulk = $this->url()->fromRoute('cart-bulk');
+        if (substr($referer, -strlen($bulk)) != $bulk) {
+            $this->session->url = $referer;
+        }
+
+        // Now forward to the requested action:
+        return $this->forwardTo('Cart', $this->getCartActionFromRequest());
+    }
+
+    /**
      * Process requests for main cart.
      *
      * @return mixed
      */
-    public function homeAction()
+    public function formAction()
     {
         // We came in from the cart -- let's remember this we can redirect there
         // when we're done:
-        $this->session->url = $this->getLightboxAwareUrl('cart-home');
-
-        // If the cart is disabled, going to cart home is not going to help us;
-        // use the referer instead.
-        if (!$this->getCart()->isActive()) {
-            $this->session->url
-                = $this->getRequest()->getServer()->get('HTTP_REFERER');
-        }
+        $this->session->url = $this->url()->fromRoute('cart-home');
 
         // Now forward to the requested action:
-        if (strlen($this->params()->fromPost('email', '')) > 0) {
-            $action = 'Email';
-        } else if (strlen($this->params()->fromPost('print', '')) > 0) {
-            $action = 'PrintCart';
-        } else if (strlen($this->params()->fromPost('saveCart', '')) > 0) {
-            $action = 'Save';
-        } else if (strlen($this->params()->fromPost('export', '')) > 0) {
-            $action = 'Export';
-        } else {
-            // Check if the user is in the midst of a login process; if not,
-            // default to cart home.
-            $action = $this->followup()->retrieveAndClear('cartAction', 'Cart');
-        }
-        return $this->forwardTo('Cart', $action);
+        return $this->forwardTo('Cart', $this->getCartActionFromRequest());
     }
 
     /**
@@ -106,12 +131,18 @@ class CartController extends AbstractBase
      *
      * @return mixed
      */
-    public function cartAction()
+    public function homeAction()
     {
         // Bail out if cart is disabled.
         if (!$this->getCart()->isActive()) {
             return $this->redirect()->toRoute('home');
         }
+
+        // If a user is coming directly to the cart, we should clear out any
+        // existing context information to prevent weird, unexpected workflows
+        // caused by unusual user behavior.
+        $this->followup()->retrieveAndClear('cartAction');
+        $this->followup()->retrieveAndClear('cartIds');
 
         $ids = is_null($this->params()->fromPost('selectAll'))
             ? $this->params()->fromPost('ids')
@@ -139,7 +170,13 @@ class CartController extends AbstractBase
                 }
             }
         }
-        return $this->createViewModel();
+        // Using the cart/cart template for the cart/home action is a legacy of
+        // an earlier controller design; we may want to rename the template for
+        // clarity, but right now we are retaining the old template name for
+        // backward compatibility.
+        $view = $this->createViewModel();
+        $view->setTemplate('cart/cart');
+        return $view;
     }
 
     /**
@@ -167,7 +204,7 @@ class CartController extends AbstractBase
             $controller = 'MyResearch';
             $action = 'Delete';
         } else if (strlen($this->params()->fromPost('add', '')) > 0) {
-            $action = 'Cart';
+            $action = 'Home';
         } else if (strlen($this->params()->fromPost('export', '')) > 0) {
             $action = 'Export';
         } else {
@@ -233,7 +270,7 @@ class CartController extends AbstractBase
                     $view->to, $view->from, $view->message,
                     $url, $this->getViewRenderer(), $view->subject, $cc
                 );
-                return $this->redirectToSource('success', 'email_success');
+                return $this->redirectToSource('success', 'bulk_email_success');
             } catch (MailException $e) {
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             }

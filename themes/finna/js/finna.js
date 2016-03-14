@@ -14,7 +14,6 @@ var finna = (function() {
                 'imagePopup',
                 'itemStatus',
                 'layout',
-                'libraryCards',
                 'metalibLinks',
                 'myList',
                 'openUrl',
@@ -22,7 +21,6 @@ var finna = (function() {
                 'primoAdvSearch',
                 'record',
                 'searchTabsRecommendations',
-                'userProfile'
             ];
 
             $.each(modules, function(ind, module) {

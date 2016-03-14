@@ -8,6 +8,7 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
 ?>
+<h2><?=$this->transEsc('request_messaging_settings_change'); ?></h2>
 <?=$this->flashmessages()?>
 <? if (empty($profile['email'])): ?>
   <div class="alert alert-danger">
@@ -24,7 +25,7 @@
             <select name="<?=$service ?>" class="form-control">
               <? foreach ($data['sendMethods'] as $method => $methodData): ?>
                 <? if (!($service == 'dueDateAlert' && $method == 'email')): ?>
-                  <option value="<?=$this->escapeHtmlAttr($methodData['type']) ?>"<? if ($methodData['active']): ?> selected<? endif; ?>><?=$this->escapeHtml($methodData['method']) ?></option>
+                  <option value="<?=$this->escapeHtmlAttr(isset($methodData['type']) ? $methodData['type'] : '') ?>"<? if ($methodData['active']): ?> selected<? endif; ?>><?=$this->escapeHtml($methodData['method']) ?></option>
                 <? endif; ?>
               <? endforeach; ?>
               <? if ($service == 'dueDateAlert'): ?>

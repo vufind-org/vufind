@@ -133,7 +133,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->cookieManager = $cookieManager;
 
         // Set up session:
-        $this->session = new \Zend\Session\Container('Account');
+        $this->session = new \Zend\Session\Container('Account', $sessionManager);
 
         // Set up CSRF:
         $this->csrf = new Csrf(

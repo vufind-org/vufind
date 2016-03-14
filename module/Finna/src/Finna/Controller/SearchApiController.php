@@ -176,7 +176,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         // Make sure VUFIND_API_CALL environment variable is set (it's ok for this to
         // not propagate, so manipulating $_ENV directly works)
         $_ENV['VUFIND_API_CALL'] = 1;
-        $this->writeSession();
+        $this->disableSessionWrites();
         $this->determineOutputMode();
 
         $auth = $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService');
@@ -234,7 +234,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         // Make sure VUFIND_API_CALL environment variable is set (it's ok for this to
         // not propagate, so manipulating $_ENV directly works)
         $_ENV['VUFIND_API_CALL'] = 1;
-        $this->writeSession();
+        $this->disableSessionWrites();
         $this->determineOutputMode();
 
         $auth = $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService');

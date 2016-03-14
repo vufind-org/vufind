@@ -1,4 +1,4 @@
-/*global VuFind */
+/*global htmlEncode, VuFind */
 
 function checkSaveStatuses(container) {
   if (typeof(container) == 'undefined') {

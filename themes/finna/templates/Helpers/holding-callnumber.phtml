@@ -1,18 +1,19 @@
 <!-- START of: finna - Helpers/holding-callnumber.phtml -->
 <div class="location-link-text">
 <? if (isset($this->locationServiceUrl)): ?>
-<a class="location-service <?=$this->locationServiceModal ? ' location-service-modal' : ''?>" href="<?=$this->locationServiceUrl?>" target="location-service" data-callnumber="<?=$this->escapeHtmlAttr($this->callnumber)?>" data-collection="<?=$this->escapeHtmlAttr($this->collection)?>" data-source="<?=$this->escapeHtmlAttr($this->source)?>"><i class="fa fa-map-marker"></i> <?=$this->escapeHtml($this->callnumber)?></a>
+  <a class="location-service <?=$this->locationServiceModal ? ' location-service-modal' : ''?>" href="<?=$this->locationServiceUrl?>"<?=$this->locationServiceModal ? ' data-lightbox-href="' . $this->url('locationservice-modal') . '?callnumber=' . urlencode($this->callnumber) . '&amp;collection=' . urlencode($this->collection) . '&amp;source=' . urlencode($this->source) : '' ?>" target="location-service"><i class="fa fa-map-marker"></i> <?=$this->escapeHtml($this->callnumber)?></a>
 <? else: ?>
-<? if ($this->page == 'results'): ?>
-(<span><?=$this->transEsc("shelf_location"); ?>: </span>
-<? endif; ?>
-<?=$this->escapeHtml($this->callnumber)?>
-<? if ($this->page == 'results'): ?>
-)
-<? endif; ?>
+  <? if ($this->page == 'results'): ?>
+    (<span><?=$this->transEsc("shelf_location"); ?>: </span><?=$this->escapeHtml($this->callnumber)?>)
+  <? else: ?>
+    <?=$this->escapeHtml($this->callnumber)?>
+  <? endif; ?>
 <? endif; ?>
 <? if ($this->qrCode): ?>
-<i class="fa fa-qrcode hidden-xs2 location-service"></i>
+  <a class="dropdown-toggle location-service" data-toggle="dropdown" href="<?=$this->escapeHtmlAttr($this->locationServiceUrl);?>" rel="nofollow"><i class="fa fa-qr-code"></i></a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="text-center"><img src="<?=$this->url('qrcode-show') . '?text=' . $this->escapeHtmlAttr($locationServiceUrl);?>" alt="<?=$this->transEsc('QR Code')?>" class="qrcode"/></li>
+  </ul>
 <? endif; ?>
 </div>
 <!-- END of: finna - Helpers/holding-callnumber.phtml -->

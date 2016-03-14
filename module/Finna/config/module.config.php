@@ -77,6 +77,16 @@ $config = [
                     ]
                 ],
             ],
+            'myresearch-deleteaccount' => [
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/MyResearch/DeleteAccount',
+                    'defaults' => [
+                        'controller' => 'MyResearch',
+                        'action'     => 'DeleteAccount',
+                    ]
+                ],
+            ],
             'myresearch-unsubscribe' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
                 'options' => [
@@ -173,6 +183,7 @@ $config = [
             'db_table' => [
                 'factories' => [
                     'user' => 'Finna\Db\Table\Factory::getUser',
+                    'userlist' => 'Finna\Db\Table\Factory::getUserList',
                 ],
                 'invokables' => [
                     'comments' => 'Finna\Db\Table\Comments',
@@ -183,7 +194,6 @@ $config = [
                     'metalibSearch' => 'Finna\Db\Table\MetaLibSearch',
                     'search' => 'Finna\Db\Table\Search',
                     'transaction' => 'Finna\Db\Table\Transaction',
-                    'userlist' => 'Finna\Db\Table\UserList',
                     'userresource' => 'Finna\Db\Table\UserResource',
                 ],
             ],

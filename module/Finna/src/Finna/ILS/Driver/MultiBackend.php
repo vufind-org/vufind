@@ -175,6 +175,12 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      */
     public function patronLogin($username, $password, $secondary = '')
     {
+        $cacheKey = "patron|$username";
+        $item = $this->getCachedData($cacheKey);
+        if ($item !== null) {
+            return $item;
+        }
+
         $source = $this->getSource($username);
         if (!$source) {
             $source = $this->getDefaultLoginDriver();
@@ -188,6 +194,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
             if (is_array($patron)) {
                 $patron['source'] = $source;
             }
+            $this->putCachedData($cacheKey, $patron);
             return $patron;
         }
         throw new ILSException('No suitable backend driver found');
@@ -219,4 +226,18 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
         return parent::getDriverConfig($source);
     }
 
+    /**
+     * Add instance-specific context to a cache key suffix to ensure that
+     * multiple drivers don't accidentally share values in the cache.
+     * This implementation works anywhere but can be overridden with something more
+     * performant.
+     *
+     * @param string $key Cache key suffix
+     *
+     * @return string
+     */
+    protected function formatCacheKey($key)
+    {
+        return 'MultiBackend-' . md5($key);
+    }
 }

@@ -24,7 +24,7 @@
       <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
     </div>
   </div>
-  <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+  <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-bulk')?>">
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + array('idPrefix' => ''))?>
     <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
     <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $results))?>

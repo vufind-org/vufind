@@ -30,6 +30,7 @@ namespace VuFindTest\Search;
 
 use VuFind\Search\Memory;
 use VuFindTest\Unit\TestCase as TestCase;
+use Zend\Session\Container;
 
 /**
  * Memory unit tests.
@@ -49,7 +50,7 @@ class MemoryTest extends TestCase
      */
     public function testBasicMemory()
     {
-        $mem = new Memory();
+        $mem = new Memory(new Container('test'));
         $this->assertEquals(null, $mem->retrieveSearch());
         $url = 'http://test';
         $mem->rememberSearch($url);
@@ -63,7 +64,7 @@ class MemoryTest extends TestCase
      */
     public function testForgetting()
     {
-        $mem = new Memory();
+        $mem = new Memory(new Container('test'));
         $url = 'http://test';
         $mem->rememberSearch($url);
         $this->assertEquals($url, $mem->retrieveSearch());
@@ -78,7 +79,7 @@ class MemoryTest extends TestCase
      */
     public function testEmptyURL()
     {
-        $mem = new Memory();
+        $mem = new Memory(new Container('test'));
         $mem->rememberSearch('');
         $this->assertEquals(null, $mem->retrieveSearch());
     }
@@ -90,7 +91,7 @@ class MemoryTest extends TestCase
      */
     public function testDisable()
     {
-        $mem = new Memory();
+        $mem = new Memory(new Container('test'));
         $url = 'http://test';
         $mem->rememberSearch($url);
         $this->assertEquals($url, $mem->retrieveSearch());

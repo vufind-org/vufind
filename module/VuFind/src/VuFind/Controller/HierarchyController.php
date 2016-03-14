@@ -80,7 +80,7 @@ class HierarchyController extends AbstractBase
      */
     public function searchtreeAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $config = $this->getConfig();
         $limit = isset($config->Hierarchy->treeSearchLimit)
             ? $config->Hierarchy->treeSearchLimit : -1;
@@ -117,7 +117,7 @@ class HierarchyController extends AbstractBase
      */
     public function gettreeAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
         $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
@@ -150,7 +150,7 @@ class HierarchyController extends AbstractBase
      */
     public function gettreejsonAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
         $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
