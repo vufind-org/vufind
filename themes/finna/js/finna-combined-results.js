@@ -1,4 +1,4 @@
-/*global VuFind,checkSaveStatuses,setupSaveRecordLinks*/
+/*global VuFind, checkSaveStatuses*/
 finna.combinedResults = (function() {
 
     var my = {
@@ -8,7 +8,6 @@ finna.combinedResults = (function() {
             finna.itemStatus.initItemStatuses(container);
             VuFind.lightbox.bind(container);
             checkSaveStatuses(container);
-            setupSaveRecordLinks(container);
         },
     };
 

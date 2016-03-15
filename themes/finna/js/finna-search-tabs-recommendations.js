@@ -1,4 +1,4 @@
-/*global VuFind,checkSaveStatuses,setupSaveRecordLinks*/
+/*global VuFind, checkSaveStatuses*/
 finna.searchTabsRecommendations = (function() {
     var initSearchTabsRecommendations = function() {
         var holder = $('#search-tabs-recommendations-holder');
