@@ -18,7 +18,7 @@ VuFind.lightbox = (function() {
     if ('undefined' == typeof details) {
       details = {};
     }
-    document.dispatchEvent(
+    return document.dispatchEvent(
       new CustomEvent(msg, {
         detail: details,
         bubbles: true,
@@ -130,15 +130,17 @@ VuFind.lightbox = (function() {
           && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/)) // that matches login/create account
             || obj.url.match(/catalogLogin/))                         // or catalog login for holds
         ) {
+          var eventResult = _emit('VuFind.lightbox.login', {
+            originalUrl: _originalUrl,
+            formUrl: obj.url
+          });
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
-            _refreshPage();
+            if (eventResult) {
+              _refreshPage();
+            }
             return false;
           } else {
             VuFind.lightbox.refreshOnClose = true;
-            _emit('VuFind.lightbox.login', {
-              originalUrl: _originalUrl,
-              formUrl: obj.url
-            });
           }
         }
         _update(html);
