@@ -123,7 +123,7 @@
       <? endif; ?>
     <? else: ?>
     <div class="row">
-      <form class="form-inline col-xs-12" method="post" name="bulkActionForm" action="<?=$this->url('cart-bulk')?>">
+      <form class="form-inline col-xs-12" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
          <?= $this->authorizationNote($searchClassId) ?>
         <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
