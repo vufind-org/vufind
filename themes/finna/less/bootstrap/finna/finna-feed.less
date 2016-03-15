@@ -9,9 +9,12 @@
     & .slick-slider .slick-slide {
         overflow: hidden;
     }
-    & .slick-slider:not(.slick-vertical) {
+    & .slick-initialized.slick-slider:not(.slick-vertical) {
         margin-bottom: 70px;
         & .slick-slide {
+            // adjust slick slider to align left grid
+            border-left: none;
+            border-right: 12px solid transparent;
             &.adjusted-height {
                 & .wrapper {
                     background: @carousel-slider-background;
@@ -28,6 +31,22 @@
                 margin-bottom: 0;
             }
         }
+        & .slick-prev, & .slick-next {
+            width: 20px;
+        }
+        & .slick-prev {
+            left: -28px;
+            &:before {
+                margin-left: -5px;
+            }
+        }
+        & .slick-next {
+            right: -14px;
+            &:before {
+                margin-left: -4px;
+            }
+        }
+        
     }
     & .carousel-header {
         background: @carousel-header-background;
