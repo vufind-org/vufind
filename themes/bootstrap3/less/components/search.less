@@ -1,3 +1,7 @@
+@thumbnail-width-small: 60px;
+@thumbnail-width-medium: 100px;
+@thumbnail-width-large: 160px;
+
 .bulkActionButtons label {display: inline-block;}
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
@@ -16,16 +20,16 @@
     float: left;
     text-align: center;
     &.small {
-      width: 60px;
-      img { max-width: 60px; }
+      width: @thumbnail-width-small;
+      img { max-width: @thumbnail-width-small; }
     }
     &.medium {
-      width: 100px;
-      img { max-width: 100px; }
+      width: @thumbnail-width-medium;
+      img { max-width: @thumbnail-width-medium; }
     }
     &.large {
-      width: 160px;
-      img { max-width: 160px; }
+      width: @thumbnail-width-large;
+      img { max-width: @thumbnail-width-large; }
     }
   }
   a.title {font-weight: bold;}
