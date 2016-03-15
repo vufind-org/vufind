@@ -99,6 +99,16 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     }
 
     /**
+     * Update search hashes. One-off after VuFind 1 migration.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function updateSearchHashesAction()
+    {
+        return $this->runService('Finna\UpdateSearchHashes');
+    }
+
+    /**
      * Verify record links.
      *
      * @return \Zend\Console\Response
