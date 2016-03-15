@@ -232,9 +232,10 @@ foreach ($this->statusItems as $item):
 <div class="actions">
 <?
 $holdingsLink = sprintf('%s%s/Holdings', $this->url('record'), $this->statusItems[0]['id']);
+$disableTitleHold = isset($summary['holdable']) && !$summary['holdable'];
 
 if ($this->holdingsSettings()->showSearchResultsTitleHold()) {
-  if ($driver && $driver->tryMethod('getHoldsAllowed')) {
+  if ($driver && $driver->tryMethod('getHoldsAllowed') && !$disableTitleHold) {
     $account = $this->auth()->getManager();
     $offlineMode = $this->ils()->getOfflineMode();
     $ilsLoginAvailable = $this->ils()->loginAvailable();

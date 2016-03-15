@@ -984,6 +984,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     protected function getHoldingsSummary($holdings)
     {
+        $holdable = false;
+        $journal = isset($holdings[0]['journalInfo']);
         $availableTotal = $itemsTotal = $orderedTotal = $reservationsTotal = 0;
         $locations = [];
         foreach ($holdings as $item) {
@@ -1005,6 +1007,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 );
             }
             $locations[$item['location']] = true;
+            if (!$journal && $item['is_holdable']) {
+                $holdable = true;
+            }
         }
 
         // Since summary data is appended to the holdings array as a fake item,
@@ -1016,6 +1021,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
            'total' => $itemsTotal,
            'reservations' => $reservations,
            'locations' => count($locations),
+           'holdable' => $holdable,
            'availability' => null,
            'callnumber' => null,
            'location' => null
@@ -1980,7 +1986,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $b = array_slice($b, 0, $cnt);
 
             $f = function ($str) {
-                return (reset(explode('-', $str)));
+                $parts = explode('-', $str);
+                return reset($parts);
             };
 
             $a = array_map($f, $a);

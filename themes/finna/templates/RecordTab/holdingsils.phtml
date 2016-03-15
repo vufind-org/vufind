@@ -35,6 +35,7 @@
       }
     }
 
+    $disableTitleHold = empty($holdings) || (isset($summary['holdable']) && !$summary['holdable']);
     $showSummary = !$journal && $this->holdingsSettings()->showRecordPageSummary();
     if ($summary && $showSummary) {
       $itemsTotal
@@ -68,7 +69,7 @@
     <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
   </div>
 <? endif; ?>
-<? if ($holdsAllowed && (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings)) || $this->ils()->getTitleHoldsMode() == 'driver')): ?>
+<? if ($holdsAllowed && !$disableTitleHold && (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings)) || $this->ils()->getTitleHoldsMode() == 'driver') ): ?>
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline' && $ilsLoginAvailable): ?>
     <? if (!$user): ?>
       <div class="pull-right">
@@ -98,6 +99,7 @@
   <? if ($illRequestLink): ?>
     <a class="expandedCheckILLRequest placeILLRequest btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>" title="<?=$this->escapeHtmlAttr($this->translate('ill_request_place_text') . ': ' . $this->driver->getTitle()) ?>"><?=$this->transEsc("ill_request_check_text")?></a>
   <? endif; ?>
+  <? if (!$disableTitleHold): ?>
   <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
     <a class="placehold btn btn-primary hidden-print" data-lightbox title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . ': ' . $this->driver->getTitle()) ?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
   <? elseif ($user): ?>
@@ -110,6 +112,7 @@
         <? endif; ?>
       <? endif; ?>
     <? endif; ?>
+  <? endif; ?>
   <? endif; ?>
   </div>
 <? endif; ?>
