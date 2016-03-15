@@ -69,4 +69,3 @@ class LibGuidesController extends AbstractSearch
             && $config->Record->next_prev_navigation);
     }
 }
-

@@ -107,4 +107,3 @@ class StatisticsController extends AbstractAdmin
         return $view;
     }
 }
-

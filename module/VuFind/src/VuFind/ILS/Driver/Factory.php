@@ -79,9 +79,13 @@ class Factory
      */
     public static function getDemo(ServiceManager $sm)
     {
+        $sessionFactory = function () use ($sm) {
+            $manager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            return new \Zend\Session\Container('DemoDriver', $manager);
+        };
         return new Demo(
             $sm->getServiceLocator()->get('VuFind\DateConverter'),
-            $sm->getServiceLocator()->get('VuFind\Search')
+            $sm->getServiceLocator()->get('VuFind\Search'), $sessionFactory
         );
     }
 
@@ -172,9 +176,13 @@ class Factory
     public static function getVoyagerRestful(ServiceManager $sm)
     {
         $ils = $sm->getServiceLocator()->get('VuFind\ILSHoldSettings');
-        return new VoyagerRestful(
+        $vr = new VoyagerRestful(
             $sm->getServiceLocator()->get('VuFind\DateConverter'),
             $ils->getHoldsMode(), $ils->getTitleHoldsMode()
         );
+        $vr->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+        return $vr;
     }
 }

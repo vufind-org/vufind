@@ -235,4 +235,3 @@ class SummonController extends AbstractSearch
         return $facetList;
     }
 }
-

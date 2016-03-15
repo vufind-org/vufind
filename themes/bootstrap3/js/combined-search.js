@@ -1,4 +1,4 @@
-/*global VuFind, setupOpenUrlLinks, checkItemStatuses, checkSaveStatuses, setupSaveRecordLinks */
+/*global VuFind, setupOpenUrlLinks, checkItemStatuses, checkSaveStatuses */
 VuFind.combinedSearch = (function() {
   var init = function(container, url) {
     container.load(url, '', function(responseText) {
@@ -8,7 +8,6 @@ VuFind.combinedSearch = (function() {
         setupOpenUrlLinks(container);
         checkItemStatuses(container);
         checkSaveStatuses(container);
-        setupSaveRecordLinks(container);
       }
     });
   };

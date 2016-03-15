@@ -56,7 +56,8 @@ abstract class QueryAdapter
      */
     public static function deminify(array $search)
     {
-        if (isset($search['l'])) {
+        // Use array_key_exists since null is also valid
+        if (array_key_exists('l', $search)) {
             $handler = isset($search['i']) ? $search['i'] : $search['f'];
             return new Query(
                 $search['l'], $handler, isset($search['o']) ? $search['o'] : null

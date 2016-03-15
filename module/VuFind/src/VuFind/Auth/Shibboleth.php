@@ -121,21 +121,18 @@ class Shibboleth extends AbstractBase
             }
         }
 
-        // Save credentials if applicable. Note that if $catPassword is empty,
-        // we'll pass through the existing password already in the database;
-        // otherwise, when users log out, their passwords may be cleared from
-        // the database. We can't simply skip saving credentials when the password
-        // is empty, because in some scenarios, an empty password is normal
-        // (see https://github.com/vufind-org/vufind/pull/532 for details).
-        // Note that this leaves an edge case where, if a user changes their
-        // password from something to nothing, VuFind will not properly clear it
-        // out. This seems unlikely, but if it is encountered, we may need to
-        // add more logic here. See https://github.com/vufind-org/vufind/pull/612
-        // for related discussion.
+        // Save credentials if applicable. Note that we want to allow empty
+        // passwords (see https://github.com/vufind-org/vufind/pull/532), but
+        // we also want to be careful not to replace a non-blank password with a
+        // blank one in case the auth mechanism fails to provide a password on
+        // an occasion after the user has manually stored one. (For discussion,
+        // see https://github.com/vufind-org/vufind/pull/612). Note that in the
+        // (unlikely) scenario that a password can actually change from non-blank
+        // to blank, additional work may need to be done here.
         if (!empty($user->cat_username)) {
             $user->saveCredentials(
                 $user->cat_username,
-                empty($catPassword) ? $user->cat_password : $catPassword
+                empty($catPassword) ? $user->getCatPassword() : $catPassword
             );
         }
 
