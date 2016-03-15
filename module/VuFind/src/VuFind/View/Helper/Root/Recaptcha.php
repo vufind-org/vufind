@@ -54,6 +54,20 @@ class Recaptcha extends AbstractHelper
     protected $active;
 
     /**
+     * HTML prefix for ReCaptcha output.
+     *
+     * @var string
+     */
+    protected $prefixHtml = '';
+
+    /**
+     * HTML suffix for ReCaptcha output.
+     *
+     * @var string
+     */
+    protected $suffixHtml = '';
+
+    /**
      * Constructor
      *
      * @param \ZendService\Recaptcha\Recaptcha $rc     Custom formatted Recaptcha
@@ -87,7 +101,7 @@ class Recaptcha extends AbstractHelper
         if (!isset($useRecaptcha) || !$useRecaptcha) {
             return false;
         }
-        return $this->recaptcha->getHtml();
+        return $this->prefixHtml . $this->recaptcha->getHtml() . $this->suffixHtml;
     }
 
     /**

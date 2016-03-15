@@ -1,4 +1,4 @@
-/*global $, document, Event, VuFind, window */
+/*global $, document, CustomEvent, VuFind, window */
 VuFind.lightbox = (function() {
   // State
   var _originalUrl = false;
@@ -7,17 +7,47 @@ VuFind.lightbox = (function() {
   // Elements
   var _modal, _modalBody, _clickedButton = null;
   // Utilities
+  var _storeClickedStatus = function() {
+    _clickedButton = this;
+  };
   var _html = function(html) {
     _modalBody.html(html);
     _modal.modal('handleUpdate');
+  };
+  var _emit = function(msg, details) {
+    if ('undefined' == typeof details) {
+      details = {};
+    }
+    document.dispatchEvent(
+      new CustomEvent(msg, {
+        detail: details,
+        bubbles: true,
+        cancelable: true
+      })
+    );
+  };
+
+  /**
+   * Reload the page without causing trouble with POST parameters while keeping hash
+   */
+  var _refreshPage = function() {
+    var parts = window.location.href.split('#');
+    if (typeof parts[1] === 'undefined') {
+      window.location.href = window.location.href;
+    } else {
+      var href = parts[0];
+      // Force reload with a timestamp
+      href += href.indexOf('?') == -1 ? '?_=' : '&_=';
+      href += new Date().getTime() + '#' + parts[1];
+      window.location.href = href;
+    }
   };
   // Public: Present an alert
   var showAlert = function(message, type) {
     if ('undefined' == typeof type) {
       type = 'info';
     }
-    _html('<div class="alert alert-'+type+'">'+message+'</div>\
-    <button class="btn btn-default" data-dismiss="modal">' + VuFind.translate('close') + '</button>');
+    _html('<div class="alert alert-'+type+'">'+message+'</div><button class="btn btn-default" data-dismiss="modal">' + VuFind.translate('close') + '</button>');
     _modal.modal('show');
   };
   var flashMessage = function(message, type) {
@@ -28,13 +58,15 @@ VuFind.lightbox = (function() {
 
   /**
    * Update content
-   * 
+   *
    * Form data options:
    *
    * data-lightbox-ignore = do not submit this form in lightbox
    */
   var _update = function(html) {
-    if (!html.match) return;
+    if (!html.match) {
+      return;
+    }
     // Isolate successes
     var htmlDiv = $('<div>'+html+'</div>');
     var alerts = htmlDiv.find('.alert-success');
@@ -51,11 +83,11 @@ VuFind.lightbox = (function() {
     _modal.modal('show');
     // Attach capturing events
     _modalBody.find('a').click(_constrainLink);
-    // Handle submit buttons attached to a form as well as those in a form. Store 
-    // information about which button was clicked here as checking focused button 
+    // Handle submit buttons attached to a form as well as those in a form. Store
+    // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
     _modalBody.find('[type=submit]').click(_storeClickedStatus);
-    
+
     var forms = _modalBody.find('form:not([data-lightbox-ignore])');
     for (var i=0;i<forms.length;i++) {
       $(forms[i]).on('submit', _formSubmit);
@@ -69,10 +101,6 @@ VuFind.lightbox = (function() {
     });
   };
 
-  var _storeClickedStatus = function() {
-    _clickedButton = this;
-  };    
-  
   var _xhr = false;
   // Public: Handle AJAX in the Lightbox
   var ajax = function(obj) {
@@ -97,37 +125,42 @@ VuFind.lightbox = (function() {
           return;
         }
         if ( // Close the lightbox after deliberate login
-          obj.method                           // is a form
-          && !html.match(/alert alert-danger/) // skip failed logins
-          && (obj.url.match(/MyResearch/)      // that matches login/create account
-          || obj.url.match(/catalogLogin/))    // catalog login for holds
+          obj.method                                                  // is a form
+          && !html.match(/alert alert-danger/)                        // skip failed logins
+          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/)) // that matches login/create account
+            || obj.url.match(/catalogLogin/))                         // or catalog login for holds
         ) {
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
-            var event = new CustomEvent('VuFind.lightbox.login', {
-              detail: {
-                originalUrl: _originalUrl,
-                formUrl: obj.url
-              },
-              bubbles: true,
-              cancelable: true
-            });
-            if (document.dispatchEvent(event)) {
-              _refreshPage();
-            }
+            _refreshPage();
             return false;
           } else {
             VuFind.lightbox.refreshOnClose = true;
+            _emit('VuFind.lightbox.login', {
+              originalUrl: _originalUrl,
+              formUrl: obj.url
+            });
           }
         }
         _update(html);
       })
       .fail(function() {
-        showAlert(VuFind.translate('error_occurred'), 'danger');  
+        showAlert(VuFind.translate('error_occurred'), 'danger');
       });
     return _xhr;
   };
   var reload = function() {
     ajax({url:_currentUrl || _originalUrl});
+  };
+
+  /**
+   * Evaluate a callback
+   */
+  var _evalCallback = function(callback, event, data) {
+    if ('function' === typeof window[callback]) {
+      return window[callback](event, data);
+    } else {
+      return eval('(function(event, data) {' + callback + '}())'); // inline code
+    }
   };
 
   /**
@@ -157,14 +190,14 @@ VuFind.lightbox = (function() {
 
   /**
    * Handle form submission.
-   * 
+   *
    * Form data options:
    *
    * data-lightbox-onsubmit = on submit, run named function
    * data-lightbox-onclose  = on close, run named function
-   * 
+   *
    * Submit button data options:
-   * 
+   *
    * data-lightbox-ignore = do not handle clicking this button in lightbox
    */
   var _formSubmit = function(event) {
@@ -176,17 +209,15 @@ VuFind.lightbox = (function() {
     // Add submit button information
     var submit = $(_clickedButton);
     _clickedButton = null;
+    var buttonData = {'name':name, 'value':1};
     if (submit.length > 0) {
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
-        return true;  
+        return true;
       }
-      // Prevent multiple submission of submit button in lightbox
-      if (submit.closest(_modal).length > 0) {
-        submit.attr('disabled', 'disabled');
-      }
-      var name = submit.attr('name') ? submit.attr('name') : 'submit';
-      data.push({'name':name, 'value':submit.attr('value') || 1});
+      buttonData.name = submit.attr('name') || 'submit';
+      buttonData.value = submit.attr('value') || 1;
     }
+    data.push(buttonData);
     // Special handlers
     if ('undefined' !== typeof dataset) {
       // On submit behavior
@@ -201,12 +232,16 @@ VuFind.lightbox = (function() {
       // onclose behavior
       if ('string' === typeof dataset.lightboxOnclose) {
         document.addEventListener('VuFind.lightbox.closed', function(event) {
-          _evalCallback(dataset.lightboxOnclose, event);  
+          _evalCallback(dataset.lightboxOnclose, event);
         }, false);
       }
     }
     // Loading
     _modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right"></i>');
+    // Prevent multiple submission of submit button in lightbox
+    if (submit.closest(_modal).length > 0) {
+      submit.attr('disabled', 'disabled');
+    }
     // Get Lightbox content
     ajax({
       url: form.action || _currentUrl,
@@ -218,33 +253,6 @@ VuFind.lightbox = (function() {
     return false;
   };
 
-  /**
-   * Evaluate a callback 
-   */
-  var _evalCallback = function(callback, event, data) {
-    if ('function' === typeof window[callback]) {
-      return window[callback](event, data);
-    } else {
-      return eval('(function(event, data) {' + callback + '}())'); // inline code  
-    }
-  };
-  
-  /**
-   * Reload the page without causing trouble with POST parameters while keeping hash
-   */
-  var _refreshPage = function() {
-    var parts = window.location.href.split('#');
-    if (typeof parts[1] === 'undefined') {
-      window.location.href = window.location.href;  
-    } else {
-      var href = parts[0];
-      // Force reload with a timestamp
-      href += href.indexOf('?') == -1 ? '?_=' : '&_=';
-      href += new Date().getTime() + '#' + parts[1];
-      window.location.href = href;
-    }
-  };
-  
   // Public: Attach listeners to the page
   var bind = function(target) {
     if ('undefined' === typeof target) {
@@ -256,9 +264,9 @@ VuFind.lightbox = (function() {
     $(target).find('form[data-lightbox]')
       .unbind('submit', _formSubmit)
       .on('submit', _formSubmit);
-    
-    // Handle submit buttons attached to a form as well as those in a form. Store 
-    // information about which button was clicked here as checking focused button 
+
+    // Handle submit buttons attached to a form as well as those in a form. Store
+    // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
     $('form[data-lightbox] [type=submit]').click(_storeClickedStatus);
   };
@@ -288,11 +296,11 @@ VuFind.lightbox = (function() {
         if (VuFind.lightbox.refreshOnClose) {
           _refreshPage();
         }
-        document.dispatchEvent(new Event('VuFind.lightbox.closing'));
+        _emit('VuFind.lightbox.closing');
       });
       _modal.on('hidden.bs.modal', function() {
-        document.dispatchEvent(new Event('VuFind.lightbox.closed'));
         VuFind.lightbox.reset();
+        _emit('VuFind.lightbox.closed');
       });
 
       VuFind.modal = function(cmd) { _modal.modal(cmd); };

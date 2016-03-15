@@ -7,10 +7,6 @@ var _CART_COOKIE_DELIM = "\t";
 var currentId,currentSource;
 var lastCartSubmit = false;
 
-function updateCartCount() {
-  var items = getCartItems();
-  $('#cartItems strong').html(items.length);
-}
 function getCartItems() {
   var items = Cookies.getItem(_CART_COOKIE);
   if(items) {
@@ -36,6 +32,11 @@ function getFullCartItems() {
     full[full.length] = sources[items[i].charCodeAt(0)-65]+'|'+items[i].substr(1);
   }
   return full;
+}
+
+function updateCartCount() {
+  var items = getCartItems();
+  $('#cartItems strong').html(items.length);
 }
 
 function addItemToCart(id,source) {

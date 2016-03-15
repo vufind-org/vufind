@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -39,21 +39,16 @@ namespace VuFind\View\Helper\Bootstrap3;
 class Recaptcha extends \VuFind\View\Helper\Root\Recaptcha
 {
     /**
-     * Wrap in bootstrap 3-9 columns. Generate <div> with ReCaptcha from render.
+     * Constructor
      *
-     * @param boolean $useRecaptcha Boolean of active state, for compact templating
-     *
-     * @return string $html
+     * @param \ZendService\Recaptcha\Recaptcha $rc     Custom formatted Recaptcha
+     * @param \VuFind\Config                   $config Config object
      */
-    public function html($useRecaptcha = true)
+    public function __construct($rc, $config)
     {
-        if (!isset($useRecaptcha) || !$useRecaptcha) {
-            return false;
-        }
-        return '<div class="form-group">' .
-            '<div class="col-sm-9 col-sm-offset-3">' .
-                $this->recaptcha->getHtml() .
-            '</div>' .
-        '</div>';
+        $this->prefixHtml = '<div class="form-group">' .
+            '<div class="col-sm-9 col-sm-offset-3">';
+        $this->suffixHtml = '</div></div>';
+        parent::__construct($rc, $config);
     }
 }
