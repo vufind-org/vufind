@@ -5,7 +5,7 @@ header {
 
 /* reset colors as rgba colors don't work */
 .navbar-nav > li > a {
-	color: #fff !imporartant;	
+	color: #fff !important;	
 }
 .logo .finnalogo {
 	 background: url('../../finna/images/finnafi-logo.png');
