@@ -104,7 +104,9 @@ VuFind.lightbox = (function() {
   var _xhr = false;
   // Public: Handle AJAX in the Lightbox
   var ajax = function(obj) {
-    if (_xhr !== false) return;
+    if (_xhr !== false) {
+      return;
+    }
     if (_originalUrl === false) {
       _originalUrl = obj.url;
     }
