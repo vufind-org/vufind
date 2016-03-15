@@ -71,7 +71,8 @@ finna.persona = (function(finna) {
                     dataType: "json",
                     url: VuFind.path + "/AJAX/JSON?method=personaLogin",
                     data: {
-                        assertion: assertion
+                        assertion: assertion,
+                        csrf: $('.persona-login').data('csrf')
                     }
                 })
                 .done(function(response, status, xhr) {

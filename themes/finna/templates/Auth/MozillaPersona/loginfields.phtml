@@ -1,7 +1,7 @@
 <!-- START of: finna - Auth/MozillaPersona/loginfields.phtml -->
 <div class="row persona-auth-login">
   <div class="col-sm-6 persona-auth-fields">
-    <a class="persona-auth-link persona-login" href="" ><span class="persona-caption"><?=$this->transEsc('Mozilla Persona')?></span><i class="fa"></i></a>
+    <a class="persona-auth-link persona-login" data-lightbox-ignore href="" data-csrf="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash(true))?>"><span class="persona-caption"><?=$this->transEsc('Mozilla Persona')?></span><i class="fa"></i></a>
   </div>
   <div class="col-sm-6">
     <div class="login-description">

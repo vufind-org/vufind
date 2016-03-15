@@ -118,12 +118,17 @@
     margin: -@modal-inner-padding;
     margin-bottom: @modal-title-padding;
     padding: @modal-title-padding;
+    // Account for close button
+    padding-right: 45px;
     min-height: (@modal-title-padding + @modal-title-line-height);
   }
   & .fa-spinner {
     position: absolute;
     right: 22px;
-    top: 60px;
+    top: 70px;
+  }
+  & .persona-auth-link .fa-spinner {
+    position: inherit;    
   }
   & .alert-success {
     margin-top: @modal-title-padding;
