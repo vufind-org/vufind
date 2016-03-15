@@ -32,7 +32,6 @@ function checkItemStatuses(container) {
     $.each(response.data, function(i, result) {
       var item = elements[result.id];
       if (!item) {
-        console.log('Unexpected selector from getItemStatuses: ' + sel);
         return;
       }
 

@@ -79,9 +79,13 @@ class Factory
      */
     public static function getDemo(ServiceManager $sm)
     {
+        $sessionFactory = function () use ($sm) {
+            $manager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            return new \Zend\Session\Container('DemoDriver', $manager);
+        };
         return new Demo(
             $sm->getServiceLocator()->get('VuFind\DateConverter'),
-            $sm->getServiceLocator()->get('VuFind\Search')
+            $sm->getServiceLocator()->get('VuFind\Search'), $sessionFactory
         );
     }
 

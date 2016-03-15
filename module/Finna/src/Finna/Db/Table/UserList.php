@@ -43,10 +43,13 @@ class UserList extends \VuFind\Db\Table\UserList
 {
     /**
      * Constructor
+     *
+     * @param \Zend\Session\Container $session Session container (must use same
+     * namespace as container provided to \VuFind\View\Helper\Root\UserList).
      */
-    public function __construct()
+    public function __construct(\Zend\Session\Container $session)
     {
-        parent::__construct();
+        parent::__construct($session);
         $this->rowClass = 'Finna\Db\Row\UserList';
     }
 }

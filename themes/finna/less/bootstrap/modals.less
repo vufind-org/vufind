@@ -77,38 +77,28 @@
   &.in { .opacity(@modal-backdrop-opacity); }
 }
 
-// Modal header
-// Top section of the modal w/ title and dismiss
-.modal-header {
-  background: @brand-primary;
-  color: @body-bg;
-  border-radius: 15px 15px 0px 0px;
-  padding: @modal-title-padding;
-  border-bottom: 1px solid @modal-header-border-color;
-  min-height: (@modal-title-padding + @modal-title-line-height);
-}
 // Close icon
-.modal-header .close {
-    color: @body-bg;
-    padding: 0px 7px 6px 7px;
-    font-weight: 500;
-    min-height: 30px;
-    min-width: 30px;
-    font-size: 1.5em;
-    line-height: 1em;
+.modal-content .close {
+  color: @body-bg;
+  padding: 0px 7px 6px 7px;
+  font-weight: 500;
+  min-height: 30px;
+  min-width: 30px;
+  font-size: 1.5em;
+  line-height: 1em;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  z-index: 2;
+  color: #fff;
+  opacity: 0.8;
   &:after {
-    position: absolute;
     font-family: 'icomoon';
     content: '\e02e';
-    top: 14px;
-    right: 14px;
   }
-}
-
-// Title text within header
-.modal-title {
-  margin: 0;
-  line-height: @modal-title-line-height;
+  &:hover {
+    opacity: 1;
+  }
 }
 
 // Modal body
@@ -116,6 +106,33 @@
 .modal-body {
   position: relative;
   padding: @modal-inner-padding;
+  
+  & h1, & h2 {
+    background: @modal-header-background;
+    color: @modal-header-color;
+    font-size: @content-headings-font-size-h4;
+    line-height: @modal-title-line-height;
+    border-top-left-radius: @border-radius-large;
+    border-top-right-radius: @border-radius-large;
+    border-bottom: 1px solid @modal-header-border-color;
+    margin: -@modal-inner-padding;
+    margin-bottom: @modal-title-padding;
+    padding: @modal-title-padding;
+    // Account for close button
+    padding-right: 45px;
+    min-height: (@modal-title-padding + @modal-title-line-height);
+  }
+  & .fa-spinner {
+    position: absolute;
+    right: 22px;
+    top: 70px;
+  }
+  & .persona-auth-link .fa-spinner {
+    position: inherit;    
+  }
+  & .alert-success {
+    margin-top: @modal-title-padding;
+  }
 }
 
 // Footer (for actions)

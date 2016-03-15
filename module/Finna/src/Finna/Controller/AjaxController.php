@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -222,7 +222,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function checkRequestsAreValidAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites(); // avoid session write timing bug
         $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
         $data = $this->params()->fromPost(
             'data', $this->params()->fromQuery('data')
@@ -436,6 +436,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function dateRangeVisualAjax()
     {
+        $this->disableSessionWrites(); // avoid session write timing bug
         $backend = $this->params()->fromQuery('backend');
         if (!$backend) {
             $backend = 'solr';
@@ -452,7 +453,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
         list($filterField, $facet)
             = explode(':', $config->SpecialFacets->dateRangeVis);
 
-        $this->writeSession();  // avoid session write timing bug
         $facetList = $this->getFacetList($isSolr, $filterField, $facet);
 
         if (empty($facetList)) {
@@ -485,7 +485,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function getBxRecommendationsAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites(); // avoid session write timing bug
+        // avoid session write timing bug
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         if (!isset($config->bX['token'])) {
             return $this->output('bX support not enabled', self::STATUS_ERROR, 400);
@@ -1196,7 +1197,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function similarRecordsAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites(); // avoid session write timing bug
 
         $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
 

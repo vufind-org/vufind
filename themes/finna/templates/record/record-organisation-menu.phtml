@@ -20,7 +20,7 @@
       <? if (isset($currentSource['moreinfoLink'])): ?>
         <li><a href="<?=$currentSource['moreinfoLink']?>"><?=$this->transEsc('More information about organisation')?></a></li>
       <? endif; ?>
-        <li><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Feedback')?>" class="modal-link controller:Record" id="feedback-record"><i class="fa fa-send-feedback"></i> <?=$this->transEsc('Send feedback on record')?></a></li>
+        <li><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Feedback')?>" data-lightbox id="feedback-record"><i class="fa fa-send-feedback"></i> <?=$this->transEsc('Send feedback on record')?></a></li>
       </ul>
     </li>
   </ul>

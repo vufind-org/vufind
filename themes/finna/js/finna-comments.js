@@ -8,7 +8,6 @@ finna.comments = (function() {
         form.toggle(allowCommenting);
         form.find('input[type=hidden][name=commentId]').val('');
 
-        initInappropriateComment();
         if (allowRating) {
             var rating = form.find('.rating');
             rating.rating('rate', 0);
@@ -44,11 +43,7 @@ finna.comments = (function() {
             });
         };
         
-        // Login link
-        $('a.login-link').click(function() {
-          return Lightbox.get('MyResearch','UserLogin');
-        });
-        finna.layout.initLightbox($('.usercomments-tab'));
+        VuFind.lightbox.bind($('.usercomments-tab'));
     };
 
     var initCommentForm = function(parentMethod, allowRating) {
@@ -115,7 +110,7 @@ finna.comments = (function() {
                 $(form).find('textarea[name="comment"]').val('');
             })
             .fail(function(response, textStatus) {
-                Lightbox.displayError(response.responseJSON.data);
+                alert(response.responseJSON.data);
             });
             return false;
         });
@@ -128,49 +123,6 @@ finna.comments = (function() {
     var updateAverageRating = function(rating, count) {
         $('.rating-average .rating').rating('rate', rating);
         $('.rating-average .count>span').text(count);
-    };
-
-    var initInappropriateComment = function() {
-        $('.comment-inappropriate a.modal-link').unbind('click').click(function() {
-            var comment = $(this).closest('.comment').data('id');
-            if (title = $(this).attr('title')) {
-                $('#modal .modal-title').html(title);
-                Lightbox.titleSet = true;
-            }
-
-            return Lightbox.get(
-                'Comments', 'inappropriate',
-                {comment: comment}
-            );
-        });
-
-        Lightbox.addFormHandler('commentInappropriateForm', function(evt) {
-            if (evt.isDefaultPrevented()) {
-                $('.fa.fa-spinner', evt.target).remove();
-                return false;
-            }
-
-            var form = $(evt.target);
-            form.find(':submit').attr('disabled', true);
-            var comment = form.find('input[type=hidden][name=comment]').val();
-            var reason = form.find('input[name=reason]:checked').val();
-
-            var url = VuFind.path + '/AJAX/JSON?method=inappropriateComment&comment';
-            $.ajax({
-                dataType: 'json',
-                data: {comment: comment, reason: reason},
-                method: 'POST',
-                url: url
-            })
-            .done(function(response) {
-                Lightbox.close();
-                requestRefreshComments();
-            })
-            .fail(function(response) {
-                Lightbox.displayError(response.responseJSON.data);
-            });
-            return false;
-        });
     };
 
     var initEditComment = function(allowCommenting, allowRating) {
@@ -218,6 +170,7 @@ finna.comments = (function() {
 
     var my = {
         initCommentList: initCommentList,
+        requestRefreshComments: requestRefreshComments, 
         init: function() {
         },
     };

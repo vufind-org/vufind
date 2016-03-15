@@ -71,26 +71,12 @@ finna.persona = (function(finna) {
                     dataType: "json",
                     url: VuFind.path + "/AJAX/JSON?method=personaLogin",
                     data: {
-                        assertion: assertion
+                        assertion: assertion,
+                        csrf: $('.persona-login').data('csrf')
                     }
                 })
                 .done(function(response, status, xhr) {
-                    if (Lightbox.shown) {
-                        Lightbox.addCloseAction(refreshPageForLogin);
-                        // and we update the modal
-                        var params = deparam(Lightbox.lastURL);
-                        if (params['subaction'] == 'UserLogin') {
-                            Lightbox.close();
-                        } else {
-                            Lightbox.getByUrl(
-                                Lightbox.lastURL,
-                                Lightbox.lastPOST,
-                                Lightbox.changeContent
-                            );
-                        }
-                    } else {
-                        window.location.href = window.location.href;
-                    }
+                    window.location.href = window.location.href;
                 })
                 .fail(function(response, textStatus, err) {
                     navigator.id.logout();

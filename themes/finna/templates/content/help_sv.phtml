@@ -48,7 +48,7 @@
         <li>Skapa en ny sökgrupp och skriv in söktermen ”andra världskriget” i sökfältet. Definiera förhållandet mellan sökgrupperna som <strong>Alla grupper (AND). </strong></li>
       </ul>
     </div>
-    
+
     <div id="myaccount" class="content-section"><h2><i class="fa fa-user"></i> Mitt konto och inloggning</h2>
       <p>Inloggade användare kan t.ex. spara sökningar, kommentera innehållet i Finna och reservera material.</p>
       <h4><i class="fa fa-sign-in"></i> Inloggning</h4>
@@ -62,7 +62,7 @@
         </li>
       </ul>
       <h4><i class="fa fa-heart"></i> Favoriter</h4>
-      <p>Du kan lägga poster till dina favoriter med hjärtikonen som finns på sidan med träfflistan eller på sidan med information om posten. Du kan ordna dina poster i olika favoritlistor, föra in dem i Refworks, skicka dem med e-post eller skriva ut dem i MARC-format.</p> 
+      <p>Du kan lägga poster till dina favoriter med hjärtikonen som finns på sidan med träfflistan eller på sidan med information om posten. Du kan ordna dina poster i olika favoritlistor, föra in dem i Refworks, skicka dem med e-post eller skriva ut dem i MARC-format.</p>
       <h4><em>Sparade sökningar, sökhistorik och nyhetsbevakning</em></h4>
       <p>Du kan spara din senaste sökning antingen på sidan med sökresultat eller med Spara-knappen i Senaste sökningar i Mitt konto. De sparade sökningarna syns överst.</p>
       <p>Du kan beställa nyhetsbevakning för sparade sökningar och få meddelanden om nyheter antingen varje vecka eller varje dag. Meddelandena skickas till din e-post.   </p>
@@ -78,13 +78,13 @@
       <p>Du kan byta e-postadress, aktivera påminnelse om förfallodag och välja vilket bibliotek du vill att dina reserveringar, beställningar och fjärrlån i första hand ska skickas till.</p>
       <p>Du kan ändra bibliotekets kontaktuppgifter genom att ta kontakt med ditt eget bibliotek.</p>
       <h4><em>Att byta pinkod eller lösenord</em></h4>
-      <p>Du kan byta lösenord eller pinkod i fliken Profil.</p>      
+      <p>Du kan byta lösenord eller pinkod i fliken Profil.</p>
     </div>
-   
+
     <div id="contactus" class="content-section"><h2><i class="fa fa-envelope"></i> Feedback</h2>
-      <p>Du kan ge feedback om Finna, t.ex. om gränssnittet eller tekniken, med en <a class="modal-link" href="<?=$this->url('feedback-home')?>">blankett.</a>  Responsen går till Nationalbiblioteket, där den behandlas och skickas vidare till den som ansvarar för ärendet.</p>
+      <p>Du kan ge feedback om Finna, t.ex. om gränssnittet eller tekniken, med en <a href="<?=$this->url('feedback-home')?>">blankett.</a>  Responsen går till Nationalbiblioteket, där den behandlas och skickas vidare till den som ansvarar för ärendet.</p>
     </div>
-  
+
     <div id="booleanoperators" class="content-section"><h2>Sökoperatorer</h2>
       <p>Du kan kombinera söktermer med hjälp av Booleska sökoperatorer. Följande operatorer kan användas: AND, +, OR, NOT och -.  </p>
       <p>Obs! De Booleska sökoperatorerna skrivs med VERSALER.</p>
@@ -104,7 +104,7 @@
       <h4 title="!-">!-</h4>
       <p>Operatoren avlägsnar de poster från sökresultaten, vilka innehåller termen efter den.
       </p>
-      <p>Exempel: sökes poster med termen "economics" men inte termen "Keynes": 
+      <p>Exempel: sökes poster med termen "economics" men inte termen "Keynes":
       </p>
       <pre class="code">economics !-Keynes</pre>
       <p>Obs! Denna operator kan inte användas i sökningar med en enda sökterm.</p>
@@ -114,15 +114,15 @@
       <p>Exempel: sökningen <i>!-merkki hakuehtona</i> (på finska):<p>
       <pre class="code">\!-huutomerkki hakuehtona</pre>
       <p>Obs! <strong>NOT</strong>-operatorn kan användas på motsvarande sätt som denna operator. <strong>NOT</strong>-operatorn kan dock ge mera resultat som ändå innehåller söktermen som skulle uteslutas.
-      </p>    
+      </p>
       <h4 title="Phrase searches">Frassökning</h4>
       <p>Du kan göra en exakt frassökning genom att skriva dina sökord inom citationstecken. </p>
       <p>Till exempel: du söker poster som innehåller frasen ”medeltidens historia”, inte t.ex. ”medeltidens kulturhistoria”: </p>
       <pre class="code">"keskiajan historia"</pre>
-      <p>Man kan också använda frassökning för enskilda söktermer, då visas bara poster som innehåller sökordet exakt så som det är skrivet, och inte t.ex. böjt på olika sätt. 
+      <p>Man kan också använda frassökning för enskilda söktermer, då visas bara poster som innehåller sökordet exakt så som det är skrivet, och inte t.ex. böjt på olika sätt.
       </p>
     </div>
-      
+
     <div id="wildcardsearches" class="content-section"><h2>Jokertecken</h2>
       <p><strong class="helpTerm">?</strong> ersätter ett tecken i sökordet.</p>
       <p>Till exempel: du kan söka både ”text” och ”test” med samma sökord:</p>
@@ -133,8 +133,8 @@
       <p>Jokertecknen kan också användas inne i sökordet:</p>
       <pre class="code">te*t</pre>
       <p>Obs! Jokertecknen ? och * kan inte vara det första tecknet i ett ord. </p>
-    </div> 
-      
+    </div>
+
     <div id="fuzzysearches"  class="content-section"><h2>Oskarp söknings</h2>
       <p>Om man gör en oskarp sökning visas också poster som innehåller ord som liknar sökordet. </p>
       <p>Du kan göra en oskarp sökning genom att lägga till tecknet ~ i slutet av ett ord. </p>
@@ -147,10 +147,10 @@
     <div id="proxitimitysearches" class="content-section"><h2>Avståndssökning</h2>
       <p>Genom att göra en avståndssökning får man träffar där sökorden är nära varandra, men inte nödvändigtvis intill varandra. </p>
       <p>Du kan göra en avståndssökning genom att lägga till tecknet ~ och ett avståndsvärde efter en sökfras med flera sökord.  </p>
-      <p>Till exempel: du söker på orden ”economics” och ”keynes” och vill att de ska förekomma på högst 10 ords avstånd från varandra: </p>   
+      <p>Till exempel: du söker på orden ”economics” och ”keynes” och vill att de ska förekomma på högst 10 ords avstånd från varandra: </p>
       <pre class="code">"economics Keynes"~10</pre>
     </div>
-    
+
     <div id="rangesearches"class="content-section"><h2>Intervallsökning</h2>
       <p>För att söka inom intervallet mellan två värden kan man använda klammerparenteser { } eller hakparenteser [ ]. Om man använder klammerparenteserna görs sökningen mellan värdena, värdena inom klammerparenteserna utesluts. Om man använder hakparenteser inkluderas värdena inom parentes i sökningen.  </p>
       <p>Till exempel: om du söker en term som börjar på bokstaven B eller C kan du söka på: </p>
@@ -159,7 +159,7 @@
       <pre class="code">[2002 TO 2003]</pre>
       <p>Obs! Operatorn TO ska skrivas med VERSALER.</p>
     </div>
-  
+
     <div id="boostingaterm" class="content-section"><h2>Att vikta sökord</h2>
       <p>Tecknet ^ ger mer vikt åt sökordet. Till exempel: i sökningen är sökordet ”Keynes” viktat:</p>
       <pre class="code">economics Keynes^5</pre>

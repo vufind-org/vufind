@@ -1,4 +1,4 @@
-/*global VuFind,checkSaveStatuses,setupSaveRecordLinks*/
+/*global VuFind, checkSaveStatuses*/
 finna.searchTabsRecommendations = (function() {
     var initSearchTabsRecommendations = function() {
         var holder = $('#search-tabs-recommendations-holder');
@@ -14,7 +14,7 @@ finna.searchTabsRecommendations = (function() {
             holder.html(response.data);
             finna.layout.initTruncate(holder);
             finna.openUrl.initLinks();
-            setupSaveRecordLinks(holder);
+            VuFind.lightbox.bind(holder);
             finna.itemStatus.initItemStatuses(holder);
             finna.itemStatus.initDedupRecordSelection(holder);
             checkSaveStatuses(holder);

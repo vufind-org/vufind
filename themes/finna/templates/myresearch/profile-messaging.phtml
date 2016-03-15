@@ -25,9 +25,9 @@
     <? if ($updateSettings): ?>
       <div class="col-xs-12 messaging-last">
         <? if ($updateSettings['method'] == 'email'): ?>
-          <i class="fa fa-pen"></i> <a class="modal-link profile-messaging-update controller:MyResearch" href="<?=$this->escapeHtmlAttr($this->url('myresearch-changemessagingsettings')) ?>"><?= $this->transEsc('request_messaging_settings_change') ?></a>
+          <i class="fa fa-pen"></i> <a class="profile-messaging-update" data-lightbox href="<?=$this->escapeHtmlAttr($this->url('myresearch-changemessagingsettings')) ?>"><?= $this->transEsc('request_messaging_settings_change') ?></a>
         <? else: ?>
-          <i class="fa fa-external-link"></i> <a class="profile-messaging-update controller:MyResearch" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateSettings['url'])) ?>" target="_blank"><?= $this->transEsc('request_messaging_settings_change') ?></a>
+          <i class="fa fa-external-link"></i> <a class="profile-messaging-update" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateSettings['url'])) ?>" target="_blank"><?= $this->transEsc('request_messaging_settings_change') ?></a>
         <? endif; ?>
       </div>
     <? endif; ?>

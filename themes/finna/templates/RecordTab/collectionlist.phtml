@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+  <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + array('idPrefix' => ''))?>
   </form>
     <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
@@ -28,7 +28,7 @@
       <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $results))?>
       </div>
     </div>
-  
+
 <? else: ?>
   <h4><?=$this->transEsc('collection_empty')?></h4><br><br>
 <? endif; ?>

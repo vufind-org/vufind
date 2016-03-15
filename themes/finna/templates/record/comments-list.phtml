@@ -27,12 +27,12 @@
       $reported = $inappropriateComments && in_array($comment->id, $inappropriateComments);
       $own = $user && $comment->user_id === $user->id;
   ?>
-  
+
   <div class="comment-wrapper comment" data-id="<?=$comment->id?>">
     <div class="name text-right">
       <? if ($comment->finna_rating !== null): ?>
       <div class="comment-rating">
-        <?= $this->partial('Helpers/rating-stars.phtml', ['value' => $comment->finna_rating ?: 0, 'disabled' => true])?>
+        <?=$this->partial('Helpers/rating-stars.phtml', ['value' => $comment->finna_rating ?: 0, 'disabled' => true])?>
       </div>
       <? endif; ?>
       <div class="comment-info">
@@ -40,8 +40,8 @@
           <strong><?=$this->escapeHtml(trim($this->userPublicName($comment)))?></strong>
           <?=$this->escapeHtml($comment->created)?>
           <? if ($own): ?>
-          <a href="#" class="edit"><?=$this->transEsc('Edit')?></a>
-          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete text-danger"><?=$this->transEsc('Delete')?></a>
+            <a href="#" class="edit"><?=$this->transEsc('Edit')?></a>
+            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete text-danger"><?=$this->transEsc('Delete')?></a>
           <? endif; ?>
         </small>
       </div>
@@ -51,9 +51,9 @@
     <div class="comment-inappropriate<?= $reported ? '-reported' : ''?> text-right">
       <small>
         <? if (!$reported): ?>
-        <a class="modal-link" title="<?= $this->escapeHtmlAttr($this->translate('Report inappropriate')) ?>" href="#"><?=$this->translate('Report inappropriate')?></a>
+          <a title="<?=$this->escapeHtmlAttr($this->translate('Report inappropriate')) ?>" href="<?=$this->url('comments-inappropriate') . '?id=' . urlencode($comment->id) ?>" data-lightbox data-lightbox-onclose="Finna.comments.requestRefreshComments();"><?=$this->translate('Report inappropriate')?></a>
         <? else: ?>
-        <?= $this->translate('Reported inappropriate'); ?>
+          <?=$this->translate('Reported inappropriate'); ?>
         <? endif; ?>
       </small>
     </div>

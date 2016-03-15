@@ -101,52 +101,6 @@ class Bootstrapper
     }
 
     /**
-     * Set up the session.  This should be done early since other startup routines
-     * may rely on session access.
-     *
-     * @return void
-     */
-    protected function initSession()
-    {
-        // Don't bother with session in CLI mode (it just causes error messages):
-        if (Console::isConsole()) {
-            return;
-        }
-
-        // Get session configuration:
-        if (!isset($this->config->Session->type)) {
-            throw new \Exception('Cannot initialize session; configuration missing');
-        }
-
-        // Set up the session handler by retrieving all the pieces from the service
-        // manager and injecting appropriate dependencies:
-        $serviceManager = $this->event->getApplication()->getServiceManager();
-        $sessionManager = $serviceManager->get('VuFind\SessionManager');
-        $sessionPluginManager = $serviceManager->get('VuFind\SessionPluginManager');
-        $sessionHandler = $sessionPluginManager->get($this->config->Session->type);
-        $sessionHandler->setConfig($this->config->Session);
-        $sessionManager->setSaveHandler($sessionHandler);
-
-        // Start up the session:
-        $sessionManager->start();
-
-        // According to the PHP manual, session_write_close should always be
-        // registered as a shutdown function when using an object as a session
-        // handler: http://us.php.net/manual/en/function.session-set-save-handler.php
-        register_shutdown_function(
-            function () use ($sessionManager) {
-                // If storage is immutable, the session is already closed:
-                if (!$sessionManager->getStorage()->isImmutable()) {
-                    $sessionManager->writeClose();
-                }
-            }
-        );
-
-        // Make sure account credentials haven't expired:
-        $serviceManager->get('VuFind\AuthManager')->checkForExpiredCredentials();
-    }
-
-    /**
      * Initialize dynamic debug mode (debug initiated by a ?debug=true parameter).
      *
      * @return void

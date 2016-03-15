@@ -40,7 +40,7 @@
     <ul role="menubar" class="nav navbar-nav">
       <? $cart = $this->cart(); if ($cart->isActive()): ?>
         <li id="cartSummary" role="menuitem">
-          <a id="cartItems" class="modal-link" title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><i class="fa fa-suitcase"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?><?=$cart->isFull() ? ' (' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
+          <a id="cartItems" data-lightbox title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-processor')?>"><i class="fa fa-suitcase"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?><?=$cart->isFull() ? ' (' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
         </li>
       <? endif; ?>
 
@@ -94,11 +94,11 @@
       <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <span class="username"><?=$user ? $this->escapeHtml($this->truncate($user->getDisplayName(), 20)) : $this->transEsc("Your Account")?></span> <b class="caret"></b></a>
       <ul role="menu" class="dropdown-menu">
         <li role="menuitem" class="logoutOptions<? if (!$user): ?> hidden<? endif ?>">
-          <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" class="modal-link" title="<?=$this->transEsc("Your Account")?>"><strong><i class="fa fa-user"></i> <?=$this->transEsc("Your Account")?></strong><div class="description"><?=$this->transEsc("your_account_info")?></div></a>
+          <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" title="<?=$this->transEsc("Your Account")?>"><strong><i class="fa fa-user"></i> <?=$this->transEsc("Your Account")?></strong><div class="description"><?=$this->transEsc("your_account_info")?></div></a>
         </li>
         <li role="menuitem" class="logoutOptions<? if (!$user): ?> hidden<? endif ?>">
           <? $logoutClass = $this->personaAuth()->getUser() === null ? '' : ' persona-logout' ?>
-          <a href="<?=$this->url('myresearch-logout')?>" class="modal-link<?=$logoutClass?>" title="<?=$this->transEsc("Log Out")?>"><strong><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></strong></a>
+          <a href="<?=$this->url('myresearch-logout')?>" class="<?=$logoutClass?>" title="<?=$this->transEsc("Log Out")?>"><strong><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></strong></a>
         </li>
       </ul>
     <? if (!$user): ?></li><? endif; ?>
@@ -109,7 +109,7 @@
         <? if ($this->templateDir === 'myresearch' && $this->templateName === 'login'): ?>
             <a title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
         <? else: ?>
-            <a href="<?=$this->url('myresearch-userlogin')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
+            <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'" title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
         <? endif; ?>
       <? endif; ?>
     </li>

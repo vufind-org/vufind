@@ -83,7 +83,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
         <div class="save-record-container">
-          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <?=$this->transEsc('Add to favorites')?></a>
+          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <?=$this->transEsc('Add to favorites')?></a>
         </div>
       <? endif; ?>
       <? if ($this->layout()->templateDir === 'list'): ?>

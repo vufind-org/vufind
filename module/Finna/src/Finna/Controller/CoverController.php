@@ -46,6 +46,7 @@ class CoverController extends \VuFind\Controller\CoverController
      */
     public function showAction()
     {
+        $this->disableSessionWrites();  // avoid session write timing bug
         $width = $this->params()->fromQuery('w');
         $height = $this->params()->fromQuery('h');
         // Use full-resolution image?

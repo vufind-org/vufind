@@ -106,7 +106,7 @@ finna.metalib = (function() {
             $('.finna-main-header .container .row').html(response.data['header']);
 
             initPagination();
-            initSearchTools();
+            VuFind.lightbox.bind($('.searchtools'));
             finna.layout.init();
             finna.openUrl.initLinks();
             finna.layout.initMobileNarrowSearch();
@@ -197,14 +197,6 @@ finna.metalib = (function() {
             href += ('search[]=MetaLib:' + hash);
             $(this).attr('href', href);
         });
-    };
-
-    var initSearchTools = function() {
-        // Email search link
-        $('.mailSearch').click(function() {
-            return Lightbox.get('Search','Email', {url:document.URL});
-        });
-
     };
 
     var scrollToRecord = function() {

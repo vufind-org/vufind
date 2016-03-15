@@ -69,7 +69,6 @@ return array(
         'finna-openurl.js',
         'finna-persona.js',
         'finna-common.js',
-        'finna-user-profile.js',
         'vendor/jquery.dataTables.min.js',
         'vendor/dataTables.bootstrap.min.js',
         'vendor/jquery.inview.min.js',

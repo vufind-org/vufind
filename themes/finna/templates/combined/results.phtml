@@ -50,7 +50,7 @@
   $this->headLink()->appendStylesheet('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
-<form class="form" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+<form class="form" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
   <? $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
     <div>
       <? foreach ($recs as $current): ?>

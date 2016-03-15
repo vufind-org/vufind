@@ -27,8 +27,6 @@
  */
 namespace Finna\Db\Table;
 
-use Zend\Db\Sql\Select;
-
 /**
  * Table Definition for user
  *
@@ -40,17 +38,6 @@ use Zend\Db\Sql\Select;
  */
 class User extends \VuFind\Db\Table\User
 {
-    /**
-     * Constructor
-     *
-     * @param \Zend\Config\Config $config VuFind configuration
-     */
-    public function __construct(\Zend\Config\Config $config)
-    {
-        parent::__construct($config);
-        $this->rowClass = 'Finna\Db\Row\User';
-    }
-
     /**
      * Create a row for the specified username.
      *
@@ -106,20 +93,5 @@ class User extends \VuFind\Db\Table\User
         }
         $row = $this->select(['id' => $id])->current();
         return (empty($row)) ? false : $row;
-    }
-
-    /**
-     * Get users with due date reminders.
-     *
-     * @return array
-     */
-    public function getUsersWithDueDateReminders()
-    {
-        return $this->select(
-            function (Select $select) {
-                $select->where->greaterThan('finna_due_date_reminder', 0);
-                $select->order('username desc');
-            }
-        );
     }
 }

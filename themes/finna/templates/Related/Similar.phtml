@@ -5,7 +5,7 @@
     <? foreach ($similarRecords as $data): ?>
       <li class="list-group-item">
         <? $formats = $data->getFormats(); if ($formats): ?>
-        <i class="iconlabel format-<?=$this->record($data)->getFormatClass(end($formats)) ?>" title="<?=$this->escapeHtmlAttr($this->translate(end($formats), null, $format)) ?>"></i>
+        <i class="iconlabel format-<?=$this->record($data)->getFormatClass(end($formats)) ?>" title="<?=$this->escapeHtmlAttr($this->translate(end($formats), null, end($formats))) ?>"></i>
         <? endif; ?>
         <a href="<?=$this->recordLink()->getUrl($data)?>">
           <?=$this->escapeHtml($data->getTitle())?>

@@ -119,9 +119,10 @@ class RecordController extends \VuFind\Controller\RecordController
             $this->getServiceLocator()->get('VuFind\Mailer')->getTransport()
                 ->send($mail);
 
-            if (!$this->inLightbox()) {
-                $flashMsg->setNamespace('info')
-                    ->addMessage('Thank you for your feedback');
+            $flashMsg->addSuccessMessage('Thank you for your feedback');
+            if ($this->getRequest()->getQuery('layout', 'no') !== 'lightbox'
+                || 'layout/lightbox' != $this->layout()->getTemplate()
+            ) {
                 $this->redirectToRecord('');
             }
         }

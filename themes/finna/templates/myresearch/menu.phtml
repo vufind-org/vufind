@@ -6,7 +6,7 @@
     }
     if ($this->auth()->getManager()->isLoggedIn()) {
         $logoutClass = $this->personaAuth()->getUser() === null ? '' : ' persona-logout';
-        $this->layout()->finnaMainHeader .= '<a class="btn btn-primary pull-right modal-link' . $logoutClass . '" href="' . $this->url('myresearch-logout') . '" title="'.$this->transEsc('Log Out') . '"><i class="fa fa-sign-out"></i> ' . $this->transEsc('Log Out') . '</a>';
+        $this->layout()->finnaMainHeader .= '<a class="btn btn-primary pull-right' . $logoutClass . '" href="' . $this->url('myresearch-logout') . '" title="'.$this->transEsc('Log Out') . '"><i class="fa fa-sign-out"></i> ' . $this->transEsc('Log Out') . '</a>';
     }
     $this->layout()->finnaMainHeader .= '</div>';
 
