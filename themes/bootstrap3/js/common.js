@@ -138,39 +138,6 @@ function setupOffcanvas() {
   }
 }
 
-function setupBacklinks() {
-  // Highlight previous links, grey out following
-  $('.backlink')
-    .mouseover(function() {
-      // Underline back
-      var t = $(this);
-      do {
-        t.css({'text-decoration':'underline'});
-        t = t.prev();
-      } while(t.length > 0);
-      // Mute ahead
-      t = $(this).next();
-      do {
-        t.css({'color':'#999'});
-        t = t.next();
-      } while(t.length > 0);
-    })
-    .mouseout(function() {
-      // Underline back
-      var t = $(this);
-      do {
-        t.css({'text-decoration':'none'});
-        t = t.prev();
-      } while(t.length > 0);
-      // Mute ahead
-      t = $(this).next();
-      do {
-        t.css({'color':''});
-        t = t.next();
-      } while(t.length > 0);
-    });
-}
-
 function setupAutocomplete() {
   // Search autocomplete
   $('.autocomplete').each(function(i, op) {
@@ -261,8 +228,6 @@ function keyboardShortcuts() {
 $(document).ready(function() {
   // Setup search autocomplete
   setupAutocomplete();
-  // Setup highlighting of backlinks
-  setupBacklinks();
   // Off canvas
   setupOffcanvas();
   // Keyboard shortcuts in detail view

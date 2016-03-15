@@ -69,7 +69,7 @@ CREATE TABLE `oai_resumption` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `resource` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `record_id` varchar(120) NOT NULL DEFAULT '',
+  `record_id` varchar(255) NOT NULL DEFAULT '',
   `title` varchar(200) NOT NULL DEFAULT '',
   `author` varchar(200) DEFAULT NULL,
   `year` mediumint(6) DEFAULT NULL,
@@ -301,7 +301,7 @@ CREATE TABLE `user_card` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `record` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `record_id` varchar(120) DEFAULT NULL,
+  `record_id` varchar(255) DEFAULT NULL,
   `source` varchar(50) DEFAULT NULL,
   `version` varchar(20) NOT NULL,
   `data` longtext DEFAULT NULL,
