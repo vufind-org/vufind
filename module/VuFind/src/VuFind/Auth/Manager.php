@@ -19,26 +19,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
 use VuFind\Cookie\CookieManager,
     VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
     VuFind\Exception\Auth as AuthException,
-    Zend\Config\Config, Zend\Session\SessionManager;
+    Zend\Config\Config, Zend\Session\SessionManager, Zend\Validator\Csrf;
 
 /**
  * Wrapper class for handling logged-in user in session.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
 {
@@ -133,7 +133,16 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->cookieManager = $cookieManager;
 
         // Set up session:
-        $this->session = new \Zend\Session\Container('Account');
+        $this->session = new \Zend\Session\Container('Account', $sessionManager);
+
+        // Set up CSRF:
+        $this->csrf = new Csrf(
+            [
+                'session' => new \Zend\Session\Container('csrf', $sessionManager),
+                'salt' => isset($this->config->Security->HMACkey)
+                    ? $this->config->Security->HMACkey : 'VuFindCsrfSalt',
+            ]
+        );
 
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
@@ -430,6 +439,20 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     }
 
     /**
+     * Retrieve CSRF token
+     *
+     * If no CSRF token currently exists, or should be regenerated, generates one.
+     *
+     * @param bool $regenerate Should we regenerate token? (default false)
+     *
+     * @return string
+     */
+    public function getCsrfHash($regenerate = false)
+    {
+        return $this->csrf->getHash($regenerate);
+    }
+
+    /**
      * Get the identity
      *
      * @return \ZfcRbac\Identity\IdentityInterface|null
@@ -526,6 +549,13 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function login($request)
     {
+        // Validate CSRF for form-based authentication methods:
+        if (!$this->getAuth()->getSessionInitiator(null)
+            && !$this->csrf->isValid($request->getPost()->get('csrf'))
+        ) {
+            throw new AuthException('authentication_error_technical');
+        }
+
         // Perform authentication:
         try {
             $user = $this->getAuth()->authenticate($request);

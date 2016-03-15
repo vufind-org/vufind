@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Anna Headley <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 namespace VuFind\Auth;
 use VuFind\Db\Row\User, VuFind\Exception\Auth as AuthException;
@@ -37,11 +37,11 @@ use Zend\Http\PhpEnvironment\Request;
  *
  * See config.ini for more details
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Anna Headley <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 class ChoiceAuth extends AbstractBase
 {
@@ -75,11 +75,14 @@ class ChoiceAuth extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param \Zend\Session\Container $container Session container for retaining
+     * user choices.
      */
-    public function __construct()
+    public function __construct(\Zend\Session\Container $container)
     {
         // Set up session container and load cached strategy (if found):
-        $this->session = new \Zend\Session\Container('ChoiceAuth');
+        $this->session = $container;
         $this->strategy = isset($this->session->auth_method)
             ? $this->session->auth_method : false;
     }

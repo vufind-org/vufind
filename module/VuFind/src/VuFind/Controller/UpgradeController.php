@@ -19,27 +19,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 use ArrayObject, VuFind\Config\Locator as ConfigLocator,
     VuFind\Cookie\Container as CookieContainer,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Mvc\MvcEvent,
-    Zend\Session\Container as SessionContainer;
+    Zend\Mvc\MvcEvent;
 
 /**
  * Class controls VuFind upgrading.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class UpgradeController extends AbstractBase
 {
@@ -53,7 +52,7 @@ class UpgradeController extends AbstractBase
     /**
      * Session container
      *
-     * @var SessionContainer
+     * @var \Zend\Session\Container
      */
     protected $session;
 
@@ -67,10 +66,12 @@ class UpgradeController extends AbstractBase
     /**
      * Constructor
      *
-     * @param \VuFind\Cookie\CookieManager $cookieManager Cookie manager
+     * @param \VuFind\Cookie\CookieManager $cookieManager    Cookie manager
+     * @param \Zend\Session\Container      $sessionContainer Session container
      */
-    public function __construct(\VuFind\Cookie\CookieManager $cookieManager)
-    {
+    public function __construct(\VuFind\Cookie\CookieManager $cookieManager,
+        \Zend\Session\Container $sessionContainer
+    ) {
         // We want to use cookies for tracking the state of the upgrade, since the
         // session is unreliable -- if the user upgrades a configuration that uses
         // a different session handler than the default one, we'll lose track of our
@@ -81,7 +82,7 @@ class UpgradeController extends AbstractBase
         // safely use the session for storing some values.  We'll use this for the
         // temporary storage of root database credentials, since it is unwise to
         // send such sensitive values around as cookies!
-        $this->session = new SessionContainer('upgrade');
+        $this->session = $sessionContainer;
 
         // We should also use the session for storing warnings once we know it will
         // be stable; this will prevent the cookies from getting too big.

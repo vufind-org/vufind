@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 
 /**
  * ILL trait (for subclasses of AbstractRecord)
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 trait ILLRequestsTrait
 {
@@ -111,14 +111,16 @@ trait ILLRequestsTrait
 
             // Success: Go to Display ILL Requests
             if (isset($results['success']) && $results['success'] == true) {
-                $this->flashMessenger()
-                    ->addMessage('ill_request_place_success', 'success');
-                if ($this->inLightbox()) {
-                    return false;
-                }
-                return $this->redirect()->toRoute(
-                    'myresearch-illrequests'
-                );
+                $msg = [
+                    'html' => true,
+                    'msg' => 'ill_request_place_success_html',
+                    'tokens' => [
+                        '%%url%%' => $this->url()
+                            ->fromRoute('myresearch-illrequests')
+                    ],
+                ];
+                $this->flashMessenger()->addMessage($msg, 'success');
+                return $this->redirectToRecord('#top');
             } else {
                 // Failure: use flash messenger to display messages, stay on
                 // the current form.

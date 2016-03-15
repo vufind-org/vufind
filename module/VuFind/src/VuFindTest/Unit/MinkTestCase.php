@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
 use Behat\Mink\Driver\ZombieDriver, Behat\Mink\Session,
@@ -35,11 +35,11 @@ use Behat\Mink\Driver\ZombieDriver, Behat\Mink\Session,
 /**
  * Abstract base class for PHPUnit test cases using Mink.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 abstract class MinkTestCase extends DbTestCase
 {
@@ -48,7 +48,7 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @var array
      */
-    protected $modifiedConfigs;
+    protected $modifiedConfigs = [];
 
     /**
      * Mink session
@@ -64,13 +64,17 @@ abstract class MinkTestCase extends DbTestCase
      * with config filenames (i.e. use 'config' for config.ini, etc.); within each
      * file's array, top-level key is config section. Within each section's array
      * are key-value configuration pairs.
+     * @param array $replace Array of config files to completely override (as
+     * opposed to modifying); if a config file from $configs is included in this
+     * array, the $configs setting will be used as the entire configuration, and
+     * the defaults from the config/vufind directory will be ignored.
      *
      * @return void
      */
-    protected function changeConfigs($configs)
+    protected function changeConfigs($configs, $replace = [])
     {
         foreach ($configs as $file => $settings) {
-            $this->changeConfigFile($file, $settings);
+            $this->changeConfigFile($file, $settings, in_array($file, $replace));
             $this->modifiedConfigs[] = $file;
         }
     }
@@ -80,10 +84,12 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @param string $configName Configuration to modify.
      * @param array  $settings   Settings to change.
+     * @param bool   $replace    Should we replace the existing config entirely
+     * (as opposed to extending it with new settings)?
      *
      * @return void
      */
-    protected function changeConfigFile($configName, $settings)
+    protected function changeConfigFile($configName, $settings, $replace = false)
     {
         $file = $configName . '.ini';
         $local = ConfigLocator::getLocalConfigPath($file, null, true);
@@ -93,6 +99,11 @@ abstract class MinkTestCase extends DbTestCase
         } else {
             // File doesn't exist? Make a baseline version.
             copy(ConfigLocator::getBaseConfigPath($file), $local);
+        }
+
+        // If we're replacing the existing file, wipe it out now:
+        if ($replace) {
+            file_put_contents($local, '');
         }
 
         $writer = new ConfigWriter($local);
@@ -256,6 +267,40 @@ abstract class MinkTestCase extends DbTestCase
         $result = $page->find('css', $selector);
         $this->assertTrue(is_object($result));
         return $result;
+    }
+
+    /**
+     * Retrieve a link and assert that it exists before returning it.
+     *
+     * @param Element $page Page element
+     * @param string  $text Link text to match
+     *
+     * @return mixed
+     */
+    protected function findAndAssertLink(Element $page, $text)
+    {
+        $link = $page->findLink($text);
+        $this->assertTrue(is_object($link));
+        return $link;
+    }
+
+    /**
+     * Check whether an element containing the specified text exists.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param string  $text     Expected text
+     *
+     * @return bool
+     */
+    protected function hasElementsMatchingText(Element $page, $selector, $text)
+    {
+        foreach ($page->findAll('css', $selector) as $current) {
+            if ($text === $current->getText()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
