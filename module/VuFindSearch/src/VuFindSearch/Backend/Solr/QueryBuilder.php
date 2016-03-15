@@ -309,17 +309,9 @@ class QueryBuilder implements QueryBuilderInterface
                 [$this, 'reduceQueryGroupComponents'], $component->getQueries()
             );
             $searchString = $component->isNegated() ? 'NOT ' : '';
-            $reduced = array_filter(
-                $reduced,
-                function ($s) {
-                    return '' !== $s;
-                }
+            $searchString .= sprintf(
+                '(%s)', implode(" {$component->getOperator()} ", $reduced)
             );
-            if ($reduced) {
-                $searchString .= sprintf(
-                    '(%s)', implode(" {$component->getOperator()} ", $reduced)
-                );
-            }
         } else {
             $searchString  = $this->getLuceneHelper()
                 ->normalizeSearchString($component->getString());
@@ -327,7 +319,7 @@ class QueryBuilder implements QueryBuilderInterface
                 $component->getHandler(),
                 $searchString
             );
-            if ($searchHandler && '' !== $searchString) {
+            if ($searchHandler) {
                 $searchString
                     = $this->createSearchString($searchString, $searchHandler);
             }
@@ -347,9 +339,6 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $advanced = $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string);
 
-        if (null === $string) {
-            return '';
-        }
         if ($advanced && $handler) {
             return $handler->createAdvancedQueryString($string);
         } else if ($handler) {
