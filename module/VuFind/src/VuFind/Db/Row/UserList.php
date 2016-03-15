@@ -19,29 +19,35 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Row;
 use VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Exception\MissingField as MissingFieldException,
-    Zend\Session\Container as SessionContainer;
+    VuFind\Exception\MissingField as MissingFieldException;
 
 /**
  * Row Definition for user_list
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
+
+    /**
+     * Session container for last list information.
+     *
+     * @var \Zend\Session\Container
+     */
+    protected $session = null;
 
     /**
      * Constructor
@@ -131,6 +137,18 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
+     * Set session container
+     *
+     * @param \Zend\Session\Container $session Session container
+     *
+     * @return void
+     */
+    public function setSession(\Zend\Session\Container $session)
+    {
+        $this->session = $session;
+    }
+
+    /**
      * Remember that this list was used so that it can become the default in
      * dialog boxes.
      *
@@ -138,19 +156,9 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function rememberLastUsed()
     {
-        $session = new SessionContainer('List');
-        $session->lastUsed = $this->id;
-    }
-
-    /**
-     * Retrieve the ID of the last list that was accessed, if any.
-     *
-     * @return mixed User_list ID (if set) or null (if not available).
-     */
-    public static function getLastUsed()
-    {
-        $session = new SessionContainer('List');
-        return isset($session->lastUsed) ? $session->lastUsed : null;
+        if (null !== $this->session) {
+            $this->session->lastUsed = $this->id;
+        }
     }
 
     /**

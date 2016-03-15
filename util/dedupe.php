@@ -21,11 +21,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Utilities
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
+ * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
 if(count($argv) < 2 || $argv[1] == "") {
     echo "\nPlease specify an input file: ";

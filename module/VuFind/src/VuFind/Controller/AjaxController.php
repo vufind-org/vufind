@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Auth as AuthException;
@@ -31,11 +31,11 @@ use VuFind\Exception\Auth as AuthException;
 /**
  * This controller handles global AJAX functionality
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class AjaxController extends AbstractBase
 {
@@ -106,7 +106,7 @@ class AjaxController extends AbstractBase
      */
     public function recommendAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
@@ -129,25 +129,6 @@ class AjaxController extends AbstractBase
         $recommend = $this->getViewRenderer()->plugin('recommend');
         $response->setContent($recommend($module));
         return $response;
-    }
-
-    /**
-     * Get the contents of a lightbox; note that unlike most methods, this
-     * one actually returns HTML rather than JSON.
-     *
-     * @return mixed
-     */
-    protected function getLightboxAjax()
-    {
-        // Turn layouts on for this action since we want to render the
-        // page inside a lightbox:
-        $this->layout()->setTemplate('layout/lightbox');
-
-        // Call the requested action:
-        return $this->forwardTo(
-            $this->params()->fromQuery('submodule'),
-            $this->params()->fromQuery('subaction')
-        );
     }
 
     /**
@@ -187,7 +168,7 @@ class AjaxController extends AbstractBase
      */
     protected function getItemStatusesAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $catalog = $this->getILS();
         $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
         $results = $catalog->getStatuses($ids);
@@ -323,6 +304,36 @@ class AjaxController extends AbstractBase
     }
 
     /**
+     * Reduce an array of service names to a human-readable string.
+     *
+     * @param array $services Names of available services.
+     *
+     * @return string
+     */
+    protected function reduceServices(array $services)
+    {
+        // Normalize, dedup and sort available services
+        $normalize = function ($in) {
+            return strtolower(preg_replace('/[^A-Za-z]/', '', $in));
+        };
+        $services = array_map($normalize, array_unique($services));
+        sort($services);
+
+        // Do we need to deal with a preferred service?
+        $config = $this->getConfig();
+        $preferred = isset($config->Item_Status->preferred_service)
+            ? $normalize($config->Item_Status->preferred_service) : false;
+        if (false !== $preferred && in_array($preferred, $services)) {
+            $services = [$preferred];
+        }
+
+        return $this->getViewRenderer()->render(
+            'ajax/status-available-services.phtml',
+            ['services' => $services]
+        );
+    }
+
+    /**
      * Support method for getItemStatuses() -- process a single bibliographic record
      * for location settings other than "group".
      *
@@ -343,6 +354,8 @@ class AjaxController extends AbstractBase
         // Summarize call number, location and availability info across all items:
         $callNumbers = $locations = [];
         $use_unknown_status = $available = false;
+        $services = [];
+
         foreach ($record as $info) {
             // Find an available copy
             if ($info['availability']) {
@@ -357,6 +370,10 @@ class AjaxController extends AbstractBase
             // Store call number/location info:
             $callNumbers[] = $info['callnumber'];
             $locations[] = $info['location'];
+            // Store all available services
+            if (isset($info['services'])) {
+                $services = array_merge($services, $info['services']);
+            }
         }
 
         // Determine call number string based on findings:
@@ -369,9 +386,13 @@ class AjaxController extends AbstractBase
             $locations, $locationSetting, 'Multiple Locations', 'location_'
         );
 
-        $availability_message = $use_unknown_status
-            ? $messages['unknown']
-            : $messages[$available ? 'available' : 'unavailable'];
+        if (!empty($services)) {
+            $availability_message = $this->reduceServices($services);
+        } else {
+            $availability_message = $use_unknown_status
+                ? $messages['unknown']
+                : $messages[$available ? 'available' : 'unavailable'];
+        }
 
         // Send back the collected details:
         return [
@@ -473,7 +494,7 @@ class AjaxController extends AbstractBase
      */
     protected function getSaveStatusesAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         // check if user is logged in
         $user = $this->getUser();
         if (!$user) {
@@ -501,11 +522,15 @@ class AjaxController extends AbstractBase
             $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
             $data = $user->getSavedData($id, null, $source);
             if ($data && count($data) > 0) {
-                $result[$i] = [];
+                $selector = $source . '|' . $id;
+                $result[$selector] = [];
                 // if this item was saved, add it to the list of saved items.
                 foreach ($data as $list) {
-                    $result[$i][] = [
-                        'list_id' => $list->list_id,
+                    $result[$selector][] = [
+                        'list_url' => $this->url()->fromRoute(
+                            'userList',
+                            ['id' => $list->list_id]
+                        ),
                         'list_title' => $list->list_title
                     ];
                 }
@@ -690,7 +715,7 @@ class AjaxController extends AbstractBase
             ];
         }
 
-        // Set layout to render the page inside a lightbox:
+        // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
         $view = $this->createViewModel(
             [
@@ -714,7 +739,7 @@ class AjaxController extends AbstractBase
      */
     protected function getMapDataAjax($fields = ['long_lat'])
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $results = $this->getResultsManager()->get('Solr');
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
@@ -749,8 +774,8 @@ class AjaxController extends AbstractBase
      */
     public function resultgooglemapinfoAction()
     {
-        $this->writeSession();  // avoid session write timing bug
-        // Set layout to render the page inside a lightbox:
+        $this->disableSessionWrites();  // avoid session write timing bug
+        // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
 
         $results = $this->getResultsManager()->get('Solr');
@@ -779,7 +804,7 @@ class AjaxController extends AbstractBase
      */
     protected function getVisDataAjax($fields = ['publishDate'])
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $results = $this->getResultsManager()->get('Solr');
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
@@ -872,7 +897,7 @@ class AjaxController extends AbstractBase
      */
     protected function getACSuggestionsAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $query = $this->getRequest()->getQuery();
         $autocompleteManager = $this->getServiceLocator()
             ->get('VuFind\AutocompletePluginManager');
@@ -888,7 +913,7 @@ class AjaxController extends AbstractBase
      */
     protected function checkRequestIsValidAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $data = $this->params()->fromQuery('data');
         $requestType = $this->params()->fromQuery('requestType');
@@ -1069,8 +1094,9 @@ class AjaxController extends AbstractBase
      */
     protected function getResolverLinksAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $openUrl = $this->params()->fromQuery('openurl', '');
+        $searchClassId = $this->params()->fromQuery('searchClassId', '');
 
         $config = $this->getConfig();
         $resolverType = isset($config->OpenURL->resolver)
@@ -1125,7 +1151,8 @@ class AjaxController extends AbstractBase
         // Render the links using the view:
         $view = [
             'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
-            'electronic' => $electronic, 'services' => $services
+            'electronic' => $electronic, 'services' => $services,
+            'searchClassId' => $searchClassId
         ];
         $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
 
@@ -1153,7 +1180,7 @@ class AjaxController extends AbstractBase
      */
     protected function getLibraryPickupLocationsAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $pickupLib = $this->params()->fromQuery('pickupLib');
         if (empty($id) || empty($pickupLib)) {
@@ -1205,7 +1232,7 @@ class AjaxController extends AbstractBase
      */
     protected function getRequestGroupPickupLocationsAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $requestGroupId = $this->params()->fromQuery('requestGroupId');
         if (empty($id) || empty($requestGroupId)) {
@@ -1268,7 +1295,7 @@ class AjaxController extends AbstractBase
      */
     protected function getFacetDataAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
 
         $facet = $this->params()->fromQuery('facetName');
         $sort = $this->params()->fromQuery('facetSort');

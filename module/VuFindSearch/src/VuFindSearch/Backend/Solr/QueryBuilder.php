@@ -20,13 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   David Maus <maus@hab.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\Solr;
 
@@ -39,13 +39,13 @@ use VuFindSearch\ParamBag;
 /**
  * SOLR QueryBuilder.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   David Maus <maus@hab.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class QueryBuilder implements QueryBuilderInterface
 {
@@ -309,9 +309,17 @@ class QueryBuilder implements QueryBuilderInterface
                 [$this, 'reduceQueryGroupComponents'], $component->getQueries()
             );
             $searchString = $component->isNegated() ? 'NOT ' : '';
-            $searchString .= sprintf(
-                '(%s)', implode(" {$component->getOperator()} ", $reduced)
+            $reduced = array_filter(
+                $reduced,
+                function ($s) {
+                    return '' !== $s;
+                }
             );
+            if ($reduced) {
+                $searchString .= sprintf(
+                    '(%s)', implode(" {$component->getOperator()} ", $reduced)
+                );
+            }
         } else {
             $searchString  = $this->getLuceneHelper()
                 ->normalizeSearchString($component->getString());
@@ -319,7 +327,7 @@ class QueryBuilder implements QueryBuilderInterface
                 $component->getHandler(),
                 $searchString
             );
-            if ($searchHandler) {
+            if ($searchHandler && '' !== $searchString) {
                 $searchString
                     = $this->createSearchString($searchString, $searchHandler);
             }
@@ -339,6 +347,9 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $advanced = $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string);
 
+        if (null === $string) {
+            return '';
+        }
         if ($advanced && $handler) {
             return $handler->createAdvancedQueryString($string);
         } else if ($handler) {

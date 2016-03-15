@@ -19,12 +19,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Cover_Generator
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/use_of_external_content Wiki
+ * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
 namespace VuFind\Cover;
 use VuFindCode\ISBN, VuFind\Content\Covers\PluginManager as ApiManager;
@@ -32,12 +32,12 @@ use VuFindCode\ISBN, VuFind\Content\Covers\PluginManager as ApiManager;
 /**
  * Book Cover Generator
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Cover_Generator
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/use_of_external_content Wiki
+ * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
 class Loader extends \VuFind\ImageLoader
 {
@@ -261,7 +261,7 @@ class Loader extends \VuFind\ImageLoader
             && !$this->fetchFromContentType()
         ) {
             if (isset($this->config->Content->makeDynamicCovers)
-                && false !== $this->config->Content->makeDynamicCovers
+                && $this->config->Content->makeDynamicCovers
             ) {
                 $this->image = $this->getCoverGenerator()->generate(
                     $settings['title'], $settings['author'], $settings['callnumber']
@@ -541,7 +541,7 @@ class Loader extends \VuFind\ImageLoader
         }
 
         $image = $result->getBody();
-        
+
         if ('' == $image) {
             return false;
         }

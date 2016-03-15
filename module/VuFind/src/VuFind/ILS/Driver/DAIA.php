@@ -22,13 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Oliver Goldschmidt <o.goldschmidt@tu-harburg.de>
  * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use DOMDocument, VuFind\Exception\ILS as ILSException,
@@ -38,13 +38,13 @@ use DOMDocument, VuFind\Exception\ILS as ILSException,
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Oliver Goldschmidt <o.goldschmidt@tu-harburg.de>
  * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class DAIA extends AbstractBase implements
     HttpServiceAwareInterface, LoggerAwareInterface
@@ -190,7 +190,9 @@ class DAIA extends AbstractBase implements
      */
     public function getHoldLink($id, $details)
     {
-        return ($details['ilslink'] != '') ? $details['ilslink'] : null;
+        return (isset($details['ilslink']) && $details['ilslink'] != '')
+            ? $details['ilslink']
+            : null;
     }
 
     /**
@@ -508,12 +510,12 @@ class DAIA extends AbstractBase implements
 
         if (count($docs)) {
             // check for error messages and write those to log
-            if (array_key_exists('message', $docs)) {
+            if (isset($docs['message'])) {
                 $this->logMessages($docs['message'], 'document');
             }
 
             // do DAIA documents exist?
-            if (array_key_exists('document', $docs) && $this->multiQuery) {
+            if (isset($docs['document']) && $this->multiQuery) {
                 // now loop through the found DAIA documents
                 foreach ($docs['document'] as $doc) {
                     // DAIA documents should use URIs as value for id
@@ -527,7 +529,7 @@ class DAIA extends AbstractBase implements
                         }
                     }
                 }
-            } elseif (array_key_exists('document', $docs)) {
+            } elseif (isset($docs['document'])) {
                 // since a document exists but multiQuery is disabled, the first
                 // document is returned if it contains an item
                 $doc = array_shift($docs['document']);
@@ -638,19 +640,19 @@ class DAIA extends AbstractBase implements
     {
         $doc_id = null;
         $doc_href = null;
-        if (array_key_exists('id', $daiaArray)) {
+        if (isset($daiaArray['id'])) {
             $doc_id = $daiaArray['id'];
         }
-        if (array_key_exists('href', $daiaArray)) {
+        if (isset($daiaArray['href'])) {
             // url of the document (not needed for VuFind)
             $doc_href = $daiaArray['href'];
         }
-        if (array_key_exists('message', $daiaArray)) {
+        if (isset($daiaArray['message'])) {
             // log messages for debugging
             $this->logMessages($daiaArray['message'], 'document');
         }
         // if one or more items exist, iterate and build result-item
-        if (array_key_exists('item', $daiaArray)) {
+        if (isset($daiaArray['item']) && is_array($daiaArray['item'])) {
             $number = 0;
             foreach ($daiaArray['item'] as $item) {
                 $result_item = [];
@@ -697,9 +699,16 @@ class DAIA extends AbstractBase implements
         $availableLink = '';
         $queue = '';
         $item_notes = [];
-        if (array_key_exists('available', $item)) {
+        $services = [];
+
+        if (isset($item['available'])) {
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
+                if (isset($available['service'])
+                    && in_array($available['service'], ['loan', 'presentation'])
+                ) {
+                    $services['available'][] = $available['service'];
+                }
                 // attribute service can be set once or not
                 if (isset($available['service'])
                     && in_array(
@@ -733,8 +742,14 @@ class DAIA extends AbstractBase implements
                 }
             }
         }
-        if (array_key_exists('unavailable', $item)) {
+
+        if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
+                if (isset($unavailable['service'])
+                    && in_array($unavailable['service'], ['loan', 'presentation'])
+                ) {
+                    $services['unavailable'][] = $unavailable['service'];
+                }
                 // attribute service can be set once or not
                 if (isset($unavailable['service'])
                     && in_array(
@@ -797,6 +812,7 @@ class DAIA extends AbstractBase implements
         $return['availability']    = $availability;
         $return['duedate']         = $duedate;
         $return['requests_placed'] = $queue;
+        $return['services']        = $this->getAvailableItemServices($services);
 
         return $return;
     }
@@ -847,7 +863,7 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemCallnumber($item)
     {
-        return array_key_exists('label', $item) && !empty($item['label'])
+        return isset($item['label']) && !empty($item['label'])
             ? $item['label']
             : 'Unknown';
     }
@@ -861,16 +877,25 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemLocation($item)
     {
-        if (isset($item['storage'])
-            && array_key_exists('content', $item['storage'])
+        $location = '';
+
+        if (isset($item['department'])
+            && isset($item['department']['content'])
         ) {
-            return $item['storage']['content'];
-        } elseif (isset($item['department'])
-            && array_key_exists('content', $item['department'])
-        ) {
-            return $item['department']['content'];
+            $location .= (empty($location)
+                ? $item['department']['content']
+                : ' - ' . $item['department']['content']);
         }
-        return 'Unknown';
+
+        if (isset($item['storage'])
+            && isset($item['storage']['content'])
+        ) {
+            $location .= (empty($location)
+                ? $item['storage']['content']
+                : ' - ' . $item['storage']['content']);
+        }
+
+        return (empty($location) ? 'Unknown' : $location);
     }
 
     /**
@@ -897,7 +922,7 @@ class DAIA extends AbstractBase implements
     {
         $itemLimitation = [];
         foreach ($limitations as $limitation) {
-            // return the first limitation with content set
+            // return the limitations with content set
             if (isset($limitation['content'])) {
                 $itemLimitation[] = $limitation['content'];
             }
@@ -905,6 +930,29 @@ class DAIA extends AbstractBase implements
         return $itemLimitation;
     }
 
+    /**
+     * Returns the available services of the given set of available and unavailable
+     * services
+     *
+     * @param array $services Array with DAIA services available/unavailable
+     *
+     * @return array
+     */
+    protected function getAvailableItemServices($services)
+    {
+        $availableServices = [];
+        if (isset($services['available'])) {
+            foreach ($services['available'] as $service) {
+                if (!isset($services['unavailable'])
+                    || !in_array($service, $services['unavailable'])
+                ) {
+                    $availableServices[] = $service;
+                }
+            }
+        }
+        return array_intersect(['loan', 'presentation'], $availableServices);
+    }
+    
     /**
      * Logs content of message elements in DAIA response for debugging
      *

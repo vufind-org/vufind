@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
@@ -37,11 +37,11 @@ use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
  *
  * This abstract class defines the parameters methods for modeling a search in VuFind
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Params implements ServiceLocatorAwareInterface
 {
@@ -449,9 +449,18 @@ class Params implements ServiceLocatorAwareInterface
 
         $this->searchType = $this->query instanceof Query ? 'basic' : 'advanced';
 
-        // If we ended up with a basic search, set the default handler if necessary:
-        if ($this->searchType == 'basic' && $this->query->getHandler() === null) {
-            $this->query->setHandler($this->getOptions()->getDefaultHandler());
+        // If we ended up with a basic search, it's probably the result of
+        // submitting an empty form, and more processing may be needed:
+        if ($this->searchType == 'basic') {
+            // Set a default handler if necessary:
+            if ($this->query->getHandler() === null) {
+                $this->query->setHandler($this->getOptions()->getDefaultHandler());
+            }
+            // If the user submitted the advanced search form, we want to treat
+            // the search as advanced even if it evaluated to a basic search.
+            if ($request->offsetExists('lookfor0')) {
+                $this->convertToAdvancedSearch();
+            }
         }
     }
 

@@ -1,0 +1,45 @@
+.bulkActionButtons label {display: inline-block;}
+.bulkActionButtons label input {margin-top: 2px;}
+.grid { @media (max-width: 767px) {min-height: 250px;} }
+.result {
+  .checkbox {
+    float: left;
+    padding-right: 1rem;
+  }
+  .media {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  .media-left {
+    box-sizing: initial;
+    display: inline-block;
+    float: left;
+    text-align: center;
+    &.small {
+      width: 60px;
+      img { max-width: 60px; }
+    }
+    &.medium {
+      width: 100px;
+      img { max-width: 100px; }
+    }
+    &.large {
+      width: 160px;
+      img { max-width: 160px; }
+    }
+  }
+  a.title {font-weight: bold;}
+  @media (max-width: 767px) {
+    a { text-decoration: underline; }
+  }
+  @media (max-width: 530px) {
+    .checkbox { padding: 0; }
+    .media-left { padding-right: 0; }
+  }
+}
+.search-controls .alert {margin-bottom: 0;}
+.searchtools a {padding: 0 .5em;}
+.title-in-heading {
+  font-size: inherit;
+  font-style: italic;
+}

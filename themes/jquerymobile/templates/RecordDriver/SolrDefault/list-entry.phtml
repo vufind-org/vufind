@@ -10,7 +10,8 @@
         $user_id = $this->user ? $this->user->id : null;
     }
 ?>
-<a rel="external" href="<?=$this->recordLink()->getUrl($this->driver)?>">
+<? $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
+<a<? if (!$missing): ?> rel="external" href="<?=$this->recordLink()->getUrl($this->driver)?>"<? endif; ?>>
   <div class="result source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
     <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>

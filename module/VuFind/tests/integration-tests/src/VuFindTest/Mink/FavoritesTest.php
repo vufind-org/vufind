@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
 use Behat\Mink\Element\Element;
@@ -31,11 +31,11 @@ use Behat\Mink\Element\Element;
 /**
  * Mink favorites test class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 {
@@ -123,10 +123,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.save-record')->click();
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         // Empty
-        $this->findCss($page, '.modal-body .btn.btn-primary.disabled');
+        $this->snooze();
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
 
         // Invalid email
+        $this->snooze();
         $this->fillInAccountForm($page, ['email' => 'blargasaurus']);
 
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
@@ -186,7 +187,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page);
         $this->assertLightboxWarning($page, 'Invalid login -- please try again.');
         // - for real
-        $this->fillInLoginForm($page, null, 'test');
+        $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         // Make sure we don't have Favorites because we have another populated list
         $this->assertNull($page->find('css', '.modal-body #save_list'));
@@ -228,9 +229,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord();
         // Login
         $this->findCss($page, '#loginOptions a')->click();
+        $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         // Save Record
+        $this->snooze();
         $this->findCss($page, '.save-record')->click();
         $this->snooze();
         $this->findCss($page, '#save_list');
@@ -257,19 +260,21 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.save-record')->click();
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         // Empty
-        $this->findCss($page, '.modal-body .btn.btn-primary.disabled');
+        $this->snooze();
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->fillInAccountForm(
             $page, ['username' => 'username2', 'email' => 'blargasaurus']
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->findCss($page, '#account_email')->setValue('username2@ignore.com');
-        // Test taken
+        // Test taken username
         $this->findCss($page, '#account_username')->setValue('username1');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->findCss($page, '#account_firstname');
-        $this->findCss($page, '#account_username')->setValue('username2');
         // Correct
+        $this->fillInAccountForm(
+            $page, ['username' => 'username2', 'email' => 'username2@ignore.com']
+        );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->findCss($page, '#save_list');
         // Make list
@@ -287,8 +292,9 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         );
         $this->findCss($page, '#add_mytags')->setValue('test1 test2 "test 3"');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->findCss($page, '.alert.alert-info'); // .success?
-        $this->findCss($page, '.modal-header .close')->click();
+        $this->snooze();
+        $this->findCss($page, '.alert.alert-success');
+        $this->findCss($page, '.modal .close')->click();
         // Check list page
         $this->snooze();
         $this->findCss($page, '.result a.title')->click();
@@ -324,6 +330,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page);
         $this->assertLightboxWarning($page, 'Login information cannot be blank.');
         // - for real
+        $this->snooze();
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
         // Make sure we don't have Favorites because we have another populated list
@@ -346,7 +353,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
             'Login Test List'
         );
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->findCss($page, '.alert.alert-info'); // .success?
+        $this->findCss($page, '.alert.alert-success');
     }
 
     /**
@@ -365,6 +372,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoSearch();
         // Login
         $this->findCss($page, '#loginOptions a')->click();
+        $this->snooze();
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
         // Save Record
@@ -373,7 +381,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#save_list');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
-        $this->findCss($page, '.alert.alert-info'); // .success?
+        $this->findCss($page, '.alert.alert-success');
     }
 
     /**

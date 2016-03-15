@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
 use Behat\Mink\Element\Element;
@@ -31,11 +31,11 @@ use Behat\Mink\Element\Element;
 /**
  * Mink bulk action test class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class BulkTest extends \VuFindTest\Unit\MinkTestCase
 {
@@ -140,8 +140,6 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
         $this->snooze();
-        $title = $this->findCss($page, '#modalTitle');
-        $this->assertEquals('Email Selected', $title->getText());
         $this->checkForLoginMessage($page);
 
         // Create an account.
@@ -186,8 +184,6 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
         $this->snooze();
-        $title = $this->findCss($page, '#modalTitle');
-        $this->assertEquals('Save Selected', $title->getText());
         $this->checkForLoginMessage($page);
 
         // Log in to account created in previous test.
@@ -233,8 +229,6 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
         $this->snooze();
-        $title = $this->findCss($page, '#modalTitle');
-        $this->assertEquals('Export Selected', $title->getText());
 
         // Select EndNote option
         $select = $this->findCss($page, '#format');
@@ -270,7 +264,8 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         list(, $params) = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
-            'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2', $params
+            'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
+            str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );
     }
 

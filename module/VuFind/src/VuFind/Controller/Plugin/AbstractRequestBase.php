@@ -19,24 +19,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\ILS\Connection;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
+use VuFind\Crypt\HMAC, VuFind\ILS\Connection;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container,
+    Zend\Session\SessionManager;
 
 /**
  * Zend action helper base class to perform request-related actions
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 abstract class AbstractRequestBase extends AbstractPlugin
 {
@@ -48,20 +49,29 @@ abstract class AbstractRequestBase extends AbstractPlugin
     protected $session;
 
     /**
+     * Session manager
+     *
+     * @var SessionManager
+     */
+    protected $sessionManager;
+
+    /**
      * HMAC generator
      *
-     * @var \VuFind\Crypt\HMAC
+     * @var HMAC
      */
     protected $hmac;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Crypt\HMAC $hmac HMAC generator
+     * @param HMAC           $hmac           HMAC generator
+     * @param SessionManager $sessionManager Session manager
      */
-    public function __construct(\VuFind\Crypt\HMAC $hmac)
+    public function __construct(HMAC $hmac, SessionManager $sessionManager)
     {
         $this->hmac = $hmac;
+        $this->sessionManager = $sessionManager;
     }
 
     /**
@@ -73,7 +83,9 @@ abstract class AbstractRequestBase extends AbstractPlugin
     protected function getSession()
     {
         if (!isset($this->session)) {
-            $this->session = new Container(get_class($this) . '_Helper');
+            $this->session = new Container(
+                get_class($this) . '_Helper', $this->sessionManager
+            );
         }
         return $this->session;
     }

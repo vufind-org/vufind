@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
 use Behat\Mink\Element\Element;
@@ -31,11 +31,11 @@ use Behat\Mink\Element\Element;
 /**
  * Mink cart test class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class CartTest extends \VuFindTest\Unit\MinkTestCase
 {
@@ -179,7 +179,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function checkForNonSelectedMessage(Element $page)
     {
-        $warning = $this->findCss($page, '.modal-body .alert .message');
+        $warning = $this->findCss($page, '.modal-body .alert');
         $this->assertEquals(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',
@@ -230,6 +230,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // First try deleting without selecting anything:
         $delete->click();
+        $this->findCss($page, '#cart-confirm-delete')->click();
         $this->checkForNonSelectedMessage($page);
 
         // Now actually select the records to delete:
@@ -291,8 +292,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Now do it for real -- we should get a login prompt.
         $this->selectAllItemsInCart($page);
         $button->click();
-        $title = $this->findCss($page, '#modalTitle');
-        $this->assertEquals('Email Selected Book Bag Items', $title->getText());
+        $this->snooze();
         $this->checkForLoginMessage($page);
 
         // Create an account.
@@ -309,7 +309,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Check for confirmation message
         $this->assertEquals(
             'Your item(s) were emailed',
-            $this->findCss($page, '.modal .alert-info')->getText()
+            $this->findCss($page, '.modal .alert-success')->getText()
         );
     }
 
@@ -330,8 +330,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Now do it for real -- we should get a login prompt.
         $this->selectAllItemsInCart($page);
         $button->click();
-        $title = $this->findCss($page, '#modalTitle');
-        $this->assertEquals('Save Selected Book Bag Items', $title->getText());
+        $this->snooze();
         $this->checkForLoginMessage($page);
 
         // Log in to account created in previous test.
@@ -339,7 +338,9 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $this->submitLoginForm($page);
 
         // Save the favorites.
+        $this->snooze();
         $this->findCss($page, '.modal-body input[name=submit]')->click();
+        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert-success');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.', $result->getText()
@@ -374,8 +375,6 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Now do it for real -- we should get an export option list:
         $this->selectAllItemsInCart($page);
         $button->click();
-        $title = $this->findCss($page, '#modalTitle');
-        $this->assertEquals('Export Selected Book Bag Items', $title->getText());
 
         // Select EndNote option
         $select = $this->findCss($page, '#format');
@@ -406,9 +405,11 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Now do it for real -- we should get redirected.
         $this->selectAllItemsInCart($page);
         $button->click();
+        $this->snooze();
         list(, $params) = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
-            'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2', $params
+            'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
+            str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );
     }
 
