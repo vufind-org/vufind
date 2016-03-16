@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,8 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\View\Helper\Root;
-use Zend\View\Helper\AbstractHelper;
+namespace VuFind\View\Helper\Bootstrap3;
 
 /**
  * Recaptcha view helper
@@ -37,36 +36,8 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Recaptcha extends AbstractHelper
+class Recaptcha extends \VuFind\View\Helper\Root\Recaptcha
 {
-    /**
-     * Recaptcha controller helper
-     *
-     * @var Recaptcha
-     */
-    protected $recaptcha;
-
-    /**
-     * Recaptcha config
-     *
-     * @var Config
-     */
-    protected $active;
-
-    /**
-     * HTML prefix for ReCaptcha output.
-     *
-     * @var string
-     */
-    protected $prefixHtml = '';
-
-    /**
-     * HTML suffix for ReCaptcha output.
-     *
-     * @var string
-     */
-    protected $suffixHtml = '';
-
     /**
      * Constructor
      *
@@ -75,42 +46,9 @@ class Recaptcha extends AbstractHelper
      */
     public function __construct($rc, $config)
     {
-        $this->recaptcha = $rc;
-        $this->active = isset($config->Captcha);
-    }
-
-    /**
-     * Return this object
-     *
-     * @return VuFind\View\Helper\Root\Recaptcha
-     */
-    public function __invoke()
-    {
-        return $this;
-    }
-
-    /**
-     * Generate <div> with ReCaptcha from render.
-     *
-     * @param boolean $useRecaptcha Boolean of active state, for compact templating
-     *
-     * @return string $html
-     */
-    public function html($useRecaptcha = true)
-    {
-        if (!isset($useRecaptcha) || !$useRecaptcha) {
-            return false;
-        }
-        return $this->prefixHtml . $this->recaptcha->getHtml() . $this->suffixHtml;
-    }
-
-    /**
-     * Return whether Captcha is active in the config
-     *
-     * @return boolean
-     */
-    public function active()
-    {
-        return $this->active;
+        $this->prefixHtml = '<div class="form-group">' .
+            '<div class="col-sm-9 col-sm-offset-3">';
+        $this->suffixHtml = '</div></div>';
+        parent::__construct($rc, $config);
     }
 }

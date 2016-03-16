@@ -24,7 +24,7 @@ CREATE INDEX comments_resource_id_idx ON comments (resource_id);
 
 CREATE TABLE resource (
 id SERIAL,
-record_id varchar(120) NOT NULL DEFAULT '',
+record_id varchar(255) NOT NULL DEFAULT '',
 title varchar(200) NOT NULL DEFAULT '',
 author varchar(200) DEFAULT NULL,
 year int DEFAULT NULL,
@@ -253,7 +253,7 @@ DROP TABLE IF EXISTS "record";
 
 CREATE TABLE `record` (
   id serial NOT NULL,
-  record_id varchar(120),
+  record_id varchar(255),
   source varchar(50),
   version varchar(20) NOT NULL,
   data text,
