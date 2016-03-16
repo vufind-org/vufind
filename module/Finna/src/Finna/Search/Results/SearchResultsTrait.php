@@ -47,16 +47,6 @@ trait SearchResultsTrait
     protected $searchHash = null;
 
     /**
-     * Get search hash.
-     *
-     * @return string hash
-     */
-    public function getSearchHash()
-    {
-        return $this->searchHash;
-    }
-
-    /**
      * Set search hash.
      *
      * @param string $hash Hash

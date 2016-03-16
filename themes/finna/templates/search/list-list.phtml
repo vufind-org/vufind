@@ -15,7 +15,7 @@
 <? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
   $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
   <? if ($needRecommendationHolder && ($recordNumber == (isset($recommendationConfig['position']) ? $recommendationConfig['position'] : 4) || $recordNumber == $resultCount)): ?>
-    <div id="search-tabs-recommendations-holder" data-search-hash="<?=$this->escapeHtmlAttr($this->results->getSearchHash())?>" data-limit="<?=$this->results->getParams()->getLimit() ?>"></div>
+    <div id="search-tabs-recommendations-holder" data-search-hash="<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" data-limit="<?=$this->results->getParams()->getLimit() ?>"></div>
     <? // Make sure OpenURL resolution support is loaded, since recommendations may include OpenURL even if main search results don't ?>
     <? $this->headScript()->appendFile("openurl.js"); ?>
     <? $haveRecommendationHolder = true; ?>
@@ -33,7 +33,7 @@
   </div>
 <? endforeach; ?>
 <? if ($needRecommendationHolder && !$haveRecommendationHolder): ?>
-  <div id="search-tabs-recommendations-holder" data-search-hash="<?=$this->escapeHtmlAttr($this->results->getSearchHash())?>" data-limit="<?=$this->results->getParams()->getLimit() ?>"></div>
+  <div id="search-tabs-recommendations-holder" data-search-hash="<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" data-limit="<?=$this->results->getParams()->getLimit() ?>"></div>
   <? // Make sure OpenURL resolution support is loaded, since recommendations may include OpenURL even if main search results don't ?>
   <? $this->headScript()->appendFile("openurl.js"); ?>
 <? endif; ?>
