@@ -13,6 +13,7 @@ return array(
             'fileSrc' => 'Finna\View\Helper\Root\Factory::getFileSrc',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
             'headLink' => 'Finna\View\Helper\Root\Factory::getHeadLink',
+            'headScript' => 'Finna\View\Helper\Root\Factory::getHeadScript',
             'headTitle' => 'Finna\View\Helper\Root\Factory::getHeadTitle',
             'holdingsSettings' => 'Finna\View\Helper\Root\Factory::getHoldingsSettings',
             'imageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',

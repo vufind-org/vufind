@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -95,6 +95,22 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $locator->get('VuFindTheme\ThemeInfo'),
             $locator->get('Request'),
             $locator->get('VuFind\Cache\Manager')
+        );
+    }
+
+    /**
+     * Construct the HeadScript helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HeadScript
+     */
+    public static function getHeadScript(ServiceManager $sm)
+    {
+        $locator = $sm->getServiceLocator();
+        return new HeadScript(
+            $locator->get('VuFindTheme\ThemeInfo'),
+            $locator->get('Request')
         );
     }
 
