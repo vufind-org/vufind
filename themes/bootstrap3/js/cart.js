@@ -7,21 +7,21 @@ VuFind.cart = (function() {
 
   var currentId, currentSource;
 
-  function getItems() {
+  var getItems = function() {
     var items = Cookies.getItem(_COOKIE);
     if(items) {
       return items.split(_COOKIE_DELIM);
     }
     return [];
   }
-  function getSources() {
+  var getSources = function() {
     var items = Cookies.getItem(_COOKIE_SOURCES);
     if(items) {
       return items.split(_COOKIE_DELIM);
     }
     return [];
   }
-  function getFullItems() {
+  var getFullItems = function() {
     var items = getItems();
     var sources = getSources();
     var full = [];
@@ -34,12 +34,12 @@ VuFind.cart = (function() {
     return full;
   }
 
-  function updateCount() {
+  var updateCount = function() {
     var items = getItems();
     $('#cartItems strong').html(items.length);
   }
 
-  function addItemTo(id,source) {
+  var addItemTo = function(id,source) {
     if(!source) {
       source = VuFind.defaultSearchBackend;
     }
@@ -58,7 +58,7 @@ VuFind.cart = (function() {
     updateCount();
     return true;
   }
-  function uniqueArray(op) {
+  var uniqueArray = function(op) {
     var ret = [];
     for(var i=0;i<op.length;i++) {
       if(ret.indexOf(op[i]) < 0) {
@@ -67,7 +67,7 @@ VuFind.cart = (function() {
     }
     return ret;
   }
-  function removeItemFrom(id,source) {
+  var removeItemFrom = function(id,source) {
     var cartItems = getItems();
     var cartSources = getSources();
     // Find
@@ -112,7 +112,7 @@ VuFind.cart = (function() {
   }
 
   var cartNotificationTimeout = false;
-  function registerUpdate($form) {
+  var registerUpdate = function($form) {
     if($form) {
       $("#updateCart, #bottom_updateCart").unbind('click').click(function(){
         var elId = this.id;
@@ -197,7 +197,7 @@ VuFind.cart = (function() {
 
 // Building an array and checking indexes prevents a race situation
 // We want to prioritize empty over printing
-function cartFormHandler(event, data) {
+var cartFormHandler = function(event, data) {
   var keys = [];
   for (var i in data) {
     keys.push(data[i].name);
