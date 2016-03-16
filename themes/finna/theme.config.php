@@ -59,6 +59,7 @@ return array(
         'finna.css'
     ),
     'js' => array(
+        'vendor/event-stub.js:lt IE 9',
         'finna.js',
         'finna-autocomplete.js',
         'finna-combined-results.js',

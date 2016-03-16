@@ -558,6 +558,9 @@ finna.layout = (function() {
     };
 
     var initLoginRedirect = function() {
+      if (!document.addEventListener) {
+        return;
+      }
       document.addEventListener('VuFind.lightbox.login', function(e) {
         if (!e.detail.formUrl.match(/catalogLogin/)) {          
           window.location.href = VuFind.path + '/MyResearch/Home'; 
