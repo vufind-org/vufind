@@ -161,9 +161,13 @@ class ProxyUrl extends \VuFind\View\Helper\Root\ProxyUrl
             if (empty($permission['ipRange'])) {
                 continue;
             }
-            if ($this->ipAddressUtils->isInRange(
-                $remoteIp, (array)$permission['ipRange']
-            )) {
+            $ranges = [];
+            foreach ($permission['ipRange']->toArray() as $range) {
+                list($ip) = explode('#', $range, 2);
+                $ranges = array_merge($ranges, array_map('trim', explode(',', $ip)));
+            }
+
+            if ($this->ipAddressUtils->isInRange($remoteIp, $ranges)) {
                 $this->ipInRange = true;
                 break;
             }
