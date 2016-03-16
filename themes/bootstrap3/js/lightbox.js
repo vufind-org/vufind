@@ -18,13 +18,19 @@ VuFind.lightbox = (function() {
     if ('undefined' == typeof details) {
       details = {};
     }
-    return document.dispatchEvent(
-      new CustomEvent(msg, {
+    // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
+    var event;
+    try {
+       event = new CustomEvent(msg, {
         detail: details,
         bubbles: true,
         cancelable: true
-      })
-    );
+      });
+    } catch (e) {
+      event = document.createEvent('Event');
+      event.initEvent(msg, true, true);  
+    }
+    return document.dispatchEvent(event);
   };
 
   /**
@@ -173,15 +179,15 @@ VuFind.lightbox = (function() {
    * data-lightbox-post = post data
    */
   var _constrainLink = function(event) {
-    if (typeof this.dataset.lightboxIgnore != 'undefined') {
+    if (typeof $(this).data('lightboxIgnore') != 'undefined') {
       return true;
     }
     if (this.href.length > 1) {
       event.preventDefault();
-      var obj = {url: this.dataset.lightboxHref || this.href};
-      if("string" === typeof this.dataset.lightboxPost) {
+      var obj = {url: $(this).data('lightboxHref') || this.href};
+      if("string" === typeof $(this).data('lightboxPost')) {
         obj.type = 'POST';
-        obj.data = this.dataset.lightboxPost;
+        obj.data = $(this).data('lightboxPost');
       }
       ajax(obj);
       _currentUrl = this.href;
@@ -205,7 +211,6 @@ VuFind.lightbox = (function() {
   var _formSubmit = function(event) {
     // Gather data
     var form = event.target;
-    var dataset = form.dataset;
     var data = $(form).serializeArray();
     data.push({'name':'layout', 'value':'lightbox'}); // Return in lightbox, please
     // Add submit button information
@@ -221,22 +226,20 @@ VuFind.lightbox = (function() {
     }
     data.push(buttonData);
     // Special handlers
-    if ('undefined' !== typeof dataset) {
-      // On submit behavior
-      if ('string' === typeof dataset.lightboxOnsubmit) {
-        var ret = _evalCallback(dataset.lightboxOnsubmit, event, data);
-        // return true or false to send that to the form
-        // return null or anything else to continue to the ajax
-        if (ret === false || ret === true) {
-          return ret;
-        }
+    // On submit behavior
+    if ('string' === typeof $(form).data('lightboxOnsubmit')) {
+      var ret = _evalCallback($(form).data('lightboxOnsubmit'), event, data);
+      // return true or false to send that to the form
+      // return null or anything else to continue to the ajax
+      if (ret === false || ret === true) {
+        return ret;
       }
-      // onclose behavior
-      if ('string' === typeof dataset.lightboxOnclose) {
-        document.addEventListener('VuFind.lightbox.closed', function(event) {
-          _evalCallback(dataset.lightboxOnclose, event);
-        }, false);
-      }
+    }
+    // onclose behavior
+    if ('string' === typeof $(form).data('lightboxOnclose')) {
+      document.addEventListener('VuFind.lightbox.closed', function(event) {
+        _evalCallback($(form).data('lightboxOnclose'), event);
+      }, false);
     }
     // Loading
     _modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right"></i>');
