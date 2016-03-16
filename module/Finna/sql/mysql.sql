@@ -21,11 +21,9 @@ ALTER TABLE comments ADD INDEX `finna_rating` (`finna_rating`);
 --
 -- Additional columns for search
 --
-ALTER TABLE search ADD COLUMN `finna_search_id` char(32) DEFAULT '';
 ALTER TABLE search ADD COLUMN `finna_schedule` int(1) NOT NULL DEFAULT '0';
 ALTER TABLE search ADD COLUMN `finna_last_executed` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
 ALTER TABLE search ADD COLUMN `finna_schedule_base_url` varchar(255) NOT NULL DEFAULT '';
-ALTER TABLE search ADD INDEX `finna_search_id` (`finna_search_id`);
 ALTER TABLE search ADD INDEX `finna_schedule` (`finna_schedule`);
 ALTER TABLE search ADD INDEX `finna_schedule_base_url` (`finna_schedule_base_url`);
 --

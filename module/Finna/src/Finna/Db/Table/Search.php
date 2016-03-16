@@ -106,48 +106,4 @@ class Search extends \VuFind\Db\Table\Search
         };
         return $this->select($callback);
     }
-
-    /**
-     * Return filters for a saved search.
-     *
-     * @param string $searchHash Search hash
-     *
-     * @return mixed \Finna\Db\Row\Search or false if the row doesn't exist
-     */
-    public function getRowByHash($searchHash)
-    {
-        $search = $this->select(['finna_search_id' => $searchHash])->current();
-        if (empty($search)) {
-            return false;
-        }
-        return $search;
-    }
-
-    /**
-     * Add a search into the search table (history)
-     *
-     * @param \VuFind\Search\Results\PluginManager $manager   Search manager
-     * @param \VuFind\Search\Base\Results          $newSearch Search to save
-     * @param string                               $sessionId Current session ID
-     * @param int|null                             $userId    Current user ID
-     *
-     * @return void
-     */
-    public function saveSearch(\VuFind\Search\Results\PluginManager $manager,
-        $newSearch, $sessionId, $userId
-    ) {
-        parent::saveSearch($manager, $newSearch, $sessionId, $userId);
-
-        // Augment row updated by parent with search hash
-        $row = $this->select(['id' => $newSearch->getSearchId()])->current();
-        if (empty($row)) {
-            return false;
-        }
-        if (null === $row->finna_search_id) {
-            $row->finna_search_id = md5($row->search_object);
-            $row->save();
-        }
-
-        $newSearch->setSearchHash($row->finna_search_id);
-    }
 }

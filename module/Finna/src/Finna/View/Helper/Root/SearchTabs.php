@@ -240,11 +240,9 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         $queryString = null;
         if (!empty($oldFilters)) {
             // Filters were active, include current search id in the url
-            if (method_exists($currentResults, 'getSearchHash')) {
-                $searchId = $currentResults->getSearchHash();
-                if (method_exists($urlQuery, 'setSearchId')) {
-                    $queryString = $urlQuery->setSearchId($tabId, $searchId);
-                }
+            $searchId = $currentResults->getSearchId();
+            if (method_exists($urlQuery, 'setSearchId')) {
+                $queryString = $urlQuery->setSearchId($tabId, $searchId);
             }
         }
         if (null === $queryString) {
@@ -273,7 +271,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     {
         $search
             = $this->table->get('Search')
-                ->select(['finna_search_id' => $id])->current();
+                ->select(['id' => $id])->current();
         if (empty($search)) {
             return false;
         }

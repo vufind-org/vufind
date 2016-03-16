@@ -979,7 +979,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         );
 
         $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager');
-        $search = $table->get('Search')->select(['finna_search_id' => $id])
+        $search = $table->get('Search')->select(['id' => $id])
             ->current();
         if (empty($search)) {
             return $this->output('Search not found', self::STATUS_ERROR, 400);
@@ -1259,7 +1259,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 'params' => $params,
                 'lookfor' => $lookfor
             ];
-            $result['searchHash'] = $view->results->getSearchHash();
+            $result['searchHash'] = $view->results->getSearchId();
             $result['content'] = $this->getViewRenderer()->render(
                 $recordsFound ? 'search/list-list.phtml' : 'metalib/nohits.phtml',
                 $viewParams
