@@ -59,37 +59,42 @@ function toggleDataView() {
   }
   // Insert new elements
   var mainNode = $(this).closest('.result');
-  if (!$(this).hasClass('toggle') && !$(this).hasClass('setup')) {
+  if (!$(this).hasClass('setup')) {
+    var left = $(this).closest('.middle').position().left-1;
+    $('<style>.result.fetching .title, .result.expanded .title {padding-left: '+left+'px;}</style>').appendTo('body');
     // Add classes to view and result container
-    $(this)
-      .closest('.row').addClass('short-view')
-      .parent().addClass('data-view');
-    // Copy the title
-    var dataView = mainNode.find('.data-view');
-    var pos = $(this).position();
-    var clone = $(this).clone()
-      .addClass('toggle').click(toggleDataView)
-      .css('padding-left', $(this).closest('.middle').position().left-1);
-    dataView.prepend(clone);
+    mainNode.find('.left,.right').addClass('short-view');
+    mainNode.find('.short-view').addClass('collapse')
+    var longNode = $('<div class="long-view collapse"></div>');
     // Add loading status
-    dataView.append('<div class="loading hidden">\
-      <i class="fa fa-spin fa-spinner"></i> '+VuFind.translate('loading')+'...\
-    </div><div class="long-view row hidden"></div>');
+    mainNode.find('.row')
+      .after('<div class="loading hidden"><i class="fa fa-spin fa-spinner"></i> '+VuFind.translate('loading')+'...</div>')
+      .after(longNode);
+    longNode.on('show.bs.collapse', function() {
+      mainNode.addClass('expanding');
+    });
+    longNode.on('shown.bs.collapse', function() {
+      mainNode.removeClass('expanding fetching').addClass('expanded');
+    });
+    longNode.on('hide.bs.collapse', function() {
+      mainNode.removeClass('expanded').addClass('expanding');
+    });
+    longNode.on('hidden.bs.collapse', function() {
+      mainNode.removeClass('expanding');
+    });
     $(this).addClass('setup');
   }
   // Gather information
-  var toggle = mainNode.find('.toggle');
   var div_id = mainNode.find(".hiddenId")[0].value;
   var shortNode = mainNode.find('.short-view');
-  var loadingNode = mainNode.find('.loading');
   var longNode = mainNode.find('.long-view');
   // Toggle visibility
   if (!longNode.is(":visible")) {
-    shortNode.addClass("hidden");
-    longNode.removeClass("hidden");
-    toggle.removeClass("hidden");
+    shortNode.collapse("hide");
     // AJAX for information
     if (longNode.is(':empty')) {
+      var loadingNode = mainNode.find('.loading');
+      mainNode.addClass('fetching');
       loadingNode.removeClass("hidden");
       var url = VuFind.path + '/AJAX/JSON?' + $.param({
         method:'getRecordDetails',
@@ -106,6 +111,7 @@ function toggleDataView() {
             longNode.html(response.data);
             // Hide loading
             loadingNode.addClass("hidden");
+            longNode.collapse("show");
             // Load first tab
             var $firstTab = $(longNode).find('.recordTabs li.active a');
             if ($firstTab.length > 0) {
@@ -129,12 +135,12 @@ function toggleDataView() {
           }
         }
       });
+    } else {
+      longNode.collapse("show");
     }
   } else {
-    toggle.addClass("hidden");
-    longNode.addClass("hidden");
-    loadingNode.addClass("hidden");
-    shortNode.removeClass("hidden");
+    shortNode.collapse("show");
+    longNode.collapse("hide");
   }
   return false;
 }

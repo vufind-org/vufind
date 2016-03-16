@@ -2,7 +2,7 @@
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
-  padding-top: 8px;
+  padding-top: 15px;
   a.title { font-weight: bold; }
   .title.getFull.toggle { padding-left: .75rem; }
   .toggle {
@@ -24,43 +24,50 @@
     .middle {width: 60%;}
     .right {display: none;}
   }
-}
-
-.data-view > .toggle,
-.data-view > .loading,
-.data-view > .long-view { background-color: #fff; }
-
-.data-view > .toggle {
-  width: 100%;
-  margin-top: -6px;
-  padding: 5px 0;
-  padding-right: 30px;
-  border: 1px solid @list-group-border;
-  border-top-left-radius: @border-radius-base;
-  border-top-right-radius: @border-radius-base;
-  &::before {
-    content: '\25BC';
-    position: absolute;
-    right: 25px;
-    color: @text-color;
+  .loading {
+    &:extend(.list-group-item);
+    background: #fff;
   }
 }
-.data-view .loading {
-  padding: .5rem;
-  border-left: 1px solid @list-group-border;
-  border-right: 1px solid @list-group-border;
+
+.result.expanded,
+.result.fetching {
+  .middle { width: 100%; }
 }
-.data-view .long-view {
-  margin: 0;
-  margin-bottom: .5rem;
-  padding: .25rem;
-  padding-top: .5rem;
-  padding-bottom: 0;
-  border: 1px solid @list-group-border;
-  border-top: 0;
-  border-bottom-left-radius: @border-radius-base;
-  border-bottom-right-radius: @border-radius-base;
+.title {
+  border: 0 solid #fff;
+  transition: border 1s;
+  &::before {
+    color: #fff;
+    transition: color 1s;
+  }
 }
+.result.expanded {
+  .title {
+    &:extend(.list-group-item);
+    width: 100%;
+    margin-top: -11px;
+    border-top-left-radius: @border-radius-base;
+    border-top-right-radius: @border-radius-base;
+    &::before {
+      content: '\25BC';
+      position: absolute;
+      right: 25px;
+      color: @gray;
+    }
+  }
+}
+.result.expanding .long-view { margin-top: 10px; }
+.result.expanding,
+.result.expanded {
+  .long-view {
+    &:extend(.list-group-item);
+    border-bottom-left-radius: @border-radius-base;
+    border-bottom-right-radius: @border-radius-base;
+    background-color: #fff;
+  }
+}
+
 
 .search-controls .alert {margin-bottom: 0;}
 .searchtools a {padding: 0 .5em;}
