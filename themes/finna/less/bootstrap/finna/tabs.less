@@ -3,7 +3,6 @@
     margin-bottom: 30px;
     @media(max-width: @screen-sm-max) {
             margin-bottom: 0;
-            padding-top: 10px;
             .template-dir-metalib.template-name-search & {
                 margin-bottom: 20px;   
             }
@@ -13,6 +12,9 @@
         margin: 0 0 0 15px;
         @media(max-width: @screen-sm-max) {
             margin-left: 0;  
+        }
+        @media(max-width: @screen-xs-max) {
+            padding-top: 10px;   
         }
         @media(max-width: 390px) {
             &.many-tabs > li {
@@ -39,7 +41,7 @@
                 color: @main-tabs-link-color;
                 transition: none;
                 @media (max-width: @screen-xs-max) {
-                    max-width: 87px;
+                    max-width: 84px;
                     padding: 8px 6px;
                     font-size: .85em;
                     display: block;
