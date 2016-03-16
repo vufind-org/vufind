@@ -126,50 +126,27 @@ class Search extends \VuFind\Db\Table\Search
     /**
      * Add a search into the search table (history)
      *
-     * @param \VuFind\Search\Results\PluginManager $manager       Search manager
-     * @param \VuFind\Search\Base\Results          $newSearch     Search to save
-     * @param string                               $sessionId     Current session ID
-     * @param array                                $searchHistory Existing saved
-     * searches (for deduplication purposes)
+     * @param \VuFind\Search\Results\PluginManager $manager   Search manager
+     * @param \VuFind\Search\Base\Results          $newSearch Search to save
+     * @param string                               $sessionId Current session ID
+     * @param int|null                             $userId    Current user ID
      *
      * @return void
      */
     public function saveSearch(\VuFind\Search\Results\PluginManager $manager,
-        $newSearch, $sessionId, $searchHistory = []
+        $newSearch, $sessionId, $userId
     ) {
-        // Resolve search hash of current search
-        $hash = null;
-
-        // Duplicate elimination
-        foreach ($searchHistory as $oldSearch) {
-            // Deminify the old search (note that if we have a resource, we need
-            // to grab the contents -- this is necessary for PostgreSQL compatibility
-            // although MySQL returns a plain string).
-            $minSO = $oldSearch->getSearchObject();
-            $dupSearch = $minSO->deminify($manager);
-            // See if the classes and urls match
-            $oldUrl = $dupSearch->getUrlQuery()->getParams();
-            $newUrl = $newSearch->getUrlQuery()->getParams();
-            if (get_class($dupSearch) == get_class($newSearch)
-                && $oldUrl == $newUrl
-            ) {
-                $hash = $oldSearch->finna_search_id;
-                break;
-            }
-        }
-
-        parent::saveSearch($manager, $newSearch, $sessionId, $searchHistory);
+        parent::saveSearch($manager, $newSearch, $sessionId, $userId);
 
         // Augment row updated by parent with search hash
         $row = $this->select(['id' => $newSearch->getSearchId()])->current();
         if (empty($row)) {
             return false;
         }
-        if (!$hash) {
-            $hash = md5($row->search_object);
+        if (null === $row->finna_search_id) {
+            $row->finna_search_id = md5($row->search_object);
+            $row->save();
         }
-        $row->finna_search_id = $hash;
-        $row->save();
 
         $newSearch->setSearchHash($row->finna_search_id);
     }

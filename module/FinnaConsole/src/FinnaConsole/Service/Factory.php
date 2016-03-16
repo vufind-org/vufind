@@ -51,8 +51,7 @@ class Factory
      */
     public static function getClearMetaLibSearch(ServiceManager $sm)
     {
-        $table = $sm->get('VuFind\DbTablePluginManager')
-            ->get('metalibSearch');
+        $table = $sm->get('VuFind\DbTablePluginManager')->get('metalibSearch');
 
         return new ClearMetaLibSearch($table);
     }
@@ -93,8 +92,7 @@ class Factory
      */
     public static function getEncryptCatalogPasswords(ServiceManager $sm)
     {
-        $table = $sm->get('VuFind\DbTablePluginManager')
-            ->get('User');
+        $table = $sm->get('VuFind\DbTablePluginManager')->get('User');
         $config = $sm->get('VuFind\Config')->get('config');
 
         return new EncryptCatalogPasswords($table, $config);
@@ -109,8 +107,7 @@ class Factory
      */
     public static function getExpireUsers(ServiceManager $sm)
     {
-        $table = $sm->get('VuFind\DbTablePluginManager')
-            ->get('User');
+        $table = $sm->get('VuFind\DbTablePluginManager')->get('User');
 
         return new ExpireUsers($table);
     }
@@ -148,6 +145,20 @@ class Factory
     public static function getScheduledAlerts(ServiceManager $sm)
     {
         return new ScheduledAlerts($sm);
+    }
+
+    /**
+     * Construct the console service for updating search hashes.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \FinnaConsole\Service\UpdateSearchHashes
+     */
+    public static function getUpdateSearchHashes(ServiceManager $sm)
+    {
+        $table = $sm->get('VuFind\DbTablePluginManager')->get('Search');
+        $manager = $sm->get('VuFind\SearchResultsPluginManager');
+        return new UpdateSearchHashes($table, $manager);
     }
 
     /**

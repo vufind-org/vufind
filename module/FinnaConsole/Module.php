@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -83,6 +83,7 @@ class Module
             'util expire_users' => 'Anonymizes expired user accounts',
             'util online_payment_monitor' => 'Process unregistered online payments',
             'util scheduled_alerts' => 'Send scheduled alerts',
+            'util update_search_hashes' => 'Update search hashes',
             'util verify_record_links' => 'Verify record links'
         ];
     }
