@@ -12,12 +12,18 @@ body {
     @media(max-width:@screen-sm-max) {
         background-size: 150% auto;
         background-position: 50% 0;
+        & .record-view-header > .container {
+            padding-left: 0;
+            padding-right: 0;
+        }
     }
     @media(max-width:@screen-xs-max) {
          background-size: 350% auto;
     }
     background-color: @footer-background;
     background-repeat: no-repeat;
+
+    
     // fine-tune tablet layout 
     @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
         & .container {
@@ -25,10 +31,6 @@ body {
         }
         // element-specific adjustments
         & .main {
-            & .record-view-header {
-                margin-left: -15px;
-                margin-right: -15px;
-            }
             & .searchtools-background {
                  margin-left: -15px;
             }
