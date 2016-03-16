@@ -16,7 +16,10 @@
     <? if (!$this->translationEmpty('holds_instructions_html')): ?><p class="no-content-message"><?=$this->translate('holds_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
-    <div class="useraccount-header"><?=$this->transEsc('Your Holds and Recalls') ?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
+    <div class="useraccount-header">
+    <?=$this->transEsc('Your Holds and Recalls') ?>
+    (<?=count($this->recordList);?>)
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
     <? if (isset($this->noSupport)): ?>
       <? if ($user->getLibraryCards()->count() > 1): ?>
         <div class="support-notice">
@@ -46,11 +49,11 @@
               <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
-          <span class="myresearch-count"><?=$this->transEsc('total_hold_items', ['%%count%%' => count($this->recordList)]);?></span>
+
         </div>
         <? else: ?>
         <div class="toolbar">
-          <p><?=$this->transEsc('cannot cancel any reservations')?><span class="myresearch-count no-buttons"><?=$this->transEsc('total_hold_items', ['%%count%%' => count($this->recordList)]);?></span></p>
+          <p><?=$this->transEsc('cannot cancel any reservations')?></p>
         </div>
         <? endif; ?>
 

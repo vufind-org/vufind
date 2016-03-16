@@ -17,7 +17,10 @@
     <? if (!$this->translationEmpty('ill_requests_instructions_html')): ?><p class="no-content-message"><?=$this->transEsc('ill_requests_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
-    <div class="useraccount-header"><?=$this->transEsc('Interlibrary Loan Requests') ?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
+    <div class="useraccount-header">
+    <?=$this->transEsc('Interlibrary Loan Requests') ?>
+    (<?=count($this->recordList);?>)
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
     <? if (isset($this->noSupport)): ?>
       <? if ($user->getLibraryCards()->count() > 1): ?>
         <div class="support-notice">
@@ -47,11 +50,10 @@
               <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
-          <span class="myresearch-count"><?=$this->transEsc('total_ill_request_items', ['%%count%%' => count($this->recordList)]);?></span>
         </div>
         <? else: ?>
         <div class="toolbar">
-          <p><?=$this->transEsc('cannot cancel any interlibrary loan requests')?><span class="myresearch-count no-buttons"><?=$this->transEsc('total_ill_request_items', ['%%count%%' => count($this->recordList)]);?></span></p>
+          <p><?=$this->transEsc('cannot cancel any interlibrary loan requests')?></p>
         </div>
         <? endif; ?>
 

@@ -16,7 +16,10 @@
     <? if (!$this->translationEmpty('checked_out_instructions_html')): ?><p class="no-content-message"><?=$this->translate('checked_out_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
-    <div class="useraccount-header"><?=$this->transEsc('Your Checked Out Items')?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
+    <div class="useraccount-header">
+    <?=$this->transEsc('Your Checked Out Items')?>
+    (<?=count($this->transactions);?>)
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
     <? if (isset($this->noSupport)): ?>
       <? if ($user->getLibraryCards()->count() > 1): ?>
         <div class="support-notice">
@@ -58,11 +61,6 @@
           </div>
         </div>
       <? endif; ?>
-        <div class="toolbar row">
-          <div class="col-sm-12 pull-right hidden-xs">
-            <span class="myresearch-count"><?=$this->transEsc('total_borrowed_items', ['%%count%%' => count($this->transactions)]);?></span>
-          </div>
-        </div>
       <? $i = 0; foreach ($this->transactions as $resource): ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row myresearch-row">

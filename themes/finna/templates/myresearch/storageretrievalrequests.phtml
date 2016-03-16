@@ -16,7 +16,9 @@
     <? if (!$this->translationEmpty('storage_requests_instructions_html')): ?><p class="no-content-message"><?=$this->transEsc('storage_requests_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
-    <div class="useraccount-header"><?=$this->transEsc('Storage Retrieval Requests') ?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
+    <div class="useraccount-header"><?=$this->transEsc('Storage Retrieval Requests') ?>
+     (<?=count($this->recordList);?>)
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
     <? if (isset($this->noSupport)): ?>
       <? if ($user->getLibraryCards()->count() > 1): ?>
         <div class="support-notice">
@@ -46,11 +48,10 @@
               <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
-          <span class="myresearch-count"><?=$this->transEsc('total_storage_request_items', ['%%count%%' => count($this->recordList)]);?></span>
         </div>
         <? else: ?>
         <div class="toolbar">
-          <p><?=$this->transEsc('Cannot cancel any Retrieval Requests')?><span class="myresearch-count no-buttons"><?=$this->transEsc('total_storage_request_items', ['%%count%%' => count($this->recordList)]);?></span></p>
+          <p><?=$this->transEsc('Cannot cancel any Retrieval Requests')?></p>
         </div>
         <? endif; ?>
 
