@@ -209,8 +209,8 @@ class Search extends Gateway
     ) {
         // Duplicate elimination
         // Normalize the URL params by minifying and deminifying the search object
-        $minified = new minSO($newSearch);
-        $newSearchCopy = $minified->deminify($manager);
+        $newSearchMinified = new minSO($newSearch);
+        $newSearchCopy = $newSearchMinified->deminify($manager);
         $newUrl = $newSearchCopy->getUrlQuery()->getParams();
         // Use crc32 as the checksum but get rid of highest bit so that we don't
         // need to care about signed/unsigned issues
@@ -238,9 +238,10 @@ class Search extends Gateway
             // Check if URLs match:
             $oldUrl = $dupSearch->getUrlQuery()->getParams();
             if ($oldUrl == $newUrl) {
-                // Update the old search if it wasn't saved:
+                // Update the old search only if it wasn't saved:
                 if (!$oldSearch->saved) {
                     $oldSearch->created = date('Y-m-d H:i:s');
+                    $oldSearch->search_object = serialize($newSearchMinified);
                     $oldSearch->save();
                 }
                 // Update the new search from the existing one
