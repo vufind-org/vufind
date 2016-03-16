@@ -50,10 +50,11 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
     /**
      * Constructor
      *
-     * @param ThemeInfo $themeInfo    Theme information service
-     * @param Request   $request      Request
+     * @param ThemeInfo $themeInfo Theme information service
+     * @param Request   $request   Request
      */
-    public function __construct(ThemeInfo $themeInfo, Request $request) {
+    public function __construct(ThemeInfo $themeInfo, Request $request)
+    {
         parent::__construct($themeInfo);
         $this->request = $request;
     }
