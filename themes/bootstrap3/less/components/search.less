@@ -30,29 +30,18 @@
   }
 }
 
-.result.expanded,
-.result.fetching {
-  .middle { width: 100%; }
-}
-.title {
-  border: 0 solid #fff;
-  transition: border 1s;
-  &::before {
-    color: #fff;
-    transition: color 1s;
-  }
-}
+.result.expanded .middle,
+.result.fetching .middle { width: 100%; }
 .result.expanded {
   .title {
     &:extend(.list-group-item);
-    width: 100%;
     margin-top: -11px;
     border-top-left-radius: @border-radius-base;
     border-top-right-radius: @border-radius-base;
     &::before {
       content: '\25BC';
       position: absolute;
-      right: 25px;
+      right: 15px;
       color: @gray;
     }
   }
