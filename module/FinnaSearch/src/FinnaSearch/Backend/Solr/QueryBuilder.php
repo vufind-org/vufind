@@ -78,11 +78,14 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder
      *
      * This function implements the recursive reduction of a query group.
      *
+     * Finna: Added finalizeSearchString() call
+     *
      * @param AbstractQuery $component Component
      *
      * @return string
      *
      * @see self::reduceQueryGroup()
+     * @todo Refactor so that functionality does not need to be copied
      */
     protected function reduceQueryGroupComponents(AbstractQuery $component)
     {
@@ -91,9 +94,17 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder
                 [$this, 'reduceQueryGroupComponents'], $component->getQueries()
             );
             $searchString = $component->isNegated() ? 'NOT ' : '';
-            $searchString .= sprintf(
-                '(%s)', implode(" {$component->getOperator()} ", $reduced)
+            $reduced = array_filter(
+                $reduced,
+                function ($s) {
+                    return '' !== $s;
+                }
             );
+            if ($reduced) {
+                $searchString .= sprintf(
+                    '(%s)', implode(" {$component->getOperator()} ", $reduced)
+                );
+            }
         } else {
             $searchString  = $this->getLuceneHelper()
                 ->normalizeSearchString($component->getString());
@@ -103,7 +114,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder
                 $component->getHandler(),
                 $searchString
             );
-            if ($searchHandler) {
+            if ($searchHandler && '' !== $searchString) {
                 $searchString
                     = $this->createSearchString($searchString, $searchHandler);
             }
