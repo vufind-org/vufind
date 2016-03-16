@@ -102,6 +102,9 @@ class IpAddressUtils
     {
         $ip = $this->normalizeIp($ip);
         foreach ($ranges as $range) {
+            if (!is_string($range)) {
+                error_log("NOT A STRING IN RANGES: " . var_export($ranges, true));
+            }
             $ips = explode('-', $range, 2);
             if (!isset($ips[1])) {
                 $ips[1] = $ips[0];
