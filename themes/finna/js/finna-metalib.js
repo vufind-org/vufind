@@ -83,8 +83,8 @@ finna.metalib = (function() {
         .done(function(response) {
             toggleLoading(holder, false);
             loading = false;
-            var hash = response.data['searchHash'];
-            initTabNavigation(hash);
+            var searchId = response.data['searchId'];
+            initTabNavigation(searchId);
             var html = '';
             if (response.data['failed']) {
                 html += response.data['failed'];

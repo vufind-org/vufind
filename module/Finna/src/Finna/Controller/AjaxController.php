@@ -972,7 +972,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         $id = $this->params()->fromPost(
-            'searchHash', $this->params()->fromQuery('searchHash')
+            'searchId', $this->params()->fromQuery('searchId')
         );
         $limit = $this->params()->fromPost(
             'limit', $this->params()->fromQuery('limit', null)
@@ -1259,7 +1259,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 'params' => $params,
                 'lookfor' => $lookfor
             ];
-            $result['searchHash'] = $view->results->getSearchId();
+            $result['searchId'] = $view->results->getSearchId();
             $result['content'] = $this->getViewRenderer()->render(
                 $recordsFound ? 'search/list-list.phtml' : 'metalib/nohits.phtml',
                 $viewParams

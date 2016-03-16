@@ -40,25 +40,6 @@ use Finna\Search\UrlQueryHelper;
 trait SearchResultsTrait
 {
     /**
-     * A hash for saving/retrieving search
-     *
-     * @var string
-     */
-    protected $searchHash = null;
-
-    /**
-     * Set search hash.
-     *
-     * @param string $hash Hash
-     *
-     * @return string hash
-     */
-    public function setSearchHash($hash)
-    {
-        return $this->searchHash = $hash;
-    }
-
-    /**
      * Get backend ID
      *
      * @return string
