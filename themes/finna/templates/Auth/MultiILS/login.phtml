@@ -21,6 +21,15 @@
     </div>
   </form>
 </div>
+<div class="row">
+  <div class="col-xs-12 visible-xs">
+    <div class="login-description">
+      <p class="login-info">
+        <?=$this->translate('login_desc_library_card_html') ?>
+      </p>
+    </div>
+  </div>
+</div>
 <? else: ?>
   <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
 <? endif; ?>
