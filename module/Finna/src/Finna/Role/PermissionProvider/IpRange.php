@@ -62,6 +62,15 @@ class IpRange extends \VuFind\Role\PermissionProvider\IpRange
             $ranges = array_merge($ranges, array_map('trim', explode(',', $ip)));
         }
 
+        // Debug: Check that ranges are actually strings. TODO: remove or improve?
+        foreach ($ranges as $range) {
+            if (!is_string($range)) {
+                error_log("IP Range is not a string: " . var_export($range, true));
+                error_log("Original ranges: " . var_export($options, true));
+            }
+        }
+
+
         return parent::getPermissions($ranges);
     }
 }
