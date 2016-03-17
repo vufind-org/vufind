@@ -92,15 +92,16 @@ class EncryptCatalogPasswords extends AbstractService
             return false;
         }
 
-        $users = $this->table->select();
+        $callback = function ($select) {
+            $select->where->notLike('username', 'deleted:%');
+        };
+
+        $users = $this->table->select($callback);
         $count = 0;
         $usersChanged = 0;
         $cardsChanged = 0;
 
         foreach ($users as $user) {
-            if (strncmp($user->username, 'deleted:', 8) === 0) {
-                continue;
-            }
             echo "Checking user: " . $user->username . "\n";
             if (null !== $user->cat_password) {
                 $user->saveCredentials($user->cat_username, $user->cat_password);
