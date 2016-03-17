@@ -18,13 +18,19 @@ VuFind.lightbox = (function() {
     if ('undefined' == typeof details) {
       details = {};
     }
-    document.dispatchEvent(
-      new CustomEvent(msg, {
+    // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
+    var event;
+    try {
+       event = new CustomEvent(msg, {
         detail: details,
         bubbles: true,
         cancelable: true
-      })
-    );
+      });
+    } catch (e) {
+      event = document.createEvent('CustomEvent');
+      event.initCustomEvent(msg, true, true, details);  
+    }
+    return document.dispatchEvent(event);
   };
 
   /**
@@ -68,8 +74,8 @@ VuFind.lightbox = (function() {
       return;
     }
     // Isolate successes
-    var htmlDiv = $('<div>'+html+'</div>');
-    var alerts = htmlDiv.find('.alert-success');
+    var htmlDiv = $('<div/>').html(html);
+    var alerts = htmlDiv.find('.flash-message.alert-success');
     if (alerts.length > 0) {
       showAlert(alerts[0].innerHTML, 'success');
       return;
@@ -104,7 +110,9 @@ VuFind.lightbox = (function() {
   var _xhr = false;
   // Public: Handle AJAX in the Lightbox
   var ajax = function(obj) {
-    if (_xhr !== false) return;
+    if (_xhr !== false) {
+      return;
+    }
     if (_originalUrl === false) {
       _originalUrl = obj.url;
     }
@@ -125,20 +133,22 @@ VuFind.lightbox = (function() {
           return;
         }
         if ( // Close the lightbox after deliberate login
-          obj.method                                                  // is a form
-          && !html.match(/alert alert-danger/)                        // skip failed logins
-          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/)) // that matches login/create account
-            || obj.url.match(/catalogLogin/))                         // or catalog login for holds
+          obj.method                                                                // is a form
+          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/))               // that matches login/create account
+            || obj.url.match(/catalogLogin/))                                       // or catalog login for holds
+          && $('<div/>').html(html).find('.flash-message.alert-danger').length == 0 // skip failed logins
         ) {
+          var eventResult = _emit('VuFind.lightbox.login', {
+            originalUrl: _originalUrl,
+            formUrl: obj.url
+          });
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
-            _refreshPage();
+            if (eventResult) {
+              _refreshPage();
+            }
             return false;
           } else {
             VuFind.lightbox.refreshOnClose = true;
-            _emit('VuFind.lightbox.login', {
-              originalUrl: _originalUrl,
-              formUrl: obj.url
-            });
           }
         }
         _update(html);
@@ -171,15 +181,15 @@ VuFind.lightbox = (function() {
    * data-lightbox-post = post data
    */
   var _constrainLink = function(event) {
-    if (typeof this.dataset.lightboxIgnore != 'undefined') {
+    if (typeof $(this).data('lightboxIgnore') != 'undefined') {
       return true;
     }
     if (this.href.length > 1) {
       event.preventDefault();
-      var obj = {url: this.dataset.lightboxHref || this.href};
-      if("string" === typeof this.dataset.lightboxPost) {
+      var obj = {url: $(this).data('lightboxHref') || this.href};
+      if("string" === typeof $(this).data('lightboxPost')) {
         obj.type = 'POST';
-        obj.data = this.dataset.lightboxPost;
+        obj.data = $(this).data('lightboxPost');
       }
       ajax(obj);
       _currentUrl = this.href;
@@ -203,7 +213,6 @@ VuFind.lightbox = (function() {
   var _formSubmit = function(event) {
     // Gather data
     var form = event.target;
-    var dataset = form.dataset;
     var data = $(form).serializeArray();
     data.push({'name':'layout', 'value':'lightbox'}); // Return in lightbox, please
     // Add submit button information
@@ -219,22 +228,20 @@ VuFind.lightbox = (function() {
     }
     data.push(buttonData);
     // Special handlers
-    if ('undefined' !== typeof dataset) {
-      // On submit behavior
-      if ('string' === typeof dataset.lightboxOnsubmit) {
-        var ret = _evalCallback(dataset.lightboxOnsubmit, event, data);
-        // return true or false to send that to the form
-        // return null or anything else to continue to the ajax
-        if (ret === false || ret === true) {
-          return ret;
-        }
+    // On submit behavior
+    if ('string' === typeof $(form).data('lightboxOnsubmit')) {
+      var ret = _evalCallback($(form).data('lightboxOnsubmit'), event, data);
+      // return true or false to send that to the form
+      // return null or anything else to continue to the ajax
+      if (ret === false || ret === true) {
+        return ret;
       }
-      // onclose behavior
-      if ('string' === typeof dataset.lightboxOnclose) {
-        document.addEventListener('VuFind.lightbox.closed', function(event) {
-          _evalCallback(dataset.lightboxOnclose, event);
-        }, false);
-      }
+    }
+    // onclose behavior
+    if ('string' === typeof $(form).data('lightboxOnclose')) {
+      document.addEventListener('VuFind.lightbox.closed', function(event) {
+        _evalCallback($(form).data('lightboxOnclose'), event);
+      }, false);
     }
     // Loading
     _modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right"></i>');

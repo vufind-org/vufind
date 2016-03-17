@@ -10,6 +10,7 @@
 <div data-role="page" id="Search-history">
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
+    <?=$this->flashmessages()?>
     <? if (!empty($this->saved) || !empty($this->unsaved)): ?>
       <? if (!empty($this->saved)): ?>
         <ul class="results history" data-role="listview" data-dividertheme="e" data-split-icon="minus" data-split-theme="c" data-inset="true">
