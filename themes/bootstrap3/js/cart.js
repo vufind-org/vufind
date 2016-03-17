@@ -1,10 +1,14 @@
-/*global COOKIE_DOMAIN, Cookies, VuFind */
+/*global _COOKIE_DOMAIN, Cookies, VuFind */
 
 VuFind.cart = (function() {
   var _COOKIE = 'vufind_cart';
   var _COOKIE_SOURCES = 'vufind_cart_src';
   var _COOKIE_DELIM = "\t";
-  var COOKIE_DOMAIN = false;
+  var _COOKIE_DOMAIN = false;
+
+  var setDomain = function(domain) {
+    _COOKIE_DOMAIN = domain;
+  }
 
   var _uniqueArray = function(op) {
     var ret = [];
@@ -49,6 +53,7 @@ VuFind.cart = (function() {
   }
 
   var addItem = function(id,source) {
+    alert(_COOKIE_DOMAIN);
     if(!source) {
       source = VuFind.defaultSearchBackend;
     }
@@ -59,11 +64,11 @@ VuFind.cart = (function() {
       // Add source to source cookie
       cartItems[cartItems.length] = String.fromCharCode(65+cartSources.length) + id;
       cartSources[cartSources.length] = source;
-      Cookies.setItem(_COOKIE_SOURCES, cartSources.join(_COOKIE_DELIM), false, '/', COOKIE_DOMAIN);
+      Cookies.setItem(_COOKIE_SOURCES, cartSources.join(_COOKIE_DELIM), false, '/', _COOKIE_DOMAIN);
     } else {
       cartItems[cartItems.length] = String.fromCharCode(65+sIndex) + id;
     }
-    Cookies.setItem(_COOKIE, $.unique(cartItems).join(_COOKIE_DELIM), false, '/', COOKIE_DOMAIN);
+    Cookies.setItem(_COOKIE, $.unique(cartItems).join(_COOKIE_DELIM), false, '/', _COOKIE_DOMAIN);
     updateCount();
     return true;
   }
@@ -99,11 +104,11 @@ VuFind.cart = (function() {
         }
       }
       if(cartItems.length > 0) {
-        Cookies.setItem(_COOKIE, _uniqueArray(cartItems).join(_COOKIE_DELIM), false, '/', COOKIE_DOMAIN);
-        Cookies.setItem(_COOKIE_SOURCES, _uniqueArray(cartSources).join(_COOKIE_DELIM), false, '/', COOKIE_DOMAIN);
+        Cookies.setItem(_COOKIE, _uniqueArray(cartItems).join(_COOKIE_DELIM), false, '/', _COOKIE_DOMAIN);
+        Cookies.setItem(_COOKIE_SOURCES, _uniqueArray(cartSources).join(_COOKIE_DELIM), false, '/', _COOKIE_DOMAIN);
       } else {
-        Cookies.removeItem(_COOKIE, '/', COOKIE_DOMAIN);
-        Cookies.removeItem(_COOKIE_SOURCES, '/', COOKIE_DOMAIN);
+        Cookies.removeItem(_COOKIE, '/', _COOKIE_DOMAIN);
+        Cookies.removeItem(_COOKIE_SOURCES, '/', _COOKIE_DOMAIN);
       }
       updateCount();
       return true;
@@ -163,13 +168,12 @@ VuFind.cart = (function() {
 
   // Reveal
   return {
-    // Properties
-    COOKIE_DOMAIN: COOKIE_DOMAIN,
     // Methods
     addItem: addItem,
     removeItem: removeItem,
     getFullItems: getFullItems,
     updateCount: updateCount,
+    setDomain: setDomain,
     // Lightbox handler
     // Setup
     ready: function() {

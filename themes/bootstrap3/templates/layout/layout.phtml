@@ -68,7 +68,7 @@
           $domain = $cart->getCookieDomain();
           if (!empty($domain)) {
             $this->headScript()->appendScript(
-              'VuFind.cart.COOKIE_DOMAIN = "' . $domain . '"'
+              'VuFind.cart.setDomain("' . $domain . '");'
             );
           }
           $this->jsTranslations()->addStrings(
