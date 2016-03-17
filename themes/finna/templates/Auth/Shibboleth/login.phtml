@@ -3,7 +3,7 @@
 <? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
 <div class="row">
   <div class="col-sm-6 shibboleth-login">
-    <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>">
+    <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>" data-lightbox-ignore>
       <img src="<?=$this->imageLink('haka_landscape_medium.gif') ?>" alt="<?=$this->escapeHtmlAttr($this->translate("Haka Login")) ?>">
     </a>
   </div>
