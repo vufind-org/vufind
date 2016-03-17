@@ -8,6 +8,7 @@ var finna = (function() {
                 'autocomplete',
                 'bx',
                 'common',
+                'changeHolds',
                 'dateRangeVis',
                 'feed',
                 'feedback',

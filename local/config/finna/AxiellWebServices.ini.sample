@@ -58,6 +58,10 @@ HMACKeys = id
 minLength = 4
 maxLength = 4
 
+; Uncomment the following line to enable changePickupLocation
+[changePickupLocation]
+method = driver
+
 ; Uncomment the following lines to enable updating of address information.
 ; Choose a method on how to update the address information (email or url).
 [updateAddress]
