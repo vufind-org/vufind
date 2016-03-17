@@ -45,9 +45,9 @@ class ILSAuthenticator extends \VuFind\Auth\ILSAuthenticator
     /**
      * Attempt to log in the user to the ILS, and save credentials if it works.
      *
-     * @param string $username  Catalog username
-     * @param string $password  Catalog password
-     * @param string $username2 Secondary user name
+     * @param string $username          Catalog username
+     * @param string $password          Catalog password
+     * @param string $secondaryUsername Secondary user name
      *
      * Returns associative array of patron data on success, false on failure.
      *
