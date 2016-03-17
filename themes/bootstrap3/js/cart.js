@@ -1,4 +1,4 @@
-/*global bulkActionSubmit, cartCookieDomain, Cookies, Lightbox, refreshPageForLogin, VuFind */
+/*global cartCookieDomain, Cookies, VuFind */
 
 VuFind.cart = (function() {
   var _COOKIE = 'vufind_cart';
