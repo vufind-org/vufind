@@ -53,7 +53,6 @@ VuFind.cart = (function() {
   }
 
   var addItem = function(id,source) {
-    alert(_COOKIE_DOMAIN);
     if(!source) {
       source = VuFind.defaultSearchBackend;
     }
