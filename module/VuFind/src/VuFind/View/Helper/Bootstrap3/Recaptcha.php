@@ -1,10 +1,10 @@
 <?php
 /**
- * Flash message view helper
+ * Recaptcha view helper
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,35 +21,34 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <crhallberg@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Bootstrap3;
 
 /**
- * Flash message view helper
+ * Recaptcha view helper
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <crhallberg@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Flashmessages extends \VuFind\View\Helper\Root\Flashmessages
+class Recaptcha extends \VuFind\View\Helper\Root\Recaptcha
 {
     /**
-     * Get the CSS class to correspond with a messenger namespace
+     * Constructor
      *
-     * @param string $ns Namespace
-     *
-     * @return string
+     * @param \ZendService\Recaptcha\Recaptcha $rc     Custom formatted Recaptcha
+     * @param \VuFind\Config                   $config Config object
      */
-    protected function getClassForNamespace($ns)
+    public function __construct($rc, $config)
     {
-        if ($ns == 'error') {
-            $ns = 'danger';
-        }
-        return 'flash-message alert alert-' . $ns;
+        $this->prefixHtml = '<div class="form-group">' .
+            '<div class="col-sm-9 col-sm-offset-3">';
+        $this->suffixHtml = '</div></div>';
+        parent::__construct($rc, $config);
     }
 }
