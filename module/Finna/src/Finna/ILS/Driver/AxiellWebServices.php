@@ -513,10 +513,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $validFromDate = date('Y-m-d');
 
             $validToDate = isset($holdDetails['requiredBy'])
-            ? $this->dateFormat->convertFromDisplayDate(
-                'Y-m-d', $holdDetails['requiredBy']
-            )
-            : date('Y-m-d', $this->getDefaultRequiredByDate());
+                ? $this->dateFormat->convertFromDisplayDate(
+                    'Y-m-d', $holdDetails['requiredBy']
+                )
+                : date('Y-m-d', $this->getDefaultRequiredByDate());
         } catch (DateException $e) {
             // Hold Date is invalid
             throw new ILSException('hold_date_invalid');
@@ -660,10 +660,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $validFromDate = date('Y-m-d');
 
             $validToDate = isset($holdDetails['requiredBy'])
-            ? $this->dateFormat->convertFromDisplayDate(
-                'Y-m-d', $holdDetails['requiredBy']
-            )
-            : date('Y-m-d', $this->getDefaultRequiredByDate());
+                ? $this->dateFormat->convertFromDisplayDate(
+                    'Y-m-d', $holdDetails['requiredBy']
+                )
+                : date('Y-m-d', $this->getDefaultRequiredByDate());
         } catch (DateException $e) {
             // Hold Date is invalid
             throw new ILSException('hold_date_invalid');
