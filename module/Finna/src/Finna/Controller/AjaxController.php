@@ -216,6 +216,59 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Change pickup Locations
+     *
+     * @return \Zend\Http\Response
+     */
+    public function changePickUpLocationAjax()
+    {
+        $reservationId = $this->params()->fromQuery('reservationId');
+        $pickupLocationId = $this->params()->fromQuery('pickupLocationId');
+        if (empty($reservationId)) {
+            return $this->output(
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                [
+                    'status' => false,
+                    'msg' => $this->translate('You must be logged in first')
+                ],
+                self::STATUS_NEED_AUTH
+            );
+        }
+
+        try {
+            $catalog = $this->getILS();
+            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+
+            if ($patron) {
+                $details = [
+                    'reservationId'    => $reservationId,
+                    'pickupLocationId' => $pickupLocationId
+                ];
+                $results = [];
+
+                $results = $catalog->changePickupLocation($patron, $details);
+
+                return $this->output($results, self::STATUS_OK);
+            }
+        } catch (\Exception $e) {
+            // Do nothing -- just fail through to the error message below.
+        }
+
+        return $this->output(
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
+        );
+    }
+
+    /**
      * Check Requests are Valid
      *
      * @return \Zend\Http\Response

@@ -115,6 +115,33 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
+     * Change Pickup Location
+     *
+     * Attempts to change the pickup location of a specific hold
+     *
+     * @param array $patron      The patron array from patronLogin
+     * @param array $holdDetails The request details
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function changePickupLocation($patron, $holdDetails)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver
+            && $this->methodSupported(
+                $driver, 'changePickupLocation', [$patron, $holdDetails]
+            )
+        ) {
+            return $driver->changePickupLocation(
+                $this->stripIdPrefixes($patron, $source), $holdDetails
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Return total amount of fees that may be paid online.
      *
      * @param array $patron Patron

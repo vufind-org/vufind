@@ -654,15 +654,23 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         global $configArray;
         $username = $patron['cat_username'];
         $password = $patron['cat_password'];
-        $pickUpLocation = $holdDetails['pickup'];
-        $created = $this->dateFormat->convertFromDisplayDate(
-            "Y-m-d", $holdDetails['created']
-        );
-        $expires = $this->dateFormat->convertFromDisplayDate(
-            "Y-m-d", $holdDetails['expires']
-        );
+        $pickupLocationId = $holdDetails['pickupLocationId'];
+
+        try {
+            $validFromDate = date('Y-m-d');
+
+            $validToDate = isset($holdDetails['requiredBy'])
+            ? $this->dateFormat->convertFromDisplayDate(
+                'Y-m-d', $holdDetails['requiredBy']
+            )
+            : date('Y-m-d', $this->getDefaultRequiredByDate());
+        } catch (DateException $e) {
+            // Hold Date is invalid
+            throw new ILSException('hold_date_invalid');
+        }
+
         $reservationId = $holdDetails['reservationId'];
-        list($organisation, $branch) = explode('.', $pickUpLocation, 2);
+        list($organisation, $branch) = explode('.', $pickupLocationId, 2);
 
         $function = 'changeReservation';
         $functionResult = 'changeReservationResult';
@@ -673,8 +681,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'language' => 'en',
             'id' => $reservationId,
             'pickUpBranchId' => $branch,
-            'validFromDate' => $created,
-            'validToDate' => $expires
+            'validFromDate' => $validFromDate,
+            'validToDate' => $validToDate
         ];
 
         $result = $this->doSOAPRequest(
@@ -1525,6 +1533,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             ];
             $holdsList[] = $hold;
         }
+
+        // Sort the holds
+        $sortArray = [];
+        foreach ($holdsList as $key => $row) {
+            $sortArray[$key] = $row['title'];
+        }
+        array_multisort($sortArray, SORT_ASC, $holdsList);
+
         return $holdsList;
     }
 
