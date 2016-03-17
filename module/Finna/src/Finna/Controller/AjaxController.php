@@ -222,9 +222,9 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function changePickUpLocationAjax()
     {
-        $reservationId = $this->params()->fromQuery('reservationId');
+        $requestId = $this->params()->fromQuery('requestId');
         $pickupLocationId = $this->params()->fromQuery('pickupLocationId');
-        if (empty($reservationId)) {
+        if (empty($requestId)) {
             return $this->output(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,
@@ -250,7 +250,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
             if ($patron) {
                 $details = [
-                    'reservationId'    => $reservationId,
+                    'requestId'    => $requestId,
                     'pickupLocationId' => $pickupLocationId
                 ];
                 $results = [];

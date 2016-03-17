@@ -513,10 +513,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $validFromDate = date('Y-m-d');
 
             $validToDate = isset($holdDetails['requiredBy'])
-                ? $this->dateFormat->convertFromDisplayDate(
-                    'Y-m-d', $holdDetails['requiredBy']
-                )
-                : date('Y-m-d', $this->getDefaultRequiredByDate());
+            ? $this->dateFormat->convertFromDisplayDate(
+                'Y-m-d', $holdDetails['requiredBy']
+            )
+            : date('Y-m-d', $this->getDefaultRequiredByDate());
         } catch (DateException $e) {
             // Hold Date is invalid
             throw new ILSException('hold_date_invalid');
@@ -669,7 +669,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             throw new ILSException('hold_date_invalid');
         }
 
-        $reservationId = $holdDetails['reservationId'];
+        $requestId = $holdDetails['requestId'];
         list($organisation, $branch) = explode('.', $pickupLocationId, 2);
 
         $function = 'changeReservation';
@@ -679,7 +679,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'user' => $username,
             'password' => $password,
             'language' => 'en',
-            'id' => $reservationId,
+            'id' => $requestId,
             'pickUpBranchId' => $branch,
             'validFromDate' => $validFromDate,
             'validToDate' => $validToDate
@@ -1522,7 +1522,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'available' => $reservation->reservationStatus == 'fetchable',
                 'modifiable' => $reservation->reservationStatus == 'active',
                 'item_id' => '',
-                'reservation_id' => $reservation->id,
+                'requestId' => $reservation->id,
                 'volume' =>
                    isset($reservation->catalogueRecord->volume)
                        ? $reservation->catalogueRecord->volume : '',

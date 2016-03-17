@@ -10,8 +10,8 @@
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('My Holds') . '</li>';
 
     $user = $this->auth()->isLoggedIn();
-    // Add finna-holds.js for holds modificatioin
-    $this->headScript()->appendFile('finna-change-holds.js');
+    // Add finna-holds.js
+    $this->headScript()->appendFile('finna-holds.js');
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
@@ -151,7 +151,7 @@
             <? if (!empty($pickupDisplay)): ?>
               <strong><?=$this->transEsc('pick_up_location') ?>:</strong>
               <? if (isset($ilsDetails['available']) && !$ilsDetails['available'] == true && $changePickupLocation): ?>
-                <div  class="changeHolds" recordId="<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" reservationId="<?=$this->escapeHtml($ilsDetails['reservation_id']) ?>" >
+                <div  class="changeHolds" recordId="<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" requestId="<?=$this->escapeHtml($ilsDetails['requestId']) ?>" >
                   <span class="pickup-location-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i></span>
                   <select id="pickupLocation" class="type form-inline form-control responsive-field" name="gatheredDetails[pickupLocation]">
                     <option selected="selected"  value="<?=$ilsDetails['location']?>"><?= $pickupTranslate ? $this->transEsc($pickupDisplay) : $this->escapeHtml($pickupDisplay)?></option>
