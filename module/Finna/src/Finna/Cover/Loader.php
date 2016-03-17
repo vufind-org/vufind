@@ -306,6 +306,12 @@ class Loader extends \VuFind\Cover\Loader
      */
     protected function processImageURL($url, $cache = true)
     {
+        $url = str_replace(
+            [' ', 'ä','ö','å','Ä','Ö','Å'],
+            ['%20','%C3%A4','%C3%B6','%C3%A5','%C3%84','%C3%96','%C3%85'],
+            trim($url)
+        );
+
         // Attempt to pull down the image:
         $result = $this->client->setUri($url)->send();
         if (!$result->isSuccess()) {
