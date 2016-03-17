@@ -68,8 +68,8 @@ VuFind.lightbox = (function() {
       return;
     }
     // Isolate successes
-    var htmlDiv = $('<div>'+html+'</div>');
-    var alerts = htmlDiv.find('.alert-success');
+    var htmlDiv = $('<div/>').html(html);
+    var alerts = htmlDiv.find('.flash-message.alert-success');
     if (alerts.length > 0) {
       showAlert(alerts[0].innerHTML, 'success');
       return;
@@ -104,7 +104,9 @@ VuFind.lightbox = (function() {
   var _xhr = false;
   // Public: Handle AJAX in the Lightbox
   var ajax = function(obj) {
-    if (_xhr !== false) return;
+    if (_xhr !== false) {
+      return;
+    }
     if (_originalUrl === false) {
       _originalUrl = obj.url;
     }
@@ -125,10 +127,10 @@ VuFind.lightbox = (function() {
           return;
         }
         if ( // Close the lightbox after deliberate login
-          obj.method                                                  // is a form
-          && !html.match(/alert alert-danger/)                        // skip failed logins
-          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/)) // that matches login/create account
-            || obj.url.match(/catalogLogin/))                         // or catalog login for holds
+          obj.method                                                                // is a form
+          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/))               // that matches login/create account
+            || obj.url.match(/catalogLogin/))                                       // or catalog login for holds
+          && $('<div/>').html(html).find('.flash-message.alert-danger').length == 0 // skip failed logins
         ) {
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
             _refreshPage();
