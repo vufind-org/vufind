@@ -98,6 +98,9 @@ class EncryptCatalogPasswords extends AbstractService
         $cardsChanged = 0;
 
         foreach ($users as $user) {
+            if (strncmp($user->username, 'deleted:', 8) === 0) {
+                continue;
+            }
             echo "Checking user: " . $user->username . "\n";
             if (null !== $user->cat_password) {
                 $user->saveCredentials($user->cat_username, $user->cat_password);
@@ -107,12 +110,22 @@ class EncryptCatalogPasswords extends AbstractService
             if ($user->libraryCardsEnabled()) {
                 foreach ($user->getLibraryCards() as $card) {
                     if (null !== $card->cat_password) {
-                        $user->saveLibraryCard(
-                            $card->id, $card->card_name, $card->cat_username,
-                            $card->cat_password, $card->home_library
-                        );
+                        try {
+                            $user->saveLibraryCard(
+                                $card->id, $card->card_name, $card->cat_username,
+                                $card->cat_password, $card->home_library
+                            );
+                            echo "  Library card {$card->id} password encrypted\n";
+                        } catch (\VuFind\Exception\LibraryCard $e) {
+                            // @codingStandardsIgnoreLine
+                            if ($e->getMessage() == 'Username is already in use in another library card') {
+                                // Duplicate library card, remove it
+                                $user->deleteLibraryCard($card->id);
+                                echo "  ***** Library card {$card->id}: "
+                                    . "removed duplicate *****\n";
+                            }
+                        }
                         ++$cardsChanged;
-                        echo "  Library card {$card->id} password encrypted\n";
                     }
                 }
             }
