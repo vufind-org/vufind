@@ -73,7 +73,7 @@ finna.changeHolds = (function() {
             .done(function(response) {
                 spinner.addClass('hidden');
                 if (response.data['success']){
-                    var success = $('<div></div>').attr('class', 'alert alert-success').text(VuFind.translate('change_reservation_success'));
+                    var success = $('<div></div>').attr('class', 'alert alert-success').text(VuFind.translate('change_hold_success'));
                     hold.append(success);
                 } else {
                     hold.append(errorOccured);
