@@ -120,13 +120,20 @@ a.list-group-item {
   margin-bottom: 0;
   line-height: 1.3;
 }
-.record-type.organisations {
+.recordProvidedBy {
     border-top: 1px solid @gray-lighter;
-    padding: 10px 0px;
+    margin-top: 5px;
+}
+.sidebar .recordProvidedBy {
+    border-top: none;
+    margin-top: 0px;
+}
+.record-type.organisations {
+    padding: 0px 0px 10px;
     font-size: 1.04em;
     @media (max-width: @screen-xs-max) {
         border-top: none;
-        border-bottom: 2px solid @gray-lighter;
+        border-bottom: 1px solid @gray-lighter;
     }
     & > li {
         font-weight: bold;

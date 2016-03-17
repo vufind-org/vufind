@@ -562,6 +562,17 @@ finna.layout = (function() {
       }
     };
 
+    var initScrollRecord = function() {
+      var identifier = window.location.hash;
+      if ($(window).height() < 960) {
+        if (($('section.main').hasClass('template-name-search') === true || $('section.main').hasClass('template-name-results') === true) && (identifier === "") && ($(window).scrollTop() === 0)) {
+          $('html,body').animate({
+            scrollTop: $('.nav.searchbox').offset().top
+          }, 100);
+        }
+      }
+    };
+
     var initLoginRedirect = function() {
       if (!document.addEventListener) {
         return;
@@ -583,6 +594,7 @@ finna.layout = (function() {
         initMobileNarrowSearch: initMobileNarrowSearch,
         initSecondaryLoginField: initSecondaryLoginField,
         init: function() {
+            initScrollRecord();
             initJumpMenus();
             initAnchorNavigationLinks();
             initFixFooter();
