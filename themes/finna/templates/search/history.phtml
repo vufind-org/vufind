@@ -3,9 +3,11 @@
   // Set page title.
   $this->headTitle($this->translate('Search History'));
 
+  $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
+
   // Set up myresearch menu
-  if ($this->auth()->isLoggedIn()):
-    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", $this->auth()->isLoggedIn() ? array('active' => 'history') : array());
+  if ($saveSupported && $this->auth()->isLoggedIn()):
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'history'));
   else:
     $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1>' . $this->transEsc("history_saved_searches") . '</h1></div>';
   endif;
@@ -26,7 +28,7 @@
       </div>
     <? endif; ?>
     <?=$this->flashmessages();?>
-    <? if (!empty($this->saved)): ?>
+    <? if ($saveSupported && !empty($this->saved)): ?>
       <h2><?=$this->transEsc("history_saved_searches")?></h2>
       <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => true));?>
     <? endif; ?>

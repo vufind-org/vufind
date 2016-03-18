@@ -1,7 +1,9 @@
 <!-- START of: finna - myresearch/borrowing-block.phtml -->
 <? if (isset($profile['blocks']) && !empty($profile['blocks'])): ?>
-  <? foreach ($profile['blocks'] as $block): ?>
-    <p class="borrowing-block"><?=$this->transEsc($block)?></p>
-  <? endforeach; ?>
+  <div class="borrowing-block-container alert alert-info">
+    <? foreach ($profile['blocks'] as $block): ?>
+      <p class="borrowing-block"><?=$this->transEsc($block)?></p>
+    <? endforeach; ?>
+  </div>
 <? endif; ?>
 <!-- END of: finna - myresearch/borrowing-block.phtml -->

@@ -6,9 +6,9 @@ finna.searchTabsRecommendations = (function() {
             return;
         }
         var url = VuFind.path + '/AJAX/JSON?method=getSearchTabsRecommendations';
-        var searchHash = holder.data('search-hash');
+        var searchId = holder.data('searchId');
         var limit = holder.data('limit');
-        var jqxhr = $.getJSON(url, {searchHash: searchHash, limit: limit})
+        var jqxhr = $.getJSON(url, {searchId: searchId, limit: limit})
         .done(function(response) {
             var holder = $('#search-tabs-recommendations-holder');
             holder.html(response.data);

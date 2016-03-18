@@ -550,7 +550,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function login($request)
     {
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator(null)
+        if (!$this->getAuth()->getSessionInitiator(null, $request)
             && !$this->csrf->isValid($request->getPost()->get('csrf'))
         ) {
             throw new AuthException('authentication_error_technical');

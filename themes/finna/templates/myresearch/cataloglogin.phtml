@@ -45,6 +45,12 @@
       </div>
     </div>
     <div class="form-group">
+      <label class="col-sm-2 control-label" for="login_secondary_username"></label>
+      <div class="col-sm-10">
+        <input id="login_secondary_username" type="text" name="cat_secondary_username" value="" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
       <label class="col-sm-2 control-label" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
       <div class="col-sm-10">
         <input id="profile_cat_password" type="password" name="cat_password" value="" class="form-control"/>
@@ -56,4 +62,33 @@
       </div>
     </div>
   </form>
+<?
+  $labels = [];
+  $manager = $this->auth()->getManager();
+  $options = $manager->getSelectableAuthOptions();
+  $originalMethod = $manager->getAuthMethod();
+  if (in_array('MultiILS', $options)) {
+    $manager->setAuthMethod('MultiILS');
+  } else {
+    $manager->setAuthMethod('ILS');
+  }
+  foreach ($this->targets as $target) {
+    $label = $manager->getSecondaryLoginFieldLabel($target);
+    $labels[] = '"' . addslashes($target) . '": "' . ($label ? addslashes($this->translate($label)) : '') . '"';
+  }
+  $manager->setAuthMethod($originalMethod);
+
+  $labels = implode(', ', $labels);
+  $script = <<<EOT
+  finna.layout.initSecondaryLoginField({{$labels}}, '');
+EOT;
+
+  // Inline the script for lightbox compatibility
+  echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>
+
+  <? if (($user = $this->auth()->isLoggedIn()) && count($user->getLibraryCards()) > 1): ?>
+    <h3><?=$this->transEsc('catalog_login_change_card_heading') ?></h3>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user, 'displaySelected' => false, 'label' => 'catalog_login_change_card_label'))?>
+  <? endif; ?>
 <? endif; ?>

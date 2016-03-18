@@ -16,6 +16,10 @@
     & #delete-account {
         margin-bottom: 20px;   
     }
+    & #pickupLocation {
+        margin-top: 3px;
+        margin-bottom: 3px; 
+    }
     & .myresearch-profile-list {
         padding: 0px 6px 20px;
         & label, & .profile-title {
@@ -208,7 +212,7 @@
             margin-left: 10px;   
         }
         & .myresearch-row:last-child {
-          box-shadow: 0 15px 30px -35px @gray;       
+          box-shadow: none;       
         }
     }
     .checkboxFilter.mylist-select-all {
@@ -304,6 +308,7 @@
         & h1 {
             font-size: @finna-header-font-size;
             margin: 0;
+            line-height: 1.5em;
         }
     }
     .finna-main-tabs {
@@ -463,7 +468,10 @@
             width: 100%;
         }
         .dropdown-menu {
-              left: 20%;   
+            left: ~"-webkit-calc(50% - 100px)";
+            left: ~"-moz-calc(50% - 100px)";
+            left: ~"calc(50% - 100px)";
+            width: 200px;
         }
     }
     .useraccount-nav {
@@ -534,9 +542,12 @@
     & p.no-content-message {
         margin-top: 5px;
     }
-    & p.borrowing-block {
-        padding: 0 8px;
-        font-weight: bold;
+    & .borrowing-block-container {
+        & p.borrowing-block {
+            padding: 0;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
     }
     .support-notice {
         margin: 0px;

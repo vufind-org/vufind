@@ -159,11 +159,13 @@ class MetaLibController extends \VuFind\Controller\AbstractSearch
         $view->currentSet = $set;
         $session = new SessionContainer('MetaLib');
         if ($isIrd) {
-            $metalib = $this->getResultsManager()->get($this->searchClassId);
+            $metalib
+                = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
+                    ->get($this->searchClassId);
             $backendParams = new ParamBag();
             $backendParams->add('irdInfo', explode(',', substr($set, 5)));
             $result
-                = $metalib->search('MetaLib', $query, false, false, $backendParams);
+                = $metalib->search($query, false, false, $backendParams);
             $info = $result->getIRDInfo();
             $name = $info ? $info['name'] : $set;
             if (!isset($session->recentSets)) {

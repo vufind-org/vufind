@@ -41,6 +41,7 @@ namespace Finna\Controller;
 class MyResearchController extends \VuFind\Controller\MyResearchController
 {
     use OnlinePaymentControllerTrait;
+    use CatalogLoginTrait;
 
     /**
      * Catalog Login Action

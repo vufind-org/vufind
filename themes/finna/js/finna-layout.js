@@ -17,7 +17,7 @@ finna.layout = (function() {
     var isTouchDevice = function() {
         return (('ontouchstart' in window)
               || (navigator.maxTouchPoints > 0)
-              || (navigator.msMaxTouchPoints > 0)); // IE10, IE11, Edge        
+              || (navigator.msMaxTouchPoints > 0)); // IE10, IE11, Edge
     };
 
     // Append current anchor (location.hash) to selected links
@@ -34,11 +34,16 @@ finna.layout = (function() {
     };
 
     var initFixFooter = function() {
-        var detectHeight = $(window).height() - $('body').height();
-        if (detectHeight > 0) {
-            var expandedFooter = $('footer').height() + detectHeight;
-            $('footer').height(expandedFooter);
-        }
+        $(window).on("resize", function(e) {
+          var detectHeight = $(window).height() - $('body').height();
+          if (detectHeight > 0) {
+              var expandedFooter = $('footer').height() + detectHeight;
+              $('footer').height(expandedFooter);
+          }
+          else {
+            $('footer').height('auto');
+          }
+        }).resize();
     };
 
     var initHideDetails = function() {
@@ -74,7 +79,7 @@ finna.layout = (function() {
             var modal = $('#modal');
             modal.addClass('location-service');
             modal.find('.modal-dialog').addClass('modal-lg');
-            
+
             $('#modal').one('hidden.bs.modal', function() {
                 closeModalCallback($(this));
             });
@@ -557,15 +562,29 @@ finna.layout = (function() {
       }
     };
 
+    var initScrollRecord = function() {
+      var identifier = window.location.hash;
+      if ($(window).height() < 960) {
+        if (($('section.main').hasClass('template-name-search') === true || $('section.main').hasClass('template-name-results') === true) && (identifier === "") && ($(window).scrollTop() === 0)) {
+          $('html,body').animate({
+            scrollTop: $('.nav.searchbox').offset().top
+          }, 100);
+        }
+      }
+    };
+
     var initLoginRedirect = function() {
+      if (!document.addEventListener) {
+        return;
+      }
       document.addEventListener('VuFind.lightbox.login', function(e) {
-        if (!e.detail.formUrl.match(/catalogLogin/)) {          
-          window.location.href = VuFind.path + '/MyResearch/Home'; 
+        if (!e.detail.formUrl.match(/catalogLogin/)) {
+          window.location.href = VuFind.path + '/MyResearch/Home';
           e.preventDefault();
         }
       });
     }
-    
+
     var my = {
         isTouchDevice: isTouchDevice,
         initTruncate: initTruncate,
@@ -575,6 +594,7 @@ finna.layout = (function() {
         initMobileNarrowSearch: initMobileNarrowSearch,
         initSecondaryLoginField: initSecondaryLoginField,
         init: function() {
+            initScrollRecord();
             initJumpMenus();
             initAnchorNavigationLinks();
             initFixFooter();

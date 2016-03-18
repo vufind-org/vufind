@@ -18,6 +18,7 @@
     white-space: nowrap;
     .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @finna-button-radius);
     .user-select(none);
+    .transition(background .1s ease-in-out);
 
     &,
     &:active,
@@ -45,7 +46,7 @@
     fieldset[disabled] & {
         cursor: not-allowed;
         pointer-events: none; // Future-proof disabling of clicks
-        .opacity(.65);
+        .opacity(.5);
         .box-shadow(none);
     }
 }
@@ -334,7 +335,7 @@
         line-height: 34px;
     }
     &.disabled {
-        .opacity(0.65);   
+        .opacity(0.5);   
     }
 }
 .jump-menu-style select::-ms-expand {

@@ -49,7 +49,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
 {
     use MetaLibIrdTrait,
         OnlinePaymentControllerTrait,
-        SearchControllerTrait;
+        SearchControllerTrait,
+        CatalogLoginTrait;
 
     /**
      * Add resources to a list.
@@ -213,6 +214,59 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         return $this->output('', self::STATUS_OK);
+    }
+
+    /**
+     * Change pickup Locations
+     *
+     * @return \Zend\Http\Response
+     */
+    public function changePickUpLocationAjax()
+    {
+        $requestId = $this->params()->fromQuery('requestId');
+        $pickupLocationId = $this->params()->fromQuery('pickupLocationId');
+        if (empty($requestId)) {
+            return $this->output(
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                [
+                    'status' => false,
+                    'msg' => $this->translate('You must be logged in first')
+                ],
+                self::STATUS_NEED_AUTH
+            );
+        }
+
+        try {
+            $catalog = $this->getILS();
+            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+
+            if ($patron) {
+                $details = [
+                    'requestId'    => $requestId,
+                    'pickupLocationId' => $pickupLocationId
+                ];
+                $results = [];
+
+                $results = $catalog->changePickupLocation($patron, $details);
+
+                return $this->output($results, self::STATUS_OK);
+            }
+        } catch (\Exception $e) {
+            // Do nothing -- just fail through to the error message below.
+        }
+
+        return $this->output(
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
+        );
     }
 
     /**
@@ -972,14 +1026,14 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         $id = $this->params()->fromPost(
-            'searchHash', $this->params()->fromQuery('searchHash')
+            'searchId', $this->params()->fromQuery('searchId')
         );
         $limit = $this->params()->fromPost(
             'limit', $this->params()->fromQuery('limit', null)
         );
 
         $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager');
-        $search = $table->get('Search')->select(['finna_search_id' => $id])
+        $search = $table->get('Search')->select(['id' => $id])
             ->current();
         if (empty($search)) {
             return $this->output('Search not found', self::STATUS_ERROR, 400);
@@ -1259,7 +1313,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 'params' => $params,
                 'lookfor' => $lookfor
             ];
-            $result['searchHash'] = $view->results->getSearchHash();
+            $result['searchId'] = $view->results->getSearchId();
             $result['content'] = $this->getViewRenderer()->render(
                 $recordsFound ? 'search/list-list.phtml' : 'metalib/nohits.phtml',
                 $viewParams

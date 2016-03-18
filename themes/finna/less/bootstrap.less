@@ -12,12 +12,18 @@ body {
     @media(max-width:@screen-sm-max) {
         background-size: 150% auto;
         background-position: 50% 0;
+        & .record-view-header > .container {
+            padding-left: 0;
+            padding-right: 0;
+        }
     }
     @media(max-width:@screen-xs-max) {
          background-size: 350% auto;
     }
     background-color: @footer-background;
     background-repeat: no-repeat;
+
+    
     // fine-tune tablet layout 
     @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
         & .container {
@@ -25,10 +31,6 @@ body {
         }
         // element-specific adjustments
         & .main {
-            & .record-view-header {
-                margin-left: -15px;
-                margin-right: -15px;
-            }
             & .searchtools-background {
                  margin-left: -15px;
             }
@@ -241,13 +243,15 @@ footer {
         border-top: none;
     }
     @media (max-width: @screen-xs-max) {
+        text-align: center;
+        padding-top: 35px;
         padding-bottom: 50px;
         & hr {
             display: block;
             border-top: 1px solid @gray-light;
         }
         & ul {
-            margin-bottom: 25px;   
+            margin-bottom: 35px;   
         }
     }
     & a, p, h5 {
@@ -296,7 +300,8 @@ input[type=number].input-year::-webkit-outer-spin-button {
 .template-name-results, .template-name-search {
     @media (max-width: @screen-xs-max) {
         & .finna-main-header {
-            padding: 0px 0;
+            padding: 0px 0px;
+            display: none;
             & .search-result-header {
                 font-size: 1.3em;
                 margin-top: 15px;
@@ -1175,7 +1180,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
                 color: @gray-light;
                 content: attr(data-format);
                 position: absolute;
-                top: 56%;
+                top: 50%;
                 font-size: .9em;
                 left:0;
                 width: 100%;
@@ -1195,14 +1200,14 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
             }
             & .iconlabel:before {
                 color: @gray-mid-light;
-                top: 46%;
+                top: 40%;
             }
         }
     }
     &:not(.touch-device) {
         & .grid.no-image  {
             & .grid-title {
-                max-height: 43px;
+                max-height: 48px;
                 background: none;
                 box-shadow: 0px 0px 0px;
                 opacity: 1;
@@ -1212,6 +1217,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
                 transition: background .1s linear;
                 padding-top: 6px;
                 padding-bottom: 6px;
+                margin-top: -5px;
             }
             & .dateyeartype {
                 margin-top: -4px;

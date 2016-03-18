@@ -5,10 +5,10 @@ header {
     & ul.navbar-nav > li > a {
         padding: 0 11px;
     }
-    & ul.navbar-nav.language:nth-child(3) > li > a {
+    & ul.navbar-nav.lang-1 > li > a {
         padding-right: 9px;
     }
-    & ul.navbar-nav.language:nth-child(4) > li > a {
+    & ul.navbar-nav.lang-2 > li > a {
         padding-left: 9px;
     }
     // reset finna margin
@@ -20,8 +20,8 @@ header {
 }
 @media (max-width: @screen-xs-max) {
     body {
-        background-size: 260% auto;
         background-position: 30% 0%;
+        background-repeat: repeat-y;
     }
 }
 // fine-tune tablet layout 
@@ -42,8 +42,8 @@ header {
             padding-right: 10px;
         }
         & .record-view-header {
-            margin-left: -15px;
-            margin-right: -15px;
+            padding-left: 25px;
+            padding-right: 25px;
         }
         & .searchtools-background {
             margin-left: -15px;
@@ -72,7 +72,7 @@ header {
 // fine-tune tablet and larger layouts 
 @media (min-width: @screen-sm-min) {
     header .navbar { 
-        & #loginOptions, .logoutOptions {
+        & #loginOptions, & .navbar-nav > .logoutOptions {
             margin-right: -15px;
         }
     }
@@ -93,6 +93,16 @@ header {
         margin: 0px 0px 30px;
     }
 }
+.logo hr {
+    border-bottom: 4px solid #fff;
+    margin-top: 9px;
+    margin-bottom: 19px;
+}
+form.navbar-form {
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    border-right: 1px solid transparent;
+}
 .introduction {
     & .fa-info.open-btn {
         color: @gray;
@@ -101,10 +111,14 @@ header {
     }
     & h1 {
         padding-left: 0;
+        letter-spacing: .3px;
         @media (max-width: @screen-xs-max) {
             background: rgba(1,1,1,0.35);
             padding-left: 7px;
             box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+            & br {
+                display: none;   
+            }
         }
         & span {
             display: inline;
@@ -140,15 +154,21 @@ header {
 }
 .left-column-content {
     padding-top: 10px;
-    padding-bottom: 10px;   
+    padding-bottom: 10px;
+    padding-right: 30px;
+    & .introduction {
+        max-width: 450px;   
+    }
 }
 .right-column-content {
+    margin-left: -15px;
+    padding-left: 35px;
     padding-top: 10px;
     padding-bottom: 10px;
     @media (max-width: @screen-xs-max) {
-        margin-left: -15px;
-        margin-right: -15px;
         padding-bottom: 20px;
+        margin-right: -15px;
+        padding-left: 30px;
     }
 }
 .info-text {
@@ -198,6 +218,22 @@ header {
                 font-size: 1.05em;
             }
         }
+    }
+}
+.home-2 {
+    & .carousel {
+        & .slick-prev, .slick-next {
+            background: none;
+        }
+        & .carousel-header {
+            padding-left: 0;   
+        }
+        & .carousel-slide-header p {
+            min-height: 55px;   
+        }
+    }
+    & .slick-initialized.slick-slider:not(.slick-vertical) .slick-slide.adjusted-height .wrapper {
+        background: none;
     }
 }
 .main.template-dir-search.template-name-home {

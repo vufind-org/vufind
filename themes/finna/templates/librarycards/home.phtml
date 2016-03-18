@@ -3,9 +3,6 @@
     // Set up page title:
     $this->headTitle($this->translate('Library Cards'));
 
-    // Set up additional JS:
-    $this->headScript()->appendFile("finna-library-cards.js");
-
     // Set up menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'librarycards'));
 
