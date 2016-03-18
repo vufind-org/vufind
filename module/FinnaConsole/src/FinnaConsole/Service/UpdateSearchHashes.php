@@ -93,7 +93,9 @@ class UpdateSearchHashes extends AbstractService
                         if (!isset($minified->f)) {
                             $minified->f = [];
                         }
-                        $minified->f = array_merge($minified->f, $minified->o);
+                        foreach ($minified->o as $filter) {
+                            $minified->f[] = "~$filter";
+                        }
                         unset($minified->o);
                         echo "Converted orFilters for row {$searchRow->id}\n";
                         $searchRow->search_object = serialize($minified);
