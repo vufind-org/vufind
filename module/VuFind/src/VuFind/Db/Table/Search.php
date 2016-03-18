@@ -223,7 +223,7 @@ class Search extends Gateway
                 ->equalTo('checksum', $checksum)
                 ->and
                 ->nest
-                ->equalTo('session_id', $sessionId);
+                ->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
             if (!empty($userId)) {
                 $nest->or->equalTo('user_id', $userId);
             }
