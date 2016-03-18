@@ -96,9 +96,11 @@
           $this->headScript()->appendFile("vendor/cookies.js");
           $this->headScript()->appendFile("cart.js");
           $domain = $cart->getCookieDomain();
-          $this->headScript()->appendScript(
-            'var cartCookieDomain = ' . (!empty($domain) ? "'$domain'" : 'false') . ';'
-          );
+          if (!empty($domain)) {
+            $this->headScript()->appendScript(
+              'VuFind.cart.setDomain("' . $domain . '");'
+            );
+          }
           $this->jsTranslations()->addStrings(
             array(
               'addBookBag' => 'Add to Book Bag',
