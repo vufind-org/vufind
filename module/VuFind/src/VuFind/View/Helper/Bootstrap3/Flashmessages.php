@@ -50,6 +50,6 @@ class Flashmessages extends \VuFind\View\Helper\Root\Flashmessages
         if ($ns == 'error') {
             $ns = 'danger';
         }
-        return 'alert alert-' . $ns;
+        return 'flash-message alert alert-' . $ns;
     }
 }
