@@ -97,26 +97,30 @@
 
       <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
       <? if (isset($authors['main']) && !empty($authors['main'])): ?>
-      <tr>
-        <th><?=$this->transEsc('Main Author')?>: </th>
-        <td property="author"><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></td>
-      </tr>
+        <tr>
+          <th><?=$this->transEsc(count($authors['main']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
+          <td>
+            <? $i = 0; foreach ($authors['main'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?></span><? endforeach; ?>
+          </td>
+        </tr>
       <? endif; ?>
 
       <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
-      <tr>
-        <th><?=$this->transEsc('Corporate Author')?>: </th>
-        <td property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></td>
-      </tr>
+        <tr>
+          <th><?=$this->transEsc(count($authors['corporate']) > 1 ? 'Corporate Author' : 'Corporate Authors')?>: </th>
+          <td>
+            <? $i = 0; foreach ($authors['corporate'] as $corporate => $roles): ?><?=($i++ == 0)?'':', '?><span property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $corporate)?>"><?=$this->escapeHtml($corporate)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?></span><? endforeach; ?>
+          </td>
+        </tr>
       <? endif; ?>
 
       <? if (isset($authors['secondary']) && !empty($authors['secondary'])): ?>
-      <tr>
-        <th><?=$this->transEsc('Other Authors')?>: </th>
-        <td>
-          <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a></span><? endforeach; ?>
-        </td>
-      </tr>
+        <tr>
+          <th><?=$this->transEsc('Other Authors')?>: </th>
+          <td>
+            <? $i = 0; foreach ($authors['secondary'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?></span><? endforeach; ?>
+          </td>
+        </tr>
       <? endif; ?>
 
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>

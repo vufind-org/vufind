@@ -10,13 +10,17 @@
 
   <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
   <? if (isset($authors['main']) && !empty($authors['main'])): ?>
-    <dt><?=$this->transEsc('Main Author')?>: </dt>
-    <dd><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></dd>
+    <dt><?=$this->transEsc(count($authors['main']) > 1 ? 'Main Authors' : 'Main Author')?>: </dt>
+    <dd>
+      <p><? $i = 0; foreach ($authors['main'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?><? endforeach; ?></p>
+    </dd>
   <? endif; ?>
 
   <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
-    <dt><?=$this->transEsc('Corporate Author')?>: </dt>
-    <dd><p><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></p></dd>
+    <dt><?=$this->transEsc(count($authors['corporate']) > 1 ? 'Corporate Author' : 'Corporate Authors')?>: </dt>
+    <dd>
+      <p><? $i = 0; foreach ($authors['corporate'] as $corporate => $roles): ?><?=($i++ == 0)?'':', '?><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $corporate)?>"><?=$this->escapeHtml($corporate)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?><? endforeach; ?></p>
+    </dd>
   <? endif; ?>
 
   <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
@@ -48,4 +52,4 @@
       <? endforeach; ?>
     </dd>
   <? endif; ?>
-</table>
+</dl>
