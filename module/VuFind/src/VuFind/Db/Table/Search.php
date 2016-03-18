@@ -230,7 +230,8 @@ class Search extends Gateway
         };
         foreach ($this->select($callback) as $oldSearch) {
             // Deminify the old search:
-            $dupSearch = $oldSearch->getSearchObject()->deminify($manager);
+            $oldSearchMinified = $oldSearch->getSearchObject();
+            $dupSearch = $oldSearchMinified->deminify($manager);
             // Check first if classes match:
             if (get_class($dupSearch) != get_class($newSearch)) {
                 continue;
@@ -241,6 +242,8 @@ class Search extends Gateway
                 // Update the old search only if it wasn't saved:
                 if (!$oldSearch->saved) {
                     $oldSearch->created = date('Y-m-d H:i:s');
+                    // Keep the ID of the old search:
+                    $newSearchMinified->id = $oldSearchMinified->id;
                     $oldSearch->search_object = serialize($newSearchMinified);
                     $oldSearch->save();
                 }
