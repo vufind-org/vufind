@@ -192,7 +192,10 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         // Perform encryption:
-        $cipher = new BlockCipher(new Mcrypt(['algorithm' => 'blowfish']));
+        $algo = isset($this->config->Authentication->ils_encryption_algo)
+            ? $this->config->Authentication->ils_encryption_algo
+            : 'blowfish';
+        $cipher = new BlockCipher(new Mcrypt(['algorithm' => $algo]));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
     }
