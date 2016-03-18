@@ -49,6 +49,10 @@ defaultPickUpLocation = 1.001
 ; By default item holds are enabled. Uncomment this setting to disable item holds.
 ;enableItemHolds = false
 
+; Optional help texts that can be displayed on the hold form
+;helpText = "Help text for all languages."
+;helpText[en-gb] = "Help text for English language."
+
 [cancelHolds]
 HMACKeys = id
 
