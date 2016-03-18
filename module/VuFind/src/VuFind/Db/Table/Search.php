@@ -122,7 +122,7 @@ class Search extends Gateway
     public function getSearches($sid, $uid = null)
     {
         $callback = function ($select) use ($sid, $uid) {
-            $select->where->equalTo('session_id', $sid);
+            $select->where->equalTo('session_id', $sid)->and->equalTo('saved', 0);
             if ($uid != null) {
                 $select->where->OR->equalTo('user_id', $uid);
             }
@@ -209,8 +209,8 @@ class Search extends Gateway
     ) {
         // Duplicate elimination
         // Normalize the URL params by minifying and deminifying the search object
-        $minified = new minSO($newSearch);
-        $newSearchCopy = $minified->deminify($manager);
+        $newSearchMinified = new minSO($newSearch);
+        $newSearchCopy = $newSearchMinified->deminify($manager);
         $newUrl = $newSearchCopy->getUrlQuery()->getParams();
         // Use crc32 as the checksum but get rid of highest bit so that we don't
         // need to care about signed/unsigned issues
@@ -230,7 +230,8 @@ class Search extends Gateway
         };
         foreach ($this->select($callback) as $oldSearch) {
             // Deminify the old search:
-            $dupSearch = $oldSearch->getSearchObject()->deminify($manager);
+            $oldSearchMinified = $oldSearch->getSearchObject();
+            $dupSearch = $oldSearchMinified->deminify($manager);
             // Check first if classes match:
             if (get_class($dupSearch) != get_class($newSearch)) {
                 continue;
@@ -238,9 +239,12 @@ class Search extends Gateway
             // Check if URLs match:
             $oldUrl = $dupSearch->getUrlQuery()->getParams();
             if ($oldUrl == $newUrl) {
-                // Update the old search if it wasn't saved:
+                // Update the old search only if it wasn't saved:
                 if (!$oldSearch->saved) {
                     $oldSearch->created = date('Y-m-d H:i:s');
+                    // Keep the ID of the old search:
+                    $newSearchMinified->id = $oldSearchMinified->id;
+                    $oldSearch->search_object = serialize($newSearchMinified);
                     $oldSearch->save();
                 }
                 // Update the new search from the existing one
