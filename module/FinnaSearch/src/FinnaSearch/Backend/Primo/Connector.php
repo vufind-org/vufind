@@ -5,7 +5,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
@@ -34,12 +35,34 @@ namespace FinnaSearch\Backend\Primo;
  * @category VuFind
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
 class Connector extends \VuFindSearch\Backend\Primo\Connector
 {
+    /**
+     * Whether highlighting is enabled
+     *
+     * @var bool
+     */
     protected $highlighting;
+
+    /**
+     * Hidden filters
+     * @var array
+     */
+    protected $hiddenFilters = [];
+
+    /**
+     * Set hidden filters
+     *
+     * @param array $filters Hidden filters
+     */
+    public function setHiddenFilters($filters)
+    {
+        $this->hiddenFilters = $filters;
+    }
 
     /**
      * Set highlighting on|off.
@@ -131,6 +154,13 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                 $lookfor = implode(" $op ", $words);
                 $term['op'] = 'contains';
                 $term['lookfor'] = $lookfor;
+            }
+        }
+        foreach ($this->hiddenFilters as $filter => $value) {
+            if ($filter == 'pcAvailability') {
+                $args['pcAvailability'] = (bool)$value;
+            } else {
+                $args['filterList'][$filter][] = $value;
             }
         }
         return parent::performSearch($institution, $terms, $args);

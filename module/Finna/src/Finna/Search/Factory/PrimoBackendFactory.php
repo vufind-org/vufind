@@ -5,7 +5,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -36,6 +37,7 @@ use FinnaSearch\Backend\Primo\Connector;
  * @category VuFind
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -46,6 +48,8 @@ class PrimoBackendFactory
      * Create the Primo Central connector.
      *
      * @return Connector
+     * @todo   Refactor so that the whole connector doesn't need to be duplicated
+     * (instantiate the class separately from initialization or something)
      */
     protected function createConnector()
     {
@@ -75,6 +79,12 @@ class PrimoBackendFactory
             && $this->primoConfig->General->highlighting
         ) {
             $connector->setHighlighting(true);
+        }
+
+        if ($this->primoConfig->HiddenFilters) {
+            $connector->setHiddenFilters(
+                $this->primoConfig->HiddenFilters->toArray()
+            );
         }
 
         return $connector;

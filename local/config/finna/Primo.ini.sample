@@ -225,3 +225,9 @@ next_prev_navigation = true
 
 [Autocomplete]
 enabled = 1
+
+; This section allows for adding hidden filters. Each filter will be passed to the 
+; Primo query in format facet_{filter},exact,{value} apart from pcAvailability
+; which is handled separately and overrides the pcAvailability checkbox facet. 
+[HiddenFilters]
+pcAvailability = true
