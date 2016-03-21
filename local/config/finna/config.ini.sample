@@ -288,6 +288,11 @@ encrypt_ils_password = "1"
 ; filled in with a random string value when encrypt_ils_passwords is set to true.
 ils_encryption_key = ""
 
+; This is the algorithm used to encrypt and decrypt catalog passwords.
+; For ILS, a symmetrical encryption algorithm must be used.
+; You can use mcrypt_list_algorithms to see the full list of choices for your system.
+ils_encryption_algo = "aes"
+
 ;Whether Mozilla Persona login is enabled
 ;mozillaPersona = true
 ;Whether Persona autologout is enabled (default is true)
