@@ -477,6 +477,11 @@ finna.layout = (function() {
                     tree.jstree('open_node', this, null, false);
                 });
             }
+            // // show filter if 15+ organisations
+            if (tree.parent().parent().attr('id') == 'side-panel-building' && tree.find('ul.jstree-container-ul > li').length > 15) {
+               $(this).prepend('<div class="building-filter"><input class="form-control" id="building_filter" placeholder="'+VuFind.translate('Organisation')+'..."></input></div>');
+               initBuildingFilter();
+            }
             // open facet if it has children and it is selected
             $(tree.find('.jstree-node.active.jstree-closed')).each(function() {
                 tree.jstree('open_node', this, null, false);
@@ -572,6 +577,22 @@ finna.layout = (function() {
         }
       }
     };
+
+    var initBuildingFilter = function() {
+      $('#building_filter').keyup(function () {
+        var valThis = this.value.toLowerCase();
+        $('#facet_building>ul>li>a>.main').each(function () {
+            var text  = $(this).text(),
+                text  = text.toLowerCase();
+            if(text.indexOf(valThis) != -1) {
+              $(this).parent().parent().show();
+            }
+            else {
+              $(this).parent().parent().hide();
+            }
+        });
+      });
+    }
 
     var initLoginRedirect = function() {
       if (!document.addEventListener) {

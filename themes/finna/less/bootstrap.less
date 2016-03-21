@@ -1742,3 +1742,16 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
     
  }
+ 
+ .building-filter {
+    padding: 5px 0px 5px 15px;
+    @media (max-width:@screen-xs-max) {
+        padding-left: 30px;   
+    }
+    & input {
+        width: 190px;   
+        @media (min-width: @screen-sm-min) and (max-width:@screen-sm-max) {
+            width: 135px;   
+        }
+    }
+}
