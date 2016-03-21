@@ -135,7 +135,7 @@ finna.imagePopup = (function(finna) {
                         var type = popup.data("type");
                         var id = popup.data("id");
                         var recordIndex = $.magnificPopup.instance.currItem.data.recordInd;
-
+                        VuFind.lightbox.bind('.imagepopup-holder');
                         $(".imagepopup-holder .image img").one("load", function() {
                             $(".imagepopup-holder .image").addClass('loaded');
                             initDimensions();
@@ -189,8 +189,7 @@ finna.imagePopup = (function(finna) {
 
                         // load feedback modal
                         if ($(".imagepopup-holder #feedback-record")[0]) {
-                          finna.layout.initRecordFeedbackForm();
-                          $(".imagepopup-holder #feedback-record").on("click", function() {
+                          $(".imagepopup-holder #feedback-record").on("click", function(e) {
                             $.magnificPopup.close();
                           });
                         }
