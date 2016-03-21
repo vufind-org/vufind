@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
 
 /**
  * Mink search actions test class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
@@ -109,12 +109,18 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testSearchHistory()
     {
-        $page = $this->performSearch('foo');
-        $page->findLink('Search History')->click();
+        // Use "foo \ bar" as our search because the backslash has been known
+        // to cause problems in some situations (e.g. PostgreSQL database with
+        // incorrect escaping); this allows us to catch regressions for a few
+        // different problems in a single test.
+        $page = $this->performSearch('foo \ bar');
+        $this->findAndAssertLink($page, 'Search History')->click();
         $this->snooze();
-        // We should see our "foo" search in the history, but no saved
+        // We should see our "foo \ bar" search in the history, but no saved
         // searches because we are logged out:
-        $this->assertEquals('foo', $page->findLink('foo')->getText());
+        $this->assertEquals(
+            'foo \ bar', $this->findAndAssertLink($page, 'foo \ bar')->getText()
+        );
         $this->assertFalse(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
@@ -126,18 +132,24 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
-        $this->assertEquals('foo', $page->findLink('foo')->getText());
+        $this->assertEquals(
+            'foo \ bar', $this->findAndAssertLink($page, 'foo \ bar')->getText()
+        );
         $this->assertTrue(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
-        $this->assertEquals('test', $page->findLink('test')->getText());
+        $this->assertEquals(
+            'test', $this->findAndAssertLink($page, 'test')->getText()
+        );
 
         // Now purge unsaved searches, confirm that unsaved search is gone
         // but saved search is still present:
-        $page->findLink('Purge unsaved searches')->click();
+        $this->findAndAssertLink($page, 'Purge unsaved searches')->click();
         $this->snooze();
-        $this->assertNull($page->findLink('foo'));
-        $this->assertEquals('test', $page->findLink('test')->getText());
+        $this->assertNull($page->findLink('foo \ bar'));
+        $this->assertEquals(
+            'test', $this->findAndAssertLink($page, 'test')->getText()
+        );
     }
 
     /**
@@ -155,8 +167,8 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
-        $delete = $page->findLink('Delete')->getAttribute('href');
-        $page->findLink('Log Out')->click();
+        $delete = $this->findAndAssertLink($page, 'Delete')->getAttribute('href');
+        $this->findAndAssertLink($page, 'Log Out')->click();
         $this->snooze();
 
         // Use user A's delete link, but try to execute it as user B:
@@ -170,11 +182,11 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         );
         $this->findCss($page, 'input.btn.btn-primary')->click();
         $this->snooze();
-        $page->findLink('Log Out')->click();
+        $this->findAndAssertLink($page, 'Log Out')->click();
         $this->snooze();
 
         // Go back in as user A -- see if the saved search still exists.
-        $page->findLink('Search History')->click();
+        $this->findAndAssertLink($page, 'Search History')->click();
         $this->snooze();
         $this->findCss($page, '#loginOptions a')->click();
         $this->snooze();
@@ -183,7 +195,9 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertTrue(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
-        $this->assertEquals('test', $page->findLink('test')->getText());
+        $this->assertEquals(
+            'test', $this->findAndAssertLink($page, 'test')->getText()
+        );
     }
 
     /**

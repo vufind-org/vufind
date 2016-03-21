@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search;
 
@@ -39,11 +39,11 @@ use Zend\StdLib\Parameters;
  * The class is a intermediate solution to translate the (possibly modified)
  * search query parameters in an object required by the new search system.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 abstract class QueryAdapter
 {
@@ -56,7 +56,8 @@ abstract class QueryAdapter
      */
     public static function deminify(array $search)
     {
-        if (isset($search['l'])) {
+        // Use array_key_exists since null is also valid
+        if (array_key_exists('l', $search)) {
             $handler = isset($search['i']) ? $search['i'] : $search['f'];
             return new Query(
                 $search['l'], $handler, isset($search['o']) ? $search['o'] : null

@@ -19,12 +19,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 namespace VuFind\Auth;
 use VuFind\Exception\Auth as AuthException;
@@ -32,12 +32,12 @@ use VuFind\Exception\Auth as AuthException;
 /**
  * LDAP authentication class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 class LDAP extends AbstractBase
 {
@@ -289,9 +289,19 @@ class LDAP extends AbstractBase
             }
         }
 
-        // Save credentials if applicable:
+        // Save credentials if applicable. Note that we want to allow empty
+        // passwords (see https://github.com/vufind-org/vufind/pull/532), but
+        // we also want to be careful not to replace a non-blank password with a
+        // blank one in case the auth mechanism fails to provide a password on
+        // an occasion after the user has manually stored one. (For discussion,
+        // see https://github.com/vufind-org/vufind/pull/612). Note that in the
+        // (unlikely) scenario that a password can actually change from non-blank
+        // to blank, additional work may need to be done here.
         if (!empty($user->cat_username)) {
-            $user->saveCredentials($user->cat_username, $catPassword);
+            $user->saveCredentials(
+                $user->cat_username,
+                empty($catPassword) ? $user->getCatPassword() : $catPassword
+            );
         }
 
         // Update the user in the database, then return it to the caller:

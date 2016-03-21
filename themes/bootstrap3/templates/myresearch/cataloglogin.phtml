@@ -20,7 +20,7 @@
   <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
   <?=$this->flashmessages()?>
   <p><?=$this->transEsc('cat_establish_account')?></p>
-  <form method="post" class="form-horizontal">
+  <form method="post" action="<?=$this->serverUrl(true)?>" class="form-horizontal">
     <? if ($this->targets !== null): ?>
     <div class="form-group">
       <label class="col-sm-2 control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>

@@ -20,25 +20,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Search;
 
 use VuFind\Search\Memory;
 use VuFindTest\Unit\TestCase as TestCase;
+use Zend\Session\Container;
 
 /**
  * Memory unit tests.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class MemoryTest extends TestCase
 {
@@ -49,7 +50,7 @@ class MemoryTest extends TestCase
      */
     public function testBasicMemory()
     {
-        $mem = new Memory();
+        $mem = new Memory(new Container('test'));
         $this->assertEquals(null, $mem->retrieveSearch());
         $url = 'http://test';
         $mem->rememberSearch($url);
@@ -63,7 +64,7 @@ class MemoryTest extends TestCase
      */
     public function testForgetting()
     {
-        $mem = new Memory();
+        $mem = new Memory(new Container('test'));
         $url = 'http://test';
         $mem->rememberSearch($url);
         $this->assertEquals($url, $mem->retrieveSearch());
@@ -78,7 +79,7 @@ class MemoryTest extends TestCase
      */
     public function testEmptyURL()
     {
-        $mem = new Memory();
+        $mem = new Memory(new Container('test'));
         $mem->rememberSearch('');
         $this->assertEquals(null, $mem->retrieveSearch());
     }
@@ -90,7 +91,7 @@ class MemoryTest extends TestCase
      */
     public function testDisable()
     {
-        $mem = new Memory();
+        $mem = new Memory(new Container('test'));
         $url = 'http://test';
         $mem->rememberSearch($url);
         $this->assertEquals($url, $mem->retrieveSearch());

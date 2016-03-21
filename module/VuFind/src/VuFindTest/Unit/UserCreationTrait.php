@@ -21,11 +21,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
 use Behat\Mink\Element\Element;
@@ -34,11 +34,11 @@ use Behat\Mink\Element\Element;
  * Trait with utility methods for user creation/management. Assumes that it
  * will be applied to a subclass of DbTestCase.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 trait UserCreationTrait
 {
@@ -75,7 +75,10 @@ trait UserCreationTrait
      */
     protected function assertLightboxWarning(Element $page, $message)
     {
-        $warning = $this->findCss($page, '.modal-body .alert-danger .message');
+        $warning = $page->find('css', '.modal-body .alert-danger .message');
+        if (!$warning || strlen(trim($warning->getText())) == 0) {
+            $warning = $this->findCss($page, '.modal-body .alert-danger');
+        }
         $this->assertEquals($message, $warning->getText());
     }
 

@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 use VuFind\Config\Locator as ConfigLocator,
@@ -34,11 +34,11 @@ use VuFind\Config\Locator as ConfigLocator,
 /**
  * Class controls VuFind auto-configuration.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class InstallController extends AbstractBase
 {
@@ -268,7 +268,7 @@ class InstallController extends AbstractBase
                 = "Your PHP installation appears to be missing the mbstring plug-in."
                 . " For better language support, it is recommended that you add"
                 . " this. For details on how to do this, see "
-                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "https://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
@@ -280,7 +280,7 @@ class InstallController extends AbstractBase
                 = "Your PHP installation appears to be missing the GD plug-in. "
                 . "For better graphics support, it is recommended that you add this."
                 . " For details on how to do this, see "
-                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "https://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
@@ -292,7 +292,7 @@ class InstallController extends AbstractBase
                 = "Your PHP installation appears to be missing the mcrypt plug-in."
                 . " For better security support, it is recommended that you add"
                 . " this. For details on how to do this, see "
-                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "https://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
@@ -303,7 +303,7 @@ class InstallController extends AbstractBase
             $msg
                 = "Your PHP installation appears to be missing the XSL plug-in."
                 . " For details on how to do this, see "
-                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "https://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
@@ -911,4 +911,3 @@ class InstallController extends AbstractBase
         return $this->createViewModel(['checks' => $checks]);
     }
 }
-

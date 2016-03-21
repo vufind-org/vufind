@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
@@ -37,11 +37,11 @@ use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
  *
  * This abstract class defines the parameters methods for modeling a search in VuFind
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Params implements ServiceLocatorAwareInterface
 {
@@ -165,6 +165,13 @@ class Params implements ServiceLocatorAwareInterface
      * @var bool
      */
     protected $defaultsApplied = false;
+
+    /**
+     * Map of facet field aliases.
+     *
+     * @var array
+     */
+    protected $facetAliases = [];
 
     /**
      * Constructor
@@ -449,9 +456,18 @@ class Params implements ServiceLocatorAwareInterface
 
         $this->searchType = $this->query instanceof Query ? 'basic' : 'advanced';
 
-        // If we ended up with a basic search, set the default handler if necessary:
-        if ($this->searchType == 'basic' && $this->query->getHandler() === null) {
-            $this->query->setHandler($this->getOptions()->getDefaultHandler());
+        // If we ended up with a basic search, it's probably the result of
+        // submitting an empty form, and more processing may be needed:
+        if ($this->searchType == 'basic') {
+            // Set a default handler if necessary:
+            if ($this->query->getHandler() === null) {
+                $this->query->setHandler($this->getOptions()->getDefaultHandler());
+            }
+            // If the user submitted the advanced search form, we want to treat
+            // the search as advanced even if it evaluated to a basic search.
+            if ($request->offsetExists('lookfor0')) {
+                $this->convertToAdvancedSearch();
+            }
         }
     }
 
@@ -707,6 +723,33 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Given a facet field, return an array containing all aliases of that
+     * field.
+     *
+     * @param string $field Field to look up
+     *
+     * @return array
+     */
+    public function getAliasesForFacetField($field)
+    {
+        // Account for field prefixes used for Boolean logic:
+        $prefix = substr($field, 0, 1);
+        if ($prefix === '-' || $prefix === '~') {
+            $rawField = substr($field, 1);
+        } else {
+            $prefix = '';
+            $rawField = $field;
+        }
+        $fieldsToCheck = [$field];
+        foreach ($this->facetAliases as $k => $v) {
+            if ($v === $rawField) {
+                $fieldsToCheck[] = $prefix . $k;
+            }
+        }
+        return $fieldsToCheck;
+    }
+
+    /**
      * Does the object already contain the specified filter?
      *
      * @param string $filter A filter string from url : "field:value"
@@ -718,10 +761,13 @@ class Params implements ServiceLocatorAwareInterface
         // Extract field and value from URL string:
         list($field, $value) = $this->parseFilter($filter);
 
-        if (isset($this->filterList[$field])
-            && in_array($value, $this->filterList[$field])
-        ) {
-            return true;
+        // Check all of the relevant fields for matches:
+        foreach ($this->getAliasesForFacetField($field) as $current) {
+            if (isset($this->filterList[$current])
+                && in_array($value, $this->filterList[$current])
+            ) {
+                return true;
+            }
         }
         return false;
     }
@@ -876,6 +922,11 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getFacetLabel($field)
     {
+        if (!isset($this->facetConfig[$field])
+            && isset($this->facetAliases[$field])
+        ) {
+            $field = $this->facetAliases[$field];
+        }
         return isset($this->facetConfig[$field])
             ? $this->facetConfig[$field] : 'unrecognized_facet_label';
     }

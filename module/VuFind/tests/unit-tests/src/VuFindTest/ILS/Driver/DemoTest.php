@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\Demo;
@@ -31,11 +31,11 @@ use VuFind\ILS\Driver\Demo;
 /**
  * ILS driver test
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class DemoTest extends \VuFindTest\Unit\TestCase
 {
@@ -53,8 +53,11 @@ class DemoTest extends \VuFindTest\Unit\TestCase
      */
     public function setUp()
     {
+        $session = $this->getMockBuilder('Zend\Session\Container')
+            ->disableOriginalConstructor()->getMock();
         $this->driver = new Demo(
-            new \VuFind\Date\Converter(), $this->getMock('VuFindSearch\Service')
+            new \VuFind\Date\Converter(), $this->getMock('VuFindSearch\Service'),
+            function () use ($session) { return $session; }
         );
         $this->driver->init();
     }

@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Service;
 use Zend\ServiceManager\ServiceManager;
@@ -31,11 +31,11 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Factory for various top-level VuFind services.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  *
  * @codeCoverageIgnore
  */
@@ -676,6 +676,20 @@ class Factory
     }
 
     /**
+     * Construct the search memory helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\Memory
+     */
+    public static function getSearchMemory(ServiceManager $sm)
+    {
+        return new \VuFind\Search\Memory(
+            new \Zend\Session\Container('Search', $sm->get('VuFind\SessionManager'))
+        );
+    }
+
+    /**
      * Construct the Search\Options Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -774,31 +788,6 @@ class Factory
             $tabConfig, $filterConfig,
             $sm->get('Application')->getRequest()
         );
-    }
-
-    /**
-     * Construct the Session Manager.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \Zend\Session\SessionManager
-     */
-    public static function getSessionManager(ServiceManager $sm)
-    {
-        $cookieManager = $sm->get('VuFind\CookieManager');
-        $sessionConfig = new \Zend\Session\Config\SessionConfig();
-        $options = [
-            'cookie_path' => $cookieManager->getPath(),
-            'cookie_secure' => $cookieManager->isSecure()
-        ];
-        $domain = $cookieManager->getDomain();
-        if (!empty($domain)) {
-            $options['cookie_domain'] = $domain;
-        }
-
-        $sessionConfig->setOptions($options);
-
-        return new \Zend\Session\SessionManager($sessionConfig);
     }
 
     /**

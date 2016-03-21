@@ -20,12 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Record;
 use VuFind\Exception\RecordMissing as RecordMissingException,
@@ -36,12 +36,12 @@ use VuFind\Exception\RecordMissing as RecordMissingException,
 /**
  * Record loader
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Loader
 {
@@ -95,21 +95,26 @@ class Loader
     public function load($id, $source = DEFAULT_SEARCH_BACKEND,
         $tolerateMissing = false
     ) {
-        $results = [];
-        if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
-            $results = $this->recordCache->lookup($id, $source);
-        }
-        if (empty($results)) {
-            $results = $this->searchService->retrieve($source, $id)->getRecords();
-        }
-        if (empty($results) && null !== $this->recordCache
-            && $this->recordCache->isFallback($source)
-        ) {
-            $results = $this->recordCache->lookup($id, $source);
-        }
+        if (null !== $id && '' !== $id) {
+            $results = [];
+            if (null !== $this->recordCache
+                && $this->recordCache->isPrimary($source)
+            ) {
+                $results = $this->recordCache->lookup($id, $source);
+            }
+            if (empty($results)) {
+                $results = $this->searchService->retrieve($source, $id)
+                    ->getRecords();
+            }
+            if (empty($results) && null !== $this->recordCache
+                && $this->recordCache->isFallback($source)
+            ) {
+                $results = $this->recordCache->lookup($id, $source);
+            }
 
-        if (!empty($results)) {
-            return $results[0];
+            if (!empty($results)) {
+                return $results[0];
+            }
         }
         if ($tolerateMissing) {
             $record = $this->recordFactory->get('Missing');

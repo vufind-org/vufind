@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/other_than_marc Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
 
 /**
  * Model for Pazpar2 records.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/other_than_marc Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 class Pazpar2 extends SolrDefault
 {
@@ -133,16 +133,16 @@ class Pazpar2 extends SolrDefault
     }
 
     /**
-     * Get the main author of the record.
+     * Get the main authors of the record.
      *
-     * @return string
+     * @return array
      */
-    public function getPrimaryAuthor()
+    public function getPrimaryAuthors()
     {
-        $authors = isset($this->pz2fields['md-author']) ?
-            $this->pz2fields['md-author'] : '';
+        $authors = isset($this->pz2fields['md-author'])
+            ? $this->pz2fields['md-author'] : [];
 
-        return is_array($authors) ? $authors[0] : $authors;
+        return empty($authors) ? [] : (array)$authors;
     }
 
     /**
@@ -178,19 +178,6 @@ class Pazpar2 extends SolrDefault
     {
         return isset($this->pz2fields['md-date']) ?
             [$this->pz2fields['md-date']] : [];
-    }
-
-    /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthor()).
-     *
-     * @return array
-     */
-    public function getSecondaryAuthors()
-    {
-        $authors = isset($this->pz2fields['md-author']) ?
-            $this->pz2fields['md-author'] : '';
-
-        return is_array($authors) ? array_slice($authors, 1) : [];
     }
 
     /**

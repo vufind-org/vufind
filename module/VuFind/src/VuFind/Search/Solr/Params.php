@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Solr;
 use VuFindSearch\ParamBag;
@@ -31,11 +31,11 @@ use VuFindSearch\ParamBag;
 /**
  * Solr Search Parameters
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Params extends \VuFind\Search\Base\Params
 {
@@ -103,6 +103,9 @@ class Params extends \VuFind\Search\Base\Params
             && is_numeric($config->Results_Settings->facet_limit)
         ) {
             $this->setFacetLimit($config->Results_Settings->facet_limit);
+        }
+        if (isset($config->LegacyFields)) {
+            $this->facetAliases = $config->LegacyFields->toArray();
         }
         if (isset($config->Results_Settings->facet_limit_by_field)) {
             foreach ($config->Results_Settings->facet_limit_by_field as $k => $v) {
@@ -436,7 +439,8 @@ class Params extends \VuFind\Search\Base\Params
         static $table = [
             'year' => ['field' => 'publishDateSort', 'order' => 'desc'],
             'publishDateSort' => ['field' => 'publishDateSort', 'order' => 'desc'],
-            'author' => ['field' => 'authorStr', 'order' => 'asc'],
+            'author' => ['field' => 'author_sort', 'order' => 'asc'],
+            'authorStr' => ['field' => 'author_sort', 'order' => 'asc'],
             'title' => ['field' => 'title_sort', 'order' => 'asc'],
             'relevance' => ['field' => 'score', 'order' => 'desc'],
             'callnumber' => ['field' => 'callnumber-sort', 'order' => 'asc'],

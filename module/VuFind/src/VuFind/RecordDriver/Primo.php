@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
 
 /**
  * Model for Primo Central records.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 class Primo extends SolrDefault
 {
@@ -67,32 +67,14 @@ class Primo extends SolrDefault
     }
 
     /**
-     * Get the main author of the record.
-     *
-     * @return string
-     */
-    public function getPrimaryAuthor()
-    {
-        return isset($this->fields['creator'][0]) ?
-            $this->fields['creator'][0] : '';
-    }
-
-    /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthor()).
+     * Get the main authors of the record.
      *
      * @return array
      */
-    public function getSecondaryAuthors()
+    public function getPrimaryAuthors()
     {
-        $authors = [];
-        if (isset($this->fields['creator'])) {
-            for ($i = 1; $i < count($this->fields['creator']); $i++) {
-                if (isset($this->fields['creator'][$i])) {
-                    $authors[] = $this->fields['creator'][$i];
-                }
-            }
-        }
-        return $authors;
+        return isset($this->fields['creator'])
+            ? array_map('trim', $this->fields['creator']) : [];
     }
 
     /**
