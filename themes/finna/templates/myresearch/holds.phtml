@@ -86,7 +86,7 @@
               <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
             <? endif; ?>
           </div>
-          <div class="col-sm-6 col-xs-5">
+          <div class="col-sm-6 col-xs-10">
             <?
               // If this is a non-missing Solr record, we should display a link:
               if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
@@ -124,7 +124,8 @@
             <? endif; ?>
             </div>
           </div>
-          <div class="col-xs-5 col-sm-4  text-right">
+          <div class="col-xs-2 visible-xs"></div>
+          <div class="col-xs-10 col-sm-4 holds-status-information">
             <? if (!empty($ilsDetails['requestGroup'])): ?>
               <strong><?=$this->transEsc('hold_requested_group') ?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['requestGroup'], array(), $ilsDetails['requestGroup'])?>
               <br />

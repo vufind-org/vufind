@@ -187,6 +187,11 @@ class Bootstrapper
      */
     protected function initFinnaLanguage()
     {
+        // Don't do anything on console
+        if (Console::isConsole()) {
+            return;
+        }
+
         $config = &$this->config;
         $sm = $this->event->getApplication()->getServiceManager();
 
