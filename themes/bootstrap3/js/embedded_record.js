@@ -70,16 +70,20 @@ function toggleDataView() {
     mainNode.find('.row')
       .after('<div class="loading hidden"><i class="fa fa-spin fa-spinner"></i> '+VuFind.translate('loading')+'...</div>')
       .after(longNode);
-    longNode.on('show.bs.collapse', function() {
+    longNode.on('show.bs.collapse', function(e) {
+      if (!$(e.target).hasClass('long-view')) return;
       mainNode.addClass('expanding');
     });
-    longNode.on('shown.bs.collapse', function() {
+    longNode.on('shown.bs.collapse', function(e) {
+      if (!$(e.target).hasClass('long-view')) return;
       mainNode.removeClass('expanding fetching').addClass('expanded');
     });
-    longNode.on('hide.bs.collapse', function() {
+    longNode.on('hide.bs.collapse', function(e) {
+      if (!$(e.target).hasClass('long-view')) return;
       mainNode.removeClass('expanded').addClass('expanding');
     });
-    longNode.on('hidden.bs.collapse', function() {
+    longNode.on('hidden.bs.collapse', function(e) {
+      if (!$(e.target).hasClass('long-view')) return;
       mainNode.removeClass('expanding');
     });
     $(this).addClass('setup');
@@ -146,5 +150,6 @@ function toggleDataView() {
 }
 
 $(document).ready(function() {
+  console.log("!");
   $('.getFull').click(toggleDataView);
 });
