@@ -1209,6 +1209,8 @@ class AjaxController extends AbstractBase
      */
     protected function keepAliveAjax()
     {
+        // Request ID from session to mark it active
+        $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
         return $this->output(true, self::STATUS_OK);
     }
 

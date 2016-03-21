@@ -69,7 +69,7 @@ CREATE TABLE `oai_resumption` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `resource` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `record_id` varchar(120) NOT NULL DEFAULT '',
+  `record_id` varchar(255) NOT NULL DEFAULT '',
   `title` varchar(200) NOT NULL DEFAULT '',
   `author` varchar(200) DEFAULT NULL,
   `year` mediumint(6) DEFAULT NULL,
@@ -115,10 +115,11 @@ CREATE TABLE `search` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `session_id` varchar(128) DEFAULT NULL,
   `folder_id` int(11) DEFAULT NULL,
-  `created` date NOT NULL DEFAULT '0000-00-00',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `title` varchar(20) DEFAULT NULL,
   `saved` int(1) NOT NULL DEFAULT '0',
   `search_object` blob,
+  `checksum` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `folder_id` (`folder_id`),
@@ -300,7 +301,7 @@ CREATE TABLE `user_card` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `record` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `record_id` varchar(120) DEFAULT NULL,
+  `record_id` varchar(255) DEFAULT NULL,
   `source` varchar(50) DEFAULT NULL,
   `version` varchar(20) NOT NULL,
   `data` longtext DEFAULT NULL,

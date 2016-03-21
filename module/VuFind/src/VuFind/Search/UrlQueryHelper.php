@@ -346,13 +346,17 @@ class UrlQueryHelper
             $field = '~' . $field;
         }
 
+        $fieldAliases = $this->params->getAliasesForFacetField($field);
+
         // Remove the filter:
         $newFilter = [];
         if (isset($params['filter']) && is_array($params['filter'])) {
             foreach ($params['filter'] as $current) {
                 list($currentField, $currentValue)
                     = $this->params->parseFilter($current);
-                if ($currentField != $field || $currentValue != $value) {
+                if (!in_array($currentField, $fieldAliases)
+                    || $currentValue != $value
+                ) {
                     $newFilter[] = $current;
                 }
             }

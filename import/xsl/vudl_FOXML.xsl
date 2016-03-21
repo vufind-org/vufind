@@ -386,22 +386,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
                 <xsl:if test="$DC//dc:creator">
                     <xsl:for-each select="$DC//dc:creator">
                         <xsl:if test="normalize-space()">
-                            <!-- author is not a multi-valued field, so we'll put
-                                 first value there and subsequent values in author2.
-                             -->
-                            <xsl:if test="position()=1">
-                                <field name="author">
-                                    <xsl:value-of select="normalize-space()"/>
-                                </field>
-                                <field name="author-letter">
-                                    <xsl:value-of select="normalize-space()"/>
-                                </field>
-                            </xsl:if>
-                            <xsl:if test="position()>1">
-                                <field name="author2">
-                                    <xsl:value-of select="normalize-space()"/>
-                                </field>
-                            </xsl:if>
+                            <field name="author">
+                                <xsl:value-of select="normalize-space()"/>
+                            </field>
                         </xsl:if>
                     </xsl:for-each>
                 </xsl:if>
