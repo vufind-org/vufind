@@ -58,6 +58,8 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
      * Set hidden filters
      *
      * @param array $filters Hidden filters
+     *
+     * @return void
      */
     public function setHiddenFilters($filters)
     {
