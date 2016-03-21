@@ -25,11 +25,11 @@
             <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
           <? else: ?>
             <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
-            <?=$this->transEsc('by')?>
-            <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
-              <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
-            <? endforeach; ?>
-          <? endif; ?>
+              <?=$this->transEsc('by')?>
+              <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
+                <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
+              <? endforeach; ?>
+            <? endif; ?>
 
             <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
             <? if (!empty($journalTitle)): ?>
