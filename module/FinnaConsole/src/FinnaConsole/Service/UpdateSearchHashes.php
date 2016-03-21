@@ -85,6 +85,7 @@ class UpdateSearchHashes extends AbstractService
         $searchRows = $this->table->select($searchWhere);
         if (count($searchRows) > 0) {
             $count = 0;
+            $orFilterCount = 0;
             foreach ($searchRows as $searchRow) {
                 try {
                     $minified = $searchRow->getSearchObject();
@@ -93,9 +94,13 @@ class UpdateSearchHashes extends AbstractService
                         if (!isset($minified->f)) {
                             $minified->f = [];
                         }
-                        $minified->f = array_merge($minified->f, $minified->o);
+                        foreach ($minified->o as $field => $orFilters) {
+                            foreach ($orFilters as $orFilter) {
+                                $minified->f["~$field"][] = $orFilter;
+                            }
+                        }
                         unset($minified->o);
-                        echo "Converted orFilters for row {$searchRow->id}\n";
+                        ++$orFilterCount;
                         $searchRow->search_object = serialize($minified);
                     }
                     $searchObj = $minified->deminify($this->manager);
@@ -111,7 +116,8 @@ class UpdateSearchHashes extends AbstractService
                 }
                 ++$count;
             }
-            echo "Added checksum to $count rows in search table\n";
+            echo "Added checksum to $count rows and converted orFilters in"
+                . " $orFilterCount rows in search table\n";
         } else {
             echo "No saved rows without hash found\n";
         }
