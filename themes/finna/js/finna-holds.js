@@ -3,14 +3,15 @@ finna.changeHolds = (function() {
     var setupChangeHolds = function () {
         var holds = $('.changeHolds');
         var errorOccured = $('<div></div>').attr('class', 'alert alert-danger').text(VuFind.translate('error_occurred'));
+        var dropdownMenu = $('ul#dropdown-menu');
         
         holds.click(function() {   
-            var spinner = $(this).find('.pickup-location-load-indicator');
-            spinner.removeClass('hidden');
-            
-            var pickupLocation = $(this).find('#pickupLocation');         
-            var defaultValue = $(this).find('#pickupLocation option:selected').text();
+            var hold = $(this);
+            var spinnerLoad = $(this).find('.pickup-location-load-indicator');
+            spinnerLoad.removeClass('hidden');
+            var pickupLocations = $(this).find('#pickupLocations');         
             var recordId = $(this).attr('recordId');
+            var requestId = $(this).attr('requestId');
             var params = {
                 method: 'getRequestGroupPickupLocations',
                 id: recordId,
@@ -23,33 +24,39 @@ finna.changeHolds = (function() {
                 url: VuFind.path + '/AJAX/JSON'
             })
             .done(function(response) {
-                pickupLocation.empty();
+                pickupLocations.empty();
                 $.each(response.data.locations, function() {
-                    var option = $('<option></option>').attr('value', this.locationID).text(this.locationDisplay);
-                    if (this.locationDisplay == defaultValue || (defaultValue == '' && this.isDefault && $emptyOption.length == 0)) {
-                        option.attr('selected', 'selected');
-                    }
-                    pickupLocation.append(option);
+                    var item = $('<li id="pickupLocationItem" class="pickupLocationItem" role="menuitem"></li>')
+                        .data('locationId', this.locationID).data('locationDisplay', this.locationDisplay).data('requestId', requestId).data('hold', hold).click(submitHandler);
+                    var text = $('<a href="#" ></a>').text(this.locationDisplay);
+                    var list = item.append(text);
+                    pickupLocations.append(list);
                 });
-                spinner.addClass('hidden');     
+                spinnerLoad.addClass('hidden');     
             })
             .fail(function() {
-                spinner.addClass('hidden');
-                hold.append(errorOccured);
+                spinnerLoad.addClass('hidden');
+                holds.append(errorOccured);
             });
         });
         
-        holds.change(function() {  
-            var hold = $(this);
-            var spinner = $(this).find('.pickup-location-load-indicator');
-            spinner.removeClass('hidden');
+        var submitHandler = function() {  
+            var selected = $(this);           
+            var requestId = selected.data('requestId');
+            var locationId = selected.data('locationId');
+            var locationDisplay = selected.data('locationDisplay');            
+            var hold = selected.data('hold');
             
-            var requestId = $(this).attr('requestId');
-            var pickupLocationId = $(this).find('#pickupLocation option:selected').val();
+            var spinnerChange = hold.find('.pickup-change-load-indicator');
+            spinnerChange.removeClass('hidden');
+
+            var pickupLocationsSelected = hold.find('.pickupLocationSelected');
+            pickupLocationsSelected.text(locationDisplay);
+
             var params = {
                 method: 'changePickupLocation',
                 requestId: requestId,
-                pickupLocationId: pickupLocationId
+                pickupLocationId: locationId
             };
             $.ajax({
                 data: params,
@@ -58,7 +65,7 @@ finna.changeHolds = (function() {
                 url: VuFind.path + '/AJAX/JSON'
             })
             .done(function(response) {
-                spinner.addClass('hidden');
+                spinnerChange.addClass('hidden');
                 if (response.data['success']){
                     var success = $('<div></div>').attr('class', 'alert alert-success').text(VuFind.translate('change_hold_success'));
                     hold.append(success);
@@ -67,10 +74,10 @@ finna.changeHolds = (function() {
                 }  
             })
             .fail(function() {
-                spinner.addClass('hidden');        
+                spinnerChange.addClass('hidden');        
                 hold.append(errorOccured);
             });
-        });
+        };
     }
     
     var my = {
