@@ -87,8 +87,18 @@ class UpdateSearchHashes extends AbstractService
             $count = 0;
             foreach ($searchRows as $searchRow) {
                 try {
-                    $searchObj = $searchRow->getSearchObject()
-                        ->deminify($this->manager);
+                    $minified = $searchRow->getSearchObject();
+                    if (!empty($minified->o)) {
+                        // Fix orFilters while at it
+                        if (!isset($minified->f)) {
+                            $minified->f = [];
+                        }
+                        $minified->f = array_merge($minified->f, $minified->o);
+                        unset($minified->o);
+                        echo "Converted orFilters for row {$searchRow->id}\n";
+                        $searchRow->search_object = serialize($minified);
+                    }
+                    $searchObj = $minified->deminify($this->manager);
                     $url = $searchObj->getUrlQuery()->getParams();
                     $checksum = crc32($url) & 0xFFFFFFF;
                     $searchRow->checksum = $checksum;

@@ -95,21 +95,26 @@ class Loader
     public function load($id, $source = DEFAULT_SEARCH_BACKEND,
         $tolerateMissing = false
     ) {
-        $results = [];
-        if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
-            $results = $this->recordCache->lookup($id, $source);
-        }
-        if (empty($results)) {
-            $results = $this->searchService->retrieve($source, $id)->getRecords();
-        }
-        if (empty($results) && null !== $this->recordCache
-            && $this->recordCache->isFallback($source)
-        ) {
-            $results = $this->recordCache->lookup($id, $source);
-        }
+        if (null !== $id && '' !== $id) {
+            $results = [];
+            if (null !== $this->recordCache
+                && $this->recordCache->isPrimary($source)
+            ) {
+                $results = $this->recordCache->lookup($id, $source);
+            }
+            if (empty($results)) {
+                $results = $this->searchService->retrieve($source, $id)
+                    ->getRecords();
+            }
+            if (empty($results) && null !== $this->recordCache
+                && $this->recordCache->isFallback($source)
+            ) {
+                $results = $this->recordCache->lookup($id, $source);
+            }
 
-        if (!empty($results)) {
-            return $results[0];
+            if (!empty($results)) {
+                return $results[0];
+            }
         }
         if ($tolerateMissing) {
             $record = $this->recordFactory->get('Missing');

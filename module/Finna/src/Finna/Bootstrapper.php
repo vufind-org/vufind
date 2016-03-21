@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Bootstrap
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -34,6 +35,7 @@ use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
  * @category VuFind
  * @package  Bootstrap
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -132,7 +134,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initLanguage()
+    protected function initCliOrApiLanguage()
     {
         $config = &$this->config;
         $sm = $this->event->getApplication()->getServiceManager();
@@ -145,14 +147,19 @@ class Bootstrapper
             $request = $event->getRequest();
             if (Console::isConsole()) {
                 $language = $config->Site->language;
-            } elseif (!(($language = $request->getPost()->get('mylang', false))
-                || ($language = $request->getQuery()->get('lng', false)))
+            } elseif (($language = $request->getPost()->get('mylang', false))
+                || ($language = $request->getQuery()->get('lng', false))
             ) {
+                // Make sure language code is valid, reset to default if bad:
+                if (!in_array($language, array_keys($config->Languages->toArray()))
+                ) {
+                    $language = $config->Site->language;
+                }
+            } else {
                 $language = $config->Site->language;
             }
 
             try {
-                $sm = $event->getApplication()->getServiceManager();
                 $sm->get('VuFind\Translator')
                     ->addTranslationFile('ExtendedIni', null, 'default', $language)
                     ->setLocale($language);
@@ -168,6 +175,33 @@ class Bootstrapper
             $viewModel = $sm->get('viewmanager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
+        };
+        $this->events->attach('dispatch.error', $callback, 9000);
+        $this->events->attach('dispatch', $callback, 9000);
+    }
+
+    /**
+     * Store selected language for a logged-in user.
+     *
+     * @return void
+     */
+    protected function initFinnaLanguage()
+    {
+        $config = &$this->config;
+        $sm = $this->event->getApplication()->getServiceManager();
+
+        $callback = function ($event) use ($config, $sm) {
+            $request = $event->getRequest();
+            if (($language = $request->getPost()->get('mylang', false))
+                || ($language = $request->getQuery()->get('lng', false))
+            ) {
+                // Update finna_language of logged-in user
+                if (($user = $sm->get('VuFind\AuthManager')->isLoggedIn())
+                    && $user->finna_language != $language
+                ) {
+                    $user->updateFinnaLanguage($language);
+                }
+            }
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);

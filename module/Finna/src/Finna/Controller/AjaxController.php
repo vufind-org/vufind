@@ -49,7 +49,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
 {
     use MetaLibIrdTrait,
         OnlinePaymentControllerTrait,
-        SearchControllerTrait;
+        SearchControllerTrait,
+        CatalogLoginTrait;
 
     /**
      * Add resources to a list.

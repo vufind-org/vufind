@@ -46,6 +46,58 @@ trait VoyagerFinna
     /**
      * Protected support method for getHolding.
      *
+     * @param array $sqlRows Sql Data
+     *
+     * @return array Keyed data
+     */
+    protected function getHoldingData($sqlRows)
+    {
+        $data = [];
+
+        foreach ($sqlRows as $row) {
+            // Determine Copy Number
+            $number = '';
+            if (isset($row['YEAR'])) {
+                $number .= utf8_encode($row['YEAR']) . ' ';
+            }
+            if (isset($row['ITEM_ENUM'])) {
+                $number .= utf8_encode($row['ITEM_ENUM']);
+            }
+            $number = trim($number);
+
+            // Concat wrapped rows (MARC data more than 300 bytes gets split
+            // into multiple rows)
+            $rowId = isset($row['ITEM_ID']) ? $row['ITEM_ID'] : $row['MFHD_ID'];
+            if (isset($data[$rowId][$number])) {
+                // We don't want to concatenate the same MARC information to
+                // itself over and over due to a record with multiple status
+                // codes -- we should only concat wrapped rows for the FIRST
+                // status code we encounter!
+                $record = & $data[$rowId][$number];
+                if ($record['STATUS_ARRAY'][0] == $row['STATUS']) {
+                    $record['RECORD_SEGMENT'] .= $row['RECORD_SEGMENT'];
+                }
+
+                // If we've encountered a new status code, we should track it:
+                if (!in_array(
+                    $row['STATUS'], $record['STATUS_ARRAY']
+                )) {
+                    $record['STATUS_ARRAY'][] = $row['STATUS'];
+                }
+            } else {
+                // This is the first time we've encountered this row number --
+                // initialize the row and start an array of statuses.
+                $data[$rowId][$number] = $row;
+                $data[$rowId][$number]['STATUS_ARRAY']
+                    = [$row['STATUS']];
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Protected support method for getHolding.
+     *
      * @param array $id A Bibliographic id
      *
      * @return array Keyed data for use in an sql query
@@ -54,6 +106,7 @@ trait VoyagerFinna
     {
         $sqlArray = parent::getHoldingItemsSQL($id);
         $sqlArray['expressions'][] = "LOCATION.LOCATION_CODE";
+        $sqlArray['expressions'][] = "MFHD_ITEM.YEAR";
 
         return $sqlArray;
     }

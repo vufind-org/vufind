@@ -124,6 +124,21 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Inspect the user's request prior to processing a login request; this is
+     * essentially an event hook which most auth modules can ignore. See
+     * ChoiceAuth for a use case example.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @throws AuthException
+     * @return void
+     */
+    public function preLoginCheck($request)
+    {
+        $this->setStrategyFromRequest($request);
+    }
+
+    /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
@@ -238,17 +253,13 @@ class ChoiceAuth extends AbstractBase
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate).  Returns false when no session initiator is needed.
      *
-     * @param string  $target  Full URL where external authentication strategy should
+     * @param string $target Full URL where external authentication strategy should
      * send user after login (some drivers may override this).
-     * @param Request $request Optional request object.
      *
      * @return bool|string
      */
-    public function getSessionInitiator($target, $request = null)
+    public function getSessionInitiator($target)
     {
-        if (null !== $request) {
-            $this->setStrategyFromRequest($request);
-        }
         return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
     }
 

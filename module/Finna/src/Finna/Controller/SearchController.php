@@ -42,6 +42,7 @@ use Finna\Search\Solr\Options,
 class SearchController extends \VuFind\Controller\SearchController
 {
     use SearchControllerTrait;
+    use CatalogLoginTrait;
 
     /**
      * Handle an advanced search

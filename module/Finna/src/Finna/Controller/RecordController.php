@@ -40,6 +40,7 @@ use VuFind\Search\Memory, Zend\Mail as Mail;
 class RecordController extends \VuFind\Controller\RecordController
 {
     use RecordControllerTrait;
+    use CatalogLoginTrait;
 
     /**
      * Create record feedback form and send feedback to correct recipient.

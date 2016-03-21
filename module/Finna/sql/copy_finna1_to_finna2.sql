@@ -105,9 +105,6 @@ INSERT INTO user_resource (id, user_id, resource_id, list_id, notes, saved)
   SELECT id, user_id, resource_id, list_id, notes, saved
     FROM `vufind`.user_resource; 
 
-INSERT INTO resource (id, record_id, title, author, source)
-  VALUES (0, 0, '', '', '');
-
 SET foreign_key_checks = 0; -- comments table may have resource_id references that don't exist
 INSERT INTO comments (id, user_id, resource_id, comment, created, finna_visible, finna_rating, finna_type, finna_updated)
   SELECT id, user_id, resource_id, comment, created, visible, rating, type, updated 

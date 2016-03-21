@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -56,6 +56,34 @@ class Factory extends \VuFind\Auth\Factory
             $sm->getServiceLocator()->get('VuFind\ILSConnection'),
             $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
         );
+    }
+
+    /**
+     * Construct the ILS authenticator.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ILSAuthenticator
+     */
+    public static function getILSAuthenticator(ServiceManager $sm)
+    {
+        // Construct the ILS authenticator as a lazy loading value holder so that
+        // the object is not instantiated until it is called. This helps break a
+        // potential circular dependency with the MultiBackend driver as well as
+        // saving on initialization costs in cases where the authenticator is not
+        // actually utilized.
+        $callback = function (& $wrapped, $proxy) use ($sm) {
+            // Generate wrapped object:
+            $auth = $sm->get('VuFind\AuthManager');
+            $catalog = $sm->get('VuFind\ILSConnection');
+            $wrapped = new ILSAuthenticator($auth, $catalog);
+
+            // Indicate that initialization is complete to avoid reinitialization:
+            $proxy->setProxyInitializer(null);
+        };
+        $cfg = $sm->get('VuFind\ProxyConfig');
+        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
+        return $factory->createProxy('Finna\Auth\ILSAuthenticator', $callback);
     }
 
     /**

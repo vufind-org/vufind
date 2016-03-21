@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Db_Row
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -33,6 +34,7 @@ namespace Finna\Db\Row;
  * @category VuFind
  * @package  Db_Row
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -140,4 +142,16 @@ class User extends \VuFind\Db\Row\User
         return true;
     }
 
+    /**
+     * Updated saved language
+     *
+     * @param string $language New language
+     *
+     * @return void
+     */
+    public function updateFinnaLanguage($language)
+    {
+        $this->finna_language = $language;
+        $this->save();
+    }
 }

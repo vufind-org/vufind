@@ -92,7 +92,11 @@ class EncryptCatalogPasswords extends AbstractService
             return false;
         }
 
-        $users = $this->table->select();
+        $callback = function ($select) {
+            $select->where->notLike('username', 'deleted:%');
+        };
+
+        $users = $this->table->select($callback);
         $count = 0;
         $usersChanged = 0;
         $cardsChanged = 0;
@@ -107,12 +111,22 @@ class EncryptCatalogPasswords extends AbstractService
             if ($user->libraryCardsEnabled()) {
                 foreach ($user->getLibraryCards() as $card) {
                     if (null !== $card->cat_password) {
-                        $user->saveLibraryCard(
-                            $card->id, $card->card_name, $card->cat_username,
-                            $card->cat_password, $card->home_library
-                        );
+                        try {
+                            $user->saveLibraryCard(
+                                $card->id, $card->card_name, $card->cat_username,
+                                $card->cat_password, $card->home_library
+                            );
+                            echo "  Library card {$card->id} password encrypted\n";
+                        } catch (\VuFind\Exception\LibraryCard $e) {
+                            // @codingStandardsIgnoreLine
+                            if ($e->getMessage() == 'Username is already in use in another library card') {
+                                // Duplicate library card, remove it
+                                $user->deleteLibraryCard($card->id);
+                                echo "  ***** Library card {$card->id}: "
+                                    . "removed duplicate *****\n";
+                            }
+                        }
                         ++$cardsChanged;
-                        echo "  Library card {$card->id} password encrypted\n";
                     }
                 }
             }

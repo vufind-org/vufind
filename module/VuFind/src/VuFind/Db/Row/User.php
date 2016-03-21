@@ -137,10 +137,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @return string The Catalog password in plain text
      * @throws \VuFind\Exception\PasswordSecurity
+     * @todo   Remove the temporary cat_pass_enc check!
      */
     public function getCatPassword()
     {
-        return $this->passwordEncryptionEnabled()
+        return $this->passwordEncryptionEnabled() && !empty($this->cat_pass_enc)
             ? $this->encryptOrDecrypt($this->cat_pass_enc, false)
             : (isset($this->cat_password) ? $this->cat_password : null);
     }
@@ -191,7 +192,10 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         // Perform encryption:
-        $cipher = new BlockCipher(new Mcrypt(['algorithm' => 'blowfish']));
+        $algo = isset($this->config->Authentication->ils_encryption_algo)
+            ? $this->config->Authentication->ils_encryption_algo
+            : 'blowfish';
+        $cipher = new BlockCipher(new Mcrypt(['algorithm' => $algo]));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
     }
@@ -447,6 +451,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @return UserCard|false Card data if found, false otherwise
      * @throws \VuFind\Exception\LibraryCard
+     * @todo   Remove the temporary cat_pass_enc check!
      */
     public function getLibraryCard($id = null)
     {
@@ -467,7 +472,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             if ($row === false) {
                 throw new \VuFind\Exception\LibraryCard('Library Card Not Found');
             }
-            if ($this->passwordEncryptionEnabled()) {
+            if ($this->passwordEncryptionEnabled() && !empty($row->cat_pass_enc)) {
                 $row->cat_password = $this->encryptOrDecrypt(
                     $row->cat_pass_enc, false
                 );
