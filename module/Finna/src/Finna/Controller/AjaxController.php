@@ -32,8 +32,7 @@ use VuFindSearch\ParamBag as ParamBag,
     Finna\MetaLib\MetaLibIrdTrait,
     Zend\Cache\StorageFactory,
     Zend\Feed\Reader\Reader,
-    Zend\Http\Request as HttpRequest,
-    Zend\Session\Container as SessionContainer;
+    Zend\Http\Request as HttpRequest;
 use Finna\Search\Solr\Params;
 
 /**
@@ -1172,43 +1171,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $html = $view->partial('Recommend/SideFacets.phtml');
 
         return $this->output($html, self::STATUS_OK);
-    }
-
-    /**
-     * Report comment inappropriate.
-     *
-     * @return void
-     */
-    public function inappropriateCommentAjax()
-    {
-        $user = $this->getUser();
-
-        $query = $this->getRequest()->getPost();
-        if (!$comment = $query->get('comment')) {
-            return $this->output(
-                $this->translate('Missing comment id'),
-                self::STATUS_ERROR,
-                400
-            );
-        }
-        if (!$reason = $query->get('reason')) {
-            return $this->output(
-                $this->translate('Missing reason'),
-                self::STATUS_ERROR,
-                400
-            );
-        }
-        $table = $this->getTable('Comments');
-        $table->markInappropriate($user ? $user->id : null, $comment, $reason);
-
-        if (!$user) {
-            $session = new SessionContainer('inappropriateComments');
-            if (!isset($session->comments)) {
-                $session->comments = [];
-            }
-            $session->comments[] = $comment;
-        }
-        return $this->output('', self::STATUS_OK);
     }
 
     /**

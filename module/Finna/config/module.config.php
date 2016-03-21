@@ -31,6 +31,20 @@ namespace Finna\Module\Configuration;
 $config = [
     'router' => [
         'routes' => [
+            'comments-inappropriate' => [
+                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/Comments/Inappropriate/[:id]',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Comments',
+                        'action'     => 'Inappropriate',
+                    ]
+                ]
+            ],
             'content-page' => [
                 'type'    => 'Zend\Mvc\Router\Http\Segment',
                 'options' => [

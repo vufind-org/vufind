@@ -51,7 +51,7 @@
     <div class="comment-inappropriate<?= $reported ? '-reported' : ''?> text-right">
       <small>
         <? if (!$reported): ?>
-          <a title="<?=$this->escapeHtmlAttr($this->translate('Report inappropriate')) ?>" href="<?=$this->url('comments-inappropriate') . '?id=' . urlencode($comment->id) ?>" data-lightbox data-lightbox-onclose="Finna.comments.requestRefreshComments();"><?=$this->translate('Report inappropriate')?></a>
+          <a title="<?=$this->escapeHtmlAttr($this->translate('Report inappropriate')) ?>" href="<?=$this->url('comments-inappropriate', ['id' => $comment->id]) ?>" data-lightbox><?=$this->translate('Report inappropriate')?></a>
         <? else: ?>
           <?=$this->translate('Reported inappropriate'); ?>
         <? endif; ?>
