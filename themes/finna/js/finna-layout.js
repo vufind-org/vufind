@@ -583,7 +583,7 @@ finna.layout = (function() {
         var valThis = this.value.toLowerCase();
         $('#facet_building>ul>li>a>.main').each(function () {
             var text  = $(this).text().toLowerCase();
-            if(text.indexOf(valThis) != -1) {
+            if (text.indexOf(valThis) != -1) {
               $(this).parent().parent().show();
             } else {
               $(this).parent().parent().hide();
