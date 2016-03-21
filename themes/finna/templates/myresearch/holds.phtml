@@ -151,13 +151,19 @@
             <? if (!empty($pickupDisplay)): ?>
               <strong><?=$this->transEsc('pick_up_location') ?>:</strong>
               <? if (isset($ilsDetails['available']) && !$ilsDetails['available'] == true && $changePickupLocation): ?>
-                <div  class="changeHolds" recordId="<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" requestId="<?=$this->escapeHtml($ilsDetails['requestId']) ?>" >
-                  <span class="pickup-location-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i></span>
-                  <select id="pickupLocation" class="type form-inline form-control responsive-field" name="gatheredDetails[pickupLocation]">
-                    <option selected="selected"  value="<?=$ilsDetails['location']?>"><?= $pickupTranslate ? $this->transEsc($pickupDisplay) : $this->escapeHtml($pickupDisplay)?></option>
-                    <option disabled="disabled"><?= $this->transEsc('Loading')?>...</option>
-                  </select>
+              <div class="changeHolds" recordId="<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" requestId="<?=$this->escapeHtml($ilsDetails['requestId']) ?>" >
+                <span class="pickup-change-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i></span>
+                <div class="view-button" id="pickupLocation">
+                  <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                      <span class="pickupLocationSelected"><?= $pickupTranslate ? $this->transEsc($pickupDisplay) : $this->escapeHtml($pickupDisplay)?></span> <i class="fa fa-arrow-down"></i>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" id="pickupLocations">
+                      <li role="menuitem"> <a><span class="pickup-location-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i></span> <?= $this->transEsc('Loading')?>...</a></li>
+                    </ul>
+                  </div>
                 </div>
+              </div>
               <? else:?>
               <?=$pickupTranslate ? $this->transEsc($pickupDisplay) : $this->escapeHtml($pickupDisplay)?>
               <br />
