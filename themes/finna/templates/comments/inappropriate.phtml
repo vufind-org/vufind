@@ -1,5 +1,9 @@
-<form class="form-horizontal comment-inappropriate-form" method="post" name="commentInappropriateForm">
-  <input type="hidden" name="comment" value="<?=$this->escapeHtmlAttr($this->comment)?>"/>
+<h2><?=$this->transEsc('Report inappropriate') ?></h2>
+
+<?=$this->flashMessages() ?>
+
+<form class="form-horizontal comment-inappropriate-form" method="post" name="commentInappropriateForm"  data-lightbox-onclose="finna.comments.requestRefreshComments();">
+  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->id)?>"/>
   <div class="form-group">
     <div class="col-sm-8">
       <p><?=$this->transEsc('Select') ?>:</p>

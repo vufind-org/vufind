@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,10 +22,12 @@
  * @category VuFind
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Controller;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * Comments Controller.
@@ -33,6 +35,7 @@ namespace Finna\Controller;
  * @category VuFind
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -45,12 +48,42 @@ class CommentsController extends \Finna\Controller\AjaxController
      */
     public function inappropriateAction()
     {
-        $comment
-            = $this->params()->fromRoute(
-                'comment',
-                $this->params()->fromQuery('comment')
-            );
+        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
 
-        return $this->createViewModel(['comment' => $comment,]);
+        if ($id && $this->formWasSubmitted()) {
+            $reason = $this->params()->fromPost('reason');
+            if (null !== $reason) {
+                $this->markCommentInappropriate($id, $reason);
+                $this->flashMessenger()->addSuccessMessage('Reported inappropriate');
+            } else {
+                $this->flashMessenger()->addErrorMessage('Missing reason');
+            }
+        }
+
+        return $this->createViewModel(['id' => $id]);
+    }
+
+    /**
+     * Mark comment inappropriate.
+     *
+     * @param int    $id     Comment ID
+     * @param string $reason Reason
+     *
+     * @return void
+     */
+    public function markCommentInappropriate($id, $reason)
+    {
+        $user = $this->getUser();
+
+        $table = $this->getTable('Comments');
+        $table->markInappropriate($user ? $user->id : null, $id, $reason);
+
+        if (!$user) {
+            $session = new SessionContainer('inappropriateComments');
+            if (!isset($session->comments)) {
+                $session->comments = [];
+            }
+            $session->comments[] = $id;
+        }
     }
 }
