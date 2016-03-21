@@ -52,8 +52,8 @@
     </fieldset>
   </div>
 <? endif; ?>
-<div class="row">
   <? if (isset($this->illustratedLimit)): ?>
+  <div class="row">
     <fieldset class="col-sm-4">
       <legend><?=$this->transEsc("Illustrated")?>:</legend>
       <? foreach ($this->illustratedLimit as $current): ?>
@@ -61,6 +61,6 @@
         <label for="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
       <? endforeach; ?>
     </fieldset>
+  </div>
   <? endif; ?>
-</div>
 <!-- END of: finna - search/advanced/solr.phtml -->

@@ -30,7 +30,7 @@
     <div class="resultItemLine1">
       <? $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
       <? if (!$missing): ?><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><? endif; ?>
-        <?=$this->record($this->driver)->getTitleHtml()?>
+        <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
       <? if (!$missing): ?></a><? endif; ?>
     </div>
 
