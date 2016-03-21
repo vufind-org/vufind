@@ -582,12 +582,10 @@ finna.layout = (function() {
       $('#building_filter').keyup(function () {
         var valThis = this.value.toLowerCase();
         $('#facet_building>ul>li>a>.main').each(function () {
-            var text  = $(this).text(),
-                text  = text.toLowerCase();
+            var text  = $(this).text().toLowerCase();
             if(text.indexOf(valThis) != -1) {
               $(this).parent().parent().show();
-            }
-            else {
+            } else {
               $(this).parent().parent().hide();
             }
         });
