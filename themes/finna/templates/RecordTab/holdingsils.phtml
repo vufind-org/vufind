@@ -269,8 +269,7 @@
         </div>
         <? else: ?>
         <div class="copy-title col-sm-6">
-          <? // $row['number'] contains item number, and possible enumeration in parenthesis. We only display the part in parenthesis: ?>
-          <span class="copy-number"><?=preg_match('/\d+ \((.+)\)/', $row['number'], $matches) ? $this->escapeHtml($matches[1]) : $this->transEsc("Copy") ?></span>
+          <span class="copy-number"><?=!empty($row['number']) ? $this->escapeHtml($row['number']) : $this->transEsc("Copy") ?></span>
         </div>
         <? endif; ?>
         <div class="copy-info <?=(isset($row['availabilityInfo'])) ? 'col-sm-3' : 'col-sm-6' ;?>">
