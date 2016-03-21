@@ -238,17 +238,13 @@ class ChoiceAuth extends AbstractBase
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate).  Returns false when no session initiator is needed.
      *
-     * @param string  $target  Full URL where external authentication strategy should
+     * @param string $target Full URL where external authentication strategy should
      * send user after login (some drivers may override this).
-     * @param Request $request Optional request object.
      *
      * @return bool|string
      */
-    public function getSessionInitiator($target, $request = null)
+    public function getSessionInitiator($target)
     {
-        if (null !== $request) {
-            $this->setStrategyFromRequest($request);
-        }
         return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
     }
 
