@@ -28,6 +28,10 @@
         overflow-x: hidden;
         position: absolute;
         right: 0;
+        @media(max-width: @screen-xs-max) {
+            left: -40px;
+            right: auto;
+        }
     }
     & .myresearch-profile-list {
         padding: 0px 6px 20px;
@@ -82,6 +86,14 @@
         box-shadow: 0px 15px 30px -25px @gray;
         & #profile_form {
             margin-top: 10px;   
+        }
+        & #profile_library_form {
+            & input {
+                min-width: 210px;
+                @media (min-width: @screen-sm-min) {
+                    margin-top: -7px;        
+                }
+            }
         }
         div {
             padding: 8px;
@@ -409,6 +421,9 @@
             border-top: 1px solid @gray-lighter;
             border-bottom: none;
         }
+        & .btn-group {
+            margin-top: 3px;   
+        }
     }
     .myresearch-row {
         padding: 10px 0px;
@@ -433,6 +448,13 @@
         & .alert {
             padding: 4px;
             margin-bottom: 3px;
+            margin-top: 3px;
+        }
+        // row for holds information
+        & .holds-status-information {
+            @media(min-width: @screen-sm-min) {
+                text-align: right;
+            }
         }
     }
     & .useraccount-cancel > li {
