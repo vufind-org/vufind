@@ -718,7 +718,7 @@ class UtilController extends AbstractBase
                 $select->where->isNotNull('cat_username');
             }
         );
-        Console::writeLine("\tConverting the hashes for ".count($users).' user(s).');
+        Console::writeLine("\tConverting hashes for " . count($users) . ' user(s).');
         foreach ($users as $row) {
             $pass = null;
             if ($oldhash != 'none' && isset($row['cat_pass_enc'])) {
