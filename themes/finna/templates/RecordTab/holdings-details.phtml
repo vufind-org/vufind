@@ -1,9 +1,33 @@
 <? if (isset($holding['textfields'])): ?>
   <? foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+    <?
+    // For purchase history, check if there's something for this holding
+    if ($textFieldName == 'purchase_history') {
+        $found = false;
+        foreach ($textFields as $current) {
+            if ($current['holdings_id'] == $holdingId) {
+                $found[] = $current['issue'];
+            }
+        }
+        if (!$found) {
+            continue;
+        }
+        $textFields = $found;
+    }
+    ?>
   <div class="copy-details <?=isset($heading) ? 'group-heading' : "row $mode"?>">
-    <? // Translation for summary is a special case for backwards-compatibility ?>
+    <? // Translation for summary is a special case for backwards-compatibility and purchase_history a special case ?>
+    <?
+    if ($textFieldName == 'summary') {
+        $title = 'Volume Holdings';
+    } elseif ($textFieldName == 'purchase_history') {
+        $title = 'Most Recent Received Issues';
+    } else {
+        $title = ucfirst($textFieldName);
+    }
+    ?>
     <? if (isset($mode)): ?>
-    <div class="col-sm-3 col-xs-6"><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</div>
+    <div class="col-sm-3 col-xs-6"><?=$this->transEsc($title)?>:</div>
     <? endif;?>
     <div <?= !isset($heading) ? ' class="col-sm-3 col-xs-6"' : ''?>>
     <? foreach ($textFields as $current): ?>

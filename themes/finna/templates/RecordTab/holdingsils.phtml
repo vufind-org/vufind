@@ -156,7 +156,7 @@
     <? endif; ?>
   </div>
 <? $holdingsGroup = 0; ?>
-<? foreach ($holdings as $holding): ?>
+<? foreach ($holdings as $holdingId => $holding): ?>
   <?
     ++$holdingsGroup;
 
@@ -223,7 +223,7 @@
     <div class="location col-sm-6 col-xs-6">
       <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>"></i> <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
       <? if ($this->holdingsSettings()->showDetailsAfterLocationGroup()): ?>
-      <div class="details"><?=$this->partial('RecordTab/holdings-details.phtml', ['holding' => $holding, 'heading' => true]);?></div>
+      <div class="details"><?=$this->partial('RecordTab/holdings-details.phtml', ['holdingId' => $holdingId, 'holding' => $holding, 'heading' => true]);?></div>
       <? endif; ?>
     </div>
     <div class="holdings-details col-sm-3 col-xs-6"><?=$holdingSummary ?></div>
@@ -237,7 +237,7 @@
     </div>
   </div>
   <? if (!$this->holdingsSettings()->showDetailsAfterLocationGroup()): ?>
-  <?=$this->partial('RecordTab/holdings-details.phtml', ['holding' => $holding, 'mode' => $holdingsDetails]);?>
+  <?=$this->partial('RecordTab/holdings-details.phtml', ['holdingId' => $holdingId, 'holding' => $holding, 'mode' => $holdingsDetails]);?>
   <? endif; ?>
   <? $formats = $this->driver->getFormats(); ?>
   <? if (!empty($holding['items'][0]['order_statuses']) && !in_array(end($formats), ['1/Book/eBook/', '1/Journal/eJournal/', '1/Journal/eArticle/'])): ?>
