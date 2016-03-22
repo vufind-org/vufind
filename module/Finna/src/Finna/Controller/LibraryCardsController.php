@@ -207,7 +207,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         $password = $this->params()->fromPost('password', '');
         $password2 = $this->params()->fromPost('password2', '');
 
-        if ($oldPassword === '' || $password === '' || $password2 === '') {
+        if ($password === '' || $password2 === '') {
             $this->flashMessenger()
                 ->addMessage('authentication_error_blank', 'error');
             return false;
