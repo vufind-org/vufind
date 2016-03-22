@@ -8,24 +8,18 @@
           <?=$this->record($driver)->getTitleHtml()?>
         </a>
         <? $summDate = $driver->getPublicationDates(); ?>
-        <? $summAuthor = $driver->getPrimaryAuthor(); ?>
-        <? if (!empty($summDate) || !empty($summAuthor)): ?>
+        <? $summAuthors = $driver->getPrimaryAuthorsWithHighlighting(); ?>
+        <? if (!empty($summDate) || !empty($summAuthors)): ?>
           <? if (!empty($summDate)): ?>
             <br/>
             <span class="small author">
               <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
             </span>
           <? endif; ?>
-          <? if (!empty($summAuthor)): ?>
+          <? if (!empty($summAuthors)): ?>
             <br/>
             <span class="small"><?=$this->transEsc('By')?></span>
-            <a class="small date" href="<?=$this->record($driver)->getLink('author', $summAuthor)?>">
-              <?
-              $summHighlightedAuthor = $driver->getHighlightedAuthor();
-              echo !empty($summHighlightedAuthor)
-                  ? $this->highlight($summHighlightedAuthor)
-                  : $this->escapeHtml($summAuthor);
-            ?></a>
+            <a class="small date" href="<?=$this->record($driver)->getLink('author', $this->highlight($summAuthors[0], null, true, false))?>"><?=$this->highlight($summAuthors[0])?></a><? if (count($summAuthors) > 1): ?><span class="small">, <?=$this->transEsc('more_authors_abbrev')?></span><? endif; ?>
           <? endif; ?>
         <? endif; ?>
       </li>
