@@ -22,7 +22,7 @@
   <div class="form-group">
     <label class="col-sm-3 control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>:</label>
     <div class="col-sm-9">
-      <input id="card_name" class="form-control" type="text" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName == "{$this->target}.{$this->username}" ? $this->username : $this->cardName)?>"/>
+      <input id="card_name" class="form-control" type="text" placeholder="<?=$this->transEsc('librarycard_placeholder'); ?>" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName == "{$this->target}.{$this->username}" ? $this->username : $this->cardName)?>"/>
     </div>
   </div>
   <? if ($this->targets !== null): ?>
