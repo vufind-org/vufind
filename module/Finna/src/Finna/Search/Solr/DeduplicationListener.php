@@ -82,6 +82,33 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
     }
 
     /**
+     * Function that determines the priority for buildings
+     *
+     * @param object $params Query parameters
+     *
+     * @return array Array keyed by building with priority as the value
+     */
+    protected function determineBuildingPriority($params)
+    {
+        $result = parent::determineBuildingPriority($params);
+
+        if (!isset($_ENV['VUFIND_API_CALL']) || !$_ENV['VUFIND_API_CALL']) {
+            return $result;
+        }
+
+        $config = $this->serviceLocator->get('VuFind\Config');
+        $searchConfig = $config->get($this->searchConfig);
+        if (!isset($searchConfig->Records->apiExcludedSources)) {
+            return $result;
+        }
+        $excluded = explode(',', $searchConfig->Records->apiExcludedSources);
+        $result = array_flip($result);
+        $result = array_diff($result, $excluded);
+
+        return array_flip($result);
+    }
+
+    /**
      * Function that determines the priority for sources
      *
      * @param string $recordSources Record sources defined in searches.ini
