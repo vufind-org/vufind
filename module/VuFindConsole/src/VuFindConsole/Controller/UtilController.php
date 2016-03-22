@@ -694,9 +694,10 @@ class UtilController extends AbstractBase
     }
 
     /**
+     * Convert hash algorithms
+     * Expected parameters: oldmethod:oldkey (or none) newmethod:newkey
      *
-     *
-     *
+     * @return \Zend\Console\Response
      */
     public function switchdbhashAction()
     {
@@ -712,9 +713,11 @@ class UtilController extends AbstractBase
 
         $userTable = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
             ->get('User');
-        $users = $userTable->select(function ($select) {
-            $select->where->isNotNull('cat_username');
-        });
+        $users = $userTable->select(
+            function ($select) {
+                $select->where->isNotNull('cat_username');
+            }
+        );
         Console::writeLine("\tConverting the hashes for ".count($users).' user(s).');
         foreach ($users as $row) {
             $pass = null;
@@ -727,7 +730,7 @@ class UtilController extends AbstractBase
             }
             $newcipher = new BlockCipher(new Mcrypt(['algorithm' => $newhash]));
             $newcipher->setKey($newkey);
-            $row['cat_password'] = NULL;
+            $row['cat_password'] = null;
             $row['cat_pass_enc'] = $newcipher->encrypt($pass);
             $row->save();
         }
