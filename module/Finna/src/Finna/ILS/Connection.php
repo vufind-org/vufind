@@ -62,18 +62,6 @@ class Connection extends \VuFind\ILS\Connection
                 'Cannot call method: ' . $this->getDriverClass() . '::changePassword'
             );
         }
-
-        // Remove old credentials from the cache regardless of whether the change
-        // was successful
-        $session = new \Zend\Session\Container('Finna\ILS\Connection\PatronCache');
-        $hash = md5(
-            $details['patron']['cat_username'] . "\t"
-            . $details['oldPassword']
-        );
-        if (isset($session->$hash)) {
-            unset($session->$hash);
-        }
-
         return $this->getDriver()->changePassword($details);
     }
 

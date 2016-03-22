@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -45,6 +45,26 @@ use VuFind\Exception\ILS as ILSException,
  */
 class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
 {
+    /**
+     * Change Password
+     *
+     * Attempts to change patron password (PIN code)
+     *
+     * @param array $details An array of patron id and old and new password
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function changePassword($details)
+    {
+        // Remove old credentials from the cache regardless of whether the change
+        // was successful
+        $cacheKey = 'patron|' . $details['patron']['cat_username'];
+        $item = $this->putCachedData($cacheKey, null);
+
+        return parent::changePassword($details);
+    }
+
     /**
      * Check if patron is authorized (e.g. to access electronic material).
      *
