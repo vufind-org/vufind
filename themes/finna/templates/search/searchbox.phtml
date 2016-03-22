@@ -26,6 +26,9 @@
     $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory);
     if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
         $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
+        if (empty($hiddenFilters)) {
+            $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId);
+        }
     }
     $hiddenFilterParams = [];
     foreach ($hiddenFilters as $key => $filter) {
