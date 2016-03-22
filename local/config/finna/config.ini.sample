@@ -1042,6 +1042,7 @@ ead_usage_permission_request_link_template[narc] = "https://testavapaingest.narc
 ; Blacklisting regexp's for record URLs 
 url_blacklist[] = '/btj\.com\/btjcgi\/arvo\/get_add_info\.cgi\?type=(PRES|IMAGE)/'
 url_blacklist[] = '/data\.kirjavalitys\.fi\/data\/servlets\/ProductRequestServlet/'
+url_blacklist[] = '/booky\.fi\/(image\.php\?|description\.php\?)/'
 
 ; Allow image links from BTJ (default is false)
 ;btj_links = true
