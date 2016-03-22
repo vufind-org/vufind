@@ -140,7 +140,7 @@
 
     <? $countNotes = count($this->driver->getListNotes($list_id, $user_id)); ?>
     <? if ($countNotes > 0 && !$list): ?>
-      <strong><?=$this->transEsc('Description')?>:</strong> <?=$countNotes?>
+      <strong><?=$this->transEsc('description_count', ['%%count%%' => $countNotes])?></strong>
     <? endif; ?>
   </div>
 
