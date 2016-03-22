@@ -1181,8 +1181,10 @@ tags = disabled
 ; between search modules. Keys are search backend names, values are labels for use in
 ; the user interface (subject to translation).
 [SearchTabs]
-;Solr = tabs_local
-;Primo = tabs_pci
+Solr = tabs_local
+Primo = tabs_pci
+Combined = tabs_combined
+MetaLib = tabs_metalib
 
 ; Recommendations that include a couple of results from other tabs when doing a
 ; basic search (first result page only).
