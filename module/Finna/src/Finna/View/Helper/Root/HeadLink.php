@@ -174,7 +174,7 @@ class HeadLink extends \VuFindTheme\View\Helper\HeadLink
                 if (!is_dir("$cache/$theme")) {
                     mkdir("$cache/$theme");
                 }
-                $handle = $this->acquireLock("$cache/$theme/.lockfile");
+                $handle = $this->acquireLock("$cache/$theme/lockfile");
                 array_map('unlink', glob("$cache/$theme/{$basename}_*") ?: []);
                 $css = file_get_contents($file);
                 $splitter = new \CssSplitter\Splitter($css);
