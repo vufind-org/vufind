@@ -124,6 +124,21 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Inspect the user's request prior to processing a login request; this is
+     * essentially an event hook which most auth modules can ignore. See
+     * ChoiceAuth for a use case example.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @throws AuthException
+     * @return void
+     */
+    public function preLoginCheck($request)
+    {
+        $this->setStrategyFromRequest($request);
+    }
+
+    /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
