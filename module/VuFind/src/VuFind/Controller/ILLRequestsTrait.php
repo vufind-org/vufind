@@ -39,17 +39,6 @@ namespace VuFind\Controller;
 trait ILLRequestsTrait
 {
     /**
-     * Action for dealing with blocked ILL requests.
-     *
-     * @return mixed
-     */
-    public function blockedILLRequestAction()
-    {
-        $this->flashMessenger()->addMessage('ill_request_error_blocked', 'error');
-        return $this->redirectToRecord('#top');
-    }
-
-    /**
      * Action for dealing with ILL requests.
      *
      * @return mixed
@@ -83,13 +72,6 @@ trait ILLRequestsTrait
         );
         if (!$gatheredDetails) {
             return $this->redirectToRecord();
-        }
-
-        // Block invalid requests:
-        if (!$catalog->checkILLRequestIsValid(
-            $driver->getUniqueID(), $gatheredDetails, $patron
-        )) {
-            return $this->blockedILLRequestAction();
         }
 
         // Send various values to the view so we can build the form:

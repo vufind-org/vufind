@@ -501,53 +501,6 @@ class Holds
     }
 
     /**
-     * Returns a URL to display a "blocked hold" message.
-     *
-     * @param array $holdDetails An array of item data
-     *
-     * @return array             Details for generating URL
-     */
-    protected function getBlockedDetails($holdDetails)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedHold', 'record' => $holdDetails['id']
-        ];
-    }
-
-    /**
-     * Returns a URL to display a "blocked storage retrieval request" message.
-     *
-     * @param array $details An array of item data
-     *
-     * @return array         Details for generating URL
-     */
-    protected function getBlockedStorageRetrievalRequestDetails($details)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedStorageRetrievalRequest',
-            'record' => $details['id']
-        ];
-    }
-
-    /**
-     * Returns a URL to display a "blocked ILL request" message.
-     *
-     * @param array $details An array of item data
-     *
-     * @return array         Details for generating URL
-     */
-    protected function getBlockedILLRequestDetails($details)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedILLRequest',
-            'record' => $details['id']
-        ];
-    }
-
-    /**
      * Get a grouping key for a holdings item
      *
      * @param array $copy Item information
