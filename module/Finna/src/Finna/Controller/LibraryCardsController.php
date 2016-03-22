@@ -244,8 +244,19 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
             ]
         );
         if (!$result['success']) {
-            $this->flashMessenger()->addMessage($result['status'], 'error');
-            return false;
+            // Try again with empty old password just in case this was a user that
+            // was logged in with the fallback login field
+            $result = $catalog->changePassword(
+                [
+                    'patron' => $patron,
+                    'oldPassword' => '',
+                    'newPassword' => $password
+                ]
+            );
+            if (!$result['success']) {
+                $this->flashMessenger()->addMessage($result['status'], 'error');
+                return false;
+            }
         }
         $user->saveLibraryCard(
             $card->id, $card->card_name, $card->cat_username, $password
