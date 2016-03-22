@@ -1,7 +1,7 @@
 <?php
 /**
  * Command-line tool to switch hashing algorithm.
- * Expected oldmethod:oldsalt (or none) newmethod:newsalt
+ * Expected oldmethod:oldkey (or none) newmethod:newkey
  *
  * PHP version 5
  *

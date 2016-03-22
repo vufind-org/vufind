@@ -703,12 +703,12 @@ class UtilController extends AbstractBase
         $argv = $this->consoleOpts->getRemainingArgs();
         if (count($argv) < 2 || !strpos($argv[0], ':') || !strpos($argv[1], ':')) {
             Console::writeLine(
-                'Expected parameters: oldmethod:oldsalt (or none) newmethod:newsalt'
+                'Expected parameters: oldmethod:oldkey (or none) newmethod:newkey'
             );
             return $this->getFailureResponse();
         }
-        list($oldhash, $oldsalt) = explode(':', $argv[0]);
-        list($newhash, $newsalt) = explode(':', $argv[1]);
+        list($oldhash, $oldkey) = explode(':', $argv[0]);
+        list($newhash, $newkey) = explode(':', $argv[1]);
 
         $userTable = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
             ->get('User');
@@ -720,13 +720,13 @@ class UtilController extends AbstractBase
             $pass = null;
             if ($oldhash != 'none' && isset($row['cat_pass_enc'])) {
                 $oldcipher = new BlockCipher(new Mcrypt(['algorithm' => $oldhash]));
-                $oldcipher->setKey($oldsalt);
+                $oldcipher->setKey($oldkey);
                 $pass = $oldcipher->decrypt($row['cat_pass_enc']);
             } else {
                 $pass = $row['cat_password'];
             }
             $newcipher = new BlockCipher(new Mcrypt(['algorithm' => $newhash]));
-            $newcipher->setKey($newsalt);
+            $newcipher->setKey($newkey);
             $row['cat_password'] = NULL;
             $row['cat_pass_enc'] = $newcipher->encrypt($pass);
             $row->save();
