@@ -3,6 +3,7 @@ relative_path = "../finna/searches.ini"
 override_full_sections = "Views,Autocomplete_Sections"
 
 ; Add any overrides below
+
 ;[Autocomplete_Sections]
 ;facets[] = "online_boolean|true"
 ;facets[] = "format||3"
@@ -19,3 +20,8 @@ override_full_sections = "Views,Autocomplete_Sections"
 ;handlers[] = "Title|autocomplete_handler_title"
 ;handlers[] = "Author|autocomplete_handler_author"
 ;handlers[] = "Subject|autocomplete_handler_subject"
+
+;[Records]
+; This setting can be used along with sources setting to exclude some of the selected
+; sources from the API
+;apiExcludedSources = "source1,source2"

@@ -107,6 +107,53 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
                 array_unshift($recordSources, $preferred);
             }
         }
+
+        // If handling an API call, remove excluded sources so that they don't get
+        // become preferred (they will get filtered out of the dedup data later)
+        if (isset($_ENV['VUFIND_API_CALL']) && $_ENV['VUFIND_API_CALL']) {
+            $config = $this->serviceLocator->get('VuFind\Config');
+            $searchConfig = $config->get($this->searchConfig);
+            if (isset($searchConfig->Records->apiExcludedSources)) {
+                $excluded = explode(',', $searchConfig->Records->apiExcludedSources);
+                $resourceSources = array_diff($recordSources, $excluded);
+            }
+        }
+
         return array_flip($recordSources);
+    }
+
+    /**
+     * Fetch local records for all the found dedup records
+     *
+     * @param EventInterface $event Event
+     *
+     * @return void
+     */
+    protected function fetchLocalRecords($event)
+    {
+        parent::fetchLocalRecords($event);
+
+        if (!isset($_ENV['VUFIND_API_CALL']) || !$_ENV['VUFIND_API_CALL']) {
+            return;
+        }
+
+        $config = $this->serviceLocator->get('VuFind\Config');
+        $searchConfig = $config->get($this->searchConfig);
+        if (!isset($searchConfig->Records->apiExcludedSources)) {
+            return;
+        }
+        $excluded = explode(',', $searchConfig->Records->apiExcludedSources);
+
+        $result = $event->getTarget();
+        foreach ($result->getRecords() as $record) {
+            $fields = $record->getRawData();
+            if (!isset($fields['dedup_data'])) {
+                continue;
+            }
+            foreach ($excluded as $item) {
+                unset($fields['dedup_data'][$item]);
+            }
+            $record->setRawData($fields);
+        }
     }
 }

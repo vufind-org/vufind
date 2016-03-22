@@ -171,11 +171,21 @@ class SolrExtensionsListener
         if (isset($searchConfig->Records->sources)
             && $searchConfig->Records->sources
         ) {
+            $sources = explode(',', $searchConfig->Records->sources);
+            if (isset($_ENV['VUFIND_API_CALL']) && $_ENV['VUFIND_API_CALL']
+                && isset($searchConfig->Records->apiExcludedSources)
+            ) {
+                $sources = array_diff(
+                    $sources,
+                    explode(',', $searchConfig->Records->apiExcludedSources)
+                );
+            }
+
             $sources = array_map(
                 function ($input) {
                     return '"' . addcslashes($input, '"') . '"';
                 },
-                explode(',', $searchConfig->Records->sources)
+                $sources
             );
             $params = $event->getParam('params');
             if ($params) {
