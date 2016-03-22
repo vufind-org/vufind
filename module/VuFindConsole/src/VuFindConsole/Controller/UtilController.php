@@ -30,6 +30,8 @@ use File_MARC, File_MARCXML, VuFind\Sitemap\Generator as Sitemap;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 use Zend\Console\Console;
+use Zend\Crypt\Symmetric\Mcrypt,
+    Zend\Crypt\BlockCipher as BlockCipher;
 
 /**
  * This controller handles various command-line tools
@@ -688,6 +690,48 @@ class UtilController extends AbstractBase
         }
         $search->delete($query);
         Console::writeLine(str_replace('%%count%%', $count, $successString));
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     *
+     *
+     *
+     */
+    public function switchdbhashAction()
+    {
+        $argv = $this->consoleOpts->getRemainingArgs();
+        if (count($argv) < 2 || !strpos($argv[0], ':') || !strpos($argv[1], ':')) {
+            Console::writeLine(
+                'Expected parameters: oldmethod:oldsalt (or none) newmethod:newsalt'
+            );
+            return $this->getFailureResponse();
+        }
+        list($oldhash, $oldsalt) = explode(':', $argv[0]);
+        list($newhash, $newsalt) = explode(':', $argv[1]);
+
+        $userTable = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+            ->get('User');
+        $users = $userTable->select(function ($select) {
+            $select->where->isNotNull('cat_username');
+        });
+        Console::writeLine("\tConverting the hashes for ".count($users).' user(s).');
+        foreach ($users as $row) {
+            $pass = null;
+            if ($oldhash != 'none' && isset($row['cat_pass_enc'])) {
+                $oldcipher = new BlockCipher(new Mcrypt(['algorithm' => $oldhash]));
+                $oldcipher->setKey($oldsalt);
+                $pass = $oldcipher->decrypt($row['cat_pass_enc']);
+            } else {
+                $pass = $row['cat_password'];
+            }
+            $newcipher = new BlockCipher(new Mcrypt(['algorithm' => $newhash]));
+            $newcipher->setKey($newsalt);
+            $row['cat_password'] = NULL;
+            $row['cat_pass_enc'] = $newcipher->encrypt($pass);
+            $row->save();
+        }
+        Console::writeLine("\tFinished.");
         return $this->getSuccessResponse();
     }
 }
