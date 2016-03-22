@@ -48,7 +48,7 @@
 
     <?
       $formats = $this->driver->getFormats();
-      $metalib = $this->metalib()->isAvailable() && !empty($formats) && strstr($formats[0]->__toString(), '0/Database') !== false;
+      $metalib = $this->metalib()->isAvailable() && !empty($formats) && strstr((string)$formats[0], '0/Database') !== false;
     ?>
     <? if ($metalib): ?>
        <? $this->headScript()->appendFile("finna-metalib-links.js"); ?>
