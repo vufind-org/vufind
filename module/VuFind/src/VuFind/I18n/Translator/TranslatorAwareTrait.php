@@ -168,7 +168,7 @@ trait TranslatorAwareTrait
     protected function extractTextDomain($target)
     {
         $parts = is_array($target) ? $target : explode('::', $target);
-        if (count($parts) < 1 || count($parts) > 2) {
+        if (count($parts) < 1) {
             throw new \Exception('Unexpected value sent to translator!');
         }
         if (count($parts) == 2) {
