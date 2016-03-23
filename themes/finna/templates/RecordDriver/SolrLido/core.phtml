@@ -152,28 +152,28 @@
 
       <? if ($results = $this->driver->getSubjectDetails()): ?>
       <tr>
-        <th><?=$this->transEsc('Subject Details')?>:</th>
+        <th><?=$this->transEsc('Subject Detail')?>:</th>
         <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
       </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->getSubjectPlaces()): ?>
       <tr>
-        <th><?=$this->transEsc('Subject Places')?>:</th>
+        <th><?=$this->transEsc('Subject Place')?>:</th>
         <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
       </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->getSubjectDates()): ?>
       <tr>
-        <th><?=$this->transEsc('Subject Dates')?>:</th>
+        <th><?=$this->transEsc('Subject Date')?>:</th>
         <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
       </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->getSubjectActors()): ?>
       <tr>
-        <th><?=$this->transEsc('Subject Actors')?>:</th>
+        <th><?=$this->transEsc('Subject Actor')?>:</th>
         <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
       </tr>
       <? endif; ?>
