@@ -27,6 +27,7 @@
  */
 namespace Finna\Db\Table;
 use Zend\Db\Sql\Select;
+use Zend\Config\Config, Zend\Session\Container;
 
 /**
  * Table Definition for user
@@ -42,13 +43,12 @@ class User extends \VuFind\Db\Table\User
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param Config    $config VuFind configuration
      * @param string    $rowClass Name of class for representing rows
      * @param Container $session  Session container to inject into rows (optional;
      * used for privacy mode)
      */
-    public function __construct(\Zend\Config\Config $config,
-        $rowClass = 'Finna\Db\Row\User',
+    public function __construct(Config $config, $rowClass = 'Finna\Db\Row\User',
         Container $session = null)
     {
         parent::__construct($config, $rowClass, $session);
