@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Db\Table;
+use Zend\Db\Sql\Select;
 
 /**
  * Table Definition for user
@@ -38,6 +39,21 @@ namespace Finna\Db\Table;
  */
 class User extends \VuFind\Db\Table\User
 {
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     * @param string    $rowClass Name of class for representing rows
+     * @param Container $session  Session container to inject into rows (optional;
+     * used for privacy mode)
+     */
+    public function __construct(\Zend\Config\Config $config,
+        $rowClass = 'Finna\Db\Row\User',
+        Container $session = null)
+    {
+        parent::__construct($config, $rowClass, $session);
+    }
+
     /**
      * Create a row for the specified username.
      *
@@ -93,5 +109,20 @@ class User extends \VuFind\Db\Table\User
         }
         $row = $this->select(['id' => $id])->current();
         return (empty($row)) ? false : $row;
+    }
+
+    /**
+     * Get users with due date reminders.
+     *
+     * @return array
+     */
+    public function getUsersWithDueDateReminders()
+    {
+        return $this->select(
+            function (Select $select) {
+                $select->where->greaterThan('finna_due_date_reminder', 0);
+                $select->order('username desc');
+            }
+        );
     }
 }
