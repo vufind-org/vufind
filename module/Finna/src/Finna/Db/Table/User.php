@@ -43,14 +43,14 @@ class User extends \VuFind\Db\Table\User
     /**
      * Constructor
      *
-     * @param Config    $config VuFind configuration
+     * @param Config    $config   VuFind configuration
      * @param string    $rowClass Name of class for representing rows
      * @param Container $session  Session container to inject into rows (optional;
      * used for privacy mode)
      */
     public function __construct(Config $config, $rowClass = 'Finna\Db\Row\User',
-        Container $session = null)
-    {
+        Container $session = null
+    ) {
         parent::__construct($config, $rowClass, $session);
     }
 
