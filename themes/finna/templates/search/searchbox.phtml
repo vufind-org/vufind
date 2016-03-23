@@ -30,13 +30,6 @@
             $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId);
         }
     }
-    $hiddenFilterParams = [];
-    foreach ($hiddenFilters as $key => $filter) {
-        foreach ($filter as $value) {
-            $hiddenFilterParams[] = urlencode('hiddenFilters[]') . '=' . urlencode("$key:$value");
-        }
-    }
-    $hiddenFilterParams = empty($hiddenFilterParams) ? '' : '?' . implode('&', $hiddenFilterParams);
 
     // Set up Finna Main Tabs:
     if (!$browse) {

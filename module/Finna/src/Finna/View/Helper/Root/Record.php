@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -143,9 +143,14 @@ class Record extends \VuFind\View\Helper\Root\Record
             ['lookfor' => $lookfor,
              'searchAction' => $searchAction]
         );
-        return $this->renderTemplate(
+        $result = $this->renderTemplate(
             'link-' . $type . '.phtml', $params
         );
+
+        $result .= $this->getView()->plugin('searchTabs')
+            ->getCurrentHiddenFilterParams();
+
+        return $result;
     }
 
     /**
