@@ -179,20 +179,20 @@
 
       <? if ($browse || $mainPage): ?>
         <? if ($browse || $this->searchClassId != 'Solr'): ?>
-        <a href="<?=$this->url('home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Basic Search")?></a>
+        <a href="<?=$this->url('home');?>" class="btn btn-link btn-basic"><i class="fa fa-search"></i> <?=$this->transEsc("Basic Search")?></a>
         <? endif; ?>
 
         <? if ($this->primo()->isAvailable() && ($browse || $this->searchClassId !== 'Primo')) : ?>
-        <a href="<?=$this->url('primo-home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Primo Search")?></a>
+        <a href="<?=$this->url('primo-home');?>" class="btn btn-link btn-primo"><i class="fa fa-search"></i> <?=$this->transEsc("Primo Search")?></a>
         <? endif; ?>
 
         <? if ($this->metalib()->isAvailable() && ($browse || $this->searchClassId !== 'MetaLib')) : ?>
-        <a href="<?=$this->url('metalib-home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("MetaLib Search")?></a>
+        <a href="<?=$this->url('metalib-home');?>" class="btn btn-link btn-metalib"><i class="fa fa-search"></i> <?=$this->transEsc("MetaLib Search")?></a>
         <? endif; ?>
       <? endif; ?>
 
       <? if ($advSearch): ?>
-      <a href="<?=$this->url($advSearch)?>" class="btn btn-link hidden-xs hidden-md hidden-lg"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>
+      <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced hidden-xs hidden-md hidden-lg"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>
       <? endif; ?>
     </div>
   </div>
