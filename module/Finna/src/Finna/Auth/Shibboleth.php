@@ -61,12 +61,21 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
         $shib = $this->getConfig()->Shibboleth;
         $username = $request->getServer()->get($shib->username);
         if (empty($username)) {
+            $this->logError(
+                'Shibboleth login failed for request: no username attribute present'
+                . ' in request: ' . print_r($request->getServer()->toArray(), true)
+            );
             throw new AuthException('authentication_error_admin');
         }
 
         // Check if required attributes match up:
         foreach ($this->getRequiredAttributes() as $key => $value) {
             if (!preg_match('/' . $value . '/', $request->getServer()->get($key))) {
+                $this->logError(
+                    "Shibboleth login failed for $username: required attribute $key"
+                    . ' missing or invalid in request: '
+                    . print_r($request->getServer()->toArray(), true)
+                );
                 throw new AuthException('authentication_error_denied');
             }
         }
