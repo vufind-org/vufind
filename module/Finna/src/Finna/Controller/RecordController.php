@@ -99,7 +99,7 @@ class RecordController extends \VuFind\Controller\RecordController
                 ]
             );
             $emailMessage .=
-                "------------------------------------------------------------\n";
+                "\n\n------------------------------------------------------------\n";
             if (!empty($message)) {
                 $emailMessage .= "\n" . $this
                     ->translate('Message From Sender') . ":\n";
