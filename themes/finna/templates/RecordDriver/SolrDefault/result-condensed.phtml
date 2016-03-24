@@ -85,7 +85,7 @@
       <div class="col-sm-6 col-md-4">
         <?=$this->record($this->driver)->getOnlineUrls('results')?>
         <? $formats = $this->driver->getFormats(); ?>
-        <?= ($this->metalib()->isAvailable() && !empty($formats) && strstr($formats[0]->__toString(), '0/Database') !== false)
+        <?= ($this->metalib()->isAvailable() && !empty($formats) && strstr((string)$formats[0], '0/Database') !== false)
             ? $this->partial('RecordDriver/MetaLib/search-link.phtml', ['id' => $this->driver->getUniqueID()])
             : ''
         ?>
