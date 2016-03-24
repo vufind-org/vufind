@@ -1173,7 +1173,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             }
         }
 
-        return array_values(array_unique($matches));
+        return array_values(array_unique($matches, SORT_REGULAR));
     }
 
     /**
