@@ -79,6 +79,17 @@ class Record extends \VuFind\View\Helper\Root\Record
         return parent::__invoke($driver);
     }
 
+
+    /**
+     * Are bX recommendations enabled.
+     *
+     * @return boolean
+     */
+    public function bxRecommendationsEnabled()
+    {
+        return !empty($this->config->bX->token);
+    }
+
     /**
      * Is commenting allowed.
      *
