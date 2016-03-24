@@ -18,7 +18,7 @@
         <div class="resultOtherLinks">
           <? $prevOtherLinkHeading = ''; ?>
           <? foreach ($results as $result): ?>
-            <?=$prevOtherLinkHeading != $result['heading'] ? $this->transEsc('link_' . $result['heading'], null, $result['heading']) : '&nbsp;' ?>
+            <?=$prevOtherLinkHeading != $result['heading'] ? $this->transEsc('default::link_' . $result['heading'], null, $result['heading']) : '&nbsp;' ?>
             <? if (!empty($result['isn'])): ?>
               <? $otherLinkTitle = !empty($result['title']) ? $result['title'] : $result['isn']; ?>
               <a title="<?=$this->escapeHtmlAttr($otherLinkTitle) ?>" href="<?=$this->record($this->driver)->getLink('isn', $result['isn']) ?>">
@@ -128,7 +128,7 @@
     <?=$this->record($this->driver)->getOnlineUrls('results')?>
     <?
       $formats = $this->driver->tryMethod('getFormats');
-      $metalib = $this->metalib()->isAvailable() && !empty($formats) && strstr($formats[0]->__toString(), '0/Database') !== false;
+      $metalib = $this->metalib()->isAvailable() && !empty($formats) && strstr((string)$formats[0], '0/Database') !== false;
       if ($metalib):
     ?>
        <?= $this->partial('RecordDriver/MetaLib/search-link.phtml', ['id' => $this->driver->getUniqueID()]); ?>

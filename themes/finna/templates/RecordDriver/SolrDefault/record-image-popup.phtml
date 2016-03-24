@@ -92,7 +92,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
                       $renderedURLs[] = $url['url'];
                       $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']);
                     ?>
-                    <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <? if (count($urls) == 1): ?>  <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><? else: ?><?=$this->transEsc('link_' . $desc, null, $desc) ?><? endif; ?></a></div>
+                    <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <? if (count($urls) == 1): ?>  <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><? else: ?><?=$this->transEsc('default::link_' . $desc, null, $desc) ?><? endif; ?></a></div>
                     <? $index++; ?>
                     <? if ($index > 4): ?>
                     <div>...</div>
@@ -102,7 +102,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
                 <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
                   <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
                     <? if (in_array($url['url'], $images) || in_array($url['url'], $renderedURLs)) { continue; } ?>
-                    <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i><? if (count($onlineURLs) == 1 || count($mergedData['urls']) == 1): ?> <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><? else: ?><?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?><? endif; ?></a>
+                    <div class="record-online-link"><a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i><? if (count($onlineURLs) == 1 || count($mergedData['urls']) == 1): ?> <?=$this->transEsc('open_online_link', ['%%format%%' => $translatedFormat])?><? else: ?><?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?><? endif; ?></a>
                     <? if ($url['source']): ?>
                       <span class="online-source"><?=is_array($url['source']) ? '('.$this->transEsc('Multiple Organisations').')' : '';?></span>
                     <? endif; ?>

@@ -73,15 +73,15 @@
             <? foreach ($urls as $url): ?>
               <? if (in_array($url['url'], $images)) { continue; } ?>
               <? $desc = isset($url['desc']) ? $url['desc'] : $this->truncateUrl($url['url']); ?>
-              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('link_' . $desc, null, $desc) ?></a></div>
+              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('default::link_' . $desc, null, $desc) ?></a></div>
             <? endforeach; ?>
           <? endif; ?>
           <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
             <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
               <? if (in_array($url['url'], $images)) { continue; } ?>
-              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
+              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
               <? if ($url['source']): ?>
-                <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('source_' . $url['source'], null, $url['source']) ?>)</span>
+                <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('default::source_' . $url['source'], null, $url['source']) ?>)</span>
               <? endif; ?>
               </div>
             <? endforeach; ?>

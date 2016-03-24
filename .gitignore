@@ -34,8 +34,10 @@ local/cache/searchspecs/*
 local/config/finna/*.ini
 local/config/finna/*.yaml
 local/config/finna/*.json
+local/config/finna/*.wsdl
 local/config/vufind/*.ini
 local/config/vufind/*.yaml
+local/config/vufind/*.wsdl
 local/httpd-vufind.conf
 local/import/import.properties
 local/import/import_auth.properties
