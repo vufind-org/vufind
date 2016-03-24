@@ -38,7 +38,7 @@ finna.layout = (function() {
           var detectHeight = $(window).height() - $('body').height();
           if (detectHeight > 0) {
               var expandedFooter = $('footer').height() + detectHeight;
-              $('footer').height(expandedFooter);
+              $('footer').outerHeight(expandedFooter);
           }
           else {
             $('footer').height('auto');
