@@ -65,6 +65,13 @@ class MultiBackend extends AbstractBase
      * @var string
      */
     protected $defaultDriver;
+    
+    /**
+     * The path to the drivers relative to the config path
+     * 
+     * @var string
+     */
+    protected $driversPath;
 
     /**
      * The array of cached drivers
@@ -136,6 +143,10 @@ class MultiBackend extends AbstractBase
         $this->drivers = $this->config['Drivers'];
         $this->defaultDriver = isset($this->config['General']['default_driver'])
             ? $this->config['General']['default_driver']
+            : null;
+        
+        $this->driversPath = isset($this->config['General']['drivers_path'])
+            ? $this->config['General']['drivers_path']
             : null;
     }
 
@@ -1354,7 +1365,11 @@ class MultiBackend extends AbstractBase
     {
         // Determine config file name based on class name:
         try {
-            $config = $this->configLoader->get($source);
+            $path = ($this->driversPath === null) 
+                ? $source 
+                : $this->driversPath . '/' . $source;
+
+            $config = $this->configLoader->get($path);
         } catch (\Zend\Config\Exception\RuntimeException $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:
