@@ -1365,8 +1365,8 @@ class MultiBackend extends AbstractBase
     {
         // Determine config file name based on class name:
         try {
-            $path = ($this->driversPath === null) 
-                ? $source 
+            $path = ($this->driversPath === null)
+                ? $source
                 : $this->driversPath . '/' . $source;
 
             $config = $this->configLoader->get($path);
