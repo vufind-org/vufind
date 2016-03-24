@@ -97,11 +97,11 @@
 
     <div class="record-authors">
         <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
-          <span><?=$this->record($this->driver)->getFormatList()?></span>
+          <span class="recordFormat"><?=$this->record($this->driver)->getFormatList()?></span>
         <? endif; ?>
 
         <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
-        <div class="truncate-field">
+        <div class="truncate-field recordAuthors">
           <span property="author">
           <? foreach($results as $index => $author): ?>
             <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
@@ -111,7 +111,7 @@
         <? endif; ?>
 
         <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
-        <div>
+        <div class="recordPublications">
         <? foreach ($publications as $field): ?>
             <span property="publisher" typeof="Organization">
             <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
@@ -142,7 +142,7 @@
     <? else: ?>
        <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
        <? if ($summary): ?>
-       <div class="truncate-field wide">
+       <div class="truncate-field wide recordSummary">
           <p class="summary"><?=$summary ?></p>
        </div>
        <? endif; ?>
@@ -173,7 +173,7 @@
 
       <? $nextTitles = $this->driver->getNewerTitles(); $prevTitles = $this->driver->getPreviousTitles(); ?>
       <? if (!empty($nextTitles)): ?>
-      <tr>
+      <tr class="recordNextTitles">
         <th><?=$this->transEsc('New Title')?>: </th>
         <td>
           <? foreach($nextTitles as $field): ?>
@@ -255,7 +255,7 @@
       <? endif; ?>
 
       <? $childRecordCount = $this->driver->tryMethod('getChildRecordCount'); if ($childRecordCount): ?>
-      <tr>
+      <tr class="recordComponentParts">
         <th><?=$this->transEsc('child_records')?>: </th>
         <td>
           <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('child_record_count', array('%%count%%' => $childRecordCount))?></a>
@@ -265,7 +265,7 @@
 
       <? $recordLinks = $this->driver->getAllRecordLinks(); ?>
       <? if(!empty($recordLinks)): ?>
-        <tr>
+        <tr class="extendedRelatedItems">
           <th><?=$this->transEsc('Related Items')?>:</th>
           <td>
             <? foreach ($recordLinks as $recordLink): ?>
