@@ -53,7 +53,7 @@
       <? if ($institutions = $this->driver->getInstitutions()): ?>
         <div class="recordInstitution">
         <? foreach ($institutions as $i => $institution): ?>
-          <?=$i > 0 ? ', ' : '' ?><?=$this->transEsc('source_' . $institution, null, $institution) ?>
+          <?=$i > 0 ? ', ' : '' ?><?=$this->transEsc('default::source_' . $institution, null, $institution) ?>
         <? endforeach; ?>
         </div>
       <? endif; ?>

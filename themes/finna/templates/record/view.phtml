@@ -31,7 +31,7 @@
 
   // Set page title.
   $dataSource = $this->driver->tryMethod('getDataSource');
-  $headText = $this->driver->getBreadcrumb() . (isset($dataSource) ? ' | ' . $this->transEsc('source_'. $dataSource) : '');
+  $headText = $this->driver->getBreadcrumb() . (isset($dataSource) ? ' | ' . $this->transEsc('default::source_'. $dataSource, null, $dataSource) : '');
   $this->headTitle($headText);
 ?>
 </div>

@@ -24,7 +24,7 @@
 
   // Set page title.
   $dataSource = $this->driver->tryMethod('getDataSource');
-  $headText = $this->driver->getBreadcrumb() . ' | ' . $this->translate('Collection') . (isset($dataSource) ? ' | ' . $this->transEsc('source_'. $dataSource) : '');
+  $headText = $this->driver->getBreadcrumb() . ' | ' . $this->translate('Collection') . (isset($dataSource) ? ' | ' . $this->transEsc('default::source_'. $dataSource, null, $dataSource) : '');
   $this->headTitle($headText);
 
   if (!empty($lastSearch)) {
