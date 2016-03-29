@@ -25,9 +25,6 @@ fallback_login_field = LAST_NAME
 ; account.
 ;secondary_login_field = "LAST_NAME:Last Name"
 
-; Whether purchase history is enabled. Default is true.
-;purchase_history = false
-
 ; These settings affect the Fund list used as a limiter in the "new items" module:
 [Funds]
 ; Uncomment this line to turn off the fund list entirely.
@@ -67,7 +64,7 @@ fallback_login_field = LAST_NAME
 ; 2) true - Purchase history is displayed below other holdings (default)
 ; 3) "split" - Purchase history is split to each corresponding holdings record and
 ; displayed by location
-;purchase_history = true
+purchase_history = "split"
 ; Fields to include in notes. Default is "852z".
 notes = "506au:845a:852z"
 ; Fields to include in summary. Default is "866a".
