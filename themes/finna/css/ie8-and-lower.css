@@ -16,3 +16,9 @@ header {
 .checkboxFilter .checkbox label:before, .checkboxFilter .checkbox.checked label:before {
 	content: '';	
 }
+.sidebar .checkboxFilter .checkbox label:before {
+	margin-left: 0px;
+}
+.sidebar .checkboxFilter .checkbox  {
+    padding-left: 6px;
+}

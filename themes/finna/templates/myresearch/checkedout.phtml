@@ -93,8 +93,13 @@
             <?
               // If this is a non-missing Solr record, we should display a link:
               if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
-                $title = $resource->getTitle();
-                $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
+                // Use ILS title if available since it may contain e.g. issue number
+                if (!empty($ilsDetails['title'])) {
+                  $title = $ilsDetails['title'];
+                } else {
+                  $title = $resource->getTitle();
+                  $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
+                }
                 echo '<h3><a href="' . $this->recordLink()->getUrl($resource) .
                   '" class="record-title">' . $title . '</a></h3>';
               } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
