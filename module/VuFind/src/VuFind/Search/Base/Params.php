@@ -1764,11 +1764,6 @@ class Params implements ServiceLocatorAwareInterface
                 || in_array($key, $orFields);
             $this->addFacet($key, $value, $useOr);
         }
-        if (isset($config->CheckboxFacets)) {
-            foreach ($config->CheckboxFacets as $key => $value) {
-                $this->addCheckboxFacet($key, $value);
-            }
-        }
 
         return true;
     }
