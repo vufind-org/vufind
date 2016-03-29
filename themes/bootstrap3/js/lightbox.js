@@ -3,6 +3,7 @@ VuFind.lightbox = (function() {
   // State
   var _originalUrl = false;
   var _currentUrl = false;
+  var _lightboxTitle = '';
   var refreshOnClose = false;
   // Elements
   var _modal, _modalBody, _clickedButton = null;
@@ -93,6 +94,14 @@ VuFind.lightbox = (function() {
     // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
     _modalBody.find('[type=submit]').click(_storeClickedStatus);
+    // Set or update title if we have one
+    if (_lightboxTitle != '') {
+      var h2 = _modalBody.find('h2:first-child');
+      if (h2.length == 0) {
+        h2 = $('<h2/>').prependTo(_modalBody);
+      }
+      h2.text(_lightboxTitle);
+    }
 
     var forms = _modalBody.find('form:not([data-lightbox-ignore])');
     for (var i=0;i<forms.length;i++) {
@@ -179,6 +188,7 @@ VuFind.lightbox = (function() {
    * data-lightbox-href = go to this url instead
    * data-lightbox-ignore = do not open this link in lightbox
    * data-lightbox-post = post data
+   * data-lightbox-title = Lightbox title (overrides any title the page provides)
    */
   var _constrainLink = function(event) {
     if (typeof $(this).data('lightboxIgnore') != 'undefined') {
@@ -191,6 +201,7 @@ VuFind.lightbox = (function() {
         obj.type = 'POST';
         obj.data = $(this).data('lightboxPost');
       }
+      _lightboxTitle = $(this).data('lightboxTitle');
       ajax(obj);
       _currentUrl = this.href;
       VuFind.modal('show');
