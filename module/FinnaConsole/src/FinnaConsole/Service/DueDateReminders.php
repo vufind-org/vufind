@@ -246,7 +246,11 @@ class DueDateReminders extends AbstractService
 
         $remindLoans = [];
         foreach ($user->getLibraryCards() as $card) {
+            if (!$card['id']) {
+                continue;
+            }
             $patron = null;
+            $card = $user->getLibraryCard($card['id']);
             try {
                 $patron = $this->catalog->patronLogin(
                     $card['cat_username'], $card['cat_password']
