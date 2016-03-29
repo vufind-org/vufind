@@ -13,6 +13,15 @@ VuFind.lightbox = (function() {
   };
   var _html = function(html) {
     _modalBody.html(html);
+    // Set or update title if we have one
+    if (_lightboxTitle != '') {
+      var h2 = _modalBody.find('h2:first-child');
+      if (h2.length == 0) {
+        h2 = $('<h2/>').prependTo(_modalBody);
+      }
+      h2.text(_lightboxTitle);
+      _lightboxTitle = '';
+    }
     _modal.modal('handleUpdate');
   };
   var _emit = function(msg, details) {
@@ -94,14 +103,6 @@ VuFind.lightbox = (function() {
     // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
     _modalBody.find('[type=submit]').click(_storeClickedStatus);
-    // Set or update title if we have one
-    if (_lightboxTitle != '') {
-      var h2 = _modalBody.find('h2:first-child');
-      if (h2.length == 0) {
-        h2 = $('<h2/>').prependTo(_modalBody);
-      }
-      h2.text(_lightboxTitle);
-    }
 
     var forms = _modalBody.find('form:not([data-lightbox-ignore])');
     for (var i=0;i<forms.length;i++) {
@@ -216,6 +217,7 @@ VuFind.lightbox = (function() {
    *
    * data-lightbox-onsubmit = on submit, run named function
    * data-lightbox-onclose  = on close, run named function
+   * data-lightbox-title = Lightbox title (overrides any title the page provides)
    *
    * Submit button data options:
    *
@@ -260,6 +262,8 @@ VuFind.lightbox = (function() {
     if (submit.closest(_modal).length > 0) {
       submit.attr('disabled', 'disabled');
     }
+    // Store custom title
+    _lightboxTitle = $(form).data('lightboxTitle');
     // Get Lightbox content
     ajax({
       url: form.action || _currentUrl,
