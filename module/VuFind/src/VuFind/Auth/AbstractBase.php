@@ -79,6 +79,23 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Inspect the user's request prior to processing a login request; this is
+     * essentially an event hook which most auth modules can ignore. See
+     * ChoiceAuth for a use case example.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @throws AuthException
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function preLoginCheck($request)
+    {
+        // By default, do no checking.
+    }
+
+    /**
      * Set configuration.
      *
      * @param \Zend\Config\Config $config Configuration to set

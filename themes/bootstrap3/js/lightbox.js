@@ -28,7 +28,7 @@ VuFind.lightbox = (function() {
       });
     } catch (e) {
       event = document.createEvent('CustomEvent');
-      event.initCustomEvent(msg, true, true, details);  
+      event.initCustomEvent(msg, true, true, details);
     }
     return document.dispatchEvent(event);
   };

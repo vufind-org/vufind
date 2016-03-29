@@ -52,7 +52,7 @@ class Params extends \VuFind\Search\Solr\Params
 
         // Force custom facet settings:
         $this->facetConfig = [];
-        $this->addFacet('authorStr');
+        $this->addFacet('author_facet');
         $this->setFacetOffset(($this->getPage() - 1) * $this->getLimit());
         $this->setFacetLimit($this->getLimit() * 10);
         // Sorting - defaults to off with unlimited facets, so let's

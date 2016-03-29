@@ -167,6 +167,13 @@ class Params implements ServiceLocatorAwareInterface
     protected $defaultsApplied = false;
 
     /**
+     * Map of facet field aliases.
+     *
+     * @var array
+     */
+    protected $facetAliases = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -716,6 +723,33 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Given a facet field, return an array containing all aliases of that
+     * field.
+     *
+     * @param string $field Field to look up
+     *
+     * @return array
+     */
+    public function getAliasesForFacetField($field)
+    {
+        // Account for field prefixes used for Boolean logic:
+        $prefix = substr($field, 0, 1);
+        if ($prefix === '-' || $prefix === '~') {
+            $rawField = substr($field, 1);
+        } else {
+            $prefix = '';
+            $rawField = $field;
+        }
+        $fieldsToCheck = [$field];
+        foreach ($this->facetAliases as $k => $v) {
+            if ($v === $rawField) {
+                $fieldsToCheck[] = $prefix . $k;
+            }
+        }
+        return $fieldsToCheck;
+    }
+
+    /**
      * Does the object already contain the specified filter?
      *
      * @param string $filter A filter string from url : "field:value"
@@ -727,10 +761,13 @@ class Params implements ServiceLocatorAwareInterface
         // Extract field and value from URL string:
         list($field, $value) = $this->parseFilter($filter);
 
-        if (isset($this->filterList[$field])
-            && in_array($value, $this->filterList[$field])
-        ) {
-            return true;
+        // Check all of the relevant fields for matches:
+        foreach ($this->getAliasesForFacetField($field) as $current) {
+            if (isset($this->filterList[$current])
+                && in_array($value, $this->filterList[$current])
+            ) {
+                return true;
+            }
         }
         return false;
     }
@@ -892,6 +929,11 @@ class Params implements ServiceLocatorAwareInterface
                     return $facet['desc'];
                 }
             }
+        }
+        if (!isset($this->facetConfig[$field])
+            && isset($this->facetAliases[$field])
+        ) {
+            $field = $this->facetAliases[$field];
         }
         return isset($this->facetConfig[$field])
             ? $this->facetConfig[$field] : 'unrecognized_facet_label';
