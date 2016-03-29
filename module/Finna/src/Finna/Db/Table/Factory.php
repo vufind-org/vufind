@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Db\Table;
+use Zend\Console\Console;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -72,8 +73,13 @@ class Factory
      */
     public static function getUserList(ServiceManager $sm)
     {
-        $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
-        $session = new \Zend\Session\Container('List', $sessionManager);
+        // For user anonymization console utility
+        if (Console::isConsole()) {
+            $session = new \Zend\Session\Container('List');
+        } else {
+            $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+            $session = new \Zend\Session\Container('List', $sessionManager);
+        }
         return new UserList($session);
     }
 }
