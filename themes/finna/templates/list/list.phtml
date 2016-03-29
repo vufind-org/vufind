@@ -18,10 +18,10 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
     <div class="row public-list-row">
       <div class="row">
         <div class="col-sm-12 col-md-10 col-lg-9">
-          <div class="public-list-desc col-xs-7 col-sm-8">
+          <div class="public-list-desc col-xs-12 col-sm-8">
             <div class="truncate-field" data-rows="5"><p><?=$this->escapeHtml($list->description) ?></p></div>
           </div>
-          <div class="public-list-info col-xs-5 col-sm-4">
+          <div class="public-list-info col-xs-12 col-sm-4">
             <div>
               <?= $this->transEsc("collection_author"); ?>:
               <span class="public-list-username"><?=$this->escapeHtml(trim($this->userPublicName($this->list_username)))?></span>
@@ -32,19 +32,21 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
       </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-sm-12 col-md-10 col-lg-9 search-controls">
-        <div class="pull-left">
-            <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results)) ?>
-        </div>
-        <div class="pull-right hidden-print">
-          <?=$this->render('search/controls/view.phtml')?>
-          <?=$this->render('search/controls/sort.phtml')?>
-          <?=$this->render('search/controls/limit.phtml')?>
-        </div>
+<div class="row search-controls">
+    <div class="col-md-10 col-lg-9">
+      <div class="row">
+          <div class="col-sm-7 col-sm-push-5 col-md-9 col-md-push-3 text-right hidden-print">
+              <?=$this->render('search/controls/view.phtml')?>
+              <?=$this->render('search/controls/sort.phtml')?>
+              <?=$this->render('search/controls/limit.phtml')?>
+          </div>
+          <div class="col-sm-5 col-md-3 col-sm-pull-7 col-md-pull-9">
+              <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results)) ?>
+          </div>
+      </div>
     </div>
 </div>
-<div class="row public-list-view">
+<div class="row public-list-view results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
     <form class="form-inline col-sm-12 col-md-10 col-lg-9" method="post" name="bulkActionForm" action="<?= $this->url('cart-home') ?>">
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => '')) ?>
         <?=$this->render('search/list-' . $this->params->getView() . '.phtml') ?>
