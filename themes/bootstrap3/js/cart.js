@@ -1,6 +1,6 @@
 /*global Cookies, VuFind */
 
-VuFind.cart = (function() {
+VuFind.register('cart', function() {
   var _COOKIE = 'vufind_cart';
   var _COOKIE_SOURCES = 'vufind_cart_src';
   var _COOKIE_DELIM = "\t";
@@ -173,9 +173,8 @@ VuFind.cart = (function() {
     getFullItems: getFullItems,
     updateCount: updateCount,
     setDomain: setDomain,
-    // Lightbox handler
     // Setup
-    ready: function() {
+    init: function() {
       // Record buttons
       var $cartId = $('.cartId');
       if($cartId.length > 0) {
@@ -202,7 +201,7 @@ VuFind.cart = (function() {
       $("#updateCart, #bottom_updateCart").popover({content:'', html:true, trigger:'manual'});
     }
   };
-})();
+});
 
 // Building an array and checking indexes prevents a race situation
 // We want to prioritize empty over printing
@@ -220,5 +219,3 @@ var cartFormHandler = function(event, data) {
 }
 
 document.addEventListener('VuFind.lightbox.closed', VuFind.cart.updateCount, false);
-
-$(document).ready(VuFind.cart.ready);

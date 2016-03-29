@@ -1,5 +1,5 @@
 /*global $, document, CustomEvent, VuFind, window */
-VuFind.lightbox = (function() {
+VuFind.register('lightbox', function() {
   // State
   var _originalUrl = false;
   var _currentUrl = false;
@@ -312,7 +312,7 @@ VuFind.lightbox = (function() {
     },
 
     // Ready
-    ready: function() {
+    init: function() {
       _modal = $('#modal');
       _modalBody = _modal.find('.modal-body');
       _modal.on('hide.bs.modal', function() {
@@ -330,6 +330,4 @@ VuFind.lightbox = (function() {
       bind();
     }
   };
-})();
-
-$(document).ready(VuFind.lightbox.ready);
+});

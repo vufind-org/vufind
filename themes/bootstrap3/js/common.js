@@ -6,7 +6,18 @@ window.console = window.console || {log: function () {}};
 var VuFind = (function() {
   var defaultSearchBackend = null;
   var path = null;
+  var _submodules = [];
   var _translations = {};
+
+  var register = function(name, module) {
+    _submodules.push(name);
+    this[name] = 'function' == typeof module ? module() : module;
+  };
+  var init = function() {
+    for (var i=0; i<_submodules.length; i++) {
+      this[_submodules[i]].init();
+    }
+  };
 
   var addTranslations = function(s) {
     for (var i in s) {
@@ -23,6 +34,8 @@ var VuFind = (function() {
     path: path,
 
     addTranslations: addTranslations,
+    init: init,
+    register: register,
     translate: translate
   };
 })();
@@ -226,6 +239,8 @@ function keyboardShortcuts() {
 }
 
 $(document).ready(function() {
+  // Start up all of our submodules
+  VuFind.init();
   // Setup search autocomplete
   setupAutocomplete();
   // Off canvas
