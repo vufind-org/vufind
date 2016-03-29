@@ -27,16 +27,16 @@
         <? endif; ?>
         <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
           <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
-            <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" title="<?=$this->transEsc("Your Account")?>"><i class="fa fa-home"></i> <?=$this->transEsc("Your Account")?></a>
+            <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>"><i class="fa fa-home"></i> <?=$this->transEsc("Your Account")?></a>
           </li>
           <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
-            <a href="<?=$this->url('myresearch-logout')?>" title="<?=$this->transEsc("Log Out")?>"><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></a>
+            <a href="<?=$this->url('myresearch-logout')?>"><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></a>
           </li>
           <li id="loginOptions"<? if($account->isLoggedIn()): ?> class="hidden"<? endif ?>>
             <? if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-              <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox title="<?=$this->transEsc("Institutional Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>
+              <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>
             <? else: ?>
-              <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
+              <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
             <? endif; ?>
           </li>
         <? endif; ?>
