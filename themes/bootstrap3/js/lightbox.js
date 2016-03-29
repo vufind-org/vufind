@@ -202,7 +202,7 @@ VuFind.lightbox = (function() {
         obj.type = 'POST';
         obj.data = $(this).data('lightboxPost');
       }
-      _lightboxTitle = $(this).data('lightboxTitle');
+      _lightboxTitle = $(this).data('lightboxTitle') || '';
       ajax(obj);
       _currentUrl = this.href;
       VuFind.modal('show');
