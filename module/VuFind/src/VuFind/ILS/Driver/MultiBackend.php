@@ -145,7 +145,8 @@ class MultiBackend extends AbstractBase
             ? $this->config['General']['default_driver']
             : null;
         
-        $this->driversConfigPath = isset($this->config['General']['drivers_config_path'])
+        $this->driversConfigPath = 
+            isset($this->config['General']['drivers_config_path'])
             ? $this->config['General']['drivers_config_path']
             : null;
     }
