@@ -30,7 +30,7 @@
             <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>"><i class="fa fa-home"></i> <?=$this->transEsc("Your Account")?></a>
           </li>
           <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
-            <a href="<?=$this->url('myresearch-logout')?>"><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></a>
+            <a href="<?=$this->url('myresearch-logout')?>" class="logout"><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></a>
           </li>
           <li id="loginOptions"<? if($account->isLoggedIn()): ?> class="hidden"<? endif ?>>
             <? if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
