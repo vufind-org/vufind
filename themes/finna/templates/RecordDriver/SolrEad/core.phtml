@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row record-rating">
       <div class="col-xs-12 rating-stars">
         <div onclick="$('a.usercomments').click();">
           <?=$this->record($this->driver)->getRating()?>
@@ -112,7 +112,7 @@
       <? endif; ?>
 
       <? if ($origination = $this->driver->getOrigination()): ?>
-      <tr>
+      <tr class="record-origination">
         <th><?=$this->transEsc('Archive Origination')?>:</th>
         <td><a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($origination)?>%22&amp;type=Author"><?=$this->escapeHtml($origination)?></a></td>
       </tr>
@@ -200,7 +200,7 @@
       <? endif; ?>
 
       <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
-      <tr>
+      <tr class="recordPublications">
         <th><?=$this->transEsc('Published')?>: </th>
         <td>
           <? foreach ($publications as $field): ?>
@@ -222,7 +222,7 @@
       <? endif; ?>
 
       <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
-      <tr>
+      <tr class="recordEdition">
         <th><?=$this->transEsc('Edition')?>: </th>
         <td property="bookEdition"><?=$this->escapeHtml($edition)?></td>
       </tr>

@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row record-rating">
       <div class="col-xs-12 rating-stars">
         <div onclick="$('a.usercomments').click();">
           <?=$this->record($this->driver)->getRating()?>
@@ -130,8 +130,8 @@
     </div>
 
     <? if ($abstracts = $this->driver->getAbstracts()): ?>
-      <div class="truncate-field wide">
-        <p class="summary recordSummary">
+      <div class="truncate-field wide recordSummary">
+        <p class="summary">
         <? if (isset($abstracts[$this->layout()->userLang])): ?>
             <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
           <? else: ?>

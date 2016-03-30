@@ -48,7 +48,7 @@
       <?=$this->render('record/record-organisation-menu.phtml') ?>
     <? endif; ?>
 
-    <div class="row">
+    <div class="row record-rating">
       <div class="col-xs-12 rating-stars">
         <div onclick="$('a.usercomments').click();">
           <?=$this->record($this->driver)->getRating()?>
@@ -93,7 +93,7 @@
     </div>
     <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
     <? if ($summary): ?>
-      <div class="truncate-field wide">
+      <div class="truncate-field wide recordSummary">
         <p class="summary"><?=preg_replace('/&lt;br\/?&gt;/', '<br>', $this->escapeHtml($summary)); /* Allow <br> tag */ ?></p>
       </div>
     <? endif; ?>
