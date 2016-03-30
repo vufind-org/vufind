@@ -101,7 +101,7 @@
   <? endif; ?>
   <? if (!$disableTitleHold): ?>
   <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
-    <a class="placehold btn btn-primary hidden-print" data-lightbox data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . ': ' . $this->driver->getTitle()) ?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
+    <a class="placehold btn btn-primary hidden-print" data-lightbox data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('title_hold_place') . ': ' . $this->driver->getTitle()) ?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
   <? elseif ($user): ?>
     <? $patron = $ilsLoginAvailable && $user->cat_username ? $this->ils()->patronLogin($user->cat_username, $user->getCatPassword()) : null; if ($patron): ?>
       <? if ($profile = $this->ils()->getMyProfile($patron)): ?>
