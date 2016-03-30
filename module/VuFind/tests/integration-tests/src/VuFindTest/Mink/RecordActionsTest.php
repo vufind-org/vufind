@@ -325,10 +325,12 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // - just right
         $this->findCss($page, '.modal #sms_to')->setValue('8005555555');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze(); // wait for form submission to catch missing carrier
         $this->assertNull($page->find('css', '.modal .sms-error'));
         // - pretty just right
         $this->findCss($page, '.modal #sms_to')->setValue('(800) 555-5555');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze(); // wait for form submission to catch missing carrier
         $this->assertNull($page->find('css', '.modal .sms-error'));
         // Send text to false number
         $this->findCss($page, '.modal #sms_to')->setValue('(800) 555-5555');

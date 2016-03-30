@@ -339,7 +339,6 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
-        
 
         // Place the hold:
         $this->placeHoldAndGoToHoldsScreen($page);

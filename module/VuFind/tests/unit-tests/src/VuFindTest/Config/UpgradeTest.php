@@ -154,6 +154,31 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             $results['Summon.ini']['TopRecommendations']
         );
 
+        // Confirm that author facets have been upgraded appropriately.
+        $this->assertFalse(isset($results['facets.ini']['Results']['authorStr']));
+        $this->assertFalse(isset($results['Collection.ini']['Facets']['authorStr']));
+        $this->assertEquals(
+            'Author', $results['facets.ini']['Results']['author_facet']
+        );
+        $this->assertEquals(
+            'author_facet', $results['facets.ini']['LegacyFields']['authorStr']
+        );
+        // Collection.ini only exists after release 1.3:
+        if ((float)$version > 1.3) {
+            $this->assertEquals(
+                'Author', $results['Collection.ini']['Facets']['author_facet']
+            );
+        }
+        // verify expected order of facet fields
+        $this->assertEquals(
+            [
+                'institution', 'building', 'format', 'callnumber-first',
+                'author_facet', 'language', 'genre_facet', 'era_facet',
+                'geographic_facet', 'publishDate'
+            ],
+            array_keys($results['facets.ini']['Results'])
+        );
+
         return ['configs' => $results, 'warnings' => $warnings];
     }
 

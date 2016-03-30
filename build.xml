@@ -192,12 +192,9 @@
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
     <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid JETTY_CONSOLE=/dev/null ${srcdir}/vufind.sh restart" outputProperty="LASTOUTPUT" />
+    <exec command="touch ${srcdir}/local/vufindtest.pid" />
+    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
-
-    <!-- wait for Solr to finish spinning up -->
-    <echo message="Waiting for Solr to start up..." />
-    <exec command="sleep 30" />
 
     <!-- import marc test records into vufind index (note: the marc test records have prefix "testsample#") -->
     <exec escape="false" command="find ${srcdir}/tests/data -name '*.mrc' -printf '%p,'" outputProperty="buglist" />
@@ -235,7 +232,7 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid ${srcdir}/vufind.sh stop" outputProperty="LASTOUTPUT" />
+    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
     <!-- run extra cleanup action, if any -->
@@ -256,17 +253,8 @@
     </if>
 
     <!-- delete the configuration, sample index, logs and cache data -->
-    <delete dir="${srcdir}/solr/logs" includeemptydirs="true" failonerror="false" />
-    <delete dir="${srcdir}/solr/alphabetical_browse" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/authority/conf" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/authority/index" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/authority/tlog" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/conf" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/tlog" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/spellchecker" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />
     <delete file="${srcdir}/import/solrmarc.log" failonerror="true" />
+    <delete dir="${srcdir}/solr" includeemptydirs="true" failonerror="true" />
     <delete file="${srcdir}/composer.lock" failonerror="false" />
     <delete file="${srcdir}/composer.phar" failonerror="false" />
     <delete file="${srcdir}/vufind-exception.log" failonerror="false" />

@@ -32,6 +32,7 @@ return array(
         'factories' => array(
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Factory::getFlashmessages',
             'layoutclass' => 'VuFind\View\Helper\Bootstrap3\Factory::getLayoutClass',
+            'recaptcha' => 'VuFind\View\Helper\Bootstrap3\Factory::getRecaptcha',
         ),
         'invokables' => array(
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',

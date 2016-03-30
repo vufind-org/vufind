@@ -30,3 +30,10 @@
   .tag-form {display: inline;}
 }
 .tagList.loggedin .tag:not(.selected) .badge:hover {background-color: @brand-success;}
+
+.subject-line:hover { color: #999; }
+.subject-line:hover a { color: @link-hover-color; }
+.subject-line a:hover ~ a {
+  color: #999;
+  text-decoration: none;
+}

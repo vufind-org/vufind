@@ -34,6 +34,7 @@
             'bulk_noitems_advice' => 'bulk_noitems_advice',
             'bulk_save_success' => 'bulk_save_success',
             'close' => 'close',
+            'error_occurred' => 'An error has occurred',
             'go_to_list' => 'go_to_list',
             'libphonenumber_invalid' => 'libphonenumber_invalid',
             'libphonenumber_invalidcountry' => 'libphonenumber_invalidcountry',
@@ -65,9 +66,11 @@
           $this->headScript()->appendFile("vendor/cookies.js");
           $this->headScript()->appendFile("cart.js");
           $domain = $cart->getCookieDomain();
-          $this->headScript()->appendScript(
-            'var cartCookieDomain = ' . (!empty($domain) ? "'$domain'" : 'false') . ';'
-          );
+          if (!empty($domain)) {
+            $this->headScript()->appendScript(
+              'VuFind.cart.setDomain("' . $domain . '");'
+            );
+          }
           $this->jsTranslations()->addStrings(
             array(
               'addBookBag' => 'Add to Book Bag',
