@@ -257,7 +257,7 @@ if ($this->holdingsSettings()->showSearchResultsTitleHold()) {
       }
       if ($link) {
 ?>
-      <a href="<?=$link?>#tabnav" class="<?=$logged ? 'placehold' : 'login'?> btn btn-primary hidden-print" title="<?=$this->transEsc('request_place_text')?>" data-lightbox> <?=$this->transEsc("title_hold_place")?></a>
+      <a href="<?=$link?>#tabnav" class="<?=$logged ? 'placehold' : 'login'?> btn btn-primary hidden-print" data-lightbox-title="<?=$this->transEsc('title_hold_place') . ': ' . $driver->getTitle() ?>" data-lightbox> <?=$this->transEsc("title_hold_place")?></a>
 <?
       }
     }

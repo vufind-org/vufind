@@ -73,7 +73,7 @@
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline' && $ilsLoginAvailable): ?>
     <? if (!$user): ?>
       <div class="pull-right">
-        <a href="?login=true&amp;catalogLogin=true" class="btn btn-primary login-link" data-lightbox title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
+        <a href="?login=true&amp;catalogLogin=true" class="btn btn-primary login-link" data-lightbox><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
       </div>
       <div class="clearfix"></div>
     <? elseif (!$user->cat_username): ?>
@@ -97,11 +97,11 @@
   <div class="place-hold-wrapper text-right hidden-print">
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn(), 'label' => 'Library Card')); ?>
   <? if ($illRequestLink): ?>
-    <a class="expandedCheckILLRequest placeILLRequest btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>" title="<?=$this->escapeHtmlAttr($this->translate('ill_request_place_text') . ': ' . $this->driver->getTitle()) ?>"><?=$this->transEsc("ill_request_check_text")?></a>
+    <a class="expandedCheckILLRequest placeILLRequest btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('ill_request_place_text') . ': ' . $this->driver->getTitle()) ?>"><?=$this->transEsc("ill_request_check_text")?></a>
   <? endif; ?>
   <? if (!$disableTitleHold): ?>
   <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
-    <a class="placehold btn btn-primary hidden-print" data-lightbox title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . ': ' . $this->driver->getTitle()) ?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
+    <a class="placehold btn btn-primary hidden-print" data-lightbox data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . ': ' . $this->driver->getTitle()) ?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
   <? elseif ($user): ?>
     <? $patron = $ilsLoginAvailable && $user->cat_username ? $this->ils()->patronLogin($user->cat_username, $user->getCatPassword()) : null; if ($patron): ?>
       <? if ($profile = $this->ils()->getMyProfile($patron)): ?>
@@ -232,7 +232,7 @@
         <?=$this->callnumber()->callnumber($currentSource, $data['callNo'], $data['collection'], $this->layout()->userLang)?>
       <? endforeach; ?>
       <? if ($holdsAllowed && isset($holdLinksLocation[$holding['location']])): ?>
-        <a class="expandedCheckRequest inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($holdLinksLocation[$holding['location']])?>" title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . $dialogTitle); ?>"><?=$this->transEsc("request_place_text")?></a>
+        <a class="expandedCheckRequest inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($holdLinksLocation[$holding['location']])?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . $dialogTitle); ?>"><?=$this->transEsc("request_place_text")?></a>
       <? endif; ?>
     </div>
   </div>
@@ -285,13 +285,13 @@
             <div class="pull-right">
             <? if (!$journal): ?>
               <? if (!$block && isset($row['link']) && $row['link'] && $holdsAllowed): ?>
-                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" title="<?=$this->escapeHtmlAttr($this->translate("Place a Hold") . $dialogTitle); ?>"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate("Place a Hold") . $dialogTitle); ?>"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
               <? endif; ?>
               <? if (!$blockStorageRetrievalRequest && isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
-                <a class="<?=$checkStorageRetrievalRequest ? "{$holdingsDetails}CheckStorageRetrievalRequest " : ''?>inlineblock placeStorageRetrievalRequest btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>" title="<?=$this->escapeHtmlAttr($this->translate("storage_retrieval_request_place_text") . $dialogTitle); ?>"><?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
+                <a class="<?=$checkStorageRetrievalRequest ? "{$holdingsDetails}CheckStorageRetrievalRequest " : ''?>inlineblock placeStorageRetrievalRequest btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate("storage_retrieval_request_place_text") . $dialogTitle); ?>"><?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
               <? endif; ?>
               <? if (!$blockILLRequest && isset($row['ILLRequestLink']) && $row['ILLRequestLink']): ?>
-                <a class="<?=$checkILLRequest ? "{$holdingsDetails}CheckILLRequest " : ''?>inlineblock placeILLRequest btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"  title="<?=$this->escapeHtmlAttr($this->translate("ill_request_place_text") . $dialogTitle); ?>"><?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
+                <a class="<?=$checkILLRequest ? "{$holdingsDetails}CheckILLRequest " : ''?>inlineblock placeILLRequest btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"  data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate("ill_request_place_text") . $dialogTitle); ?>"><?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
               <? endif; ?>
             <? endif; ?>
             </div>
@@ -307,7 +307,7 @@
             <? endif; ?>
             <? if (!$journal && !$block && isset($row['link']) && $row['link'] && $holdsAllowed): ?>
               <div class="pull-right">
-                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" title="<?=$this->escapeHtmlAttr($this->translate("Recall This") . $dialogTitle); ?>"><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+                <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate("Recall This") . $dialogTitle); ?>"><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
               </div>
             <? endif; ?>
           <? endif; ?>
