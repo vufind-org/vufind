@@ -68,7 +68,7 @@ VuFind.lightbox = (function() {
   };
   var flashMessage = function(message, type) {
     _modalBody.find('.alert,.fa.fa-spinner').remove();
-    _modalBody.find('h2:first-child')
+    _modalBody.find('h2:first-of-type')
       .after('<div class="alert alert-'+type+'">'+message+'</div>');
   };
 
