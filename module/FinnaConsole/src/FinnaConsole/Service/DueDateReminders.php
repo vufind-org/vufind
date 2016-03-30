@@ -224,11 +224,14 @@ class DueDateReminders extends AbstractService
             $remindLoans = $this->getReminders($user);
             if ($remindCnt = count($remindLoans)) {
                 $this->msg(
-                    $remindCnt . ' new loans to remind for user ' . $user->id
+                    "$remindCnt new loans to remind for user {$user->username}"
+                    . " (id {$user->id})"
                 );
                 $this->sendReminder($user, $remindLoans);
             } else {
-                $this->msg('No loans to remind for user ' . $user->id);
+                $this->msg(
+                    "No loans to remind for user {$user->username} (id {$user->id})"
+                );
             }
         }
         return true;
@@ -244,8 +247,8 @@ class DueDateReminders extends AbstractService
     protected function getReminders($user)
     {
         if (!$user->email || trim($user->email) == '') {
-            $this->err(
-                'User ' . $user->username
+            $this->warn(
+                "User {$user->username} (id {$user->id})"
                 . ' does not have an email address, bypassing due date reminders'
             );
             return false;
@@ -267,9 +270,10 @@ class DueDateReminders extends AbstractService
             }
 
             if (!$patron) {
-                $this->err(
-                    'Catalog login failed for user ' . $user->id
-                    . ', account ' . $card->id . ' (' . $card->cat_username . ')'
+                $this->warn(
+                    "Catalog login failed for user {$user->username}"
+                    . " (id {$user->id}), card {$card->cat_username}"
+                    . " (id {$card->id})"
                 );
                 continue;
             }
@@ -300,15 +304,9 @@ class DueDateReminders extends AbstractService
                         : null;
 
                     if (isset($loan['id'])) {
-                        try {
-                            $record = $this->recordLoader->load($loan['id'], 'Solr');
-                            if ($record) {
-                                $title = $record->getTitle();
-                            }
-                        } catch (\Exception $e) {
-                            $this->err('Error loading record ' . $loan['id']);
-                            $this->err('  ' . $e->getMessage());
-                        }
+                        $record = $this->recordLoader->load(
+                            $loan['id'], 'Solr', true
+                        );
                     }
 
                     $dateFormat = isset(
@@ -321,7 +319,8 @@ class DueDateReminders extends AbstractService
                         'loanId' => $loan['item_id'],
                         'dueDate' => $loan['duedate'],
                         'dueDateFormatted' => $dueDate->format($dateFormat),
-                        'title' => $title
+                        'title' => $title,
+                        'record' => $record
                     ];
                 }
             }
@@ -341,7 +340,7 @@ class DueDateReminders extends AbstractService
     {
         if (!$user->email || trim($user->email) == '') {
             $this->msg(
-                'User ' . $user->username
+                "User {$user->username} (id {$user->id})"
                 . ' does not have an email address, bypassing due date reminders'
             );
             return false;
@@ -358,7 +357,8 @@ class DueDateReminders extends AbstractService
             ];
             if (!$viewPath = $this->resolveViewPath($this->currentInstitution)) {
                 $this->err(
-                    "Could not resolve view path for user " . $user['username']
+                    "Could not resolve view path for user {$user->username}"
+                    . " (id {$user->id})"
                 );
                 return false;
             } else {
@@ -422,8 +422,8 @@ class DueDateReminders extends AbstractService
             );
         } catch (\Exception $e) {
             $this->err(
-                'Failed to send due date reminders (user id '
-                . $user->id . ', cat_username: ' . $user->cat_username . ')'
+                "Failed to send due date reminders to user {$user->username} "
+                . " (id {$user->id})"
             );
             $this->err('   ' . $e->getMessage());
             return false;
