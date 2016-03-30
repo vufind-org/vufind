@@ -116,6 +116,7 @@ abstract class AbstractService implements ConsoleServiceInterface
      */
     protected function warn($msg)
     {
+        $msg = '[' . getmypid() . "] $msg";
         $this->logger->warn($msg);
     }
 
