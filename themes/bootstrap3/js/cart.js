@@ -165,6 +165,33 @@ VuFind.register('cart', function() {
     }
   }
 
+  var init = function() {
+    // Record buttons
+    var $cartId = $('.cartId');
+    if($cartId.length > 0) {
+      $cartId.each(function() {
+        var cartId = this.value.split('|');
+        var currentId = cartId[1];
+        var currentSource = cartId[0];
+        var $parent = $(this).parent();
+        $parent.find('.cart-add.correct,.cart-remove.correct').removeClass('correct hidden');
+        $parent.find('.cart-add').click(function() {
+          addItem(currentId,currentSource);
+          $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
+        });
+        $parent.find('.cart-remove').click(function() {
+          removeItem(currentId,currentSource);
+          $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
+        });
+      });
+    } else {
+      // Search results
+      var $form = $('form[name="bulkActionForm"]');
+      _registerUpdate($form);
+    }
+    $("#updateCart, #bottom_updateCart").popover({content:'', html:true, trigger:'manual'});
+  };
+
   // Reveal
   return {
     // Methods
@@ -173,33 +200,8 @@ VuFind.register('cart', function() {
     getFullItems: getFullItems,
     updateCount: updateCount,
     setDomain: setDomain,
-    // Setup
-    init: function() {
-      // Record buttons
-      var $cartId = $('.cartId');
-      if($cartId.length > 0) {
-        $cartId.each(function() {
-          var cartId = this.value.split('|');
-          var currentId = cartId[1];
-          var currentSource = cartId[0];
-          var $parent = $(this).parent();
-          $parent.find('.cart-add.correct,.cart-remove.correct').removeClass('correct hidden');
-          $parent.find('.cart-add').click(function() {
-            addItem(currentId,currentSource);
-            $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
-          });
-          $parent.find('.cart-remove').click(function() {
-            removeItem(currentId,currentSource);
-            $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
-          });
-        });
-      } else {
-        // Search results
-        var $form = $('form[name="bulkActionForm"]');
-        _registerUpdate($form);
-      }
-      $("#updateCart, #bottom_updateCart").popover({content:'', html:true, trigger:'manual'});
-    }
+    // Init
+    init: init
   };
 });
 
