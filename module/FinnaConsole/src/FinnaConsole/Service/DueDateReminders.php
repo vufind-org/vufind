@@ -389,7 +389,14 @@ class DueDateReminders extends AbstractService
             = $this->urlHelper->__invoke('myresearch-unsubscribe')
             . '?' . http_build_query($params);
 
-        $baseUrl = 'https://' . $this->currentInstitution . '.finna.fi';
+        $urlParts = explode('/', $viewPath);
+        $urlView = array_pop($urlParts);
+        $urlInstitution = array_pop($urlParts);
+
+        $baseUrl = 'https://' . $urlInstitution . '.finna.fi';
+        if ($urlView != $this::DEFAULT_PATH) {
+            $baseUrl .= "/$urlView";
+        }
         $params = [
              'loans' => $remindLoans,
              'url' => $baseUrl . $this->urlHelper->__invoke('myresearch-checkedout'),
