@@ -108,7 +108,7 @@ function ajaxLoadPages(min, max) {
   }
   .fail(function(response, textStatus) {
     console.log(response, textStatus);
-  });
+  }));
 }
 // Pages
 function prevPage() {
