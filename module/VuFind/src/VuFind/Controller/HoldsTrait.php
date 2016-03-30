@@ -91,12 +91,26 @@ trait HoldsTrait
         }
 
         // Send various values to the view so we can build the form:
-        $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
         $requestGroups = $catalog->checkCapability(
             'getRequestGroups', [$driver->getUniqueID(), $patron]
         ) ? $catalog->getRequestGroups($driver->getUniqueID(), $patron) : [];
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
             ? explode(":", $checkHolds['extraHoldFields']) : [];
+
+        $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
+            && !empty($requestGroups)
+            && (empty($gatheredDetails['level'])
+                || $gatheredDetails['level'] != 'copy');
+
+        $pickupDetails = $gatheredDetails;
+        if (!$requestGroupNeeded && !empty($requestGroups)
+            && count($requestGroups) == 1
+        ) {
+            // Request group selection is not required, but we have a single request
+            // group, so make sure pickup locations match with the group
+            $pickupDetails['requestGroupId'] = $requestGroups[0]['id'];
+        }
+        $pickup = $catalog->getPickUpLocations($patron, $pickupDetails);
 
         // Process form submissions if necessary:
         if (!is_null($this->params()->fromPost('placeHold'))) {
@@ -168,11 +182,6 @@ trait HoldsTrait
         } catch (\Exception $e) {
             $defaultRequestGroup = false;
         }
-
-        $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
-            && !empty($requestGroups)
-            && (empty($gatheredDetails['level'])
-                || $gatheredDetails['level'] != 'copy');
 
         $view = $this->createViewModel(
             [
