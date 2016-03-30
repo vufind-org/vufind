@@ -1810,6 +1810,36 @@ EOT;
     }
 
     /**
+     * Get Patron Holds
+     *
+     * This is responsible for retrieving all holds by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's holds on success.
+     */
+    public function getMyHolds($patron)
+    {
+        $holds = parent::getMyHolds($patron);
+        // Holds that we added based on UB requests don't show up in the normal
+        // Voyager database table even though they are marked as local, so fetch
+        // via the API and augment hold list as necessary.
+        $apiHolds = $this->getHoldsFromApi($patron, true);
+        foreach ($apiHolds as $apiHold) {
+            // Check for duplicates
+            foreach ($holds as $hold) {
+                if ($hold['reqnum'] == $apiHold['reqnum']) {
+                    continue 2;
+                }
+            }
+            $holds[] = $apiHold;
+        }
+        return $holds;
+    }
+
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -2158,17 +2188,19 @@ EOT;
     }
 
     /**
-     * Get Patron Remote Holds
+     * Get patron's local or remote holds from the API
      *
-     * This is responsible for retrieving all remote holds by a specific patron.
+     * This is responsible for retrieving all local or remote holds by a specific
+     * patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param bool  $local  Whether to fetch local holds instead of remote holds
      *
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    protected function getRemoteHolds($patron)
+    protected function getHoldsFromApi($patron, $local)
     {
         // Build Hierarchy
         $hierarchy = [
@@ -2196,8 +2228,11 @@ EOT;
         $holds = [];
         if (isset($results->holds->institution)) {
             foreach ($results->holds->institution as $institution) {
-                // Only take remote holds
-                if ($this->isLocalInst((string)$institution->attributes()->id)) {
+                // Filter by the $local parameter
+                $isLocal = $this->isLocalInst(
+                    (string)$institution->attributes()->id
+                );
+                if ($local != $isLocal) {
                     continue;
                 }
 
@@ -3022,7 +3057,7 @@ EOT;
     public function getMyILLRequests($patron)
     {
         return array_merge(
-            $this->getRemoteHolds($patron),
+            $this->getHoldsFromApi($patron, false),
             $this->getRemoteCallSlips($patron)
         );
     }
