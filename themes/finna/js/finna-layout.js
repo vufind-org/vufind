@@ -568,14 +568,27 @@ finna.layout = (function() {
     };
 
     var initScrollRecord = function() {
-      var identifier = window.location.hash;
-      if ($(window).height() < 960) {
-        if (($('section.main').hasClass('template-name-search') === true || $('section.main').hasClass('template-name-results') === true) && (identifier === "") && ($(window).scrollTop() === 0)) {
-          $('html,body').animate({
-            scrollTop: $('.nav.searchbox').offset().top
-          }, 100);
+        if (!$('section.main').is('.template-name-search, .template-name-results')) {
+            return;
         }
-      }
+
+        var target = null;
+        var identifier = decodeURIComponent(window.location.hash);
+        if (identifier === "") {
+            // Scroll to search box
+            if ($(window).height() < 960 && $(window).scrollTop() === 0) {
+                target = $('.nav.searchbox');
+            }
+        } else {
+            // Scroll to record
+            var result = $('.hiddenId[value="' + identifier.substr(1) + '"]');
+            if (result.length) {
+                target = result.closest('.result');
+            }
+        }
+        if (target) {
+            $('html,body').animate({scrollTop: target.offset().top}, 100);
+        }
     };
 
     var initBuildingFilter = function() {
