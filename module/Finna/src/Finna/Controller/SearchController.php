@@ -393,7 +393,7 @@ class SearchController extends \VuFind\Controller\SearchController
                 );
             }
         }
-        if ($results) {
+        if (isset($results) && $results) {
             if ($params['date'] || $params['volume'] || $params['issue']
                 || $params['spage'] || $params['atitle']
             ) {
