@@ -114,5 +114,6 @@ class Params extends \VuFind\Search\Base\Params
     {
         $this->initFacetList('Facets', 'Results_Settings', 'Primo');
         $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings', 'Primo');
+        $this->initCheckboxFacets('CheckboxFacets', 'Primo');
     }
 }
