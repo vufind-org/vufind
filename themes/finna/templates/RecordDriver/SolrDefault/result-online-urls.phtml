@@ -37,7 +37,7 @@
             $icon = 'fa-external-link';
             if (!empty($url['desc'])) {
               if (!is_string($url['desc'])) {
-                  error_log('$url["desc"] is not a string: ' . print_r($url['desc']));
+                  error_log('$url["desc"] is not a string: ' . print_r($url['desc'], true));
               }
               $map = ['Database Guide' => 'fa-info-database', 'Database Interface' => 'fa-browse-database'];
               if (is_string($url['desc']) && isset($map[$url['desc']])) {
