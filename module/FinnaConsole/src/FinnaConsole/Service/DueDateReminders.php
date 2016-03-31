@@ -351,11 +351,10 @@ class DueDateReminders extends AbstractService
         if (!$this->currentInstitution
             || $userInstitution != $this->currentInstitution
         ) {
-            $this->currentInstitution = $userInstitution;
             $templateDirs = [
                 "{$this->baseDir}/themes/finna/templates",
             ];
-            if (!$viewPath = $this->resolveViewPath($this->currentInstitution)) {
+            if (!$viewPath = $this->resolveViewPath($userInstitution)) {
                 $this->err(
                     "Could not resolve view path for user {$user->username}"
                     . " (id {$user->id})"
@@ -364,6 +363,7 @@ class DueDateReminders extends AbstractService
             } else {
                 $templateDirs[] = "$viewPath/themes/custom/templates";
             }
+            $this->currentInstitution = $userInstitution;
             $this->currentViewPath = $viewPath;
 
             $resolver = new AggregateResolver();
