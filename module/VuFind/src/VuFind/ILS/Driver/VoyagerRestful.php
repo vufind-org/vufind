@@ -1810,6 +1810,92 @@ EOT;
     }
 
     /**
+     * Protected support method for getMyHolds.
+     *
+     * Fetch both local and remote holds. Remote hold data will be augmented using
+     * the API.
+     *
+     * @param array $patron Patron data for use in an sql query
+     *
+     * @return array Keyed data for use in an sql query
+     */
+    protected function getMyHoldsSQL($patron)
+    {
+        // Modifier
+        $sqlSelectModifier = "distinct";
+
+        // Expressions
+        $sqlExpressions = [
+            "HOLD_RECALL.HOLD_RECALL_ID", "HOLD_RECALL.BIB_ID",
+            "HOLD_RECALL.PICKUP_LOCATION",
+            "HOLD_RECALL.HOLD_RECALL_TYPE",
+            "to_char(HOLD_RECALL.EXPIRE_DATE, 'MM-DD-YY') as EXPIRE_DATE",
+            "to_char(HOLD_RECALL.CREATE_DATE, 'MM-DD-YY') as CREATE_DATE",
+            "HOLD_RECALL_ITEMS.ITEM_ID",
+            "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS",
+            "HOLD_RECALL_ITEMS.QUEUE_POSITION",
+            // MFHD_ITEM and BIB_TEXT entries will be bogus for remote holds, but
+            // we'll deal with them later in getMyHolds()
+            "MFHD_ITEM.ITEM_ENUM",
+            "MFHD_ITEM.YEAR",
+            "BIB_TEXT.TITLE_BRIEF",
+            "BIB_TEXT.TITLE",
+            "REQUEST_GROUP.GROUP_NAME as REQUEST_GROUP_NAME",
+            "NVL(VOYAGER_DATABASES.DB_CODE, 'LOCAL') as DB_CODE"
+        ];
+
+        // From
+        $sqlFrom = [
+            $this->dbName . ".HOLD_RECALL",
+            $this->dbName . ".HOLD_RECALL_ITEMS",
+            $this->dbName . ".MFHD_ITEM",
+            $this->dbName . ".BIB_TEXT",
+            $this->dbName . ".VOYAGER_DATABASES",
+            $this->dbName . ".REQUEST_GROUP"
+        ];
+
+        // Where
+        $sqlWhere = [
+            "HOLD_RECALL.PATRON_ID = :id",
+            "HOLD_RECALL.HOLD_RECALL_ID = HOLD_RECALL_ITEMS.HOLD_RECALL_ID(+)",
+            "HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
+            "(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR " .
+            "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
+            "HOLD_RECALL.BIB_ID = BIB_TEXT.BIB_ID(+)",
+            "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)",
+            "HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)"
+        ];
+
+        // Bind
+        $sqlBind = [':id' => $patron['id']];
+
+        $sqlArray = [
+            'modifier' => $sqlSelectModifier,
+            'expressions' => $sqlExpressions,
+            'from' => $sqlFrom,
+            'where' => $sqlWhere,
+            'bind' => $sqlBind
+        ];
+
+        return $sqlArray;
+    }
+
+    /**
+     * Protected support method for getMyHolds.
+     *
+     * @param array $sqlRow An array of keyed data
+     *
+     * @throws DateException
+     * @return array Keyed data for display by template files
+     */
+    protected function processMyHoldsData($sqlRow)
+    {
+        $result = parent::processMyHoldsData($sqlRow);
+        $result['db_code'] = $sqlRow['DB_CODE'];
+        return $result;
+    }
+
+    /**
      * Get Patron Holds
      *
      * This is responsible for retrieving all holds by a specific patron.
@@ -1823,18 +1909,39 @@ EOT;
     public function getMyHolds($patron)
     {
         $holds = parent::getMyHolds($patron);
-        // Holds that we added based on UB requests don't show up in the normal
-        // Voyager database table even though they are marked as local, so fetch
-        // via the API and augment hold list as necessary.
-        $apiHolds = $this->getHoldsFromApi($patron, true);
-        foreach ($apiHolds as $apiHold) {
-            // Check for duplicates
-            foreach ($holds as $hold) {
-                if ($hold['reqnum'] == $apiHold['reqnum']) {
-                    continue 2;
+        // Check if we have remote holds and augment if necessary
+        $augment = false;
+        foreach ($holds as $hold) {
+            if ($hold['db_code'] != 'LOCAL') {
+                $augment = true;
+                break;
+            }
+        }
+        if ($augment) {
+            // Fetch hold information via the API so that we can include correct
+            // title etc. for remote holds.
+            $copyFields = [
+                'id', 'item_id', 'volume', 'publication_year', 'title',
+                'institution_id', 'institution_name',
+                'institution_dbkey', 'in_transit'
+            ];
+            $apiHolds = $this->getHoldsFromApi($patron, true);
+            foreach ($apiHolds as $apiHold) {
+                // Find the hold and add information to it
+                foreach ($holds as &$hold) {
+                    if ($hold['reqnum'] == $apiHold['reqnum']) {
+                        // Ignore local holds
+                        if ($hold['db_code'] == 'LOCAL') {
+                            continue 2;
+                        }
+                        foreach ($copyFields as $field) {
+                            $hold[$field] = isset($apiHold[$field])
+                                ? $apiHold[$field] : '';
+                        }
+                        break;
+                    }
                 }
             }
-            $holds[] = $apiHold;
         }
         return $holds;
     }
