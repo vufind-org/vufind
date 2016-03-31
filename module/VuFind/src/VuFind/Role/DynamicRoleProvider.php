@@ -140,12 +140,14 @@ class DynamicRoleProvider implements RoleProviderInterface
         $retVal = [];
         foreach ($this->config as $settings) {
             $current = $this->getRolesForSettings($settings);
-            foreach ($current['roles'] as $role) {
-                if (!isset($retVal[$role])) {
-                    $retVal[$role] = [];
-                }
-                foreach ($current['permissions'] as $permission) {
-                    $retVal[$role][] = $permission;
+            if (null !== $current['roles']) {
+                foreach ($current['roles'] as $role) {
+                    if (!isset($retVal[$role])) {
+                        $retVal[$role] = [];
+                    }
+                    foreach ($current['permissions'] as $permission) {
+                        $retVal[$role][] = $permission;
+                    }
                 }
             }
         }
