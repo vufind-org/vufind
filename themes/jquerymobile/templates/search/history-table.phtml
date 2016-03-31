@@ -12,7 +12,7 @@
     <p><strong><?=$this->transEsc("history_time")?></strong>: <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime("U", $info->getStartTime()))?></p>
     <? $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList(true) as $field => $filters): ?>
       <? foreach ($filters as $i => $filter): ?>
-        <p><? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?></p>
+        <p><? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><strong><?=$this->transEsc($field)?></strong><? if (!empty($filter['displayText'])): ?>: <?=$this->escapeHtml($filter['displayText'])?><? endif; ?></p>
       <? endforeach; ?>
     <? endforeach; ?>
     <? foreach($info->getParams()->getCheckboxFacets() as $facet): ?>
