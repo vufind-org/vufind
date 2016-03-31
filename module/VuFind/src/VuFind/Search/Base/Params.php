@@ -917,10 +917,13 @@ class Params implements ServiceLocatorAwareInterface
      * Get a user-friendly string to describe the provided facet field.
      *
      * @param string $field Facet field name.
+     * @param string $value Facet value.
      *
      * @return string       Human-readable description of field.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getFacetLabel($field)
+    public function getFacetLabel($field, $value = null)
     {
         if (!isset($this->facetConfig[$field])
             && isset($this->facetAliases[$field])
@@ -987,7 +990,7 @@ class Params implements ServiceLocatorAwareInterface
                 if (!isset($skipList[$field])
                     || !in_array($value, $skipList[$field])
                 ) {
-                    $facetLabel = $this->getFacetLabel($field);
+                    $facetLabel = $this->getFacetLabel($field, $value);
                     $list[$facetLabel][] = $this->formatFilterListEntry(
                         $field, $value, $operator, $translate
                     );
