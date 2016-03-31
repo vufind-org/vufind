@@ -217,6 +217,17 @@
         $dialogTitle .= " - $titleLocation";
     }
   ?>
+  <? if ($holdingsGroup == 1 && $holdingsConfig = $this->ils()->getConfig('Holdings', [$this->driver->getUniqueId()])): ?>
+    <? if (!empty($holdingsConfig['extra_texts'])): ?>
+      <div class="holdings-container-heading row">
+        <div class="col-xs-12">
+          <? foreach ($holdingsConfig['extra_texts'] as $extraText): ?>
+            <div class="holdings-extra-text"><?=$this->translate($extraText, ['{{recordId}}' => $this->driver->getUniqueId()])?></div>
+          <? endforeach; ?>
+        </div>
+      </div>
+    <? endif; ?>
+  <? endif; ?>
   <div class="holdings-container-heading row">
     <div class="location col-sm-6 col-xs-6">
       <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>"></i> <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
