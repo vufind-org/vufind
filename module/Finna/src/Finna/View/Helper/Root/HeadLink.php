@@ -158,7 +158,8 @@ class HeadLink extends \VuFindTheme\View\Helper\HeadLink
         if (!file_exists($file) || filesize($file) < 65535) {
             return '';
         }
-        $agent = $this->request->getHeader('User-Agent')->toString();
+        $ua = $this->request->getHeader('User-Agent');
+        $agent = is_object($ua) ? $ua->toString() : '';
         if (strstr($agent, 'MSIE 9.0') || strstr($agent, 'MSIE 8.0')
             || strstr($agent, 'MSIE 7.0')
         ) {
