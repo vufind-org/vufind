@@ -917,19 +917,11 @@ class Params implements ServiceLocatorAwareInterface
      * Get a user-friendly string to describe the provided facet field.
      *
      * @param string $field Facet field name.
-     * @param string $value Facet value.
      *
      * @return string       Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null)
+    public function getFacetLabel($field)
     {
-        if (isset($this->checkboxFacets[$field]) && null !== $value) {
-            foreach ($this->checkboxFacets[$field] as $facet) {
-                if ($facet['filter'] == "$field:$value") {
-                    return $facet['desc'];
-                }
-            }
-        }
         if (!isset($this->facetConfig[$field])
             && isset($this->facetAliases[$field])
         ) {
@@ -1039,9 +1031,7 @@ class Params implements ServiceLocatorAwareInterface
     {
         $displayText = $this->checkForDelimitedFacetDisplayText($field, $value);
 
-        if (isset($this->checkboxFacets[$field])) {
-            $displayText = '';
-        } elseif ($translate) {
+        if ($translate) {
             $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
             $displayText = $this->translate("$domain::$displayText");
         }
@@ -1776,5 +1766,25 @@ class Params implements ServiceLocatorAwareInterface
     public function hasDefaultsApplied()
     {
         return $this->defaultsApplied;
+    }
+
+    /**
+     * Initialize checkbox facet settings for the specified configuration sections.
+     *
+     * @param string $facetList Config section containing fields to activate
+     * @param string $cfgFile   Name of configuration to load
+     *
+     * @return bool             True if facets set, false if no settings found
+     */
+    protected function initCheckboxFacets($facetList = 'CheckboxFacets',
+        $cfgFile = 'facets'
+    ) {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($cfgFile);
+        if (empty($config->$facetList)) {
+            return false;
+        }
+        foreach ($config->$facetList as $key => $value) {
+            $this->addCheckboxFacet($key, $value);
+        }
     }
 }
