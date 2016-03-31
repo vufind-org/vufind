@@ -1,4 +1,46 @@
 /*global registerAjaxCommentRecord, registerTabEvents, setupRecordToolbar, VuFind */
+var _EMBEDDED_COOKIE = 'vufind_search_open';
+var _EMBEDDED_DELIM  = ',';
+var _EMBEDDED_STATUS = {};
+
+function saveEmbeddedStatusToCookie() {
+  var cookie = [];
+  for (var i in _EMBEDDED_STATUS) {
+    var str = i;
+    if (_EMBEDDED_STATUS[i]) {
+      str += ':::' + _EMBEDDED_STATUS[i];
+    }
+    cookie.push(str);
+  }
+  Cookies.setItem(_EMBEDDED_COOKIE, $.unique(cookie).join(_EMBEDDED_DELIM), false, '/', false);
+}
+function loadEmbeddedCookies() {
+  var cookies = Cookies.getItem(_EMBEDDED_COOKIE);
+  if (!cookies) return;
+  var items = cookies.split(_EMBEDDED_DELIM);
+  for (var i=0; i<items.length; i++) {
+    var parts = items[i].split(':::');
+    _EMBEDDED_STATUS[parts[0]] = parts[1] || null;
+    var mainNode = $('#'+parts[0]);
+    if (parts[1]) {
+      mainNode.find('.long-view').on('shown.bs.collapse', function(e) {
+        var link = mainNode.find('.getFull');
+        if (!link.hasClass('auto') || !$(e.target).hasClass('long-view')) return;
+        link.removeClass('auto');
+        mainNode.find(parts[1]).click();
+      });
+    }
+    mainNode.find('.getFull').addClass('auto').click();
+  }
+}
+function addToEmbeddedCookie(id, tab) {
+  _EMBEDDED_STATUS[id] = tab;
+  saveEmbeddedStatusToCookie();
+}
+function removeFromEmbeddedCookie(id) {
+  delete _EMBEDDED_STATUS[id];
+  saveEmbeddedStatusToCookie();
+}
 
 function showhideTabs(tabid) {
   $('#'+tabid).parents('.search_tabs').find('.tab-pane.active').removeClass('active');
@@ -13,7 +55,10 @@ function ajaxFLLoadTab(tabid, reload) {
     window.location.href = $('#'+tabid).attr('href');
     return true;
   }
-  var $record = $('#'+tabid).closest('.record,.result');
+  var $record = $('#'+tabid).closest('.result');
+  if ($record.length == 0) {
+    $record = $('#'+tabid).closest('.record');
+  }
   var id = $record.find(".hiddenId")[0].value;
   var source = $record.find(".hiddenSource")[0].value;
   var urlroot;
@@ -38,6 +83,10 @@ function ajaxFLLoadTab(tabid, reload) {
           registerTabEvents();
         } else {
           $('#'+tabid+'-tab').html(VuFind.translate('collection_empty'));
+        }
+        // Auto click last tab
+        if ($record.find('.getFull').hasClass('auto')) {
+          $('#'+_EMBEDDED_STATUS[$record.attr('id')]).click();
         }
         if(typeof syn_get_widget === "function") {
           syn_get_widget();
@@ -80,6 +129,8 @@ function toggleDataView() {
     longNode.on('hide.bs.collapse', function(e) {
       if (!$(e.target).hasClass('long-view')) return;
       mainNode.removeClass('expanded').addClass('expanding');
+      // Cookies
+      removeFromEmbeddedCookie(mainNode.attr('id'));
     });
     longNode.on('hidden.bs.collapse', function(e) {
       if (!$(e.target).hasClass('long-view')) return;
@@ -122,6 +173,11 @@ function toggleDataView() {
             }
             // Bind tab clicks
             longNode.find('.search_tabs .recordTabs a').click(function() {
+              if (mainNode.find('.getFull').hasClass('auto')) {
+                mainNode.find('.getFull').removeClass('auto');
+              } else {
+                addToEmbeddedCookie(mainNode.attr('id'), $(this).attr('id'));
+              }
               return ajaxFLLoadTab(this.id);
             });
             longNode.find('.panel.noajax .accordion-toggle').click(function() {
@@ -150,4 +206,5 @@ function toggleDataView() {
 
 $(document).ready(function() {
   $('.getFull').click(toggleDataView);
+  loadEmbeddedCookies();
 });
