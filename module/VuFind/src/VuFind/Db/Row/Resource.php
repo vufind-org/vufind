@@ -155,13 +155,23 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     public function assignMetadata($driver, \VuFind\Date\Converter $converter)
     {
         // Grab title -- we have to have something in this field!
-        $this->title = $driver->tryMethod('getSortTitle');
+        $this->title = mb_substr(
+            $driver->tryMethod('getSortTitle'),
+            0,
+            255,
+            "UTF-8"
+        );
         if (empty($this->title)) {
             $this->title = $driver->getBreadcrumb();
         }
 
         // Try to find an author; if not available, just leave the default null:
-        $author = $driver->tryMethod('getPrimaryAuthor');
+        $this->title = mb_substr(
+            $driver->tryMethod('getPrimaryAuthor'),
+            0,
+            255,
+            "UTF-8"
+        );
         if (!empty($author)) {
             $this->author = $author;
         }
