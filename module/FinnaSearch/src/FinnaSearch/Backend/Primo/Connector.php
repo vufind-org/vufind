@@ -369,10 +369,10 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                 return $result;
             }
 
-            list($start, $end) = explode('?', $result);
+            list($host, $query) = explode('?', $result);
 
             $params = [];
-            foreach (explode('&', $end) as $param) {
+            foreach (explode('&', $query) as $param) {
                 if (strstr($param, '=') === false) {
                     continue;
                 }
@@ -385,8 +385,8 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                 }
                 $params[$key] = $val;
             }
-            $end = http_build_query($params);
-            return "$start?$end";
+            $query = http_build_query($params);
+            return "$host?$query";
         }
 
         return false;
