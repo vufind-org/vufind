@@ -5,6 +5,7 @@ function showhideTabs(tabid) {
   $('#'+tabid+'-tab').addClass('active');
   $('#'+tabid).tab('show');
 }
+
 function ajaxFLLoadTab(tabid, reload) {
   if(typeof reload === "undefined") {
     reload = false;
@@ -28,7 +29,7 @@ function ajaxFLLoadTab(tabid, reload) {
     showhideTabs(tabid);
     $('#'+tabid+'-tab').html('<i class="fa fa-spinner fa-spin"></i> '+VuFind.translate('loading')+'...');
     $.ajax({
-      url: VuFind.path + '/' + urlroot + '/' + encodeURIComponent(id) + '/AjaxTab',
+      url: VuFind.path + '/' + urlroot + '/' + id + '/AjaxTab',
       type: 'POST',
       data: {tab: tab},
       success: function(data) {
@@ -149,5 +150,6 @@ function toggleDataView() {
 }
 
 $(document).ready(function() {
+  console.log("!");
   $('.getFull').click(toggleDataView);
 });

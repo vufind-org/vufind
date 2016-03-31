@@ -253,8 +253,7 @@ class AbstractRecord extends AbstractBase
      */
     public function ajaxtabAction()
     {
-        $id = rawurldecode($this->params()->fromRoute('id'));
-        $this->loadRecord($id);
+        $this->loadRecord();
         // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
         return $this->showTab(
@@ -544,7 +543,7 @@ class AbstractRecord extends AbstractBase
      *
      * @return AbstractRecordDriver
      */
-    protected function loadRecord($id = null)
+    protected function loadRecord()
     {
         // Only load the record if it has not already been loaded.  Note that
         // when determining record ID, we check both the route match (the most
@@ -556,13 +555,8 @@ class AbstractRecord extends AbstractBase
             if (isset($cacheContext)) {
                 $recordLoader->setCacheContext($cacheContext);
             }
-            if ($id == null) {
-                $id = $this->params()->fromRoute(
-                    'id', $this->params()->fromQuery('id')
-                );
-            }
             $this->driver = $recordLoader->load(
-                $id,
+                $this->params()->fromRoute('id', $this->params()->fromQuery('id')),
                 $this->searchClassId,
                 false
             );
