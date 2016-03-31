@@ -341,23 +341,52 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
      */
     protected function getOpenUrl($sear)
     {
+        $result = null;
         if (!empty($sear->LINKS->openurl)) {
             if (($url = $sear->LINKS->openurl) !== '') {
-                return (string)$url;
+                $result = (string)$url;
             }
         }
 
         $attr = $sear->GETIT->attributes();
         if (!empty($attr->GetIt2)) {
             if (($url = (string)$attr->GetIt2) !== '') {
-                return (string)$url;
+                $result = (string)$url;
             }
         }
 
         if (!empty($attr->GetIt1)) {
             if (($url = (string)$attr->GetIt1) !== '') {
-                return (string)$url;
+                $result = (string)$url;
             }
+        }
+
+        if ($result) {
+            // Remove blacklisted and empty URL parameters
+            $blacklist = ['rft_id' => 'info:oai/'];
+
+            if (strstr($result, '?') === false) {
+                return $result;
+            }
+
+            list($start, $end) = explode('?', $result);
+
+            $params = [];
+            foreach (explode('&', $end) as $param) {
+                if (strstr($param, '=') === false) {
+                    continue;
+                }
+                list($key, $val) = explode('=', $param, 2);
+                $val = trim($val);
+                if ($val == ''
+                    || isset($blacklist[$key]) && $blacklist[$key] == $val
+                ) {
+                    continue;
+                }
+                $params[$key] = $val;
+            }
+            $end = http_build_query($params);
+            return "$start?$end";
         }
 
         return false;
