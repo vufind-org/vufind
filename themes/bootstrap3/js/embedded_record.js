@@ -14,32 +14,35 @@ function saveEmbeddedStatusToCookie() {
   }
   Cookies.setItem(_EMBEDDED_COOKIE, $.unique(cookie).join(_EMBEDDED_DELIM), false, '/', false);
 }
+function addToEmbeddedCookie(id, tab) {
+  var realID = $('#'+id).find('.hiddenId').val();
+  _EMBEDDED_STATUS[realID] = tab;
+  saveEmbeddedStatusToCookie();
+}
+function removeFromEmbeddedCookie(id) {
+  var realID = $('#'+id).find('.hiddenId').val();
+  delete _EMBEDDED_STATUS[realID];
+  saveEmbeddedStatusToCookie();
+}
 function loadEmbeddedCookies() {
   var cookies = Cookies.getItem(_EMBEDDED_COOKIE);
   if (!cookies) return;
   var items = cookies.split(_EMBEDDED_DELIM);
+  var hiddenIds = $('.hiddenId');
   for (var i=0; i<items.length; i++) {
     var parts = items[i].split(':::');
+    console.log(parts);
     _EMBEDDED_STATUS[parts[0]] = parts[1] || null;
-    var mainNode = $('#'+parts[0]);
-    if (parts[1]) {
-      mainNode.find('.long-view').on('shown.bs.collapse', function(e) {
-        var link = mainNode.find('.getFull');
-        if (!link.hasClass('auto') || !$(e.target).hasClass('long-view')) return;
-        link.removeClass('auto');
-        mainNode.find(parts[1]).click();
-      });
+    var mainNode = null;
+    for (var j=0; j<hiddenIds.length; j++) {
+      if (hiddenIds[j].value == parts[0]) {
+        mainNode = $(hiddenIds[j]).closest('.result');
+        break;
+      }
     }
+    if (mainNode == null) continue;
     mainNode.find('.getFull').addClass('auto').click();
   }
-}
-function addToEmbeddedCookie(id, tab) {
-  _EMBEDDED_STATUS[id] = tab;
-  saveEmbeddedStatusToCookie();
-}
-function removeFromEmbeddedCookie(id) {
-  delete _EMBEDDED_STATUS[id];
-  saveEmbeddedStatusToCookie();
 }
 
 function showhideTabs(tabid) {
@@ -85,8 +88,9 @@ function ajaxFLLoadTab(tabid, reload) {
           $('#'+tabid+'-tab').html(VuFind.translate('collection_empty'));
         }
         // Auto click last tab
-        if ($record.find('.getFull').hasClass('auto')) {
-          $('#'+_EMBEDDED_STATUS[$record.attr('id')]).click();
+        if ($record.find('.getFull').hasClass('auto') && _EMBEDDED_STATUS[id]) {
+          $('#'+_EMBEDDED_STATUS[id]).click();
+          $record.find('.getFull').removeClass('auto')
         }
         if(typeof syn_get_widget === "function") {
           syn_get_widget();
@@ -173,11 +177,7 @@ function toggleDataView() {
             }
             // Bind tab clicks
             longNode.find('.search_tabs .recordTabs a').click(function() {
-              if (mainNode.find('.getFull').hasClass('auto')) {
-                mainNode.find('.getFull').removeClass('auto');
-              } else {
-                addToEmbeddedCookie(mainNode.attr('id'), $(this).attr('id'));
-              }
+              addToEmbeddedCookie(mainNode.attr('id'), $(this).attr('id'));
               return ajaxFLLoadTab(this.id);
             });
             longNode.find('.panel.noajax .accordion-toggle').click(function() {
@@ -196,6 +196,9 @@ function toggleDataView() {
       });
     } else {
       longNode.collapse("show");
+    }
+    if (!mainNode.find('.getFull').hasClass('auto')) {
+      addToEmbeddedCookie(mainNode.attr('id'), $(this).attr('id'));
     }
   } else {
     shortNode.collapse("show");
