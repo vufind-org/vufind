@@ -20,8 +20,7 @@ function addToEmbeddedCookie(id, tab) {
   saveEmbeddedStatusToCookie();
 }
 function removeFromEmbeddedCookie(id) {
-  var realID = $('#'+id).find('.hiddenId').val();
-  delete _EMBEDDED_STATUS[realID];
+  delete _EMBEDDED_STATUS[id];
   saveEmbeddedStatusToCookie();
 }
 function loadEmbeddedCookies() {
@@ -29,9 +28,9 @@ function loadEmbeddedCookies() {
   if (!cookies) return;
   var items = cookies.split(_EMBEDDED_DELIM);
   var hiddenIds = $('.hiddenId');
+  var doomed = [];
   for (var i=0; i<items.length; i++) {
     var parts = items[i].split(':::');
-    console.log(parts);
     _EMBEDDED_STATUS[parts[0]] = parts[1] || null;
     var mainNode = null;
     for (var j=0; j<hiddenIds.length; j++) {
@@ -40,8 +39,15 @@ function loadEmbeddedCookies() {
         break;
       }
     }
-    if (mainNode == null) continue;
+    if (mainNode == null) {
+      doomed.push(parts[0]);
+      continue;
+    };
     mainNode.find('.getFull').addClass('auto').click();
+  }
+  for (var i=0; i<doomed.length; i++) {
+    console.log('doomed', doomed[i]);
+    removeFromEmbeddedCookie(doomed[i]);
   }
 }
 
@@ -134,7 +140,7 @@ function toggleDataView() {
       if (!$(e.target).hasClass('long-view')) return;
       mainNode.removeClass('expanded').addClass('expanding');
       // Cookies
-      removeFromEmbeddedCookie(mainNode.attr('id'));
+      removeFromEmbeddedCookie(mainNode.find('.hiddenId').val());
     });
     longNode.on('hidden.bs.collapse', function(e) {
       if (!$(e.target).hasClass('long-view')) return;
