@@ -138,7 +138,6 @@
         </div>
       </div>
     <? if (!empty($holdings)): ?>
-      <? // N.B. The division to 3 + 2 cols is required for the table to be valid HTML ?>
       <div class="headers reservations-container col-sm-4 col-xs-5">
         <? if ($showSummary): ?>
           <? if (!empty($reservationsTotal)): ?>
@@ -152,7 +151,6 @@
       <div class="headers total-container col-sm-2 hidden-xs text-right">
         <?=$this->transEsc("shelf_location"); ?>
       </div>
-      <? if ($journal): ?><!-- <div class="headers"></div> --><? endif ?>
     <? endif; ?>
   </div>
 <? $holdingsGroup = 0; ?>
