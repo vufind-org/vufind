@@ -2,12 +2,16 @@
     // Set up convenience variables:
     $account = $this->auth()->getManager();
     $user = $account->isLoggedIn();
-    $holdings = $this->driver->getRealTimeHoldings();
     $openUrl = $this->openUrl($this->driver, 'holdings');
     $openUrlActive = $openUrl->isActive();
     // Account for replace_other_urls setting
     $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     $offlineMode = $this->ils()->getOfflineMode();
+    try {
+        $holdings = $this->driver->getRealTimeHoldings();
+    } catch (\VuFind\Exception\ILS $e) {
+        $offlineMode = 'ils-offline';
+    }
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>

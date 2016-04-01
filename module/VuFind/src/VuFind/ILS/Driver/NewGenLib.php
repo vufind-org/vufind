@@ -440,7 +440,6 @@ class NewGenLib extends AbstractBase
      */
     public function patronLogin($username, $password)
     {
-        $patron = [];
         $PatId = $username;
         $psswrd = $password;
         //SQL Statement
@@ -458,21 +457,21 @@ class NewGenLib extends AbstractBase
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
-        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-            if ($PatId != $row['patron_id'] || $psswrd != $row['user_password']) {
-                return null;
-            } else {
-                $patron = ["id" => $PatId,
-                    "firstname" => $row['fname'],
-                    'lastname' => $row['lname'],
-                    'cat_username' => $PatId,
-                    'cat_password' => $psswrd,
-                    'email' => $row['email'],
-                    'major' => null,
-                    'college' => null];
-            }
+        $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row || $PatId != $row['patron_id'] || $psswrd != $row['user_password']
+        ) {
+            return null;
         }
-        return $patron;
+        return [
+            "id" => $PatId,
+            "firstname" => $row['fname'],
+            'lastname' => $row['lname'],
+            'cat_username' => $PatId,
+            'cat_password' => $psswrd,
+            'email' => $row['email'],
+            'major' => null,
+            'college' => null
+        ];
     }
 
     /**

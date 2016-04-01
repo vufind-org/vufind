@@ -29,11 +29,13 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Forbidden as ForbiddenException,
+    VuFind\Exception\ILS as ILSException,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\MvcEvent,
     Zend\View\Model\ViewModel,
     ZfcRbac\Service\AuthorizationServiceAwareInterface,
     ZfcRbac\Service\AuthorizationServiceAwareTrait;
+
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -287,9 +289,10 @@ class AbstractBase extends AbstractActionController
     /**
      * Does the user have catalog credentials available?  Returns associative array
      * of patron data if so, otherwise forwards to appropriate login prompt and
-     * returns false.
+     * returns false. If there is an ILS exception, a flash message is added and
+     * a newly created ViewModel is returned.
      *
-     * @return bool|array
+     * @return bool|array|ViewModel
      */
     protected function catalogLogin()
     {
@@ -316,8 +319,13 @@ class AbstractBase extends AbstractActionController
                 $this->flashMessenger()->addMessage('Invalid Patron Login', 'error');
             }
         } else {
-            // If no credentials were provided, try the stored values:
-            $patron = $ilsAuth->storedCatalogLogin();
+            try {
+                // If no credentials were provided, try the stored values:
+                $patron = $ilsAuth->storedCatalogLogin();
+            } catch (ILSException $e) {
+                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+                return $this->createViewModel();
+            }
         }
 
         // If catalog login failed, send the user to the right page:

@@ -167,7 +167,7 @@ class Voyager extends AbstractBase
             $this->error(
                 "PDO Connection failed ($this->dbName): " . $e->getMessage()
             );
-            throw $e;
+            throw new ILSException($e->getMessage());
         }
 
         $this->useHoldingsSortGroups

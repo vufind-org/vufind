@@ -92,13 +92,9 @@ class ILSAuthenticator
             if (isset($this->ilsAccount[$user->cat_username])) {
                 return $this->ilsAccount[$user->cat_username];
             }
-            try {
-                $patron = $this->catalog->patronLogin(
-                    $user->cat_username, $user->getCatPassword()
-                );
-            } catch (ILSException $e) {
-                $patron = null;
-            }
+            $patron = $this->catalog->patronLogin(
+                $user->cat_username, $user->getCatPassword()
+            );
             if (empty($patron)) {
                 // Problem logging in -- clear user credentials so they can be
                 // prompted again; perhaps their password has changed in the

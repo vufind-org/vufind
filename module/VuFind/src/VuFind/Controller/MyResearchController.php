@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException,
+    VuFind\Exception\ILS as ILSException,
     VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
@@ -1069,7 +1070,8 @@ class MyResearchController extends AbstractBase
      */
     public function checkedoutAction()
     {
-        // Stop now if the user does not have valid catalog credentials available:
+        // Stop now if the user does not have valid catalog credentials
+        // available:
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
