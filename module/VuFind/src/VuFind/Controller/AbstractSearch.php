@@ -344,8 +344,18 @@ class AbstractSearch extends AbstractBase
      */
     protected function processJumpTo($results)
     {
+        // Jump to only result, if configured
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
+        if (isset($config->General->jump_to_single_search_result)
+            && $config->General->jump_to_single_search_result
+            && $results->getResultTotal() == 1
+        ) {
+            $jumpto = 1;
+        } else {
+            $jumpto = null;
+        }
         // Missing/invalid parameter?  Ignore it:
-        $jumpto = $this->params()->fromQuery('jumpto');
+        $jumpto = $this->params()->fromQuery('jumpto', $jumpto);
         if (empty($jumpto) || !is_numeric($jumpto)) {
             return false;
         }
