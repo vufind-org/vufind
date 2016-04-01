@@ -85,7 +85,7 @@ indexes = "868az"
 ; Default is any. 
 ;order_formats = 'am:jm'
 ; Extra texts for the holdings display. These are run through translation, may 
-; contain HTML and {{recordId}} may be used as a placeholder for the BIB ID.
+; contain HTML and %%recordId%% may be used as a placeholder for the BIB ID.
 ;extra_texts[] = fennica_viola_access_rights_html 
 
 ; Status rankings can be used to either promote or demote certain item statuses when

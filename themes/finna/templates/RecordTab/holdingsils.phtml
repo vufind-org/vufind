@@ -222,7 +222,7 @@
       <div class="holdings-container-heading row">
         <div class="col-xs-12">
           <? foreach ($holdingsConfig['extra_texts'] as $extraText): ?>
-            <div class="holdings-extra-text"><?=$this->translate($extraText, ['{{recordId}}' => $this->driver->getUniqueId()])?></div>
+            <div class="holdings-extra-text"><?=$this->translate($extraText, ['%%recordId%%' => $this->driver->getUniqueId()])?></div>
           <? endforeach; ?>
         </div>
       </div>
