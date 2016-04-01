@@ -10,9 +10,16 @@
     float: left;
     padding-right: 1rem;
   }
+  .media,
+  .media-body { overflow: visible; }
   .media {
     margin-top: 0;
     margin-bottom: 1rem;
+    &::after {
+      display: table;
+      clear: both;
+      content: '';
+    }
   }
   .media-left {
     box-sizing: initial;
