@@ -51,7 +51,8 @@ class ErrorController extends \VuFind\Controller\ErrorController
             $router = $event->getRouter();
             if ($router) {
                 $routeMatch = $router->match($this->getRequest());
-                if ($routeMatch->getParam('controller') == 'AdminApi') {
+                if (strcasecmp($routeMatch->getParam('controller'), 'adminapi') == 0
+                ) {
                     return $this->forward()->dispatch(
                         $routeMatch->getParam('controller'),
                         $routeMatch->getParams()
