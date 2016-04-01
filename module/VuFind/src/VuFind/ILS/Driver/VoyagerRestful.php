@@ -590,7 +590,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         if ("driver" == $mode && "auto" == $holdType) {
             $itemID = isset($data['item_id']) ? $data['item_id'] : false;
             $result = $this->determineHoldType($patron['id'], $id, $itemID);
-            if (!$result || $result == 'block') {
+            if (!$result) {
                 return false;
             }
         }
@@ -858,7 +858,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             // First get hold information for the list of items Voyager
             // thinks are holdable
             $request = $this->determineHoldType($patron['id'], $bibId);
-            if ($request != 'hold' && $request != 'recall') {
+            if (!$request) {
                 return false;
             }
 
@@ -1577,11 +1577,6 @@ EOT;
             return false;
         }
 
-        // Check for account Blocks
-        if ($this->checkAccountBlocks($patronId)) {
-            return "block";
-        }
-
         // Check Recalls First
         if ($this->recallsEnabled) {
             $recall = $this->checkItemRequests($patronId, "recall", $bibId, $itemId);
@@ -1839,7 +1834,7 @@ EOT;
         // Let's determine Hold Type now
         if ($type == "auto") {
             $type = $this->determineHoldType($patron['id'], $bibId, $itemId);
-            if (!$type || $type == "block") {
+            if (!$type) {
                 return $this->holdError("hold_error_blocked");
             }
         }
