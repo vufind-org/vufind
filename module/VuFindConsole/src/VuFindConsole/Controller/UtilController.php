@@ -708,7 +708,9 @@ class UtilController extends AbstractBase
             );
             return $this->getFailureResponse();
         }
-        list($oldhash, $oldkey) = explode(':', $argv[0]);
+        list($oldhash, $oldkey) = $argv[0] == 'none'
+            ? ['none', null]
+            : explode(':', $argv[0]);
         list($newhash, $newkey) = explode(':', $argv[1]);
 
         $userTable = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
