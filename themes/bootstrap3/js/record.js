@@ -9,6 +9,7 @@ function checkRequestIsValid(element, requestType) {
   vars['id'] = recordId;
 
   var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
+  $(element).find('i.fa').removeClass('fa-flag').addClass('fa-spinner fa-spin');
   $.ajax({
     dataType: 'json',
     cache: false,
@@ -16,7 +17,7 @@ function checkRequestIsValid(element, requestType) {
   })
   .done(function(response) {
     if (response.data.status) {
-      $(element).removeClass('disabled')
+      $(element)
         .attr('title', response.data.msg)
         .html('<i class="fa fa-flag"></i>&nbsp;'+response.data.msg);
     } else {
