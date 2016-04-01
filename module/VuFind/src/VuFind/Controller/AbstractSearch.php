@@ -345,9 +345,9 @@ class AbstractSearch extends AbstractBase
     protected function processJumpTo($results)
     {
         // Jump to only result, if configured
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
-        if (isset($config->General->jump_to_single_search_result)
-            && $config->General->jump_to_single_search_result
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (isset($config->Record->jump_to_single_search_result)
+            && $config->Record->jump_to_single_search_result
             && $results->getResultTotal() == 1
         ) {
             $jumpto = 1;
