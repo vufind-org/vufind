@@ -36,7 +36,6 @@ use VuFind\Exception\Forbidden as ForbiddenException,
     ZfcRbac\Service\AuthorizationServiceAwareInterface,
     ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
-
 /**
  * VuFind controller base class (defines some methods that can be shared by other
  * controllers).
