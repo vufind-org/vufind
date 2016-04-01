@@ -27,8 +27,6 @@
  */
 namespace Finna\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-
 /**
  * Error Controller
  *
