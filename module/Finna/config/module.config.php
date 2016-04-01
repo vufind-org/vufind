@@ -140,6 +140,7 @@ $config = [
             'comments' => 'Finna\Controller\CommentsController',
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
+            'error' => 'Finna\Controller\ErrorController',
             'feedback' => 'Finna\Controller\FeedbackController',
             'librarycards' => 'Finna\Controller\LibraryCardsController',
             'locationService' => 'Finna\Controller\LocationServiceController',
