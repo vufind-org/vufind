@@ -618,10 +618,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        if (!isset($this->config['StorageRetrievalRequests'])) {
-            return false;
-        }
-        if ($this->checkAccountBlocks($patron['id'])) {
+        if (!isset($this->config['StorageRetrievalRequests'])
+            || $this->checkAccountBlocks($patron['id'])
+        ) {
             return false;
         }
 
@@ -629,13 +628,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $itemID = ($level != 'title' && isset($data['item_id']))
             ? $data['item_id']
             : false;
-        $result = $this->checkItemRequests(
-            $patron['id'], 'callslip', $id, $itemID
-        );
-        if (!$result || $result == 'block') {
-            return $result;
-        }
-        return true;
+        return $this->checkItemRequests($patron['id'], 'callslip', $id, $itemID);
     }
 
     /**
@@ -1176,6 +1169,28 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
+     * Given the appropriate portion of the blocks API response, extract a list
+     * of block reasons that VuFind is not configured to ignore.
+     *
+     * @param \SimpleXMLElement $borrowBlocks borrowingBlock section of XML response
+     *
+     * @return array
+     */
+    protected function extractBlockReasons($borrowBlocks)
+    {
+        $whitelistConfig = isset($this->config['Patron']['ignoredBlockCodes'])
+            ? $this->config['Patron']['ignoredBlockCodes'] : '';
+        $whitelist = array_map('trim', explode(',', $whitelistConfig));
+        $blockReason = [];
+        foreach ($borrowBlocks as $borrowBlock) {
+            if (!in_array((string)$borrowBlock->blockCode, $whitelist)) {
+                $blockReason[] = (string)$borrowBlock->blockReason;
+            }
+        }
+        return $blockReason;
+    }
+
+    /**
      * Check Account Blocks
      *
      * Checks if a user has any blocks against their account which may prevent them
@@ -1203,21 +1218,16 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 "view" => "full"
             ];
 
-            $blockReason = [];
-
             $blocks = $this->makeRequest($hierarchy, $params);
-            if ($blocks) {
-                $node = "reply-text";
-                $reply = (string)$blocks->$node;
-
-                // Valid Response
-                if ($reply == "ok" && isset($blocks->blocks)) {
-                    foreach ($blocks->blocks->institution->borrowingBlock
-                        as $borrowBlock
-                    ) {
-                        $blockReason[] = (string)$borrowBlock->blockReason;
-                    }
-                }
+            if ($blocks
+                && (string)$blocks->{'reply-text'} == "ok"
+                && isset($blocks->blocks->institution->borrowingBlock)
+            ) {
+                $blockReason = $this->extractBlockReasons(
+                    $blocks->blocks->institution->borrowingBlock
+                );
+            } else {
+                $blockReason = [];
             }
             $this->putCachedData($cacheId, $blockReason);
         }
@@ -1822,7 +1832,7 @@ EOT;
         $pickUpLocation = !empty($holdDetails['pickUpLocation'])
             ? $holdDetails['pickUpLocation'] : $this->defaultPickUpLocation;
         $itemId = isset($holdDetails['item_id']) ? $holdDetails['item_id'] : false;
-        $comment = $holdDetails['comment'];
+        $comment = isset($holdDetails['comment']) ? $holdDetails['comment'] : '';
         $bibId = $holdDetails['id'];
 
         // Request was initiated before patron was logged in -

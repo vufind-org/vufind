@@ -480,18 +480,6 @@ class Factory
     }
 
     /**
-     * Construct the on-demand session container factory.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Session\OnDemandContainerFactory
-     */
-    public static function getOnDemandContainerFactory(ServiceManager $sm)
-    {
-        return new \VuFind\Session\OnDemandContainerFactory($sm);
-    }
-
-    /**
      * Construct the ProxyManager configuration.
      *
      * @param ServiceManager $sm Service manager.

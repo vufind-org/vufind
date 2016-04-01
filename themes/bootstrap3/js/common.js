@@ -6,7 +6,18 @@ window.console = window.console || {log: function () {}};
 var VuFind = (function() {
   var defaultSearchBackend = null;
   var path = null;
+  var _submodules = [];
   var _translations = {};
+
+  var register = function(name, module) {
+    _submodules.push(name);
+    this[name] = 'function' == typeof module ? module() : module;
+  };
+  var init = function() {
+    for (var i=0; i<_submodules.length; i++) {
+      this[_submodules[i]].init();
+    }
+  };
 
   var addTranslations = function(s) {
     for (var i in s) {
@@ -23,6 +34,8 @@ var VuFind = (function() {
     path: path,
 
     addTranslations: addTranslations,
+    init: init,
+    register: register,
     translate: translate
   };
 })();
@@ -138,39 +151,6 @@ function setupOffcanvas() {
   }
 }
 
-function setupBacklinks() {
-  // Highlight previous links, grey out following
-  $('.backlink')
-    .mouseover(function() {
-      // Underline back
-      var t = $(this);
-      do {
-        t.css({'text-decoration':'underline'});
-        t = t.prev();
-      } while(t.length > 0);
-      // Mute ahead
-      t = $(this).next();
-      do {
-        t.css({'color':'#999'});
-        t = t.next();
-      } while(t.length > 0);
-    })
-    .mouseout(function() {
-      // Underline back
-      var t = $(this);
-      do {
-        t.css({'text-decoration':'none'});
-        t = t.prev();
-      } while(t.length > 0);
-      // Mute ahead
-      t = $(this).next();
-      do {
-        t.css({'color':''});
-        t = t.next();
-      } while(t.length > 0);
-    });
-}
-
 function setupAutocomplete() {
   // Search autocomplete
   $('.autocomplete').each(function(i, op) {
@@ -221,7 +201,7 @@ function setupAutocomplete() {
  * @returns {undefined}
  */
 function keyboardShortcuts() {
-    var $searchform = $('#searchForm_lookfor');
+    var $searchform = $('.searchForm_lookfor');
     if ($('.pager').length > 0) {
         $(window).keydown(function(e) {
           if (!$searchform.is(':focus')) {
@@ -259,10 +239,10 @@ function keyboardShortcuts() {
 }
 
 $(document).ready(function() {
+  // Start up all of our submodules
+  VuFind.init();
   // Setup search autocomplete
   setupAutocomplete();
-  // Setup highlighting of backlinks
-  setupBacklinks();
   // Off canvas
   setupOffcanvas();
   // Keyboard shortcuts in detail view

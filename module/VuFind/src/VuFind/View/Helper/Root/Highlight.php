@@ -59,11 +59,15 @@ class Highlight extends AbstractHelper
      *
      * @param string $haystack String to highlight
      * @param mixed  $needle   Array of words to highlight (null for none)
+     * @param bool   $clear    Should we dehighlight (true) rather than highlight
+     * (false)?
+     * @param bool   $escape   Should we HTML encode the results?
      *
      * @return string          Highlighted, HTML encoded string
      */
-    public function __invoke($haystack, $needle = null)
-    {
+    public function __invoke($haystack, $needle = null, $clear = false,
+        $escape = true
+    ) {
         // Normalize value to an array so we can loop through it; this saves us from
         // writing the highlighting code twice, once for arrays, once for non-arrays.
         // Also make sure our generated array is empty if needle itself is empty --
@@ -90,8 +94,8 @@ class Highlight extends AbstractHelper
         // URL encode the string, then put in the highlight spans:
         $haystack = str_replace(
             ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
-            [$this->startTag, $this->endTag],
-            htmlspecialchars($haystack)
+            $clear ? '' : [$this->startTag, $this->endTag],
+            $escape ? htmlspecialchars($haystack) : $haystack
         );
 
         return $haystack;

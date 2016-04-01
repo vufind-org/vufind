@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2012.
+ * Copyright (C) The National Library of Finland 2012-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -65,21 +65,20 @@ class MultiBackend extends AbstractBase
      * @var string
      */
     protected $defaultDriver;
+    
+    /**
+     * The path to the driver configurations relative to the config path
+     * 
+     * @var string
+     */
+    protected $driversConfigPath;
 
     /**
-     * The array of cached pre-instantiated drivers
+     * The array of cached drivers
      *
      * @var object[]
      */
-    protected $cache = [];
-
-    /**
-     * The array of booleans letting us know if a
-     * driver in the cache has been initialized.
-     *
-     * @var boolean[]
-     */
-    protected $isInitialized = [];
+    protected $driverCache = [];
 
     /**
      * The array of driver configuration options.
@@ -144,6 +143,10 @@ class MultiBackend extends AbstractBase
         $this->drivers = $this->config['Drivers'];
         $this->defaultDriver = isset($this->config['General']['default_driver'])
             ? $this->config['General']['default_driver']
+            : null;
+        $this->driversConfigPath
+            = isset($this->config['General']['drivers_config_path'])
+            ? $this->config['General']['drivers_config_path']
             : null;
     }
 
@@ -1312,83 +1315,40 @@ class MultiBackend extends AbstractBase
             }
         }
 
-        if (!isset($this->isInitialized[$source])
-            || !$this->isInitialized[$source]
-        ) {
-            $driverInst = null;
-
-            // And we don't have a copy in our cache...
-            if (!isset($this->cache[$source])) {
-                // Get an uninitialized copy
-                $driverInst = $this->getUninitializedDriver($source);
-            } else {
-                // Otherwise, use the uninitialized cached copy
-                $driverInst = $this->cache[$source];
-            }
-
-            // If we have a driver, initialize it.  That version has already
-            // been cached.
-            if ($driverInst) {
-                $this->initializeDriver($driverInst, $source);
-            } else {
+        // Check for a cached driver
+        if (!array_key_exists($source, $this->driverCache)) {
+            // Create the driver
+            $this->driverCache[$source] = $this->createDriver($source);
+            if (null === $this->driverCache[$source]) {
                 $this->debug("Could not initialize driver for source '$source'");
                 return null;
             }
         }
-        return $this->cache[$source];
+        return $this->driverCache[$source];
     }
 
     /**
-     * Find the correct driver for the correct configuration file
-     * for the given source.  For performance reasons, we do not
-     * want to initialize the driver yet if it hasn't been already.
+     * Create a driver for the given source.
      *
-     * @param string $source the source title for the driver.
+     * @param string $source Source id for the driver.
      *
-     * @return mixed On success an uninitialized driver object, otherwise null.
+     * @return mixed On success a driver object, otherwise null.
      */
-    protected function getUninitializedDriver($source)
+    protected function createDriver($source)
     {
-        // We don't really care if it's initialized here.  If it is, then there's
-        // still no added overhead of returning an initialized driver.
-        if (isset($this->cache[$source])) {
-            return $this->cache[$source];
+        if (!isset($this->drivers[$source])) {
+            return null;
         }
-
-        if (isset($this->drivers[$source])) {
-            $driver = $this->drivers[$source];
-            $config = $this->getDriverConfig($source);
-            if (!$config) {
-                $this->error("No configuration found for source '$source'");
-                return null;
-            }
-            $driverInst = clone($this->getServiceLocator()->get($driver));
-            $driverInst->setConfig($config);
-            $this->cache[$source] = $driverInst;
-            $this->isInitialized[$source] = false;
-            return $driverInst;
+        $driver = $this->drivers[$source];
+        $config = $this->getDriverConfig($source);
+        if (!$config) {
+            $this->error("No configuration found for source '$source'");
+            return null;
         }
-
-        return null;
-    }
-
-    /**
-     * Initialize an uninitialized driver.
-     *
-     * @param object $driver The driver object to be initialized
-     * @param string $source The source related to the driver for caching purposes.
-     *
-     * @return void
-     */
-    protected function initializeDriver($driver, $source)
-    {
-        if (!isset($this->isInitialized[$source])
-            || !$this->isInitialized[$source]
-        ) {
-            $driver->init();
-            $this->isInitialized[$source] = true;
-            $this->cache[$source] = $driver;
-        }
+        $driverInst = clone($this->getServiceLocator()->get($driver));
+        $driverInst->setConfig($config);
+        $driverInst->init();
+        return $driverInst;
     }
 
     /**
@@ -1405,7 +1365,11 @@ class MultiBackend extends AbstractBase
     {
         // Determine config file name based on class name:
         try {
-            $config = $this->configLoader->get($source);
+            $path = empty($this->driversConfigPath)
+                ? $source
+                : $this->driversConfigPath . '/' . $source;
+
+            $config = $this->configLoader->get($path);
         } catch (\Zend\Config\Exception\RuntimeException $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:

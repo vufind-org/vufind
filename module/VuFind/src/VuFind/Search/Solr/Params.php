@@ -104,6 +104,9 @@ class Params extends \VuFind\Search\Base\Params
         ) {
             $this->setFacetLimit($config->Results_Settings->facet_limit);
         }
+        if (isset($config->LegacyFields)) {
+            $this->facetAliases = $config->LegacyFields->toArray();
+        }
         if (isset($config->Results_Settings->facet_limit_by_field)) {
             foreach ($config->Results_Settings->facet_limit_by_field as $k => $v) {
                 $this->facetLimitByField[$k] = $v;
@@ -360,6 +363,7 @@ class Params extends \VuFind\Search\Base\Params
             $this->initAdvancedFacets();
             $this->initBasicFacets();
         }
+        $this->initCheckboxFacets();
     }
 
     /**
@@ -436,7 +440,8 @@ class Params extends \VuFind\Search\Base\Params
         static $table = [
             'year' => ['field' => 'publishDateSort', 'order' => 'desc'],
             'publishDateSort' => ['field' => 'publishDateSort', 'order' => 'desc'],
-            'author' => ['field' => 'authorStr', 'order' => 'asc'],
+            'author' => ['field' => 'author_sort', 'order' => 'asc'],
+            'authorStr' => ['field' => 'author_sort', 'order' => 'asc'],
             'title' => ['field' => 'title_sort', 'order' => 'asc'],
             'relevance' => ['field' => 'score', 'order' => 'desc'],
             'callnumber' => ['field' => 'callnumber-sort', 'order' => 'asc'],

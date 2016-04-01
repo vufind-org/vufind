@@ -15,8 +15,12 @@
   <div class="result source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
     <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
-    <? $listAuthor = $this->driver->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
-      <p><?=$this->transEsc('by')?> <?=$this->escapeHtml($listAuthor)?></p>
+    <? $listAuthors = $this->driver->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
+      <p><?=$this->transEsc('by')?>
+        <? $authorCount = count($listAuthors); foreach ($listAuthors as $i => $listAuthor): ?>
+            <?=$this->escapeHtml($listAuthor) . ($i + 1 < $authorCount ? ';' : '') ?>
+        <? endforeach; ?>
+      </p>
     <? endif; ?>
     <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
         $list_id, // get tags for all lists if no single list is selected
