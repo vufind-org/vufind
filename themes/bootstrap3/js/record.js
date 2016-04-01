@@ -152,7 +152,7 @@ function ajaxLoadTab(tabid) {
   // we're flagged to skip AJAX for this tab, just return true and let the
   // browser handle it.
   var urlroot = document.URL.match(new RegExp('/[^/]+/'+id));
-  if(!urlroot || document.getElementById(tabid).parentNode.className.indexOf('noajax') > -1) {
+  if(!urlroot) {
     return true;
   }
   $.ajax({
@@ -221,9 +221,12 @@ $(document).ready(function(){
   registerTabEvents();
 
   $('ul.recordTabs a').click(function (e) {
-    if($(this).parents('li.active').length > 0) {
+    // Follow active and noajax tabs
+    var $li = $(this).parent();
+    if($li.hasClass('active') || $li.hasClass('noajax')) {
       return true;
     }
+    // Load tab
     var tabid = $(this).attr('id').toLowerCase();
     if($('#'+tabid+'-tab').length > 0) {
       $('#record-tabs .tab-pane.active').removeClass('active');
