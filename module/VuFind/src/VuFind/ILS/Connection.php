@@ -232,8 +232,10 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             // Send back the settings:
             return $this->$checkMethod($functionConfig, $params);
         } catch (ILSException $e) {
-            $this->logError("checkFunction($function) with params: "
-                . print_r($params, true) . ' failed: ' . $e->getMessage());
+            $this->logError(
+                "checkFunction($function) with params: " . print_r($params, true)
+                . ' failed: ' . $e->getMessage()
+            );
             return false;
         }
     }
@@ -742,8 +744,10 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 return true;
             }
         } catch (ILSException $e) {
-            $this->logError("checkCapability($method) with params: "
-                . print_r($params, true) . ' failed: ' . $e->getMessage());
+            $this->logError(
+                "checkCapability($method) with params: " . print_r($params, true)
+                . ' failed: ' . $e->getMessage()
+            );
             if ($throw) {
                 throw $e;
             }
