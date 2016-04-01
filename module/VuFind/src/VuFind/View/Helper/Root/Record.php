@@ -361,7 +361,7 @@ class Record extends AbstractHelper
             'link-' . $type . '.phtml', ['lookfor' => $lookfor]
         );
         $link .= $this->getView()->plugin('searchTabs')
-            ->getCurrentHiddenFilterParams();
+            ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
         return $link;
     }
 

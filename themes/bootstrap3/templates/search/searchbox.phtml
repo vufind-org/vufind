@@ -24,7 +24,7 @@
             $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId);
         }
     }
-    $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams('?');
+    $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
 ?>
 <? if ($this->searchType == 'advanced'): ?>
   <div class="searchForm navbar-form navbar-left flip">
