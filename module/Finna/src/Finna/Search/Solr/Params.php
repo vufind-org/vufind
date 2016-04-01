@@ -246,10 +246,15 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function initFromRequest($request)
     {
-        // Check for advanced search with missing join parameter from VuFind1:
+        // Check for advanced search with missing join or bool parameter from
+        // VuFind1:
         if (null === $request->get('lookfor')) {
             if (null === $request->get('join')) {
                 $request->set('join', 'AND');
+            }
+            $bool0 = array_filter($request->get('bool0'));
+            if (empty($bool0)) {
+                $request->set('bool0', ['AND']);
             }
         }
 
