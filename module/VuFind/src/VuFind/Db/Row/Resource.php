@@ -166,7 +166,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         }
 
         // Try to find an author; if not available, just leave the default null:
-        $this->title = mb_substr(
+        $author = mb_substr(
             $driver->tryMethod('getPrimaryAuthor'),
             0,
             255,
