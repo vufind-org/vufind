@@ -102,7 +102,8 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'util optimize' => 'Solr optimize tool',
             'util sitemap' => 'XML sitemap generator',
             'util switch_db_hash' => 'Switch the hashing algorithm in the database '
-                . 'and config. Expects new algorithm and key as parameters.',
+                . 'and config. Expects new algorithm and (optional) new key as'
+                . ' parameters.',
             'util suppressed' => 'Remove ILS-suppressed records from Solr',
         ];
     }

@@ -703,13 +703,16 @@ class UtilController extends AbstractBase
      */
     public function switchdbhashAction()
     {
+        // Validate command line arguments:
         $argv = $this->consoleOpts->getRemainingArgs();
-        if (count($argv) < 2) {
+        if (count($argv) < 1) {
             Console::writeLine(
-                'Expected parameters: newmethod newkey'
+                'Expected parameters: newmethod [newkey]'
             );
             return $this->getFailureResponse();
         }
+
+        // Pull existing encryption settings from the configuration:
         $config = $this->getConfig();
         if (!isset($config->Authentication->encrypt_ils_password)
             || !isset($config->Authentication->ils_encryption_key)
@@ -722,8 +725,25 @@ class UtilController extends AbstractBase
                 ? $config->Authentication->ils_encryption_algo : 'blowfish';
             $oldkey = $config->Authentication->ils_encryption_key;
         }
-        list($newhash, $newkey) = $argv;
 
+        // Pull new encryption settings from arguments:
+        $newhash = $argv[0];
+        $newkey = isset($argv[1]) ? $argv[1] : $oldkey;
+
+        // No key specified AND no key on file = fatal error:
+        if ($newkey === null) {
+            Console::writeLine('Please specify a key as the second parameter.');
+            return $this->getFailureResponse();
+        }
+
+        // If no changes were requested, abort early:
+        if ($oldkey == $newkey && $oldhash == $newhash) {
+            Console::writeLine('No changes requested -- no action needed.');
+            return $this->getSuccessResponse();
+        }
+
+        // Initialize Mcrypt first, so we can catch any illegal algorithms before
+        // making any changes:
         try {
             if ($oldhash != 'none') {
                 $oldCrypt = new Mcrypt(['algorithm' => $oldhash]);
@@ -734,6 +754,8 @@ class UtilController extends AbstractBase
             return $this->getFailureResponse();
         }
 
+        // Next update the config file, so if we are unable to write the file,
+        // we don't go ahead and make unwanted changes to the database:
         $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
         Console::writeLine("\tUpdating $configPath...");
         $writer = new ConfigWriter($configPath);
@@ -745,6 +767,7 @@ class UtilController extends AbstractBase
             return $this->getFailureResponse();
         }
 
+        // Now do the database rewrite:
         $userTable = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
             ->get('User');
         $users = $userTable->select(
@@ -768,6 +791,8 @@ class UtilController extends AbstractBase
             $row['cat_pass_enc'] = $newcipher->encrypt($pass);
             $row->save();
         }
+
+        // If we got this far, all went well!
         Console::writeLine("\tFinished.");
         return $this->getSuccessResponse();
     }
