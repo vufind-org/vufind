@@ -122,7 +122,7 @@ class Search extends Gateway
     public function getSearches($sid, $uid = null)
     {
         $callback = function ($select) use ($sid, $uid) {
-            $select->where->equalTo('session_id', $sid);
+            $select->where->equalTo('session_id', $sid)->and->equalTo('saved', 0);
             if ($uid != null) {
                 $select->where->OR->equalTo('user_id', $uid);
             }
@@ -223,7 +223,7 @@ class Search extends Gateway
                 ->equalTo('checksum', $checksum)
                 ->and
                 ->nest
-                ->equalTo('session_id', $sessionId);
+                ->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
             if (!empty($userId)) {
                 $nest->or->equalTo('user_id', $userId);
             }

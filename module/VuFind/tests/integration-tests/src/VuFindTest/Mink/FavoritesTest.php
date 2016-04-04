@@ -159,7 +159,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->findCss($page, '.resultItemLine1 a')->click();
         $this->assertEquals($recordURL, $this->stripHash($session->getCurrentUrl()));
-        $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
+        $this->findCss($page, '.logoutOptions a.logout')->click();
     }
 
     /**
@@ -306,7 +306,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.resultItemLine1 a')->click();
         $this->snooze();
         $this->assertEquals($recordURL, $session->getCurrentUrl());
-        $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
+        $this->findCss($page, '.logoutOptions a.logout')->click();
     }
 
     /**

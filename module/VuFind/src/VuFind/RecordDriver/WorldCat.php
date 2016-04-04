@@ -183,13 +183,13 @@ class WorldCat extends SolrMarc
     }
 
     /**
-     * Get the main author of the record.
+     * Get the main authors of the record.
      *
-     * @return string
+     * @return array
      */
-    public function getPrimaryAuthor()
+    public function getPrimaryAuthors()
     {
-        return $this->getFirstFieldValue('100', ['a']);
+        return [$this->getFirstFieldValue('100', ['a'])];
     }
 
     /**
@@ -279,7 +279,7 @@ class WorldCat extends SolrMarc
     }
 
     /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthor()).
+     * Get an array of all secondary authors (complementing getPrimaryAuthors()).
      *
      * @return array
      */
