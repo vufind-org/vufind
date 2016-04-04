@@ -83,20 +83,6 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test invalid translation string
-     *
-     * @return void
-     *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Unexpected value sent to translator!
-     */
-    public function testTranslateWithDoubleTextDomainArray()
-    {
-        $translate = new Translate();
-        $translate->__invoke('a::b::c');
-    }
-
-    /**
      * Test translation with a loaded translator
      *
      * @return void

@@ -150,11 +150,25 @@
 
         <? if ($this->userlist()->getMode() !== 'disabled'): ?>
           <? /* Add to favorites */ ?>
-          <i class="fa fa-fw fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+          <i class="fa fa-fw fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
           <? /* Saved lists */ ?>
           <div class="savedLists alert alert-info hidden">
             <strong><?=$this->transEsc("Saved in")?>:</strong>
           </div>
+        <? endif; ?>
+
+        <? /* Hierarchy tree link */ ?>
+        <? $trees = $this->driver->tryMethod('getHierarchyTrees'); ?>
+        <? if (!empty($trees)): ?>
+          <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+            <div class="hierarchyTreeLink">
+              <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
+              <i class="fa fa-fw fa-sitemap"></i>
+              <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab')?>?hierarchy=<?=urlencode($hierarchyID)?>" data-lightbox-post="tab=hierarchytree">
+                <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
+              </a>
+            </div>
+          <? endforeach; ?>
         <? endif; ?>
 
         <? /* Hierarchy tree link */ ?>

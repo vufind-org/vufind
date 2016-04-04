@@ -130,7 +130,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze(); // wait for UI update
         $this->assertNull($page->find('css', '.comment.row'));
         // Logout
-        $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
+        $this->findCss($page, '.logoutOptions a.logout')->click();
     }
 
     /**
@@ -163,7 +163,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal #addtag_tag');
         $this->findCss($page, '.modal .close')->click();
         $this->snooze(); // wait for display to update
-        $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
+        $this->findCss($page, '.logoutOptions a.logout')->click();
         $this->snooze();
         // Login
         $page = $this->gotoRecord(); // redirects to search home???
@@ -203,7 +203,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         }
         $this->assertEquals(3, $sum);
         // Log out
-        $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
+        $this->findCss($page, '.logoutOptions a.logout')->click();
         $this->snooze(); // wait for UI update
 
         // Flat tags
@@ -231,7 +231,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         // Check selected == 0
         $this->assertNull($page->find('css', '.tagList .tag.selected'));
-        $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
+        $this->findCss($page, '.logoutOptions a.logout')->click();
     }
 
     /**
@@ -281,7 +281,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Check for confirmation message
         $this->findCss($page, '.modal .alert-success');
         // Logout
-        $this->findCss($page, '.logoutOptions a[title="Log Out"]')->click();
+        $this->findCss($page, '.logoutOptions a.logout')->click();
     }
 
     /**

@@ -612,8 +612,10 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             // doaj_xmloai:doaj.org/article:94935655971c4917aab4fcaeafeb67b9).
             // According to Ex Libris support we must use contains search without
             // quotes for the time being.
+            // Escaping the - character causes problems getting records like
+            // wj10.1111/j.1475-679X.2011.00421.x
             $qs[] = 'query=rid,contains,'
-                . urlencode(addcslashes($recordId, '":-()'));
+                . urlencode(addcslashes($recordId, '":()'));
             $qs[] = "institution=$inst_code";
             $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
             $qs[] = "indx=1";
@@ -649,7 +651,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     {
         // Callback function for formatting IDs:
         $formatIds = function ($id) {
-            return addcslashes($id, '":-()');
+            return addcslashes($id, '":()');
         };
 
         // Query String Parameters
