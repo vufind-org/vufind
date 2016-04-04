@@ -16,7 +16,7 @@
   <form class="form-horizontal" method="post" name="placeHold">
     <?=$this->flashmessages()?>
     <? if (in_array("comments", $this->extraHoldFields)): ?>
-      <div class="form-group">
+      <div class="form-group hold-comment">
         <label class="col-sm-3 control-label"><?=$this->transEsc("Comments")?>:</label>
         <div class="col-sm-9">
           <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
@@ -25,7 +25,7 @@
     <? endif; ?>
 
     <? if (in_array("requiredByDate", $this->extraHoldFields)): ?>
-      <div class="form-group">
+      <div class="form-group hold-required-by">
         <label class="col-sm-3 control-label"><?=$this->transEsc("hold_required_by")?>:</label>
         <div class="col-sm-9">
           <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="form-control"/>
@@ -34,12 +34,8 @@
       </div>
     <? endif; ?>
 
-    <? $showRequestGroups = in_array("requestGroup", $this->extraHoldFields)
-        && (empty($this->gatheredDetails['level'])
-            || $this->gatheredDetails['level'] != 'copy');
-    ?>
     <? if ($this->requestGroupNeeded): ?>
-      <div class="form-group">
+      <div class="form-group hold-request-group">
         <?
           if (isset($this->gatheredDetails['requestGroupId']) && $this->gatheredDetails['requestGroupId'] !== "") {
               $selected = $this->gatheredDetails['requestGroupId'];
@@ -57,7 +53,7 @@
           <? endif; ?>
           <? foreach ($this->requestGroups as $group): ?>
             <option value="<?=$this->escapeHtmlAttr($group['id'])?>"<?=($selected == $group['id']) ? ' selected="selected"' : ''?>>
-              <?=$this->escapeHtml($group['name'])?>
+              <?=$this->transEsc('request_group_' . $group['name'], null, $group['name'])?>
             </option>
           <? endforeach; ?>
           </select>
@@ -76,7 +72,7 @@
         }
       ?>
       <? if ($this->requestGroupNeeded): ?>
-        <div class="form-group">
+        <div class="form-group hold-pickup-location">
           <label id="pickUpLocationLabel" class="col-sm-3 control-label"><i></i> <?=$this->transEsc("pick_up_location")?>:
             <? if (in_array("requestGroup", $this->extraHoldFields)): ?>
               <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
@@ -92,19 +88,19 @@
             </select>
           </div>
         </div>
-      <? elseif (count($this->pickup) > 1): ?>
-        <div class="form-group">
+      <? elseif ($this->pickup): ?>
+        <div class="form-group hold-pickup-location">
           <label class="col-sm-3 control-label"><?=$this->transEsc("pick_up_location")?>:</label>
           <div class="col-sm-9">
             <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" class="form-control">
-            <? if ($selected === false): ?>
+            <? if ($selected === false && count($this->pickup) > 1): ?>
               <option value="" selected="selected">
                 <?=$this->transEsc('select_pickup_location')?>
               </option>
             <? endif; ?>
             <? foreach ($this->pickup as $lib): ?>
               <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
-                <?=$this->escapeHtml($lib['locationDisplay'])?>
+                <?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?>
               </option>
             <? endforeach; ?>
             </select>
