@@ -1,12 +1,9 @@
 <?
   $this->defaultTab = strtolower($this->defaultTab);
-
-  function escapeJSAttr($op) {
-    return preg_replace("/\W/", "_", $op);
-  }
+  $idSuffix = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
 ?>
-<div class="search_tabs record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="tabs_<?=escapeJSAttr($this->driver->getUniqueId())?>">
-  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=escapeJSAttr($this->driver->getUniqueId())?>" />
+<div class="search_tabs record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="tabs_<?=$idSuffix?>">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffix?>" />
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
   <?=$this->flashmessages()?>
 
@@ -15,7 +12,7 @@
     <? $coreMetadata = trim($this->record($this->driver)->getCoreMetadata()); ?>
     <? if (!empty($coreMetadata)): ?>
       <li<? if($this->defaultTab === 'information'): ?> class="active"<? endif; ?>>
-        <a id="information_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toggle="tab" data-target="#information_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab" class="noajax">
+        <a id="information_<?=$idSuffix?>" data-toggle="tab" data-target="#information_<?=$idSuffix?>-tab" class="noajax">
           <?=$this->translate('ajaxview_label_information') ?>
         </a>
       </li>
@@ -34,14 +31,14 @@
         if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
       ?>
       <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-        <a id="<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab"><?=$this->transEsc($desc)?></a>
+        <a id="<?=strtolower($tab)?>_<?=$idSuffix?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-tab"><?=$this->transEsc($desc)?></a>
       </li>
     <? endforeach; ?>
 
     <? $toolbar = trim($this->record($this->driver)->getToolbar()); ?>
     <? if (!empty($toolbar)): ?>
       <li<? if($this->defaultTab === 'tools'): ?> class="active"<? endif; ?>>
-        <a id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toggle="tab" data-target="#tools_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab" class="noajax">
+        <a id="tools_<?=$idSuffix?>" data-toggle="tab" data-target="#tools_<?=$idSuffix?>-tab" class="noajax">
         <?=$this->translate('ajaxview_label_tools') ?>
         </a>
       </li>
@@ -50,7 +47,7 @@
     <? $list = $this->related()->getList($this->driver); ?>
     <? if (!empty($list)): ?>
       <li<? if($this->defaultTab === 'related'): ?> class="active"<? endif; ?>>
-        <a id="related_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toggle="tab" data-target="#related_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab" class="noajax">
+        <a id="related_<?=$idSuffix?>" data-toggle="tab" data-target="#related_<?=$idSuffix?>-tab" class="noajax">
           <?=$this->transEsc("Related Items")?>
         </a>
       </li>
@@ -58,20 +55,20 @@
   </ul>
   <div class="tab-content">
     <? if (!empty($coreMetadata)): ?>
-      <div class="tab-pane<? if($this->defaultTab === 'information'): ?> active<? endif; ?>" id="information_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
+      <div class="tab-pane<? if($this->defaultTab === 'information'): ?> active<? endif; ?>" id="information_<?=$idSuffix?>-tab">
         <?=$coreMetadata ?>
       </div>
     <? endif; ?>
     <? foreach ($this->tabs as $tab => $obj): ?>
-      <div class="tab-pane<? if($this->defaultTab === strtolower($tab)): ?> active<? endif; ?>" id="<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab"></div>
+      <div class="tab-pane<? if($this->defaultTab === strtolower($tab)): ?> active<? endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffix?>-tab"></div>
     <? endforeach; ?>
     <? if (!empty($toolbar)): ?>
-      <div class="tab-pane<? if($this->defaultTab === 'tools'): ?> active<? endif; ?>" id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
+      <div class="tab-pane<? if($this->defaultTab === 'tools'): ?> active<? endif; ?>" id="tools_<?=$idSuffix?>-tab">
         <?=$toolbar ?>
       </div>
     <? endif; ?>
     <? if (!empty($list)): ?>
-      <div class="tab-pane<? if($this->defaultTab === 'related'): ?> active<? endif; ?>" id="related_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
+      <div class="tab-pane<? if($this->defaultTab === 'related'): ?> active<? endif; ?>" id="related_<?=$idSuffix?>-tab">
         <? foreach ($list as $current): ?>
           <?=$this->related()->render($current)?>
         <? endforeach; ?>

@@ -1,13 +1,10 @@
 <?
   $this->defaultTab = strtolower($this->defaultTab);
-
-  function escapeJSAttr($op) {
-    return preg_replace("/\W/", "_", $op);
-  }
+  $idSuffix = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
 ?>
 
-<div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
-  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=escapeJSAttr($this->driver->getUniqueId())?>" />
+<div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record_<?=$idSuffix?>">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffix?>" />
 
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
   <?=$this->flashmessages()?>
@@ -19,18 +16,18 @@
       </div>
     <? endif; ?>
 
-  <div class="panel-group" id="accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+  <div class="panel-group" id="accordion_<?=$idSuffix?>">
     <? $coreMetadata = $this->record($this->driver)->getCoreMetadata(); ?>
     <? if (!empty($coreMetadata)): ?>
       <div class="panel panel-default">
-        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-target="#title-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" style="cursor: pointer">
+        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#title-collapse_<?=$idSuffix?>" style="cursor: pointer">
           <h4 class="panel-title">
             <a class="accordion-toggle">
               <?=$this->translate('ajaxview_label_information') ?>
             </a>
           </h4>
         </div>
-        <div id="title-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse<? if($this->defaultTab === 'information'): ?> in<? endif; ?>">
+        <div id="title-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'information'): ?> in<? endif; ?>">
           <div class="panel-body">
             <?=$coreMetadata ?>
           </div>
@@ -41,14 +38,14 @@
     <? $toolbar = $this->record($this->driver)->getToolbar(); ?>
     <? if (!empty($toolbar)): ?>
       <div class="panel panel-default">
-        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-target="#tools-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" style="cursor: pointer">
+        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#tools-collapse_<?=$idSuffix?>" style="cursor: pointer">
           <h4 class="panel-title">
             <a class="accordion-toggle">
         <?=$this->translate('ajaxview_label_tools') ?>
             </a>
           </h4>
         </div>
-        <div id="tools-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse<? if($this->defaultTab === 'tools'): ?> in<? endif; ?>">
+        <div id="tools-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'tools'): ?> in<? endif; ?>">
           <div class="panel-body">
             <?=$toolbar ?>
           </div>
@@ -59,14 +56,14 @@
     <? $relatedList = $this->related()->getList($this->driver); ?>
     <? if ($relatedList != null ): ?>
       <div class="panel panel-default">
-        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-target="#related-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" style="cursor: pointer">
+        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#related-collapse_<?=$idSuffix?>" style="cursor: pointer">
           <h4 class="panel-title">
             <a class="accordion-toggle">
               <?=$this->transEsc("Related Items")?>
             </a>
           </h4>
         </div>
-        <div id="related-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse<? if($this->defaultTab === 'related'): ?> in<? endif; ?>">
+        <div id="related-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'related'): ?> in<? endif; ?>">
           <div class="panel-body">
             <? foreach ($relatedList as $current): ?>
               <?=$this->related()->render($current)?>
@@ -89,12 +86,12 @@
           if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
         ?>
         <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
-          <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-target="#<?=(strtolower($tab))?>-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" style="cursor: pointer">
+          <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#<?=(strtolower($tab))?>-collapse_<?=$idSuffix?>" style="cursor: pointer">
             <h4 class="panel-title">
               <a class="accordion-toggle" data-href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$desc ?></a>
             </h4>
           </div>
-          <div id="<?=(strtolower($tab))?>-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse<? if($active): ?> in<? endif; ?>">
+          <div id="<?=(strtolower($tab))?>-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($active): ?> in<? endif; ?>">
             <div class="panel-body">
               <?=$this->record($this->driver)->getTab($obj) ?>
             </div>
