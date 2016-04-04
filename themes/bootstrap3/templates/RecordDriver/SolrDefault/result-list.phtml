@@ -171,19 +171,6 @@
           <? endforeach; ?>
         <? endif; ?>
 
-        <? /* Hierarchy tree link */ ?>
-        <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
-          <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
-            <div class="hierarchyTreeLink">
-              <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-              <i class="fa fa-fw fa-sitemap"></i>
-              <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab')?>?hierarchy=<?=urlencode($hierarchyID)?>" data-lightbox-post="tab=hierarchytree">
-                <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
-              </a>
-            </div>
-          <? endforeach; ?>
-        <? endif; ?>
-
         <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
       </div>
     </div>
