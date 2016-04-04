@@ -314,11 +314,10 @@ class Params extends \VuFind\Search\Base\Params
      * Get a user-friendly string to describe the provided facet field.
      *
      * @param string $field Facet field name.
-     * @param string $value Facet value.
      *
      * @return string       Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null)
+    public function getFacetLabel($field)
     {
         //Also store Limiter/Search Mode IDs/Values in the config file
         $facetId = $field;
