@@ -380,6 +380,11 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $this->wwwuser = $this->config['Catalog']['wwwuser'];
             $this->wwwpasswd = $this->config['Catalog']['wwwpasswd'];
             $this->xserver_enabled = true;
+            if (isset($this->config['Catalog']['xport'])) {
+                $this->xport = $this->config['Catalog']['xport'];
+            } else {
+                $this->xport = 80;
+            }
         } else {
             $this->xserver_enabled = false;
         }
@@ -439,7 +444,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 'Call to doXRequest without X-Server configuration in Aleph.ini'
             );
         }
-        $url = "http://$this->host/X?op=$op";
+        $url = "http://$this->host:$this->xport/X?op=$op";
         $url = $this->appendQueryString($url, $params);
         if ($auth) {
             $url = $this->appendQueryString(
@@ -1341,6 +1346,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 ], true
             );
         } catch (\Exception $ex) {
+            if (strpos($ex->getMessage(), 'Error in Verification') !== false) {
+                return null;
+            }
             throw new ILSException($ex->getMessage());
         }
         $patron = [];
