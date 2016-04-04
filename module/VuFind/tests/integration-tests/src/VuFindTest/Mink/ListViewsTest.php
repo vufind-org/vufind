@@ -109,27 +109,59 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
 
         $page = $this->gotoRecord();
 
-        $this->findCss($page, '#tools_testdeweybrowse')->click();
-        $this->findCss($page, '#tools_testdeweybrowse-tab .save-record')->click();
+        // Click save inside the tools tab
+        $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a')->click();
+        $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-tab .save-record')->click();
+        // Make an account
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
         $this->findCss($page, '#save_list');
+        // Save to list
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+        $this->findCss($page, '#modal .close')->click();
+        $this->snooze();
+        // Check saved items status
+        $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-tab .savedLists ul');
+    }
+
+    /**
+     * Test that we can save a favorite from accordion mode.
+     *
+     * @return void
+     */
+    public function testFavoritesInAccordionMode()
+    {
+        // Change the theme:
+        $this->changeConfigs(
+            ['searches' => ['List' => ['view' => 'accordion']]]
+        );
+
+        $page = $this->gotoRecord();
+
+        // Click save inside the tools tab
+        $this->findCss($page, '[data-target="#tools-collapse_cd588d8723d65ca0ce9439e79755fa0a"]')->click();
+        $this->findCss($page, '#tools-collapse_cd588d8723d65ca0ce9439e79755fa0a .save-record')->click();
+        // Login
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
         // Make list
         $this->findCss($page, '#make-list')->click();
         $this->snooze();
-        // Empty
         $this->findCss($page, '#list_title')->setValue('Test List');
         $this->findCss($page, '#list_desc')->setValue('Just. THE BEST.');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
-        $this->assertEquals($this->findCss($page, '#save_list option[selected]')->getHtml(), 'Test List');
-        $this->findCss($page, '#add_mytags')->setValue('test1 test2 "test 3"');
+        // Save to list
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
-        // TODO: finish this test; as of this writing, there is no useful
-        // feedback provided about saved items in tabbed mode.
+        $this->findCss($page, '#modal .close')->click();
+        $this->snooze();
+        // Check saved items status
+        // Not visible, but still exists
+        $this->findCss($page, '#title-collapse_cd588d8723d65ca0ce9439e79755fa0a .savedLists ul');
     }
 
     /**
