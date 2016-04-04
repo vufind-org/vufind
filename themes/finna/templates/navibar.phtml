@@ -98,7 +98,7 @@
         </li>
         <li role="menuitem" class="logoutOptions<? if (!$user): ?> hidden<? endif ?>">
           <? $logoutClass = $this->personaAuth()->getUser() === null ? '' : ' persona-logout' ?>
-          <a href="<?=$this->url('myresearch-logout')?>" class="<?=$logoutClass?>" title="<?=$this->transEsc("Log Out")?>"><strong><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></strong></a>
+          <a href="<?=$this->url('myresearch-logout')?>" class="logout<?=$logoutClass?>" title="<?=$this->transEsc("Log Out")?>"><strong><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></strong></a>
         </li>
       </ul>
     <? if (!$user): ?></li><? endif; ?>
