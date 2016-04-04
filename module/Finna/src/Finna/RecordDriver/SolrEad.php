@@ -377,7 +377,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
                 }
             } else {
                 if ($p = $node->xpath('parent::*/daodesc/p')) {
-                    $desc = $p[0];
+                    $desc = (string)$p[0];
                 }
             }
             if (!$this->urlBlacklisted($url, $desc)) {

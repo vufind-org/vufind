@@ -159,12 +159,19 @@ class DueDateReminders extends AbstractService
      * @var array
      */
     protected $currentSiteConfig = null;
-    
+
+    /**
+     * Current view path.
+     *
+     * @var string
+     */
+    protected $currentViewPath = null;
+
     /**
      * Constructor
      *
      * @param Finna\Db\Table\User            $userTable            User table.
-     * @param Finna\Db\Table\DueDateReminder $dueDateReminderTable Due date 
+     * @param Finna\Db\Table\DueDateReminder $dueDateReminderTable Due date
      *                                                             reminder table.
      * @param VuFind\ILS\Connection          $catalog              ILS connection.
      * @param VuFind\Config                  $configReader         Config reader.
@@ -209,7 +216,7 @@ class DueDateReminders extends AbstractService
         } else {
             $this->collectScriptArguments($arguments);
         }
-        
+
         $users = $this->userTable->getUsersWithDueDateReminders();
         $this->msg('Processing ' . count($users) . ' users');
 
@@ -217,11 +224,14 @@ class DueDateReminders extends AbstractService
             $remindLoans = $this->getReminders($user);
             if ($remindCnt = count($remindLoans)) {
                 $this->msg(
-                    $remindCnt . ' new loans to remind for user ' . $user->id
+                    "$remindCnt new loans to remind for user {$user->username}"
+                    . " (id {$user->id})"
                 );
                 $this->sendReminder($user, $remindLoans);
             } else {
-                $this->msg('No loans to remind for user ' . $user->id);
+                $this->msg(
+                    "No loans to remind for user {$user->username} (id {$user->id})"
+                );
             }
         }
         return true;
@@ -237,8 +247,8 @@ class DueDateReminders extends AbstractService
     protected function getReminders($user)
     {
         if (!$user->email || trim($user->email) == '') {
-            $this->err(
-                'User ' . $user->username
+            $this->warn(
+                "User {$user->username} (id {$user->id})"
                 . ' does not have an email address, bypassing due date reminders'
             );
             return false;
@@ -258,11 +268,12 @@ class DueDateReminders extends AbstractService
             } catch (\Exception $e) {
                 $this->err('Catalog login error: ' . $e->getMessage());
             }
-        
+
             if (!$patron) {
-                $this->err(
-                    'Catalog login failed for user ' . $user->id
-                    . ', account ' . $card->id . ' (' . $card->cat_username . ')'
+                $this->warn(
+                    "Catalog login failed for user {$user->username}"
+                    . " (id {$user->id}), card {$card->cat_username}"
+                    . " (id {$card->id})"
                 );
                 continue;
             }
@@ -293,15 +304,9 @@ class DueDateReminders extends AbstractService
                         : null;
 
                     if (isset($loan['id'])) {
-                        try {
-                            $record = $this->recordLoader->load($loan['id'], 'Solr');
-                            if ($record) {
-                                $title = $record->getTitle();
-                            }
-                        } catch (\Exception $e) {
-                            $this->err('Error loading record ' . $loan['id']);
-                            $this->err('  ' . $e->getMessage());
-                        }
+                        $record = $this->recordLoader->load(
+                            $loan['id'], 'Solr', true
+                        );
                     }
 
                     $dateFormat = isset(
@@ -309,12 +314,13 @@ class DueDateReminders extends AbstractService
                     )
                         ? $this->currentSiteConfig['Site']['displayDateFormat']
                         : $this->mainConfig->Site->displayDateFormat;
-                              
+
                     $remindLoans[] = [
                         'loanId' => $loan['item_id'],
                         'dueDate' => $loan['duedate'],
                         'dueDateFormatted' => $dueDate->format($dateFormat),
-                        'title' => $title
+                        'title' => $title,
+                        'record' => $record
                     ];
                 }
             }
@@ -334,7 +340,7 @@ class DueDateReminders extends AbstractService
     {
         if (!$user->email || trim($user->email) == '') {
             $this->msg(
-                'User ' . $user->username
+                "User {$user->username} (id {$user->id})"
                 . ' does not have an email address, bypassing due date reminders'
             );
             return false;
@@ -345,17 +351,20 @@ class DueDateReminders extends AbstractService
         if (!$this->currentInstitution
             || $userInstitution != $this->currentInstitution
         ) {
-            $this->currentInstitution = $userInstitution;
             $templateDirs = [
                 "{$this->baseDir}/themes/finna/templates",
             ];
-            if (!$viewPath = $this->resolveViewPath($this->currentInstitution)) {
+            if (!$viewPath = $this->resolveViewPath($userInstitution)) {
                 $this->err(
-                    "Could not resolve view path for user " . $user['username']
+                    "Could not resolve view path for user {$user->username}"
+                    . " (id {$user->id})"
                 );
+                return false;
             } else {
                 $templateDirs[] = "$viewPath/themes/custom/templates";
             }
+            $this->currentInstitution = $userInstitution;
+            $this->currentViewPath = $viewPath;
 
             $resolver = new AggregateResolver();
             $this->renderer->setResolver($resolver);
@@ -389,7 +398,14 @@ class DueDateReminders extends AbstractService
             = $this->urlHelper->__invoke('myresearch-unsubscribe')
             . '?' . http_build_query($params);
 
-        $baseUrl = 'https://' . $this->currentInstitution . '.finna.fi';
+        $urlParts = explode('/', $this->currentViewPath);
+        $urlView = array_pop($urlParts);
+        $urlInstitution = array_pop($urlParts);
+
+        $baseUrl = 'https://' . $urlInstitution . '.finna.fi';
+        if ($urlView != $this::DEFAULT_PATH) {
+            $baseUrl .= "/$urlView";
+        }
         $params = [
              'loans' => $remindLoans,
              'url' => $baseUrl . $this->urlHelper->__invoke('myresearch-checkedout'),
@@ -406,8 +422,8 @@ class DueDateReminders extends AbstractService
             );
         } catch (\Exception $e) {
             $this->err(
-                'Failed to send due date reminders (user id '
-                . $user->id . ', cat_username: ' . $user->cat_username . ')'
+                "Failed to send due date reminders to user {$user->username} "
+                . " (id {$user->id})"
             );
             $this->err('   ' . $e->getMessage());
             return false;
@@ -416,7 +432,7 @@ class DueDateReminders extends AbstractService
         foreach ($remindLoans as $loan) {
             $params = ['user_id' => $user->id, 'loan_id' => $loan['loanId']];
             $this->dueDateReminderTable->delete($params);
-            
+
             $dueDate = new \DateTime($loan['dueDate']);
             $params['due_date'] = $dueDate->format($this::DUE_DATE_FORMAT);
             $params['notification_date'] = gmdate($this::DUE_DATE_FORMAT, time());

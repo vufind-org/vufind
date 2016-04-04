@@ -106,6 +106,7 @@ finna.metalib = (function() {
             $('.finna-main-header .container .row').html(response.data['header']);
 
             initPagination();
+            VuFind.lightbox.bind(holder);
             VuFind.lightbox.bind($('.searchtools'));
             finna.layout.init();
             finna.openUrl.initLinks();

@@ -5,7 +5,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -141,6 +141,10 @@ class Backend extends AbstractBackend
                 $e
             );
         }
+        if (null === $response) {
+            return $this->createRecordCollection([]);
+        }
+
         $response['id'] = $id;
         $collection = $this->createRecordCollection(['documents' => [$response]]);
 

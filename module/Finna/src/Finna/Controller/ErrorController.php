@@ -1,10 +1,10 @@
 <?php
 /**
- * Voyager ILS Driver
+ * Error Controller
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,46 +20,45 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Controller
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
+ * @link     https://vufind.org Main Site
  */
-namespace Finna\ILS\Driver;
+namespace Finna\Controller;
 
 /**
- * Voyager ILS Driver
+ * Error Controller
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  Controller
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
+ * @link     https://vufind.org Main Site
  */
-class Voyager extends \VuFind\ILS\Driver\Voyager
+class ErrorController extends \VuFind\Controller\ErrorController
 {
-    use VoyagerFinna;
-
     /**
-     * Public Function which retrieves renew, hold and cancel settings from the
-     * driver ini file.
+     * Display unavailable message.
      *
-     * @param string $function The name of the feature to be checked
-     * @param array  $params   Optional feature-specific parameters (array)
-     *
-     * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return mixed
      */
-    public function getConfig($function, $params = null)
+    public function unavailableAction()
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
+        // Handle AdminApi requests even if the site is unavailable
+        $event = $this->getEvent();
+        if ($event) {
+            $router = $event->getRouter();
+            if ($router) {
+                $routeMatch = $router->match($this->getRequest());
+                if (strcasecmp($routeMatch->getParam('controller'), 'adminapi') == 0
+                ) {
+                    return $this->forward()->dispatch(
+                        $routeMatch->getParam('controller'),
+                        $routeMatch->getParams()
+                    );
+                }
+            }
         }
-
-        return $functionConfig;
     }
-
 }

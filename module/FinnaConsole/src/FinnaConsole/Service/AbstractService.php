@@ -108,6 +108,19 @@ abstract class AbstractService implements ConsoleServiceInterface
     }
 
     /**
+     * Output a warning message with a timestamp
+     *
+     * @param string $msg Message
+     *
+     * @return void
+     */
+    protected function warn($msg)
+    {
+        $msg = '[' . getmypid() . "] $msg";
+        $this->logger->warn($msg);
+    }
+
+    /**
      * Resolve path to the view directory.
      *
      * @param string $institution Institution

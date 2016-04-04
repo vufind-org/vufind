@@ -142,7 +142,7 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
             $searchConfig = $config->get($this->searchConfig);
             if (isset($searchConfig->Records->apiExcludedSources)) {
                 $excluded = explode(',', $searchConfig->Records->apiExcludedSources);
-                $resourceSources = array_diff($recordSources, $excluded);
+                $recordSources = array_diff($recordSources, $excluded);
             }
         }
 

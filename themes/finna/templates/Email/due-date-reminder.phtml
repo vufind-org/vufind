@@ -2,7 +2,19 @@
 
 
 <? foreach ($this->loans as $loan): ?>
-<?= isset($loan['title']) ? $loan['title'] : $this->translate('Title not available') ?>
+<?
+  if (!empty($loan['title'])) {
+      $title = $loan['title'];
+  } else {
+      if (is_a($loan['record'], 'VuFind\\RecordDriver\\SolrDefault') && !is_a($loan['record'], 'VuFind\\RecordDriver\\Missing')) {
+          $title = $loan['record']->getTitle();
+      }
+      if (empty($title)) {
+          $title = $this->transEsc('Title not available');
+      }
+  }
+?>
+<?= $title ?>
 
 <?= $this->translate('Due Date') . ': ' . $loan['dueDateFormatted'] ?>
 

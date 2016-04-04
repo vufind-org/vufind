@@ -112,7 +112,16 @@ class RecordController extends \VuFind\Controller\RecordController
             $mail->setBody($emailMessage);
             $mail->setFrom($senderEmail);
             $mail->addTo($recipientEmail);
-            $mail->setSubject($emailSubject);
+            try {
+                $mail->setSubject($emailSubject);
+            } catch (\Exception $e) {
+                // Uhh.. PHP bug https://bugs.php.net/bug.php?id=53891 causes trouble
+                // when trying to encode a subject containing non-ascii characters.
+                // Try to convert the subject to ascii..
+                // TODO: Remove this when PHP works properly..
+                $emailSubject = iconv('UTF-8', 'ascii//TRANSLIT', $emailSubject);
+                $mail->setSubject($emailSubject);
+            }
             $headers = $mail->getHeaders();
             $headers->removeHeader('Content-Type');
             $headers->addHeaderLine('Content-Type', 'text/plain; charset=UTF-8');

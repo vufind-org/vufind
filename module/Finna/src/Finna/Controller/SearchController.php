@@ -231,7 +231,6 @@ class SearchController extends \VuFind\Controller\SearchController
         try {
             $config = $config[$type];
             $query = $this->getRequest()->getQuery();
-            $query->set('view', 'condensed');
             if (!$query->get('limit')) {
                 $query->set('limit', $config['resultLimit'] ?: 100);
             }
@@ -264,6 +263,7 @@ class SearchController extends \VuFind\Controller\SearchController
             $this->getSearchMemory()->forgetSearch();
             $this->rememberSearch($view->results);
 
+            $view->results->getParams()->setView('condensed');
             $view->results->getParams()->getQuery()->setHandler($queryType);
 
             return $view;
@@ -393,7 +393,7 @@ class SearchController extends \VuFind\Controller\SearchController
                 );
             }
         }
-        if ($results) {
+        if (isset($results) && $results) {
             if ($params['date'] || $params['volume'] || $params['issue']
                 || $params['spage'] || $params['atitle']
             ) {

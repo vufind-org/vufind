@@ -349,7 +349,7 @@ class ScheduledAlerts extends AbstractService
             }
 
             if (!$user->email || trim($user->email) == '') {
-                $this->err(
+                $this->warn(
                     'User ' . $user->username
                     . ' does not have an email address, bypassing alert ' . $s->id
                 );

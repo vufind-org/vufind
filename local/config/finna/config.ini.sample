@@ -241,13 +241,6 @@ title_level_holds_mode = "driver"
 ; - item_agency_id,location
 ;holdings_grouping = holdings_id
 
-; Text fields such as notes gathered from items to be displayed in each
-; holdings group in the display order.
-; The default list is 'notes', 'summary', 'supplements' and 'indexes'.
-; Note that displayed information depends on what the ILS driver returns.
-;holdings_text_fields[] = 'notes'
-;holdings_text_fields[] = 'summary'
-
 ; Whether support for multiple library cards is enabled. Default is false.
 library_cards = true
 
@@ -1026,6 +1019,8 @@ related[] = "SimilarDeferred"
 ; Presenter roles that are displayed separately from other authors
 presenter_roles[] = "esitt."
 presenter_roles[] = "joht."
+presenter_roles[] = "esittäjä."
+presenter_roles[] = "johtaja."
 
 ; Arranger roles that are displayed separately from other authors in component parts
 arranger_roles[] = "sov."

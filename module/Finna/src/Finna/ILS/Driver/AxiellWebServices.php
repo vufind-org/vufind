@@ -1128,7 +1128,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'college' => null
         ];
 
-        if (isset($info->emailAddresses) && $info->emailAddresses->emailAddress) {
+        if (!empty($info->emailAddresses->emailAddress)) {
             $emailAddresses
                 =  $this->objectToArray($info->emailAddresses->emailAddress);
 
@@ -1222,7 +1222,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                         ? $method->sendMethod->value : 'none';
                     $userCached['messagingServices'][$serviceType]['sendMethods']
                         [$methodType]['active']
-                            = $method->sendMethod->isActive === 'yes';
+                            = isset($method->sendMethod->isActive)
+                            && $method->sendMethod->isActive === 'yes';
                 }
 
                 foreach ($userCached['messagingServices'][$serviceType]

@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -1021,15 +1021,14 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $id The document to retrieve from the MetaLib API
      *
-     * @throws \Exception
-     * @return string The requested resource
+     * @return string|null The requested resource or null if not found
      */
     public function getRecord($id)
     {
         list($queryId, $index) = explode('_', $id);
         $result = $this->getCachedResults($queryId);
         if ($index < 1 || $index > count($result['documents'])) {
-            throw new \Exception('Invalid record id');
+            return null;
         }
         $result['documents'] = array_slice($result['documents'], $index - 1, 1);
 
