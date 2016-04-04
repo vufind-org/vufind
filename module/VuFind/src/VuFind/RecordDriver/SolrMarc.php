@@ -1072,7 +1072,9 @@ class SolrMarc extends SolrDefault
      */
     public function supportsAjaxStatus()
     {
-        return true;
+        // as AJAX status lookups are done via the ILS AJAX status lookup support is
+        // only given if the ILS is available for this record
+        return $this->hasILS();
     }
 
     /**
