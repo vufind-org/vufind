@@ -1,18 +1,18 @@
-/*global registerAjaxCommentRecord, registerTabEvents, setupRecordToolbar, VuFind */
+/*global localStorage, registerAjaxCommentRecord, registerTabEvents, setupRecordToolbar, VuFind */
 var _EMBEDDED_COOKIE = 'vufind_search_open';
 var _EMBEDDED_DELIM  = ',';
 var _EMBEDDED_STATUS = {};
 
 function saveEmbeddedStatusToCookie() {
-  var cookie = [];
+  var storage = [];
   for (var i in _EMBEDDED_STATUS) {
     var str = i;
     if (_EMBEDDED_STATUS[i]) {
       str += ':::' + _EMBEDDED_STATUS[i];
     }
-    cookie.push(str);
+    storage.push(str);
   }
-  Cookies.setItem(_EMBEDDED_COOKIE, $.unique(cookie).join(_EMBEDDED_DELIM), false, '/', false);
+  localStorage.setItem(_EMBEDDED_COOKIE, $.unique(storage).join(_EMBEDDED_DELIM));
 }
 function addToEmbeddedCookie(id, tab) {
   var realID = $('#'+id).find('.hiddenId').val();
@@ -24,7 +24,7 @@ function removeFromEmbeddedCookie(id) {
   saveEmbeddedStatusToCookie();
 }
 function loadEmbeddedCookies() {
-  var cookies = Cookies.getItem(_EMBEDDED_COOKIE);
+  var cookies = localStorage.getItem(_EMBEDDED_COOKIE);
   if (!cookies) return;
   var items = cookies.split(_EMBEDDED_DELIM);
   var hiddenIds = $('.hiddenId');
