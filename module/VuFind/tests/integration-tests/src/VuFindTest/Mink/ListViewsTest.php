@@ -165,6 +165,72 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test localStorage saving from tab mode.
+     *
+     * @return void
+     */
+    protected function localStorageDance()
+    {
+        $page = $this->gotoRecord();
+        $session = $this->getMinkSession();
+
+        // Reload the page to close all results
+        $session->reload();
+        // Did our saved one open automatically?
+        $this->findCss($page, '.result.expanded');
+
+        // Close it
+        $this->findCss($page, '.result a.title')->click();
+        // Did our result stay closed?
+        $session->reload();
+        $result = $page->find('css', '.result.expanded');
+        $this->assertFalse(is_object($result));
+
+        // Open it
+        $this->findCss($page, '.result a.title')->click();
+        $this->snooze();
+        // Search for anything else
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '.searchForm [name="lookfor"]')
+            ->setValue('anything else');
+        $this->findCss($page, '.btn.btn-primary')->click();
+        // Come back
+        $page = $this->gotoSearch();
+        // Did our result close after not being being in the last search?
+        $result = $page->find('css', '.result.expanded');
+        $this->assertFalse(is_object($result));
+    }
+
+    /**
+     * Test localStorage saving from tab mode.
+     *
+     * @return void
+     */
+    public function testSavedOpenInTabsMode()
+    {
+        // Change the theme:
+        $this->changeConfigs(
+            ['searches' => ['List' => ['view' => 'tabs']]]
+        );
+        $this->localStorageDance();
+    }
+
+    /**
+     * Test localStorage saving from accordion mode.
+     *
+     * @return void
+     */
+    public function testSavedOpenInAccordionMode()
+    {
+        // Change the theme:
+        $this->changeConfigs(
+            ['searches' => ['List' => ['view' => 'accordion']]]
+        );
+        $this->localStorageDance();
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
