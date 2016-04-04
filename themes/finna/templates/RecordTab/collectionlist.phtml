@@ -22,7 +22,9 @@
   <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + array('idPrefix' => ''))?>
   </form>
+  <div class="results result-view-<?=$this->escapeHtmlAttr($params->getView()) == 'grid' ? 'grid col-xs-12' : $this->escapeHtmlAttr($params->getView());?>">
     <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
+  </div>
     <div class="row">
       <div class="col-xs-12 text-center">
       <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $results))?>
