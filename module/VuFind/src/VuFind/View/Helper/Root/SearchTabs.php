@@ -75,13 +75,6 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     protected $helper;
 
     /**
-     * Cached hidden filter url params
-     *
-     * @var null|string
-     */
-    protected $cachedHiddenFilterParams = null;
-
-    /**
      * Constructor
      *
      * @param PluginManager    $results Search results plugin manager
@@ -178,51 +171,6 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     {
         return $this->helper
             ->getHiddenFilters($searchClassId, $returnDefaultsIfEmpty);
-    }
-
-    /**
-     * Get current hidden filters as a string suitable for search URLs
-     *
-     * @param string $prepend String to prepend to the hidden filters if they're not
-     * empty
-     *
-     * @return string
-     */
-    public function getCurrentHiddenFilterParams($prepend = '&amp;')
-    {
-        if (null === $this->cachedHiddenFilterParams) {
-            $view = $this->getView();
-            $layout = $view->plugin('layout');
-            $searchTabs = $view->plugin('searchTabs');
-            $searchClassId = 'Solr';
-            if (isset($view->searchClassId)) {
-                $searchClassId = $view->searchClassId;
-            } elseif (isset($view->results->searchClassId)) {
-                $searchClassId = $view->results->searchClassId;
-            }
-            $ignoreHiddenFilterMemory = isset($layout->ignoreHiddenFilterMemory)
-                && $layout->ignoreHiddenFilterMemory;
-            $hiddenFilters = $searchTabs->getHiddenFilters(
-                $searchClassId, $ignoreHiddenFilterMemory
-            );
-            if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
-                $hiddenFilters = $view->plugin('searchMemory')
-                    ->getLastHiddenFilters($searchClassId);
-                if (empty($hiddenFilters)) {
-                    $hiddenFilters = $searchTabs->getHiddenFilters($searchClassId);
-                }
-            }
-            $hiddenFilterParams = [];
-            foreach ($hiddenFilters as $key => $filter) {
-                foreach ($filter as $value) {
-                    $hiddenFilterParams[] = urlencode('hiddenFilters[]') . '='
-                        . urlencode("$key:$value");
-                }
-            }
-            $this->cachedHiddenFilterParams = implode('&amp;', $hiddenFilterParams);
-        }
-        return $this->cachedHiddenFilterParams
-            ? $prepend . $this->cachedHiddenFilterParams : '';
     }
 
     /**
