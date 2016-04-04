@@ -33,7 +33,7 @@
  * @author   Kun Lin <vufind-tech@lists.sourceforge.net>
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
@@ -46,7 +46,7 @@ use VuFind\Exception\Date as DateException;
  * @package  ILS_Drivers
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class AlephTranslator
 {
@@ -251,7 +251,7 @@ class AlephTranslator
  * @package  Exceptions
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class AlephRestfulException extends ILSException
 {
@@ -296,7 +296,7 @@ class AlephRestfulException extends ILSException
  * @author   Kun Lin <vufind-tech@lists.sourceforge.net>
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
@@ -448,7 +448,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $url = $this->appendQueryString($url, $params);
         if ($auth) {
             $url = $this->appendQueryString(
-                $url, [
+                $url,
+                [
                     'user_name' => $this->wwwuser,
                     'user_password' => $this->wwwpasswd
                 ]
@@ -1143,11 +1144,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $barcode = (string) $z30->{'z30-barcode'};
             $checkout = (string) $z31->{'z31-date'};
             $id = $this->barcodeToID($barcode);
-            if ($transactiontype == "Debit") {
-                $mult = -100;
-            } elseif ($transactiontype == "Credit") {
-                $mult = 100;
-            }
+            $mult = ($transactiontype == "Credit") ? 100 : -100;
             $amount
                 = (float)(preg_replace("/[\(\)]/", "", (string) $z31->{'z31-sum'}))
                 * $mult;

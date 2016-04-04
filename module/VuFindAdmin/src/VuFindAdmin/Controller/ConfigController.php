@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFindAdmin\Controller;
 
 /**
  * Class controls VuFind administration.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class ConfigController extends AbstractAdmin
 {
@@ -65,21 +65,19 @@ class ConfigController extends AbstractAdmin
         $writer = new \VuFind\Config\Writer($configFile);
         $writer->set('System', 'autoConfigure', 1);
         if ($writer->save()) {
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('Auto-configuration enabled.');
+            $this->flashMessenger()
+                ->addMessage('Auto-configuration enabled.', 'success');
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
             $this->getServiceLocator()->get('VuFind\Config')->reload('config');
         } else {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage(
-                    'Could not enable auto-configuration; check permissions on '
-                    . $configFile . '.'
-                );
+            $this->flashMessenger()->addMessage(
+                'Could not enable auto-configuration; check permissions on '
+                . $configFile . '.', 'error'
+            );
         }
         return $this->forwardTo('AdminConfig', 'Home');
     }
 
 }
-

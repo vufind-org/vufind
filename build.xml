@@ -6,6 +6,7 @@
   <property name="srcdir"   value="${project.basedir}" override="true" />
   <property name="apacheconfdir" value="/etc/apache2/conf.d" />
   <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
+  <property name="seleniumjar" value="false" /><!-- set to Selenium jar path to spin up Selenium instance -->
   <property name="nodepath" value="" /><!-- set to node.js modules path to use Zombie.js testing -->
   <!-- command for extra cleanup during shutdown; e.g. to change cache ownership after testing w/ Apache so deletion won't fail: -->
   <property name="extra_shutdown_cleanup" value="false" />
@@ -20,10 +21,12 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
-  <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use" />
+  <property name="mink_driver" value="zombiejs" /><!-- may also be set to selenium -->
+  <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
+  <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use,eof_ending" />
 
 
-  <property name="version" value="2.4.1" />
+  <property name="version" value="2.5.2" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -90,10 +93,10 @@
 
   <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
   <target name="php-cs-fixer">
-    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers}" escape="false" />
+    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --verbose" passthru="true" escape="false" />
   </target>
   <target name="php-cs-fixer-dryrun">
-    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run" escape="false" checkreturn="true" />
+    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run --verbose --diff" passthru="true" escape="false" checkreturn="true" />
   </target>
 
   <!-- PHP API Documentation -->
@@ -109,22 +112,39 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+  </target>
+
+  <target name="composer" description="Install dependencies with Composer">
+    <httpget url="https://getcomposer.org/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+    <echo message="Installing dependencies..." />
+    <exec command="php ${srcdir}/composer.phar install" passthru="true" checkreturn="true" />
   </target>
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
+    <!-- get dependencies -->
+    <phingcall target="composer" />
+
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${srcdir}/local/cache" />
 
     <!-- Generate basic configuration -->
     <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
     <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive" />
+
+    <!-- Activate Selenium (if a path has been provided) -->
+    <if>
+      <istrue value="${seleniumjar}" />
+      <then>
+        <exec command="xvfb-run --server-args=&quot;-screen 0 1024x768x24&quot; java -jar ${seleniumjar} > /dev/null &amp;" />
+      </then>
+    </if>
 
     <!-- Activate Apache (if an apachectl path has been provided) -->
     <if>
@@ -150,7 +170,7 @@
         <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
+        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
       </then>
       <else>
         <!-- build database -->
@@ -161,22 +181,25 @@
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
+        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
       </else>
     </if>
 
+    <!-- Turn on exception logging -->
+    <exec command="sed -e &quot;s!;file           = /var/log/vufind.log:alert,error,notice,debug!file = ${srcdir}/vufind-exception.log:alert-5,error-5!&quot; ${srcdir}/local/config/vufind/config.ini.tmp &gt; ${srcdir}/local/config/vufind/config.ini" />
+    <delete file="${srcdir}/local/config/vufind/config.ini.tmp" />
+    <exec command="touch ${srcdir}/vufind-exception.log" />
+    <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
+
     <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid JETTY_CONSOLE=/dev/null ${srcdir}/vufind.sh restart" outputProperty="LASTOUTPUT" />
+    <exec command="touch ${srcdir}/local/vufindtest.pid" />
+    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
-    <!-- wait for Solor to finish spinning up -->
-    <echo message="Waiting for Solr to start up..." />
-    <exec command="sleep 30" />
-
     <!-- import marc test records into vufind index (note: the marc test records have prefix "testsample#") -->
-    <exec command="find ${srcdir}/tests/data -name *.mrc -printf %p," outputProperty="buglist" />
+    <exec escape="false" command="find ${srcdir}/tests/data -name '*.mrc' -printf '%p,'" outputProperty="buglist" />
     <foreach list="${buglist}" param="filename" delimiter="," target="importrec" />
-    <exec command="find ${srcdir}/tests/data/authority -name *.mrc -printf %p," outputProperty="authlist" />
+    <exec escape="false" command="find ${srcdir}/tests/data/authority -name '*.mrc' -printf '%p,'" outputProperty="authlist" />
     <foreach list="${authlist}" param="filename" delimiter="," target="importauthrec" />
 
     <!-- build alphabrowse index -->
@@ -209,7 +232,7 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid ${srcdir}/vufind.sh stop" outputProperty="LASTOUTPUT" />
+    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
     <!-- run extra cleanup action, if any -->
@@ -220,15 +243,22 @@
       </then>
     </if>
 
+    <!-- shut down selenium if necessary -->
+    <if>
+      <istrue value="${seleniumjar}" />
+      <then>
+        <exec command="pkill -f xvfb" />
+        <exec command="pkill -f &quot;java -jar `basename ${seleniumjar}`&quot;" />
+      </then>
+    </if>
+
     <!-- delete the configuration, sample index, logs and cache data -->
-    <delete dir="${srcdir}/solr/alphabetical_browse" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/authority/index" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/authority/tlog" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/tlog" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/spellchecker" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />
     <delete file="${srcdir}/import/solrmarc.log" failonerror="true" />
+    <delete dir="${srcdir}/solr" includeemptydirs="true" failonerror="true" />
+    <delete file="${srcdir}/composer.lock" failonerror="false" />
+    <delete file="${srcdir}/composer.phar" failonerror="false" />
+    <delete file="${srcdir}/vufind-exception.log" failonerror="false" />
+    <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
     <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
     <exec command="git reset --hard" />
   </target>
@@ -236,22 +266,35 @@
   <!-- Prepare VuFind for distribution -->
   <target name="package" description="build VuFind packages for distribution">
     <!-- make sure the work area is empty, then rebuild it -->
-    <delete dir="${builddir}/packages" includeemptydirs="true" failonerror="true" />
+    <delete dir="${builddir}/packages" includeemptydirs="true" failonerror="false" />
     <mkdir dir="${builddir}/packages" />
+    <delete dir="${builddir}/export" includeemptydirs="true" failonerror="false" />
+    <mkdir dir="${builddir}/export/vufind/usr/local/vufind2" />
+
+    <!-- load the relevant files into the work area -->
+    <phingcall target="composer" />
+    <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind2" />
+    <copy todir = "${builddir}/export/vufind/usr/local/vufind2/vendor">
+      <fileset dir="${srcdir}/vendor" defaultexcludes="false" />
+    </copy>
+
+    <!-- create a version-specific symlink so that tar/zip packages will have
+         appropriate directory structures. -->
+    <exec command="ln -s ${builddir}/export/vufind/usr/local/vufind2 ${builddir}/export/vufind-${version}" />
 
     <!-- build the standard tar.gz archive -->
-    <exec command="git archive HEAD --format=tar --prefix=vufind-${version}/ -o ${builddir}/packages/vufind-${version}.tar" />
-    <exec command="gzip ${builddir}/packages/vufind-${version}.tar" />
+    <echo message="Building .tar.gz...." />
+    <exec command="cd ${builddir}/export ; tar czfh ${builddir}/packages/vufind-${version}.tar.gz vufind-${version}" checkreturn="true" />
 
     <!-- build the a zip archive -->
-    <exec command="git archive HEAD --format=zip --prefix=vufind-${version}/ -o ${builddir}/packages/vufind-${version}.zip" />
+    <echo message="Building .zip...." />
+    <exec command="cd ${builddir}/export ; zip -r ${builddir}/packages/vufind-${version}.zip vufind-${version}" checkreturn="true" />
 
     <!-- build the DEB package -->
-    <mkdir dir="${builddir}/export/vufind/usr/local/vufind2" />
-    <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind2" />
+    <echo message="Building .deb...." />
     <move file="${builddir}/export/vufind/usr/local/vufind2/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
     <exec command="chmod 0775 ${builddir}/export/vufind/DEBIAN/postinst" />
-    <exec command="dpkg-deb -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />
+    <exec command="dpkg-deb -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" checkreturn="true" />
 
     <!-- clean up -->
     <delete dir="${builddir}/export" includeemptydirs="true" failonerror="true" />

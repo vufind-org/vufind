@@ -1,14 +1,12 @@
 <a rel="external" href="<?=$this->recordLink()->getUrl($this->driver)?>">
-  <div class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+  <div class="result source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
     <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
-    <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
-      <p><?=$this->transEsc('by')?> <?
-      $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
-      echo !empty($summHighlightedAuthor)
-          ? $this->highlight($summHighlightedAuthor)
-          : $this->escapeHtml($summAuthor);
-      ?>
+    <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
+      <p><?=$this->transEsc('by')?>
+      <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
+        <?=$this->highlight($summAuthor)?><?=$i + 1 < $authorCount ? ';' : ''?>
+      <? endforeach; ?></p>
     <? endif; ?>
     <? if ($this->driver->supportsAjaxStatus()): ?>
       <p class="callnumAndLocation">
@@ -24,8 +22,9 @@
     <? endif; ?>
     <?=$this->record($this->driver)->getFormatList()?>
     <?
-       $openUrlActive = $this->driver->openURLActive('results');
-       $urls = $this->record($this->driver)->getLinkDetails();
+       $openUrl = $this->openUrl($this->driver, 'results');
+       $openUrlActive = $openUrl->isActive();
+       $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     ?>
     <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
       <p><span class="ajax_availability hide status"><?=$this->transEsc('Loading')?>...</span></p>

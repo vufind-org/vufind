@@ -18,11 +18,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   BookSite <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Config\Reader as ConfigReader,
@@ -33,11 +33,11 @@ use VuFind\Config\Reader as ConfigReader,
  *
  * Based on Polaris 1.4 API
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   BookSite <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
@@ -298,9 +298,9 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'barcode'         => $holdings_response->Barcode,
                 'shelf_location'  => $holdings_response->ShelfLocation,
                 'collection_name' => $holdings_response->CollectionName,
-            'per_item_holdable' => $per_item_holdable,
-            'designation' => $designation,
-            'holdable' => $holdings_response->Holdable,
+                //'per_item_holdable' => $per_item_holdable,
+                //'designation' => $designation,
+                'holdable' => $holdings_response->Holdable,
             ];
 
         }
@@ -745,7 +745,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             } elseif ($response->PAPIErrorCode == -2) {
                 $item_blocks[$renew_id]
                     = $response->ItemRenewResult->BlockRows[0]->ErrorDesc;
-                $item_response[$hold_id] = [
+                $item_response[$renew_id] = [
                 'success'  => -1,
                 'new_date' => false,
                 'item_id' => $response->ItemRenewResult->BlockRows[0]->ItemRecordID,
@@ -863,7 +863,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             return;
         }
 
-        $offset = $count - $items_per_page;
         $pages = ceil($count / $items_per_page);
 
         $penultimate_page = $pages - 1;

@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -19,23 +20,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
 use minSO;
+use Zend\Db\Adapter\ParameterContainer;
+use Zend\Db\TableGateway\Feature;
 
 /**
  * Table Definition for search
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Search extends Gateway
 {
@@ -45,6 +50,53 @@ class Search extends Gateway
     public function __construct()
     {
         parent::__construct('search', 'VuFind\Db\Row\Search');
+    }
+
+    /**
+     * Initialize
+     *
+     * @return void
+     */
+    public function initialize()
+    {
+        if ($this->isInitialized) {
+            return;
+        }
+
+        // Special case for PostgreSQL inserts -- we need to provide an extra
+        // clue so that the database knows how to write bytea data correctly:
+        if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
+            if (!is_object($this->featureSet)) {
+                $this->featureSet = new Feature\FeatureSet();
+            }
+            $eventFeature = new Feature\EventFeature();
+            $eventFeature->getEventManager()->attach(
+                Feature\EventFeature::EVENT_PRE_INSERT, [$this, 'onPreInsert']
+            );
+            $this->featureSet->addFeature($eventFeature);
+        }
+
+        parent::initialize();
+    }
+
+    /**
+     * Customize the Insert object to include extra metadata about the
+     * search_object field so that it will be written correctly. This is
+     * triggered only when we're interacting with PostgreSQL; MySQL works fine
+     * without the extra hint.
+     *
+     * @param object $event Event object
+     *
+     * @return void
+     */
+    public function onPreInsert($event)
+    {
+        $driver = $event->getTarget()->getAdapter()->getDriver();
+        $statement = $driver->createStatement();
+        $params = new ParameterContainer();
+        $params->offsetSetErrata('search_object', ParameterContainer::TYPE_LOB);
+        $statement->setParameterContainer($params);
+        $driver->registerStatementPrototype($statement);
     }
 
     /**
@@ -70,11 +122,11 @@ class Search extends Gateway
     public function getSearches($sid, $uid = null)
     {
         $callback = function ($select) use ($sid, $uid) {
-            $select->where->equalTo('session_id', $sid);
+            $select->where->equalTo('session_id', $sid)->and->equalTo('saved', 0);
             if ($uid != null) {
                 $select->where->OR->equalTo('user_id', $uid);
             }
-            $select->order('id');
+            $select->order('created');
         };
         return $this->select($callback);
     }
@@ -118,76 +170,101 @@ class Search extends Gateway
     }
 
     /**
-     * Set the "saved" flag for a specific row.
+     * Get a single row, enforcing user ownership. Returns row if found, null
+     * otherwise.
      *
-     * @param int  $id      Primary key value of row to change.
-     * @param bool $saved   New status value to save.
-     * @param int  $user_id ID of user saving row (only required if $saved == true)
+     * @param int    $id     Primary key value
+     * @param string $sessId Current user session ID
+     * @param int    $userId Current logged-in user ID (or null if none)
      *
-     * @return void
+     * @return \VuFind\Db\Row\Search
      */
-    public function setSavedFlag($id, $saved, $user_id = false)
+    public function getOwnedRowById($id, $sessId, $userId)
     {
-        $row = $this->getRowById($id);
-        $row->saved = $saved ? 1 : 0;
-        if ($user_id !== false) {
-            $row->user_id = $user_id;
-        }
-        $row->save();
+        $callback = function ($select) use ($id, $sessId, $userId) {
+            $nest = $select->where
+                ->equalTo('id', $id)
+                ->and
+                ->nest
+                ->equalTo('session_id', $sessId);
+            if (!empty($userId)) {
+                $nest->or->equalTo('user_id', $userId);
+            }
+        };
+        return $this->select($callback)->current();
     }
 
     /**
      * Add a search into the search table (history)
      *
-     * @param \VuFind\Search\Results\PluginManager $manager       Search manager
-     * @param \VuFind\Search\Base\Results          $newSearch     Search to save
-     * @param string                               $sessionId     Current session ID
-     * @param array                                $searchHistory Existing saved
-     * searches (for deduplication purposes)
+     * @param \VuFind\Search\Results\PluginManager $manager   Search manager
+     * @param \VuFind\Search\Base\Results          $newSearch Search to save
+     * @param string                               $sessionId Current session ID
+     * @param int|null                             $userId    Current user ID
      *
      * @return void
      */
     public function saveSearch(\VuFind\Search\Results\PluginManager $manager,
-        $newSearch, $sessionId, $searchHistory = []
+        $newSearch, $sessionId, $userId
     ) {
         // Duplicate elimination
-        foreach ($searchHistory as $oldSearch) {
-            // Deminify the old search (note that if we have a resource, we need
-            // to grab the contents -- this is necessary for PostgreSQL compatibility
-            // although MySQL returns a plain string).
-            $minSO = $oldSearch->getSearchObject();
-            $dupSearch = $minSO->deminify($manager);
-            // See if the classes and urls match
+        // Normalize the URL params by minifying and deminifying the search object
+        $newSearchMinified = new minSO($newSearch);
+        $newSearchCopy = $newSearchMinified->deminify($manager);
+        $newUrl = $newSearchCopy->getUrlQuery()->getParams();
+        // Use crc32 as the checksum but get rid of highest bit so that we don't
+        // need to care about signed/unsigned issues
+        // (note: the checksum doesn't need to be unique)
+        $checksum = crc32($newUrl) & 0xFFFFFFF;
+
+        // Fetch all rows with the same CRC32 and try to match with the URL
+        $callback = function ($select) use ($checksum, $sessionId, $userId) {
+            $nest = $select->where
+                ->equalTo('checksum', $checksum)
+                ->and
+                ->nest
+                ->equalTo('session_id', $sessionId)->and->equalTo('saved', 0);
+            if (!empty($userId)) {
+                $nest->or->equalTo('user_id', $userId);
+            }
+        };
+        foreach ($this->select($callback) as $oldSearch) {
+            // Deminify the old search:
+            $oldSearchMinified = $oldSearch->getSearchObject();
+            $dupSearch = $oldSearchMinified->deminify($manager);
+            // Check first if classes match:
+            if (get_class($dupSearch) != get_class($newSearch)) {
+                continue;
+            }
+            // Check if URLs match:
             $oldUrl = $dupSearch->getUrlQuery()->getParams();
-            $newUrl = $newSearch->getUrlQuery()->getParams();
-            if (get_class($dupSearch) == get_class($newSearch)
-                && $oldUrl == $newUrl
-            ) {
-                // Is the older search saved?
-                if ($oldSearch->saved) {
-                    // Return existing saved row instead of creating a new one:
-                    $newSearch->updateSaveStatus($oldSearch);
-                    return;
-                } else {
-                    // Delete the old search since we'll be creating a new, more
-                    // current version below:
-                    $oldSearch->delete();
+            if ($oldUrl == $newUrl) {
+                // Update the old search only if it wasn't saved:
+                if (!$oldSearch->saved) {
+                    $oldSearch->created = date('Y-m-d H:i:s');
+                    // Keep the ID of the old search:
+                    $newSearchMinified->id = $oldSearchMinified->id;
+                    $oldSearch->search_object = serialize($newSearchMinified);
+                    $oldSearch->save();
                 }
+                // Update the new search from the existing one
+                $newSearch->updateSaveStatus($oldSearch);
+                return;
             }
         }
 
         // If we got this far, we didn't find a saved duplicate, so we should
         // save the new search:
-        $data = [
-            'session_id' => $sessionId,
-            'created' => date('Y-m-d'),
-            'search_object' => serialize(new minSO($newSearch))
-        ];
-        $this->insert($data);
+        $this->insert(['created' => date('Y-m-d H:i:s'), 'checksum' => $checksum]);
         $row = $this->getRowById($this->getLastInsertValue());
 
         // Chicken and egg... We didn't know the id before insert
         $newSearch->updateSaveStatus($row);
+
+        // Don't set session ID until this stage, because we don't want to risk
+        // ever having a row that's associated with a session but which has no
+        // search object data attached to it; this could cause problems!
+        $row->session_id = $sessionId;
         $row->search_object = serialize(new minSO($newSearch));
         $row->save();
     }

@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Controller\Plugin;
 
@@ -35,11 +35,11 @@ use Zend\Config\Config;
 /**
  * New items controller plugin tests.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class NewItemsTest extends TestCase
 {
@@ -67,10 +67,8 @@ class NewItemsTest extends TestCase
     public function testGetBibIDsFromCatalogWithIDLimit()
     {
         $flash = $this->getMock('Zend\Mvc\Controller\Plugin\FlashMessenger');
-        $flash->expects($this->once())->method('setNamespace')
-            ->with($this->equalTo('info'))->will($this->returnValue($flash));
         $flash->expects($this->once())->method('addMessage')
-            ->with($this->equalTo('too_many_new_items'));
+            ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
         $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(

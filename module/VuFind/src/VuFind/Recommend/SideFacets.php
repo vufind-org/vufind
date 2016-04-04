@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
 use VuFind\Solr\Utils as SolrUtils;
@@ -34,11 +34,11 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
  *
  * This class provides recommendations displaying facets beside search results
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 class SideFacets extends AbstractFacets
 {
@@ -83,6 +83,13 @@ class SideFacets extends AbstractFacets
      * @var array
      */
     protected $checkboxFacets = [];
+
+    /**
+     * Settings controlling how many values to display before "show more."
+     *
+     * @var array
+     */
+    protected $showMoreSettings = [];
 
     /**
      * Collapsed facet setting
@@ -179,6 +186,12 @@ class SideFacets extends AbstractFacets
             ? $config->$checkboxSection->toArray() : [];
         if (isset($flipCheckboxes) && $flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
+        }
+
+        // Show more settings:
+        if (isset($config->Results_Settings->showMore)) {
+            $this->showMoreSettings
+                = $config->Results_Settings->showMore->toArray();
         }
 
         // Collapsed facets:
@@ -331,6 +344,27 @@ class SideFacets extends AbstractFacets
             return array_keys($this->getFacetSet());
         }
         return array_map('trim', explode(',', $this->collapsedFacets));
+    }
+
+    /**
+     * Return the list of facets configured to be collapsed
+     *
+     * @param string $facetName Name of the facet to get
+     *
+     * @return int
+     */
+    public function getShowMoreSetting($facetName = '*')
+    {
+        // Look for either facet-specific configuration or else a configured
+        // default. If neither is found, initialize return value to 0.
+        if (isset($this->showMoreSettings[$facetName])) {
+            $val = intval($this->showMoreSettings[$facetName]);
+        } elseif (isset($this->showMoreSettings['*'])) {
+            $val = intval($this->showMoreSettings['*']);
+        }
+
+        // Validate the return value, defaulting to 6 if missing/invalid
+        return (isset($val) && $val > 0) ? $val : 6;
     }
 
     /**

@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 namespace VuFind\Session;
 
 /**
  * File-based session handler
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 class File extends AbstractBase
 {
@@ -106,7 +106,7 @@ class File extends AbstractBase
      * @param string $sess_id The current session ID
      * @param string $data    The session data to write
      *
-     * @return void
+     * @return bool
      */
     public function write($sess_id, $data)
     {
@@ -115,7 +115,7 @@ class File extends AbstractBase
             $return = fwrite($fp, $data);
             fclose($fp);
             if ($return !== false) {
-                return;
+                return true;
             }
         }
         // If we got this far, something went wrong with the file output...
@@ -123,6 +123,7 @@ class File extends AbstractBase
         // outside of the context of exception handling, so all we can do is
         // echo a message.
         echo 'Cannot write session to ' . $sess_file . "\n";
+        return false;
     }
 
     /**

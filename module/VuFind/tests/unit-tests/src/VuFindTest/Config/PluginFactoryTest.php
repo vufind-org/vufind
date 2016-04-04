@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Config;
 use VuFind\Config\Locator;
@@ -31,12 +31,12 @@ use VuFind\Config\Locator;
 /**
  * Config Factory Test Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class PluginFactoryTest extends \VuFindTest\Unit\TestCase
 {
@@ -175,6 +175,21 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
 
         // Make sure Section 3 was inherited; values from parent should exist.
         $this->assertEquals('7', $config->Section3->g);
+    }
+
+    /**
+     * Test that the plugin factory omits the Parent_Config section from the
+     * merged configuration.
+     *
+     * @void
+     */
+    public function testParentConfigOmission()
+    {
+        if (self::$writeFailed) {
+            $this->markTestSkipped('Could not write test configurations.');
+        }
+        $config = $this->getConfig('unit-test-child');
+        $this->assertFalse(isset($config->Parent_Config));
     }
 
     /**

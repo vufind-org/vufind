@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Module
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/dmj/vf2-proxy
+ * @link     https://vufind.org/wiki/development
  */
 namespace VuFindConsole;
 use Zend\Console\Adapter\AdapterInterface as Console;
@@ -31,11 +31,11 @@ use Zend\Console\Adapter\AdapterInterface as Console;
 /**
  * ZF2 module definition for the VuFind console module
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Module
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/dmj/vf2-proxy
+ * @link     https://vufind.org/wiki/development
  */
 class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterface
 {
@@ -86,9 +86,13 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'harvest merge-marc' => 'MARC merge tool',
             'import import-xsl' => 'XSLT importer',
             'import webcrawl' => 'Web crawler',
+            'language addusingtemplate' => 'Build new language strings from '
+                . 'existing ones using a template',
             'language copystring' => 'Copy one language string to another',
             'language delete' => 'Remove a language string from all files',
             'language normalize' => 'Normalize a directory of language files',
+            'util cleanup_record_cache' => 'Remove unused records from the cache',
+            'util commit' => 'Solr commit tool',
             'util createHierarchyTrees' => 'Cache populator for hierarchies',
             'util cssBuilder' => 'LESS compiler',
             'util deletes' => 'Tool for deleting Solr records',

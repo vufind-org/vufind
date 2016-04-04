@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Bootstrap
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind;
 use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
@@ -31,11 +31,11 @@ use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
 /**
  * VuFind Bootstrapper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Bootstrap
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Bootstrapper
 {
@@ -101,49 +101,27 @@ class Bootstrapper
     }
 
     /**
-     * Set up the session.  This should be done early since other startup routines
-     * may rely on session access.
+     * Initialize dynamic debug mode (debug initiated by a ?debug=true parameter).
      *
      * @return void
      */
-    protected function initSession()
+    protected function initDynamicDebug()
     {
-        // Don't bother with session in CLI mode (it just causes error messages):
+        // Query parameters do not apply in console mode:
         if (Console::isConsole()) {
             return;
         }
 
-        // Get session configuration:
-        if (!isset($this->config->Session->type)) {
-            throw new \Exception('Cannot initialize session; configuration missing');
-        }
-
-        // Set up the session handler by retrieving all the pieces from the service
-        // manager and injecting appropriate dependencies:
-        $serviceManager = $this->event->getApplication()->getServiceManager();
-        $sessionManager = $serviceManager->get('VuFind\SessionManager');
-        $sessionPluginManager = $serviceManager->get('VuFind\SessionPluginManager');
-        $sessionHandler = $sessionPluginManager->get($this->config->Session->type);
-        $sessionHandler->setConfig($this->config->Session);
-        $sessionManager->setSaveHandler($sessionHandler);
-
-        // Start up the session:
-        $sessionManager->start();
-
-        // According to the PHP manual, session_write_close should always be
-        // registered as a shutdown function when using an object as a session
-        // handler: http://us.php.net/manual/en/function.session-set-save-handler.php
-        register_shutdown_function(
-            function () use ($sessionManager) {
-                // If storage is immutable, the session is already closed:
-                if (!$sessionManager->getStorage()->isImmutable()) {
-                    $sessionManager->writeClose();
-                }
+        $app = $this->event->getApplication();
+        $sm = $app->getServiceManager();
+        $debugOverride = $sm->get('Request')->getQuery()->get('debug');
+        if ($debugOverride) {
+            $auth = $sm->get('ZfcRbac\Service\AuthorizationService');
+            if ($auth->isGranted('access.DebugMode')) {
+                $logger = $sm->get('VuFind\Logger');
+                $logger->addDebugWriter($debugOverride);
             }
-        );
-
-        // Make sure account credentials haven't expired:
-        $serviceManager->get('VuFind\AuthManager')->checkForExpiredCredentials();
+        }
     }
 
     /**
@@ -179,7 +157,8 @@ class Bootstrapper
         // the config file if this doesn't work -- different systems may vary in
         // their behavior here.
         setlocale(
-            LC_ALL, [
+            LC_ALL,
+            [
                 "{$this->config->Site->locale}.UTF8",
                 "{$this->config->Site->locale}.UTF-8",
                 $this->config->Site->locale
@@ -290,6 +269,30 @@ class Bootstrapper
     }
 
     /**
+     * Support method for initLanguage() -- look up all text domains.
+     *
+     * @return array
+     */
+    protected function getTextDomains()
+    {
+        $base = APPLICATION_PATH;
+        $local = LOCAL_OVERRIDE_DIR;
+        $languagePathParts = ["$base/languages"];
+        if (!empty($local)) {
+            $languagePathParts[] = "$local/languages";
+        }
+        $languagePathParts[] = "$base/themes/*/languages";
+
+        $domains = [];
+        foreach ($languagePathParts as $current) {
+            $places = glob($current . '/*', GLOB_ONLYDIR | GLOB_NOSORT);
+            $domains = array_merge($domains, array_map('basename', $places));
+        }
+
+        return array_unique($domains);
+    }
+
+    /**
      * Set up language handling.
      *
      * @return void
@@ -325,11 +328,18 @@ class Bootstrapper
             if (!in_array($language, array_keys($config->Languages->toArray()))) {
                 $language = $config->Site->language;
             }
-
             try {
-                $sm->get('VuFind\Translator')
-                    ->addTranslationFile('ExtendedIni', null, 'default', $language)
-                    ->setLocale($language);
+                $translator = $sm->get('VuFind\Translator');
+                $translator->setLocale($language)
+                    ->addTranslationFile('ExtendedIni', null, 'default', $language);
+                foreach ($this->getTextDomains() as $domain) {
+                    // Set up text domains using the domain name as the filename;
+                    // this will help the ExtendedIni loader dynamically locate
+                    // the appropriate files.
+                    $translator->addTranslationFile(
+                        'ExtendedIni', $domain, $domain, $language
+                    );
+                }
             } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
                 if (!extension_loaded('intl')) {
                     throw new \Exception(
@@ -342,6 +352,11 @@ class Bootstrapper
             $viewModel = $sm->get('viewmanager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
+            $rtlLangs = isset($config->LanguageSettings->rtl_langs)
+                ? array_map(
+                    'trim', explode(',', $config->LanguageSettings->rtl_langs)
+                ) : [];
+            $viewModel->setVariable('rtl', in_array($language, $rtlLangs));
         };
         $this->events->attach('dispatch.error', $callback, 10000);
         $this->events->attach('dispatch', $callback, 10000);

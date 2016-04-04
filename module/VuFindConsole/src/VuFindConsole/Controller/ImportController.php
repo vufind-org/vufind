@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
 use VuFind\XSLT\Importer, Zend\Console\Console;
@@ -31,11 +31,11 @@ use VuFind\XSLT\Importer, Zend\Console\Console;
 /**
  * This controller handles various command-line tools
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class ImportController extends AbstractBase
 {
@@ -138,6 +138,16 @@ class ImportController extends AbstractBase
      */
     public function webcrawlAction()
     {
+        // Parse switches:
+        $this->consoleOpts->addRules(
+            ['test-only' => 'Use test mode', 'index-s' => 'Solr index to use']
+        );
+        $testMode = $this->consoleOpts->getOption('test-only') ? true : false;
+        $index = $this->consoleOpts->getOption('index');
+        if (empty($index)) {
+            $index = 'SolrWeb';
+        }
+
         $configLoader = $this->getServiceLocator()->get('VuFind\Config');
         $crawlConfig = $configLoader->get('webcrawl');
 
@@ -152,14 +162,26 @@ class ImportController extends AbstractBase
 
         // Loop through sitemap URLs in the config file.
         foreach ($crawlConfig->Sitemaps->url as $current) {
-            $this->harvestSitemap($current, $verbose);
+            $this->harvestSitemap($current, $verbose, $index, $testMode);
         }
 
-        // Perform the delete of outdated records:
-        $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
-        $solr->deleteByQuery('SolrWeb', 'last_indexed:[* TO ' . $startTime . ']');
-        $solr->commit('SolrWeb');
-        $solr->optimize('SolrWeb');
+        // Skip Solr operations if we're in test mode.
+        if (!$testMode) {
+            $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+            if ($verbose) {
+                Console::writeLine("Deleting old records (prior to $startTime)...");
+            }
+            // Perform the delete of outdated records:
+            $solr->deleteByQuery($index, 'last_indexed:[* TO ' . $startTime . ']');
+            if ($verbose) {
+                Console::writeLine('Committing...');
+            }
+            $solr->commit($index);
+            if ($verbose) {
+                Console::writeLine('Optimizing...');
+            }
+            $solr->optimize($index);
+        }
     }
 
     /**
@@ -168,13 +190,16 @@ class ImportController extends AbstractBase
      * Process a sitemap URL, either harvesting its contents directly or recursively
      * reading in child sitemaps.
      *
-     * @param string $url     URL of sitemap to read.
-     * @param bool   $verbose Are we in verbose mode?
+     * @param string $url      URL of sitemap to read.
+     * @param bool   $verbose  Are we in verbose mode?
+     * @param string $index    Solr index to update
+     * @param bool   $testMode Are we in test mode?
      *
      * @return bool       True on success, false on error.
      */
-    protected function harvestSitemap($url, $verbose = false)
-    {
+    protected function harvestSitemap($url, $verbose = false, $index = 'SolrWeb',
+        $testMode = false
+    ) {
         if ($verbose) {
             Console::writeLine("Harvesting $url...");
         }
@@ -189,19 +214,26 @@ class ImportController extends AbstractBase
             $results = isset($xml->sitemap) ? $xml->sitemap : [];
             foreach ($results as $current) {
                 if (isset($current->loc)) {
-                    if (!$this->harvestSitemap((string)$current->loc, $verbose)) {
+                    $success = $this->harvestSitemap(
+                        (string)$current->loc, $verbose, $index, $testMode
+                    );
+                    if (!$success) {
                         $retVal = false;
                     }
                 }
             }
-
-            try {
-                $this->performImport($file, 'sitemap.properties', 'SolrWeb');
-            } catch (\Exception $e) {
-                if ($verbose) {
-                    Console::writeLine(get_class($e) . ': ' . $e->getMessage());
+            // Only import the current sitemap if it contains URLs!
+            if (isset($xml->url)) {
+                try {
+                    $this->performImport(
+                        $file, 'sitemap.properties', $index, $testMode
+                    );
+                } catch (\Exception $e) {
+                    if ($verbose) {
+                        Console::writeLine(get_class($e) . ': ' . $e->getMessage());
+                    }
+                    $retVal = false;
                 }
-                $retVal = false;
             }
         }
         unlink($file);

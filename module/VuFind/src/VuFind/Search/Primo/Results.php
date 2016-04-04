@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Primo
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Primo;
 
 /**
  * Primo Central Search Parameters
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Primo
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Results extends \VuFind\Search\Base\Results
 {
@@ -81,19 +81,23 @@ class Results extends \VuFind\Search\Base\Results
         $order = array_flip(array_keys($filter));
         // Loop through the facets returned by Primo.
         $facetResult = [];
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
         if (is_array($this->responseFacets)) {
             foreach ($this->responseFacets as $field => $current) {
-                $translate
-                    = in_array($field, $this->getOptions()->getTranslatedFacets());
+                if ($translate = in_array($field, $translatedFacets)) {
+                    $transTextDomain = $this->getOptions()
+                        ->getTextDomainForTranslatedFacet($field);
+                }
                 if (isset($filter[$field])) {
                     $new = [];
                     foreach ($current as $value => $count) {
+                        $rawFixed = $this->getParams()->fixPrimoFacetValue($value);
+                        $displayText = $translate ? $this->translate(
+                            "$transTextDomain::$value", [], $rawFixed
+                        ) : $rawFixed;
                         $new[] = [
                             'value' => $value,
-                            'displayText' =>
-                                $translate
-                                    ? $this->translate($value)
-                                    : $this->getParams()->fixPrimoFacetValue($value),
+                            'displayText' => $displayText,
                             'isApplied' =>
                                 $this->getParams()->hasFilter("$field:" . $value),
                             'operator' => 'AND', 'count' => $count

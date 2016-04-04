@@ -11,7 +11,7 @@
 <? if (isset($this->display_exceptions) && $this->display_exceptions): ?>
   <h3><?=$this->transEsc('Exception')?>:</h3>
   <p>
-    <b><?=$this->transEsc('Message')?>:</b> <?=$this->exception->getMessage()?>
+    <b><?=$this->transEsc('Message')?>:</b> <?=$this->escapeHtml($this->exception->getMessage())?>
   </p>
 
   <h3><?=$this->transEsc('Backtrace')?>:</h3>
@@ -19,7 +19,7 @@
   </pre>
 
   <? if ($e = $this->exception->getPrevious()): ?>
-    <h3>Previous exceptions:</h2>
+    <h3>Previous exceptions:</h3>
     <? while($e): ?>
         <h4><?php echo get_class($e); ?></h4>
         <p><?=$e->getMessage()?></p>

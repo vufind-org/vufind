@@ -1,0 +1,21 @@
+[
+  {
+    "include": [
+      {
+        "methods": {
+          "getCleanISSN": "*",
+          "getFormats": ["Journal"]
+        }
+      },
+      {
+        "methods": {
+          "getCleanISSN": "*",
+          "getFormats": [
+            "Article",
+            "ElectronicArticle"
+          ]
+        }
+      }
+    ]
+  }
+]

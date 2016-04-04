@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Record;
 
 /**
  * Record route generator
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Router
 {
@@ -130,7 +130,7 @@ class Router
     ) {
         // Extract source and ID from driver or string:
         if (is_object($driver)) {
-            $source = $driver->getResourceSource();
+            $source = $driver->getSourceIdentifier();
             $id = $driver->getUniqueId();
         } else {
             list($source, $id) = $this->extractSourceAndId($driver);
@@ -142,7 +142,7 @@ class Router
 
         // Determine route based on naming convention (default VuFind route is
         // the exception to the rule):
-        $routeBase = ($source == 'VuFind')
+        $routeBase = ($source == DEFAULT_SEARCH_BACKEND)
             ? 'record' : strtolower($source . 'record');
 
         return [
@@ -162,7 +162,7 @@ class Router
     {
         $parts = explode('|', $driver, 2);
         if (count($parts) < 2) {
-            $source = 'VuFind';
+            $source = DEFAULT_SEARCH_BACKEND;
             $id = $parts[0];
         } else {
             $source = $parts[0];

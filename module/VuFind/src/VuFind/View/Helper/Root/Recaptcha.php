@@ -19,23 +19,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Chris Hallberg <crhallberg@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
-use Zend\View\Helper\AbstractHelper, Zend\Mvc\Controller\Plugin\FlashMessenger;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Recaptcha view helper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Chris Hallberg <crhallberg@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Recaptcha extends AbstractHelper
 {
@@ -52,6 +52,20 @@ class Recaptcha extends AbstractHelper
      * @var Config
      */
     protected $active;
+
+    /**
+     * HTML prefix for ReCaptcha output.
+     *
+     * @var string
+     */
+    protected $prefixHtml = '';
+
+    /**
+     * HTML suffix for ReCaptcha output.
+     *
+     * @var string
+     */
+    protected $suffixHtml = '';
 
     /**
      * Constructor
@@ -87,7 +101,7 @@ class Recaptcha extends AbstractHelper
         if (!isset($useRecaptcha) || !$useRecaptcha) {
             return false;
         }
-        return $this->recaptcha->getHtml();
+        return $this->prefixHtml . $this->recaptcha->getHtml() . $this->suffixHtml;
     }
 
     /**

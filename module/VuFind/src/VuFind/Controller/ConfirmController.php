@@ -19,24 +19,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 
 /**
  * Redirects the user to the appropriate VuFind action.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class ConfirmController extends AbstractBase
 {
@@ -53,8 +53,6 @@ class ConfirmController extends AbstractBase
 
         // Assign Flash Messages
         if (isset($data['messages'])) {
-            $this->flashMessenger()->setNamespace('info');
-
             foreach ($data['messages'] as $message) {
                 $flash = (true === is_array($message))
                     ? [
@@ -62,7 +60,7 @@ class ConfirmController extends AbstractBase
                         'tokens' => $message['tokens']
                     ]
                     : $message;
-                $this->flashMessenger()->addMessage($flash);
+                $this->flashMessenger()->addMessage($flash, 'info');
             }
         }
 

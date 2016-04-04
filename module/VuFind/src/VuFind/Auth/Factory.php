@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Auth;
 use Zend\ServiceManager\ServiceManager;
@@ -31,16 +31,46 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Factory for authentication services.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  *
  * @codeCoverageIgnore
  */
 class Factory
 {
+    /**
+     * Construct the ChoiceAuth plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ChoiceAuth
+     */
+    public static function getChoiceAuth(ServiceManager $sm)
+    {
+        $container = new \Zend\Session\Container(
+            'ChoiceAuth', $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
+        return new ChoiceAuth($container);
+    }
+
+    /**
+     * Construct the Facebook plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Facebook
+     */
+    public static function getFacebook(ServiceManager $sm)
+    {
+        $container = new \Zend\Session\Container(
+            'Facebook', $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
+        return new Facebook($container);
+    }
+
     /**
      * Construct the ILS plugin.
      *
@@ -79,7 +109,8 @@ class Factory
             // Indicate that initialization is complete to avoid reinitialization:
             $proxy->setProxyInitializer(null);
         };
-        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory();
+        $cfg = $sm->get('VuFind\ProxyConfig');
+        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
         return $factory->createProxy('VuFind\Auth\ILSAuthenticator', $callback);
     }
 
@@ -116,8 +147,10 @@ class Factory
         $pm = $sm->get('VuFind\AuthPluginManager');
         $cookies = $sm->get('VuFind\CookieManager');
 
-        // Build the object:
-        return new Manager($config, $userTable, $sessionManager, $pm, $cookies);
+        // Build the object and make sure account credentials haven't expired:
+        $manager = new Manager($config, $userTable, $sessionManager, $pm, $cookies);
+        $manager->checkForExpiredCredentials();
+        return $manager;
     }
 
     /**

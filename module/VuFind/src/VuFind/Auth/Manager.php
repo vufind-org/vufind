@@ -19,26 +19,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
 use VuFind\Cookie\CookieManager,
     VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
     VuFind\Exception\Auth as AuthException,
-    Zend\Config\Config, Zend\Session\SessionManager;
+    Zend\Config\Config, Zend\Session\SessionManager, Zend\Validator\Csrf;
 
 /**
  * Wrapper class for handling logged-in user in session.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
 {
@@ -133,7 +133,16 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->cookieManager = $cookieManager;
 
         // Set up session:
-        $this->session = new \Zend\Session\Container('Account');
+        $this->session = new \Zend\Session\Container('Account', $sessionManager);
+
+        // Set up CSRF:
+        $this->csrf = new Csrf(
+            [
+                'session' => new \Zend\Session\Container('csrf', $sessionManager),
+                'salt' => isset($this->config->Security->HMACkey)
+                    ? $this->config->Security->HMACkey : 'VuFindCsrfSalt',
+            ]
+        );
 
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
@@ -374,6 +383,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         // Clear out the cached user object and session entry.
         $this->currentUser = false;
         unset($this->session->userId);
+        unset($this->session->userDetails);
         $this->cookieManager->set('loggedOut', 1);
 
         // Destroy the session for good measure, if requested.
@@ -408,13 +418,38 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     {
         // If user object is not in cache, but user ID is in session,
         // load the object from the database:
-        if (!$this->currentUser && isset($this->session->userId)) {
-            $results = $this->userTable
-                ->select(['id' => $this->session->userId]);
-            $this->currentUser = count($results) < 1
-                ? false : $results->current();
+        if (!$this->currentUser) {
+            if (isset($this->session->userId)) {
+                // normal mode
+                $results = $this->userTable
+                    ->select(['id' => $this->session->userId]);
+                $this->currentUser = count($results) < 1
+                    ? false : $results->current();
+            } else if (isset($this->session->userDetails)) {
+                // privacy mode
+                $results = $this->userTable->createRow();
+                $results->exchangeArray($this->session->userDetails);
+                $this->currentUser = $results;
+            } else {
+                // unexpected state
+                $this->currentUser = false;
+            }
         }
         return $this->currentUser;
+    }
+
+    /**
+     * Retrieve CSRF token
+     *
+     * If no CSRF token currently exists, or should be regenerated, generates one.
+     *
+     * @param bool $regenerate Should we regenerate token? (default false)
+     *
+     * @return string
+     */
+    public function getCsrfHash($regenerate = false)
+    {
+        return $this->csrf->getHash($regenerate);
     }
 
     /**
@@ -442,6 +477,17 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     }
 
     /**
+     * Are we in privacy mode?
+     *
+     * @return bool
+     */
+    public function inPrivacyMode()
+    {
+        return isset($this->config->Authentication->privacy)
+            && $this->config->Authentication->privacy;
+    }
+
+    /**
      * Updates the user information in the session.
      *
      * @param UserRow $user User object to store in the session
@@ -451,7 +497,11 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     public function updateSession($user)
     {
         $this->currentUser = $user;
-        $this->session->userId = $user->id;
+        if ($this->inPrivacyMode()) {
+            $this->session->userDetails = $user->toArray();
+        } else {
+            $this->session->userId = $user->id;
+        }
         $this->cookieManager->clear('loggedOut');
     }
 
@@ -499,6 +549,17 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function login($request)
     {
+        // Allow the auth module to inspect the request (used by ChoiceAuth,
+        // for example):
+        $this->getAuth()->preLoginCheck($request);
+
+        // Validate CSRF for form-based authentication methods:
+        if (!$this->getAuth()->getSessionInitiator(null)
+            && !$this->csrf->isValid($request->getPost()->get('csrf'))
+        ) {
+            throw new AuthException('authentication_error_technical');
+        }
+
         // Perform authentication:
         try {
             $user = $this->getAuth()->authenticate($request);

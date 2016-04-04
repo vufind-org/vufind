@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_SolrAuthor
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\SolrCollection;
 
 /**
  * Solr Collection Search Options
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_SolrAuthor
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Params extends \VuFind\Search\Solr\Params
 {
@@ -84,13 +84,12 @@ class Params extends \VuFind\Search\Solr\Params
         }
 
         // We don't spellcheck this screen; it's not for free user input anyway
-        $options = $this->getOptions();
-        $options->spellcheckEnabled(false);
+        $this->getOptions()->spellcheckEnabled(false);
 
         // Prepare the search
         $safeId = addcslashes($this->collectionID, '"');
-        $options->addHiddenFilter($this->collectionField . ':"' . $safeId . '"');
-        $options->addHiddenFilter('!id:"' . $safeId . '"');
+        $this->addHiddenFilter($this->collectionField . ':"' . $safeId . '"');
+        $this->addHiddenFilter('!id:"' . $safeId . '"');
     }
 
     /**

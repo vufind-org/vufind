@@ -1,10 +1,11 @@
+<? $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled'; ?>
 <table class="table table-striped">
   <tr>
     <th width="20%"><?=$this->transEsc("history_time")?></th>
     <th><?=$this->transEsc("history_search")?></th>
     <th><?=$this->transEsc("history_limits")?></th>
     <th><?=$this->transEsc("history_results")?></th>
-    <th><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th>
+    <? if ($saveSupported): ?><th><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th><? endif; ?>
   </tr>
   <? foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
     <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
@@ -17,21 +18,28 @@
         ?></a>
       </td>
       <td>
-        <? $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList() as $field => $filters): ?>
+        <? $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList(true) as $field => $filters): ?>
           <? foreach ($filters as $i => $filter): ?>
             <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?>
             <strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?><br/>
           <? endforeach; ?>
         <? endforeach; ?>
+        <? foreach($info->getParams()->getCheckboxFacets() as $facet): ?>
+          <? if ($facet['selected']): ?>
+            <strong><?=$this->transEsc($facet['desc'])?></strong><br/>
+          <? endif; ?>
+        <? endforeach; ?>
       </td>
       <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
-      <td>
-        <? if ($this->showSaved): ?>
-          <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-remove"></i> <?=$this->transEsc("history_delete_link")?></a>
-        <? else: ?>
-          <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-save"></i> <?=$this->transEsc("history_save_link")?></a>
-        <? endif; ?>
-      </td>
+      <? if ($saveSupported): ?>
+        <td>
+          <? if ($this->showSaved): ?>
+            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-remove"></i> <?=$this->transEsc("history_delete_link")?></a>
+          <? else: ?>
+            <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-save"></i> <?=$this->transEsc("history_save_link")?></a>
+          <? endif; ?>
+        </td>
+      <? endif; ?>
     </tr>
   <? endforeach; ?>
 </table>

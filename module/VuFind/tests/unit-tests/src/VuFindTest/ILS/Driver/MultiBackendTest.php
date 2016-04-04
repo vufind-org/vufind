@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,12 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Kyle McGrogan <km7717@ship.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\MultiBackend, VuFind\Config\Reader as ConfigReader;
@@ -34,12 +34,12 @@ use Zend\Log\Writer\Mock;
 /**
  * ILS driver test
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Kyle McGrogan <km7717@ship.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class MultiBackendTest extends \VuFindTest\Unit\TestCase
 {
@@ -152,9 +152,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Test that MultiBackend can properly retrieve a new driver
-     * Almost the same as testing the Uninitialized driver, we just
-     * have to expect it to get initialized.
+     * Test that MultiBackend can properly retrieve a new driver.
      *
      * @return void
      */
@@ -163,7 +161,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $driver = $this->getDriver();
         //Set up the mock driver to be retrieved
         $ILS = $this->getMockILS('Voyager', ['init', 'setConfig']);
-        $ILS->expects($this->exactly(2))
+        $ILS->expects($this->once())
             ->method('init');
         $ILS->expects($this->once())
             ->method('setConfig')
@@ -180,115 +178,9 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $returnDriver = $this->callMethod($driver, 'getDriver', ['testing2']);
         $this->assertEquals($ILS, $returnDriver);
 
-        $this->setProperty($driver, 'isInitialized', []);
-        $returnDriver = $this->callMethod($driver, 'getDriver', ['testing2']);
-        $this->assertEquals($ILS, $returnDriver);
-
         $returnDriver
             = $this->callMethod($driver, 'getDriver', ['nonexistent']);
         $this->assertNull($returnDriver);
-    }
-
-    /**
-     * Test that MultiBackend can properly retrieve an uninitialized
-     * driver.
-     *
-     * @return void
-     */
-    public function testGetUninitializedDriver()
-    {
-        $driver = $this->getDriver();
-        //Set up the mock driver to be retrieved
-        $ILS = $this->getMockILS('Voyager', ['setConfig']);
-        $ILS->expects($this->once())
-            ->method('setConfig')
-            ->with(['config' => 'values']);
-
-        //Set up the ServiceLocator so it returns our mock driver
-        $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
-        $driver->setServiceLocator($sm);
-        //Add an entry for our test driver to the array of drivers
-        $drivers = ['testing' => 'Voyager'];
-        $this->setProperty($driver, 'drivers', $drivers);
-
-        //Case: A driver is associated with the given name
-            //Result: Return that driver. Cached, but not initialized.
-        $unInitDriver = $this->callMethod(
-            $driver,
-            'getUninitializedDriver',
-            ['testing']
-        );
-        $this->assertEquals($ILS, $unInitDriver);
-
-        //Check the cache arrays to make sure they get set correctly
-        $isInit = $this->getProperty($driver, 'isInitialized');
-        $cache = $this->getproperty($driver, 'cache');
-        $this->assertEquals($ILS, $cache['testing']);
-        $this->assertFalse($isInit['testing']);
-
-        //Verify that the cached driver is returned properly
-        $unInitDriver = $this->callMethod(
-            $driver,
-            'getUninitializedDriver',
-            ['testing']
-        );
-        $this->assertEquals($ILS, $unInitDriver);
-
-        //Case: No driver associated with that name exists
-            //Result: Return of null
-        $unInitDriver = $this->callMethod(
-            $driver,
-            'getUninitializedDriver',
-            ['noDriverWithThisName']
-        );
-        $this->assertNull($unInitDriver);
-
-        //Case: No configuration for the driver
-            //Result: Return of null
-        $mockPM = $this->getMock('\VuFind\Config\PluginManager');
-        $mockPM->expects($this->any())
-            ->method('get')
-            ->will(
-                $this->throwException(new \Zend\Config\Exception\RuntimeException())
-            );
-        $driver = new MultiBackend($mockPM, $this->getMockILSAuthenticator());
-        $driver->setConfig(['Drivers' => ['d1' => 'Voyager']]);
-        $driver->init();
-        $unInitDriver = $this->callMethod(
-            $driver,
-            'getUninitializedDriver',
-            ['d1']
-        );
-        $this->assertNull($unInitDriver);
-    }
-
-    /**
-     * Test that MultiBackend can properly initialize a driver it
-     * is given, and cache it.
-     *
-     * @return void
-     */
-    public function testInitializeDriver()
-    {
-        $driver = $this->getDriver();
-        //Set up the mock driver to be initialized.
-        $ILS = $this->getMockILS('Voyager', ['init']);
-        $ILS->expects($this->once())
-            ->method('init');
-
-        //Run the test method
-        $this->callMethod($driver, 'initializeDriver', [$ILS, 'test']);
-
-        //Check the cache arrays
-        $isInit = $this->getProperty($driver, 'isInitialized');
-        $cache = $this->getproperty($driver, 'cache');
-        $this->assertSame($ILS, $cache['test']);
-        $this->assertTrue($isInit['test']);
-
-        $this->setProperty($driver, 'isInitialized', []);
-        $d = new \VuFind\ILS\Driver\Voyager(new \VuFind\Date\Converter());
-        $this->setExpectedException('VuFind\Exception\ILS');
-        $this->callMethod($driver, 'initializeDriver', [$d, 'fail']);
     }
 
     /**
@@ -340,6 +232,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'cat_username' => "$source.record2"
         ];
         $result = $this->callMethod($driver, 'addIdPrefixes', [$data, $source]);
+        $this->assertEquals($expected, $result);
+
+        // Empty source must not add prefixes
+        $expected = [
+            'id' => "record1",
+            'cat_username' => "record2"
+        ];
+        $result = $this->callMethod($driver, 'addIdPrefixes', [$data, '']);
         $this->assertEquals($expected, $result);
 
         $data = [
@@ -778,22 +678,112 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetNewItems()
     {
-        $expected = ['test' => 'true'];
-        $driver = $this->initSimpleMethodTest(
-            $this->once(),
-            $this->never(),
-            'getNewItems',
-            [1, 10, 5, 0],
-            $expected,
-            $expected
-        );
+        $driver = $this->getDriver();
+        $drivers = ['d1' => 'Voyager'];
+        $this->setProperty($driver, 'drivers', $drivers);
+
+        $return = [
+            'count' => 2,
+            'results' => ['id' => '1', 'id' => '2']
+        ];
+
+        $ILS = $this->getMockILS('Voyager', ['getNewItems', 'init']);
+        $ILS->expects($this->once())
+            ->method('getNewItems')
+            ->with($this->equalTo('1'), $this->equalTo('10'), $this->equalTo('5'), $this->equalTo('0'))
+            ->will($this->returnValue($return));
+
+        $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
+        $driver->setServiceLocator($sm);
 
         // getNewItems only works with a default driver, so the first calls fails
         $result = $driver->getNewItems(1, 10, 5, 0);
         $this->assertEquals([], $result);
 
+        $expected = [
+            'count' => 2,
+            'results' => ['id' => 'd1.1', 'id' => 'd1.2']
+        ];
         $this->setProperty($driver, 'defaultDriver', 'd1');
         $result = $driver->getNewItems(1, 10, 5, 0);
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing method for getCourses
+     *
+     * @return void
+     */
+    public function testGetCourses()
+    {
+        $expected = ['test' => 'true'];
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->never(),
+            'getCourses',
+            [],
+            $expected,
+            $expected
+        );
+
+        // getCourses  only works with a default driver, so the first calls fails
+        $result = $driver->getCourses();
+        $this->assertEquals([], $result);
+
+        $this->setProperty($driver, 'defaultDriver', 'd1');
+        $result = $driver->getCourses();
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing method for getDepartments
+     *
+     * @return void
+     */
+    public function testGetDepartments()
+    {
+        $expected = ['test' => 'true'];
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->never(),
+            'getDepartments',
+            [],
+            $expected,
+            $expected
+        );
+
+        // getCourses  only works with a default driver, so the first calls fails
+        $result = $driver->getDepartments();
+        $this->assertEquals([], $result);
+
+        $this->setProperty($driver, 'defaultDriver', 'd1');
+        $result = $driver->getDepartments();
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing method for getInstructors
+     *
+     * @return void
+     */
+    public function testGetInstructors()
+    {
+        $expected = ['test' => 'true'];
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->never(),
+            'getInstructors',
+            [],
+            $expected,
+            $expected
+        );
+
+        // getCourses  only works with a default driver, so the first calls fails
+        $result = $driver->getInstructors();
+        $this->assertEquals([], $result);
+
+        $this->setProperty($driver, 'defaultDriver', 'd1');
+        $result = $driver->getInstructors();
         $this->assertEquals($expected, $result);
     }
 
@@ -804,21 +794,43 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testFindReserves()
     {
-        $expected = ['test' => 'true'];
-        $driver = $this->initSimpleMethodTest(
-            $this->once(),
-            $this->never(),
-            'findReserves',
-            ['course', 'inst', 'dept'],
-            $expected,
-            $expected
-        );
+        $driver = $this->getDriver();
+        $drivers = ['d1' => 'Voyager'];
+        $this->setProperty($driver, 'drivers', $drivers);
+        $id = '123456';
+
+        $reservesReturn = [
+            [
+                'BIB_ID' => '12345',
+                'COURSE_ID' => 1,
+                'DEPARTMENT_ID' => 2,
+                'INSTRUCTOR_ID' => 3,
+            ],
+            [
+                'BIB_ID' => '56789',
+                'COURSE_ID' => 4,
+                'DEPARTMENT_ID' => 5,
+                'INSTRUCTOR_ID' => 6,
+            ]
+        ];
+
+        $ILS = $this->getMockILS('Voyager', ['findReserves', 'init']);
+        $ILS->expects($this->once())
+            ->method('findReserves')
+            ->with($this->equalTo('course'), $this->equalTo('inst'), $this->equalTo('dept'))
+            ->will($this->returnValue($reservesReturn));
+
+        $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
+        $driver->setServiceLocator($sm);
 
         // findReserves only works with a default driver, so the first calls fails
         $result = $driver->findReserves('course', 'inst', 'dept');
         $this->assertEquals([], $result);
 
         $this->setProperty($driver, 'defaultDriver', 'd1');
+        $expected = $reservesReturn;
+        $expected[0]['BIB_ID'] = 'd1.' . $expected[0]['BIB_ID'];
+        $expected[1]['BIB_ID'] = 'd1.' . $expected[1]['BIB_ID'];
         $result = $driver->findReserves('course', 'inst', 'dept');
         $this->assertEquals($expected, $result);
     }
@@ -870,13 +882,11 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             ->with('username', 'password')
             ->will($this->returnValue($patronReturn));
 
-        //Prep MultiBackend with values it will need
+        // Prep MultiBackend with values it will need
         $drivers = [$instance => 'Voyager'];
-        $isInit = [$instance => true];
         $cache = [$instance => $ILS];
         $this->setProperty($driver, 'drivers', $drivers);
-        $this->setProperty($driver, 'isInitialized', $isInit);
-        $this->setProperty($driver, 'cache', $cache);
+        $this->setProperty($driver, 'driverCache', $cache);
 
         //Call the method
         $patron = $driver->patronLogin("$instance.username", 'password');
@@ -2378,25 +2388,38 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Get a mock Demo driver
+     *
+     * @return \VuFind\ILS\Driver\Demo
+     */
+    protected function getMockDemoDriver($methods)
+    {
+        $session = $this->getMockBuilder('Zend\Session\Container')
+            ->disableOriginalConstructor()->getMock();
+        return $this->getMock(
+            "VuFind\ILS\Driver\Demo", $methods,
+            [
+                new \VuFind\Date\Converter(),
+                $this->getMock('VuFindSearch\Service'),
+                function () use ($session) { return $session; }
+            ]
+        );
+    }
+
+    /**
      * Get a mock driver
      *
      * @param string $type    Type of driver to make
      * @param array  $methods Array of methods to stub
      *
-     * @return \VuFind\ILS\Driver\$type
+     * @return \VuFind\ILS\Driver\AbstractBase
      */
     protected function getMockILS($type, $methods = null)
     {
         $mock = null;
         try {
             if ($type == 'Demo') {
-                $mock = $this->getMock(
-                    "VuFind\ILS\Driver\\$type", $methods,
-                    [
-                        new \VuFind\Date\Converter(),
-                        $this->getMock('VuFindSearch\Service')
-                    ]
-                );
+                $mock = $this->getMockDemoDriver($methods);
             } else {
                 $mock = $this->getMock(
                     "VuFind\ILS\Driver\\$type", $methods,
@@ -2421,11 +2444,11 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 /**
  * A dummy ILS driver used for testing a driver with unsupported features
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class DummyILS extends \VuFind\ILS\Driver\AbstractBase
 {

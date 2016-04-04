@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Frank Morgner <morgnerf@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Solr;
 
@@ -34,11 +34,11 @@ use Zend\EventManager\EventInterface;
 /**
  * Hide single facet values from displaying.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Frank Morgner <morgnerf@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class HideFacetValueListener
 {
@@ -60,7 +60,8 @@ class HideFacetValueListener
      * Constructor.
      *
      * @param BackendInterface $backend         Search backend
-     * @param array            $hideFacetValues Facet config file id
+     * @param array            $hideFacetValues Associative array of field name
+     * to array of facet values to hide.
      */
     public function __construct(
         BackendInterface $backend,
@@ -118,13 +119,7 @@ class HideFacetValueListener
 
         foreach ($this->hideFacets as $facet => $value) {
             if (isset($facets[$facet])) {
-                foreach ((array)$value as $config_value) {
-                    foreach ($facets[$facet] as $facet_value => $count) {
-                        if ($facet_value == $config_value) {
-                            $facets[$facet]->remove();
-                        }
-                    }
-                }
+                $facets[$facet]->removeKeys((array)$value);
             }
         }
         return null;

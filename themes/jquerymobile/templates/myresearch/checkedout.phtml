@@ -34,7 +34,7 @@
           <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
           <? $prefix = isset($ilsDetails['title']) ? $ilsDetails['title'] : $ilsDetails['item_id']; ?>
           <? if (isset($renewDetails['success']) && $renewDetails['success']): ?>
-            <div class="info"><?=$this->escapeHtml($prefix . ': ') . $this->transEsc('renew_success')?></div>
+            <div class="success"><?=$this->escapeHtml($prefix . ': ') . $this->transEsc('renew_success')?></div>
           <? else: ?>
             <div class="error"><?=$this->escapeHtml($prefix . ': ') . $this->transEsc('renew_fail')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escapeHtml($renewDetails['sysMessage'])?><? endif; ?></div>
           <? endif; ?>
@@ -69,8 +69,8 @@
           ?>
           <div class="result">
             <h3><?=$title?></h3>
-            <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
-              <p><?=$this->transEsc('by')?> <?=$this->escapeHtml($listAuthor)?></p>
+            <? $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
+              <p><?=$this->transEsc('by')?> <?=$this->escapeHtml($listAuthors[0])?><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?></p>
             <? endif; ?>
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=$this->record($resource)->getFormatList()?>

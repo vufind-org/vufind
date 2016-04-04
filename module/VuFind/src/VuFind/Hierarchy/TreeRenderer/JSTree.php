@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  HierarchyTree_Renderer
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\TreeRenderer;
 
@@ -32,11 +32,11 @@ namespace VuFind\Hierarchy\TreeRenderer;
  *
  * This is a helper class for producing hierarchy trees.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  HierarchyTree_Renderer
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 class JSTree extends AbstractBase
     implements \VuFind\I18n\Translator\TranslatorAwareInterface
@@ -176,7 +176,7 @@ class JSTree extends AbstractBase
                 'recordid' => $node->id
             ],
             'a_attr' => [
-                'href' => $this->getContextualUrl($node, $context, $hierarchyID),
+                'href' => $this->getContextualUrl($node, $context),
                 'title' => $node->title
             ],
             'type' => $node->type
@@ -194,19 +194,17 @@ class JSTree extends AbstractBase
     /**
      * Use the router to build the appropriate URL based on context
      *
-     * @param object $node         JSON object of a node/top node
-     * @param string $context      Record or Collection
-     * @param string $collectionID Collection ID
+     * @param object $node    JSON object of a node/top node
+     * @param string $context Record or Collection
      *
      * @return string
      */
-    protected function getContextualUrl($node, $context, $collectionID)
+    protected function getContextualUrl($node, $context)
     {
         if ($context == 'Collection') {
             return $this->getUrlFromRouteCache('collection', $node->id)
                 . '#tabnav';
         } else {
-            $options['query']['hierarchy'] = $collectionID;
             $url = $this->getUrlFromRouteCache($node->type, $node->id);
             return $node->type == 'collection'
                 ? $url . '#tabnav'
@@ -258,7 +256,7 @@ class JSTree extends AbstractBase
         $name = strlen($node->title) > 100
             ? substr($node->title, 0, 100) . '...'
             : $node->title;
-        $href = $this->getContextualUrl($node, $context, $hierarchyID);
+        $href = $this->getContextualUrl($node, $context);
         $icon = $node->type == 'record' ? 'file-o' : 'folder-open';
 
         $html = '<li';

@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Autocomplete
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
+ * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
 namespace VuFind\Autocomplete;
 
 /**
  * Autocomplete handler plugin manager
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Autocomplete
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
+ * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
@@ -68,6 +68,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $type = $request->get($typeParam, '');
         $query = $request->get($queryParam, '');
         $searcher = $request->get('searcher', 'Solr');
+        $hiddenFilters = $request->get('hiddenFilters', []);
 
         // If we're using a combined search box, we need to override the searcher
         // and type settings.
@@ -101,6 +102,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             list($name, $params) = explode(':', $module, 2);
             $handler = $this->get($name);
             $handler->setConfig($params);
+        }
+
+        if (is_callable([$handler, 'addFilters'])) {
+            $handler->addFilters($hiddenFilters);
         }
 
         return (isset($handler) && is_object($handler))

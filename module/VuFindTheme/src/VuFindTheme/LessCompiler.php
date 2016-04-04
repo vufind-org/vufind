@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Theme
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFindTheme;
 use Zend\Console\Console;
@@ -31,11 +31,11 @@ use Zend\Console\Console;
 /**
  * Class to compile LESS into CSS within a theme.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Theme
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class LessCompiler
 {
@@ -141,11 +141,6 @@ class LessCompiler
                 $this->compileFile($theme, $less);
             }
         }
-
-        \Less_Cache::SetCacheDir(
-            APPLICATION_PATH . '/themes/' . $theme . '/css/less/'
-        );
-        \Less_Cache::CleanCache(); // deletes week old files
     }
 
     /**
@@ -202,11 +197,11 @@ class LessCompiler
             );
             return;
         }
-        $outFile = \Less_Cache::Regen(
+        $outFile = \Less_Cache::Get(
             [$lessDir . $less => $this->fakePath . "themes/$theme/css/less"],
             [
                 'cache_dir' => $this->tempPath,
-                'cache_method' => false,
+                'cache_method' => 'php',
                 'compress' => true,
                 'import_dirs' => $directories
             ]

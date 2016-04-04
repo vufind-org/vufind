@@ -20,7 +20,7 @@
     <script type="text/javascript">$("#reservesSearchForm_lookfor").focus()</script>
 
     <div class="resulthead">
-      <div class="pull-left">
+      <div class="pull-left flip">
         <? if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
           <?=$this->transEsc("Showing")?>
           <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
@@ -32,7 +32,7 @@
         <? endif; ?>
       </div>
 
-      <div class="pull-right">
+      <div class="pull-right flip">
         <?=$this->render('search/controls/sort.phtml')?>
       </div>
     </div>

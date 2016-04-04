@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Harvest_Tools
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/importing_records#oai-pmh_harvesting Wiki
+ * @link     https://vufind.org/wiki/indexing:oai-pmh Wiki
  */
 namespace VuFind\Harvester;
 use Zend\Console\Console;
@@ -33,11 +33,11 @@ use Zend\Console\Console;
  *
  * This class harvests records via OAI-PMH using settings from oai.ini.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Harvest_Tools
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/importing_records#oai-pmh_harvesting Wiki
+ * @link     https://vufind.org/wiki/indexing:oai-pmh Wiki
  */
 class OAI
 {
@@ -124,6 +124,14 @@ class OAI
      * @var string
      */
     protected $lastHarvestFile;
+
+    /**
+     * File for tracking last harvest state (for continuing interrupted
+     * connection).
+     *
+     * @var string
+     */
+    protected $lastStateFile;
 
     /**
      * Harvest end date (null for no specific end)
@@ -267,6 +275,7 @@ class OAI
 
         // Check if there is a file containing a start date:
         $this->lastHarvestFile = $this->basePath . 'last_harvest.txt';
+        $this->lastStateFile = $this->basePath . 'last_state.txt';
 
         // Set up start/end dates:
         $this->setStartDate(empty($from) ? $this->loadLastHarvestedDate() : $from);
@@ -322,16 +331,45 @@ class OAI
             $sets = [null];
         }
 
+        // Load last state, if applicable (used to recover from server failure).
+        if (file_exists($this->lastStateFile)) {
+            $this->write("Found {$this->lastStateFile}; attempting to resume.\n");
+            list($resumeSet, $resumeToken, $this->startDate)
+                = explode("\t", file_get_contents($this->lastStateFile));
+        }
+    
         // Loop through all of the selected sets:
         foreach ($sets as $set) {
-            // Start harvesting at the requested date:
-            $token = $this
-                ->getRecordsByDate($this->startDate, $set, $this->harvestEndDate);
+            // If we're resuming and there are multiple sets, find the right one.
+            if (isset($resumeToken) && $resumeSet != $set) {
+                continue;
+            }
+
+            // If we have a token to resume from, pick up there now...
+            if (isset($resumeToken)) {
+                $token = $resumeToken;
+                unset($resumeToken);
+            } else {
+                // ...otherwise, start harvesting at the requested date:
+                $token = $this->getRecordsByDate(
+                    $this->startDate, $set, $this->harvestEndDate
+                );
+            }
 
             // Keep harvesting as long as a resumption token is provided:
             while ($token !== false) {
+                // Save current state in case we need to resume later:
+                file_put_contents(
+                    $this->lastStateFile, "$set\t$token\t{$this->startDate}"
+                );
                 $token = $this->getRecordsByToken($token);
             }
+        }
+
+        // If we made it this far, all was successful, so we should clean up
+        // the "last state" file.
+        if (file_exists($this->lastStateFile)) {
+            unlink($this->lastStateFile);
         }
     }
 
@@ -457,7 +495,7 @@ class OAI
                     sleep($delay);
                 }
             } else if (!$result->isSuccess()) {
-                throw new \Exception('HTTP Error');
+                throw new \Exception('HTTP Error ' . $result->getStatusCode());
             } else {
                 // If we didn't get an error, we can leave the retry loop:
                 break;
@@ -520,8 +558,10 @@ class OAI
             $xml = $this->sanitizeXML($xml);
         }
 
-        // Parse the XML:
-        $result = simplexml_load_string($xml);
+        // Parse the XML (newer versions of LibXML require a special flag for
+        // large documents, and responses may be quite large):
+        $flags = LIBXML_VERSION >= 20900 ? LIBXML_PARSEHUGE : 0;
+        $result = simplexml_load_string($xml, null, $flags);
         if (!$result) {
             throw new \Exception("Problem loading XML: {$xml}");
         }
@@ -529,6 +569,17 @@ class OAI
         // Detect errors and die if one is found:
         if ($result->error) {
             $attribs = $result->error->attributes();
+
+            // If this is a bad resumption token error and we're trying to
+            // restore a prior state, we should clean up.
+            if ($attribs['code'] == 'badResumptionToken'
+                && file_exists($this->lastStateFile)
+            ) {
+                unlink($this->lastStateFile);
+                throw new \Exception(
+                    "Token expired; removing last_state.txt. Please restart harvest."
+                );
+            }
             throw new \Exception(
                 "OAI-PMH error -- code: {$attribs['code']}, " .
                 "value: {$result->error}"

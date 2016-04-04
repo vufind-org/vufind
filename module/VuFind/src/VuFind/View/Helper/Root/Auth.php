@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 use Zend\View\Exception\RuntimeException;
@@ -31,11 +31,11 @@ use Zend\View\Exception\RuntimeException;
 /**
  * Authentication view helper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Auth extends \Zend\View\Helper\AbstractHelper
 {
@@ -66,14 +66,16 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      */
     protected function renderTemplate($name, $context = [])
     {
+        // Get the current auth module's class name
+        $className = $this->getManager()->getAuthClassForTemplateRendering();
+
         // Set up the needed context in the view:
         $contextHelper = $this->getView()->plugin('context');
+        $context['topClass'] = $this->getBriefClass($className);
         $oldContext = $contextHelper($this->getView())->apply($context);
 
-        // Get the current auth module's class name, then start a loop
-        // in case we need to use a parent class' name to find the appropriate
-        // template.
-        $className = $this->getManager()->getAuthClassForTemplateRendering();
+        // Start a loop in case we need to use a parent class' name to find the
+        // appropriate template.
         $topClassName = $className; // for error message
         $resolver = $this->getView()->resolver();
         while (true) {

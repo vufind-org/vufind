@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 use Zend\View\Helper\AbstractHelper, Zend\Mvc\Controller\Plugin\FlashMessenger;
@@ -31,11 +31,11 @@ use Zend\View\Helper\AbstractHelper, Zend\Mvc\Controller\Plugin\FlashMessenger;
 /**
  * Flash message view helper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Flashmessages extends AbstractHelper
 {
@@ -76,11 +76,10 @@ class Flashmessages extends AbstractHelper
     public function __invoke()
     {
         $html = '';
-        $namespaces = ['error', 'info'];
+        $namespaces = ['error', 'info', 'success'];
         foreach ($namespaces as $ns) {
-            $this->fm->setNamespace($ns);
             $messages = array_merge(
-                $this->fm->getMessages(), $this->fm->getCurrentMessages()
+                $this->fm->getMessages($ns), $this->fm->getCurrentMessages($ns)
             );
             foreach (array_unique($messages, SORT_REGULAR) as $msg) {
                 $html .= '<div class="' . $this->getClassForNamespace($ns) . '">';
@@ -108,8 +107,8 @@ class Flashmessages extends AbstractHelper
                 }
                 $html .= '</div>';
             }
-            $this->fm->clearMessages();
-            $this->fm->clearCurrentMessages();
+            $this->fm->clearMessages($ns);
+            $this->fm->clearCurrentMessages($ns);
         }
         return $html;
     }

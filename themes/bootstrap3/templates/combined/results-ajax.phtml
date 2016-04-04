@@ -1,15 +1,26 @@
 <?
+    // Make sure OpenURL support is loaded
+    $this->headScript()->appendFile("openurl.js");
+
     $view = $currentSearch['view'];
     $results = $view->results;
     $params = $results->getParams();
     $lookfor = $params->getDisplayQuery();
 
     // Set up Javascript for use below:
-    $loadJs = 'var url = path + "/Combined/Result?id=' . urlencode($searchClassId)
-        . '&lookfor=' . urlencode($lookfor) . '";'
-        . "\$('#combined_" . $this->escapeHtml($searchClassId) . "').load(url, '', function(responseText) { if (responseText.length == 0) $('#combined_" . $this->escapeHtml($searchClassId) . "').hide(); });";
+    $searchClassIdEncoded = urlencode($searchClassId);
+    $targetIdHtmlEscaped = $this->escapeHtml('#' . $currentSearch['domId']);
+    $lookforEncoded = urlencode($lookfor);
+    $loadJs = <<<JS
+$(document).ready(function(){
+    var url = VuFind.path + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded';
+    var container = $('$targetIdHtmlEscaped');
+    VuFind.combinedSearch.init(container, url);
+});
+JS;
+
 ?>
 <h2><?=$this->transEsc($currentSearch['label'])?></h2>
 <p><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc("Loading")?>...</p>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(function(){' . $loadJs . '});', 'SET')?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 <noscript><?=$this->transEsc('Please enable JavaScript.')?></noscript>

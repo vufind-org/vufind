@@ -19,27 +19,52 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 /**
  * FavoriteFacets Recommendations Module
  *
  * This class provides special facets for the Favorites area (tags/lists)
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 class FavoriteFacets extends SideFacets
 {
+    /**
+     * Tag capability setting
+     *
+     * @var string
+     */
+    protected $tagSetting;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param HierarchicalFacetHelper      $facetHelper  Helper for handling
+     * hierarchical facets
+     * @param string                       $tagSetting   Tag capability setting
+     */
+    public function __construct(
+        \VuFind\Config\PluginManager $configLoader,
+        HierarchicalFacetHelper $facetHelper = null,
+        $tagSetting = 'enabled'
+    ) {
+        parent::__construct($configLoader, $facetHelper);
+        $this->tagSetting = $tagSetting;
+    }
+
     /**
      * Store the configuration of the recommendation module.
      *
@@ -49,12 +74,8 @@ class FavoriteFacets extends SideFacets
      */
     public function setConfig($settings)
     {
-        $config = $this->configLoader->get('config');
-        $tagSetting = isset($config->Social->tags)
-            ? $config->Social->tags : true;
-
         // Only display tags when enabled:
-        $this->mainFacets = ($tagSetting && $tagSetting !== 'disabled')
+        $this->mainFacets = ($this->tagSetting !== 'disabled')
             ? ['tags' => 'Your Tags'] : [];
     }
 }

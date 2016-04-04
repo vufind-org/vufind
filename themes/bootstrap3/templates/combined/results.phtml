@@ -15,7 +15,7 @@
       'searchIndex' => $this->params->getSearchHandler(),
       'searchType' => $this->params->getSearchType(),
       'searchId' => $this->results->getSearchId(),
-      'searchClassId' => $this->params->getsearchClassId(),
+      'searchClassId' => $this->params->getSearchClassId(),
       'checkboxFilters' => $this->params->getCheckboxFacets(),
       'filterList' => $this->params->getFilters(),
       'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
@@ -42,11 +42,12 @@
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
   $this->headScript()->appendFile("check_save_statuses.js");
+  $this->headScript()->appendFile("combined-search.js");
   // Style
   $this->headLink()->appendStylesheet('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
-<form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+<form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
   <? $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
     <div>
       <? foreach ($recs as $current): ?>

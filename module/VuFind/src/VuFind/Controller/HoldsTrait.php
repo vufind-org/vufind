@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 
 /**
  * Holds trait (for subclasses of AbstractRecord)
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 trait HoldsTrait
 {
@@ -45,8 +45,7 @@ trait HoldsTrait
      */
     public function blockedholdAction()
     {
-        $this->flashMessenger()->setNamespace('error')
-            ->addMessage('hold_error_blocked');
+        $this->flashMessenger()->addMessage('hold_error_blocked', 'error');
         return $this->redirectToRecord('#top');
     }
 
@@ -92,12 +91,26 @@ trait HoldsTrait
         }
 
         // Send various values to the view so we can build the form:
-        $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
         $requestGroups = $catalog->checkCapability(
             'getRequestGroups', [$driver->getUniqueID(), $patron]
         ) ? $catalog->getRequestGroups($driver->getUniqueID(), $patron) : [];
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
             ? explode(":", $checkHolds['extraHoldFields']) : [];
+
+        $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
+            && !empty($requestGroups)
+            && (empty($gatheredDetails['level'])
+                || $gatheredDetails['level'] != 'copy');
+
+        $pickupDetails = $gatheredDetails;
+        if (!$requestGroupNeeded && !empty($requestGroups)
+            && count($requestGroups) == 1
+        ) {
+            // Request group selection is not required, but we have a single request
+            // group, so make sure pickup locations match with the group
+            $pickupDetails['requestGroupId'] = $requestGroups[0]['id'];
+        }
+        $pickup = $catalog->getPickUpLocations($patron, $pickupDetails);
 
         // Process form submissions if necessary:
         if (!is_null($this->params()->fromPost('placeHold'))) {
@@ -107,13 +120,12 @@ trait HoldsTrait
                 $gatheredDetails, $extraHoldFields, $requestGroups
             );
             if (!$valid) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('hold_invalid_request_group');
+                $this->flashMessenger()
+                    ->addMessage('hold_invalid_request_group', 'error');
             } elseif (!$this->holds()->validatePickUpInput(
                 $gatheredDetails['pickUpLocation'], $extraHoldFields, $pickup
             )) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('hold_invalid_pickup');
+                $this->flashMessenger()->addMessage('hold_invalid_pickup', 'error');
             } else {
                 // If we made it this far, we're ready to place the hold;
                 // if successful, we will redirect and can stop here.
@@ -134,18 +146,18 @@ trait HoldsTrait
                             '%%url%%' => $this->url()->fromRoute('myresearch-holds')
                         ],
                     ];
-                    $this->flashMessenger()->setNamespace('info')->addMessage($msg);
+                    $this->flashMessenger()->addMessage($msg, 'success');
                     return $this->redirectToRecord('#top');
                 } else {
                     // Failure: use flash messenger to display messages, stay on
                     // the current form.
                     if (isset($results['status'])) {
-                        $this->flashMessenger()->setNamespace('error')
-                            ->addMessage($results['status']);
+                        $this->flashMessenger()
+                            ->addMessage($results['status'], 'error');
                     }
                     if (isset($results['sysMessage'])) {
-                        $this->flashMessenger()->setNamespace('error')
-                            ->addMessage($results['sysMessage']);
+                        $this->flashMessenger()
+                            ->addMessage($results['sysMessage'], 'error');
                     }
                 }
             }
@@ -170,11 +182,6 @@ trait HoldsTrait
         } catch (\Exception $e) {
             $defaultRequestGroup = false;
         }
-
-        $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
-            && !empty($requestGroups)
-            && (empty($gatheredDetails['level'])
-                || $gatheredDetails['level'] != 'copy');
 
         $view = $this->createViewModel(
             [

@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Solr;
 
@@ -36,11 +36,11 @@ use Zend\EventManager\EventInterface;
 /**
  * MultiIndex listener class file.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class MultiIndexListener
 {
@@ -116,9 +116,10 @@ class MultiIndexListener
         $backend = $event->getTarget();
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
-            if ($event->getParam('context') == 'retrieve') {
-                // If we're retrieving a record, we should pull all shards to be
-                // sure we find it.
+            $allShardsContexts = ['retrieve', 'retrieveBatch'];
+            if (in_array($event->getParam('context'), $allShardsContexts)) {
+                // If we're retrieving by id(s), we should pull all shards to be
+                // sure we find the right record(s).
                 $params->set('shards', implode(',', $this->shards));
             } else {
                 // In any other context, we should make sure our field values are

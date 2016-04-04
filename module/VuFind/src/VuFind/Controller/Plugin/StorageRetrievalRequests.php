@@ -20,24 +20,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
 
 /**
  * Zend action helper to perform storage retrieval request related actions
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class StorageRetrievalRequests extends AbstractRequestBase
 {
@@ -143,8 +143,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
                 // If the user input contains a value not found in the session
                 // whitelist, something has been tampered with -- abort the process.
                 if (!in_array($info, $this->getSession()->validIds)) {
-                    $flashMsg->setNamespace('error')
-                        ->addMessage('error_inconsistent_parameters');
+                    $flashMsg->addMessage('error_inconsistent_parameters', 'error');
                     return [];
                 }
             }
@@ -154,9 +153,8 @@ class StorageRetrievalRequests extends AbstractRequestBase
                 ['details' => $details, 'patron' => $patron]
             );
             if ($cancelResults == false) {
-                $flashMsg->setNamespace('error')->addMessage(
-                    'storage_retrieval_request_cancel_fail'
-                );
+                $flashMsg
+                    ->addMessage('storage_retrieval_request_cancel_fail', 'error');
             } else {
                 if ($cancelResults['count'] > 0) {
                     // TODO : add a mechanism for inserting tokens into translated
@@ -164,16 +162,15 @@ class StorageRetrievalRequests extends AbstractRequestBase
                     $msg = $this->getController()->translate(
                         'storage_retrieval_request_cancel_success_items'
                     );
-                    $flashMsg->setNamespace('info')->addMessage(
-                        $cancelResults['count'] . ' ' . $msg
+                    $flashMsg->addMessage(
+                        $cancelResults['count'] . ' ' . $msg, 'success'
                     );
                 }
                 return $cancelResults;
             }
         } else {
-            $flashMsg->setNamespace('error')->addMessage(
-                'storage_retrieval_request_empty_selection'
-            );
+            $flashMsg
+                ->addMessage('storage_retrieval_request_empty_selection', 'error');
         }
         return [];
     }

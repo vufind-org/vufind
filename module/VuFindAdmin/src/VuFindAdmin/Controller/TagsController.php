@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFindAdmin\Controller;
 
 /**
  * Class controls distribution of tags and resource tags.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class TagsController extends AbstractAdmin
 {
@@ -162,8 +162,7 @@ class TagsController extends AbstractAdmin
                 : $this->params()->fromPost('idsAll');
 
             if (!is_array($ids) || empty($ids)) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('bulk_noitems_advice');
+                $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
                 return $this->redirect()->toUrl($originUrl);
             }
 
@@ -175,18 +174,16 @@ class TagsController extends AbstractAdmin
         }
 
         if (0 == $delete) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('tags_delete_fail');
+            $this->flashMessenger()->addMessage('tags_delete_fail', 'error');
             return $this->redirect()->toUrl($originUrl);
         }
 
-        $this->flashMessenger()->setNamespace('info')
-            ->addMessage(
-                [
-                    'msg' => 'tags_deleted',
-                    'tokens' => ['%count%' => $delete]
-                ]
-            );
+        $this->flashMessenger()->addMessage(
+            [
+                'msg' => 'tags_deleted',
+                'tokens' => ['%count%' => $delete]
+            ], 'success'
+        );
         return $this->redirect()->toUrl($originUrl);
     }
 

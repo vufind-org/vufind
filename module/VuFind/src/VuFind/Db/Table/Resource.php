@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
 use Zend\Db\Sql\Expression;
@@ -31,11 +31,11 @@ use Zend\Db\Sql\Expression;
 /**
  * Table Definition for resource
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Resource extends Gateway
 {
@@ -72,8 +72,8 @@ class Resource extends Gateway
      * @return \VuFind\Db\Row\Resource|null Matching row if found or created, null
      * otherwise.
      */
-    public function findResource($id, $source = 'VuFind', $create = true,
-        $driver = null
+    public function findResource($id, $source = DEFAULT_SEARCH_BACKEND,
+        $create = true, $driver = null
     ) {
         if (empty($id)) {
             throw new \Exception('Resource ID cannot be empty');
@@ -110,7 +110,7 @@ class Resource extends Gateway
      *
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
-    public function findResources($ids, $source = 'VuFind')
+    public function findResources($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
         $callback = function ($select) use ($ids, $source) {
             $select->where->in('record_id', $ids);

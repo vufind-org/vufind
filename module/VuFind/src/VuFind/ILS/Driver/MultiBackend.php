@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2012.
+ * Copyright (C) The National Library of Finland 2012-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -24,7 +24,7 @@
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 
@@ -42,7 +42,7 @@ use VuFind\Exception\ILS as ILSException,
  * @package  ILSdrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class MultiBackend extends AbstractBase
     implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
@@ -65,21 +65,20 @@ class MultiBackend extends AbstractBase
      * @var string
      */
     protected $defaultDriver;
+    
+    /**
+     * The path to the driver configurations relative to the config path
+     * 
+     * @var string
+     */
+    protected $driversConfigPath;
 
     /**
-     * The array of cached pre-instantiated drivers
+     * The array of cached drivers
      *
      * @var object[]
      */
-     protected $cache = [];
-
-    /**
-     * The array of booleans letting us know if a
-     * driver in the cache has been initialized.
-     *
-     * @var boolean[]
-     */
-     protected $isInitialized = [];
+    protected $driverCache = [];
 
     /**
      * The array of driver configuration options.
@@ -144,6 +143,10 @@ class MultiBackend extends AbstractBase
         $this->drivers = $this->config['Drivers'];
         $this->defaultDriver = isset($this->config['General']['default_driver'])
             ? $this->config['General']['default_driver']
+            : null;
+        $this->driversConfigPath
+            = isset($this->config['General']['drivers_config_path'])
+            ? $this->config['General']['drivers_config_path']
             : null;
     }
 
@@ -288,7 +291,60 @@ class MultiBackend extends AbstractBase
     {
         $driver = $this->getDriver($this->defaultDriver);
         if ($driver) {
-            return $driver->getNewItems($page, $limit, $daysOld, $fundId);
+            $result = $driver->getNewItems($page, $limit, $daysOld, $fundId);
+            if (isset($result['results'])) {
+                $result['results']
+                    = $this->addIdPrefixes($result['results'], $this->defaultDriver);
+            }
+            return $result;
+        }
+        return [];
+    }
+
+    /**
+     * Get Departments
+     *
+     * Obtain a list of departments for use in limiting the reserves list.
+     *
+     * @return array An associative array with key = dept. ID, value = dept. name.
+     */
+    public function getDepartments()
+    {
+        $driver = $this->getDriver($this->defaultDriver);
+        if ($driver) {
+            return $driver->getDepartments();
+        }
+        return [];
+    }
+
+    /**
+     * Get Instructors
+     *
+     * Obtain a list of instructors for use in limiting the reserves list.
+     *
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getInstructors()
+    {
+        $driver = $this->getDriver($this->defaultDriver);
+        if ($driver) {
+            return $driver->getInstructors();
+        }
+        return [];
+    }
+
+    /**
+     * Get Courses
+     *
+     * Obtain a list of courses for use in limiting the reserves list.
+     *
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getCourses()
+    {
+        $driver = $this->getDriver($this->defaultDriver);
+        if ($driver) {
+            return $driver->getCourses();
         }
         return [];
     }
@@ -308,7 +364,11 @@ class MultiBackend extends AbstractBase
     {
         $driver = $this->getDriver($this->defaultDriver);
         if ($driver) {
-            return $driver->findReserves($course, $inst, $dept);
+            return $this->addIdPrefixes(
+                $driver->findReserves($course, $inst, $dept),
+                $this->defaultDriver,
+                ['BIB_ID']
+            );
         }
         return [];
     }
@@ -969,7 +1029,8 @@ class MultiBackend extends AbstractBase
      * Place ILL Request
      *
      * Attempts to place an ILL request on a particular item and returns
-     * an array with result details or a PEAR error on failure of support classes
+     * an array with result details (or throws an exception on failure of support
+     * classes)
      *
      * @param array $details An array of item and patron data
      *
@@ -1254,83 +1315,40 @@ class MultiBackend extends AbstractBase
             }
         }
 
-        if (!isset($this->isInitialized[$source])
-            || !$this->isInitialized[$source]
-        ) {
-            $driverInst = null;
-
-            // And we don't have a copy in our cache...
-            if (!isset($this->cache[$source])) {
-                // Get an uninitialized copy
-                $driverInst = $this->getUninitializedDriver($source);
-            } else {
-                // Otherwise, use the uninitialized cached copy
-                $driverInst = $this->cache[$source];
-            }
-
-            // If we have a driver, initialize it.  That version has already
-            // been cached.
-            if ($driverInst) {
-                $this->initializeDriver($driverInst, $source);
-            } else {
+        // Check for a cached driver
+        if (!array_key_exists($source, $this->driverCache)) {
+            // Create the driver
+            $this->driverCache[$source] = $this->createDriver($source);
+            if (null === $this->driverCache[$source]) {
                 $this->debug("Could not initialize driver for source '$source'");
                 return null;
             }
         }
-        return $this->cache[$source];
+        return $this->driverCache[$source];
     }
 
     /**
-     * Find the correct driver for the correct configuration file
-     * for the given source.  For performance reasons, we do not
-     * want to initialize the driver yet if it hasn't been already.
+     * Create a driver for the given source.
      *
-     * @param string $source the source title for the driver.
+     * @param string $source Source id for the driver.
      *
-     * @return mixed On success an uninitialized driver object, otherwise null.
+     * @return mixed On success a driver object, otherwise null.
      */
-    protected function getUninitializedDriver($source)
+    protected function createDriver($source)
     {
-        // We don't really care if it's initialized here.  If it is, then there's
-        // still no added overhead of returning an initialized driver.
-        if (isset($this->cache[$source])) {
-            return $this->cache[$source];
+        if (!isset($this->drivers[$source])) {
+            return null;
         }
-
-        if (isset($this->drivers[$source])) {
-            $driver = $this->drivers[$source];
-            $config = $this->getDriverConfig($source);
-            if (!$config) {
-                $this->error("No configuration found for source '$source'");
-                return null;
-            }
-            $driverInst = clone($this->getServiceLocator()->get($driver));
-            $driverInst->setConfig($config);
-            $this->cache[$source] = $driverInst;
-            $this->isInitialized[$source] = false;
-            return $driverInst;
+        $driver = $this->drivers[$source];
+        $config = $this->getDriverConfig($source);
+        if (!$config) {
+            $this->error("No configuration found for source '$source'");
+            return null;
         }
-
-        return null;
-    }
-
-    /**
-     * Initialize an uninitialized driver.
-     *
-     * @param object $driver The driver object to be initialized
-     * @param string $source The source related to the driver for caching purposes.
-     *
-     * @return void
-     */
-    protected function initializeDriver($driver, $source)
-    {
-        if (!isset($this->isInitialized[$source])
-            || !$this->isInitialized[$source]
-        ) {
-            $driver->init();
-            $this->isInitialized[$source] = true;
-            $this->cache[$source] = $driver;
-        }
+        $driverInst = clone($this->getServiceLocator()->get($driver));
+        $driverInst->setConfig($config);
+        $driverInst->init();
+        return $driverInst;
     }
 
     /**
@@ -1347,7 +1365,11 @@ class MultiBackend extends AbstractBase
     {
         // Determine config file name based on class name:
         try {
-            $config = $this->configLoader->get($source);
+            $path = empty($this->driversConfigPath)
+                ? $source
+                : $this->driversConfigPath . '/' . $source;
+
+            $config = $this->configLoader->get($path);
         } catch (\Zend\Config\Exception\RuntimeException $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:
@@ -1371,7 +1393,7 @@ class MultiBackend extends AbstractBase
     protected function addIdPrefixes($data, $source,
         $modifyFields = ['id', 'cat_username']
     ) {
-        if (!isset($data) || empty($data) || !is_array($data)) {
+        if (empty($source) || empty($data) || !is_array($data)) {
             return $data;
         }
 

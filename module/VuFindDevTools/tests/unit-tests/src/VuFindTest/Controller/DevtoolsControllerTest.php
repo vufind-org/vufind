@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindTest\Controller;
 
@@ -34,53 +34,14 @@ use Zend\Config\Config;
 /**
  * Unit tests for DevTools controller.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class DevtoolsControllerTest extends \VuFindTest\Unit\TestCase
 {
-    /**
-     * Test language mappings.
-     *
-     * @return void
-     */
-    public function testGetLangName()
-    {
-        $c = $this->getMockController();
-
-        // config-driven case:
-        $this->assertEquals('English', $c->getLangName('en'));
-
-        // special cases:
-        $this->assertEquals('British English', $c->getLangName('en-gb'));
-        $this->assertEquals('Brazilian Portuguese', $c->getLangName('pt-br'));
-
-        // unknown case:
-        $this->assertEquals('??', $c->getLangName('??'));
-    }
-
-    /**
-     * Test language comparison.
-     *
-     * @return void
-     */
-    public function testComparison()
-    {
-        $l1 = ['1' => 'one', '2' => 'two', '3' => 'three'];
-        $l2 = ['2' => 'two', '4' => 'four'];
-        $c = new Controller();
-        $expected = [
-            'notInL1' => [4],
-            'notInL2' => [1, 3],
-            'l1Percent' => '150.00',
-            'l2Percent' => '66.67'
-        ];
-        $this->assertEquals($expected, $this->callMethod($c, 'compareLanguages', [$l1, $l2]));
-    }
-
     /**
      * Test language action.
      *

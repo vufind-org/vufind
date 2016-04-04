@@ -209,7 +209,7 @@ div.footer-text {
     padding:0 .5em .5em 20px;
 }
 
-.error, .alert, .info {
+.error, .alert, .info, .success {
   text-align:center;
   padding:10px 0;
   box-shadow:0 1px 0 #AAA,0 -1px 0 #FFF;
@@ -220,7 +220,11 @@ div.footer-text {
   border:1px solid #811;
 }
 .notice {color:#514721;}
-.success {color:#264409;}
+.success {
+  color:#264409;
+  background:#e6efc2;
+  border:1px solid #c6d880;
+}
 .info {
   color:#205791;
   background:#DEF;
@@ -293,3 +297,10 @@ p.citationText {
   vertical-align: super;
 }
 #tagList .tag .tag-form {display: inline;}
+
+span[class^="services-"], span[class*=" services-"] span:first-of-type::before {
+    content: "";
+}
+span[class^="services-"], span[class*=" services-"] span::before {
+    content: ", ";
+}

@@ -21,12 +21,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Solr;
 
@@ -39,12 +39,12 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 /**
  * Solr hierarchical facet handling listener.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class HierarchicalFacetListener
 {
@@ -75,13 +75,6 @@ class HierarchicalFacetListener
      * @var HierarchicalFacetHelper
      */
     protected $facetHelper;
-
-    /**
-     * Translated facets.
-     *
-     * @var array
-     */
-    protected $translatedFacets;
 
     /**
      * Facet display styles.
@@ -119,10 +112,6 @@ class HierarchicalFacetListener
         $this->facetHelper
             = $this->serviceLocator->get('VuFind\HierarchicalFacetHelper');
 
-        $this->translatedFacets
-            = isset($this->facetConfig->Advanced_Settings->translated_facets)
-            ? $this->facetConfig->Advanced_Settings->translated_facets->toArray()
-            : [];
         $specialFacets = $this->facetConfig->SpecialFacets;
         $this->displayStyles
             = isset($specialFacets->hierarchicalFacetDisplayStyles)

@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\Primo;
 
@@ -41,11 +41,11 @@ use VuFindSearch\Backend\Exception\BackendException;
 /**
  * Primo Central backend.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class Backend extends AbstractBackend
 {
@@ -131,9 +131,13 @@ class Backend extends AbstractBackend
      */
     public function retrieve($id, ParamBag $params = null)
     {
+        $onCampus = (null !== $params) ? $params->get('onCampus') : [false];
+        $onCampus = $onCampus ? $onCampus[0] : false;
         try {
             $response   = $this->connector
-                ->getRecord($id, $this->connector->getInstitutionCode());
+                ->getRecord(
+                    $id, $this->connector->getInstitutionCode(), $onCampus
+                );
         } catch (\Exception $e) {
             throw new BackendException(
                 $e->getMessage(),
@@ -225,6 +229,7 @@ class Backend extends AbstractBackend
 
         // Convert the options:
         $options = [];
+
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
         $arraySettings = [
@@ -232,6 +237,12 @@ class Backend extends AbstractBackend
         ];
         foreach ($params as $key => $param) {
             $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
+        }
+
+        // Use special facet pcAvailabilty if it has been set
+        if (isset($params['filterList']['pcAvailability'])) {
+            unset($options['filterList']['pcAvailability']);
+            $options['pcAvailability'] = true;
         }
 
         return $options;

@@ -12,19 +12,19 @@
     <?=$this->recommend($current)?>
   <? endforeach; ?>
   <div class="clearfix hidden-print">
-    <div class="pull-left">
+    <div class="pull-left flip">
       <?=$this->transEsc("Showing")?>
       <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
       <? if (!isset($this->skipTotalCount)): ?>
         <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong> <?=$this->transEsc('Items')?>
       <? endif; ?>
     </div>
-    <div class="pull-right">
+    <div class="pull-right flip">
       <?=$this->render('search/controls/limit.phtml', $searchDetails)?>
       <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
     </div>
   </div>
-  <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+  <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + array('idPrefix' => ''))?>
     <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
     <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $results))?>
