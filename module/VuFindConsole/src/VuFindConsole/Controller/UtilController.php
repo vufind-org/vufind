@@ -27,6 +27,8 @@
  */
 namespace VuFindConsole\Controller;
 use File_MARC, File_MARCXML, VuFind\Sitemap\Generator as Sitemap;
+use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Writer as ConfigWriter;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 use Zend\Console\Console;
@@ -702,16 +704,46 @@ class UtilController extends AbstractBase
     public function switchdbhashAction()
     {
         $argv = $this->consoleOpts->getRemainingArgs();
-        if (count($argv) < 2 || !strpos($argv[0], ':') || !strpos($argv[1], ':')) {
+        if (count($argv) < 2) {
             Console::writeLine(
-                'Expected parameters: oldmethod:oldkey (or none) newmethod:newkey'
+                'Expected parameters: newmethod newkey'
             );
             return $this->getFailureResponse();
         }
-        list($oldhash, $oldkey) = $argv[0] == 'none'
-            ? ['none', null]
-            : explode(':', $argv[0]);
-        list($newhash, $newkey) = explode(':', $argv[1]);
+        $config = $this->getConfig();
+        if (!isset($config->Authentication->encrypt_ils_password)
+            || !isset($config->Authentication->ils_encryption_key)
+            || !$config->Authentication->encrypt_ils_password
+        ) {
+            $oldhash = 'none';
+            $oldkey = null;
+        } else {
+            $oldhash = isset($config->Authentication->ils_encryption_algo)
+                ? $config->Authentication->ils_encryption_algo : 'blowfish';
+            $oldkey = $config->Authentication->ils_encryption_key;
+        }
+        list($newhash, $newkey) = $argv;
+
+        try {
+            if ($oldhash != 'none') {
+                $oldCrypt = new Mcrypt(['algorithm' => $oldhash]);
+            }
+            $newCrypt = new Mcrypt(['algorithm' => $newhash]);
+        } catch (\Exception $e) {
+            Console::writeLine($e->getMessage());
+            return $this->getFailureResponse();
+        }
+
+        $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        Console::writeLine("\tUpdating $configPath...");
+        $writer = new ConfigWriter($configPath);
+        $writer->set('Authentication', 'encrypt_ils_password', true);
+        $writer->set('Authentication', 'ils_encryption_algo', $newhash);
+        $writer->set('Authentication', 'ils_encryption_key', $newkey);
+        if (!$writer->save()) {
+            Console::writeLine("\tWrite failed!");
+            return $this->getFailureResponse();
+        }
 
         $userTable = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
             ->get('User');
@@ -724,13 +756,13 @@ class UtilController extends AbstractBase
         foreach ($users as $row) {
             $pass = null;
             if ($oldhash != 'none' && isset($row['cat_pass_enc'])) {
-                $oldcipher = new BlockCipher(new Mcrypt(['algorithm' => $oldhash]));
+                $oldcipher = new BlockCipher($oldCrypt);
                 $oldcipher->setKey($oldkey);
                 $pass = $oldcipher->decrypt($row['cat_pass_enc']);
             } else {
                 $pass = $row['cat_password'];
             }
-            $newcipher = new BlockCipher(new Mcrypt(['algorithm' => $newhash]));
+            $newcipher = new BlockCipher($newCrypt);
             $newcipher->setKey($newkey);
             $row['cat_password'] = null;
             $row['cat_pass_enc'] = $newcipher->encrypt($pass);
