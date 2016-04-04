@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -37,6 +39,7 @@ use ArrayObject, VuFind\Config\Locator as ConfigLocator,
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -293,6 +296,32 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Support method for fixdatabaseAction() -- add checksums to search table rows.
+     *
+     * @return void
+     */
+    protected function fixSearchChecksumsInDatabase()
+    {
+        $manager = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager');
+        $search = $this->getTable('search');
+        $searchWhere = ['checksum' => null, 'saved' => 1];
+        $searchRows = $search->select($searchWhere);
+        if (count($searchRows) > 0) {
+            foreach ($searchRows as $searchRow) {
+                $searchObj = $searchRow->getSearchObject()->deminify($manager);
+                $url = $searchObj->getUrlQuery()->getParams();
+                $checksum = crc32($url) & 0xFFFFFFF;
+                $searchRow->checksum = $checksum;
+                $searchRow->save();
+            }
+            $this->session->warnings->append(
+                'Added checksum to ' . count($searchRows) . ' rows in search table'
+            );
+        }
+    }
+
+    /**
      * Upgrade the database.
      *
      * @return mixed
@@ -410,6 +439,9 @@ class UpgradeController extends AbstractBase
 
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
+
+            // Add checksums to all saved searches
+            $this->fixSearchChecksumsInDatabase();
         } catch (\Exception $e) {
             $this->flashMessenger()->addMessage(
                 'Database upgrade failed: ' . $e->getMessage(), 'error'

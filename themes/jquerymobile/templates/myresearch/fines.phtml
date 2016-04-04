@@ -6,6 +6,7 @@
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
     <h3><?=$this->transEsc('Your Fines')?></h3>
+    <?=$this->flashmessages()?>
 
     <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
 

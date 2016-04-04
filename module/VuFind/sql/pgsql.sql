@@ -25,8 +25,8 @@ CREATE INDEX comments_resource_id_idx ON comments (resource_id);
 CREATE TABLE resource (
 id SERIAL,
 record_id varchar(255) NOT NULL DEFAULT '',
-title varchar(200) NOT NULL DEFAULT '',
-author varchar(200) DEFAULT NULL,
+title varchar(255) NOT NULL DEFAULT '',
+author varchar(255) DEFAULT NULL,
 year int DEFAULT NULL,
 source varchar(50) NOT NULL DEFAULT 'Solr',
 PRIMARY KEY (id)
@@ -66,10 +66,11 @@ id SERIAL,
 user_id int NOT NULL DEFAULT '0',
 session_id varchar(128),
 folder_id int DEFAULT NULL,
-created date NOT NULL DEFAULT '1970-01-01',
+created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 title varchar(20) DEFAULT NULL,
 saved int NOT NULL DEFAULT '0',
 search_object bytea,
+checksum int DEFAULT NULL,
 PRIMARY KEY (id)
 );
 CREATE INDEX search_user_id_idx ON search (user_id);

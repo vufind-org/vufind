@@ -88,6 +88,8 @@ class SearchHandler
         if (empty($this->specs['DismaxHandler'])) {
             $this->specs['DismaxHandler'] = $defaultDismaxHandler;
         }
+        // Set default mm handler if necessary:
+        $this->setDefaultMustMatch();
     }
 
     /// Public API
@@ -247,6 +249,44 @@ class SearchHandler
     }
 
     /// Internal API
+
+    /**
+     * Support method for constructor: if no mm is provided, set a reasonable
+     * default based on the selected Dismax handler.
+     *
+     * @return void
+     */
+    protected function setDefaultMustMatch()
+    {
+        // Initialize parameter array if absent:
+        if (!isset($this->specs['DismaxParams'])) {
+            $this->specs['DismaxParams'] = [];
+        }
+        // Add mm if applicable:
+        if ($this->hasDismax()) {
+            // Our default mm depends on whether we're using dismax or edismax;
+            // for dismax, we want 100% matches, because we always want to
+            // simulate "AND" behavior by default (any "OR" searches will get
+            // rerouted to Lucene queries). For edismax, boolean operators are
+            // accounted for, and with an mm of 100%, OR searches will always
+            // fail. We can use 0% here, because the default q.op of AND will
+            // make AND searches work correctly even without a high mm value.
+            $default = $this->hasExtendedDismax() ? '0%' : '100%';
+
+            // Now if the configuration has no explicit mm value, let's push in
+            // our default:
+            $foundSetting = false;
+            foreach ($this->specs['DismaxParams'] as $current) {
+                if ($current[0] == 'mm') {
+                    $foundSetting = true;
+                    break;
+                }
+            }
+            if (!$foundSetting) {
+                $this->specs['DismaxParams'][] = ['mm', $default];
+            }
+        }
+    }
 
     /**
      * Return a Dismax subquery for specified search string.
