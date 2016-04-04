@@ -105,7 +105,7 @@ function ajaxLoadPages(min, max) {
       response.data.start++;
     }
     findVisible();
-  }
+  })
   .fail(function(response, textStatus) {
     console.log(response, textStatus);
   });

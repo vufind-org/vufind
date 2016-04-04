@@ -425,7 +425,7 @@ class DbUpgrade extends AbstractPlugin
 
         // If it's not a blob or a text (which don't have explicit sizes in our SQL),
         // we should see what the character length is, if any:
-        if ($type != 'blob' && $type != 'text') {
+        if ($type != 'blob' && $type != 'text' && $type != 'longtext') {
             $charLen = $column->getCharacterMaximumLength();
             if ($charLen) {
                 $type .= '(' . $charLen . ')';

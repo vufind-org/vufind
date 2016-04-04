@@ -116,7 +116,7 @@
         <strong><?=$this->transEsc('Search Tools')?>:</strong>
         <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell"></i> <?=$this->transEsc('Get RSS Feed')?></a>
         &mdash;
-        <a href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>">
+        <a href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>">
           <i class="fa fa-envelope"></i> <?=$this->transEsc('Email this Search')?>
         </a>
         <? if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>

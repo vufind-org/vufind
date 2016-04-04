@@ -53,11 +53,12 @@ Array
 (
     [REMOTE_ADDR] => 1.2.3.4
     [HTTP_USER_AGENT] => Fake browser
+    [HTTP_HOST] => localhost:80
     [REQUEST_URI] => /foo/bar
 )
 CONTEXT;
             return $a[1] === 'test'
-                && $a[2] === 'test(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, Request URI = /foo/bar)'
+                && $a[2] === 'test(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, Host = localhost:80, Request URI = /foo/bar)'
                 && false !== strpos($a[3], $a[2])
                 && false !== strpos($a[3], 'Backtrace:')
                 && false !== strpos($a[3], 'line')
@@ -85,6 +86,7 @@ CONTEXT;
                 [
                     'REMOTE_ADDR' => '1.2.3.4',
                     'HTTP_USER_AGENT' => 'Fake browser',
+                    'HTTP_HOST' => 'localhost:80',
                     'REQUEST_URI' => '/foo/bar'
                 ]
             );
