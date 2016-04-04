@@ -1,5 +1,5 @@
 /*global $, document, CustomEvent, VuFind, window */
-VuFind.lightbox = (function() {
+VuFind.register('lightbox', function() {
   // State
   var _originalUrl = false;
   var _currentUrl = false;
@@ -68,7 +68,7 @@ VuFind.lightbox = (function() {
   };
   var flashMessage = function(message, type) {
     _modalBody.find('.alert,.fa.fa-spinner').remove();
-    _modalBody.find('h2:first-child')
+    _modalBody.find('h2:first-of-type')
       .after('<div class="alert alert-'+type+'">'+message+'</div>');
   };
 
@@ -293,6 +293,30 @@ VuFind.lightbox = (function() {
     $('form[data-lightbox] [type=submit]').click(_storeClickedStatus);
   };
 
+  var reset = function() {
+    _html(VuFind.translate('loading') + '...');
+    _originalUrl = false;
+    _currentUrl = false;
+    _lightboxTitle = '';
+  };
+  var init = function() {
+    _modal = $('#modal');
+    _modalBody = _modal.find('.modal-body');
+    _modal.on('hide.bs.modal', function() {
+      if (VuFind.lightbox.refreshOnClose) {
+        _refreshPage();
+      }
+      _emit('VuFind.lightbox.closing');
+    });
+    _modal.on('hidden.bs.modal', function() {
+      VuFind.lightbox.reset();
+      _emit('VuFind.lightbox.closed');
+    });
+
+    VuFind.modal = function(cmd) { _modal.modal(cmd); };
+    bind();
+  };
+
   // Reveal
   return {
     // Properties
@@ -304,32 +328,9 @@ VuFind.lightbox = (function() {
     bind: bind,
     flashMessage: flashMessage,
     reload: reload,
-    reset:  function() {
-      _html(VuFind.translate('loading') + '...');
-      _originalUrl = false;
-      _currentUrl = false;
-      _lightboxTitle = '';
-    },
-
-    // Ready
-    ready: function() {
-      _modal = $('#modal');
-      _modalBody = _modal.find('.modal-body');
-      _modal.on('hide.bs.modal', function() {
-        if (VuFind.lightbox.refreshOnClose) {
-          _refreshPage();
-        }
-        _emit('VuFind.lightbox.closing');
-      });
-      _modal.on('hidden.bs.modal', function() {
-        VuFind.lightbox.reset();
-        _emit('VuFind.lightbox.closed');
-      });
-
-      VuFind.modal = function(cmd) { _modal.modal(cmd); };
-      bind();
-    }
+    // Reset
+    reset: reset,
+    // Init
+    init: init
   };
-})();
-
-$(document).ready(VuFind.lightbox.ready);
+});

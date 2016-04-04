@@ -25,8 +25,8 @@ CREATE INDEX comments_resource_id_idx ON comments (resource_id);
 CREATE TABLE resource (
 id SERIAL,
 record_id varchar(255) NOT NULL DEFAULT '',
-title varchar(200) NOT NULL DEFAULT '',
-author varchar(200) DEFAULT NULL,
+title varchar(255) NOT NULL DEFAULT '',
+author varchar(255) DEFAULT NULL,
 year int DEFAULT NULL,
 source varchar(50) NOT NULL DEFAULT 'Solr',
 PRIMARY KEY (id)
