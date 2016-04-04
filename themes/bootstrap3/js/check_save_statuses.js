@@ -25,12 +25,8 @@ function checkSaveStatuses(container) {
     var ids = [];
     var srcs = [];
     for (var i = 0; i < data.length; i++) {
-      var index = ids.indexOf(data[i].id);
-      // embedded record views cause duplicate ids
-      if (index < 0 || srcs[index] != data[i].source) {
-        ids[i] = data[i].id;
-        srcs[i] = data[i].source;
-      }
+      ids.push(data[i].id);
+      srcs.push(data[i].source);
     }
     $.ajax({
       dataType: 'json',
