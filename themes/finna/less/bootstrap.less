@@ -386,7 +386,7 @@ mark, .highlight {
     }
 }
 .add-to-favorite-col {
-    @media(max-width: @screen-sm-max) {
+    @media(max-width: @screen-xs-max) {
         margin-top: 10px;   
     }
 }
@@ -1114,6 +1114,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
             background: rgba(255, 255, 255, 0.9);
             transition: opacity .2s linear;
         }
+        & .dateyeartype p {
+            margin-bottom: 0px;   
+        }
         & .grid-image {
             overflow: hidden;   
         }
@@ -1140,6 +1143,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
+            display: none;
         }
         & .save-record {
             float: none;
@@ -1207,7 +1211,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     &:not(.touch-device) {
         & .grid.no-image  {
             & .grid-title {
-                max-height: 48px;
+                max-height: 44px;
                 background: none;
                 box-shadow: 0px 0px 0px;
                 opacity: 1;
@@ -1222,7 +1226,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
             & .dateyeartype {
                 margin-top: -4px;
                 & p {
-                    margin-bottom: 5px;   
+                    margin-bottom: 0px;   
                 }
             }
             &:hover {
@@ -1241,7 +1245,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         & .grid-title {
             .opacity(.9);
             transition: max-height .2s ease-in, box-shadow .2s ease-in;
-            max-height: 50px;
+            max-height: 60px;
             top: 100%;
             box-shadow: none;
             padding: 10px;
@@ -1249,11 +1253,14 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
             top: ~"-moz-calc(100% - 21px)";
             top: ~"calc(100% - 21px)";
         }
-        & .dateyeartype, & .fulltext-links {
+        & .save-record-container, & .fulltext-links {
             display: none;   
         }
-        & .save-record-container {
-            margin-top: -2px;
+        & .dateyeartype {
+            margin-top: -4px;
+            & p {
+                margin-bottom: 0;
+            }
         }
         &:hover .grid-title {
             max-height: 200px;
