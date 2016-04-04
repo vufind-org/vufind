@@ -1821,41 +1821,17 @@ EOT;
      */
     protected function getMyHoldsSQL($patron)
     {
-        // Modifier
-        $sqlSelectModifier = "distinct";
+        // Most of our SQL settings will be identical to the parent class....
+        $sqlArray = parent::getMyHoldsSQL($patron);
 
-        // Expressions
-        $sqlExpressions = [
-            "HOLD_RECALL.HOLD_RECALL_ID", "HOLD_RECALL.BIB_ID",
-            "HOLD_RECALL.PICKUP_LOCATION",
-            "HOLD_RECALL.HOLD_RECALL_TYPE",
-            "to_char(HOLD_RECALL.EXPIRE_DATE, 'MM-DD-YY') as EXPIRE_DATE",
-            "to_char(HOLD_RECALL.CREATE_DATE, 'MM-DD-YY') as CREATE_DATE",
-            "HOLD_RECALL_ITEMS.ITEM_ID",
-            "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS",
-            "HOLD_RECALL_ITEMS.QUEUE_POSITION",
-            // MFHD_ITEM and BIB_TEXT entries will be bogus for remote holds, but
-            // we'll deal with them later in getMyHolds()
-            "MFHD_ITEM.ITEM_ENUM",
-            "MFHD_ITEM.YEAR",
-            "BIB_TEXT.TITLE_BRIEF",
-            "BIB_TEXT.TITLE",
-            "REQUEST_GROUP.GROUP_NAME as REQUEST_GROUP_NAME",
-            "NVL(VOYAGER_DATABASES.DB_CODE, 'LOCAL') as DB_CODE"
-        ];
+        // Add remote holds; MFHD_ITEM and BIB_TEXT entries will be bogus for these,
+        // but we'll deal with them later in getMyHolds()
+        $sqlArray['expressions'][]
+            = "NVL(VOYAGER_DATABASES.DB_CODE, 'LOCAL') as DB_CODE";
 
-        // From
-        $sqlFrom = [
-            $this->dbName . ".HOLD_RECALL",
-            $this->dbName . ".HOLD_RECALL_ITEMS",
-            $this->dbName . ".MFHD_ITEM",
-            $this->dbName . ".BIB_TEXT",
-            $this->dbName . ".VOYAGER_DATABASES",
-            $this->dbName . ".REQUEST_GROUP"
-        ];
-
-        // Where
-        $sqlWhere = [
+        // We need to significantly change the where clauses to account for remote
+        // holds
+        $sqlArray['where'] = [
             "HOLD_RECALL.PATRON_ID = :id",
             "HOLD_RECALL.HOLD_RECALL_ID = HOLD_RECALL_ITEMS.HOLD_RECALL_ID(+)",
             "HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
@@ -1864,17 +1840,6 @@ EOT;
             "HOLD_RECALL.BIB_ID = BIB_TEXT.BIB_ID(+)",
             "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)",
             "HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)"
-        ];
-
-        // Bind
-        $sqlBind = [':id' => $patron['id']];
-
-        $sqlArray = [
-            'modifier' => $sqlSelectModifier,
-            'expressions' => $sqlExpressions,
-            'from' => $sqlFrom,
-            'where' => $sqlWhere,
-            'bind' => $sqlBind
         ];
 
         return $sqlArray;
