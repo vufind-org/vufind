@@ -1347,11 +1347,6 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 return null;
             }
             throw new ILSException($ex->getMessage());
-        } catch (ILSException $ex) {
-            if ($ex->getMessage() == 'Error in Verification') {
-                return null;
-            }
-            throw $ex;
         }
         $patron = [];
         $name = $xml->z303->{'z303-name'};
