@@ -694,7 +694,8 @@ class MyResearchController extends AbstractBase
 
             $results = $runner->run($request, 'Favorites', $setupCallback);
             // Get coversize setting
-            $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+            $config = $this->getServiceLocator()->get('VuFind\Config')
+                ->get('config');
             $coversize = false;
             if (isset($config->Content->coversize) && $config->Content->coversize) {
                 $searchType = 'result-' . $results->getParams()->getView();
