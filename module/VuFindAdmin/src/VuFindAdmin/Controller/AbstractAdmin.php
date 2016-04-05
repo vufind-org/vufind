@@ -55,7 +55,7 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
      *
      * @return void
      */
-    public function preDispatch(MvcEvent $e)
+    public function validateAccessPermission(MvcEvent $e)
     {
         // Disable search box in Admin module:
         $this->layout()->searchbox = false;
@@ -77,7 +77,7 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
         }
 
         // Call parent method to do permission checking:
-        parent::preDispatch($e);
+        parent::validateAccessPermission($e);
     }
 
     /**
