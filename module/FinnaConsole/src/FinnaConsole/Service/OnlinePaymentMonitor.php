@@ -238,7 +238,7 @@ class OnlinePaymentMonitor extends AbstractService
             if (!$t->save()) {
                 $this->err(
                     '    Failed to update transaction '
-                    . $t->transaction_id . 'as expired.'
+                    . $t->transaction_id . ' as expired.'
                 );
             } else {
                 $this->msg('    Transaction ' . $t->transaction_id . ' expired.');
@@ -251,10 +251,12 @@ class OnlinePaymentMonitor extends AbstractService
 
             $catUsername = $patron = null;
             foreach ($user->getLibraryCards() as $card) {
+                $card = $user->getLibraryCard($card['id']);
+
                 if ($card['cat_username'] == $t->cat_username) {
                     try {
                         $patron = $this->catalog->patronLogin(
-                            $t->cat_username, $card['cat_password']
+                            $card['cat_username'], $card['cat_password']
                         );
                         if ($patron) {
                             break;
@@ -266,9 +268,10 @@ class OnlinePaymentMonitor extends AbstractService
             }
             
             if (!$patron) {
-                $this->err(
-                    '    Could not perform patron login for transaction '
-                    . $t->transaction_id
+                $this->warn(
+                    "Catalog login failed for user {$user->username}"
+                    . " (id {$user->id}), card {$card->cat_username}"
+                    . " (id {$card->id})"
                 );
                 $failedCnt++;
                 return false;
