@@ -1810,6 +1810,108 @@ EOT;
     }
 
     /**
+     * Protected support method for getMyHolds.
+     *
+     * Fetch both local and remote holds. Remote hold data will be augmented using
+     * the API.
+     *
+     * @param array $patron Patron data for use in an sql query
+     *
+     * @return array Keyed data for use in an sql query
+     */
+    protected function getMyHoldsSQL($patron)
+    {
+        // Most of our SQL settings will be identical to the parent class....
+        $sqlArray = parent::getMyHoldsSQL($patron);
+
+        // Add remote holds; MFHD_ITEM and BIB_TEXT entries will be bogus for these,
+        // but we'll deal with them later in getMyHolds()
+        $sqlArray['expressions'][]
+            = "NVL(VOYAGER_DATABASES.DB_CODE, 'LOCAL') as DB_CODE";
+
+        // We need to significantly change the where clauses to account for remote
+        // holds
+        $sqlArray['where'] = [
+            "HOLD_RECALL.PATRON_ID = :id",
+            "HOLD_RECALL.HOLD_RECALL_ID = HOLD_RECALL_ITEMS.HOLD_RECALL_ID(+)",
+            "HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
+            "(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR " .
+            "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
+            "HOLD_RECALL.BIB_ID = BIB_TEXT.BIB_ID(+)",
+            "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)",
+            "HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)"
+        ];
+
+        return $sqlArray;
+    }
+
+    /**
+     * Protected support method for getMyHolds.
+     *
+     * @param array $sqlRow An array of keyed data
+     *
+     * @throws DateException
+     * @return array Keyed data for display by template files
+     */
+    protected function processMyHoldsData($sqlRow)
+    {
+        $result = parent::processMyHoldsData($sqlRow);
+        $result['db_code'] = $sqlRow['DB_CODE'];
+        return $result;
+    }
+
+    /**
+     * Get Patron Holds
+     *
+     * This is responsible for retrieving all holds by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's holds on success.
+     */
+    public function getMyHolds($patron)
+    {
+        $holds = parent::getMyHolds($patron);
+        // Check if we have remote holds and augment if necessary
+        $augment = false;
+        foreach ($holds as $hold) {
+            if ($hold['db_code'] != 'LOCAL') {
+                $augment = true;
+                break;
+            }
+        }
+        if ($augment) {
+            // Fetch hold information via the API so that we can include correct
+            // title etc. for remote holds.
+            $copyFields = [
+                'id', 'item_id', 'volume', 'publication_year', 'title',
+                'institution_id', 'institution_name',
+                'institution_dbkey', 'in_transit'
+            ];
+            $apiHolds = $this->getHoldsFromApi($patron, true);
+            foreach ($apiHolds as $apiHold) {
+                // Find the hold and add information to it
+                foreach ($holds as &$hold) {
+                    if ($hold['reqnum'] == $apiHold['reqnum']) {
+                        // Ignore local holds
+                        if ($hold['db_code'] == 'LOCAL') {
+                            continue 2;
+                        }
+                        foreach ($copyFields as $field) {
+                            $hold[$field] = isset($apiHold[$field])
+                                ? $apiHold[$field] : '';
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return $holds;
+    }
+
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -2158,17 +2260,19 @@ EOT;
     }
 
     /**
-     * Get Patron Remote Holds
+     * Get patron's local or remote holds from the API
      *
-     * This is responsible for retrieving all remote holds by a specific patron.
+     * This is responsible for retrieving all local or remote holds by a specific
+     * patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param bool  $local  Whether to fetch local holds instead of remote holds
      *
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    protected function getRemoteHolds($patron)
+    protected function getHoldsFromApi($patron, $local)
     {
         // Build Hierarchy
         $hierarchy = [
@@ -2196,8 +2300,11 @@ EOT;
         $holds = [];
         if (isset($results->holds->institution)) {
             foreach ($results->holds->institution as $institution) {
-                // Only take remote holds
-                if ($this->isLocalInst((string)$institution->attributes()->id)) {
+                // Filter by the $local parameter
+                $isLocal = $this->isLocalInst(
+                    (string)$institution->attributes()->id
+                );
+                if ($local != $isLocal) {
                     continue;
                 }
 
@@ -3022,7 +3129,7 @@ EOT;
     public function getMyILLRequests($patron)
     {
         return array_merge(
-            $this->getRemoteHolds($patron),
+            $this->getHoldsFromApi($patron, false),
             $this->getRemoteCallSlips($patron)
         );
     }
