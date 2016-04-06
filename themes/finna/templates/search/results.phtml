@@ -135,7 +135,7 @@
   <? /* End Main Listing */ ?>
 
   <? /* Narrow Search Options */ ?>
-  <div class="<?=$this->layoutClass('sidebar')?>">
+  <div class="<?=$recordTotal < 1 ? "col-sm-9" : $this->layoutClass('sidebar');?>">
     <? foreach ($this->results->getRecommendations('side') as $current): ?>
       <?=$this->recommend($current)?>
     <? endforeach; ?>
