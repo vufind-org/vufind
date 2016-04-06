@@ -178,9 +178,10 @@ function toggleDataView() {
             longNode.collapse("show");
             // Load first tab
             var $firstTab = $(longNode).find('.recordTabs li.active a');
-            if ($firstTab.length > 0) {
-              ajaxFLLoadTab($firstTab.attr('id'));
+            if ($firstTab.length == 0) {
+              $firstTab = $($(longNode).find('.recordTabs li a')[0]);
             }
+            ajaxFLLoadTab($firstTab.attr('id'));
             // Bind tab clicks
             longNode.find('.search_tabs .recordTabs a').click(function() {
               addToEmbeddedCookie(mainNode.attr('id'), $(this).attr('id'));

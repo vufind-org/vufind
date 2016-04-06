@@ -17,60 +17,66 @@
     <? endif; ?>
 
   <div class="panel-group" id="accordion_<?=$idSuffix?>">
-    <? $coreMetadata = $this->record($this->driver)->getCoreMetadata(); ?>
-    <? if (!empty($coreMetadata)): ?>
-      <div class="panel panel-default">
-        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#title-collapse_<?=$idSuffix?>" style="cursor: pointer">
-          <h4 class="panel-title">
-            <a class="accordion-toggle">
-              <?=$this->translate('ajaxview_label_information') ?>
-            </a>
-          </h4>
-        </div>
-        <div id="title-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'information'): ?> in<? endif; ?>">
-          <div class="panel-body">
-            <?=$coreMetadata ?>
+    <? if (empty($this->confenabled) || in_array('Information', $this->confenabled)): ?>
+      <? $coreMetadata = $this->record($this->driver)->getCoreMetadata(); ?>
+      <? if (!empty($coreMetadata)): ?>
+        <div class="panel panel-default">
+          <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#title-collapse_<?=$idSuffix?>" style="cursor: pointer">
+            <h4 class="panel-title">
+              <a class="accordion-toggle">
+                <?=$this->translate('ajaxview_label_information') ?>
+              </a>
+            </h4>
+          </div>
+          <div id="title-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'information'): ?> in<? endif; ?>">
+            <div class="panel-body">
+              <?=$coreMetadata ?>
+            </div>
           </div>
         </div>
-      </div>
+      <? endif; ?>
     <? endif; ?>
 
-    <? $toolbar = $this->record($this->driver)->getToolbar(); ?>
-    <? if (!empty($toolbar)): ?>
-      <div class="panel panel-default">
-        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#tools-collapse_<?=$idSuffix?>" style="cursor: pointer">
-          <h4 class="panel-title">
-            <a class="accordion-toggle">
-        <?=$this->translate('ajaxview_label_tools') ?>
-            </a>
-          </h4>
-        </div>
-        <div id="tools-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'tools'): ?> in<? endif; ?>">
-          <div class="panel-body">
-            <?=$toolbar ?>
+    <? if (empty($this->confenabled) || in_array('Tools', $this->confenabled)): ?>
+      <? $toolbar = $this->record($this->driver)->getToolbar(); ?>
+      <? if (!empty($toolbar)): ?>
+        <div class="panel panel-default">
+          <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#tools-collapse_<?=$idSuffix?>" style="cursor: pointer">
+            <h4 class="panel-title">
+              <a class="accordion-toggle">
+          <?=$this->translate('ajaxview_label_tools') ?>
+              </a>
+            </h4>
+          </div>
+          <div id="tools-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'tools'): ?> in<? endif; ?>">
+            <div class="panel-body">
+              <?=$toolbar ?>
+            </div>
           </div>
         </div>
-      </div>
+      <? endif; ?>
     <? endif; ?>
 
-    <? $relatedList = $this->related()->getList($this->driver); ?>
-    <? if ($relatedList != null ): ?>
-      <div class="panel panel-default">
-        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#related-collapse_<?=$idSuffix?>" style="cursor: pointer">
-          <h4 class="panel-title">
-            <a class="accordion-toggle">
-              <?=$this->transEsc("Related Items")?>
-            </a>
-          </h4>
-        </div>
-        <div id="related-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'related'): ?> in<? endif; ?>">
-          <div class="panel-body">
-            <? foreach ($relatedList as $current): ?>
-              <?=$this->related()->render($current)?>
-            <? endforeach; ?>
+    <? if (empty($this->confenabled) || in_array('Related', $this->confenabled)): ?>
+      <? $relatedList = $this->related()->getList($this->driver); ?>
+      <? if ($relatedList != null ): ?>
+        <div class="panel panel-default">
+          <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#related-collapse_<?=$idSuffix?>" style="cursor: pointer">
+            <h4 class="panel-title">
+              <a class="accordion-toggle">
+                <?=$this->transEsc("Related Items")?>
+              </a>
+            </h4>
+          </div>
+          <div id="related-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'related'): ?> in<? endif; ?>">
+            <div class="panel-body">
+              <? foreach ($relatedList as $current): ?>
+                <?=$this->related()->render($current)?>
+              <? endforeach; ?>
+            </div>
           </div>
         </div>
-      </div>
+      <? endif; ?>
     <? endif; ?>
 
     <? if (count($this->tabs) > 0): ?>
