@@ -2,9 +2,9 @@
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
   if (isset($this->overrideTitle)) {
-    $this->headTitle($this->overrideTitle);
+      $this->headTitle($this->overrideTitle);
   } else {
-    $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
   }
 
   // Set up search box:
