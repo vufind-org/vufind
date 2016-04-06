@@ -139,7 +139,7 @@
             <? endif; ?>
 
             <? if (isset($ilsDetails['in_transit']) && $ilsDetails['in_transit']): ?>
-              <div class="text-success"><?=$this->transEsc("ill_request_in_transit") . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], array(), $ilsDetails['in_transit']) : '') ?></div>
+              <div class="text-success"><?=$this->transEsc("request_in_transit") . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], array(), $ilsDetails['in_transit']) : '') ?></div>
             <? endif; ?>
             <? if (isset($ilsDetails['processed']) && $ilsDetails['processed']): ?>
               <div class="text-success"><?=$this->transEsc("ill_request_processed") . (is_string($ilsDetails['processed']) ? ': ' . $ilsDetails['processed'] : '') ?></div>

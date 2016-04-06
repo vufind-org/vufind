@@ -80,6 +80,21 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Make new account
+     *
+     * @return void
+     */
+    protected function makeAccount($page, $username) {
+        $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->snooze();
+        $this->fillInAccountForm(
+            $page, ['username' => $username, 'email' => $username . '@vufind.org']
+        );
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+    }
+
+    /**
      * Test adding comments on records.
      *
      * @return void
@@ -106,11 +121,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal.in'); // Lightbox open
         $this->findCss($page, '.modal [name="username"]');
         // Create new account
-        $this->findCss($page, '.modal-body .createAccountLink')->click();
-        $this->snooze();
-        $this->fillInAccountForm($page);
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->snooze();
+        $this->makeAccount($page, 'username1');
         // Make sure page updated for login
         $page = $this->gotoRecord();
         $this->findCss($page, '.record-tabs .usercomments')->click();
@@ -154,12 +165,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Lightbox login open?
         $this->findCss($page, '.modal.in [name="username"]');
         // Make account
-        $this->findCss($page, '.modal-body .createAccountLink')->click();
-        $this->fillInAccountForm(
-            $page, ['username' => 'username2', 'email' => 'test2@com.com']
-        );
-        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->snooze();
+        $this->makeAccount($page, 'username2');
+        // Add tag exists?
         $this->findCss($page, '.modal #addtag_tag');
         $this->findCss($page, '.modal .close')->click();
         $this->snooze(); // wait for display to update
@@ -257,8 +264,33 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.mail-record')->click();
         $this->snooze();
         $this->findCss($page, '.modal.in [name="username"]');
+        // Make account
+        $this->makeAccount($page, 'emailmaniac');
+        // Make sure Lightbox redirects to email view
+        $this->findCss($page, '.modal #email_to');
+        // Type invalid email
+        $this->findCss($page, '.modal #email_to')->setValue('blargarsaurus');
+        $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
+        $this->findCss($page, '.modal #email_message')->setValue('message');
+        // Send text to false email
+        $this->snooze();
+        $this->findCss($page, '.modal #email_to')->setValue('asdf@vufind.org');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+        // Check for confirmation message
+        $this->findCss($page, '.modal .alert-success');
+        $this->findCss($page, '.modal .close')->click();
+        // Logout
+        $this->findCss($page, '.logoutOptions a.logout')->click();
+
+        // Go to a record view
+        $page = $this->gotoRecord();
+        // Click email record without logging in
+        $this->findCss($page, '.mail-record')->click();
+        $this->snooze();
+        $this->findCss($page, '.modal.in [name="username"]');
         // Login in Lightbox
-        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->fillInLoginForm($page, 'emailmaniac', 'test');
         $this->submitLoginForm($page);
         // Make sure Lightbox redirects to email view
         $this->findCss($page, '.modal #email_to');
@@ -269,13 +301,9 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.mail-record')->click();
         $this->snooze();
         $this->findCss($page, '.modal #email_to');
-        // Type invalid email
-        $this->findCss($page, '.modal #email_to')->setValue('blargarsaurus');
-        $this->findCss($page, '.modal #email_from')->setValue('asdf@asdf.com');
-        $this->findCss($page, '.modal #email_message')->setValue('message');
         // Send text to false email
-        $this->snooze();
         $this->findCss($page, '.modal #email_to')->setValue('asdf@vufind.org');
+        $this->findCss($page, '.modal #email_from')->setValue('asdf@vufind.org');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
         // Check for confirmation message
@@ -349,6 +377,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public static function tearDownAfterClass()
     {
-        static::removeUsers(['username1', 'username2']);
+        static::removeUsers(['username1', 'username2', 'emailmaniac']);
     }
 }

@@ -144,6 +144,8 @@
 
             <? if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
               <div class="text-success"><?=$this->transEsc("hold_available") ?></div>
+            <? elseif (isset($ilsDetails['in_transit']) && $ilsDetails['in_transit']): ?>
+              <div class="text-success"><?=$this->transEsc('request_in_transit') . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], array(), $ilsDetails['in_transit']) : '') ?></div>
             <? elseif (isset($ilsDetails['position'])): ?>
               <p><strong><?=$this->transEsc("hold_queue_position") ?>:</strong> <?=$this->escapeHtml($ilsDetails['position']) ?></p>
             <? endif; ?>
