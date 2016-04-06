@@ -65,10 +65,10 @@ class MultiBackend extends AbstractBase
      * @var string
      */
     protected $defaultDriver;
-    
+
     /**
      * The path to the driver configurations relative to the config path
-     * 
+     *
      * @var string
      */
     protected $driversConfigPath;
@@ -1177,9 +1177,13 @@ class MultiBackend extends AbstractBase
             $source = $this->getSourceFromParams($params);
         }
         if (!$source) {
-            $patron = $this->ilsAuth->storedCatalogLogin();
-            if ($patron && isset($patron['cat_username'])) {
-                $source = $this->getSource($patron['cat_username']);
+            try {
+                $patron = $this->ilsAuth->storedCatalogLogin();
+                if ($patron && isset($patron['cat_username'])) {
+                    $source = $this->getSource($patron['cat_username']);
+                }
+            } catch (ILSException $e) {
+                return [];
             }
         }
 

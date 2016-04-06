@@ -64,7 +64,7 @@ class AbstractBase extends AbstractActionController
      *
      * @return void
      */
-    public function preDispatch(MvcEvent $e)
+    public function validateAccessPermission(MvcEvent $e)
     {
         // Make sure the current user has permission to access the module:
         if ($this->accessPermission
@@ -90,7 +90,7 @@ class AbstractBase extends AbstractActionController
         if ($this->accessPermission) {
             $events = $this->getEventManager();
             $events->attach(
-                MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000
+                MvcEvent::EVENT_DISPATCH, [$this, 'validateAccessPermission'], 1000
             );
         }
     }
