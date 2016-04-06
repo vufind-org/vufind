@@ -26,7 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Auth;
-use VuFind\Exception\ILS as ILSException, VuFind\ILS\Connection as ILSConnection;
+use VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Class for managing ILS-specific authentication.
@@ -119,14 +119,11 @@ class ILSAuthenticator
      * Returns associative array of patron data on success, false on failure.
      *
      * @return array|bool
+     * @throws ILSException
      */
     public function newCatalogLogin($username, $password)
     {
-        try {
-            $result = $this->catalog->patronLogin($username, $password);
-        } catch (ILSException $e) {
-            return false;
-        }
+        $result = $this->catalog->patronLogin($username, $password);
         if ($result) {
             $user = $this->auth->isLoggedIn();
             if ($user) {

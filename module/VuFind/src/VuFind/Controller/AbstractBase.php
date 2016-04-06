@@ -311,11 +311,15 @@ class AbstractBase extends AbstractActionController
             if ($target) {
                 $username = "$target.$username";
             }
-            $patron = $ilsAuth->newCatalogLogin($username, $password);
+            try {
+                $patron = $ilsAuth->newCatalogLogin($username, $password);
 
-            // If login failed, store a warning message:
-            if (!$patron) {
-                $this->flashMessenger()->addMessage('Invalid Patron Login', 'error');
+                // If login failed, store a warning message:
+                if (!$patron) {
+                    $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
+                }
+            } catch (ILSException $e) {
+                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
             }
         } else {
             try {
