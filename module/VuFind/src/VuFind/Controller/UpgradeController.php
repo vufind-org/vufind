@@ -440,8 +440,17 @@ class UpgradeController extends AbstractBase
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
 
-            // Add checksums to all saved searches
-            $this->fixSearchChecksumsInDatabase();
+            // Add checksums to all saved searches but catch exceptions (e.g. in case
+            // column checksum does not exist yet because of sqllog).
+            try {
+                $this->fixSearchChecksumsInDatabase();
+            } catch (\Exception $e) {
+                $this->session->warnings->append(
+                    'Could not fix checksums in table search - maybe column ' .
+                    'checksum is missing? Exception thrown with ' .
+                    'message: ' . $e->getMessage()
+                );
+            }
         } catch (\Exception $e) {
             $this->flashMessenger()->addMessage(
                 'Database upgrade failed: ' . $e->getMessage(), 'error'
