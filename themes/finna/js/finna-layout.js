@@ -617,6 +617,18 @@ finna.layout = (function() {
       });
     }
 
+    var initLoadMasonry = function() {
+      var $grid = $('.result-view-grid .masonry-wrapper').imagesLoaded( function() {
+        // init Masonry after all images have loaded
+        $grid.masonry({
+           fitWidth: false,
+           itemSelector: '.result.grid',
+           columnWidth: '.result.grid',
+           isResizeBound: 'true',
+        });
+      });
+    }
+
     var my = {
         isTouchDevice: isTouchDevice,
         initTruncate: initTruncate,
@@ -651,6 +663,7 @@ finna.layout = (function() {
             initAutoScrollTouch();
             initIpadCheck();
             initLoginRedirect();
+            initLoadMasonry();
         }
     };
 
