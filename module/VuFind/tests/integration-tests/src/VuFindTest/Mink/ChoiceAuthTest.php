@@ -26,7 +26,6 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
-use Behat\Mink\Element\Element;
 
 /**
  * Mink ChoiceAuth test class.
