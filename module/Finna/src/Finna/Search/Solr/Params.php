@@ -252,7 +252,7 @@ class Params extends \VuFind\Search\Solr\Params
             if (null === $request->get('join')) {
                 $request->set('join', 'AND');
             }
-            $bool0 = array_filter($request->get('bool0'));
+            $bool0 = array_filter($request->get('bool0', []));
             if (empty($bool0)) {
                 $request->set('bool0', ['AND']);
             }
