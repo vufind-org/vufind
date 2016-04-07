@@ -86,7 +86,7 @@ if ($xhprof) {
     include_once "xhprof_lib/utils/xhprof_lib.php";
     include_once "xhprof_lib/utils/xhprof_runs.php";
     $xhprofRuns = new XHProfRuns_Default();
-    $suffix = 'vufind2';
+    $suffix = 'vufind';
     $xhprofRunId = $xhprofRuns->save_run($xhprofData, $suffix);
     $url = "$xhprof?run=$xhprofRunId&source=$suffix";
     echo "<a href='$url'>Profiler output</a>";
