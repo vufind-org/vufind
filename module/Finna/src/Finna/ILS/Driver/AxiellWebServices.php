@@ -1846,7 +1846,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 "$function Request for '$this->arenaMember'.'$id' failed: "
                 . $e->getMessage()
             );
-            throw $e;
+            throw new ILSException($e->getMessage());
         }
 
         if ($this->durationLogPrefix) {

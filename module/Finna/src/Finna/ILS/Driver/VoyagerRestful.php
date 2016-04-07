@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -307,99 +307,5 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
         }
 
         return $config['WebServices']['patronHomeUbId'];
-    }
-
-    /**
-     * Get Patron Holds
-     *
-     * This is responsible for retrieving all holds by a specific patron.
-     *
-     * @param array $patron The patron array from patronLogin
-     *
-     * @throws DateException
-     * @throws ILSException
-     * @return array        Array of the patron's holds on success.
-     * @todo   Merge to upstream
-     */
-    public function getMyHolds($patron)
-    {
-        $holds = parent::getMyHolds($patron);
-
-        // Build Hierarchy
-        $hierarchy = [
-            'patron' =>  $patron['id'],
-            'circulationActions' => 'requests',
-            'holds' => false
-        ];
-
-        // Add Required Params
-        $params = [
-            "patron_homedb" => $this->ws_patronHomeUbId,
-            "view" => "full"
-        ];
-
-        $results = $this->makeRequest($hierarchy, $params);
-
-        if ($results === false) {
-            throw new ILSException('System error fetching holds');
-        }
-
-        $replyCode = (string)$results->{'reply-code'};
-        if ($replyCode != 0 && $replyCode != 8) {
-            throw new ILSException('System error fetching holds');
-        }
-        if (isset($results->holds->institution)) {
-            foreach ($results->holds->institution as $institution) {
-                // Only take local holds
-                if (!$this->isLocalInst((string)$institution->attributes()->id)) {
-                    continue;
-                }
-
-                foreach ($institution->hold as $hold) {
-                    $item = $hold->requestItem;
-
-                    $id = (string)$item->holdRecallId;
-                    foreach ($holds as $hold) {
-                        if ($hold['reqnum'] == $id) {
-                            continue 2;
-                        }
-                    }
-
-                    $holds[] = [
-                        'id' => '',
-                        'type' => (string)$item->holdType,
-                        'location' => (string)$item->pickupLocation,
-                        'expire' => (string)$item->expiredDate
-                            ? $this->dateFormat->convertToDisplayDate(
-                                'Y-m-d', (string)$item->expiredDate
-                            )
-                            : '',
-                        // Looks like expired date shows creation date for
-                        // UB requests, but who knows
-                        'create' => (string)$item->expiredDate
-                            ? $this->dateFormat->convertToDisplayDate(
-                                'Y-m-d', (string)$item->expiredDate
-                            )
-                            : '',
-                        'position' => (string)$item->queuePosition,
-                        'available' => (string)$item->status == '2',
-                        'reqnum' => (string)$item->holdRecallId,
-                        'item_id' => (string)$item->itemId,
-                        'volume' => '',
-                        'publication_year' => '',
-                        'title' => (string)$item->itemTitle,
-                        'institution_id' => (string)$institution->attributes()->id,
-                        'institution_name' => (string)$item->dbName,
-                        'institution_dbkey' => (string)$item->dbKey,
-                        'in_transit' => (substr((string)$item->statusText, 0, 13)
-                            == 'In transit to')
-                          ? substr((string)$item->statusText, 14)
-                          : ''
-                    ];
-                }
-            }
-        }
-        return $holds;
-
     }
 }

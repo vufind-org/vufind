@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,12 +22,14 @@
  * @category VuFind
  * @package  Authorization
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Role\PermissionProvider;
-use Finna\Auth\Manager,
-    \VuFind\Role\PermissionProvider\PermissionProviderInterface;
+use Finna\Auth\Manager;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\Role\PermissionProvider\PermissionProviderInterface;
 
 /**
  * Authentication strategy permission provider for VuFind.
@@ -35,6 +37,7 @@ use Finna\Auth\Manager,
  * @category VuFind
  * @package  Authorization
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -82,14 +85,21 @@ class AuthenticationStrategy implements PermissionProviderInterface
             // Check ILS stat group
             $connection = $this->serviceLocator->get('VuFind\ILSConnection');
             $ilsAuth = $this->serviceLocator->get('VuFind\ILSAuthenticator');
-            $patron = $ilsAuth->storedCatalogLogin();
-            if (!$patron) {
+            try {
+                $patron = $ilsAuth->storedCatalogLogin();
+                if (!$patron) {
+                    return [];
+                }
+                $functionConfig = $connection->checkFunction(
+                    'getPatronAuthorizationStatus', $patron
+                );
+                if (!$functionConfig
+                    || $connection->getPatronAuthorizationStatus($patron)
+                ) {
+                    return ['loggedin'];
+                }
+            } catch (ILSException $e) {
                 return [];
-            }
-            if (!$connection->checkFunction('getPatronAuthorizationStatus', $patron)
-                || $connection->getPatronAuthorizationStatus($patron)
-            ) {
-                return ['loggedin'];
             }
         }
         return [];

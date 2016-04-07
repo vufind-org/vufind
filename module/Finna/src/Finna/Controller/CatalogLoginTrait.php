@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace Finna\Controller;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * CatalogLogin trait.
@@ -70,17 +71,26 @@ trait CatalogLoginTrait
             $secondaryUsername = $this->params()->fromPost(
                 'cat_secondary_username', ''
             );
-            $patron = $ilsAuth->newCatalogLogin(
-                $username, $password, $secondaryUsername
-            );
+            try {
+                $patron = $ilsAuth->newCatalogLogin(
+                    $username, $password, $secondaryUsername
+                );
 
-            // If login failed, store a warning message:
-            if (!$patron) {
-                $this->flashMessenger()->addMessage('Invalid Patron Login', 'error');
+                // If login failed, store a warning message:
+                if (!$patron) {
+                    $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
+                }
+            } catch (ILSException $e) {
+                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
             }
         } else {
-            // If no credentials were provided, try the stored values:
-            $patron = $ilsAuth->storedCatalogLogin();
+            try {
+                // If no credentials were provided, try the stored values:
+                $patron = $ilsAuth->storedCatalogLogin();
+            } catch (ILSException $e) {
+                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+                return $this->createViewModel();
+            }
         }
 
         // If catalog login failed, send the user to the right page:
