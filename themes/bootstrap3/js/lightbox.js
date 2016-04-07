@@ -63,13 +63,14 @@ VuFind.register('lightbox', function() {
     if ('undefined' == typeof type) {
       type = 'info';
     }
-    _html('<div class="alert alert-'+type+'">'+message+'</div><button class="btn btn-default" data-dismiss="modal">' + VuFind.translate('close') + '</button>');
+    _html('<div class="flash-message alert alert-'+type+'">'+message+'</div>'
+        + '<button class="btn btn-default" data-dismiss="modal">' + VuFind.translate('close') + '</button>');
     _modal.modal('show');
   };
   var flashMessage = function(message, type) {
-    _modalBody.find('.alert,.fa.fa-spinner').remove();
+    _modalBody.find('.flash-message,.fa.fa-spinner').remove();
     _modalBody.find('h2:first-of-type')
-      .after('<div class="alert alert-'+type+'">'+message+'</div>');
+      .after('<div class="flash-message alert alert-'+type+'">'+message+'</div>');
   };
 
   /**
