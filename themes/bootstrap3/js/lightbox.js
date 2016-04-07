@@ -266,8 +266,8 @@ VuFind.register('lightbox', function() {
     _lightboxTitle = submit.data('lightboxTitle') || $(form).data('lightboxTitle') || '';
     // Get Lightbox content
     ajax({
-      url: form.action || _currentUrl,
-      method: form.method || 'GET',
+      url: $(form).attr('action') || _currentUrl,
+      method: $(form).attr('method') || 'GET',
       data: data
     });
 
