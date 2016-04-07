@@ -32,7 +32,7 @@
           <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
           <? if (!empty($journalTitle)): ?>
             <?=!empty($summAuthor) ? '' : ' '?>
-            <?=$this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', $journalTitle, ['set' => $this->params->getMetaLibSearchSet()]) . '">' . $journalTitle . '</a>';?>
+            <?=$this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', $journalTitle, ['set' => is_callable([$this->params, 'getMetaLibSearchSets']) ? $this->params->getMetaLibSearchSet() : '']) . '">' . $journalTitle . '</a>';?>
             <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } else if (!empty($summDate)) { echo($this->escapeHtml($summDate[0])); } ?>
           <? elseif (!empty($summDate)): ?>
             <?=!empty($summAuthor) ? '' : ' '?>
