@@ -344,11 +344,19 @@ mark, .highlight {
     padding-top: 15px;
     padding-bottom: 15px;
     &:first-child {
-      padding-top: 0px;   
+        padding-top: 0px;   
     }
     @media (max-width:@screen-xs-max) {
         border-bottom: 1px solid @gray-lighter;
     }
+    & .list-view .publish-year {
+        display: block;
+    }
+    & .list-view {
+        & .more-link, & .less-link {
+            padding-bottom: 0;
+        }
+    } 
 }
 .dateyeartype {
     .date-and-year();  

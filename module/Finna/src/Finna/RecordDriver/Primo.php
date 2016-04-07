@@ -202,11 +202,11 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
-     * Get highlighted authors, if available.
+     * Get primary author information with highlights applied (if applicable)
      *
      * @return array
      */
-    public function getHighlightedAuthors()
+    public function getPrimaryAuthorsWithHighlighting()
     {
         $authors = $this->getCreators();
         // Don't check for highlighted values if highlighting is disabled or we

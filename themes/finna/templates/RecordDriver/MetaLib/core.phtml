@@ -51,7 +51,7 @@
       <? endif; ?>
     <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
       <? if (isset($authors['main']) && !empty($authors['main'])): ?>
-        <span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'], $linkParams)?>"><?=$this->escapeHtml($authors['main'])?></a></span>
+        <span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'], $linkParams)?>"><?=$this->escapeHtml($authors['main'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?></span>
       <? endif; ?>
       <?
         $journalTitle = $this->driver->getContainerTitle();

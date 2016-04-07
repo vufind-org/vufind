@@ -40,7 +40,7 @@
       <? else: ?>
         <?
           $highlight = true;
-          $summAuthors = $this->driver->getHighlightedAuthors();
+          $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting();
           if (empty($summAuthors)) {
               $summAuthors = $this->driver->getCreators();
               $highlight = false;

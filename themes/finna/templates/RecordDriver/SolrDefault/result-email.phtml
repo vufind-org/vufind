@@ -1,5 +1,5 @@
 <?
-  $author = $this->driver->getPrimaryAuthor();
+  $authors = $this->driver->getPrimaryAuthors();
   $title = $this->driver->getTitle();
   $journalTitle = $this->driver->getContainerTitle();
   $publicationDate = $this->driver->getPublicationDates();
@@ -12,8 +12,8 @@
 ?>
 
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
-<? if (!empty($author)): ?>
-<?= PHP_EOL . $this->translate('by') . ': ' . $author; ?>
+<? if (!empty($authors)): ?>
+<?= PHP_EOL . $this->translate('by') . ': ' . $authors[0]; ?><? if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
 <? endif; ?>
 <? if (!empty($publicationDate)) : ?>
 <?= PHP_EOL . $this->translate('Published') . ': ' . $publicationDate[0]; ?>

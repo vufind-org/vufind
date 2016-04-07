@@ -22,13 +22,12 @@
 
       <div class="dateyeartype">
         <div class="resultItemFormat"><?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?></div>
-        <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
-        <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
-          $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
-          echo !empty($summHighlightedAuthor)
-              ? $this->highlight($summHighlightedAuthor)
-              : $this->escapeHtml($summAuthor);
-        ?></a>
+        <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
+          <div class="truncate-field" data-rows="1">
+            <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
+              <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ' ; ' : ''?>
+            <? endforeach; ?>
+          </div>
         <? endif; ?>
 
         <div class="resultHierarchyLinks">

@@ -118,7 +118,7 @@
           <? if ($results): ?>
             <span class="recordAuthors">
             <? foreach($results as $index => $author): ?>
-              <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
+              <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?><? if (!empty($author['role'])): ?><span class="author-role">, <?=$this->escapeHtml($author['role']) ?></span><? endif; ?>
             <? endforeach; ?>
             </span>
           <? endif; ?>
@@ -225,10 +225,11 @@
           <div class="truncate-field">
           <? if (!empty($results['presenters'])): ?>
             <? foreach($results['presenters'] as $index => $author): ?>
-              <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
+              <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><? if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><? endif; ?><? if (!empty($author['role'])): ?><span class="author-role">, <?=$this->escapeHtml($author['role']) ?></span><? endif; ?>
             <? endforeach; ?>
           <? endif; ?>
           <? if (!empty($results['details'])): ?>
+            <br/>
             <? foreach($results['details'] as $detail): ?>
               <?=($index > 0 || !empty($results['presenters']) ? '' : '')?><?=$this->escapeHtml($detail)?>
             <? endforeach; ?>

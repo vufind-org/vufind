@@ -82,6 +82,20 @@ trait SolrFinna
     }
 
     /**
+     * Return all presenter and non-presenter authors as an array.
+     *
+     * @return array
+     */
+    public function getAuthorsWithRoles()
+    {
+        $nonPresenters = $this->getNonPresenterAuthors();
+        $presenters = $this->getPresenters();
+        return isset($presenters['presenters'])
+            ? array_merge($nonPresenters, $presenters['presenters'])
+            : $nonPresenters;
+    }
+
+    /**
      * Get record rating.
      *
      * @return array Keys 'average' and 'count'
@@ -253,10 +267,10 @@ trait SolrFinna
     public function getNonPresenterAuthors()
     {
         $authors = [];
-        if ($author = $this->getPrimaryAuthor()) {
+        foreach ($this->getPrimaryAuthors() as $author) {
             $authors[] = ['name' => $author];
         }
-        if ($author = $this->getCorporateAuthor()) {
+        foreach ($this->getCorporateAuthors() as $author) {
             $authors[] = ['name' => $author];
         }
         foreach ($this->getSecondaryAuthors() as $author) {

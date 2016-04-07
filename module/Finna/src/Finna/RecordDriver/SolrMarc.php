@@ -649,11 +649,13 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                         continue;
                     }
                     $subfields = $this->getSubfieldArray(
-                        $field, ['a', 'b', 'c', 'd']
+                        $field, ['a', 'b', 'c']
                     );
+                    $dates = $this->getSubfieldArray($field, ['d']);
                     if (!empty($subfields)) {
                         $result[] = [
                             'name' => $this->stripTrailingPunctuation($subfields[0]),
+                            'date' => !empty($dates) ? $dates[0] : '',
                             'role' => $role
                         ];
                     }
@@ -740,11 +742,13 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                         continue;
                     }
                     $subfields = $this->getSubfieldArray(
-                        $field, ['a', 'b', 'c', 'd']
+                        $field, ['a', 'b', 'c']
                     );
+                    $dates = $this->getSubfieldArray($field, ['d']);
                     if (!empty($subfields)) {
                         $result['presenters'][] = [
                             'name' => $this->stripTrailingPunctuation($subfields[0]),
+                            'date' => !empty($dates) ? $dates[0] : '',
                             'role' => $role
                         ];
                     }
@@ -764,9 +768,11 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
      */
     public function getPrimaryAuthorForSearch()
     {
-        return $this->stripTrailingPunctuation(
-            $this->getFirstFieldValue('100', ['a', 'b', 'c'])
-        );
+        $authors = $this->getNonPresenterAuthors();
+        if ($authors) {
+            return $authors[0]['name'];
+        }
+        return '';
     }
 
     /**
