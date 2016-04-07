@@ -8,25 +8,25 @@ building           = Organisation
 format             = Format
 
 ; Use callnumber-first for LC call numbers, dewey-hundreds for Dewey Decimal:
-;callnumber-first   = "Call Number"
-;dewey-hundreds     = "Call Number"
-;hierarchy_top_title   = Collections
-author2Str         = Author
-language           = Language
+;callnumber-first    = "Call Number"
+;dewey-hundreds      = "Call Number"
+;hierarchy_top_title = Collections
+author_facet        = Author
+language            = Language
 original_lng_str_mv = original_work_language
 subtitle_lng_str_mv = subtitle_language
-main_date_str      = "Year"
+main_date_str       = "Year"
 search_daterange_mv = "Main Year"
-major_genre_str_mv = "Major Genre"
-genre_facet        = Genre
-era_facet          = Era
-geographic_facet   = Region
-;publishDate        = "adv_search_year"  ; share year string w/advanced search page
-topic_facet        = Topic
+major_genre_str_mv  = "Major Genre"
+genre_facet         = Genre
+era_facet           = Era
+geographic_facet    = Region
+;publishDate         = "adv_search_year"  ; share year string w/advanced search page
+topic_facet         = Topic
 usage_rights_str_mv = "Usage Rights"
 hierarchy_parent_title = component_part_is_part_of
-first_indexed      = "New Items in Index"
-category_str_mv    = category_facet_heading
+first_indexed       = "New Items in Index"
+category_str_mv     = category_facet_heading
 
 ; Facets that will appear at the top of search results when the TopFacets
 ; recommendations module is used.  See the [TopRecommendations] section of
@@ -103,7 +103,7 @@ top_cols = 3
 ; to false or omit to disable ORed facets.
 orFacets = *
 ; Do we want any facets to be collapsed by default?
-collapsedFacets = sector_str_mv,building,author2Str,language,original_lng_str_mv,subtitle_lng_str_mv,main_date_str,search_daterange_mv,genre_facet,era_facet,geographic_facet,topic_facet,hierarchy_parent_title,first_indexed,category_str_mv,usage_rights_str_mv,major_genre_str_mv
+collapsedFacets = sector_str_mv,building,author_facet,language,original_lng_str_mv,subtitle_lng_str_mv,main_date_str,search_daterange_mv,genre_facet,era_facet,geographic_facet,topic_facet,hierarchy_parent_title,first_indexed,category_str_mv,usage_rights_str_mv,major_genre_str_mv
 
 ; This can be used to sort specific facet fields alphabetically by index value
 ; (which normally results in alphabetical order).
@@ -120,7 +120,7 @@ topic_facet = "Related Subjects"
 [Collection]
 geographic_facet       = Location
 topic_facet            = Subjects
-author2Str             = Author
+author_facet           = Author
 hierarchy_parent_title = "Sub Collection"
 genre_facet            = Genre
 era_facet              = Era
