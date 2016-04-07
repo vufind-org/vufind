@@ -218,6 +218,6 @@ var cartFormHandler = function(event, data) {
   if (keys.indexOf('print') > -1) {
     return true;
   }
-}
+};
 
 document.addEventListener('VuFind.lightbox.closed', VuFind.cart.updateCount, false);
