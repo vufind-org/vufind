@@ -231,7 +231,7 @@ foreach ($this->statusItems as $item):
 
 <div class="actions">
 <?
-$holdingsLink = sprintf('%s%s/Holdings', $this->url('record'), $this->statusItems[0]['id']);
+$holdingsLink = $this->recordLink()->getUrl($driver);
 $disableTitleHold = isset($summary['holdable']) && !$summary['holdable'];
 
 if ($this->holdingsSettings()->showSearchResultsTitleHold()) {
@@ -246,7 +246,7 @@ if ($this->holdingsSettings()->showSearchResultsTitleHold()) {
       $logged = $account->isLoggedIn();
       $link = null;
       if (!$logged) {
-          $link = $holdingsLink . '?login=true&amp;catalogLogin=true';
+        $link = $holdingsLink . '?login=true&amp;catalogLogin=true';
       } elseif ($journal) {
         $link = $holdingsLink;
       } else {
@@ -256,9 +256,15 @@ if ($this->holdingsSettings()->showSearchResultsTitleHold()) {
         }
       }
       if ($link) {
+        if ($logged) {
 ?>
-      <a href="<?=$link?>#tabnav" class="<?=$logged ? 'placehold' : 'login'?> btn btn-primary hidden-print" data-lightbox-title="<?=$this->transEsc('title_hold_place') . ': ' . $driver->getTitle() ?>" data-lightbox> <?=$this->transEsc("title_hold_place")?></a>
+      <a href="<?=$link?>" class="placehold btn btn-primary hidden-print" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('title_hold_place') . ': ' . $driver->getTitle()) ?>" data-lightbox><?=$this->transEsc('title_hold_place')?></a>
 <?
+        } else {
+?>
+      <a href="<?=$link?>" class="login btn btn-primary hidden-print" data-lightbox><?=$this->transEsc('title_hold_login')?></a>
+<?
+        }
       }
     }
 ?>

@@ -229,4 +229,27 @@ class RecordController extends \VuFind\Controller\RecordController
 
         return $this->loadPreviewRecord($data, $format, $source);
     }
+
+    /**
+     * Display a particular tab.
+     *
+     * @param string $tab  Name of tab to display
+     * @param bool   $ajax Are we in AJAX mode?
+     *
+     * @return mixed
+     */
+    protected function showTab($tab, $ajax = false)
+    {
+        // Special case -- handle lightbox login request if login has already been
+        // done
+        if ($this->params()->fromQuery('layout', 'false') == 'lightbox'
+            && $this->params()->fromQuery('catalogLogin', 'false') == 'true'
+            && is_array($patron = $this->catalogLogin())
+        ) {
+            $response = $this->getResponse();
+            $response->setStatusCode(205);
+            return $response;
+        }
+        return parent::showTab($tab, $ajax);
+    }
 }
