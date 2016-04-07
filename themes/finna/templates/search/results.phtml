@@ -137,11 +137,11 @@
   <? /* End Main Listing */ ?>
 
   <? /* Narrow Search Options */ ?>
-  <div class="<?=$this->layoutClass('sidebar')?>">
+  <div class="<?=$recordTotal < 1 ? "col-sm-9" : $this->layoutClass('sidebar');?>">
     <? foreach ($this->results->getRecommendations('side') as $current): ?>
       <?=$this->recommend($current)?>
     <? endforeach; ?>
-    <? if ($template = $this->content()->findTemplateForLng("content/Additions/search-post-facets")): ?>
+    <? if (($template = $this->content()->findTemplateForLng("content/Additions/search-post-facets")) && ($recordTotal > 0)): ?>
       <div class="row">
         <div class="col-xs-12">
           <?=$this->render($template)?>
