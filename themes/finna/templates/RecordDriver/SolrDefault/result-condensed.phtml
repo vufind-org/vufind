@@ -37,20 +37,10 @@
             <? if($this->driver->isCollection()): ?>
               <?=implode('<br>', $this->driver->getSummary()); ?>
             <? else: ?>
-              <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
-                <? $authorForSearch = $this->driver->tryMethod('getPrimaryAuthorForSearch'); ?>
-                <a href="<?=$this->record($this->driver)->getLink('author', $authorForSearch ? $authorForSearch : $summAuthor)?>"><?=$this->escapeHtml($summAuthor) ?></a>
-              <? else: ?>
-                <? $authors = $this->driver->tryMethod('getNonPresenterAuthors'); if (!empty($authors)): ?>
-                <div class="truncate-field" data-rows="2">
-                  <? foreach ($authors as $i => $author): ?>
-                    <?=$i > 0 ? ' ; ' : '' ?>
-                    <a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>">
-                      <?=$this->escapeHtml($author['name']) ?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role']) ?><? endif; ?>
-                    </a>
-                  <? endforeach; ?>
-                </div>
-                <? endif; ?>
+              <? $authors = $this->driver->tryMethod('getAuthorsWithRoles'); if (!empty($authors)): ?>
+                <? $author = $authors[0]; ?>
+                <a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a>
+                <? if (count($authors) > 1): ?> <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
               <? endif; ?>
               <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
               <? if (!empty($journalTitle)): ?>
