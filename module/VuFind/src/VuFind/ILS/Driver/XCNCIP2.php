@@ -539,8 +539,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $holdCallNo = (string)$holdCallNo[0];
                 $avail = $holding->xpath('ns1:ItemInformation');
                 $eResource = $holding->xpath(
-                                 'ns1:ElectronicResource/ns1:ReferenceToResource'
-                             );
+                    'ns1:ElectronicResource/ns1:ReferenceToResource'
+                );
                 $eResource = (string)$eResource[0];
 
                 // Build the array of holdings:
@@ -1410,7 +1410,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($details as $cancelDetails) {
             list($itemAgencyId, $requestId, $bibId) = explode("|", $cancelDetails);
             $request = $this->getCancelRequest(
-                $username, $password, $patronAgency, $itemAgencyId, $requestId, "Stack Retrieval"
+                $username,
+                $password,
+                $patronAgency,
+                $itemAgencyId,
+                $requestId,
+                "Stack Retrieval"
             );
             $cancelRequestResponse = $this->sendRequest($request);
             $userId = $cancelRequestResponse->xpath(
@@ -1517,12 +1522,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return string           NCIP request XML
      */
     protected function getCancelRequest($username,
-                                        $password,
-                                        $patronAgency,
-                                        $itemAgencyId,
-                                        $requestId,
-                                        $type)
-    {
+        $password,
+        $patronAgency,
+        $itemAgencyId,
+        $requestId,
+        $type
+    ) {
+    
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
             'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
@@ -1678,11 +1684,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return string          NCIP request XML
      */
     protected function getRenewRequest($username,
-                                       $password,
-                                       $itemId,
-                                       $itemAgencyId,
-                                       $patronAgencyId)
-    {
+        $password,
+        $itemId,
+        $itemAgencyId,
+        $patronAgencyId
+    ) {
+    
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
             'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
