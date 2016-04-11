@@ -4,9 +4,9 @@
         <span class="myresearch-profile-middle-header"><?= $this->transEsc('messaging_settings_title') ?></span>
     </div>
     <? foreach ($profile['messagingServices'] as $service): ?>
-        <div class="col-xs-12">
+        <div class="col-xs-12 profile-messaging-service">
             <?
-            echo $service['type'] . ': ';
+            echo '<strong>' . $service['type'] . ':</strong> ';
             $notFound = true;
             foreach ($service['sendMethods'] as $method) {
                 if ($method['active']) {

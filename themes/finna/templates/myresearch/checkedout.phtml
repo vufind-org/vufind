@@ -51,12 +51,8 @@
         </div>
       <? else: ?>
         <div class="toolbar row">
-          <div class="col-xs-8 col-sm-7">
-            <p><?=$this->transEsc('cannot renew any checked out items')?></p>
-          </div>
-          <div class="col-xs-2 col-sm-1">
-          </div>
-          <div class="col-xs-12 col-sm-3 col-sm-push-1 text-right">
+          <h4 class="col-xs-5 myresearch-notification"><?=$this->transEsc('cannot renew any checked out items')?></h4>
+          <div class="col-xs-7 text-right">
             <?=$this->render('search/controls/sort.phtml')?>
           </div>
         </div>

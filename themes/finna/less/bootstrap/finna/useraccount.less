@@ -130,10 +130,22 @@
                 margin-bottom: 20px;
             }
         }
+        & .profile-messaging-service {
+            padding-top: 2px;
+            font-size: 1.1em;
+            & strong {
+                @media (max-width: @screen-xs-max) {
+                    display: block;
+                }
+            }
+        }
     }
     & .myresearch-profile-middle-header {
         font-size: @font-size-h3;
-        font-weight: bold;   
+        font-weight: bold;
+        display: block;
+        line-height: 1.1em;
+        margin-top: 15px;
     }
     & select#library_card {
         display: inline-block;   
@@ -642,5 +654,12 @@
     @media (max-width: @screen-xs-max) {
        left: auto;
        right: 0;   
+    }
+}
+
+.myresearch-notification {
+    padding-left: 0;
+    @media (max-width: @screen-xs-max) {
+        margin-top: 0;
     }
 }
