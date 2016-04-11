@@ -1252,7 +1252,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getRenewDetails($checkOutDetails)
     {
-        return $checkOutDetails['item_agency_id'] . "|" .  $checkOutDetails['item_id'] . "|" . $checkOutDetails['id'];
+        return $checkOutDetails['item_agency_id'] . 
+                                "|" . 
+                                $checkOutDetails['item_id'] .
+                                "|" .
+                                $checkOutDetails['id'];
     }
 
     /**
@@ -1438,7 +1442,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCancelStorageRetrievalRequestDetails($callslipDetails)
     {
-        return $callslipDetails['item_agency_id'] . "|" . $callslipDetails['requestId'] . "|" . $callslipDetails['id'];
+        return $callslipDetails['item_agency_id'] .
+                                "|" .
+                                $callslipDetails['requestId'] .
+                                "|" .
+                                $callslipDetails['id'];
     }
 
     /**
@@ -1494,6 +1502,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param string $username  Username for login
      * @param string $password  Password for login
+     * @param string $patronAgency  Agency for patron
+     * @param string $itemAgencyId  Agency ID for item
      * @param string $requestId Id of the request to cancel
      * @param string $type      The type of request to cancel (Hold, etc)
      *
@@ -1650,10 +1660,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $username Username for login
      * @param string $password Password for login
      * @param string $itemId   Id of item to renew
+     * @param string $itemAgencyId   Agency of Item Id to renew
+     * @param string $patronAgencyId   Agency of patron
      *
      * @return string          NCIP request XML
      */
-    protected function getRenewRequest($username, $password, $itemId, $itemAgencyId, $patron_agency_id)
+    protected function getRenewRequest($username, $password, $itemId, $itemAgencyId, $patronAgencyId)
     {
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
@@ -1663,7 +1675,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                    '<ns1:InitiationHeader>' .
                         '<ns1:ToAgencyId>' .
                             '<ns1:AgencyId>' .
-                                htmlspecialchars($patron_agency_id) .
+                                htmlspecialchars($patronAgencyId) .
                             '</ns1:AgencyId>' .
                         '</ns1:ToAgencyId>' .
                     '</ns1:InitiationHeader>' .
