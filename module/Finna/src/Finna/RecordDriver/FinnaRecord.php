@@ -52,4 +52,48 @@ trait FinnaRecord
             $userId, $this->getUniqueID()
         );
     }
+
+    /**
+     * Get OpenURL parameters for an article.
+     *
+     * @return array
+     */
+    protected function getArticleOpenUrlParams()
+    {
+        $params = parent::getArticleOpenUrlParams();
+        $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:article';
+        return $params;
+    }
+
+    /**
+     * Get OpenURL parameters for a book section.
+     *
+     * @return array
+     */
+    protected function getBookSectionOpenUrlParams()
+    {
+        $params = $this->getBookOpenUrlParams();
+        $params['rft.volume'] = $this->getContainerVolume();
+        $params['rft.issue'] = $this->getContainerIssue();
+        $params['rft.spage'] = $this->getContainerStartPage();
+        unset($params['rft.title']);
+        $params['rft.btitle'] = $this->getContainerTitle();
+        $params['rft.atitle'] = $this->getTitle();
+
+        return $params;
+    }
+
+    /**
+     * Get OpenURL parameters for a journal.
+     *
+     * @return array
+     */
+    protected function getJournalOpenUrlParams()
+    {
+        $params = parent::getJournalOpenUrlParams();
+        if ($objectId = $this->getSfxObjectId()) {
+            $params['rft.object_id'] = $objectId;
+        }
+        return $params;
+    }
 }

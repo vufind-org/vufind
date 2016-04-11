@@ -180,8 +180,8 @@ class Primo extends \VuFind\RecordDriver\Primo
     public function getPublicationDates()
     {
         $rec = $this->getSimpleXML();
-        if (isset($rec->search->creationdate)) {
-            return (array)($rec->search->creationdate);
+        if (isset($rec->facets->creationdate)) {
+            return (array)($rec->facets->creationdate);
         }
     }
 
@@ -333,7 +333,8 @@ class Primo extends \VuFind\RecordDriver\Primo
             ? $this->mainConfig->OpenURL->rfr_id
             : '';
         if ($dates = $this->getPublicationDates()) {
-            $params['rft.date'] = implode('', $this->getPublicationDates());
+            $params['rft.date'] = $params['rft_date']
+                = implode('', $this->getPublicationDates());
         }
         if (!isset($params['rft.title'])) {
             $params['rft.title'] = $this->getTitle();

@@ -457,38 +457,6 @@ trait SolrFinna
     }
 
     /**
-     * Get OpenURL parameters for a book section.
-     *
-     * @return array
-     */
-    protected function getBookSectionOpenUrlParams()
-    {
-        $params = $this->getBookOpenUrlParams();
-        $params['rft.volume'] = $this->getContainerVolume();
-        $params['rft.issue'] = $this->getContainerIssue();
-        $params['rft.spage'] = $this->getContainerStartPage();
-        unset($params['rft.title']);
-        $params['rft.btitle'] = $this->getContainerTitle();
-        $params['rft.atitle'] = $this->getTitle();
-
-        return $params;
-    }
-
-    /**
-     * Get OpenURL parameters for a journal.
-     *
-     * @return array
-     */
-    protected function getJournalOpenUrlParams()
-    {
-        $params = parent::getJournalOpenUrlParams();
-        if ($objectId = $this->getSfxObjectId()) {
-            $params['rft.object_id'] = $objectId;
-        }
-        return $params;
-    }
-
-    /**
      * Support method for getOpenURL() -- pick the OpenURL format.
      *
      * @return string
