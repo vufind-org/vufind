@@ -538,7 +538,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $holdCallNo = $holding->xpath('ns1:CallNumber');
                 $holdCallNo = (string)$holdCallNo[0];
                 $avail = $holding->xpath('ns1:ItemInformation');
-                $eResource = $holding->xpath('ns1:ElectronicResource/ns1:ReferenceToResource');
+                $eResource = $holding->xpath(
+                                 'ns1:ElectronicResource/ns1:ReferenceToResource'
+                             );
                 $eResource = (string)$eResource[0];
 
                 // Build the array of holdings:
@@ -1336,7 +1338,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($details as $cancelDetails) {
             list($itemAgencyId, $requestId, $bibId) = explode("|", $cancelDetails);
             $request = $this->getCancelRequest(
-                $username, $password, $patronAgency, $itemAgencyId, $requestId, "Hold"
+                $username, $password, $patronAgency,
+                $itemAgencyId, $requestId, "Hold"
             );
             $cancelRequestResponse = $this->sendRequest($request);
             $userId = $cancelRequestResponse->xpath(
@@ -1375,7 +1378,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        $cancelDetails = $holdDetails['item_agency_id'] . "|" . $holdDetails['requestId'] . "|" . $holdDetails['id'];
+        $cancelDetails = $holdDetails['item_agency_id'] .
+                         "|" .
+                         $holdDetails['requestId'] .
+                         "|" .
+                         $holdDetails['id'];
         return $cancelDetails;
     }
 
@@ -1500,16 +1507,21 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Helper function to build the request XML to cancel a request:
      *
-     * @param string $username  Username for login
-     * @param string $password  Password for login
-     * @param string $patronAgency  Agency for patron
-     * @param string $itemAgencyId  Agency ID for item
-     * @param string $requestId Id of the request to cancel
-     * @param string $type      The type of request to cancel (Hold, etc)
+     * @param string $username     Username for login
+     * @param string $password     Password for login
+     * @param string $patronAgency Agency for patron
+     * @param string $itemAgencyId Agency ID for item
+     * @param string $requestId    Id of the request to cancel
+     * @param string $type         The type of request to cancel (Hold, etc)
      *
      * @return string           NCIP request XML
      */
-    protected function getCancelRequest($username, $password, $patronAgency, $itemAgencyId, $requestId, $type)
+    protected function getCancelRequest($username,
+                                        $password,
+                                        $patronAgency,
+                                        $itemAgencyId,
+                                        $requestId,
+                                        $type)
     {
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
@@ -1657,15 +1669,19 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Helper function to build the request XML to renew an item:
      *
-     * @param string $username Username for login
-     * @param string $password Password for login
-     * @param string $itemId   Id of item to renew
+     * @param string $username       Username for login
+     * @param string $password       Password for login
+     * @param string $itemId         Id of item to renew
      * @param string $itemAgencyId   Agency of Item Id to renew
-     * @param string $patronAgencyId   Agency of patron
+     * @param string $patronAgencyId Agency of patron
      *
      * @return string          NCIP request XML
      */
-    protected function getRenewRequest($username, $password, $itemId, $itemAgencyId, $patronAgencyId)
+    protected function getRenewRequest($username,
+                                       $password,
+                                       $itemId,
+                                       $itemAgencyId,
+                                       $patronAgencyId)
     {
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
