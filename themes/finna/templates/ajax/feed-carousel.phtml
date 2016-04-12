@@ -9,10 +9,10 @@
   <div class="carousel-feed">
     <? foreach($this->items as $item): ?>
     <div>
-      <? if ($clickableElement && isset($item['link'])):?><a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>"><? endif; ?>  
+      <? if ($clickableElement && isset($item['link'])):?><a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?>><? endif; ?>  
       <? if (isset($item['title'])): ?>
       <div class="carousel-slide-header">
-        <p><?= $item['title']; ?></p>
+        <p><?= $this->truncate($item['title'], 70); ?></p>
       </div>
       <? endif; ?>
 
@@ -20,10 +20,10 @@
       <? if (isset($item['text']) || $clickableLink): ?>
       <div class="carousel-text">
         <? if (isset($item['title'])): ?>
-        <p class="carousel-hover-title"><?= $item['title']; ?></p>
+        <p class="carousel-hover-title"><?= $this->truncate($item['title'], 70); ?></p>
         <? endif; ?>
         <p><?= $item['text']; ?>
-        <? if ($clickableLink): ?><a <?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>" class="carousel-link"><?=$this->transEsc($this->linkText ? $this->linkText : 'To the record')?></a><? endif; ?>
+        <? if ($clickableLink): ?><a <?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>" class="carousel-link"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?>><?=$this->transEsc($this->linkText ? $this->linkText : 'To the record')?></a><? endif; ?>
         </p>
       </div>
       <? endif; ?>

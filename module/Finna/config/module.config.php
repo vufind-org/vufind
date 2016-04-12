@@ -58,6 +58,20 @@ $config = [
                     ]
                 ],
             ],
+            'feed-content-page' => [
+                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/FeedContent/[:page]/[:element]',
+                    'constraints' => [
+                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'element'     => '[0-9]*'
+                    ],
+                    'defaults' => [
+                        'controller' => 'Feedcontentpage',
+                        'action'     => 'Content',
+                    ]
+                ],
+            ],
             'list-page' => [
                 'type'    => 'Zend\Mvc\Router\Http\Segment',
                 'options' => [
@@ -142,6 +156,7 @@ $config = [
             'cover' => 'Finna\Controller\CoverController',
             'error' => 'Finna\Controller\ErrorController',
             'feedback' => 'Finna\Controller\FeedbackController',
+            'feedcontentpage' => 'Finna\Controller\FeedContentController',
             'librarycards' => 'Finna\Controller\LibraryCardsController',
             'locationService' => 'Finna\Controller\LocationServiceController',
             'metalib' => 'Finna\Controller\MetaLibController',
@@ -157,6 +172,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
+            'Finna\Feed' => 'Finna\Service\Factory::getFeed',
             'Finna\LocationService' => 'Finna\Service\Factory::getLocationService',
             'Finna\OnlinePayment' => 'Finna\Service\Factory::getOnlinePayment',
             'VuFind\AutocompletePluginManager' => 'Finna\Service\Factory::getAutocompletePluginManager',

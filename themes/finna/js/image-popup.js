@@ -188,8 +188,8 @@ finna.imagePopup = (function(finna) {
                         });
 
                         // load feedback modal
-                        if ($(".imagepopup-holder #feedback-record")[0]) {
-                          $(".imagepopup-holder #feedback-record").on("click", function(e) {
+                        if ($(".imagepopup-holder #feedback-record")[0] || $(".imagepopup-holder .save-record")[0]) {
+                          $(".imagepopup-holder #feedback-record, .imagepopup-holder .save-record").on("click", function(e) {
                             $.magnificPopup.close();
                           });
                         }

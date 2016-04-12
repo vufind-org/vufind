@@ -85,6 +85,24 @@ class Factory extends \VuFind\Service\Factory
     }
 
     /**
+     * Construct the feed service.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\Feed\Feed
+     */
+    public static function getFeed(ServiceManager $sm)
+    {
+        return new \Finna\Feed\Feed(
+            $sm->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config')->get('rss'),
+            $sm->get('VuFind\Http'),
+            $sm->get('VuFind\Translator'),
+            $sm->get('VuFind\CacheManager')
+        );
+    }
+
+    /**
      * Construct the ILS connection.
      *
      * @param ServiceManager $sm Service manager.

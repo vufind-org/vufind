@@ -26,6 +26,23 @@
 ; linkText[desktop] = "<translation-key>"
 ; linkText[touch] = = "<translation-key>"
 
+; When the item is clicked show content:encoded tag in a modal or on a content page.
+; linkTo = "content-page|modal"
+
+; Filters for searching item content:encoded tag contents using regular expressions
+; (htmlContentSearch) and replacing matches with strings (htmlContentReplace).
+; Note: filtering is used only for feed content that is shown in a modal or on a content page
+; (see: linkTo).
+;
+; htmlContentSearch[] = 'search-1'
+; htmlContentReplace[] = 'replace-1'
+; htmlContentSearch[] = 'search-2'
+; htmlContentReplace[] = 'replace-2'
+;
+; Example: remove links with a specific attribute
+; htmlContentSearch[] = '<a rel="nofollow".*?<\/a>'
+; htmlContentReplace[] = ''
+
 
 ; Content elements to hide (by default all elments are shown):
 
