@@ -193,6 +193,10 @@ class SideFacets extends AbstractFacets
             $this->showMoreSettings
                 = $config->Results_Settings->showMore->toArray();
         }
+        if (isset($config->Results_Settings->showMoreInLightbox)) {
+            $this->showInLightboxSettings
+                = $config->Results_Settings->showMoreInLightbox->toArray();
+        }
 
         // Collapsed facets:
         if (isset($config->Results_Settings->collapsedFacets)) {
@@ -348,6 +352,7 @@ class SideFacets extends AbstractFacets
 
     /**
      * Return the list of facets configured to be collapsed
+     * defaults to 6
      *
      * @param string $facetName Name of the facet to get
      *
@@ -365,6 +370,27 @@ class SideFacets extends AbstractFacets
 
         // Validate the return value, defaulting to 6 if missing/invalid
         return (isset($val) && $val > 0) ? $val : 6;
+    }
+
+    /**
+     * Return settings for showing more results in the lightbox
+     *
+     * @param string $facetName Name of the facet to get
+     *
+     * @return int
+     */
+    public function getShowInLightboxSetting($facetName = '*')
+    {
+        // Look for either facet-specific configuration or else a configured
+        // default. If neither is found, initialize return value to false.
+        if (isset($this->showInLightboxSettings[$facetName])) {
+            $val = $this->showInLightboxSettings[$facetName];
+        } elseif (isset($this->showInLightboxSettings['*'])) {
+            $val = $this->showInLightboxSettings['*'];
+        }
+
+        // Validate the return value
+        return isset($val) ? $val : false;
     }
 
     /**
