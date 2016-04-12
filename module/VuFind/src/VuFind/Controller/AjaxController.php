@@ -1395,4 +1395,21 @@ class AjaxController extends AbstractBase
     {
         return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
     }
+
+    public function facetLightboxAction() {
+        $this->disableSessionWrites();  // avoid session write timing bug
+
+        $facet = $this->params()->fromQuery('facet');
+
+        $results = $this->getResultsManager()->get('Solr');
+        $params = $results->getParams();
+        $params->initFromRequest($this->getRequest()->getQuery());
+
+        $facets = $results->getFullFieldFacets([$facet], false);
+
+        $this->layout()->setTemplate('layout/lightbox');
+        $view = $this->createViewModel(['data' => $facets[$facet]['data']['list']]);
+        $view->setTemplate('ajax/LightboxFacetList');
+        return $view;
+    }
 }

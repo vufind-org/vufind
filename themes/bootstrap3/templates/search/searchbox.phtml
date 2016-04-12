@@ -4,6 +4,8 @@
         $this->searchClassId = 'Solr';
     }
 
+    $this->layout()->lookfor = $this->lookfor;
+
     // Load search actions and settings (if any):
     $options = $this->searchOptions($this->searchClassId);
     $handlers = $this->searchbox()->getHandlers(
