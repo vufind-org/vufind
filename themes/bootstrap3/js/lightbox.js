@@ -164,9 +164,8 @@ VuFind.register('lightbox', function() {
         }
         _update(html);
       })
-      .fail(function(html, status, jq_xhr) {
+      .fail(function() {
         showAlert(VuFind.translate('error_occurred'), 'danger');
-        console.log(html, status, jq_xhr);
       });
     return _xhr;
   };
