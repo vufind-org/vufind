@@ -1399,12 +1399,11 @@ class AjaxController extends AbstractBase
     public function facetLightboxAction() {
         $this->disableSessionWrites();  // avoid session write timing bug
 
-        $facet = $this->params()->fromQuery('facet');
-
         $results = $this->getResultsManager()->get('Solr');
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
 
+        $facet = $this->params()->fromQuery('facet');
         $facets = $results->getFullFieldFacets([$facet], false);
 
         $this->layout()->setTemplate('layout/lightbox');
@@ -1413,7 +1412,7 @@ class AjaxController extends AbstractBase
             'facet' => $facet,
             'results' => $results
         ]);
-        $view->setTemplate('ajax/LightboxFacetList');
+        $view->setTemplate('ajax/lightboxFacetList');
         return $view;
     }
 }
