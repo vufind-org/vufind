@@ -85,7 +85,7 @@ dateRangeVis = search_daterange_mv:main_date_str
 ; Leave the section empty if you do not need checkbox facets.
 [CheckboxFacets]
 ;edition:1st* = "First Edition"     ; Contrived hypothetical example
-online_boolean:1 = "Limit to online materials"
+online_boolean:1 = online_material_facet_html
 
 ; These settings affect the way the [Results] facets are displayed
 ; If using facets at the top of search results you have more room for text.
