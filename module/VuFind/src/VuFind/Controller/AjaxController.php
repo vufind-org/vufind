@@ -1408,7 +1408,11 @@ class AjaxController extends AbstractBase
         $facets = $results->getFullFieldFacets([$facet], false);
 
         $this->layout()->setTemplate('layout/lightbox');
-        $view = $this->createViewModel(['data' => $facets[$facet]['data']['list']]);
+        $view = $this->createViewModel([
+            'data' => $facets[$facet]['data']['list'],
+            'facet' => $facet,
+            'results' => $results
+        ]);
         $view->setTemplate('ajax/LightboxFacetList');
         return $view;
     }

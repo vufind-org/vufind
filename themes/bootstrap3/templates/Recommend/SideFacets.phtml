@@ -162,7 +162,7 @@ JS;
               ?>
               <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
             <? if ($i == $facets_before_more): ?>
-              <a id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>" class="list-group-item narrow-toggle" href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')" data-lightbox data-lightbox-href="/vufind/AJAX/facetLightbox<?=$results->getUrlQuery()->getParams() ?>&method=getAllFacetValues&facet=<?=$title ?>"><?=$this->transEsc('more')?> ...</a>
+              <a id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>" class="list-group-item narrow-toggle" href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')" data-lightbox data-lightbox-href="<?=$this->url('home') ?>AJAX/facetLightbox<?=$results->getUrlQuery()->getParams() ?>&method=getAllFacetValues&facet=<?=$title ?>"><?=$this->transEsc('more')?> ...</a>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
               <a class="list-group-item active<? if ($i >= $facets_before_more): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>">
