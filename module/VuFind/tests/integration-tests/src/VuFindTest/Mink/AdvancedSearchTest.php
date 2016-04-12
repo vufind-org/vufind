@@ -39,6 +39,34 @@ namespace VuFindTest\Mink;
 class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
 {
     /**
+     * Test persistent
+     *
+     * @return void
+     */
+    public function testPersistent()
+    {
+        // Go to the advanced search page
+        $session = $this->getMinkSession();
+        $path = '/Search/Advanced';
+        $session->visit($this->getVuFindUrl() . $path);
+        $page = $session->getPage();
+        // Submit empty search form
+        $this->findCss($page, '[type=submit]')->press();
+        // Test edit search
+        $links = $page->findAll('css', '.adv_search_links a');
+        $isAdv = false;
+        foreach ($links as $link) {
+            if ($this->checkVisibility($link)
+                && $link->getHtml() == 'Edit this Advanced Search'
+            ) {
+                $isAdv = true;
+                break;
+            }
+        }
+        $this->assertTrue($isAdv);
+    }
+
+    /**
      * Test that the home page is available.
      *
      * @return void
