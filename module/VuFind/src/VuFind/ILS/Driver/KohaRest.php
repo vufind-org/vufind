@@ -652,7 +652,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             i.holdingbranch as HLDBRNCH, i.homebranch as HOMEBRANCH,
             i.reserves as RESERVES, i.itemcallnumber as CALLNO, i.barcode as BARCODE,
             i.copynumber as COPYNO, i.notforloan as NOTFORLOAN,
-            i.itemnotes as PERIONAME, b.frameworkcode as DOCTYPE,
+            i.itemnotes as PUBLICNOTES, b.frameworkcode as DOCTYPE,
             t.frombranch as TRANSFERFROM, t.tobranch as TRANSFERTO,
             i.itemlost as ITEMLOST
             from items i join biblio b on i.biblionumber = b.biblionumber
@@ -799,6 +799,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'item_id'      => $rowItem['ITEMNO'],
                 'status'       => $status,
                 'location'     => $loc,
+                'publicNotes'  => $rowItem['PUBLICNOTES'],
                 'notes'        => $notes["MFHD"],
                 //'reserve'      => (null == $rowItem['RESERVES'])
                 //    ? 'N' : $rowItem['RESERVES'],
@@ -921,27 +922,91 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $row = $sql = $sqlStmt = '';
         try {
             $id = $patron['id'];
-            $sql = "select old_issues.issuedate as DUEDATE, items.biblionumber as " .
-                "BIBNO, items.barcode BARCODE, items.itemnumber as ITEM_ID, " .
-                "items.itemnotes as NOTES " .
-                "from old_issues join items USING (itemnumber) " .
-                "where old_issues.borrowernumber = :id ORDER BY DUEDATE DESC ";
-            if (!$this->db) {
-                  $this->initDb();
-            }
-
+            $sql = "SELECT al.amount*100 as amount, al.amountoutstanding*100 as balance, al.accounttype as fine, " .
+                   "  al.date as createdat, items.biblionumber as id, al.description as title " .
+                   "FROM `accountlines` al " .
+                   "LEFT JOIN items USING (itemnumber) " .
+                   "WHERE al.borrowernumber = :id ";
+ 			if (!$this->db) {
+        		$this->initDB();
+      		}
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
+               switch ($row['fine'])
+               {
+                   case 'A':
+                       $fineValue = "Account Management Fee";
+                       break;
+                   case 'C':
+                       $fineValue = "Credit";
+                       break;
+                   case "CR":
+                       $fineValue = "Credit for Returning Lost Book";
+                       break;
+                   case "Copie":
+                       $fineValue = "Copier Fee";
+                       break;
+                   case 'F':
+                       $fineValue = "Overdue Fine";
+                       break;
+                   case "FFOR":
+                       $fineValue = "Forgiven Overdue Fine";
+                       break;
+                   case "FOR":
+                       $fineValue = "Forgiven";
+                       break;
+                   case "FU":
+                       $fineValue = "Overdue Fine";
+                       break;
+                   case 'L':
+                       $fineValue = "Lost Item";
+                       break;
+                   case "LR":
+                       $fineValue = "Lost and Returned";
+                       break;
+                   case 'M':
+                       $fineValue = "Sundry";
+                       break;
+                   case 'N':
+                       $fineValue = "New Card";
+                       break;
+                   case 'O':
+                       $fineValue = "Overdue Fine";
+                       break;
+                   case "Pay":
+                       $fineValue = "Payment";
+                       break;
+                   case "REF":
+                       $fineValue = "Refund";
+                       break;
+                   case "Rent":
+                       $fineValue = "Rental Fee";
+                       break;
+                   case "Rep":
+                       $fineValue = "Replacement";
+                       break;
+                   case "Res":
+                       $fineValue = "Reserve Charge";
+                       break;
+                   case 'W':
+                       $fineValue = "Charge Written Off";
+                       break;
+                   default:
+                       $fineValue = "Unknown Charge";
+                       break;
+                }
+ 
                 $transactionLst[] = [
-                    'duedate' => date_format(
-                        new \DateTime($row['DUEDATE']), "m/d/Y"
-                    ),
-                    'id' => $row['BIBNO'],
-                    'barcode' => $row['BARCODE'],
-                    'renew' => $row['RENEWALS'],
-                    'item_id' => $row['ITEM_ID'],
-                    'message' => $row['NOTES'],
+                           'amount'     => $row['amount'],
+                           'checkout'   => "N/A",
+                           'title'      => $row['title'],
+                           'fine'       => $fineValue,
+                           'balance'    => $row['balance'],
+                           'createdate' => $row['createdat'],
+                           'duedate' => date_format(new \DateTime($row['duedate']), "m/d/Y"),
+                           'duedate'    => "N/A",
+                           'id'         => isset($row['id']) ? $row['id'] : -1,
                 ];
             }
             return $transactionLst;
