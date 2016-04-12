@@ -156,15 +156,15 @@ JS;
             <noscript>
           <? endif; ?>
           <? foreach ($cluster['list'] as $i=>$thisFacet): ?>
-              <?
-                if(strlen($thisFacet['displayText']) == 0) {
-                  $thisFacet['displayText'] = "-";
-                }
-              ?>
-              <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
-            <? if ($i == $facets_before_more):
-                $idAndClass = 'id="more-narrowGroupHidden-'.$this->escapeHtmlAttr($title).'" class="list-group-item narrow-toggle"';
-                if ($show_more_in_lightbox): ?>
+            <?
+              if(strlen($thisFacet['displayText']) == 0) {
+                $thisFacet['displayText'] = "-";
+              }
+            ?>
+            <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
+            <? if ($i == $facets_before_more): ?>
+              <? $idAndClass = 'id="more-narrowGroupHidden-'.$this->escapeHtmlAttr($title).'" class="list-group-item narrow-toggle"'; ?>
+              <? if ($show_more_in_lightbox): ?>
                 <a <?=$idAndClass ?> data-lightbox href="<?=$this->url('home') ?>AJAX/facetLightbox<?=$results->getUrlQuery()->getParams() ?>&method=getAllFacetValues&facet=<?=$title ?>"><?=$this->transEsc('more')?> ...</a>
                 <? break; ?>
               <? else: ?>
