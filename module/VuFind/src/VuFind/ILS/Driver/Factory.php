@@ -143,6 +143,18 @@ class Factory
     }
 
     /**
+     * Factory for KohaRest driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return KohaRest
+     */
+    public static function getKohaRest(ServiceManager $sm)
+    {
+        return new KohaRest($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
      * Factory for Unicorn driver.
      *
      * @param ServiceManager $sm Service manager.
