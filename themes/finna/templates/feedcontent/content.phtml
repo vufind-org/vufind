@@ -1,0 +1,32 @@
+<!-- START of: finna - feedcontent/content.phtml -->
+<?
+  $this->headScript()->appendFile('finna-content-feed.js');
+  $this->headTitle($this->translate(''));
+  $this->content()->setHeading($this->translate(''));
+  $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
+     'content/header.phtml', ['heading' => $this->content()->getHeading()]
+  );
+
+  if ($this->modal) {
+     $setupJS = <<<JS
+$(document).ready(function() {
+   finna.contentFeed.loadFeed($('#modal .feed-content'), true);
+});
+JS;
+    $this->headScript()->appendScript($setupJS);
+  }
+?>
+
+<?=$this->headScript()?>
+<div class="row">
+  <div class="col-xs-12 feed-content" data-feed="<?=$this->escapeHtmlAttr($this->feed)?>" data-num="<?=$this->escapeHtmlAttr($this->element)?>">
+  <? if ($this->modal): ?>
+    <div class="holder"></div>
+  <? else: ?>
+    <div class="row">
+      <div class="col-md-10 col-lg-9 holder"></div>
+    </div>
+  <? endif; ?>
+  </div>
+</div>
+<!-- END of: finna - feedcontent/content.phtml -->

@@ -106,8 +106,9 @@
 .modal-body {
   position: relative;
   padding: @modal-inner-padding;
-  
-  & h1, & h2 {
+  overflow: hidden;
+
+  & > h1, & > h2 {
     background: @modal-header-background;
     color: @modal-header-color;
     font-size: @content-headings-font-size-h4;
@@ -175,4 +176,13 @@
 
 @media (min-width: @screen-md-min) {
   .modal-lg { width: @modal-lg; }
+}
+
+#modal.feed-content {
+    & .modal-dialog {
+        & img {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+    }
 }

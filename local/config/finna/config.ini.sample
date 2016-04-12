@@ -544,7 +544,7 @@ summarycachetime = 1440
 
 ; How long feed content is cached locally in minutes.
 ; Set this to false or comment out to disable caching.
-feedcachetime = 1440
+feedcachetime = 10
 
 ; You can select from Syndetics, SyndeticsPlus, Amazon Editorial, Amazon, Booksite
 ; and/or the Guardian

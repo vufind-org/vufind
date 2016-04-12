@@ -30,9 +30,8 @@ use VuFindSearch\ParamBag as ParamBag,
     VuFindSearch\Query\Query as Query,
     VuFind\Search\RecommendListener,
     Finna\MetaLib\MetaLibIrdTrait,
-    Zend\Cache\StorageFactory,
-    Zend\Feed\Reader\Reader,
-    Zend\Http\Request as HttpRequest;
+    Zend\Cache\StorageFactory;
+
 use Finna\Search\Solr\Params;
 
 /**
@@ -687,7 +686,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function getFeedAjax()
     {
-        if (!$id = $this->params()->fromQuery('id')) {
+        if (null === ($id = $this->params()->fromQuery('id'))) {
             return $this->output('Missing feed id', self::STATUS_ERROR, 400);
         }
 
@@ -696,160 +695,34 @@ class AjaxController extends \VuFind\Controller\AjaxController
             : false
         ;
 
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('rss');
-        if (!isset($config[$id])) {
-            return $this->output(
-                'Missing feed configuration', self::STATUS_ERROR, 400
-            );
+        $feedService = $this->getServiceLocator()->get('Finna\Feed');
+        try {
+            $feed
+                = $feedService->readFeed(
+                    $id, $this->url(), $this->getServerUrl('home')
+                );
+        } catch (\Exception $e) {
+            return $this->output($e->getMessage(), self::STATUS_ERROR, 400);
         }
 
-        $config = $config[$id];
-        if (!$config->active) {
-            return $this->output('Feed inactive', self::STATUS_ERROR, 400);
+        if (!$feed) {
+            return $this->output('Error reading feed', self::STATUS_ERROR, 400);
         }
 
-        if (!$url = $config->url) {
-            return $this->output('Missing feed URL', self::STATUS_ERROR, 500);
-        }
-
-        $translator = $this->getServiceLocator()->get('VuFind\Translator');
-        $language   = $translator->getLocale();
-        if (isset($url[$language])) {
-            $url = trim($url[$language]);
-        } else if (isset($url['*'])) {
-            $url = trim($url['*']);
-        } else {
-            return $this->output('Missing feed URL', self::STATUS_ERROR, 500);
-        }
-
-        $type = $config->type;
-        $channel = null;
-
-        // Check for cached version
-        $cacheEnabled = false;
-        $cacheDir = $this->getServiceLocator()->get('VuFind\CacheManager')
-            ->getCache('feed')->getOptions()->getCacheDir();
-
-        $cacheKey = $config->toArray();
-        $cacheKey['language'] = $language;
-
-        $localFile = "$cacheDir/" . md5(var_export($cacheKey, true)) . '.xml';
-        $cacheConfig = $this->getServiceLocator()
-            ->get('VuFind\Config')->get('config');
-        $maxAge = isset($cacheConfig->Content->feedcachetime)
-            ? $cacheConfig->Content->feedcachetime : false;
-
-        $httpService = $this->getServiceLocator()->get('VuFind\Http');
-        Reader::setHttpClient($httpService->createClient());
-
-        if ($maxAge) {
-            $cacheEnabled = true;
-            if (is_readable($localFile)
-                && time() - filemtime($localFile) < $maxAge * 60
-            ) {
-                $channel = Reader::importFile($localFile);
-            }
-        }
-
-        if (!$channel) {
-            // No cache available, read from source.
-            if (preg_match('/^http(s)?:\/\//', $url)) {
-                // Absolute URL
-                $channel = Reader::import($url);
-            } else if (substr($url, 0, 1) === '/') {
-                // Relative URL
-                $url = substr($this->getServerUrl('home'), 0, -1) . $url;
-                $channel = Reader::import($url);
-            } else {
-                // Local file
-                if (!is_file($url)) {
-                    return $this->output(
-                        "File $url could not be found", self::STATUS_ERROR, 500
-                    );
-                }
-                $channel = Reader::importFile($url);
-            }
-        }
-
-        if (!$channel) {
-            return $this->output('Parsing failed', self::STATUS_ERROR, 500);
-        }
-
-        if ($cacheEnabled) {
-            file_put_contents($localFile, $channel->saveXml());
-        }
-
-        $content = [
-            'title' => 'getTitle',
-            'text' => 'getContent',
-            'image' => 'getEnclosure',
-            'link' => 'getLink',
-            'date' => 'getDateCreated'
-        ];
-
-        $dateFormat = isset($config->dateFormat) ? $config->dateFormat : 'j.n.';
-        $itemsCnt = isset($config->items) ? $config->items : null;
-
-        $items = [];
-        foreach ($channel as $item) {
-            $data = [];
-            foreach ($content as $setting => $method) {
-                if (!isset($config->content[$setting])
-                    || $config->content[$setting] != 0
-                ) {
-                    $tmp = $item->{$method}();
-                    if (is_object($tmp)) {
-                        $tmp = get_object_vars($tmp);
-                    }
-
-                    if ($setting == 'image') {
-                        if (!$tmp
-                            || stripos($tmp['type'], 'image') === false
-                        ) {
-                            // Attempt to parse image URL from content
-                            if ($tmp = $this->extractImage($item->getContent())) {
-                                $tmp = ['url' => $tmp];
-                            }
-                        }
-                    } else if ($setting == 'date') {
-                        if (isset($tmp['date'])) {
-                            $tmp = new \DateTime(($tmp['date']));
-                            $tmp = $tmp->format($dateFormat);
-                        }
-                    } else {
-                        if (is_string($tmp)) {
-                            $tmp = strip_tags($tmp);
-                        }
-                    }
-                    if ($tmp) {
-                        $data[$setting] = $tmp;
-                    }
-                }
-            }
-
-            // Make sure that we have something to display
-            $accept = $data['title'] && trim($data['title']) != ''
-                || $data['text'] && trim($data['text']) != ''
-                || $data['image']
-            ;
-            if (!$accept) {
-                continue;
-            }
-
-            $items[] = $data;
-            if ($itemsCnt !== null) {
-                if (--$itemsCnt === 0) {
-                    break;
-                }
-            }
-        }
+        $channel = $feed['channel'];
+        $items = $feed['items'];
+        $config = $feed['config'];
+        $modal = $feed['modal'];
 
         $images
             = isset($config->content['image'])
             ? $config->content['image'] : true;
 
         $moreLink = !isset($config->moreLink) || $config->moreLink
-            ? $channel->getLink() : null;
+             ? $channel->getLink() : null;
+
+        $type = $config->type;
+        $linkTo = isset($config->linkTo) ? $config->linkTo : null;
 
         $key = $touchDevice ? 'touch' : 'desktop';
         $linkText = null;
@@ -865,7 +738,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
             'type' => $type,
             'items' => $items,
             'touchDevice' => $touchDevice,
-            'images' => $images
+            'images' => $images,
+            'modal' => $modal
         ];
 
         if (isset($config->title)) {
@@ -887,6 +761,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $settings = [];
         $settings['type'] = $type;
+        $settings['modal'] = $modal;
         if (isset($config->height)) {
             $settings['height'] = $config->height;
         }
@@ -920,6 +795,44 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $res = ['html' => $html, 'settings' => $settings];
         return $this->output($res, self::STATUS_OK);
+    }
+
+    /**
+     * Return feed full content (from content:encoded tag).
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    public function getContentFeedAjax()
+    {
+        if (null === ($id = $this->params()->fromQuery('id'))) {
+            return $this->output('Missing feed id', self::STATUS_ERROR, 400);
+        }
+        $num = $this->params()->fromQuery('num', 0);
+
+        $feedService = $this->getServiceLocator()->get('Finna\Feed');
+        try {
+            $feed
+                = $feedService->readFeed(
+                    $id, $this->url(), $this->getServerUrl('home')
+                );
+        } catch (\Exception $e) {
+            return $this->output($e->getMessage(), self::STATUS_ERROR, 400);
+        }
+
+        if (!$feed) {
+            return $this->output('Error reading feed', self::STATUS_ERROR, 400);
+        }
+
+        $channel = $feed['channel'];
+        $items = $feed['items'];
+        $config = $feed['config'];
+        $modal = $feed['modal'];
+
+        return $this->output(
+            isset($items[$num]) ? $items[$num] : false,
+            self::STATUS_OK
+        );
     }
 
     /**
@@ -1647,35 +1560,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
             }
         }
         return $config->OpenURL['url'] . '?' . http_build_query($params);
-    }
-
-    /**
-     * Utility function for extracting an image URL from a HTML snippet.
-     *
-     * @param string $html HTML snippet.
-     *
-     * @return mixed null|string
-     */
-    protected function extractImage($html)
-    {
-        if (empty($html)) {
-            return null;
-        }
-        $doc = new \DOMDocument();
-        // Silence errors caused by invalid HTML
-        libxml_use_internal_errors(true);
-        if (!$doc->loadHTML($html)) {
-            return null;
-        }
-        libxml_clear_errors();
-
-        $img = null;
-        $imgs = iterator_to_array($doc->getElementsByTagName('img'));
-        if (!empty($imgs)) {
-            $img = $imgs[0];
-        }
-
-        return $img ? $img->getAttribute('src') : null;
     }
 
     /**

@@ -7,6 +7,7 @@ var finna = (function() {
                 'advSearch',
                 'autocomplete',
                 'bx',
+                'contentFeed',
                 'common',
                 'changeHolds',
                 'dateRangeVis',

@@ -6,7 +6,7 @@
     <li>
       <? if (isset($item['date'])): ?><span class="date"><?= $item['date']; ?></span> <? endif; ?>
       <? if (!isset($this->linkText) && isset($item['link'])):?>
-      <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>"><? endif; ?>
+      <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?>><? endif; ?>
         <? if (isset($item['image']) && isset($item['image']['url'])): ?>
         <img src="<?= $item['image']['url']; ?>" />
         <? endif; ?>
