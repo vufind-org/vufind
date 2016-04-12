@@ -1405,7 +1405,8 @@ class AjaxController extends AbstractBase
      *
      * @return mixed
      */
-    public function facetLightboxAction() {
+    public function facetLightboxAction()
+    {
         $this->disableSessionWrites();  // avoid session write timing bug
 
         $results = $this->getResultsManager()->get('Solr');
