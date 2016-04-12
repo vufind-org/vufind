@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library 2015.
+ * Copyright (C) The National Library 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -51,18 +51,6 @@ trait FinnaRecord
         return $table->getForRecord(
             $userId, $this->getUniqueID()
         );
-    }
-
-    /**
-     * Get OpenURL parameters for an article.
-     *
-     * @return array
-     */
-    protected function getArticleOpenUrlParams()
-    {
-        $params = parent::getArticleOpenUrlParams();
-        $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:article';
-        return $params;
     }
 
     /**
