@@ -796,4 +796,29 @@ trait VoyagerFinna
 
         return $fines;
     }
+
+    /**
+     * Execute an SQL query
+     *
+     * @param string|array $sql  SQL statement (string or array that includes
+     * bind params)
+     * @param array        $bind Bind parameters (if $sql is string)
+     *
+     * @return PDOStatement
+     */
+    protected function executeSQL($sql, $bind = [])
+    {
+        $startTime = microtime(true);
+        $result = parent::executeSQL($sql, $bind);
+        if (!empty($this->config['Debug']['durationLogPrefix'])) {
+            list(, $caller) = debug_backtrace(false);
+            file_put_contents(
+                $this->config['Debug']['durationLogPrefix'] . $caller['function']
+                . '_sql.log',
+                date('Y-m-d H:i:s ') . round(microtime(true) - $startTime, 4) . "\n",
+                FILE_APPEND
+            );
+        }
+        return $result;
+    }
 }

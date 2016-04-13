@@ -308,4 +308,35 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
 
         return $config['WebServices']['patronHomeUbId'];
     }
+
+    /**
+     * Make Request
+     *
+     * Makes a request to the Voyager Restful API
+     *
+     * @param array  $hierarchy Array of key-value pairs to embed in the URL path of
+     * the request (set value to false to inject a non-paired value).
+     * @param array  $params    A keyed array of query data
+     * @param string $mode      The http request method to use (Default of GET)
+     * @param string $xml       An optional XML string to send to the API
+     *
+     * @throws ILSException
+     * @return obj  A Simple XML Object loaded with the xml data returned by the API
+     */
+    protected function makeRequest($hierarchy, $params = false, $mode = "GET",
+        $xml = false
+    ) {
+        $startTime = microtime(true);
+        $result = parent::makeRequest($hierarchy, $params, $mode, $xml);
+        if (!empty($this->config['Debug']['durationLogPrefix'])) {
+            list(, $caller) = debug_backtrace(false);
+            file_put_contents(
+                $this->config['Debug']['durationLogPrefix'] . $caller['function']
+                . '_ws.log',
+                date('Y-m-d H:i:s ') . round(microtime(true) - $startTime, 4) . "\n",
+                FILE_APPEND
+            );
+        }
+        return $result;
+    }
 }
