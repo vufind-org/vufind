@@ -260,7 +260,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Make Request
      *
-     * Makes a request to the Polaris Restful API
+     * Makes a request to the Koha ILSDI API
      *
      * @param string $api_query   Query string for request
      * @param string $http_method HTTP method (default = GET)
@@ -314,7 +314,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Make Ilsdi Request Array
      *
-     * Makes a request to the Polaris Restful API
+     * Makes a request to the Koha ILSDI API
      *
      * @param string $service     Called function (GetAvailability,
      *                                             GetRecords,
