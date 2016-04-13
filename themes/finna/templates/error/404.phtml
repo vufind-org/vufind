@@ -1,0 +1,15 @@
+<?
+  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3 class="finna-main-header">' . $this->transEsc($this->message) . '</h3></div>';
+  $this->headTitle($this->transEsc($this->message));
+?>
+<div class="row">
+  <div class="col-xs-12 content-404">
+    <? if (isset($this->reason) && $this->reason): ?><!-- <p><b><?=$this->transEsc('Message')?>:</b> <?=$this->transEsc($this->reason)?></p> --><? endif; ?>
+    <h4><?=$this->transEsc('404_details_text');?></h4>
+    <ul class="links-404 list-bullets">
+      <li><a href="<?=$this->url('home');?>"><?=$this->transEsc('404_home');?></a></li>
+    </ul>
+    <br>
+    <p><?=$this->transEsc('404_broken_links');?> <a href="<?=$this->url('feedback-home');?>"><?=$this->transEsc('404_feedback');?>.</a></p>
+  </div>
+</div>
