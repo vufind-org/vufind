@@ -141,7 +141,12 @@ function registerTabEvents() {
     params.id = parts[parts.length-2];
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
     return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
-      Lightbox.checkForError(html, Lightbox.changeContent);
+      var $page = $('<div>'+html+'</div>');
+      if ($page.find('.record').length) {
+        Lightbox.checkForError(html, Lightbox.changeContent);
+      } else {
+        Lightbox.changeContent(html);
+      }
     });
   });
 }
