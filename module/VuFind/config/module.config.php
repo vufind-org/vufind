@@ -398,7 +398,6 @@ $config = [
                     'evergreen' => 'VuFind\ILS\Driver\Evergreen',
                     'innovative' => 'VuFind\ILS\Driver\Innovative',
                     'koha' => 'VuFind\ILS\Driver\Koha',
-                    'koharest' => 'VuFind\ILS\Driver\KohaRest',
                     'lbs4' => 'VuFind\ILS\Driver\LBS4',
                     'newgenlib' => 'VuFind\ILS\Driver\NewGenLib',
                     'polaris' => 'VuFind\ILS\Driver\Polaris',
