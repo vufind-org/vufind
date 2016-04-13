@@ -813,8 +813,8 @@ trait VoyagerFinna
         if (!empty($this->config['Debug']['durationLogPrefix'])) {
             list(, $caller) = debug_backtrace(false);
             file_put_contents(
-                $this->config['Debug']['durationLogPrefix'] . $caller['function']
-                . '_sql.log',
+                $this->config['Debug']['durationLogPrefix'] . '_'
+                . $caller['function'] . '_sql.log',
                 date('Y-m-d H:i:s ') . round(microtime(true) - $startTime, 4) . "\n",
                 FILE_APPEND
             );

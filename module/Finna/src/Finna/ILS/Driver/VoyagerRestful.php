@@ -331,8 +331,8 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
         if (!empty($this->config['Debug']['durationLogPrefix'])) {
             list(, $caller) = debug_backtrace(false);
             file_put_contents(
-                $this->config['Debug']['durationLogPrefix'] . $caller['function']
-                . '_ws.log',
+                $this->config['Debug']['durationLogPrefix'] . '_'
+                . $caller['function'] . '_ws.log',
                 date('Y-m-d H:i:s ') . round(microtime(true) - $startTime, 4) . "\n",
                 FILE_APPEND
             );
