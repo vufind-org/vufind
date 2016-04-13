@@ -20,6 +20,18 @@ finna.layout = (function() {
               || (navigator.msMaxTouchPoints > 0)); // IE10, IE11, Edge
     };
 
+    var detectIe = function(){
+        var undef,
+            v = 3,
+            div = document.createElement('div'),
+            all = div.getElementsByTagName('i');
+        while (
+            div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+            all[0]
+        );
+        return v > 4 ? v : undef;
+    };
+
     // Append current anchor (location.hash) to selected links
     // in order to preserve the anchor when the link is clicked.
     // This is used in top header language links.
@@ -618,16 +630,21 @@ finna.layout = (function() {
     }
 
     var initLoadMasonry = function() {
-      var $grid = $('.result-view-grid .masonry-wrapper').imagesLoaded( function() {
-        // init Masonry after all images have loaded
-        $grid.masonry({
-           fitWidth: false,
-           itemSelector: '.result.grid',
-           columnWidth: '.result.grid',
-           isResizeBound: 'true',
+      var ie = detectIe();
+      // do not execute on ie8 or lower as they are not supported by masonry
+      if (ie > 8 || ie == null) {
+        var $grid = $('.result-view-grid .masonry-wrapper').imagesLoaded( function() {
+          // init Masonry after all images have loaded
+          $grid.masonry({
+            fitWidth: false,
+            itemSelector: '.result.grid',
+            columnWidth: '.result.grid',
+            isResizeBound: 'true',
+          });
         });
-      });
-    }
+      }
+    };
+
 
     var my = {
         isTouchDevice: isTouchDevice,

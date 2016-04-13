@@ -9,7 +9,7 @@
   <div class="carousel-feed">
     <? foreach($this->items as $item): ?>
     <div>
-      <? if ($clickableElement && isset($item['link'])):?><a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?>><? endif; ?>  
+      <? if ($clickableElement && isset($item['link'])):?><a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?>><? endif; ?>
       <? if (isset($item['title'])): ?>
       <div class="carousel-slide-header">
         <p><?= $this->truncate($item['title'], 70); ?></p>
