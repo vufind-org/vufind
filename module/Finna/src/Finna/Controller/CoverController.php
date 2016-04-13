@@ -5,6 +5,7 @@
  * PHP Version 5
  *
  * Copyright (C) Villanova University 2011.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -34,6 +36,7 @@ use Finna\Cover\Loader;
  * @category VuFind
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -60,11 +63,49 @@ class CoverController extends \VuFind\Controller\CoverController
             $index = $this->params()->fromQuery('index');
 
             $this->getLoader()->loadRecordImage($driver, $index ? $index : 0);
-            return parent::displayImage();
+            $response = parent::displayImage();
         } else {
             // Redirect book covers to VuFind's cover controller
-            return parent::showAction();
+            $response = parent::showAction();
         }
+
+        // Add a filename to the headers so that saving an image defaults to a
+        // sensible filename
+        if ($response instanceof \Zend\Http\PhpEnvironment\Response) {
+            $headers = $response->getHeaders();
+            $contentType = $headers->get('Content-Type');
+            if ($contentType && $contentType->match('image/jpeg')) {
+                $params = $this->getImageParams();
+                if (!empty($params['isbn'])) {
+                    $filename = $params['isbn'];
+                } elseif (!empty($params['issn'])) {
+                    $filename = $params['issn'];
+                } elseif (isset($driver)) {
+                    if ($isbn = $driver->tryMethod('getCleanISBN')) {
+                        $filename = $isbn;
+                    } elseif ($issn = $driver->tryMethod('getCleanISSN')) {
+                        $filename = $issn;
+                    } else {
+                        // Strip the data source prefix
+                        $filename = end(explode('.', $driver->getUniqueID(), 2));
+                    }
+                } elseif (!empty($params['title'])) {
+                    $filename = $params['title'];
+                }
+                if (isset($filename)) {
+                    // Remove any existing extension
+                    $filename = preg_replace('/\.jpe?g/', '', $filename);
+                    // Replace some characters for cleaner filenames and hopefully
+                    // something that can be found with the search
+                    $filename = preg_replace('/[^\w_ -]/', ' ', $filename);
+                    $filename .= '.jpg';
+                    $headers->addHeaderLine(
+                        'Content-Disposition', "inline; filename=$filename"
+                    );
+                }
+            }
+        }
+        return $response;
     }
 
     /**
