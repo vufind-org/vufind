@@ -92,7 +92,7 @@
 [carousel]
 type = "carousel"
 active = 1
-url[*] = "http://www.hel.fi/hel2/kaumuseo/finna/hkm_nostot.xml"
+url[*]= "https://musasto.wordpress.com/feed/"
 title = 'rss'
 height = 350
 
