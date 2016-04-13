@@ -1,6 +1,6 @@
 <?php
 /**
- * KohaRest ILS Driver
+ * KohaILSDI ILS Driver
  *
  * PHP version 5
  *
@@ -33,9 +33,9 @@ use Zend\Log\LoggerInterface;
 use VuFind\Exception\Date as DateException;
 
 /**
- * VuFind Driver for Koha, using web APIs (version: 0.2)
+ * VuFind Driver for Koha, using web APIs (ILSDI) (version: 0.3)
  *
- * Last updated: 10/13/2015
+ * Last updated: 04/13/2016
  * Minimum Koha Version: 3.18.6
  *
  * @category VuFind2
@@ -45,7 +45,7 @@ use VuFind\Exception\Date as DateException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
+class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
     /**
@@ -176,7 +176,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $this->ilsBaseUrl = isset($this->config['Catalog']['url'])
             ? $this->config['Catalog']['url'] : "";
 
-        // Default location defined in 'KohaRest.ini'
+        // Default location defined in 'KohaILSDI.ini'
         $this->defaultLocation
             = isset($this->config['Holds']['defaultPickUpLocation'])
             ? $this->config['Holds']['defaultPickUpLocation'] : null;
@@ -494,7 +494,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Get Default Pick Up Location
      *
-     * Returns the default pick up location set in KohaRest.ini
+     * Returns the default pick up location set in KohaILSDI.ini
      *
      * @param array $patron      Patron information returned by the patronLogin
      * method.

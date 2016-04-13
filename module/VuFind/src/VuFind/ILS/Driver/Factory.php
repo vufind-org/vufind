@@ -143,15 +143,15 @@ class Factory
     }
 
     /**
-     * Factory for KohaRest driver.
+     * Factory for KohaILSDI driver.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return KohaRest
+     * @return KohaILSDI
      */
-    public static function getKohaRest(ServiceManager $sm)
+    public static function getKohaILSDI(ServiceManager $sm)
     {
-        return new KohaRest($sm->getServiceLocator()->get('VuFind\DateConverter'));
+        return new KohaILSDI($sm->getServiceLocator()->get('VuFind\DateConverter'));
     }
 
     /**
