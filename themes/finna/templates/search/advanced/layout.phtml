@@ -191,6 +191,9 @@
       </div>
       <? endif; ?>
     </div>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/solr-advanced-post")): ?>
+      <?=$this->render($template)?>
+    <? endif; ?>
   </div>
   </div>
 </form>
