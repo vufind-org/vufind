@@ -1239,7 +1239,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $requestTimes[] = $end - $start;
             $renewable = false;
             foreach ($rsp2->{'AvailableFor'} as $service) {
-                if ($this->getField($service->{0}) == "loan renewal") {
+                if ($this->getField((string)$service) == "loan renewal") {
                     $renewable = true;
                 }
             }
