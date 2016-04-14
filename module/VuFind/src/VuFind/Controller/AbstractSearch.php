@@ -717,7 +717,6 @@ class AbstractSearch extends AbstractBase
         $facet = $this->params()->fromQuery('facet');
         $facets = $results->getFullFieldFacets([$facet], false);
 
-        $this->layout()->setTemplate('layout/lightbox');
         $view = $this->createViewModel(
             [
                 'data' => $facets[$facet]['data']['list'],
@@ -725,7 +724,7 @@ class AbstractSearch extends AbstractBase
                 'results' => $results
             ]
         );
-        $view->setTemplate('ajax/lightboxFacetList');
+        $view->setTemplate('search/facet-list');
         return $view;
     }
 }
