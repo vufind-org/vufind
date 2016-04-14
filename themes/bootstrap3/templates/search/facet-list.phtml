@@ -1,0 +1,47 @@
+<div class="full-facet-list list-group">
+  <? foreach ($this->data as $item): ?>
+    <? $addURL = $this->url('search-results').$this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator']); ?>
+    <a href="<?=$addURL ?>" data-lightbox-ignore class="list-group-item" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>">
+      <? if (!empty($item['displayText'])): ?>
+        <?=$this->escapeHtml($item['displayText'])?>
+      <? else: ?>
+        &nbsp;
+      <? endif; ?>
+      <span class="badge">
+        <?=$this->localizedNumber($item['count'])?>
+      </span>
+    </a>
+  <? endforeach; ?>
+</div>
+<button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
+<? $script = <<<JS
+(function facetListSorting() {
+  var titleSort = $('<button>').text(VuFind.translate('Sort By Title')).addClass('btn btn-default');
+  var countSort = $('<button>').text(VuFind.translate('Sort By Count')).addClass('btn btn-default pull-right');
+  var nav = $('<nav/>').addClass('btn-toolbar').append(titleSort, countSort);
+  var list = $('.full-facet-list');
+  var items = list.find('.list-group-item');
+  list.before(nav);
+  function facetSort(sortFunc) {
+    items.detach();
+    items.sort(sortFunc);
+    for (var i=0; i<items.length; i++) {
+      list.append(items[i]);
+    }
+  }
+  // Title sort
+  titleSort.click(function facetTitleSort() {
+    facetSort(function (a, b) {
+      return a.dataset.title.toLowerCase() < b.dataset.title.toLowerCase() ? -1 : 1;
+    });
+  });
+  // Count sort
+  countSort.click(function facetCountSort() {
+    facetSort(function (a, b) {
+      return parseInt(b.dataset.count) - parseInt(a.dataset.count);
+    });
+  });
+}());
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
