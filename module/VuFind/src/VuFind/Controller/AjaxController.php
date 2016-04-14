@@ -1395,36 +1395,4 @@ class AjaxController extends AbstractBase
     {
         return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
     }
-
-    /**
-     * Returns a list of all items associated with one facet for the lightbox
-     *
-     * Parameters:
-     * facet        The facet to retrieve
-     * searchParams Facet search params from $results->getUrlQuery()->getParams()
-     *
-     * @return mixed
-     */
-    public function facetLightboxAction()
-    {
-        $this->disableSessionWrites();  // avoid session write timing bug
-
-        $results = $this->getResultsManager()->get('Solr');
-        $params = $results->getParams();
-        $params->initFromRequest($this->getRequest()->getQuery());
-
-        $facet = $this->params()->fromQuery('facet');
-        $facets = $results->getFullFieldFacets([$facet], false);
-
-        $this->layout()->setTemplate('layout/lightbox');
-        $view = $this->createViewModel(
-            [
-                'data' => $facets[$facet]['data']['list'],
-                'facet' => $facet,
-                'results' => $results
-            ]
-        );
-        $view->setTemplate('ajax/lightboxFacetList');
-        return $view;
-    }
 }
