@@ -1094,7 +1094,7 @@ class Params implements ServiceLocatorAwareInterface
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
-        foreach ($this->checkboxFacets as $field => $facets) {
+        foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $facet) {
                 $facet['selected'] = $this->hasFilter($facet['filter']);
                 // Is this checkbox always visible, even if non-selected on the
