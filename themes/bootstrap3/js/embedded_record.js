@@ -68,6 +68,9 @@ function ajaxFLLoadTab(tabid, reload) {
   if ($record.length == 0) {
     $record = $('#'+tabid).closest('.record');
   }
+  if ($record.length == 0) {
+    return true;
+  }
   var id = $record.find(".hiddenId")[0].value;
   var source = $record.find(".hiddenSource")[0].value;
   var urlroot;
