@@ -333,7 +333,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
             }
         }
 
-        if (!empty($xpathContent)) {
+        if ($xpath && !empty($xpathContent)) {
             if ($xpathItem = $xpath->query('//item/content:encoded')->item(0)) {
                 $contentSearch = isset($config->htmlContentSearch)
                     ? $config->htmlContentSearch->toArray() : [];
