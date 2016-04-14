@@ -511,23 +511,21 @@ CallNumber:
   # which will return a larger number of hits at a lower boost.
   CustomMunge:
     callnumber_exact:
-      - [uppercase]
       # Strip whitespace and quotes:
-      - [preg_replace, '/[ "]/', ""]
+      - [preg_replace, '/[ "]/', '']
       # Escape colons (unescape first to avoid double-escapes):
-      - [preg_replace, "/(\\\:)/", ':']
+      - [preg_replace, '/(\\:)/', ':']
       - [preg_replace, '/:/', '\:']
       # Strip pre-existing trailing asterisks:
-      - [preg_replace, "/\*+$/", ""]
+      - [preg_replace, '/\*+$/', '']
     callnumber_fuzzy:
-      - [uppercase]
       # Strip whitespace and quotes:
-      - [preg_replace, '/[ "]/', ""]
+      - [preg_replace, '/[ "]/', '']
       # Escape colons (unescape first to avoid double-escapes):
-      - [preg_replace, "/(\\\:)/", ':']
+      - [preg_replace, '/(\\:)/', ':']
       - [preg_replace, '/:/', '\:']
       # Strip pre-existing trailing asterisks, then add a new one:
-      - [preg_replace, "/\*+$/", ""]
+      - [preg_replace, '/\*+$/', '']
       - [append, "*"]
   QueryFields:
     callnumber:
