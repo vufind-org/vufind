@@ -167,9 +167,13 @@ JS;
               ?>
               <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
             <? if ($i == $facets_before_more): ?>
-              <a id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>" class="list-group-item narrow-toggle" href="javascript:moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')" data-lightbox data-lightbox-href="<?=$this->url($facetLightbox) ?><?=$results->getUrlQuery()->getParams() ?>&method=getAllFacetValues&facet=<?=$title ?>"><?=$this->transEsc('more')?> ...</a>
+              <? $idAndClass = 'id="more-narrowGroupHidden-'.$this->escapeHtmlAttr($title).'" class="list-group-item narrow-toggle"'; ?>
+              <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&method=getAllFacetValues&facet='.$title; ?>
               <? if ($show_more_in_lightbox): ?>
+                <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>"><?=$this->transEsc('more')?> ...</a>
                 <? break; ?>
+              <? else: ?>
+                <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onClick="moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('more')?> ...</a>
               <? endif; ?>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
