@@ -155,6 +155,7 @@ $config = [
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
             'error' => 'Finna\Controller\ErrorController',
+            'externalauth' => 'Finna\Controller\ExternalAuthController',
             'feedback' => 'Finna\Controller\FeedbackController',
             'feedcontentpage' => 'Finna\Controller\FeedContentController',
             'librarycards' => 'Finna\Controller\LibraryCardsController',
