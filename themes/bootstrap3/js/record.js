@@ -138,7 +138,7 @@ function registerTabEvents() {
     var parts = $(this).attr('href').split('?');
     parts = parts[0].split('/');
     var params = deparam($(this).attr('href'));
-    params.id = parts[parts.length-2];
+    params.id = decodeURIComponent(parts[parts.length-2]);
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
     return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
       var $page = $('<div>'+html+'</div>');
