@@ -170,6 +170,7 @@ VuFind.register('lightbox', function() {
           } else {
             VuFind.lightbox.refreshOnClose = true;
           }
+          _currentUrl = _originalUrl; // Now that we're logged in, where were we?
         }
         _update(html);
       })
