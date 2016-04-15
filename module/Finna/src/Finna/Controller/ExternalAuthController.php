@@ -95,18 +95,16 @@ class ExternalAuthController extends \VuFind\Controller\AbstractBase
             throw new \Exception('EZproxy secret not defined in configuration');
         }
 
-        $packet = '$u' . time(). '$e';
+        $packet = '$u' . time() . '$e';
         $hash = new \Zend\Crypt\Hash();
         $algorithm = !empty($config->EZproxy->secret_hash_method)
             ? $config->EZproxy->secret_hash_method : 'SHA512';
         $ticket = $config->EZproxy->secret . $user . $packet;
         $ticket = $hash->compute($algorithm, $ticket);
         $ticket .= $packet;
-        $params = http_build_query([
-            'user' => $user,
-            'ticket' => $ticket,
-            'url' => $url
-        ]);
+        $params = http_build_query(
+            ['user' => $user, 'ticket' => $ticket, 'url' => $url]
+        );
         return $config->EZproxy->host . "/login?$params";
     }
 }

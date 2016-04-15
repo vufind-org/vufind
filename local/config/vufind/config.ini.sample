@@ -28,6 +28,21 @@ url = "http://"
 
 ;[EZproxy]
 ;host = http://proxy.myuniversity.edu
+; Uncomment the following line to enable EZproxy ticket authentication.
+;secret = verysecretpassword
+;
+; To enable ticket authentication in EZproxy, you will also need the following in 
+; EZproxy's user.txt or ezproxy.usr for older versions (without the leading 
+; semicolons and spaces):
+;
+; ::CGI=http://something.finna.fi/ExternalAuth/EzproxyLogin?url=^R 
+; ::Ticket
+; TimeValid 10
+; SHA512 verysecretpassword
+;
+; Uncomment and modify the following line to use another hashing algorithm with the
+; EZproxy authentication if necessary. SHA512 is the default.
+;secret_hash_method=SHA512
 
 [Languages]
 en-gb = "English"
