@@ -143,6 +143,14 @@ VuFind.register('lightbox', function() {
           _refreshPage();
           return;
         }
+        // Place Hold error isolation
+        if (obj.url.match(/\/Record/) && (obj.url.match(/Hold\?/) || obj.url.match(/Request\?/))) {
+          var error = $('<div/>').html(html).find('.flash-message.alert-danger');
+          if (error.length) {
+            showAlert(error[0].innerHTML, 'danger');
+            return false;
+          }
+        }
         if ( // Close the lightbox after deliberate login
           obj.method                                                                // is a form
           && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/))               // that matches login/create account
