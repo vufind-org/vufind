@@ -79,7 +79,7 @@ trait FinnaRecord
     protected function getJournalOpenUrlParams()
     {
         $params = parent::getJournalOpenUrlParams();
-        if ($objectId = $this->getSfxObjectId()) {
+        if ($objectId = $this->tryMethod('getSfxObjectId')) {
             $params['rft.object_id'] = $objectId;
         }
         return $params;
