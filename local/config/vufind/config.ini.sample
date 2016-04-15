@@ -35,7 +35,7 @@ url = "http://"
 ; EZproxy's user.txt or ezproxy.usr for older versions (without the leading 
 ; semicolons and spaces):
 ;
-; ::CGI=http://something.finna.fi/ExternalAuth/EzproxyLogin?url=^R 
+; ::CGI=https://something.finna.fi/ExternalAuth/EzproxyLogin?url=^R 
 ; ::Ticket
 ; TimeValid 10
 ; SHA512 verysecretpassword
