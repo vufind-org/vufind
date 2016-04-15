@@ -239,7 +239,7 @@
   <!-- Prepare VuFind for distribution -->
   <target name="package" description="build VuFind packages for distribution">
     <!-- make sure the work area is empty, then rebuild it -->
-    <delete dir="${builddir}/packages" includeemptydirs="true" failonerror="true" />
+    <delete dir="${builddir}/packages" includeemptydirs="true" failonerror="false" />
     <mkdir dir="${builddir}/packages" />
 
     <!-- build the standard tar.gz archive -->
