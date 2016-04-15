@@ -87,7 +87,8 @@ class CoverController extends \VuFind\Controller\CoverController
                         $filename = $issn;
                     } else {
                         // Strip the data source prefix
-                        $filename = end(explode('.', $driver->getUniqueID(), 2));
+                        $parts = explode('.', $driver->getUniqueID(), 2);
+                        $filename = end($parts);
                     }
                 } elseif (!empty($params['title'])) {
                     $filename = $params['title'];
