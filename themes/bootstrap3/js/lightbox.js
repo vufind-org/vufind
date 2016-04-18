@@ -268,7 +268,7 @@ VuFind.register('lightbox', function() {
       }, false);
     }
     // Loading
-    _modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right"></i>');
+    _modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right" title="'+VuFind.translate('loading')+'"></i>');
     // Prevent multiple submission of submit button in lightbox
     if (submit.closest(_modal).length > 0) {
       submit.attr('disabled', 'disabled');
