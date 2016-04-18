@@ -15,6 +15,16 @@ module.exports = function(grunt) {
         }
       }
     },
+    replace: {
+      another_example: {
+        src: ['themes/bootstrap3/css/compiled.css', 'themes/bootprint3/css/compiled.css'],
+        overwrite: true,                 // overwrite matched source files
+        replacements: [{
+          from: '../images',
+          to: 'images'
+        }]
+      }
+    },
     css: {
       sass: {
         options: {
@@ -57,8 +67,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-text-replace');
 
-  grunt.registerTask('default', ['less', 'uglify']);
+  grunt.registerTask('default', ['less', 'replace', 'uglify']);
+  grunt.registerTask('lesscss', ['less', 'replace']);
   grunt.registerTask('js', ['uglify']);
 
   grunt.registerMultiTask('css', function (arg1, arg2) {
@@ -111,5 +123,6 @@ module.exports = function(grunt) {
 
     grunt.config.set('sass', sassConfig);
     grunt.task.run('sass');
+    grunt.task.run('replace');
   });
 };
