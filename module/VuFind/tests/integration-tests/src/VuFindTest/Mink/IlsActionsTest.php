@@ -76,8 +76,38 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
                 'driver' => 'Demo',
                 'holds_mode' => 'driver',
                 'title_level_holds_mode' => 'driver',
+                'renewals_enabled' => true,
             ]
         ];
+    }
+
+    /**
+     * Get transaction JSON for Demo.ini.
+     *
+     * @param string $bibId Bibliographic record ID to create fake item info for.
+     *
+     * @return array
+     */
+    protected function getFakeTransactions($bibId)
+    {
+        $rawDueDate = strtotime("now +5 days");
+        return json_encode(
+            [
+                [
+                    'duedate' => $rawDueDate,
+                    'rawduedate' => $rawDueDate,
+                    'dueStatus' => 'due',
+                    'barcode' => 1234567890,
+                    'renew'   => 0,
+                    'renewLimit' => 1,
+                    'request' => 0,
+                    'id' => $bibId,
+                    'source' => 'Solr',
+                    'item_id' => 0,
+                    'renewable' => true,
+                ]
+            ]
+        );
     }
 
     /**
@@ -90,12 +120,16 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     public function getDemoIniOverrides($bibId = 'testsample1')
     {
         return [
+            'Records' => [
+                'transactions' => $this->getFakeTransactions($bibId),
+            ],
             'Failure_Probabilities' => [
                 'cancelHolds' => 0,
                 'cancelILLRequests' => 0,
                 'cancelStorageRetrievalRequests' => 0,
                 'checkILLRequestBlock' => 0,
                 'checkILLRequestIsValid' => 0,
+                'checkRenewBlock' => 0,
                 'checkRequestBlock' => 0,
                 'checkRequestIsValid' => 0,
                 'checkStorageRetrievalRequestBlock' => 0,
@@ -105,6 +139,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
                 'placeHold' => 0,
                 'placeILLRequest' => 0,
                 'placeStorageRetrievalRequest' => 0,
+                'renewMyItems' => 0,
             ],
             'Holdings' => [$bibId => json_encode([$this->getFakeItem()])],
             'Users' => ['catuser' => 'catpass'],
@@ -483,6 +518,46 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         foreach ($texts as $text) {
             $this->assertTrue($this->hasElementsMatchingText($page, 'td', $text));
         }
+    }
+
+    /**
+     * Test renewal action.
+     *
+     * @return void
+     */
+    public function testRenewal()
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Go to user profile screen:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/CheckedOut');
+        $page = $session->getPage();
+
+        // Log in
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+
+        // Test submitting with no selected checkboxes:
+        $this->findCss($page, '#renewSelected')->click();
+        $this->snooze();
+        $this->assertEquals(
+            'No items were selected',
+            $this->findCss($page, '.alert.alert-danger')->getText()
+        );
+
+        // Test "renew all":
+        $this->findCss($page, '#renewAll')->click();
+        $this->snooze();
+        $this->assertEquals(
+            'Renewal Successful',
+            $this->findCss($page, '.alert.alert-success')->getText()
+        );
     }
 
     /**
