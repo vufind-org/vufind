@@ -43,8 +43,8 @@
             $filter['displayText'] = $this->translate('filter_wildcard');
           }
         ?>
-        <a class="list-group-item active" href="<?=$removeLink?>">
-          <span class="pull-right flip"><i class="fa fa-times"></i></span>
+        <a class="list-group-item active" href="<?=$removeLink?>" title="<?=$this->transEsc('clear_tag_filter') ?>">
+          <span class="pull-right flip"><i class="fa fa-times" aria-hidden="true"></i></span>
           <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?>
         </a>
       <? endforeach; ?>
@@ -165,11 +165,11 @@ JS;
               <a id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>" class="list-group-item narrow-toggle" href="javascript:moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('more')?> ...</a>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
-              <a class="list-group-item active<? if ($i >= $facets_before_more): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>">
+              <a class="list-group-item active<? if ($i >= $facets_before_more): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>" title="<?=$this->transEsc('applied_filter') ?>">
                 <? if ($thisFacet['operator'] == 'OR'): ?>
-                  <i class="fa fa-check-square-o"></i>
+                  <i class="fa fa-check-square-o" aria-hidden="true"></i>
                 <? else: ?>
-                  <span class="pull-right flip"><i class="fa fa-check"></i></span>
+                  <span class="pull-right flip"><i class="fa fa-check" aria-hidden="true"></i></span>
                 <? endif; ?>
                 <?=$this->escapeHtml($thisFacet['displayText'])?>
               </a>
@@ -183,14 +183,14 @@ JS;
               <span class="badge">
                 <?=$this->localizedNumber($thisFacet['count'])?>
                 <? if ($allowExclude): ?>
-                  <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times"></i></a>
+                  <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
                 <? endif; ?>
               </span>
               <? if ($allowExclude): ?>
                 <a href="<?=$addURL ?>">
               <? endif; ?>
               <? if($thisFacet['operator'] == 'OR'): ?>
-                <i class="fa fa-square-o"></i>
+                <i class="fa fa-square-o" aria-hidden="true"></i>
               <? endif; ?>
               <?=$this->escapeHtml($thisFacet['displayText'])?>
               <? if ($allowExclude): ?>

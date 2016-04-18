@@ -73,10 +73,10 @@
 </script>
 <ul class="nav nav-tabs">
   <li class="static opener">
-    <a onClick="toggleSideNav()">
-      <i class="fa fa-caret-right"></i>
-      <i class="fa fa-caret-right"></i>
-      <i class="fa fa-caret-right"></i>
+    <a onClick="toggleSideNav()" title="<?=$this->transEsc('Expand Sidebar') ?>">
+      <i class="fa fa-caret-right" aria-hidden="true"></i>
+      <i class="fa fa-caret-right" aria-hidden="true"></i>
+      <i class="fa fa-caret-right" aria-hidden="true"></i>
     </a>
   </li>
   <li><a href="#image" id="medium-tab" onClick="showPreview('medium', this)">Medium</a></li>
@@ -96,14 +96,14 @@
     <img id="preview" src="<?=isset($this->medium) ? $this->medium : '' ?>">
   </div>
   <div class="tab-pane text-center" id="zoom">
-    <a class="btn btn-default" onClick="Zoomy.turnLeft()"><i class="fa fa-rotate-left"></i></a>
-    <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:1})"><i class="fa fa-search-minus"></i></a>
-    <a class="btn btn-default" onClick="Zoomy.zoom(0,1)">[1:1]</a>
+    <a class="btn btn-default" onClick="Zoomy.turnLeft()" title="<?=$this->transEsc('vudl_rotate_left') ?>"><i class="fa fa-rotate-left"></i></a>
+    <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:1})" title="<?=$this->transEsc('vudl_rotate_zoom_out') ?>"><i class="fa fa-search-minus"></i></a>
+    <a class="btn btn-default" onClick="Zoomy.zoom(0,1)" title="<?=$this->transEsc('vudl_rotate_left') ?>">[1:1]</a>
     <a class="btn btn-default" onClick="Zoomy.toggleMap();$(this).children('.fa').toggleClass('fa fa-toggle-down').toggleClass('fa fa-toggle-up');" title="<?=$this->transEsc('more_info_toggle') ?>">
       <i class="fa fa-toggle-down"></i>
     </a>
-    <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:-1})"><i class="fa fa-search-plus"></i></a>
-    <a class="btn btn-default" onClick="Zoomy.turnRight()"><i class="fa fa-rotate-right"></i></a>
+    <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:-1})" title="<?=$this->transEsc('vudl_rotate_zoom_in') ?>"><i class="fa fa-search-plus"></i></a>
+    <a class="btn btn-default" onClick="Zoomy.turnRight()" title="<?=$this->transEsc('vudl_rotate_right') ?>"><i class="fa fa-rotate-right"></i></a>
     <canvas id="zoomy"></canvas>
   </div>
   <div class="tab-pane text-center" id="master">

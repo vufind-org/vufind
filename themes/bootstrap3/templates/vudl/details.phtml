@@ -73,8 +73,8 @@
           <?=$this->render('/vudl/licenses/'.$this->details['special_license'], array('details'=>$this->details)); ?>
         </div>
       <? endif; ?>
-      <a href="<?=$this->url('record', array('id'=>$this->id))?>"><i class="fa fa-list"></i> <?=$this->transEsc('More Details') ?></a><br/>
-      <a href="<?=$this->url('vudl-record', array('id'=>$this->id))?>"><i class="fa fa-book"></i> <?=$this->transEsc('Permanent Link') ?></a>
+      <a href="<?=$this->url('record', array('id'=>$this->id))?>"><i class="fa fa-list" aria-hidden="true"></i> <?=$this->transEsc('More Details') ?></a><br/>
+      <a href="<?=$this->url('vudl-record', array('id'=>$this->id))?>"><i class="fa fa-book" aria-hidden="true"></i> <?=$this->transEsc('Permanent Link') ?></a>
       <? if(isset($this->details['description'])): ?><p class="description"><?=html_entity_decode($this->details['description']['value'], 2 /*ENT_COMPAT|ENT_HTML401*/, 'UTF-8') ?></p><? endif ?>
     </div>
   </div>

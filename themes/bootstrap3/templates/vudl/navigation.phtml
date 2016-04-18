@@ -40,7 +40,7 @@
     <? else: ?>
       <li>
         <a href="<?=$siblingHref ?>&prev=1" class="btn btn-default" title="<?=$this->transEsc('Prev Item in Collection')?>">
-          <i class="fa fa-angle-left"></i>
+          <i class="fa fa-angle-left" aria-hidden="true"></i>
           <?=$this->transEsc('Prev Item')?>
         </a>
       </li>
@@ -48,7 +48,7 @@
     <li class="btn-group">
       <a href="javascript:prevPage()" class="turn-button btn btn-default<? if($this->outline['counts'][$this->initList] <= 1): ?> hidden<? endif; ?>">Prev Page</a>
       <a href="<?=$this->url('vudl-grid', array('id'=>$this->id)) ?>" class="grid-btn btn btn-default">
-        <i class="fa fa-th hidden-xs"></i>
+        <i class="fa fa-th hidden-xs" aria-hidden="true"></i>
         <span class="visible-xs-inline"><?=$this->transEsc('grid_view') ?></span>
       </a>
       <a href="javascript:nextPage()" class="turn-button btn btn-default<? if($this->outline['counts'][$this->initList] <= 1): ?> hidden<? endif; ?>">Next Page</a>
@@ -73,7 +73,7 @@
       <li>
         <a href="<?=$siblingHref ?>&next=1" class="btn btn-default" title="<?=$this->transEsc('Next Item in Collection')?>">
           <?=$this->transEsc('Next Item')?>
-          <i class="fa fa-angle-right"></i>
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>
       </li>
     <? endif; ?>
