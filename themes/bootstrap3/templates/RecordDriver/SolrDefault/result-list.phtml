@@ -1,8 +1,17 @@
+<?
+  $cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+  $thumbnail = false;
+  if ($cover):
+    ob_start(); ?>
+    <div class="media-<?=$this->thumbnailSide ?> <?=$coversize ?>"><?=$cover ?></div>
+    <? $thumbnail = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+<? endif; ?>
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
 <div class="media">
-  <? if ($cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver))): ?>
-    <div class="media-left <?=$coversize ?>"><?=$cover ?></div>
+  <? if ($thumbnail && $this->thumbnailSide == 'left'): ?>
+    <?=$thumbnail ?>
   <? endif ?>
   <div class="media-body">
     <div class="row">
@@ -175,4 +184,7 @@
       </div>
     </div>
   </div>
+  <? if ($thumbnail && $this->thumbnailSide == 'right'): ?>
+    <?=$thumbnail ?>
+  <? endif ?>
 </div>

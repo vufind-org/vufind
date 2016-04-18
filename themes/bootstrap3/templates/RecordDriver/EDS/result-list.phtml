@@ -3,19 +3,25 @@
   $accessLevel = $this->driver->getAccessLevel();
   $restrictedView = empty($accessLevel) ? false : true;
 ?>
+<? ob_start(); ?>
+  <div class="media-<?=$this->thumbnailSide ?> <?=$coversize ?>">
+    <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
+      <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+      </a>
+    <? else: ?>
+      <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
+      <div><?=$this->driver->getPubType()?></div>
+    <? endif; ?>
+  </div>
+<? $thumbnail = ob_get_contents(); ?>
+<? ob_end_clean(); ?>
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
 <div class="media<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
-  <div class="media-left <?=$coversize ?>">
-    <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
-        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-        </a>
-    <? else: ?>
-        <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
-        <div><?=$this->driver->getPubType()?></div>
-    <? endif; ?>
-  </div>
+  <? if ($this->thumbnailSide == 'left') ?>
+    <?=$thumbnail ?>
+  <? endif; ?>
   <div class="media-body">
     <div class="row">
       <div class="col-sm-8 middle">
@@ -121,4 +127,7 @@
       </div>
     </div>
   </div>
+  <? if ($this->thumbnailSide == 'right') ?>
+    <?=$thumbnail ?>
+  <? endif; ?>
 </div>

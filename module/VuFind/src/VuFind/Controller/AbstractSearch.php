@@ -340,6 +340,17 @@ class AbstractSearch extends AbstractBase
             }
         }
 
+        // Thumbnail side
+        $layout = $this->getServiceLocator()->get('viewmanager')->getViewModel();
+        $left = !isset($config->Site->resultThumbnailsOnLeft)
+            ? false : $config->Site->resultThumbnailsOnLeft;
+        $mirror = !isset($config->Site->mirrorThumbnailsRTL)
+            ? true : $config->Site->mirrorThumbnailsRTL;
+        if ($layout->rtl && !$mirror) {
+            $left = !$left;
+        }
+        $view->thumbnailSide = $left ? 'left' : 'right';
+
         return $view;
     }
 
