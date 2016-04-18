@@ -1139,7 +1139,6 @@ class Upgrade
     protected function upgradePrimoServerSettings()
     {
         $config = & $this->newConfigs['Primo.ini'];
-        $permissions = & $this->newConfigs['permissions.ini'];
         // Convert apiId to url
         if (isset($config['General']['apiId'])) {
             $url = 'http://' . $config['General']['apiId']
