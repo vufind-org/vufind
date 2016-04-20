@@ -561,12 +561,66 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test create account path when in holds_mode = "all"
+     *
+     * @return void
+     */
+    public function testHoldsAll()
+    {
+        $config = $this->getConfigIniOverrides();
+        $config['Catalog']['holds_mode'] = 'all';
+        $config['Catalog']['title_level_holds_mode'] = 'always';
+        $this->changeConfigs(
+            [
+                'config' => $config,
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+        $page = $this->gotoRecordById('dollar$ign/slashcombo');
+        // No login at top
+        $this->assertNull($page->find('css', '.alert.alert-info a'));
+        // Hold links should be visible
+        $element = $this->findCss($page, 'a.placehold');
+        $element->click();
+        $this->snooze();
+        // Since we're not logged in...
+        $this->findCss($page, '.createAccountLink')->click();
+        $this->snooze();
+        $this->fillInAccountForm(
+            $page, ['username' => 'username2', 'email' => 'u2@vufind.org']
+        );
+        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->snooze();
+
+        // Test valid patron login
+        $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
+
+        // Go directly to holds screen
+        // Set pickup location to a non-default value so we can confirm that
+        // the element is being passed through correctly, then submit form:
+        $this->findCss($page, '#pickUpLocation')->setValue('B');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+
+        // If successful, we should now have a link to review the hold:
+        $link = $this->findCss($page, '.modal-body a');
+        $this->assertEquals('Your Holds and Recalls', $link->getText());
+        $link->click();
+        $this->snooze();
+
+        // Make sure we arrived where we expected to:
+        $this->assertEquals(
+            'Your Holds and Recalls', $this->findCss($page, 'h2')->getText()
+        );
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
      */
     public static function tearDownAfterClass()
     {
-        static::removeUsers(['username1']);
+        static::removeUsers(['username1', 'username2']);
     }
 }
