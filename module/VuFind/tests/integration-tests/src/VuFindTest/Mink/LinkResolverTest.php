@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
+use Behat\Mink\Element\Element;
 
 /**
  * Mink link resolver test class.
@@ -54,12 +55,14 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Get config.ini override settings for testing ILS functions.
      *
+     * @param array $openUrlExtras Extra settings for the [OpenURL] section.
+     *
      * @return array
      */
-    public function getConfigIniOverrides()
+    public function getConfigIniOverrides($openUrlExtras = [])
     {
         return [
-            'OpenURL' => [
+            'OpenURL' => $openUrlExtras + [
                 'resolver' => 'demo',
                 'embed' => '1',
                 'url' => 'https://vufind.org/wiki',
@@ -67,23 +70,37 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
         ];
     }
 
-    public function testPlaceHold()
+    /**
+     * Set up the record page for OpenURL testing.
+     *
+     * @param array $openUrlExtras Extra settings for the [OpenURL] config section.
+     *
+     * @return Element
+     */
+    protected function setupRecordPage($openUrlExtras = [])
     {
         // Set up configs
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(),
+                'config' => $this->getConfigIniOverrides($openUrlExtras),
             ]
         );
 
         // Search for a known record:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
-        $page = $session->getPage();
-        $this->findCss($page, '.searchForm [name="lookfor"]')
-            ->setValue('id:testsample1');
-        $this->findCss($page, '.btn.btn-primary')->click();
+        $session->visit($this->getVuFindUrl() . '/Record/testsample1');
+        return $session->getPage();
+    }
 
+    /**
+     * Click an OpenURL on the page and assert the expected results.
+     *
+     * @param Element $page Current page object
+     *
+     * @return void
+     */
+    protected function assertOpenUrl(Element $page)
+    {
         // Click the OpenURL link:
         $this->findCss($page, '.fulltext')->click();
         $this->snooze();
@@ -112,5 +129,68 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
             'https://vufind.org/wiki?' . $openUrl . '#print',
             $print->getAttribute('href')
         );
+    }
+
+    /**
+     * Test a link in the search results.
+     *
+     * @return void
+     */
+    public function testLinkInSearchResults()
+    {
+        // Set up configs
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+            ]
+        );
+
+        // Search for a known record:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '.searchForm [name="lookfor"]')
+            ->setValue('id:testsample1');
+        $this->findCss($page, '.btn.btn-primary')->click();
+
+        // Verify the OpenURL
+        $this->assertOpenUrl($page);
+    }
+
+    /**
+     * Test a link on the record page.
+     *
+     * @return void
+     */
+    public function testLinkOnRecordPageWithDefaultConfig()
+    {
+        // By default, no OpenURL on record page:
+        $page = $this->setupRecordPage();
+        $this->snooze();
+        $this->assertNull($page->find('css', '.fulltext'));
+    }
+
+    /**
+     * Test a link on the record page.
+     *
+     * @return void
+     */
+    public function testLinkOnRecordPageWithLinkInCore()
+    {
+        // By default, no OpenURL on record page:
+        $page = $this->setupRecordPage(['show_in_record' => true]);
+        $this->assertOpenUrl($page);
+    }
+
+    /**
+     * Test a link on the record page.
+     *
+     * @return void
+     */
+    public function testLinkOnRecordPageWithLinkInHoldings()
+    {
+        // By default, no OpenURL on record page:
+        $page = $this->setupRecordPage(['show_in_holdings' => true]);
+        $this->assertOpenUrl($page);
     }
 }
