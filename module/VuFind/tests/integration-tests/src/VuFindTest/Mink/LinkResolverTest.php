@@ -74,15 +74,17 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
      * Set up the record page for OpenURL testing.
      *
      * @param array $openUrlExtras Extra settings for the [OpenURL] config section.
+     * @param array $extraConfigs  Top-level config.ini overrides
      *
      * @return Element
      */
-    protected function setupRecordPage($openUrlExtras = [])
+    protected function setupRecordPage($openUrlExtras = [], $extraConfigs = [])
     {
         // Set up configs
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides($openUrlExtras),
+                'config' =>
+                    $extraConfigs + $this->getConfigIniOverrides($openUrlExtras),
             ]
         );
 
@@ -158,7 +160,7 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test a link on the record page.
+     * Test that link is missing from the record page by default.
      *
      * @return void
      */
@@ -171,7 +173,7 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test a link on the record page.
+     * Test a link on the record page (in core metadata).
      *
      * @return void
      */
@@ -183,7 +185,7 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test a link on the record page.
+     * Test a link on the record page (in holdings tab).
      *
      * @return void
      */
@@ -191,6 +193,21 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
     {
         // By default, no OpenURL on record page:
         $page = $this->setupRecordPage(['show_in_holdings' => true]);
+        $this->assertOpenUrl($page);
+    }
+
+    /**
+     * Test a link on the record page (in holdings tab w/ AJAX loading).
+     *
+     * @return void
+     */
+    public function testLinkOnRecordPageWithLinkInHoldingsAndAjaxTabLoading()
+    {
+        // By default, no OpenURL on record page:
+        $page = $this->setupRecordPage(
+            ['show_in_holdings' => true],
+            ['Site' => ['loadInitialTabWithAjax' => true]]
+        );
         $this->assertOpenUrl($page);
     }
 }
