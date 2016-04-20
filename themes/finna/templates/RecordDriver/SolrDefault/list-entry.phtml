@@ -121,6 +121,9 @@
     ?>
       <div class="note-info <?= $hasNote ? '' : ' hide' ?>"><strong><?=$this->transEsc('Description')?>:</strong></div>
       <div class="resource-note">
+        <? if ($list_id): ?>
+          <i class="fa fa-pen icon"></i>
+        <? endif; ?>
         <span data-empty="<?= $hasNote ? '0' : '1' ?>">
           <? if (count($listNotes) > 0): ?>
             <?= $notes; ?>
@@ -128,9 +131,6 @@
             <?=$this->transEsc('Add note')?>
           <? endif; ?>
         </span>
-        <? if ($list_id): ?>
-          <i class="fa fa-pen icon"></i>
-        <? endif; ?>
       </div>
     </div>
     <? if (count($this->lists) > 0 && !$list): ?>

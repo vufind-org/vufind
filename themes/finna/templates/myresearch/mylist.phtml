@@ -51,12 +51,12 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-7">
-      <h2 class="list-title<?= !$list ? ' no-edit' : '' ?>"><span><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("All Favourites")?></span><? if(!$isDefaultList): ?><i class="list-title-edit fa fa-pen"></i><? endif; ?></h2><br>
+      <div class="col-xs-12 col-md-8">
+      <h2 class="list-title<?= !$list ? ' no-edit' : '' ?>"><? if(!$isDefaultList): ?><i class="list-title-edit fa fa-pen"></i><? endif; ?><span><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("All Favourites")?></span></h2><br>
       <? if ($list && !empty($list->description)): ?>
-        <h5 class="list-description"><span><?=preg_replace("/\r\n|\r|\n/",'<br class="newline">', $this->escapeHtml($list->description))?></span> <i class="list-description-edit fa fa-pen"></i></h5>
+        <h5 class="list-description"><i class="list-description-edit fa fa-pen"></i><span><?=preg_replace("/\r\n|\r|\n/",'<br class="newline">', $this->escapeHtml($list->description))?></span></h5>
       <? elseif ($list && empty($list->description)): ?>
-        <h5 class="list-description"><span data-empty="1"><?=$this->transEsc('Add list description')?></span> <i class="list-description-edit fa fa-pen"></i></h5>
+        <h5 class="list-description"><i class="list-description-edit fa fa-pen"></i><span data-empty="1"><?=$this->transEsc('Add list description')?></span></h5>
       <? endif; ?>
     </div>
     </div>
@@ -64,11 +64,14 @@
     <div class="row">
     <div class="col-xs-12">
     <? if ($recordTotal > 0): ?>
-      <div class="pull-left">
-      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results))?>
-      </div>
-      <div class="pull-right search-controls">
+      <div class="search-controls row">
+        <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right hidden-print">
           <?=$this->render('search/controls/sort.phtml')?>
+          <?=$this->render('search/controls/limit.phtml')?>
+        </div>
+        <div class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8">
+          <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results))?>
+        </div>
       </div>
     </div>
   </div>
