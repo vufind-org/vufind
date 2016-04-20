@@ -18,7 +18,7 @@ function checkRequestIsValid(element, requestType) {
     if (response.data.status) {
       $(element).removeClass('disabled')
         .attr('title', response.data.msg)
-        .html('<i class="fa fa-flag"></i>&nbsp;'+response.data.msg);
+        .html('<i class="fa fa-flag" aria-hidden="true"></i>&nbsp;'+response.data.msg);
     } else {
       $(element).remove();
     }
@@ -242,7 +242,7 @@ function recordDocReady() {
       window.location.hash = tabid;
       return false;
     } else {
-      var newTab = $('<div class="tab-pane active '+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+VuFind.translate('loading')+'...</div>');
+      var newTab = $('<div class="tab-pane active '+tabid+'-tab"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> '+VuFind.translate('loading')+'...</div>');
       $top.find('.tab-content').append(newTab);
       return ajaxLoadTab(newTab, tabid, !$(this).parent().hasClass('initiallyActive'));
     }
