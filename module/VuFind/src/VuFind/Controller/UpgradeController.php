@@ -101,7 +101,7 @@ class UpgradeController extends AbstractBase
      *
      * @return void
      */
-    public function preDispatch(MvcEvent $e)
+    public function validateAutoConfigureConfig(MvcEvent $e)
     {
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
@@ -123,7 +123,9 @@ class UpgradeController extends AbstractBase
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
+        $events->attach(
+            MvcEvent::EVENT_DISPATCH, [$this, 'validateAutoConfigureConfig'], 1000
+        );
     }
 
     /**
@@ -440,8 +442,17 @@ class UpgradeController extends AbstractBase
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
 
-            // Add checksums to all saved searches
-            $this->fixSearchChecksumsInDatabase();
+            // Add checksums to all saved searches but catch exceptions (e.g. in case
+            // column checksum does not exist yet because of sqllog).
+            try {
+                $this->fixSearchChecksumsInDatabase();
+            } catch (\Exception $e) {
+                $this->session->warnings->append(
+                    'Could not fix checksums in table search - maybe column ' .
+                    'checksum is missing? Exception thrown with ' .
+                    'message: ' . $e->getMessage()
+                );
+            }
         } catch (\Exception $e) {
             $this->flashMessenger()->addMessage(
                 'Database upgrade failed: ' . $e->getMessage(), 'error'

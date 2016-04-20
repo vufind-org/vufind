@@ -357,9 +357,12 @@ class Record extends AbstractHelper
      */
     public function getLink($type, $lookfor)
     {
-        return $this->renderTemplate(
+        $link = $this->renderTemplate(
             'link-' . $type . '.phtml', ['lookfor' => $lookfor]
         );
+        $link .= $this->getView()->plugin('searchTabs')
+            ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
+        return $link;
     }
 
     /**

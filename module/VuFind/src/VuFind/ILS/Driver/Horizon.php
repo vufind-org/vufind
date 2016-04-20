@@ -1008,7 +1008,7 @@ class Horizon extends AbstractBase
                     . "    join bib_control bc "
                     . "      on bc.bib# = nb.bib# "
                     . "     and bc.staff_only = 0 "
-                    . "   where nb.date > "
+                    . "   where nb.date >= "
                     . "         datediff(dd, '01JAN1970', getdate()) - {$daysOld} "
                     . "order by nb.date desc ";
 

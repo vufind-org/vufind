@@ -1,5 +1,5 @@
-Package: vufind2
-Version: 2.5.2
+Package: vufind
+Version: 3.0
 Section: World Wide Web
 Priority: Optional
 Architecture: all

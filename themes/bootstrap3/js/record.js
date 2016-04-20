@@ -228,7 +228,10 @@ $(window).on('hashchange', applyRecordTabHash);
 
 function recordDocReady() {
   $('.record-tabs .nav-tabs a').click(function (e) {
-    if ($(this.parentNode).hasClass('active')) {
+    var $li = $(this).parent();
+    // If it's an active tab, click again to follow to a shareable link.
+    // if we're flagged to skip AJAX for this tab, just return true and let the browser handle it.
+    if($li.hasClass('active') || $li.hasClass('noajax')) {
       return true;
     }
     var tabid = this.className;
@@ -240,10 +243,6 @@ function recordDocReady() {
       window.location.hash = tabid;
       return false;
     } else {
-      // if we're flagged to skip AJAX for this tab, just return true and let the browser handle it.
-      if ($(this.parentNode).hasClass('noajax')) {
-        return true;
-      }
       var newTab = $('<div class="tab-pane active '+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+VuFind.translate('loading')+'...</div>');
       $top.find('.tab-content').append(newTab);
       return ajaxLoadTab(newTab, tabid, !$(this).parent().hasClass('initiallyActive'));

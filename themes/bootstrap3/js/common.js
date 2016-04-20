@@ -6,7 +6,26 @@ window.console = window.console || {log: function () {}};
 var VuFind = (function() {
   var defaultSearchBackend = null;
   var path = null;
+  var _initialized = false;
+  var _submodules = [];
   var _translations = {};
+
+  var register = function(name, module) {
+    if (_submodules.indexOf(name) === -1) {
+      _submodules.push(name);
+      this[name] = typeof module == 'function' ? module() : module;
+    }
+    // If the object has already initialized, we should auto-init on register:
+    if (_initialized) {
+      this[name].init();
+    }
+  };
+  var init = function() {
+    for (var i=0; i<_submodules.length; i++) {
+      this[_submodules[i]].init();
+    }
+    _initialized = true;
+  };
 
   var addTranslations = function(s) {
     for (var i in s) {
@@ -23,6 +42,8 @@ var VuFind = (function() {
     path: path,
 
     addTranslations: addTranslations,
+    init: init,
+    register: register,
     translate: translate
   };
 })();
@@ -188,7 +209,7 @@ function setupAutocomplete() {
  * @returns {undefined}
  */
 function keyboardShortcuts() {
-    var $searchform = $('#searchForm_lookfor');
+    var $searchform = $('.searchForm_lookfor');
     if ($('.pager').length > 0) {
         $(window).keydown(function(e) {
           if (!$searchform.is(':focus')) {
@@ -226,6 +247,8 @@ function keyboardShortcuts() {
 }
 
 $(document).ready(function() {
+  // Start up all of our submodules
+  VuFind.init();
   // Setup search autocomplete
   setupAutocomplete();
   // Off canvas
