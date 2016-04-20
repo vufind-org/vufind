@@ -59,7 +59,7 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
     {
         // Check if username is set.
         $shib = $this->getConfig()->Shibboleth;
-        $username = $request->getServer()->get($shib->username);
+        $username = $this->getServerParam($request, $shib->username);
         if (empty($username)) {
             $this->logError(
                 'Shibboleth login failed for request: no username attribute present'
@@ -70,7 +70,8 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
 
         // Check if required attributes match up:
         foreach ($this->getRequiredAttributes() as $key => $value) {
-            if (!preg_match('/' . $value . '/', $request->getServer()->get($key))) {
+            $attrValue = $this->getServerParam($request, $key);
+            if (!preg_match('/' . $value . '/', $attrValue)) {
                 throw new AuthException('authentication_error_denied');
             }
         }
@@ -89,7 +90,7 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
         ];
         foreach ($attribsToCheck as $attribute) {
             if (isset($shib->$attribute)) {
-                $value = $request->getServer()->get($shib->$attribute);
+                $value = $this->getServerParam($request, $shib->$attribute);
                 if ($attribute != 'cat_password') {
                     // Special case: don't override existing email address:
                     if ($attribute == 'email') {
@@ -112,7 +113,7 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
         // Store logout URL in session:
         $config = $this->getConfig()->Shibboleth;
         if (isset($config->logout_attribute)) {
-            $url = $request->getServer()->get($config->logout_attribute);
+            $url = $this->getServerParam($request, $config->logout_attribute);
             if ($url) {
                 $sessionContainer = new SessionContainer('Shibboleth');
                 $sessionContainer['logoutUrl'] = $url;
@@ -153,4 +154,20 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
         return $url;
     }
 
+    /**
+     * Get a server parameter taking into account any environment variables
+     * redirected by Apache mod_rewrite.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * account credentials.
+     * @param string                            $param   Parameter name
+     *
+     * @return mixed
+     */
+    protected function getServerParam($request, $param)
+    {
+        return $request->getServer()->get(
+            $param, $request->getServer()->get("REDIRECT_$param")
+        );
+    }
 }
