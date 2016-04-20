@@ -96,14 +96,14 @@
     <img id="preview" src="<?=isset($this->medium) ? $this->medium : '' ?>">
   </div>
   <div class="tab-pane text-center" id="zoom">
-    <a class="btn btn-default" onClick="Zoomy.turnLeft()" title="<?=$this->transEsc('vudl_rotate_left') ?>"><i class="fa fa-rotate-left"></i></a>
-    <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:1})" title="<?=$this->transEsc('vudl_rotate_zoom_out') ?>"><i class="fa fa-search-minus"></i></a>
+    <a class="btn btn-default" onClick="Zoomy.turnLeft()" title="<?=$this->transEsc('vudl_rotate_left') ?>"><i class="fa fa-rotate-left" aria-hidden="true"></i></a>
+    <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:1})" title="<?=$this->transEsc('vudl_rotate_zoom_out') ?>"><i class="fa fa-search-minus" aria-hidden="true"></i></a>
     <a class="btn btn-default" onClick="Zoomy.zoom(0,1)" title="<?=$this->transEsc('vudl_rotate_left') ?>">[1:1]</a>
     <a class="btn btn-default" onClick="Zoomy.toggleMap();$(this).children('.fa').toggleClass('fa fa-toggle-down').toggleClass('fa fa-toggle-up');" title="<?=$this->transEsc('more_info_toggle') ?>">
-      <i class="fa fa-toggle-down"></i>
+      <i class="fa fa-toggle-down" aria-hidden="true"></i>
     </a>
-    <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:-1})" title="<?=$this->transEsc('vudl_rotate_zoom_in') ?>"><i class="fa fa-search-plus"></i></a>
-    <a class="btn btn-default" onClick="Zoomy.turnRight()" title="<?=$this->transEsc('vudl_rotate_right') ?>"><i class="fa fa-rotate-right"></i></a>
+    <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:-1})" title="<?=$this->transEsc('vudl_rotate_zoom_in') ?>"><i class="fa fa-search-plus" aria-hidden="true"></i></a>
+    <a class="btn btn-default" onClick="Zoomy.turnRight()" title="<?=$this->transEsc('vudl_rotate_right') ?>"><i class="fa fa-rotate-right" aria-hidden="true"></i></a>
     <canvas id="zoomy"></canvas>
   </div>
   <div class="tab-pane text-center" id="master">
