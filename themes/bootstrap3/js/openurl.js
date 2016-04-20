@@ -44,7 +44,7 @@ VuFind.register('openurl', function() {
     }
 
      // assign action to the openUrlWindow link class
-    container.find('a.openUrlWindow').click(function() {
+    container.find('a.openUrlWindow').unbind('click').click(function() {
       var params = extractClassParams(this);
       var settings = params.window_settings;
       window.open($(this).attr('href'), 'openurl', settings);
@@ -52,7 +52,7 @@ VuFind.register('openurl', function() {
     });
 
     // assign action to the openUrlEmbed link class
-    container.find('.openUrlEmbed a').click(function() {
+    container.find('.openUrlEmbed a').unbind('click').click(function() {
       _embedOpenUrlLinks($(this));
       return false;
     });
