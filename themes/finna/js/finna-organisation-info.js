@@ -171,7 +171,6 @@ finna.organisationInfo = (function() {
             params = $.extend(params, {dir: dir});
         }
 
-        //holder.find('.schedules-info .truncate-field, .more-link, .less-link').remove();
         query(holder.data('consortium'), params, function(success, obj) {
             if (!success) {
                 holder.find('.error').show();
