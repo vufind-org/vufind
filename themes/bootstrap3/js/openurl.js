@@ -15,7 +15,7 @@ VuFind.register('openurl', function() {
       if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
       $target.append(response.responseJSON.data);
     });
-  }
+  };
 
   var _embedOpenUrlLinks = function(element) {
     // Extract the OpenURL associated with the clicked element:
@@ -33,7 +33,7 @@ VuFind.register('openurl', function() {
     if (target.hasClass('hidden')) {
       _loadResolverLinks(target.removeClass('hidden'), openUrl, element.data('search-class-id'));
     }
-  }
+  };
 
   // Assign actions to the OpenURL links. This can be called with a container e.g. when 
   // combined results fetched with AJAX are loaded.
@@ -58,6 +58,6 @@ VuFind.register('openurl', function() {
     });
 
     container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
-  }
-  return {init: init}
+  };
+  return {init: init};
 });

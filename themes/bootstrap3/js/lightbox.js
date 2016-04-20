@@ -145,7 +145,7 @@ VuFind.register('lightbox', function() {
         }
         // Place Hold error isolation
         if (obj.url.match(/\/Record/) && (obj.url.match(/Hold\?/) || obj.url.match(/Request\?/))) {
-          var testDiv = $('<div/>').html(html)
+          var testDiv = $('<div/>').html(html);
           var error = testDiv.find('.flash-message.alert-danger');
           if (error.length && testDiv.find('.record').length) {
             showAlert(error[0].innerHTML, 'danger');
