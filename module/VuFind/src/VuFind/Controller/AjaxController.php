@@ -757,8 +757,7 @@ class AjaxController extends AbstractBase
         $allowed = isset($sconfig['List']['embeddedTabs'])
             ? $sconfig->List->embeddedTabs->toArray()
             : [];
-        if (
-            isset($sconfig['List']['embeddedTabs'])
+        if (isset($sconfig['List']['embeddedTabs'])
             && !empty($sconfig['List']['embeddedTabs'])
         ) {
             $class = get_class($driver);
