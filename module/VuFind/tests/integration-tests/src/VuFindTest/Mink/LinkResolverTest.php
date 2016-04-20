@@ -97,14 +97,17 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Click an OpenURL on the page and assert the expected results.
      *
-     * @param Element $page Current page object
+     * @param Element $page  Current page object
+     * @param bool    $click Should we click the link (true), or is it autoloading?
      *
      * @return void
      */
-    protected function assertOpenUrl(Element $page)
+    protected function assertOpenUrl(Element $page, $click = true)
     {
         // Click the OpenURL link:
-        $this->findCss($page, '.fulltext')->click();
+        if ($click) {
+            $this->findCss($page, '.fulltext')->click();
+        }
         $this->snooze();
 
         // Confirm that the expected fake demo driver data is there:
@@ -134,7 +137,7 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test a link in the search results.
+     * Test a link in the search results (default behavior, click required).
      *
      * @return void
      */
@@ -157,6 +160,34 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
 
         // Verify the OpenURL
         $this->assertOpenUrl($page);
+    }
+
+    /**
+     * Test a link in the search results (optional autoloading enabled).
+     *
+     * @return void
+     */
+    public function testLinkInSearchResultsWithAutoloading()
+    {
+        // Set up configs
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(
+                    ['embed_auto_load' => true]
+                ),
+            ]
+        );
+
+        // Search for a known record:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '.searchForm [name="lookfor"]')
+            ->setValue('id:testsample1');
+        $this->findCss($page, '.btn.btn-primary')->click();
+
+        // Verify the OpenURL
+        $this->assertOpenUrl($page, false /* do not click link */);
     }
 
     /**
