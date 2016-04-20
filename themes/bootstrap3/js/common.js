@@ -10,7 +10,9 @@ var VuFind = (function() {
   var _translations = {};
 
   var register = function(name, module) {
-    _submodules.push(name);
+    if (-1 == _submodules.indexOf(name)) {
+      _submodules.push(name);
+    }
     this[name] = 'function' == typeof module ? module() : module;
   };
   var init = function() {
