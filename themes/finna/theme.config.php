@@ -23,6 +23,7 @@ return array(
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
             'onlinePayment' => 'Finna\View\Helper\Root\Factory::getOnlinePayment',
             'openUrl' => 'Finna\View\Helper\Root\Factory::getOpenUrl',
+            'organisationInfo' => 'Finna\View\Helper\Root\Factory::getOrganisationInfo',
             'organisationsList'
                 => 'Finna\View\Helper\Root\Factory::getOrganisationsList',
             'personaAuth' => 'Finna\View\Helper\Root\Factory::getPersonaAuth',

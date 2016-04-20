@@ -30,7 +30,8 @@ use VuFindSearch\ParamBag as ParamBag,
     VuFindSearch\Query\Query as Query,
     VuFind\Search\RecommendListener,
     Finna\MetaLib\MetaLibIrdTrait,
-    Zend\Cache\StorageFactory;
+    Zend\Cache\StorageFactory,
+    Zend\Session\Container as SessionContainer;
 
 use Finna\Search\Solr\Params;
 
@@ -923,6 +924,39 @@ class AjaxController extends \VuFind\Controller\AjaxController
             ['user' => $user, 'activeId' => $activeId, 'lists' => $lists]
         );
         return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
+     * Return organisation info in JSON format.
+     *
+     * @return mixed
+     */
+    public function getOrganisationInfoAjax()
+    {
+        if (!$consortium = $this->params()->fromQuery('consortium')) {
+            return $this->output('Missing consortium', self::STATUS_ERROR, 400);
+        }
+
+        $params = $this->params()->fromQuery('params');
+        $session = new SessionContainer('OrganisationInfo');
+        if (isset($params['id'])) {
+            $session->id = $params['id'];
+        } else if (isset($session->id)) {
+            $params['id'] = $session->id;
+        }
+
+        $service = $this->getServiceLocator()->get('Finna\OrganisationInfo');
+        try {
+            $result = $service->query($consortium, $params);
+        } catch (\Exception $e) {
+            return $this->output(
+                "Error reading organisation info (consortium $consortium)",
+                self::STATUS_ERROR, 400
+            );
+        }
+
+        $this->outputMode = 'json';
+        return $this->output($result, self::STATUS_OK);
     }
 
     /**

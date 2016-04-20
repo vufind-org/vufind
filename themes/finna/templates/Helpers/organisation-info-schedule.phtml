@@ -1,0 +1,60 @@
+<table class="opening-times-week info-element" data-period-start="<?=$this->escapeHtmlAttr($this->periodStart)?>">
+  <tbody>
+    <? foreach ($this->schedules as $day): ?>
+      <?
+        $openNow = false;
+        $staffTimes = false;
+        $selfServiceTimes = [];
+
+        foreach ($day['times'] as $time) {
+           $selfServiceTime = $time['selfservice'];
+           $selfServiceTimes[] = $selfServiceTime;
+           if ($selfServiceTime) {
+              $staffTimes = true;
+           }
+           if (!empty($time['openNow'])) {
+              $openNow = true;
+           }
+        }
+        array_shift($selfServiceTimes);
+        $classes = [];
+        if ($day['today']) {
+           $classes[] = 'today';
+           $classes[] = $openNow ? 'open' : '';
+      }
+    ?>
+    <tr<?= !empty($classes) ? (' class="' . implode(' ', $classes) . '"') : ''?>>
+      <td><?= date('d.m', $day['date'])?></td>
+      <td>
+        <ul>
+        <?
+        if (empty($day['times'])): ?>
+          <li>
+            <span class="day"><?=$this->translate('day-name-short-' . $day['dayName'])?></span>
+            <span class="time"><?=$this->translate('organisation-info-is-closed')?></span>
+          </li>
+        <? else:
+           $cnt = 0;
+           foreach ($day['times'] as $time):
+        ?>
+        <? $selfServiceTime = $time['selfservice']; ?>
+          <li<?=$staffTimes && !$selfServiceTime ? ' class="staff"' : ''?>>
+            <span class="day">
+            <? if ($cnt++ == 0): ?>
+              <?= $this->translate(!$staffTimes || $selfServiceTime ? ('day-name-short-' . $day['dayName']) : 'organisation-info-schedule-staff');?>
+            <? elseif (!$selfServiceTime && $staffTimes): ?>
+                <?= $this->translate('organisation-info-schedule-staff');?>
+            <? else: ?>
+               &nbsp;
+            <? endif; ?>
+            </span>
+            <span class="time"><?= $time['opens']?> - <?= $time['closes']?></span>
+          </li>
+           <? endforeach; ?>
+        <? endif; ?>
+        </ul>
+      </td>
+    </tr>
+    <? endforeach ?>
+  </tbody>
+</table>

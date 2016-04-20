@@ -1,0 +1,47 @@
+<? $this->headScript()->appendFile("finna-organisation-info.js"); ?>
+<div class="organisation-info" data-consortium="<?=$this->escapeHtmlAttr($this->consortium)?>"<?=isset($this->id) ? (' data-id="' . $this->id . '"') : ''?>>
+  <div class="row">
+    <div class="col-xs-12">
+      <h2><?=$this->transEsc('organisation-info-title');?></h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="loader"><i class="fa fa-spin fa-spinner"></i></div>
+    </div>
+  </div>
+  <div class="row content hide">
+    <div class="col-md-8 col-lg-7 col-xs-12 info">
+      <h4>
+        <select name="organisation" class="organisation form-control form-inline"></select>
+        <span class="is-open open info-element"><?=$this->translate('organisation-info-is-open')?></span>
+        <span class="is-open closed info-element"><?=$this->translate('organisation-info-is-closed')?></span>
+      </h4>
+      <div class="schedules">
+        <div class="week-navi-holder">
+          <i class="fa fa-arrow-left prev-week week-navi" data-dir="-1"></i>
+          <span class="week-text"><?=$this->translate('organisation-info-schedule-week')?> <span class="num"></span></span>
+          <i class="fa fa-arrow-right next-week week-navi" data-dir="+1"></i>
+        </div>
+        <div class="loader"><i class="fa fa-spin fa-spinner"></i></div>
+        <div class="content"></div>
+        <div class="no-schedules info-element"><?=$this->translate('organisation-info-no-schedule')?></div>
+      </div>
+      <div class="schedules-info info-element"></div>
+    </div>
+    <div class="col-md-4 col-xs-12">
+      <a href="#" target="_blank" class="facility details"><img src="<?=$this->imageLink('noCover2.gif')?>" alt="" class="facility-image"></a>
+      <div class="contact-links">
+        <a href="#" class="email info-element"><span class="btn btn-open-widget"><i class="fa fa-at"></i></span></a>
+        <span class="btn btn-open-widget phone info-element" data-toggle="tooltip" data-html="true" data-original-title=""><i class="fa fa-phone-square"></i></span></a>
+        <a href="#" target="_blank" class="route info-element"><span class="btn"><i class="fa fa-bus"></i></span></a>
+        <a href="#" target="_blank" class="facebook info-element"><span class="btn"><i class="fa fa-facebook-square"></i></span></a>
+      </div>
+      <div class="map info-element"><a href="#" target="_blank"><i class="fa fa-map-marker"></i> <span class="map-address">Linnankatu 2 20100 Turku</span></a></div>
+      <div class="services">
+        <span class="btn btn-open-widget btn-round service-wifi info-element" title="<?=$this->translate('organisation-info-service-wifi')?>"><i class="fa fa-wifi"></i></span>
+      </div>
+      <div class="details-link info-element"><a href="#" target="_blank" class="details"><?=$this->translate('organisation-info-details')?></a></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+; Organisation info component (see: https://api.kirjastot.fi)
+;    Embed to a template file:  <?=$this->organisationInfo('<consortium>')?>
+
+[General]
+enabled = 0
+
+; How long content is cached locally in minutes.
+; Set this to false or comment out to disable caching.
+cachetime = 10
+
+url = "https://api.kirjastot.fi/v3"
+
+routeUrl = "http://www.matka.fi/fi/?keya=&keyb={street}, {city}"
+mapUrl = "http://maps.google.com/?q={street} {city}"
+
+[vaski]
+consortium = 2115
+
+; Default organisation
+default = 85141
