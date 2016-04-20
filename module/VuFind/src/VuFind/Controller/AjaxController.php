@@ -761,8 +761,8 @@ class AjaxController extends AbstractBase
             && !empty($sconfig['List']['embeddedTabs'])
         ) {
             $class = get_class($driver);
-            $configTabs =& $config['vufind']['recorddriver_tabs'][$class]['tabs'];
-            foreach ($configTabs as $tab=>$content) {
+            $configTabs = & $config['vufind']['recorddriver_tabs'][$class]['tabs'];
+            foreach ($configTabs as $tab => $content) {
                 if (!in_array($tab, $allowed)) {
                     unset($configTabs[$tab]);
                 }
