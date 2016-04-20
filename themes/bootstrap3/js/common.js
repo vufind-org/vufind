@@ -11,9 +11,9 @@ var VuFind = (function() {
   var _translations = {};
 
   var register = function(name, module) {
-    if (-1 == _submodules.indexOf(name)) {
+    if (_submodules.indexOf(name) === -1) {
       _submodules.push(name);
-      this[name] = 'function' == typeof module ? module() : module;
+      this[name] = typeof module == 'function' ? module() : module;
     }
     // If the object has already initialized, we should auto-init on register:
     if (_initialized) {
