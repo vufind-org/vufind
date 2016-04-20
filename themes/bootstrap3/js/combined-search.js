@@ -1,11 +1,11 @@
-/*global VuFind, setupOpenUrlLinks, checkItemStatuses, checkSaveStatuses */
+/*global VuFind, checkItemStatuses, checkSaveStatuses */
 VuFind.combinedSearch = (function() {
   var init = function(container, url) {
     container.load(url, '', function(responseText) {
       if (responseText.length == 0) {
         container.hide();
       } else {
-        setupOpenUrlLinks(container);
+        VuFind.openurl.init(container);
         checkItemStatuses(container);
         checkSaveStatuses(container);
       }
