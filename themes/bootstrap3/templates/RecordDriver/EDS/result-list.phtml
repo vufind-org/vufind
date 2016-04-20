@@ -4,7 +4,7 @@
   $restrictedView = empty($accessLevel) ? false : true;
 ?>
 <? ob_start(); ?>
-  <div class="media-<?=$this->thumbnailSide ?> <?=$coversize ?>">
+  <div class="media-<?=$this->record($this->driver)->getThumbnailAlignment() ?> <?=$this->record($this->driver)->getCoverSize($this->params) ?>">
     <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
       <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
@@ -19,7 +19,7 @@
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
 <div class="media<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
-  <? if ($this->thumbnailSide == 'left') ?>
+  <? if ($this->record($this->driver)->getThumbnailAlignment() == 'left') ?>
     <?=$thumbnail ?>
   <? endif; ?>
   <div class="media-body">
@@ -127,7 +127,7 @@
       </div>
     </div>
   </div>
-  <? if ($this->thumbnailSide == 'right') ?>
+  <? if ($this->record($this->driver)->getThumbnailAlignment() == 'right') ?>
     <?=$thumbnail ?>
   <? endif; ?>
 </div>

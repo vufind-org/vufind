@@ -3,14 +3,16 @@
   $thumbnail = false;
   if ($cover):
     ob_start(); ?>
-    <div class="media-<?=$this->thumbnailSide ?> <?=$coversize ?>"><?=$cover ?></div>
+    <div class="media-<?=$this->record($this->driver)->getThumbnailAlignment() ?> <?=$this->record($this->driver)->getCoverSize($this->params) ?>">
+      <?=$cover ?>
+    </div>
     <? $thumbnail = ob_get_contents(); ?>
   <? ob_end_clean(); ?>
 <? endif; ?>
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
 <div class="media">
-  <? if ($thumbnail && $this->thumbnailSide == 'left'): ?>
+  <? if ($thumbnail && $this->record($this->driver)->getThumbnailAlignment() == 'left'): ?>
     <?=$thumbnail ?>
   <? endif ?>
   <div class="media-body">
@@ -184,7 +186,7 @@
       </div>
     </div>
   </div>
-  <? if ($thumbnail && $this->thumbnailSide == 'right'): ?>
+  <? if ($thumbnail && $this->record($this->driver)->getThumbnailAlignment() == 'right'): ?>
     <?=$thumbnail ?>
   <? endif ?>
 </div>

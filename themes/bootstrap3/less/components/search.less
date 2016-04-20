@@ -19,16 +19,19 @@
   }
   .media-left,
   .media-right {
-    text-align: center;
-    &.small {
+    a {
+      display: inline-block;
+      text-align: center;
+    }
+    &.small a {
       width: @thumbnail-width-small;
       img { max-width: @thumbnail-width-small; }
     }
-    &.medium {
+    &.medium a {
       width: @thumbnail-width-medium;
       img { max-width: @thumbnail-width-medium; }
     }
-    &.large {
+    &.large a {
       width: @thumbnail-width-large;
       img { max-width: @thumbnail-width-large; }
     }

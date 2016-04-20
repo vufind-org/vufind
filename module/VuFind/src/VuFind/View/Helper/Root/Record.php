@@ -464,6 +464,42 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Get the configured thumbnail size for record lists
+     *
+     * @return string
+     */
+    public function getCoverSize($params)
+    {
+        if (isset($this->config->Content->coversize) && $this->config->Content->coversize) {
+            $searchType = 'result-' . $params->getView();
+            if (isset($this->config->Content->coversize[$searchType])) {
+                return $this->config->Content->coversize[$searchType];
+            } else {
+                return $this->config->Content->coversize;
+            }
+        }
+        return 'medium';
+    }
+
+    /**
+     * Get the configured thumbnail alignment
+     *
+     * @return string
+     */
+    public function getThumbnailAlignment()
+    {
+        $view = $this->getView();
+        $left = !isset($this->config->Site->resultThumbnailsOnLeft)
+            ? false : $this->config->Site->resultThumbnailsOnLeft;
+        $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
+            ? true : $this->config->Site->mirrorThumbnailsRTL;
+        if ($view->layout()->rtl && !$mirror) {
+            $left = !$left;
+        }
+        return $left ? 'left' : 'right';
+    }
+
+    /**
      * Generate a qrcode URL (return false if unsupported).
      *
      * @param string $context Context of code being generated (core or results)

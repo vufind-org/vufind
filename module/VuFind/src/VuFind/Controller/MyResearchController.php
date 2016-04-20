@@ -693,24 +693,8 @@ class MyResearchController extends AbstractBase
             };
 
             $results = $runner->run($request, 'Favorites', $setupCallback);
-            // Get coversize setting
-            $config = $this->getServiceLocator()->get('VuFind\Config')
-                ->get('config');
-            $coversize = false;
-            if (isset($config->Content->coversize) && $config->Content->coversize) {
-                $searchType = 'result-' . $results->getParams()->getView();
-                if (isset($config->Content->coversize[$searchType])) {
-                    $coversize = $config->Content->coversize[$searchType];
-                } else {
-                    $coversize = $config->Content->coversize;
-                }
-            }
             return $this->createViewModel(
-                [
-                    'params' => $results->getParams(),
-                    'results' => $results,
-                    'coversize' => $coversize
-                ]
+                ['params' => $results->getParams(), 'results' => $results]
             );
         } catch (ListPermissionException $e) {
             if (!$this->getUser()) {
