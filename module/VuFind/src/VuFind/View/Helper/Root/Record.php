@@ -466,11 +466,16 @@ class Record extends AbstractHelper
     /**
      * Get the configured thumbnail size for record lists
      *
+     * @param \VuFind\Search\Base\Params $params Search parameters
+     *
      * @return string
      */
     public function getCoverSize($params)
     {
-        if (isset($this->config->Content->coversize) && $this->config->Content->coversize) {
+        if (
+            isset($this->config->Content->coversize)
+            && $this->config->Content->coversize
+        ) {
             $searchType = 'result-' . $params->getView();
             if (isset($this->config->Content->coversize[$searchType])) {
                 return $this->config->Content->coversize[$searchType];
