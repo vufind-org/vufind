@@ -202,7 +202,7 @@ finna.organisationInfo = (function() {
 
         holder.find('.week-navi-holder').toggle(html != null);
 
-        schedulesHolder.stop(true, false).fadeTo(200, 1); //show();
+        schedulesHolder.stop(true, false).fadeTo(200, 1);
 
         if (info = getField(response, 'description')) {
             if (!currentScheduleInfo || info != currentScheduleInfo) {
