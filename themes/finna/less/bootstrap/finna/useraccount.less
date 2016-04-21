@@ -355,11 +355,15 @@
          margin-bottom: 0px;   
     }
     & .list-title, .list-description, .resource-note, .add-new-list {
-             border: 1px solid transparent;
-             display: inline-block;
-             padding: 5px;
-             transition: all 0.2s linear;
-        &:hover {
+            border: 1px solid transparent;
+            display: inline-block;
+            padding: 5px;
+            transition: all 0.2s linear;
+            width: ~"-webkit-calc(100% - 30px)";
+            width: ~"-moz-calc(100% - 30px)";
+            width: ~"calc(100% - 30px)";
+            width: 100%;
+        &:hover, &:active, &:focus {
             border: 1px solid @gray-lighter; 
             & i {
                 transition: all 0.2s linear;
@@ -367,8 +371,32 @@
             }
         }
         & i {
-            color: @gray-light;   
+            color: @gray-light;
+            float: right;
         }
+        & span {
+
+            width: 100%;
+            display: inline-block;
+            word-wrap: break-word;
+            padding-right: 25px;
+            & input, textarea {
+                &:focus, &:active {
+                    border: none;
+                    box-shadow: none;
+                    outline: none;
+                }
+            }
+        }
+    }
+    & .list-title i.fa-pen {
+        margin-bottom: -22px; 
+    }
+    & .list-description i.fa-pen {
+        margin-bottom: -12px;   
+    }
+    & .resource-note i.fa-pen {
+        margin-bottom: -18px;   
     }
     & .list-title.no-edit {
         border: 0;
@@ -600,8 +628,20 @@
 }
 
 .main.template-dir-myresearch.template-name-mylist {
+    & .search-controls {
+        margin-top: 10px;
+        margin-bottom: 0px;
+    }
     & i.fa.fa-pen {
         margin-left: 10px;
+    }
+    & .bulk-action-buttons-col {
+        @media (min-width: @screen-sm-min) {
+            padding-right: 0;
+        }
+        &:not(.fixed) .mylist-functions {
+            text-align: right;   
+        }
     }
     & .mylist-nav .list-visibility {
         padding: 10px;
