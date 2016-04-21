@@ -88,6 +88,8 @@ class Database extends AbstractBase
 
         // Now do database-specific destruction:
         $this->getTable('Session')->destroySession($sess_id);
+
+        return true;
     }
 
     /**
@@ -101,5 +103,6 @@ class Database extends AbstractBase
     public function gc($sess_maxlifetime)
     {
         $this->getTable('Session')->garbageCollect($sess_maxlifetime);
+        return true;
     }
 }
