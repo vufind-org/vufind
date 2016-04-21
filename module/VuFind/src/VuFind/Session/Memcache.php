@@ -110,7 +110,7 @@ class Memcache extends AbstractBase
      *
      * @param string $sess_id The session ID to destroy
      *
-     * @return void
+     * @return bool
      */
     public function destroy($sess_id)
     {
@@ -119,5 +119,7 @@ class Memcache extends AbstractBase
 
         // Perform Memcache-specific cleanup:
         return $this->getConnection()->delete("vufind_sessions/{$sess_id}");
+
+        return true;
     }
 }
