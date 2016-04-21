@@ -244,19 +244,20 @@ class Ezb implements DriverInterface
         foreach ($results as $result) {
             $record = [];
             $titleXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
-                "Result[@state={$state}][".($i+1)."]/Title";
+                "Result[@state={$state}][" . ($i + 1) . "]/Title";
             $title = $xpath->query($titleXP, $result)->item(0);
             if (isset($title)) {
                 $record['title'] = strip_tags($title->nodeValue);
             }
 
             $additionalXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
-                "Result[@state={$state}][".($i+1)."]/Additionals/Additional";
+                "Result[@state={$state}][" . ($i + 1) . "]/Additionals/Additional";
             $additionalType = ['nali', 'intervall', 'moving_wall'];
             $additionals = [];
             foreach ($additionalType as $type) {
                 $additional = $xpath
-                    ->query($additionalXP . "[@type='".$type."']", $result)->item(0);
+                    ->query($additionalXP . "[@type='" . $type . "']", $result)
+                    ->item(0);
                 if (isset($additional->nodeValue)) {
                     $additionals[$type] = strip_tags($additional->nodeValue);
                 }
@@ -267,7 +268,7 @@ class Ezb implements DriverInterface
             $record['access'] = $state_access_mapping[$state];
 
             $urlXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
-                "Result[@state={$state}][".($i+1)."]/AccessURL";
+                "Result[@state={$state}][" . ($i + 1) . "]/AccessURL";
             $url = $xpath->query($urlXP, $result)->item(0);
             if (isset($url->nodeValue)) {
                 $record['href'] = $url->nodeValue;
@@ -325,13 +326,13 @@ class Ezb implements DriverInterface
             $record['title'] = $coverage;
 
             $resultXP = "/OpenURLResponseXML/Full/PrintData/ResultList/" .
-                "Result[@state={$state}][".($i+1)."]";
+                "Result[@state={$state}][" . ($i + 1) . "]";
             $resultElements = [
                 'Title', 'Location', 'Signature', 'Period', 'Holding_comment'
             ];
             $elements = [];
             foreach ($resultElements as $element) {
-                $elem = $xpath->query($resultXP . "/".$element, $result)->item(0);
+                $elem = $xpath->query($resultXP . "/" . $element, $result)->item(0);
                 if (isset($elem->nodeValue)) {
                     $elements[$element] = strip_tags($elem->nodeValue);
                 }
