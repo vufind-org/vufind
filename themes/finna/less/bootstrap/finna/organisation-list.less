@@ -1,0 +1,178 @@
+.organisation-info {
+    padding-bottom: 20px;
+    & .open {
+        color: green;
+    }
+    & .closed {
+        color: red;
+    }
+    & .row:not(.content) h2 {
+        @media (max-width: @screen-xs-max) {
+            max-width: 400px;
+            text-align: left;
+        }
+        text-align: center;
+    }
+    & h4 {
+        margin: 0;
+    } 
+    & .organisation {
+        margin-bottom: 5px;
+        max-width: ~"-webkit-calc(100% - 70px)";
+        max-width: ~"-moz-calc(100% - 70px)";
+        max-width: ~"calc(100% - 70px)";
+        font-weight: normal;
+    }
+    & .week-navi-holder {
+        max-width: 400px;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        & i {
+            font-size: 1.5em;
+            margin-left: 4px;
+            vertical-align: middle;
+            margin-top: -3px;
+            color: @link-color;
+            &:hover {
+                cursor: pointer;
+            }
+        }    
+    }
+    & .info {
+        & .is-open {
+            float: right;
+            margin-top: 8px;
+            margin-right: 3px;
+        }
+        & h4 {
+            margin-bottom: 5px;
+            @media (max-width: @screen-sm-max) {
+                max-width: 400px;
+            }
+        }
+        & .schedules {
+            & .no-schedules {
+                margin: 10px;
+                font-size: 1.1em;
+                font-weight: bold;
+            }
+        }
+        & .opening-times-week {
+            font-size: 1.1em;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+            & td {
+                padding: 2px 5px;
+                vertical-align: top;
+            }
+            & td:first-child {
+                padding-left: 5px;
+            }
+            & .day {
+            }
+            & .time {
+                float: right;
+            }
+            & ul {
+                margin: 0;
+            }
+            & .today {
+                background: whitesmoke;
+                font-weight: bold;
+            }
+            & .staff {
+                display: block;
+                color: @gray-light;
+            }
+        }
+    }
+    & .facility-image  {
+        @media(max-width: @screen-sm-max) {
+            float: left;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 150px;
+        }
+    }
+    & .map {
+        margin-top: 5px;
+    }
+    & .info-element {
+        @media (max-width: 375px) {
+            clear: both;   
+        }
+        @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+            clear: both; 
+        }
+    }
+    & .schedules-info {
+        margin-bottom: 10px;
+    }
+    & .btn {
+        background: @link-color;
+        border-radius: 0px;
+        margin-top: 5px;
+        margin-right: 2px;
+        color: @body-bg;
+        font-size: 1.8em;
+        font-weight: normal;
+        padding: 0px;
+        line-height: 35px;
+        height: 35px;
+        width: 35px;
+        @media(max-width: @screen-sm-max) {
+            clear:right;
+            margin-top: 0px;
+            margin-bottom: 5px;
+        }
+        &:hover {
+            background: darken(@link-color, 10%);
+        }
+        & i[class^='fa-'],[class*='fa-'] {
+            font-family: 'FontAwesome';
+            &.fa-print:before {
+                content: "\f02f";
+            }
+        }
+        &.btn-round {
+            border-radius: 50px;
+            background: @gray-mid-light;
+            &:hover {
+                background: @gray-mid-light;
+            }
+        }
+    }
+    & .address {
+        margin-top: 5px;
+        letter-spacing: .3px;
+        @media(max-width: 336px) {
+            clear: both;
+        }
+    }
+    & .services {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+    & .kirjastohakemisto-link {
+        margin-top: 10px;
+    }
+    & .tooltip {
+        max-height: 400px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 10px;
+        padding-top: 0;
+        & .tooltip-inner {
+            border: 1px solid #D5D5D5;
+            margin-top: 5px;
+            box-shadow: 0 5px 15px -6px #464646;
+        }
+        & .tooltip-arrow {
+            border-bottom-color: @link-color;   
+        }
+    }
+}

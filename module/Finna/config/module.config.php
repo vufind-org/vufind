@@ -176,6 +176,7 @@ $config = [
             'Finna\Feed' => 'Finna\Service\Factory::getFeed',
             'Finna\LocationService' => 'Finna\Service\Factory::getLocationService',
             'Finna\OnlinePayment' => 'Finna\Service\Factory::getOnlinePayment',
+            'Finna\OrganisationInfo' => 'Finna\Service\Factory::getOrganisationInfo',
             'VuFind\AutocompletePluginManager' => 'Finna\Service\Factory::getAutocompletePluginManager',
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
             'VuFind\CookieManager' => 'Finna\Service\Factory::getCookieManager',

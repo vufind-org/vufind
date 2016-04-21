@@ -140,6 +140,23 @@ class Factory extends \VuFind\Service\Factory
     }
 
     /**
+     * Construct the Organisation info Service.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\LocationService
+     */
+    public static function getOrganisationInfo(ServiceManager $sm)
+    {
+        return new \Finna\OrganisationInfo\OrganisationInfo(
+            $config = $sm->get('VuFind\Config')->get('organisationInfo'),
+            $sm->get('VuFind\CacheManager'),
+            $sm->get('VuFind\Http'),
+            $sm->get('viewmanager')->getRenderer()
+        );
+    }
+
+    /**
      * Construct the Location Service.
      *
      * @param ServiceManager $sm Service manager.
