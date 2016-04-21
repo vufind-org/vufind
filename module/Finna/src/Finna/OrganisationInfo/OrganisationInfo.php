@@ -485,7 +485,8 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
         }
 
         if (isset($response['extra']['description'])) {
-            $result['description'] = $response['extra']['description'];
+            $result['description']
+                = html_entity_decode($response['extra']['description']);
         }
 
         return $result;

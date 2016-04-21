@@ -210,7 +210,7 @@ finna.organisationInfo = (function() {
                 holder.find('.schedules-info .truncate-field, .more-link, .less-link').remove();
                 var infoHolder = holder.find('.schedules-info');
                 var truncateField = $('<div/>').addClass("truncate-field").attr('data-rows', 5).attr('data-row-height', 20);
-                $('<div/>').text(info).appendTo(truncateField);
+                $('<div/>').html(info).appendTo(truncateField);
                 infoHolder.show().append(truncateField);
             }
         } else {
