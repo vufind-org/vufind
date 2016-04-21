@@ -6,7 +6,7 @@
  * http://services.dnb.de/fize-service/gvr/full.xml
  *
  * API documentation is available at
- * http://www.zeitschriftendatenbank.de/services/schnittstellen/journals-online-print/
+ * http://www.zeitschriftendatenbank.de/services/schnittstellen/journals-online-print
  *
  * PHP version 5
  *
