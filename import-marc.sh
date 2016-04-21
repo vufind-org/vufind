@@ -69,7 +69,7 @@ fi
 ##################################################
 if [ -z "$VUFIND_HOME" ]
 then
-  VUFIND_HOME="/usr/local/vufind2"
+  VUFIND_HOME="/usr/local/vufind"
 fi
 
 

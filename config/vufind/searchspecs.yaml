@@ -158,6 +158,7 @@ Author:
     - author2
     - author2_fuller
     - author_additional
+    - author_corporate
     - author_variant
     - author2_variant
   QueryFields:
@@ -178,6 +179,10 @@ Author:
       - [and, 50]
       - [or, ~]
     author_additional:
+      - [onephrase, 100]
+      - [and, 50]
+      - [or, ~]
+    author_corporate:
       - [onephrase, 100]
       - [and, 50]
       - [or, ~]
@@ -502,20 +507,20 @@ CallNumber:
   CustomMunge:
     callnumber_exact:
       # Strip whitespace and quotes:
-      - [preg_replace, '/[ "]/', ""]
+      - [preg_replace, '/[ "]/', '']
       # Escape colons (unescape first to avoid double-escapes):
-      - [preg_replace, "/(\\\:)/", ':']
+      - [preg_replace, '/(\\:)/', ':']
       - [preg_replace, '/:/', '\:']
       # Strip pre-existing trailing asterisks:
-      - [preg_replace, "/\*+$/", ""]
+      - [preg_replace, '/\*+$/', '']
     callnumber_fuzzy:
       # Strip whitespace and quotes:
-      - [preg_replace, '/[ "]/', ""]
+      - [preg_replace, '/[ "]/', '']
       # Escape colons (unescape first to avoid double-escapes):
-      - [preg_replace, "/(\\\:)/", ':']
+      - [preg_replace, '/(\\:)/', ':']
       - [preg_replace, '/:/', '\:']
       # Strip pre-existing trailing asterisks, then add a new one:
-      - [preg_replace, "/\*+$/", ""]
+      - [preg_replace, '/\*+$/', '']
       - [append, "*"]
   QueryFields:
     callnumber-search:

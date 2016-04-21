@@ -117,7 +117,7 @@ class AuthorityRecommend implements RecommendInterface
                 if ($params[$i] == '__resultlimit__') {
                     $this->resultLimit = intval($params[$i + 1]);
                 } else {
-                    $this->filters[] = $params[$i] . ':(' . $params[$i + 1] . ')';
+                    $this->filters[] = $params[$i] . ':' . $params[$i + 1];
                 }
             }
         }
