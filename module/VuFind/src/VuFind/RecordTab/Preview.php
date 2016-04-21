@@ -93,4 +93,15 @@ class Preview extends AbstractBase
         // until there is content
         return false;
     }
+
+    /**
+     * Can this tab be loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function supportsAjax()
+    {
+        // No, Google script magic required
+        return false;
+    }
 }
