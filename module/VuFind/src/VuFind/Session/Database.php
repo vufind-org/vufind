@@ -79,7 +79,7 @@ class Database extends AbstractBase
      *
      * @param string $sess_id The session ID to destroy
      *
-     * @return void
+     * @return bool
      */
     public function destroy($sess_id)
     {
@@ -88,6 +88,8 @@ class Database extends AbstractBase
 
         // Now do database-specific destruction:
         $this->getTable('Session')->destroySession($sess_id);
+
+        return true;
     }
 
     /**
@@ -96,10 +98,11 @@ class Database extends AbstractBase
      *
      * @param int $sess_maxlifetime Maximum session lifetime.
      *
-     * @return void
+     * @return bool
      */
     public function gc($sess_maxlifetime)
     {
         $this->getTable('Session')->garbageCollect($sess_maxlifetime);
+        return true;
     }
 }
