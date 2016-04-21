@@ -151,6 +151,7 @@ class Factory extends \VuFind\Service\Factory
         return new \Finna\OrganisationInfo\OrganisationInfo(
             $config = $sm->get('VuFind\Config')->get('organisationInfo'),
             $sm->get('VuFind\CacheManager'),
+            $sm->get('VuFind\Http'),
             $sm->get('viewmanager')->getRenderer()
         );
     }

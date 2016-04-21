@@ -71,17 +71,26 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
     protected $viewRenderer;
 
     /**
+     * HTTP service
+     *
+     * @var VuFind\Http
+     */
+    protected $http;
+
+    /**
      * Constructor.
      *
      * @param Zend\Config\Config             $config       Configuration
      * @param VuFind\CacheManager            $cacheManager Cache manager
+     * @param VuFind\Http                    $http         HTTP service
      * @param Zend\View\Renderer\PhpRenderer $viewRenderer View renderer
      */
-    public function __construct($config, $cacheManager, $viewRenderer)
+    public function __construct($config, $cacheManager, $http, $viewRenderer)
     {
         $this->mainConfig = $config;
         $this->cacheManager = $cacheManager;
         $this->viewRenderer = $viewRenderer;
+        $this->http = $http;
     }
 
     /**
@@ -106,13 +115,16 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             );
         }
 
-        if (!isset($this->config['url'])) {
-            $this->logError("Missing url");
+        if (!$this->config['enabled']) {
+            $this->logError("Organisation info disabled (consortium: $consortium)");
             return false;
         }
 
-        if (!$this->config['enabled']) {
-            $this->logError("Organisation info disabled (consortium: $consortium)");
+        if (!isset($this->config['url'])) {
+            $this->logError(
+                "URL missing from organisation info configuration"
+                . "(consortium: $consortium)"
+            );
             return false;
         }
 
@@ -125,8 +137,18 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
         }
         $url = $this->config['url'];
 
-        $now = isset($params['periodStart'])
-            ? strtotime($params['periodStart']) : time();
+        $now = false;
+        if (isset($params['periodStart'])) {
+            $now = strtotime($params['periodStart']);
+            if ($now === false) {
+                $this->logError(
+                    'Error parsing periodStart: ' . $params['periodStart']
+                );
+            }
+        }
+        if ($now === false) {
+            $now = time();
+        }
 
         $weekDay = date('N', $now);
         $startDate = $weekDay == 1
@@ -249,9 +271,27 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             }
         }
         if (!$response) {
-            if ($response = @file_get_contents($url)) {
-                file_put_contents($localFile, $response);
+            $client = $this->http->createClient($url);
+            $result = $client->setMethod('GET')->send();
+            if ($result->isSuccess()) {
+                if ($result->getStatusCode() != 200) {
+                    $this->logError(
+                        'Error querying organisation info, response code '
+                        . $result->getStatusCode() . ", url: $url"
+                    );
+                    return false;
+                }
+            } else {
+                $this->logError(
+                    'Error querying organisation info: '
+                    . $result->getStatusCode() . ': ' . $result->getReasonPhrase()
+                    . ", url: $url"
+                );
+                return false;
             }
+
+            $response = $result->getBody();
+            file_put_contents($localFile, $response);
         }
         return $response;
     }
@@ -291,14 +331,14 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
 
             $fields = ['homepage', 'email'];
             foreach ($fields as $field) {
-                if (isset($item[$field])) {
+                if (!empty($item[$field])) {
                     $data[$field] = $item[$field];
                 }
             }
 
             $address = [];
             foreach (['street', 'zip', 'city'] as $addressField) {
-                if (isset($item['address'][$addressField])) {
+                if (!empty($item['address'][$addressField])) {
                     $address[$addressField] = $item['address'][$addressField];
                 }
             }
@@ -311,12 +351,14 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
                 if (!empty($mapConf['params'])) {
                     $replace = [];
                     foreach ($mapConf['params'] as $param) {
-                        if (isset($item['address'][$param])) {
+                        if (!empty($item['address'][$param])) {
                             $replace[$param] = $item['address'][$param];
                         }
                     }
                     foreach ($replace as $param => $val) {
-                        $mapUrl = str_replace('{' . $param . '}', $val, $mapUrl);
+                        $mapUrl = str_replace(
+                            '{' . $param . '}', rawurlencode($val), $mapUrl
+                        );
                     }
                 }
                 $data[$map] = $mapUrl;
@@ -356,7 +398,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
     protected function parseDetails($response)
     {
         $result = [];
-        if (isset($response['extra']['description'])) {
+        if (!empty($response['extra']['description'])) {
             $result['info'] = $response['extra']['description'];
         }
 
@@ -389,6 +431,11 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             $today = $now == $date;
 
             $dayTime = strtotime($day['date']);
+            if ($dayTime === false) {
+                $this->logError("Error parsing date: " . $day['date']);
+                continue;
+            }
+
             $weekDay = date('N', $dayTime);
             $weekDayName = $dayNames[($day['day']) - 1];
 
@@ -396,7 +443,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             $now = time();
 
             // Self service times
-            if (isset($day['sections']['selfservice']['times'])) {
+            if (!empty($day['sections']['selfservice']['times'])) {
                 foreach ($day['sections']['selfservice']['times'] as $time) {
                     $result = $this->extractDayTime($now, $time, $today, true);
                     if (!empty($result['openNow'])) {
@@ -438,7 +485,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
         }
         $result['currentWeek'] = $currentWeek;
 
-        if (isset($response['phone_numbers'])) {
+        if (!empty($response['phone_numbers'])) {
             $phones = [];
             foreach ($response['phone_numbers'] as $phone) {
                 $phones[]
@@ -449,7 +496,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             );
         }
 
-        if (isset($response['pictures'])) {
+        if (!empty($response['pictures'])) {
             $pics = [];
             foreach ($response['pictures'] as $pic) {
                 $picResult = ['url' => $pic['files']['medium']];
@@ -460,7 +507,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             }
         }
 
-        if (isset($response['links'])) {
+        if (!empty($response['links'])) {
             $links = [];
             foreach ($response['links'] as $link) {
                 if ($link['name'] != 'Facebook') {
@@ -471,8 +518,8 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             $result['links'] = $links;
         }
 
-        if (isset($response['services'])) {
-            $servicesMap = ['55290' => 'wifi'];
+        if (!empty($response['services']) && !empty($this->config['services'])) {
+            $servicesMap = $this->config['services'];
             $services = [];
             foreach ($response['services'] as $service) {
                 if (in_array($service['id'], array_keys($servicesMap))) {
@@ -484,7 +531,7 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             }
         }
 
-        if (isset($response['extra']['description'])) {
+        if (!empty($response['extra']['description'])) {
             $result['description']
                 = html_entity_decode($response['extra']['description']);
         }

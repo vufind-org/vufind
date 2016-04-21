@@ -10,8 +10,14 @@ cachetime = 10
 
 url = "https://api.kirjastot.fi/v3"
 
-routeUrl = "http://www.matka.fi/fi/?keya=&keyb={street}, {city}"
-mapUrl = "http://maps.google.com/?q={street} {city}"
+routeUrl = "http://www.matka.fi/fi/?keya=&keyb={street},%20{city}"
+mapUrl = "http://maps.google.com/?q={street}%20{city}"
+
+services[55290] = "wifi"
+services[55318] = "wifi"
+services[55342] = "print"
+services[55266] = "print"
+services[55322] = "print"
 
 [vaski]
 consortium = 2115

@@ -1,8 +1,8 @@
 <ul>
 <? foreach ($this->phones as $phone): ?>
-<? if (isset($phone['name'])): ?>
-<dt><?=$this->escapeHtml($phone['name'])?></dt>
-<? endif ?>
-<dl><a href="tel:<?=$this->escapeHtmlAttr($phone['number'])?>"><?=$this->escapeHtml($phone['number'])?></a></dl>
+  <? if (isset($phone['name'])): ?>
+  <dt><?=$this->escapeHtml($phone['name'])?></dt>
+  <? endif ?>
+  <dl><a href="tel:<?=$this->escapeHtmlAttr($phone['number'])?>"><?=$this->escapeHtml($phone['number'])?></a></dl>
 <? endforeach ?>
 </li>
