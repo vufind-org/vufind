@@ -1142,7 +1142,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             }
         }
 
-        if (isset($info->addresses)) {
+        if (isset($info->addresses->address)) {
             $addresses = $this->objectToArray($info->addresses->address);
             foreach ($addresses as $address) {
                 if ($address->isActive == 'yes') {
@@ -1158,8 +1158,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             }
         }
 
-        if (isset($info->phoneNumbers)) {
-            $phoneNumbers =  $this->objectToArray($info->phoneNumbers->phoneNumber);
+        if (isset($info->phoneNumbers->phoneNumber)) {
+            $phoneNumbers = $this->objectToArray($info->phoneNumbers->phoneNumber);
             foreach ($phoneNumbers as $phoneNumber) {
                 if ($phoneNumber->sms->useForSms == 'yes') {
                     $userCached['phone'] = isset($phoneNumber->areaCode)
