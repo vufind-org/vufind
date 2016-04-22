@@ -3,7 +3,20 @@ Version: 2.5.3
 Section: World Wide Web
 Priority: Optional
 Architecture: all
-Depends: default-jdk, apache2, php5, php5-dev, php-pear, php5-intl, php5-json, php5-ldap, php5-mcrypt, php5-mysql, php5-xsl, php5-gd, mysql-server
+Depends: apache2,
+         default-jdk,
+         libapache2-mod-php5 | libapache2-mod-php,
+         mysql-server | virtual-mysql-server-core,
+         php-pear,
+         php5 | php,
+         php5-dev | php-dev,
+         php5-gd | php-gd,
+         php5-intl | php-intl,
+         php5-json | php-json,
+         php5-ldap | php-ldap,
+         php5-mcrypt | php-mcrypt,
+         php5-mysql | php-mysql,
+         php5-xsl | php-xml
 Maintainer: VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>
 Homepage: http://vufind.org/
 Description: A library resource discovery portal
