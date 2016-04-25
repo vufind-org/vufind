@@ -79,4 +79,30 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
             $this->findCss($page, '.location')->getText()
         );
     }
+
+    /**
+     * Test language switching by checking a link in the footer
+     *
+     * @return void
+     */
+    public function testLanguage()
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        // Check footer help-link
+        $this->assertEquals(
+            'Search Tips',
+            $this->findCss($page, 'footer .help-link')->getHTML()
+        );
+        // Change the language:
+        $this->findCss($page, '.language.dropdown')->click();
+        $this->findCss($page, '.language.dropdown li:not(.active) a')->click();
+        $this->snooze();
+        // Check footer help-link
+        $this->assertNotEquals(
+            'Search Tips',
+            $this->findCss($page, 'footer .help-link')->getHTML()
+        );
+    }
 }

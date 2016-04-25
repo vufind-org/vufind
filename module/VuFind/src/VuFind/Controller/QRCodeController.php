@@ -75,7 +75,7 @@ class QRCodeController extends AbstractBase
      */
     public function showAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
 
         $this->getLoader()->loadQRCode(
             $this->params()->fromQuery('text'),
@@ -95,7 +95,7 @@ class QRCodeController extends AbstractBase
      */
     public function unavailableAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $this->getLoader()->loadUnavailable();
         return $this->displayQRCode();
     }
@@ -117,4 +117,3 @@ class QRCodeController extends AbstractBase
         return $response;
     }
 }
-

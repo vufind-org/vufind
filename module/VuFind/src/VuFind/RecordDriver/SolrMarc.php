@@ -185,21 +185,6 @@ class SolrMarc extends SolrDefault
     }
 
     /**
-     * Get the main corporate author (if any) for the record.
-     *
-     * @return string
-     */
-    public function getCorporateAuthor()
-    {
-        // Try 110 first -- if none found, try 710 next.
-        $main = $this->getFirstFieldValue('110', ['a', 'b']);
-        if (!empty($main)) {
-            return $main;
-        }
-        return $this->getFirstFieldValue('710', ['a', 'b']);
-    }
-
-    /**
      * Return an array of all values extracted from the specified field/subfield
      * combination.  If multiple subfields are specified and $concat is true, they
      * will be concatenated together in the order listed -- each entry in the array
@@ -1087,7 +1072,9 @@ class SolrMarc extends SolrDefault
      */
     public function supportsAjaxStatus()
     {
-        return true;
+        // as AJAX status lookups are done via the ILS AJAX status lookup support is
+        // only given if the ILS is available for this record
+        return $this->hasILS();
     }
 
     /**

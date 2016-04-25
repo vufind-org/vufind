@@ -50,7 +50,7 @@ function updateTechInfo(record) {
     if(typeof d.data.type !== "undefined") {
       $('#download-button .details').html(d.data.type+' ~ '+d.data.size);
     }
-    $('#file-download').attr('action', VuFind.getPath()+'/files/'+record.id+'/'+downloadSrc+'?download=true');
+    $('#file-download').attr('action', VuFind.path+'/files/'+record.id+'/'+downloadSrc+'?download=true');
   })
   .fail(function(response, textStatus) {
     console.log(response, textStatus);
@@ -105,7 +105,7 @@ function ajaxLoadPages(min, max) {
       response.data.start++;
     }
     findVisible();
-  }
+  })
   .fail(function(response, textStatus) {
     console.log(response, textStatus);
   });

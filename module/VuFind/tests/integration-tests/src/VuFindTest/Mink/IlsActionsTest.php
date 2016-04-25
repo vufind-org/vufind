@@ -76,8 +76,38 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
                 'driver' => 'Demo',
                 'holds_mode' => 'driver',
                 'title_level_holds_mode' => 'driver',
+                'renewals_enabled' => true,
             ]
         ];
+    }
+
+    /**
+     * Get transaction JSON for Demo.ini.
+     *
+     * @param string $bibId Bibliographic record ID to create fake item info for.
+     *
+     * @return array
+     */
+    protected function getFakeTransactions($bibId)
+    {
+        $rawDueDate = strtotime("now +5 days");
+        return json_encode(
+            [
+                [
+                    'duedate' => $rawDueDate,
+                    'rawduedate' => $rawDueDate,
+                    'dueStatus' => 'due',
+                    'barcode' => 1234567890,
+                    'renew'   => 0,
+                    'renewLimit' => 1,
+                    'request' => 0,
+                    'id' => $bibId,
+                    'source' => 'Solr',
+                    'item_id' => 0,
+                    'renewable' => true,
+                ]
+            ]
+        );
     }
 
     /**
@@ -90,12 +120,16 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     public function getDemoIniOverrides($bibId = 'testsample1')
     {
         return [
+            'Records' => [
+                'transactions' => $this->getFakeTransactions($bibId),
+            ],
             'Failure_Probabilities' => [
                 'cancelHolds' => 0,
                 'cancelILLRequests' => 0,
                 'cancelStorageRetrievalRequests' => 0,
                 'checkILLRequestBlock' => 0,
                 'checkILLRequestIsValid' => 0,
+                'checkRenewBlock' => 0,
                 'checkRequestBlock' => 0,
                 'checkRequestIsValid' => 0,
                 'checkStorageRetrievalRequestBlock' => 0,
@@ -105,6 +139,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
                 'placeHold' => 0,
                 'placeILLRequest' => 0,
                 'placeStorageRetrievalRequest' => 0,
+                'renewMyItems' => 0,
             ],
             'Holdings' => [$bibId => json_encode([$this->getFakeItem()])],
             'Users' => ['catuser' => 'catpass'],
@@ -339,7 +374,6 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
-        
 
         // Place the hold:
         $this->placeHoldAndGoToHoldsScreen($page);
@@ -487,12 +521,110 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test renewal action.
+     *
+     * @return void
+     */
+    public function testRenewal()
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Go to user profile screen:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/CheckedOut');
+        $page = $session->getPage();
+
+        // Log in
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+
+        // Test submitting with no selected checkboxes:
+        $this->findCss($page, '#renewSelected')->click();
+        $this->snooze();
+        $this->assertEquals(
+            'No items were selected',
+            $this->findCss($page, '.alert.alert-danger')->getText()
+        );
+
+        // Test "renew all":
+        $this->findCss($page, '#renewAll')->click();
+        $this->snooze();
+        $this->assertEquals(
+            'Renewal Successful',
+            $this->findCss($page, '.alert.alert-success')->getText()
+        );
+    }
+
+    /**
+     * Test create account path when in holds_mode = "all"
+     *
+     * IMPORTANT: this test uses an ID with a slash in it; if it fails, ensure
+     * that Apache is configured with "AllowEncodedSlashes on" inside the
+     * VirtualHost used for your VuFind test instance!
+     *
+     * @return void
+     */
+    public function testHoldsAll()
+    {
+        $config = $this->getConfigIniOverrides();
+        $config['Catalog']['holds_mode'] = 'all';
+        $config['Catalog']['title_level_holds_mode'] = 'always';
+        $this->changeConfigs(
+            [
+                'config' => $config,
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+        $page = $this->gotoRecordById('dollar$ign/slashcombo');
+        // No login at top
+        $this->assertNull($page->find('css', '.alert.alert-info a'));
+        // Hold links should be visible
+        $element = $this->findCss($page, 'a.placehold');
+        $element->click();
+        $this->snooze();
+        // Since we're not logged in...
+        $this->findCss($page, '.createAccountLink')->click();
+        $this->snooze();
+        $this->fillInAccountForm(
+            $page, ['username' => 'username2', 'email' => 'u2@vufind.org']
+        );
+        $this->findCss($page, 'input.btn.btn-primary')->click();
+        $this->snooze();
+
+        // Test valid patron login
+        $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
+
+        // Go directly to holds screen
+        // Set pickup location to a non-default value so we can confirm that
+        // the element is being passed through correctly, then submit form:
+        $this->findCss($page, '#pickUpLocation')->setValue('B');
+        $this->findCss($page, '.modal-body .btn.btn-primary')->click();
+        $this->snooze();
+
+        // If successful, we should now have a link to review the hold:
+        $link = $this->findCss($page, '.modal-body a');
+        $this->assertEquals('Your Holds and Recalls', $link->getText());
+        $link->click();
+        $this->snooze();
+
+        // Make sure we arrived where we expected to:
+        $this->assertEquals(
+            'Your Holds and Recalls', $this->findCss($page, 'h2')->getText()
+        );
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
      */
     public static function tearDownAfterClass()
     {
-        static::removeUsers(['username1']);
+        static::removeUsers(['username1', 'username2']);
     }
 }

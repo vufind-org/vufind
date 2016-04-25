@@ -24,8 +24,8 @@
                   <? $formats = $data->getFormats(); ?>
                   <i class="fa fa-x<? if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><? endif; ?>"></i>
                   <b><?=$this->escapeHtml($data->getTitle())?></b>
-                  <? $author = $data->getPrimaryAuthor(); if (!empty($author)): ?>
-                    <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($author);?>
+                  <? $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
+                    <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><? if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
                   <? endif; ?>
                   <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
                     <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
@@ -57,7 +57,9 @@
 <? endif; ?>
 <?
   $script = <<<JS
+var normalizeHeightCount = $('#similar-items-carousel img').length;
 function normalizeHeights() {
+  if(--normalizeHeightCount > 0) return;
   var tallest = 0;
   var items = $('#similar-items-carousel .hover-overlay');
   items.each(function() { //add heights to array
@@ -65,7 +67,7 @@ function normalizeHeights() {
       tallest = $(this).height();
     }
   });
-  items.css('min-height',tallest + 'px');
+  items.css('min-height', (tallest+25) + 'px');
 }
 $('#similar-items-carousel img').load(normalizeHeights);
 JS;

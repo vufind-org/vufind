@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2007.
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,8 +31,7 @@
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    Zend\Session\Container as SessionContainer;
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * Voyager Restful ILS Driver
@@ -126,13 +125,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @var string
      */
     protected $titleHoldsMode;
-
-    /**
-     * Container for storing cached ILS data.
-     *
-     * @var SessionContainer
-     */
-    protected $session;
 
     /**
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
@@ -306,9 +298,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $this->allowCancelingAvailableRequests
             = isset($this->config['Holds']['allowCancelingAvailableRequests'])
             ? $this->config['Holds']['allowCancelingAvailableRequests'] : true;
-
-        // Establish a namespace in the session for persisting cached data
-        $this->session = new SessionContainer('VoyagerRestful_' . $this->dbName);
     }
 
     /**
@@ -334,45 +323,19 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
-     * Helper function for fetching cached data.
-     * Data is cached for up to 30 seconds so that it would be faster to process
-     * e.g. requests where multiple calls to the backend are made.
+     * Add instance-specific context to a cache key suffix (to ensure that
+     * multiple drivers don't accidentally share values in the cache.
      *
-     * @param string $id Cache entry id
+     * @param string $key Cache key suffix
      *
-     * @return mixed|null Cached entry or null if not cached or expired
+     * @return string
      */
-    protected function getCachedData($id)
+    protected function formatCacheKey($key)
     {
-        if (isset($this->session->cache[$id])) {
-            $item = $this->session->cache[$id];
-            if (time() - $item['time'] < 30) {
-                return $item['entry'];
-            }
-            unset($this->session->cache[$id]);
-        }
-        return null;
-    }
-
-    /**
-     * Helper function for storing cached data.
-     * Data is cached for up to 30 seconds so that it would be faster to process
-     * e.g. requests where multiple calls to the backend are made.
-     *
-     * @param string $id    Cache entry id
-     * @param mixed  $entry Entry to be cached
-     *
-     * @return void
-     */
-    protected function putCachedData($id, $entry)
-    {
-        if (!isset($this->session->cache)) {
-            $this->session->cache = [];
-        }
-        $this->session->cache[$id] = [
-            'time' => time(),
-            'entry' => $entry
-        ];
+        // Override the base class formatting with Voyager-specific details
+        // to ensure proper caching in a MultiBackend environment.
+        return 'VoyagerRestful-'
+            . md5("{$this->ws_host}|{$this->ws_dbKey}|$key");
     }
 
     /**
@@ -655,10 +618,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        if (!isset($this->config['StorageRetrievalRequests'])) {
-            return false;
-        }
-        if ($this->checkAccountBlocks($patron['id'])) {
+        if (!isset($this->config['StorageRetrievalRequests'])
+            || $this->checkAccountBlocks($patron['id'])
+        ) {
             return false;
         }
 
@@ -666,13 +628,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $itemID = ($level != 'title' && isset($data['item_id']))
             ? $data['item_id']
             : false;
-        $result = $this->checkItemRequests(
-            $patron['id'], 'callslip', $id, $itemID
-        );
-        if (!$result || $result == 'block') {
-            return $result;
-        }
-        return true;
+        return $this->checkItemRequests($patron['id'], 'callslip', $id, $itemID);
     }
 
     /**
@@ -1213,6 +1169,28 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
+     * Given the appropriate portion of the blocks API response, extract a list
+     * of block reasons that VuFind is not configured to ignore.
+     *
+     * @param \SimpleXMLElement $borrowBlocks borrowingBlock section of XML response
+     *
+     * @return array
+     */
+    protected function extractBlockReasons($borrowBlocks)
+    {
+        $whitelistConfig = isset($this->config['Patron']['ignoredBlockCodes'])
+            ? $this->config['Patron']['ignoredBlockCodes'] : '';
+        $whitelist = array_map('trim', explode(',', $whitelistConfig));
+        $blockReason = [];
+        foreach ($borrowBlocks as $borrowBlock) {
+            if (!in_array((string)$borrowBlock->blockCode, $whitelist)) {
+                $blockReason[] = (string)$borrowBlock->blockReason;
+            }
+        }
+        return $blockReason;
+    }
+
+    /**
      * Check Account Blocks
      *
      * Checks if a user has any blocks against their account which may prevent them
@@ -1225,7 +1203,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function checkAccountBlocks($patronId)
     {
-        $cacheId = "blocks_$patronId";
+        $cacheId = "blocks|$patronId";
         $blockReason = $this->getCachedData($cacheId);
         if (null === $blockReason) {
             // Build Hierarchy
@@ -1240,21 +1218,16 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 "view" => "full"
             ];
 
-            $blockReason = [];
-
             $blocks = $this->makeRequest($hierarchy, $params);
-            if ($blocks) {
-                $node = "reply-text";
-                $reply = (string)$blocks->$node;
-
-                // Valid Response
-                if ($reply == "ok" && isset($blocks->blocks)) {
-                    foreach ($blocks->blocks->institution->borrowingBlock
-                        as $borrowBlock
-                    ) {
-                        $blockReason[] = (string)$borrowBlock->blockReason;
-                    }
-                }
+            if ($blocks
+                && (string)$blocks->{'reply-text'} == "ok"
+                && isset($blocks->blocks->institution->borrowingBlock)
+            ) {
+                $blockReason = $this->extractBlockReasons(
+                    $blocks->blocks->institution->borrowingBlock
+                );
+            } else {
+                $blockReason = [];
             }
             $this->putCachedData($cacheId, $blockReason);
         }
@@ -1837,6 +1810,108 @@ EOT;
     }
 
     /**
+     * Protected support method for getMyHolds.
+     *
+     * Fetch both local and remote holds. Remote hold data will be augmented using
+     * the API.
+     *
+     * @param array $patron Patron data for use in an sql query
+     *
+     * @return array Keyed data for use in an sql query
+     */
+    protected function getMyHoldsSQL($patron)
+    {
+        // Most of our SQL settings will be identical to the parent class....
+        $sqlArray = parent::getMyHoldsSQL($patron);
+
+        // Add remote holds; MFHD_ITEM and BIB_TEXT entries will be bogus for these,
+        // but we'll deal with them later in getMyHolds()
+        $sqlArray['expressions'][]
+            = "NVL(VOYAGER_DATABASES.DB_CODE, 'LOCAL') as DB_CODE";
+
+        // We need to significantly change the where clauses to account for remote
+        // holds
+        $sqlArray['where'] = [
+            "HOLD_RECALL.PATRON_ID = :id",
+            "HOLD_RECALL.HOLD_RECALL_ID = HOLD_RECALL_ITEMS.HOLD_RECALL_ID(+)",
+            "HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
+            "(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR " .
+            "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
+            "HOLD_RECALL.BIB_ID = BIB_TEXT.BIB_ID(+)",
+            "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)",
+            "HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)"
+        ];
+
+        return $sqlArray;
+    }
+
+    /**
+     * Protected support method for getMyHolds.
+     *
+     * @param array $sqlRow An array of keyed data
+     *
+     * @throws DateException
+     * @return array Keyed data for display by template files
+     */
+    protected function processMyHoldsData($sqlRow)
+    {
+        $result = parent::processMyHoldsData($sqlRow);
+        $result['db_code'] = $sqlRow['DB_CODE'];
+        return $result;
+    }
+
+    /**
+     * Get Patron Holds
+     *
+     * This is responsible for retrieving all holds by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's holds on success.
+     */
+    public function getMyHolds($patron)
+    {
+        $holds = parent::getMyHolds($patron);
+        // Check if we have remote holds and augment if necessary
+        $augment = false;
+        foreach ($holds as $hold) {
+            if ($hold['db_code'] != 'LOCAL') {
+                $augment = true;
+                break;
+            }
+        }
+        if ($augment) {
+            // Fetch hold information via the API so that we can include correct
+            // title etc. for remote holds.
+            $copyFields = [
+                'id', 'item_id', 'volume', 'publication_year', 'title',
+                'institution_id', 'institution_name',
+                'institution_dbkey', 'in_transit'
+            ];
+            $apiHolds = $this->getHoldsFromApi($patron, true);
+            foreach ($apiHolds as $apiHold) {
+                // Find the hold and add information to it
+                foreach ($holds as &$hold) {
+                    if ($hold['reqnum'] == $apiHold['reqnum']) {
+                        // Ignore local holds
+                        if ($hold['db_code'] == 'LOCAL') {
+                            continue 2;
+                        }
+                        foreach ($copyFields as $field) {
+                            $hold[$field] = isset($apiHold[$field])
+                                ? $apiHold[$field] : '';
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return $holds;
+    }
+
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -1859,7 +1934,7 @@ EOT;
         $pickUpLocation = !empty($holdDetails['pickUpLocation'])
             ? $holdDetails['pickUpLocation'] : $this->defaultPickUpLocation;
         $itemId = isset($holdDetails['item_id']) ? $holdDetails['item_id'] : false;
-        $comment = $holdDetails['comment'];
+        $comment = isset($holdDetails['comment']) ? $holdDetails['comment'] : '';
         $bibId = $holdDetails['id'];
 
         // Request was initiated before patron was logged in -
@@ -2185,17 +2260,19 @@ EOT;
     }
 
     /**
-     * Get Patron Remote Holds
+     * Get patron's local or remote holds from the API
      *
-     * This is responsible for retrieving all remote holds by a specific patron.
+     * This is responsible for retrieving all local or remote holds by a specific
+     * patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param bool  $local  Whether to fetch local holds instead of remote holds
      *
      * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    protected function getRemoteHolds($patron)
+    protected function getHoldsFromApi($patron, $local)
     {
         // Build Hierarchy
         $hierarchy = [
@@ -2223,8 +2300,11 @@ EOT;
         $holds = [];
         if (isset($results->holds->institution)) {
             foreach ($results->holds->institution as $institution) {
-                // Only take remote holds
-                if ($this->isLocalInst($institution)) {
+                // Filter by the $local parameter
+                $isLocal = $this->isLocalInst(
+                    (string)$institution->attributes()->id
+                );
+                if ($local != $isLocal) {
                     continue;
                 }
 
@@ -2557,8 +2637,8 @@ EOT;
      */
     protected function getUBRequestDetails($id, $patron)
     {
-        $requestId = "ub_{$id}_" . $patron['id'];
-        $data = $this->getCachedData($requestId);
+        $cacheId = "ub|$id|{$patron['id']}";
+        $data = $this->getCachedData($cacheId);
         if (!empty($data)) {
             return $data;
         }
@@ -2567,13 +2647,13 @@ EOT;
             $this->debug(
                 "getUBRequestDetails: no prefix in patron id '{$patron['id']}'"
             );
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
         list($source, $patronId) = explode('.', $patron['id'], 2);
         if (!isset($this->config['ILLRequestSources'][$source])) {
             $this->debug("getUBRequestDetails: source '$source' unknown");
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
 
@@ -2615,11 +2695,7 @@ EOT;
         );
 
         if ($response === false) {
-            $this->session->UBDetails[$requestId] = [
-                'time' => time(),
-                'data' => false
-            ];
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
         // Process
@@ -2631,7 +2707,7 @@ EOT;
         );
         foreach ($response->xpath('//ser:message') as $message) {
             // Any message means a problem, right?
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
         $requestCount = count(
@@ -2639,7 +2715,7 @@ EOT;
         );
         if ($requestCount == 0) {
             // UB request not available
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
 
@@ -2676,7 +2752,7 @@ EOT;
         );
 
         if ($response === false) {
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
         // Process
@@ -2688,7 +2764,7 @@ EOT;
         );
         foreach ($response->xpath('//ser:message') as $message) {
             // Any message means a problem, right?
-            $this->putCachedData($requestId, false);
+            $this->putCachedData($cacheId, false);
             return false;
         }
         $items = [];
@@ -2737,7 +2813,7 @@ EOT;
             'locations' => $locations,
             'requiredBy' => $requiredByDate
         ];
-        $this->putCachedData($requestId, $results);
+        $this->putCachedData($cacheId, $results);
         return $results;
     }
 
@@ -3053,7 +3129,7 @@ EOT;
     public function getMyILLRequests($patron)
     {
         return array_merge(
-            $this->getRemoteHolds($patron),
+            $this->getHoldsFromApi($patron, false),
             $this->getRemoteCallSlips($patron)
         );
     }

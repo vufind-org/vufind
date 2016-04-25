@@ -67,4 +67,3 @@ class AdminController extends AbstractAdmin
         return $view;
     }
 }
-

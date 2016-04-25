@@ -27,7 +27,8 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\ILS\Connection as ILSConnection;
+use VuFind\ILS\Connection as ILSConnection,
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * Hold Logic Class
@@ -179,12 +180,18 @@ class Holds
             // Retrieve stored patron credentials; it is the responsibility of the
             // controller and view to inform the user that these credentials are
             // needed for hold data.
-            $patron = $this->ilsAuth->storedCatalogLogin();
+            try {
+                $patron = $this->ilsAuth->storedCatalogLogin();
 
-            // Does this ILS Driver handle consortial holdings?
-            $config = $this->catalog->checkFunction(
-                'Holds', compact('id', 'patron')
-            );
+                // Does this ILS Driver handle consortial holdings?
+                $config = $this->catalog->checkFunction(
+                    'Holds', compact('id', 'patron')
+                );
+            } catch (ILSException $e) {
+                $patron = false;
+                $config = [];
+            }
+
             if (isset($config['consortium']) && $config['consortium'] == true) {
                 $result = $this->catalog->getConsortialHoldings(
                     $id, $patron ? $patron : null, $ids

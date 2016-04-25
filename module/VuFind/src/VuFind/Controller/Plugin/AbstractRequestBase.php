@@ -26,8 +26,9 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\ILS\Connection;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
+use VuFind\Crypt\HMAC, VuFind\ILS\Connection;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container,
+    Zend\Session\SessionManager;
 
 /**
  * Zend action helper base class to perform request-related actions
@@ -48,20 +49,29 @@ abstract class AbstractRequestBase extends AbstractPlugin
     protected $session;
 
     /**
+     * Session manager
+     *
+     * @var SessionManager
+     */
+    protected $sessionManager;
+
+    /**
      * HMAC generator
      *
-     * @var \VuFind\Crypt\HMAC
+     * @var HMAC
      */
     protected $hmac;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Crypt\HMAC $hmac HMAC generator
+     * @param HMAC           $hmac           HMAC generator
+     * @param SessionManager $sessionManager Session manager
      */
-    public function __construct(\VuFind\Crypt\HMAC $hmac)
+    public function __construct(HMAC $hmac, SessionManager $sessionManager)
     {
         $this->hmac = $hmac;
+        $this->sessionManager = $sessionManager;
     }
 
     /**
@@ -73,7 +83,9 @@ abstract class AbstractRequestBase extends AbstractPlugin
     protected function getSession()
     {
         if (!isset($this->session)) {
-            $this->session = new Container(get_class($this) . '_Helper');
+            $this->session = new Container(
+                get_class($this) . '_Helper', $this->sessionManager
+            );
         }
         return $this->session;
     }

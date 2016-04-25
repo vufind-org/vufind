@@ -75,11 +75,14 @@ class ChoiceAuth extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param \Zend\Session\Container $container Session container for retaining
+     * user choices.
      */
-    public function __construct()
+    public function __construct(\Zend\Session\Container $container)
     {
         // Set up session container and load cached strategy (if found):
-        $this->session = new \Zend\Session\Container('ChoiceAuth');
+        $this->session = $container;
         $this->strategy = isset($this->session->auth_method)
             ? $this->session->auth_method : false;
     }
@@ -118,6 +121,21 @@ class ChoiceAuth extends AbstractBase
         $this->strategies = array_map(
             'trim', explode(',', $this->getConfig()->ChoiceAuth->choice_order)
         );
+    }
+
+    /**
+     * Inspect the user's request prior to processing a login request; this is
+     * essentially an event hook which most auth modules can ignore. See
+     * ChoiceAuth for a use case example.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @throws AuthException
+     * @return void
+     */
+    public function preLoginCheck($request)
+    {
+        $this->setStrategyFromRequest($request);
     }
 
     /**

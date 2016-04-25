@@ -38,7 +38,7 @@ CREATE TABLE `comments` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `resource_id` int(11) NOT NULL DEFAULT '0',
   `comment` text NOT NULL,
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `resource_id` (`resource_id`),
@@ -56,7 +56,7 @@ CREATE TABLE `comments` (
 CREATE TABLE `oai_resumption` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `params` text,
-  `expires` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `expires` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -69,9 +69,9 @@ CREATE TABLE `oai_resumption` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `resource` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `record_id` varchar(120) NOT NULL DEFAULT '',
-  `title` varchar(200) NOT NULL DEFAULT '',
-  `author` varchar(200) DEFAULT NULL,
+  `record_id` varchar(255) NOT NULL DEFAULT '',
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `author` varchar(255) DEFAULT NULL,
   `year` mediumint(6) DEFAULT NULL,
   `source` varchar(50) NOT NULL DEFAULT 'Solr',
   PRIMARY KEY (`id`),
@@ -115,10 +115,11 @@ CREATE TABLE `search` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `session_id` varchar(128) DEFAULT NULL,
   `folder_id` int(11) DEFAULT NULL,
-  `created` date NOT NULL DEFAULT '0000-00-00',
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `title` varchar(20) DEFAULT NULL,
   `saved` int(1) NOT NULL DEFAULT '0',
   `search_object` blob,
+  `checksum` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `folder_id` (`folder_id`),
@@ -137,7 +138,7 @@ CREATE TABLE `session` (
   `session_id` varchar(128) DEFAULT NULL,
   `data` text,
   `last_used` int(12) NOT NULL DEFAULT '0',
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
   UNIQUE KEY `session_id` (`session_id`),
   KEY `last_used` (`last_used`)
@@ -177,7 +178,7 @@ CREATE TABLE `user` (
   `college` varchar(100) NOT NULL DEFAULT '',
   `major` varchar(100) NOT NULL DEFAULT '',
   `home_library` varchar(100) NOT NULL DEFAULT '',
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `verify_hash` varchar(42) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
@@ -195,7 +196,7 @@ CREATE TABLE `user_list` (
   `user_id` int(11) NOT NULL,
   `title` varchar(200) NOT NULL,
   `description` text,
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `public` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
@@ -273,7 +274,7 @@ CREATE TABLE `user_card` (
   `cat_password` varchar(50) DEFAULT NULL,
   `cat_pass_enc` varchar(110) DEFAULT NULL,
   `home_library` varchar(100) NOT NULL DEFAULT '',
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `saved` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
@@ -300,11 +301,11 @@ CREATE TABLE `user_card` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `record` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `record_id` varchar(120) DEFAULT NULL,
+  `record_id` varchar(255) DEFAULT NULL,
   `source` varchar(50) DEFAULT NULL,
   `version` varchar(20) NOT NULL,
   `data` longtext DEFAULT NULL,
-  `updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
   UNIQUE KEY `record_id_source` (`record_id`, `source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

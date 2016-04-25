@@ -1,23 +1,52 @@
-/*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape, VuFind */
+/*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape */
 
 // IE 9< console polyfill
 window.console = window.console || {log: function () {}};
 
-function VuFindNamespace(p, s, dsb) {
-  var defaultSearchBackend = dsb;
-  var path = p;
-  var strings = s;
+var VuFind = (function() {
+  var defaultSearchBackend = null;
+  var path = null;
+  var _initialized = false;
+  var _submodules = [];
+  var _translations = {};
 
-  var getDefaultSearchBackend = function() { return defaultSearchBackend; };
-  var getPath = function() { return path; };
-  var translate = function(op) { return strings[op] || op; };
+  var register = function(name, module) {
+    if (_submodules.indexOf(name) === -1) {
+      _submodules.push(name);
+      this[name] = typeof module == 'function' ? module() : module;
+    }
+    // If the object has already initialized, we should auto-init on register:
+    if (_initialized) {
+      this[name].init();
+    }
+  };
+  var init = function() {
+    for (var i=0; i<_submodules.length; i++) {
+      this[_submodules[i]].init();
+    }
+    _initialized = true;
+  };
 
+  var addTranslations = function(s) {
+    for (var i in s) {
+      _translations[i] = s[i];
+    }
+  };
+  var translate = function(op) {
+    return _translations[op] || op;
+  };
+
+  //Reveal
   return {
-    getDefaultSearchBackend: getDefaultSearchBackend,
-    getPath: getPath,
+    defaultSearchBackend: defaultSearchBackend,
+    path: path,
+
+    addTranslations: addTranslations,
+    init: init,
+    register: register,
     translate: translate
   };
-}
+})();
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value) {
@@ -95,154 +124,20 @@ function phoneNumberFormHandler(numID, regionCode) {
   } else {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
-    return true;
   }
 }
 
-// Lightbox
-/*
- * This function adds jQuery events to elements in the lightbox
- *
- * This is a default open action, so it runs every time changeContent
- * is called and the 'shown' lightbox event is triggered
- */
-function bulkActionSubmit($form) {
-  var button = $form.find('[type="submit"][clicked=true]');
-  var submit = button.attr('name');
-  var checks = $form.find('input.checkbox-select-item:checked');
-  if(checks.length == 0 && submit != 'empty') {
-    Lightbox.displayError(VuFind.translate('bulk_noitems_advice'));
+function bulkFormHandler(event, data) {
+  if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length == 0) {
+    VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
-  if (submit == 'print') {
-    //redirect page
-    var url = VuFind.getPath() + '/Records/Home?print=true';
-    for(var i=0;i<checks.length;i++) {
-      url += '&id[]='+checks[i].value;
+  var keys = [];
+  for (var i in data) {
+    if ('print' == data[i].name) {
+      return true;
     }
-    document.location.href = url;
-  } else {
-    $('#modal .modal-title').html(button.attr('title'));
-    Lightbox.titleSet = true;
-    Lightbox.submit($form, Lightbox.changeContent);
   }
-  return false;
-}
-
-function registerLightboxEvents() {
-  var modal = $("#modal");
-  // New list
-  $('#make-list').click(function() {
-    var get = deparam(this.href);
-    get['id'] = 'NEW';
-    return Lightbox.get('MyResearch', 'EditList', get);
-  });
-  // New account link handler
-  $('.createAccountLink').click(function() {
-    var get = deparam(this.href);
-    return Lightbox.get('MyResearch', 'Account', get);
-  });
-  $('.back-to-login').click(function() {
-    Lightbox.getByUrl(Lightbox.openingURL);
-    return false;
-  });
-  // Select all checkboxes
-  $(modal).find('.checkbox-select-all').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
-  });
-  $(modal).find('.checkbox-select-item').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
-  });
-  // Highlight which submit button clicked
-  $(modal).find("form [type=submit]").click(function() {
-    // Abort requests triggered by the lightbox
-    $('#modal .fa-spinner').remove();
-    // Remove other clicks
-    $(modal).find('[type="submit"][clicked=true]').attr('clicked', false);
-    // Add useful information
-    $(this).attr("clicked", "true");
-    // Add prettiness
-    if($(modal).find('.has-error,.sms-error').length == 0 && !$(this).hasClass('dropdown-toggle')) {
-      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
-    }
-  });
-  /**
-   * Hide the header in the lightbox content
-   * if it matches the title bar of the lightbox
-   */
-  var header = $('#modal .modal-title').html();
-  var contentHeader = $('#modal .modal-body h2');
-  contentHeader.each(function(i,op) {
-    if (op.innerHTML == header) {
-      $(op).hide();
-    }
-  });
-}
-
-function refreshPageForLogin() {
-  window.location.reload();
-}
-
-function newAccountHandler(html) {
-  Lightbox.addCloseAction(refreshPageForLogin);
-  var params = deparam(Lightbox.openingURL);
-  if (params['subaction'] == 'UserLogin') {
-    Lightbox.close();
-  } else {
-    Lightbox.getByUrl(Lightbox.openingURL);
-    Lightbox.openingURL = false;
-  }
-  return false;
-}
-
-// This is a full handler for the login form
-function ajaxLogin(form) {
-  Lightbox.ajax({
-    url: VuFind.getPath() + '/AJAX/JSON?method=getSalt',
-    dataType: 'json'
-  })
-  .done(function(response) {
-    var salt = response.data;
-
-    // extract form values
-    var params = {};
-    for (var i = 0; i < form.length; i++) {
-      // special handling for password
-      if (form.elements[i].name == 'password') {
-        // base-64 encode the password (to allow support for Unicode)
-        // and then encrypt the password with the salt
-        var password = rc4Encrypt(
-            salt, btoa(unescape(encodeURIComponent(form.elements[i].value)))
-        );
-        // hex encode the encrypted password
-        params[form.elements[i].name] = hexEncode(password);
-      } else {
-        params[form.elements[i].name] = form.elements[i].value;
-      }
-    }
-
-    // login via ajax
-    Lightbox.ajax({
-      type: 'POST',
-      url: VuFind.getPath() + '/AJAX/JSON?method=login',
-      dataType: 'json',
-      data: params
-    })
-    .done(function(response) {
-      Lightbox.addCloseAction(refreshPageForLogin);
-      // and we update the modal
-      var params = deparam(Lightbox.lastURL);
-      if (params['subaction'] == 'UserLogin') {
-        Lightbox.close();
-      } else {
-        Lightbox.getByUrl(
-          Lightbox.lastURL,
-          Lightbox.lastPOST,
-          Lightbox.changeContent
-        );
-      }
-    });
-  });
 }
 
 // Ready functions
@@ -264,39 +159,6 @@ function setupOffcanvas() {
   }
 }
 
-function setupBacklinks() {
-  // Highlight previous links, grey out following
-  $('.backlink')
-    .mouseover(function() {
-      // Underline back
-      var t = $(this);
-      do {
-        t.css({'text-decoration':'underline'});
-        t = t.prev();
-      } while(t.length > 0);
-      // Mute ahead
-      t = $(this).next();
-      do {
-        t.css({'color':'#999'});
-        t = t.next();
-      } while(t.length > 0);
-    })
-    .mouseout(function() {
-      // Underline back
-      var t = $(this);
-      do {
-        t.css({'text-decoration':'none'});
-        t = t.prev();
-      } while(t.length > 0);
-      // Mute ahead
-      t = $(this).next();
-      do {
-        t.css({'color':''});
-        t = t.next();
-      } while(t.length > 0);
-    });
-}
-
 function setupAutocomplete() {
   // Search autocomplete
   $('.autocomplete').each(function(i, op) {
@@ -310,7 +172,7 @@ function setupAutocomplete() {
           hiddenFilters.push($(this).val());
         });
         $.fn.autocomplete.ajax({
-          url: VuFind.getPath() + '/AJAX/JSON',
+          url: VuFind.path + '/AJAX/JSON',
           data: {
             q:query,
             method:'getACSuggestions',
@@ -347,7 +209,7 @@ function setupAutocomplete() {
  * @returns {undefined}
  */
 function keyboardShortcuts() {
-    var $searchform = $('#searchForm_lookfor');
+    var $searchform = $('.searchForm_lookfor');
     if ($('.pager').length > 0) {
         $(window).keydown(function(e) {
           if (!$searchform.is(':focus')) {
@@ -385,10 +247,10 @@ function keyboardShortcuts() {
 }
 
 $(document).ready(function() {
+  // Start up all of our submodules
+  VuFind.init();
   // Setup search autocomplete
   setupAutocomplete();
-  // Setup highlighting of backlinks
-  setupBacklinks() ;
   // Off canvas
   setupOffcanvas();
   // Keyboard shortcuts in detail view
@@ -431,24 +293,12 @@ $(document).ready(function() {
       window.print();
     });
     // Make an ajax call to ensure that ajaxStop is triggered
-    $.getJSON(VuFind.getPath() + '/AJAX/JSON', {method: 'keepAlive'});
+    $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
   // Advanced facets
   $('.facetOR').click(function() {
     $(this).closest('.collapse').html('<div class="list-group-item">'+VuFind.translate('loading')+'...</div>');
     window.location.assign($(this).attr('href'));
-  });
-
-  $('[name=bulkActionForm]').submit(function() {
-    return bulkActionSubmit($(this));
-  });
-  $('[name=bulkActionForm]').find("[type=submit]").click(function() {
-    // Abort requests triggered by the lightbox
-    $('#modal .fa-spinner').remove();
-    // Remove other clicks
-    $(this).closest('form').find('[type="submit"][clicked=true]').attr('clicked', false);
-    // Add useful information
-    $(this).attr("clicked", "true");
   });
 });

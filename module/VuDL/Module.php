@@ -23,7 +23,7 @@
  * @package  Module
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/dmj/vf2-proxy
+ * @link     https://vufind.org/wiki/development
  */
 namespace VuDL;
 
@@ -34,7 +34,7 @@ namespace VuDL;
  * @package  Module
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/dmj/vf2-proxy
+ * @link     https://vufind.org/wiki/development
  */
 class Module
 {

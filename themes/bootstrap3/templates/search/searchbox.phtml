@@ -17,17 +17,15 @@
     $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
     $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
     $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
-    $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory);
+    $ignoreHiddenFiltersInRequest = isset($this->ignoreHiddenFiltersInRequest) && $this->ignoreHiddenFiltersInRequest;
+    $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
     if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
         $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
-    }
-    $hiddenFilterParams = [];
-    foreach ($hiddenFilters as $key => $filter) {
-        foreach ($filter as $value) {
-            $hiddenFilterParams[] = urlencode('hiddenFilters[]') . '=' . urlencode("$key:$value");
+        if (empty($hiddenFilters)) {
+            $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId);
         }
     }
-    $hiddenFilterParams = empty($hiddenFilterParams) ? '' : '?' . implode('&', $hiddenFilterParams);
+    $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
 ?>
 <? if ($this->searchType == 'advanced'): ?>
   <div class="searchForm navbar-form navbar-left flip">

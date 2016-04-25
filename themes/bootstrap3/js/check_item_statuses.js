@@ -1,10 +1,23 @@
 /*global VuFind */
 
-function checkItemStatuses() {
-  var id = $.map($('.ajaxItem'), function(i) {
-    return $(i).find('.hiddenId')[0].value;
+function checkItemStatuses(container) {
+  if (typeof(container) == 'undefined') {
+    container = $('body');
+  }
+
+  var elements = {};
+  var data = $.map(container.find('.ajaxItem'), function(record) {
+    if ($(record).find('.hiddenId').length == 0) {
+      return null;
+    }
+    var datum = $(record).find('.hiddenId').val();
+    if (typeof elements[datum] === 'undefined') {
+        elements[datum] = $();
+    }
+    elements[datum] = elements[datum].add($(record));
+    return datum;
   });
-  if (!id.length) {
+  if (!data.length) {
     return;
   }
 
@@ -12,12 +25,15 @@ function checkItemStatuses() {
   $.ajax({
     dataType: 'json',
     method: 'POST',
-    url: VuFind.getPath() + '/AJAX/JSON?method=getItemStatuses',
-    data: {id:id}
+    url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
+    data: {'id':data}
   })
   .done(function(response) {
     $.each(response.data, function(i, result) {
-      var item = $($('.ajaxItem')[result.record_number]);
+      var item = elements[result.id];
+      if (!item) {
+        return;
+      }
 
       item.find('.status').empty().append(result.availability_message);
       if (typeof(result.full_status) != 'undefined'
