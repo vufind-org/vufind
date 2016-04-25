@@ -25,7 +25,7 @@
         "pear/file_marc": "1.1.2",
         "pear/validate_ispn": "dev-master",
         "serialssolutions/summon": "1.0.0",
-        "symfony/yaml": "3.0.4",
+        "symfony/yaml": "2.7.6",
         "vufind-org/vufindcode": "1.0.2",
         "vufind-org/vufindhttp": "2.0.0",
         "zendframework/zendframework": "2.4.6",
