@@ -17,25 +17,24 @@ function setUpHoldRequestForm(recordId) {
       data: params,
       dataType: 'json',
       cache: false,
-      url: VuFind.getPath() + '/AJAX/JSON',
-      success: function(response) {
-        if (response.status == 'OK') {
-          var defaultValue = $('#pickUpLocation').data('default');
-          $.each(response.data.locations, function() {
-            var option = $('<option></option>').attr('value', this.locationID).text(this.locationDisplay);
-            if (this.locationID == defaultValue || (defaultValue == '' && this.isDefault && $emptyOption.length == 0)) {
-              option.attr('selected', 'selected');
-            }
-            $('#pickUpLocation').append(option);
-          });
+      url: VuFind.path + '/AJAX/JSON'
+    })
+    .done(function(response) {
+      var defaultValue = $('#pickUpLocation').data('default');
+      $.each(response.data.locations, function() {
+        var option = $('<option></option>').attr('value', this.locationID).text(this.locationDisplay);
+        if (this.locationID == defaultValue || (defaultValue == '' && this.isDefault && $emptyOption.length == 0)) {
+          option.attr('selected', 'selected');
         }
-        $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
-        $('#pickUpLocation').removeAttr('disabled');
-      },
-      fail: function() {
-        $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
-        $('#pickUpLocation').removeAttr('disabled');
-      }
+        $('#pickUpLocation').append(option);
+      });
+
+      $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
+      $('#pickUpLocation').removeAttr('disabled');
+    })
+    .fail(function(response) {
+      $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
+      $('#pickUpLocation').removeAttr('disabled');
     });
   });
   $('#requestGroupId').change();

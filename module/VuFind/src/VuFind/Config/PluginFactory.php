@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Config;
 use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader,
@@ -33,11 +33,11 @@ use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader,
 /**
  * VuFind Config Plugin Factory
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class PluginFactory implements AbstractFactoryInterface
 {
@@ -113,6 +113,13 @@ class PluginFactory implements AbstractFactoryInterface
                 )
                 : [];
             foreach ($child as $section => $contents) {
+                // Omit Parent_Config from the returned configuration; it is only
+                // needed during loading, and its presence will cause problems in
+                // config files that iterate through all of the sections (e.g.
+                // combined.ini, permissions.ini).
+                if ($section === 'Parent_Config') {
+                    continue;
+                }
                 if (in_array($section, $overrideSections)
                     || !isset($config->$section)
                 ) {

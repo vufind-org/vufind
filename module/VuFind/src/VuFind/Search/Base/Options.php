@@ -19,26 +19,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\I18n\Translator\TranslatorAwareInterface,
-    Zend\Session\Container as SessionContainer;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Abstract options search model.
  *
  * This abstract class defines the option methods for modeling a search in VuFind.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 abstract class Options implements TranslatorAwareInterface
 {
@@ -141,6 +140,27 @@ abstract class Options implements TranslatorAwareInterface
      * @var array
      */
     protected $viewOptions = [];
+
+    /**
+     * Default delimiter used for delimited facets
+     *
+     * @var string
+     */
+    protected $defaultFacetDelimiter;
+
+    /**
+     * Facet settings
+     *
+     * @var array
+     */
+    protected $delimitedFacets = [];
+
+    /**
+     * Convenient field => delimiter lookup array derived from $delimitedFacets.
+     *
+     * @var array
+     */
+    protected $processedDelimitedFacets = null;
 
     /**
      * Facet settings
@@ -464,6 +484,71 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+    * Returns the defaultFacetDelimiter value.
+    *
+    * @return string
+    */
+    public function getDefaultFacetDelimiter()
+    {
+        return $this->defaultFacetDelimiter;
+    }
+
+    /**
+    * Set the defaultFacetDelimiter value.
+    *
+    * @param string $defaultFacetDelimiter A default delimiter to be used with
+    * delimited facets
+    *
+    * @return void
+    */
+    public function setDefaultFacetDelimiter($defaultFacetDelimiter)
+    {
+        $this->defaultFacetDelimiter = $defaultFacetDelimiter;
+        $this->processedDelimitedFacets = null; // clear processed value cache
+    }
+
+    /**
+     * Get a list of delimited facets
+     *
+     * @param bool $processed False = return raw values; true = process values into
+     * field => delimiter associative array.
+     *
+     * @return array
+     */
+    public function getDelimitedFacets($processed = false)
+    {
+        if (!$processed) {
+            return $this->delimitedFacets;
+        }
+        if (null === $this->processedDelimitedFacets) {
+            $this->processedDelimitedFacets = [];
+            $defaultDelimiter = $this->getDefaultFacetDelimiter();
+            foreach ($this->delimitedFacets as $current) {
+                $parts = explode('|', $current, 2);
+                if (count($parts) == 2) {
+                    $this->processedDelimitedFacets[$parts[0]] = $parts[1];
+                } else {
+                    $this->processedDelimitedFacets[$parts[0]] = $defaultDelimiter;
+                }
+            }
+        }
+        return $this->processedDelimitedFacets;
+    }
+
+    /**
+    * Set the delimitedFacets value.
+    *
+    * @param array $delimitedFacets An array of delimited facet names
+    *
+    * @return void
+    */
+    public function setDelimitedFacets($delimitedFacets)
+    {
+        $this->delimitedFacets = $delimitedFacets;
+        $this->processedDelimitedFacets = null; // clear processed value cache
+    }
+
+    /**
      * Get a list of facets that are subject to translation.
      *
      * @return array
@@ -618,98 +703,6 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Get a session namespace specific to the current class.
-     *
-     * @return SessionContainer
-     */
-    public function getSession()
-    {
-        static $session = false;
-        if (!$session) {
-            $session = new SessionContainer(get_class($this));
-        }
-        return $session;
-    }
-
-    /**
-     * Remember the last sort option used.
-     *
-     * @param string $last Option to remember.
-     *
-     * @return void
-     */
-    public function rememberLastSort($last)
-    {
-        $session = $this->getSession();
-        if (!$session->getManager()->getStorage()->isImmutable()) {
-            $session->lastSort = $last;
-        }
-    }
-
-    /**
-     * Retrieve the last sort option used.
-     *
-     * @return string
-     */
-    public function getLastSort()
-    {
-        $session = $this->getSession();
-        return isset($session->lastSort) ? $session->lastSort : null;
-    }
-
-    /**
-     * Remember the last limit option used.
-     *
-     * @param string $last Option to remember.
-     *
-     * @return void
-     */
-    public function rememberLastLimit($last)
-    {
-        $session = $this->getSession();
-        if (!$session->getManager()->getStorage()->isImmutable()) {
-            $session->lastLimit = $last;
-        }
-    }
-
-    /**
-     * Retrieve the last limit option used.
-     *
-     * @return string
-     */
-    public function getLastLimit()
-    {
-        $session = $this->getSession();
-        return isset($session->lastLimit) ? $session->lastLimit : null;
-    }
-
-    /**
-     * Remember the last view option used.
-     *
-     * @param string $last Option to remember.
-     *
-     * @return void
-     */
-    public function rememberLastView($last)
-    {
-        $session = $this->getSession();
-        if (!$session->getManager()->getStorage()->isImmutable()) {
-            $session->lastView = $last;
-        }
-    }
-
-    /**
-     * Retrieve the last view option used.
-     *
-     * @return string
-     */
-    public function getLastView()
-    {
-        $session = $this->getSession();
-        return isset($session->lastView) ? $session->lastView : null;
-    }
-
-    /**
      * Get default filters to apply to an empty search.
      *
      * @return array
@@ -834,6 +827,18 @@ abstract class Options implements TranslatorAwareInterface
         }
 
         return $recommend;
+    }
+
+    /**
+     * Get the identifier used for naming the various search classes in this family.
+     *
+     * @return string
+     */
+    public function getSearchClassId()
+    {
+        // Parse identifier out of class name of format VuFind\Search\[id]\Options:
+        $class = explode('\\', get_class($this));
+        return $class[2];
     }
 
     /**

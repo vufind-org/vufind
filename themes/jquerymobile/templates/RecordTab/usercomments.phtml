@@ -8,7 +8,7 @@
 
 <form action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post" data-ajax="false">
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
-  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>"/>
+  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>"/>
   <div data-role="fieldcontain">
     <label for="comments_form_comment"><?=$this->transEsc("Your Comment")?>:</label>
     <textarea id="comments_form_comment" name="comment"></textarea>

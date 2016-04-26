@@ -13,7 +13,7 @@ function setUpHoldRequestForm(recordId) {
     var params = {
       method: 'getRequestGroupPickupLocations',
       id: recordId,
-      requestGroupId: $('#requestGroupId').val()              
+      requestGroupId: $('#requestGroupId').val()
     };
     $.ajax({
       data: params,
@@ -39,7 +39,7 @@ function setUpHoldRequestForm(recordId) {
       fail: function() {
         $('#pickUpLocationLabel').removeClass("ajax_hold_request_loading");
       }
-    });   
+    });
   });
   $('#requestGroupId').change();
 }

@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  SMS
  * @author   Ronan McHugh <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\SMS;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -31,11 +31,11 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 /**
  * Factory for instantiating SMS objects
  *
- * @category VuFind2
+ * @category VuFind
  * @package  SMS
  * @author   Ronan McHugh <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  *
  * @codeCoverageIgnore
  */

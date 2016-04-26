@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Config;
 use VuFind\Config\Writer as ConfigWriter,
@@ -32,11 +32,11 @@ use VuFind\Config\Writer as ConfigWriter,
 /**
  * Class to upgrade previous VuFind configurations to the current version
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Upgrade
 {
@@ -152,7 +152,7 @@ class Upgrade
         // and into other files.
         $this->upgradeConfig();
         $this->upgradeAuthority();
-        $this->upgradeFacets();
+        $this->upgradeFacetsAndCollection();
         $this->upgradeFulltext();
         $this->upgradeReserves();
         $this->upgradeSearches();
@@ -237,7 +237,8 @@ class Upgrade
     protected function loadOldBaseConfig()
     {
         // Load the base settings:
-        $mainArray = parse_ini_file($this->oldDir . '/config.ini', true);
+        $oldIni = $this->oldDir . '/config.ini';
+        $mainArray = file_exists($oldIni) ? parse_ini_file($oldIni, true) : [];
 
         // Merge in local overrides as needed.  VuFind 2 structures configurations
         // differently, so people who used this mechanism will need to refactor
@@ -293,7 +294,7 @@ class Upgrade
         $configs = [
             'config.ini', 'authority.ini', 'facets.ini', 'reserves.ini',
             'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini',
-            'Primo.ini', 'permissions.ini'
+            'permissions.ini', 'Collection.ini', 'Primo.ini'
         ];
         foreach ($configs as $config) {
             // Special case for config.ini, since we may need to overlay extra
@@ -565,12 +566,35 @@ class Upgrade
             }
         }
 
-        // Warn the user about deprecated WorldCat setting:
+        // Warn the user about deprecated WorldCat settings:
         if (isset($newConfig['WorldCat']['LimitCodes'])) {
             unset($newConfig['WorldCat']['LimitCodes']);
             $this->addWarning(
                 'The [WorldCat] LimitCodes setting never had any effect and has been'
                 . ' removed.'
+            );
+        }
+        $badKeys
+            = ['id', 'xISBN_token', 'xISBN_secret', 'xISSN_token', 'xISSN_secret'];
+        foreach ($badKeys as $key) {
+            if (isset($newConfig['WorldCat'][$key])) {
+                unset($newConfig['WorldCat'][$key]);
+                $this->addWarning(
+                    'The [WorldCat] ' . $key . ' setting is no longer used and'
+                    . ' has been removed.'
+                );
+            }
+        }
+        if (isset($newConfig['Record']['related'])
+            && in_array('Editions', $newConfig['Record']['related'])
+        ) {
+            $newConfig['Record']['related'] = array_diff(
+                $newConfig['Record']['related'], ['Editions']
+            );
+            $this->addWarning(
+                'The Editions related record module is no longer '
+                . 'supported due to OCLC\'s xID API shutdown.'
+                . ' It has been removed from your settings.'
             );
         }
 
@@ -682,12 +706,62 @@ class Upgrade
     }
 
     /**
-     * Upgrade facets.ini.
+     * Change an array key.
+     *
+     * @param array  $array Array to rewrite
+     * @param string $old   Old key name
+     * @param string $new   New key name
+     *
+     * @return array
+     */
+    protected function changeArrayKey($array, $old, $new)
+    {
+        $newArr = [];
+        foreach ($array as $k => $v) {
+            if ($k === $old) {
+                $k = $new;
+            }
+            $newArr[$k] = $v;
+        }
+        return $newArr;
+    }
+
+    /**
+     * Support method for upgradeFacetsAndCollection() - change the name of
+     * a facet field.
+     *
+     * @param string $old Old field name
+     * @param string $new New field name
+     *
+     * @return void
+     */
+    protected function renameFacet($old, $new)
+    {
+        $didWork = false;
+        if (isset($this->newConfigs['facets.ini']['Results'][$old])) {
+            $this->newConfigs['facets.ini']['Results'] = $this->changeArrayKey(
+                $this->newConfigs['facets.ini']['Results'], $old, $new
+            );
+            $didWork = true;
+        }
+        if (isset($this->newConfigs['Collection.ini']['Facets'][$old])) {
+            $this->newConfigs['Collection.ini']['Facets'] = $this->changeArrayKey(
+                $this->newConfigs['Collection.ini']['Facets'], $old, $new
+            );
+            $didWork = true;
+        }
+        if ($didWork) {
+            $this->newConfigs['facets.ini']['LegacyFields'][$old] = $new;
+        }
+    }
+
+    /**
+     * Upgrade facets.ini and Collection.ini (since these are tied together).
      *
      * @throws FileAccessException
      * @return void
      */
-    protected function upgradeFacets()
+    protected function upgradeFacetsAndCollection()
     {
         // we want to retain the old installation's various facet groups
         // exactly as-is
@@ -696,6 +770,7 @@ class Upgrade
             'HomePage'
         ];
         $this->applyOldSettings('facets.ini', $facetGroups);
+        $this->applyOldSettings('Collection.ini', ['Facets', 'Sort']);
 
         // fill in home page facets with advanced facets if missing:
         if (!isset($this->oldConfigs['facets.ini']['HomePage'])) {
@@ -703,8 +778,12 @@ class Upgrade
                 = $this->newConfigs['facets.ini']['Advanced'];
         }
 
+        // rename changed facets
+        $this->renameFacet('authorStr', 'author_facet');
+
         // save the file
         $this->saveModifiedConfig('facets.ini');
+        $this->saveModifiedConfig('Collection.ini');
     }
 
     /**
@@ -993,6 +1072,9 @@ class Upgrade
         // update permission settings
         $this->upgradePrimoPermissions();
 
+        // update server settings
+        $this->upgradePrimoServerSettings();
+
         // save the file
         $this->saveModifiedConfig('Primo.ini');
     }
@@ -1050,6 +1132,32 @@ class Upgrade
     }
 
     /**
+     * Translate obsolete server settings.
+     *
+     * @return void
+     */
+    protected function upgradePrimoServerSettings()
+    {
+        $config = & $this->newConfigs['Primo.ini'];
+        // Convert apiId to url
+        if (isset($config['General']['apiId'])) {
+            $url = 'http://' . $config['General']['apiId']
+                . '.hosted.exlibrisgroup.com';
+            if (isset($config['General']['port'])) {
+                $url .= ':' . $config['General']['port'];
+            } else {
+                $url .= ':1701';
+            }
+
+            $config['General']['url'] = $url;
+
+            // Remove any old settings remaining in Primo.ini:
+            unset($config['General']['apiId']);
+            unset($config['General']['port']);
+        }
+    }
+
+    /**
      * Upgrade WorldCat.ini.
      *
      * @throws FileAccessException
@@ -1079,6 +1187,21 @@ class Upgrade
                 $new[$k] = $v;
             }
             $this->newConfigs['WorldCat.ini'][$section] = $new;
+        }
+
+        // Deal with deprecated related record module.
+        $newConfig = & $this->newConfigs['WorldCat.ini'];
+        if (isset($newConfig['Record']['related'])
+            && in_array('WorldCatEditions', $newConfig['Record']['related'])
+        ) {
+            $newConfig['Record']['related'] = array_diff(
+                $newConfig['Record']['related'], ['WorldCatEditions']
+            );
+            $this->addWarning(
+                'The WorldCatEditions related record module is no longer '
+                . 'supported due to OCLC\'s xID API shutdown.'
+                . ' It has been removed from your settings.'
+            );
         }
 
         // save the file

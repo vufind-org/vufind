@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Config;
 
 /**
  * Class to update VuFind configuration settings
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Writer
 {
@@ -69,7 +69,7 @@ class Writer
         $this->filename = $filename;
         if (null === $content) {
             $this->content = file_get_contents($filename);
-            if (!$this->content) {
+            if (false === $this->content) {
                 throw new \Exception('Could not read ' . $filename);
             }
         } else if (is_array($content)) {
@@ -112,7 +112,8 @@ class Writer
                 if ($currentSection == $section && !$settingSet
                     && $value !== null
                 ) {
-                    $line = $setting . ' = "' . $value . '"' . "\n\n" . $line;
+                    $line = $this->buildContentLine($setting, $value, 0)
+                        . "\n\n" . $line;
                     $settingSet = true;
                 }
                 $currentSection = $matches[1];
@@ -124,7 +125,7 @@ class Writer
                     if ($value === null) {
                         continue;
                     } else {
-                        $line = $setting . ' = "' . $value . '"';
+                        $line = $this->buildContentLine($setting, $value, 0);
                     }
                     if (!empty($comment)) {
                         $line .= ' ;' . $comment;
@@ -142,7 +143,7 @@ class Writer
             if ($currentSection != $section) {
                 $this->content .= '[' . $section . "]\n";
             }
-            $this->content .= $setting . ' = "' . $value . '"' . "\n";
+            $this->content .= $this->buildContentLine($setting, $value, 0) . "\n";
         }
     }
 
@@ -209,7 +210,7 @@ class Writer
         } else if ($e == "") {
             return '';
         } else {
-            return '"' . $e . '"';
+            return '"' . str_replace('"', '\"', $e) . '"';
         }
     }
 

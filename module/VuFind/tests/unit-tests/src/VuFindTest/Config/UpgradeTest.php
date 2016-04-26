@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Config;
 use VuFind\Config\Upgrade;
@@ -31,12 +31,12 @@ use VuFind\Config\Upgrade;
 /**
  * Config Upgrade Test Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class UpgradeTest extends \VuFindTest\Unit\TestCase
 {
@@ -89,27 +89,19 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
 
         // Prior to 2.4, we expect exactly one warning about using a deprecated
         // theme:
+        $expectedWarnings = [];
         if ((float)$version < 1.3) {
-            $this->assertEquals(1, count($warnings));
-            $this->assertEquals(
-                "WARNING: This version of VuFind does not support "
+            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
                 . "the default theme.  Your config.ini [Site] theme setting "
                 . "has been reset to the default: bootprint3.  You may need to "
-                . "reimplement your custom theme.",
-                $warnings[0]
-            );
+                . "reimplement your custom theme.";
         } else if ((float)$version < 2.4) {
-            $this->assertEquals(1, count($warnings));
-            $this->assertEquals(
-                "WARNING: This version of VuFind does not support "
+            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
                 . "the blueprint theme.  Your config.ini [Site] theme setting "
                 . "has been reset to the default: bootprint3.  You may need to "
-                . "reimplement your custom theme.",
-                $warnings[0]
-            );
-        } else {
-            $this->assertEquals(0, count($warnings));
+                . "reimplement your custom theme.";
         }
+        $this->assertEquals($expectedWarnings, $warnings);
 
         // Summon should always have the checkboxes setting turned on after
         // upgrade:
@@ -160,6 +152,31 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             [],
             $results['Summon.ini']['TopRecommendations']
+        );
+
+        // Confirm that author facets have been upgraded appropriately.
+        $this->assertFalse(isset($results['facets.ini']['Results']['authorStr']));
+        $this->assertFalse(isset($results['Collection.ini']['Facets']['authorStr']));
+        $this->assertEquals(
+            'Author', $results['facets.ini']['Results']['author_facet']
+        );
+        $this->assertEquals(
+            'author_facet', $results['facets.ini']['LegacyFields']['authorStr']
+        );
+        // Collection.ini only exists after release 1.3:
+        if ((float)$version > 1.3) {
+            $this->assertEquals(
+                'Author', $results['Collection.ini']['Facets']['author_facet']
+            );
+        }
+        // verify expected order of facet fields
+        $this->assertEquals(
+            [
+                'institution', 'building', 'format', 'callnumber-first',
+                'author_facet', 'language', 'genre_facet', 'era_facet',
+                'geographic_facet', 'publishDate'
+            ],
+            array_keys($results['facets.ini']['Results'])
         );
 
         return ['configs' => $results, 'warnings' => $warnings];
@@ -267,6 +284,35 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             'noview,full', $results['config.ini']['Content']['GoogleOptions']['link']
         );
+    }
+
+    /**
+     * Test removal of xID settings
+     *
+     * @return void
+     */
+    public function testXidDeprecation()
+    {
+        $upgrader = $this->getUpgrader('xid');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            ['Similar'], $results['config.ini']['Record']['related']
+        );
+        $this->assertEquals(
+            ['WorldCatSimilar'], $results['WorldCat.ini']['Record']['related']
+        );
+        $this->assertEquals(['apiKey' => 'foo'], $results['config.ini']['WorldCat']);
+        $expectedWarnings = [
+            'The [WorldCat] id setting is no longer used and has been removed.',
+            'The [WorldCat] xISBN_token setting is no longer used and has been removed.',
+            'The [WorldCat] xISBN_secret setting is no longer used and has been removed.',
+            'The [WorldCat] xISSN_token setting is no longer used and has been removed.',
+            'The [WorldCat] xISSN_secret setting is no longer used and has been removed.',
+            'The Editions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
+            'The WorldCatEditions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
+        ];
+        $this->assertEquals($expectedWarnings, $upgrader->getWarnings());
     }
 
     /**
@@ -421,6 +467,23 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             $this->callMethod(
                 $upgrader, 'fileContainsMeaningfulLines', [$meaningful]
             )
+        );
+    }
+
+    /**
+     * Test Primo upgrade.
+     *
+     * @return void
+     */
+    public function testPrimoUpgrade()
+    {
+        $upgrader = $this->getUpgrader('primo');
+        $upgrader->run();
+        $this->assertEquals([], $upgrader->getWarnings());
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            'http://my-id.hosted.exlibrisgroup.com:1701',
+            $results['Primo.ini']['General']['url']
         );
     }
 }

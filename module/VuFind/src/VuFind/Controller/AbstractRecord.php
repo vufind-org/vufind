@@ -19,25 +19,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Mail as MailException,
-    VuFind\RecordDriver\AbstractBase as AbstractRecordDriver,
-    Zend\Session\Container as SessionContainer;
+    VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 
 /**
  * VuFind Record Controller
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class AbstractRecord extends AbstractBase
 {
@@ -128,7 +127,7 @@ class AbstractRecord extends AbstractBase
         if (!empty($comment)) {
             $table = $this->getTable('Resource');
             $resource = $table->findResource(
-                $driver->getUniqueId(), $driver->getResourceSource(), true, $driver
+                $driver->getUniqueId(), $driver->getSourceIdentifier(), true, $driver
             );
             $resource->addComment($comment, $user);
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
@@ -255,6 +254,7 @@ class AbstractRecord extends AbstractBase
     public function ajaxtabAction()
     {
         $this->loadRecord();
+        // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
         return $this->showTab(
             $this->params()->fromPost('tab', $this->getDefaultTab()), true
@@ -277,11 +277,19 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
         $post = $this->getRequest()->getPost()->toArray();
         $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
-        $post['mytags'] = $tagParser->parse($post['mytags']);
-        $driver->saveToFavorites($post, $user);
+        $post['mytags']
+            = $tagParser->parse(isset($post['mytags']) ? $post['mytags'] : '');
+        $results = $driver->saveToFavorites($post, $user);
 
         // Display a success status message:
-        $this->flashMessenger()->addMessage('bulk_save_success', 'success');
+        $listUrl = $this->url()->fromRoute('userList', ['id' => $results['listId']]);
+        $message = [
+            'html' => true,
+            'msg' => $this->translate('bulk_save_success') . '. '
+            . '<a href="' . $listUrl . '" class="gotolist">'
+            . $this->translate('go_to_list') . '</a>.'
+        ];
+        $this->flashMessenger()->addMessage($message, 'success');
 
         // redirect to followup url saved in saveAction
         if ($url = $this->getFollowupUrl()) {
@@ -337,7 +345,7 @@ class AbstractRecord extends AbstractBase
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = [];
         $resources = $user->getSavedData(
-            $driver->getUniqueId(), null, $driver->getResourceSource()
+            $driver->getUniqueId(), null, $driver->getSourceIdentifier()
         );
         foreach ($resources as $userResource) {
             $listIds[] = $userResource->list_id;
@@ -542,9 +550,15 @@ class AbstractRecord extends AbstractBase
         // common scenario) and the GET parameters (a fallback used by some
         // legacy routes).
         if (!is_object($this->driver)) {
-            $this->driver = $this->getRecordLoader()->load(
+            $recordLoader = $this->getRecordLoader();
+            $cacheContext = $this->getRequest()->getQuery()->get('cacheContext');
+            if (isset($cacheContext)) {
+                $recordLoader->setCacheContext($cacheContext);
+            }
+            $this->driver = $recordLoader->load(
                 $this->params()->fromRoute('id', $this->params()->fromQuery('id')),
-                $this->searchClassId
+                $this->searchClassId,
+                false
             );
         }
         return $this->driver;
@@ -562,7 +576,7 @@ class AbstractRecord extends AbstractBase
     {
         $details = $this->getRecordRouter()
             ->getTabRouteDetails($this->loadRecord(), $tab);
-        $target = $this->getLightboxAwareUrl($details['route'], $details['params']);
+        $target = $this->url()->fromRoute($details['route'], $details['params']);
 
         // Special case: don't use anchors in jquerymobile theme, since they
         // mess things up!
@@ -672,8 +686,9 @@ class AbstractRecord extends AbstractBase
         $view->tabs = $this->getAllTabs();
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
-        $view->ajaxTabs = isset($config->Site->ajaxTabs)
-            ? $config->Site->ajaxTabs : false;
+        $view->loadInitialTabWithAjax
+            = isset($config->Site->loadInitialTabWithAjax)
+            ? (bool) $config->Site->loadInitialTabWithAjax : false;
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {

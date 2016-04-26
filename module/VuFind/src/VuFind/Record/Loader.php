@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -19,25 +20,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Record;
 use VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\RecordDriver\PluginManager as RecordFactory,
-    VuFindSearch\Service as SearchService;
+    VuFindSearch\Service as SearchService,
+    VuFind\Record\Cache;
 
 /**
  * Record loader
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Record
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Loader
 {
@@ -56,16 +60,25 @@ class Loader
     protected $searchService;
 
     /**
+     * Record cache
+     *
+     * @var Cache
+     */
+    protected $recordCache;
+
+    /**
      * Constructor
      *
      * @param SearchService $searchService Search service
      * @param RecordFactory $recordFactory Record loader
+     * @param Cache         $recordCache   Record Cache
      */
     public function __construct(SearchService $searchService,
-        RecordFactory $recordFactory
+        RecordFactory $recordFactory, Cache $recordCache = null
     ) {
         $this->searchService = $searchService;
         $this->recordFactory = $recordFactory;
+        $this->recordCache = $recordCache;
     }
 
     /**
@@ -82,9 +95,26 @@ class Loader
     public function load($id, $source = DEFAULT_SEARCH_BACKEND,
         $tolerateMissing = false
     ) {
-        $results = $this->searchService->retrieve($source, $id)->getRecords();
-        if (count($results) > 0) {
-            return $results[0];
+        if (null !== $id && '' !== $id) {
+            $results = [];
+            if (null !== $this->recordCache
+                && $this->recordCache->isPrimary($source)
+            ) {
+                $results = $this->recordCache->lookup($id, $source);
+            }
+            if (empty($results)) {
+                $results = $this->searchService->retrieve($source, $id)
+                    ->getRecords();
+            }
+            if (empty($results) && null !== $this->recordCache
+                && $this->recordCache->isFallback($source)
+            ) {
+                $results = $this->recordCache->lookup($id, $source);
+            }
+
+            if (!empty($results)) {
+                return $results[0];
+            }
         }
         if ($tolerateMissing) {
             $record = $this->recordFactory->get('Missing');
@@ -109,7 +139,47 @@ class Loader
      */
     public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND)
     {
-        return $this->searchService->retrieveBatch($source, $ids)->getRecords();
+        $cachedRecords = [];
+        if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
+            // Try to load records from cache if source is cachable
+            $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
+            // Check which records could not be loaded from the record cache
+            foreach ($cachedRecords as $cachedRecord) {
+                $key = array_search($cachedRecord->getUniqueId(), $ids);
+                if ($key !== false) {
+                    unset($ids[$key]);
+                }
+            }
+        }
+
+        // Try to load the uncached records from the original $source
+        $genuineRecords = [];
+        if (!empty($ids)) {
+            $genuineRecords = $this->searchService->retrieveBatch($source, $ids)
+                ->getRecords();
+
+            foreach ($genuineRecords as $genuineRecord) {
+                $key = array_search($genuineRecord->getUniqueId(), $ids);
+                if ($key !== false) {
+                    unset($ids[$key]);
+                }
+            }
+        }
+
+        if (!empty($ids) && null !== $this->recordCache
+            && $this->recordCache->isFallback($source)
+        ) {
+            // Try to load missing records from cache if source is cachable
+            $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
+        }
+
+        // Merge records found in cache and records loaded from original $source
+        $retVal = $genuineRecords;
+        foreach ($cachedRecords as $cachedRecord) {
+            $retVal[] = $cachedRecord;
+        }
+
+        return $retVal;
     }
 
     /**
@@ -175,5 +245,19 @@ class Loader
         // Send back the final array, with the keys in proper order:
         ksort($retVal);
         return $retVal;
+    }
+
+    /**
+     * Set the context to control cache behavior
+     *
+     * @param string $context Cache context
+     *
+     * @return void
+     */
+    public function setCacheContext($context)
+    {
+        if (null !== $this->recordCache) {
+            $this->recordCache->setContext($context);
+        }
     }
 }

@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ServiceManager;
 use Zend\ServiceManager\ServiceManager;
@@ -31,14 +31,43 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * VuFind Service Initializer
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Initializer
 {
+    /**
+     * Check if the record cache is enabled within a service manager.
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return bool
+     */
+    protected static function isCacheEnabled(ServiceManager $sm)
+    {
+        // Use static cache to save time on repeated lookups:
+        static $enabled = null;
+        if (null === $enabled) {
+            // Return true if Record Cache is enabled for any data source
+            $cacheConfig = $sm->get('VuFind\Config')->get('RecordCache');
+            $enabled = false;
+            foreach ($cacheConfig as $section) {
+                foreach ($section as $setting) {
+                    if (isset($setting['operatingMode'])
+                        && $setting['operatingMode'] !== 'disabled'
+                    ) {
+                        $enabled = true;
+                        break 2;    // quit looping -- we know the answer!
+                    }
+                }
+            }
+        }
+        return $enabled;
+    }
+
     /**
      * Given an instance and a Service Manager, initialize the instance.
      *
@@ -60,6 +89,12 @@ class Initializer
         }
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get('VuFind\Http'));
+        }
+        // Only inject cache if configuration enabled (to save resources):
+        if ($instance instanceof \VuFind\Record\Cache\RecordCacheAwareInterface
+            && static::isCacheEnabled($sm)
+        ) {
+            $instance->setRecordCache($sm->get('VuFind\RecordCache'));
         }
         return $instance;
     }

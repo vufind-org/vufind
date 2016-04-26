@@ -22,8 +22,8 @@
               <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
               <?=$this->transEsc('select_page')?> |
             </label>
-            <input type="submit" class="btn btn-default" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
-            <input type="submit" class="btn btn-default" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
+            <input type="submit" class="btn btn-default" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+            <input type="submit" class="btn btn-default" id="renewAll" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
           </div>
         </div>
       <? endif; ?>
@@ -61,20 +61,22 @@
           <? if ($this->renewForm): ?>
             <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
               <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
-              <input class="pull-left flip checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
-              <input class="pull-left flip" type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
-              <input class="pull-left flip" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+              <div class="col-xs-1">
+                <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
+                <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+                <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+              </div>
             <? endif; ?>
           <? endif; ?>
 
           <? $cover = $this->record($resource)->getCover('checkedout', 'small'); ?>
           <? if ($cover): ?>
-            <div class="col-sm-2 text-center">
+            <div class="col-sm-2 col-xs-11 text-center">
             <? /* Display thumbnail if appropriate: */ ?>
               <?=$cover?>
             </div>
 
-            <div class="col-sm-6">
+            <div class="col-sm-6 col-xs-12">
          <? else: ?>
             <div class="col-sm-9">
          <? endif; ?>
@@ -94,9 +96,9 @@
                 echo $this->transEsc('Title not available');
               }
             ?><br/>
-            <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
+            <? $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
               <?=$this->transEsc('by')?>:
-              <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
+              <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?><br/>
             <? endif; ?>
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=str_replace('class="', 'class="label label-info ', $this->record($resource)->getFormatList())?>

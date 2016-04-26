@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 use VuFind\Db\Row\UserList as UserListRow, Zend\View\Helper\AbstractHelper;
@@ -31,11 +31,11 @@ use VuFind\Db\Row\UserList as UserListRow, Zend\View\Helper\AbstractHelper;
 /**
  * List view helper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class UserList extends AbstractHelper
 {
@@ -47,13 +47,23 @@ class UserList extends AbstractHelper
     protected $mode;
 
     /**
+     * Session container for last list information.
+     *
+     * @var \Zend\Session\Container
+     */
+    protected $session;
+
+    /**
      * Constructor
      *
-     * @param string $mode List mode (enabled or disabled)
+     * @param \Zend\Session\Container $session Session container (must use same
+     * namespace as container provided to \VuFind\Db\Table\UserList)
+     * @param string                  $mode    List mode (enabled or disabled)
      */
-    public function __construct($mode = 'enabled')
+    public function __construct(\Zend\Session\Container $session, $mode = 'enabled')
     {
         $this->mode = $mode;
+        $this->session = $session;
     }
 
     /**
@@ -73,6 +83,6 @@ class UserList extends AbstractHelper
      */
     public function lastUsed()
     {
-        return UserListRow::getLastUsed();
+        return isset($this->session->lastUsed) ? $this->session->lastUsed : null;
     }
 }

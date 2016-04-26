@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search;
 
@@ -39,11 +39,11 @@ use Zend\StdLib\Parameters;
  * The class is a intermediate solution to translate the (possibly modified)
  * search query parameters in an object required by the new search system.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 abstract class QueryAdapter
 {
@@ -56,7 +56,8 @@ abstract class QueryAdapter
      */
     public static function deminify(array $search)
     {
-        if (isset($search['l'])) {
+        // Use array_key_exists since null is also valid
+        if (array_key_exists('l', $search)) {
             $handler = isset($search['i']) ? $search['i'] : $search['f'];
             return new Query(
                 $search['l'], $handler, isset($search['o']) ? $search['o'] : null
@@ -183,16 +184,14 @@ abstract class QueryAdapter
                 if ($lookfor[$i] != '') {
                     // Use default fields if not set
                     $typeArr = $request->get('type' . $groupCount);
-                    $handler = (isset($typeArr[$i]) && !empty($typeArr[$i]))
-                        ? $typeArr[$i] : $defaultHandler;
+                    $handler = !empty($typeArr[$i]) ? $typeArr[$i] : $defaultHandler;
 
                     $opArr = $request->get('op' . $groupCount);
-                    $operator = (isset($opArr[$i]) && !empty($opArr[$i]))
-                        ? $opArr[$i] : null;
+                    $operator = !empty($opArr[$i]) ? $opArr[$i] : null;
 
                     // Add term to this group
                     $boolArr = $request->get('bool' . $groupCount);
-                    $lastBool = isset($boolArr[0]) ? $boolArr[0] : null;
+                    $lastBool = isset($boolArr[0]) ? $boolArr[0] : 'AND';
                     $group[] = new Query($lookfor[$i], $handler, $operator);
                 }
             }
@@ -208,7 +207,7 @@ abstract class QueryAdapter
         }
 
         return (count($groups) > 0)
-            ? new QueryGroup($request->get('join'), $groups)
+            ? new QueryGroup($request->get('join', 'AND'), $groups)
             : new Query();
     }
 

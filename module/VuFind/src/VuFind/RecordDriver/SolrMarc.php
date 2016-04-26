@@ -20,12 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
 use VuFind\Exception\ILS as ILSException,
@@ -35,12 +35,12 @@ use VuFind\Exception\ILS as ILSException,
 /**
  * Model for MARC records in Solr.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 class SolrMarc extends SolrDefault
 {
@@ -185,21 +185,6 @@ class SolrMarc extends SolrDefault
     }
 
     /**
-     * Get the main corporate author (if any) for the record.
-     *
-     * @return string
-     */
-    public function getCorporateAuthor()
-    {
-        // Try 110 first -- if none found, try 710 next.
-        $main = $this->getFirstFieldValue('110', ['a', 'b']);
-        if (!empty($main)) {
-            return $main;
-        }
-        return $this->getFirstFieldValue('710', ['a', 'b']);
-    }
-
-    /**
      * Return an array of all values extracted from the specified field/subfield
      * combination.  If multiple subfields are specified and $concat is true, they
      * will be concatenated together in the order listed -- each entry in the array
@@ -209,11 +194,13 @@ class SolrMarc extends SolrDefault
      * @param string $field     The MARC field number to read
      * @param array  $subfields The MARC subfield codes to read
      * @param bool   $concat    Should we concatenate subfields?
+     * @param string $separator Separator string (used only when $concat === true)
      *
      * @return array
      */
-    protected function getFieldArray($field, $subfields = null, $concat = true)
-    {
+    protected function getFieldArray($field, $subfields = null, $concat = true,
+        $separator = ' '
+    ) {
         // Default to subfield a if nothing is specified.
         if (!is_array($subfields)) {
             $subfields = ['a'];
@@ -231,7 +218,8 @@ class SolrMarc extends SolrDefault
 
         // Extract all the requested subfields, if applicable.
         foreach ($fields as $currentField) {
-            $next = $this->getSubfieldArray($currentField, $subfields, $concat);
+            $next = $this
+                ->getSubfieldArray($currentField, $subfields, $concat, $separator);
             $matches = array_merge($matches, $next);
         }
 
@@ -308,8 +296,12 @@ class SolrMarc extends SolrDefault
      */
     protected function getPublicationInfo($subfield = 'a')
     {
+        // Get string separator for publication information:
+        $separator = isset($this->mainConfig->Record->marcPublicationInfoSeparator)
+            ? $this->mainConfig->Record->marcPublicationInfoSeparator : ' ';
+
         // First check old-style 260 field:
-        $results = $this->getFieldArray('260', [$subfield]);
+        $results = $this->getFieldArray('260', [$subfield], true, $separator);
 
         // Now track down relevant RDA-style 264 fields; we only care about
         // copyright and publication places (and ignore copyright places if
@@ -320,25 +312,26 @@ class SolrMarc extends SolrDefault
         $fields = $this->getMarcRecord()->getFields('264');
         if (is_array($fields)) {
             foreach ($fields as $currentField) {
-                $currentVal = $currentField->getSubfield($subfield);
-                $currentVal = is_object($currentVal)
-                    ? $currentVal->getData() : null;
+                $currentVal = $this
+                    ->getSubfieldArray($currentField, [$subfield], true, $separator);
                 if (!empty($currentVal)) {
                     switch ($currentField->getIndicator('2')) {
                     case '1':
-                        $pubResults[] = $currentVal;
+                        $pubResults = array_merge($pubResults, $currentVal);
                         break;
                     case '4':
-                        $copyResults[] = $currentVal;
+                        $copyResults = array_merge($copyResults, $currentVal);
                         break;
                     }
                 }
             }
         }
+        $replace260 = isset($this->mainConfig->Record->replaceMarc260)
+            ? $this->mainConfig->Record->replaceMarc260 : false;
         if (count($pubResults) > 0) {
-            $results = array_merge($results, $pubResults);
+            return $replace260 ? $pubResults : array_merge($results, $pubResults);
         } else if (count($copyResults) > 0) {
-            $results = array_merge($results, $copyResults);
+            return $replace260 ? $copyResults : array_merge($results, $copyResults);
         }
 
         return $results;
@@ -503,14 +496,15 @@ class SolrMarc extends SolrDefault
      * @param object $currentField Result from File_MARC::getFields.
      * @param array  $subfields    The MARC subfield codes to read
      * @param bool   $concat       Should we concatenate subfields?
+     * @param string $separator    Separator string (used only when $concat === true)
      *
      * @return array
      */
-    protected function getSubfieldArray($currentField, $subfields, $concat = true)
-    {
+    protected function getSubfieldArray($currentField, $subfields, $concat = true,
+        $separator = ' '
+    ) {
         // Start building a line of text for the current field
         $matches = [];
-        $currentLine = '';
 
         // Loop through all subfields, collecting results that match the whitelist;
         // note that it is important to retain the original MARC order here!
@@ -522,26 +516,14 @@ class SolrMarc extends SolrDefault
                     // non-empty:
                     $data = trim($currentSubfield->getData());
                     if (!empty($data)) {
-                        // Are we concatenating fields or storing them separately?
-                        if ($concat) {
-                            $currentLine .= $data . ' ';
-                        } else {
-                            $matches[] = $data;
-                        }
+                        $matches[] = $data;
                     }
                 }
             }
         }
 
-        // If we're in concat mode and found data, it will be in $currentLine and
-        // must be moved into the matches array.  If we're not in concat mode,
-        // $currentLine will always be empty and this code will be ignored.
-        if (!empty($currentLine)) {
-            $matches[] = trim($currentLine);
-        }
-
-        // Send back our result array:
-        return $matches;
+        // Send back the data in a different format depending on $concat mode:
+        return $concat ? [implode($separator, $matches)] : $matches;
     }
 
     /**
@@ -765,6 +747,14 @@ class SolrMarc extends SolrDefault
      */
     protected function getRecordLinkNote($field)
     {
+        // If set, use relationship information from subfield i
+        if ($subfieldI = $field->getSubfield('i')) {
+            $data = trim($subfieldI->getData());
+            if (!empty($data)) {
+                return $data;
+            }
+        }
+
         // Normalize blank relationship indicator to 0:
         $relationshipIndicator = $field->getIndicator('2');
         if ($relationshipIndicator == ' ') {
@@ -1082,7 +1072,9 @@ class SolrMarc extends SolrDefault
      */
     public function supportsAjaxStatus()
     {
-        return true;
+        // as AJAX status lookups are done via the ILS AJAX status lookup support is
+        // only given if the ILS is available for this record
+        return $this->hasILS();
     }
 
     /**

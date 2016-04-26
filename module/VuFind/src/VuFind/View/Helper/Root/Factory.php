@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 use Zend\ServiceManager\ServiceManager;
@@ -31,11 +31,11 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Factory for Root view helpers.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  *
  * @codeCoverageIgnore
  */
@@ -238,20 +238,6 @@ class Factory
     }
 
     /**
-     * Construct the GetLastSearchLink helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return GetLastSearchLink
-     */
-    public static function getGetLastSearchLink(ServiceManager $sm)
-    {
-        return new GetLastSearchLink(
-            $sm->getServiceLocator()->get('VuFind\Search\Memory')
-        );
-    }
-
-    /**
      * Construct the HelpText helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -444,6 +430,20 @@ class Factory
     }
 
     /**
+     * Construct the SearchMemory helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SearchMemory
+     */
+    public static function getSearchMemory(ServiceManager $sm)
+    {
+        return new SearchMemory(
+            $sm->getServiceLocator()->get('VuFind\Search\Memory')
+        );
+    }
+
+    /**
      * Construct the SearchOptions helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -480,12 +480,9 @@ class Factory
      */
     public static function getSearchTabs(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $config = isset($config->SearchTabs)
-            ? $config->SearchTabs->toArray() : [];
         return new SearchTabs(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-            $config, $sm->get('url')
+            $sm->get('url'), $sm->getServiceLocator()->get('VuFind\SearchTabsHelper')
         );
     }
 
@@ -528,8 +525,10 @@ class Factory
      */
     public static function getUserList(ServiceManager $sm)
     {
+        $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+        $session = new \Zend\Session\Container('List', $sessionManager);
         $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
-        return new UserList($capabilities->getListSetting());
+        return new UserList($session, $capabilities->getListSetting());
     }
 
     /**

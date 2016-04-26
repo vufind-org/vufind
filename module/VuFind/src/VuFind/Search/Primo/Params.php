@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Primo
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Primo;
 use VuFindSearch\ParamBag;
@@ -31,11 +31,11 @@ use VuFindSearch\ParamBag;
 /**
  * Primo Central Search Parameters
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Primo
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Params extends \VuFind\Search\Base\Params
 {
@@ -53,7 +53,11 @@ class Params extends \VuFind\Search\Base\Params
         $sort = $this->getSort();
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
-        $backendParams->set('filterList', $this->filterList);
+        $filterList = array_merge(
+            $this->getHiddenFilters(),
+            $this->filterList
+        );
+        $backendParams->set('filterList', $filterList);
 
         return $backendParams;
     }
@@ -110,5 +114,6 @@ class Params extends \VuFind\Search\Base\Params
     {
         $this->initFacetList('Facets', 'Results_Settings', 'Primo');
         $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings', 'Primo');
+        $this->initCheckboxFacets('CheckboxFacets', 'Primo');
     }
 }

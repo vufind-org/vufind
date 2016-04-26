@@ -4,7 +4,7 @@
   $this->headScript()->appendFile("check_save_statuses.js");
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
-    echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+    $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
   }
 
   // Add RDF header link if applicable:
@@ -13,7 +13,7 @@
   }
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
+  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
     '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
   $this->layout()->title = $this->driver->getShortTitle();
 ?>
@@ -42,9 +42,9 @@
 
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
-    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>">
+    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
     </div>
@@ -58,7 +58,7 @@
               $desc = $obj->getDescription();
               $tab_classes = array();
               if (0 === strcasecmp($this->activeTab, $tab)) {
-                if (!$this->ajaxTabs || !$obj->supportsAjax()) {
+                if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
                   $tab_classes[] = 'active';
                 }
                 $tab_classes[] = 'initiallyActive';
@@ -75,7 +75,7 @@
         </ul>
 
         <div class="tab-content">
-          <? if (!$this->ajaxTabs || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+          <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
             <div class="tab-pane active <?=$this->activeTab ?>-tab">
               <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
             </div>

@@ -24,11 +24,11 @@ CREATE INDEX comments_resource_id_idx ON comments (resource_id);
 
 CREATE TABLE resource (
 id SERIAL,
-record_id varchar(120) NOT NULL DEFAULT '',
-title varchar(200) NOT NULL DEFAULT '',
-author varchar(200) DEFAULT NULL,
+record_id varchar(255) NOT NULL DEFAULT '',
+title varchar(255) NOT NULL DEFAULT '',
+author varchar(255) DEFAULT NULL,
 year int DEFAULT NULL,
-source varchar(50) NOT NULL DEFAULT 'VuFind',
+source varchar(50) NOT NULL DEFAULT 'Solr',
 PRIMARY KEY (id)
 );
 CREATE INDEX resource_record_id_idx ON resource (record_id);
@@ -66,10 +66,11 @@ id SERIAL,
 user_id int NOT NULL DEFAULT '0',
 session_id varchar(128),
 folder_id int DEFAULT NULL,
-created date NOT NULL DEFAULT '1970-01-01',
+created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 title varchar(20) DEFAULT NULL,
 saved int NOT NULL DEFAULT '0',
 search_object bytea,
+checksum int DEFAULT NULL,
 PRIMARY KEY (id)
 );
 CREATE INDEX search_user_id_idx ON search (user_id);
@@ -245,6 +246,25 @@ PRIMARY KEY (id)
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `record`
+--
+
+DROP TABLE IF EXISTS "record";
+
+CREATE TABLE `record` (
+  id serial NOT NULL,
+  record_id varchar(255),
+  source varchar(50),
+  version varchar(20) NOT NULL,
+  data text,
+  updated timestamp without time zone,
+  PRIMARY KEY (id),
+  UNIQUE(record_id, source)
+);
+
+-- --------------------------------------------------------
+
+-- 
 -- Table structure for table `user_card`
 --
 

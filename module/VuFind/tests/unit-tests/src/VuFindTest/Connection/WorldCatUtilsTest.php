@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindTest\Connection;
 
@@ -36,56 +36,14 @@ use Zend\Http\Client as HttpClient;
 /**
  * Unit tests for WorldCat utility connector.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class WorldCatUtilsTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * Test XISBN processing.
-     *
-     * @return void
-     */
-    public function testXISBN()
-    {
-        $client = $this->getClient('xisbn');
-        $result = $client->getXISBN('0140435123');
-        $this->assertEquals(82, count($result));
-        $this->assertTrue(in_array('0140435123', $result));
-        $this->assertTrue(in_array('1848378912', $result));
-    }
-
-    /**
-     * Test XISSN processing.
-     *
-     * @return void
-     */
-    public function testXISSN()
-    {
-        $client = $this->getClient('xissn');
-        $result = $client->getXISSN('0362-4331');
-        $this->assertEquals(4, count($result));
-        $this->assertTrue(in_array('0362-4331', $result));
-        $this->assertTrue(in_array('1542-667X', $result));
-    }
-
-    /**
-     * Test XOCLCNUM processing.
-     *
-     * @return void
-     */
-    public function testXOCLCNUM()
-    {
-        $client = $this->getClient('xoclcnum');
-        $result = $client->getXOCLCNUM('42371494');
-        $this->assertEquals(568, count($result));
-        $this->assertTrue(in_array('42371494', $result));
-        $this->assertTrue(in_array('1710732', $result));
-    }
-
     /**
      * Test related identities
      *
@@ -109,21 +67,6 @@ class WorldCatUtilsTest extends \PHPUnit_Framework_TestCase
     {
         $client = $this->getClient();
         $this->assertFalse($client->getRelatedIdentities(''));
-    }
-
-    /**
-     * Test related terminology
-     *
-     * @return void
-     */
-    public function testGetRelatedTerms()
-    {
-        $client = $this->getClient('terms');
-        $terms = $client->getRelatedTerms('hogs');
-        $this->assertEquals(4, count($terms['exact']));
-        $this->assertEquals(7, count($terms['broader']));
-        $this->assertEquals(4, count($terms['narrower']));
-        $this->assertTrue(in_array('Construction workers', $terms['broader']));
     }
 
     /**

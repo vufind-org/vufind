@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
@@ -31,11 +31,11 @@ use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
 /**
  * Record driver view helper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Record extends AbstractHelper
 {
@@ -337,7 +337,7 @@ class Record extends AbstractHelper
     {
         // Figure out controller using naming convention based on resource
         // source:
-        $source = $this->driver->getResourceSource();
+        $source = $this->driver->getSourceIdentifier();
         if ($source == DEFAULT_SEARCH_BACKEND) {
             // Default source is special case -- it uses the basic record
             // controller.
@@ -357,9 +357,12 @@ class Record extends AbstractHelper
      */
     public function getLink($type, $lookfor)
     {
-        return $this->renderTemplate(
+        $link = $this->renderTemplate(
             'link-' . $type . '.phtml', ['lookfor' => $lookfor]
         );
+        $link .= $this->getView()->plugin('searchTabs')
+            ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
+        return $link;
     }
 
     /**
@@ -412,7 +415,7 @@ class Record extends AbstractHelper
     public function getCheckbox($idPrefix = '')
     {
         static $checkboxCount = 0;
-        $id = $this->driver->getResourceSource() . '|'
+        $id = $this->driver->getSourceIdentifier() . '|'
             . $this->driver->getUniqueId();
         $context
             = ['id' => $id, 'count' => $checkboxCount++, 'prefix' => $idPrefix];

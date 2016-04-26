@@ -22,7 +22,7 @@ defined('APPLICATION_ENV')
     );
 
 // Define default search backend identifier
-defined('DEFAULT_SEARCH_BACKEND') || define('DEFAULT_SEARCH_BACKEND', 'VuFind');
+defined('DEFAULT_SEARCH_BACKEND') || define('DEFAULT_SEARCH_BACKEND', 'Solr');
 
 // Define path to local override directory
 defined('LOCAL_OVERRIDE_DIR')

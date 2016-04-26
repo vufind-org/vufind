@@ -19,25 +19,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Preetha Rao <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\RecordDriver;
 
 /**
  * SolrMarc Record Driver Test Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   David Maus <maus@hab.de>
  * @author   Preetha Rao <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class SolrMarcTest extends \VuFindTest\Unit\TestCase
 {
@@ -59,8 +59,8 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         $fixture = $this->loadRecordFixture('testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $expected = [
-            ['title' => 'note_785_1', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000343528']],
-            ['title' => 'note_785_1', 'value' => 'Bollettino della Unione matematica', 'link' => ['type' => 'bib', 'value' => '000343529']],
+            ['title' => 'A', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000343528']],
+            ['title' => 'B', 'value' => 'Bollettino della Unione matematica', 'link' => ['type' => 'bib', 'value' => '000343529']],
             ['title' => 'note_785_8', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000394898']],
         ];
         $this->assertEquals($expected, $record->getAllRecordLinks());

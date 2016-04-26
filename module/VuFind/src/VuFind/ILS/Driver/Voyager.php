@@ -20,13 +20,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use File_MARC, PDO, PDOException,
@@ -38,13 +38,13 @@ use File_MARC, PDO, PDOException,
 /**
  * Voyager ILS Driver
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Voyager extends AbstractBase
     implements TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
@@ -167,7 +167,7 @@ class Voyager extends AbstractBase
             $this->error(
                 "PDO Connection failed ($this->dbName): " . $e->getMessage()
             );
-            throw $e;
+            throw new ILSException($e->getMessage());
         }
 
         $this->useHoldingsSortGroups
@@ -495,6 +495,9 @@ class Voyager extends AbstractBase
                     = $this->pickStatus($availability['otherStatuses']);
             }
             $current['availability'] = $availability['available'];
+            $current['use_unknown_message']
+                = in_array('No information available', $current['status_array']);
+
             $status[] = $current;
         }
 
@@ -1610,7 +1613,8 @@ class Voyager extends AbstractBase
             "(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR " .
             "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
             "BIB_TEXT.BIB_ID = HOLD_RECALL.BIB_ID",
-            "(HOLD_RECALL.HOLDING_DB_ID IS NULL OR (HOLD_RECALL.HOLDING_DB_ID = " .
+            "(HOLD_RECALL.HOLDING_DB_ID IS NULL OR HOLD_RECALL.HOLDING_DB_ID = 0 " .
+            "OR (HOLD_RECALL.HOLDING_DB_ID = " .
             "VOYAGER_DATABASES.DB_ID AND VOYAGER_DATABASES.DB_CODE = 'LOCAL'))",
             "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)"
         ];
@@ -1884,7 +1888,7 @@ class Voyager extends AbstractBase
         $sql = $this->buildSqlFromArray($sqlArray);
         try {
             $sqlStmt = $this->db->prepare($sql['string']);
-            $this->debugsql(__FUNCTION__, $sql['string'], $sql['bind']);
+            $this->debugSQL(__FUNCTION__, $sql['string'], $sql['bind']);
             $sqlStmt->execute($sql['bind']);
             while ($sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $list[] = $this->processMyStorageRetrievalRequestsData($sqlRow);

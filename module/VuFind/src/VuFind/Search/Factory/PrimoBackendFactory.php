@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Factory;
 
@@ -43,11 +43,11 @@ use Zend\ServiceManager\FactoryInterface;
 /**
  * Factory for Primo Central backends.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class PrimoBackendFactory implements FactoryInterface
 {
@@ -135,11 +135,10 @@ class PrimoBackendFactory implements FactoryInterface
         // Get the PermissionHandler
         $permHandler = $this->getPermissionHandler();
 
-        // Load credentials and port number:
-        $id = isset($this->primoConfig->General->apiId)
-            ? $this->primoConfig->General->apiId : null;
-        $port = isset($this->primoConfig->General->port)
-            ? $this->primoConfig->General->port : 1701;
+        // Load url and credentials:
+        if (!isset($this->primoConfig->General->url)) {
+            throw new \Exception('Missing url in Primo.ini');
+        }
         $instCode = isset($permHandler)
             ? $permHandler->getInstCode()
             : null;
@@ -150,7 +149,9 @@ class PrimoBackendFactory implements FactoryInterface
             ? $this->primoConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);
 
-        $connector = new Connector($id, $instCode, $client, $port);
+        $connector = new Connector(
+            $this->primoConfig->General->url, $instCode, $client
+        );
         $connector->setLogger($this->logger);
         return $connector;
     }

@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
 use Zend\Console\Console, Zend\Console\Getopt,
@@ -34,11 +34,11 @@ use Zend\Console\Console, Zend\Console\Getopt,
  * VuFind controller base class (defines some methods that can be shared by other
  * controllers).
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class AbstractBase extends AbstractActionController
 {
@@ -110,6 +110,18 @@ class AbstractBase extends AbstractActionController
     protected function getSuccessResponse()
     {
         return $this->getResponse()->setErrorLevel(0);
+    }
+
+    /**
+     * Get a VuFind configuration.
+     *
+     * @param string $id Configuration identifier (default = main VuFind config)
+     *
+     * @return \Zend\Config\Config
+     */
+    public function getConfig($id = 'config')
+    {
+        return $this->getServiceLocator()->get('VuFind\Config')->get($id);
     }
 
     /**

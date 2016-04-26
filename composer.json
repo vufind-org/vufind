@@ -12,14 +12,6 @@
         {
             "type": "composer",
             "url": "https://packages.zendframework.com/"
-        },
-        {
-            "type": "pear",
-            "url": "http://pear.php.net"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/ahand/mobileesp"
         }
     ],
     "require": {
@@ -30,9 +22,8 @@
         "ahand/mobileesp": "dev-master",
         "ocramius/proxy-manager": "1.0.2",
         "oyejorge/less.php": "1.7.0.9",
-        "pear-pear.php.net/file_marc": "1.1.2",
-        "pear-pear.php.net/pear": "1.10.1",
-        "pear-pear.php.net/validate_ispn": "0.6.1",
+        "pear/file_marc": "1.1.2",
+        "pear/validate_ispn": "dev-master",
         "serialssolutions/summon": "1.0.0",
         "symfony/yaml": "2.7.6",
         "vufind-org/vufindcode": "1.0.2",

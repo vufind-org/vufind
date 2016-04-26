@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 use Zend\Mvc\MvcEvent;
@@ -31,11 +31,11 @@ use Zend\Mvc\MvcEvent;
 /**
  * Summon Controller
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class SummonController extends AbstractSearch
 {
@@ -69,7 +69,7 @@ class SummonController extends AbstractSearch
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function preDispatch(MvcEvent $e)
+    public function injectSummonMessage(MvcEvent $e)
     {
         $this->layout()->poweredBy
             = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
@@ -84,7 +84,9 @@ class SummonController extends AbstractSearch
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
+        $events->attach(
+            MvcEvent::EVENT_DISPATCH, [$this, 'injectSummonMessage'], 1000
+        );
     }
 
     /**
@@ -235,4 +237,3 @@ class SummonController extends AbstractSearch
         return $facetList;
     }
 }
-

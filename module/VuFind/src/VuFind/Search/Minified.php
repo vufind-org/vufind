@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Search;
 
@@ -44,11 +44,11 @@ namespace VuFind\Search;
  * $searchObject = unserialize($search);
  * $searchObject->deminify($manager);
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Minified
 {
@@ -65,6 +65,13 @@ class Minified
      * @var array
      */
     public $f = [];
+
+    /**
+     * Hidden Filters
+     *
+     * @var array
+     */
+    public $hf = [];
 
     /**
      * ID, start tIme, query Speed, Result total, search TYpe, search CLass id
@@ -96,6 +103,7 @@ class Minified
         // It would be nice to shorten filter fields too, but
         //      it would be a nightmare to maintain.
         $this->f = $searchObject->getParams()->getFilters();
+        $this->hf = $searchObject->getParams()->getHiddenFilters();
     }
 
     /**
