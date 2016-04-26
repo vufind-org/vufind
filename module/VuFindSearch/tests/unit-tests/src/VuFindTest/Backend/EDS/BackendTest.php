@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindTest\Backend\EDS;
 
@@ -35,11 +35,11 @@ use InvalidArgumentException;
 /**
  * Unit tests for EDS backend.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class BackendTest extends \VuFindTest\Unit\TestCase
 {
@@ -216,8 +216,8 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             $cache = $this->getMock('Zend\Cache\Storage\Adapter\Filesystem');
         }
         if (null === $container) {
-            // Using a mock here causes an error for some reason -- investigate later.
-            $container = new \Zend\Session\Container('EBSCO');
+            $container = $this->getMockBuilder('Zend\Session\Container')
+                ->disableOriginalConstructor()->getMock();
         }
         if (null === $mock) {
             return new Backend($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));

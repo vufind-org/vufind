@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Verus Solutions <info@verussolutions.biz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Exception\ILS as ILSException;
@@ -31,11 +31,11 @@ use PDO, PDOException, VuFind\Exception\ILS as ILSException;
 /**
  * ILS Driver for NewGenLib
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Verus Solutions <info@verussolutions.biz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class NewGenLib extends AbstractBase
 {
@@ -440,39 +440,35 @@ class NewGenLib extends AbstractBase
      */
     public function patronLogin($username, $password)
     {
-        $patron = [];
-        $PatId = $username;
-        $psswrd = $password;
         //SQL Statement
         $sql = "select p.patron_id as patron_id, p.library_id as library_id, " .
             "p.fname as fname, p.lname as lname, p.user_password as " .
             "user_password, p.membership_start_date as membership_start_date, " .
             "p.membership_expiry_date as membership_expiry_date, p.email as " .
-            "email from patron p where p.patron_id='" . $PatId .
-            "' and p.user_password='" . $psswrd . "' and p.membership_start_date " .
+            "email from patron p where p.patron_id=:patronId" .
+            "' and p.user_password=:password and p.membership_start_date " .
             "<= current_date and p.membership_expiry_date > current_date";
 
         try {
             $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->execute();
+            $sqlStmt->execute([':patronId' => $username, ':password' => $password]);
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
-        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-            if ($PatId != $row['patron_id'] || $psswrd != $row['user_password']) {
-                return null;
-            } else {
-                $patron = ["id" => $PatId,
-                    "firstname" => $row['fname'],
-                    'lastname' => $row['lname'],
-                    'cat_username' => $PatId,
-                    'cat_password' => $psswrd,
-                    'email' => $row['email'],
-                    'major' => null,
-                    'college' => null];
-            }
+        $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            return null;
         }
-        return $patron;
+        return [
+            "id" => $row['patron_id'],
+            "firstname" => $row['fname'],
+            'lastname' => $row['lname'],
+            'cat_username' => $username,
+            'cat_password' => $password,
+            'email' => $row['email'],
+            'major' => null,
+            'college' => null
+        ];
     }
 
     /**

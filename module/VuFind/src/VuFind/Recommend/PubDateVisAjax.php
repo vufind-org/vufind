@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Till Kinstler <kinstler@gbv.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
 
@@ -32,11 +32,11 @@ namespace VuFind\Recommend;
  *
  * This class displays a visualisation of facet values in a recommendation module
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Till Kinstler <kinstler@gbv.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 class PubDateVisAjax implements RecommendInterface
 {
@@ -169,16 +169,7 @@ class PubDateVisAjax implements RecommendInterface
     public function getSearchParams()
     {
         // Get search parameters and return them minus the leading ?:
-        $str = substr($this->searchObject->getUrlQuery()->getParams(false), 1);
-
-        // Pass through hidden filters:
-        $options = $this->searchObject->getOptions();
-        if (is_callable([$options, 'getHiddenFilters'])) {
-            foreach ($options->getHiddenFilters() as $hf) {
-                $str .= '&' . urlencode('hf[]') . '=' . urlencode($hf);
-            }
-        }
-        return $str;
+        return substr($this->searchObject->getUrlQuery()->getParams(false), 1);
     }
 
     /**

@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\Search\Options;
 use Zend\ServiceManager\ServiceManager;
@@ -31,11 +31,11 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Search Options Object Factory Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  *
  * @codeCoverageIgnore
  */
@@ -51,7 +51,9 @@ class Factory
     public static function getEDS(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config');
-        $container = new \Zend\Session\Container('EBSCO');
+        $container = new \Zend\Session\Container(
+            'EBSCO', $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
         // No API info in session? Re-establish connection:
         if (!isset($container->info)) {
             $backend = $sm->getServiceLocator()->get('VuFind\Search\BackendManager')

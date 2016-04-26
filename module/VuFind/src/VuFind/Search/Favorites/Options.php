@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Favorites
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Favorites;
 
 /**
  * Search Favorites Options
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Favorites
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Options extends \VuFind\Search\Base\Options
 {
@@ -52,6 +52,13 @@ class Options extends \VuFind\Search\Base\Options
             'title' => 'sort_title', 'author' => 'sort_author',
             'year DESC' => 'sort_year', 'year' => 'sort_year asc'
         ];
+        $config = $configLoader->get('config');
+        if (isset($config->Social->lists_default_limit)) {
+            $this->defaultLimit = $config->Social->lists_default_limit;
+        }
+        if (isset($config->Social->lists_limit_options)) {
+            $this->limitOptions = explode(',', $config->Social->lists_limit_options);
+        }
     }
 
     /**

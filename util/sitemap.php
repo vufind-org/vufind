@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Utilities
  * @author   David K. Uspal <david.uspal@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/search_engine_optimization Wiki
+ * @link     https://vufind.org/wiki/search_engine_optimization Wiki
  */
  
 // Load the Zend framework -- this will automatically trigger the appropriate

@@ -22,17 +22,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS;
 use VuFind\Exception\ILS as ILSException,
     VuFind\ILS\Driver\DriverInterface,
     VuFind\I18n\Translator\TranslatorAwareInterface;
+use Zend\Log\LoggerAwareInterface;
 
 /**
  * Catalog Connection Class
@@ -40,16 +41,17 @@ use VuFind\Exception\ILS as ILSException,
  * This wrapper works with a driver class to pass information from the ILS to
  * VuFind.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Connection implements TranslatorAwareInterface
+class Connection implements TranslatorAwareInterface, LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Has the driver been initialized yet?
@@ -215,19 +217,27 @@ class Connection implements TranslatorAwareInterface
      */
     public function checkFunction($function, $params = null)
     {
-        // Extract the configuration from the driver if available:
-        $functionConfig = $this->checkCapability(
-            'getConfig', [$function, $params]
-        ) ? $this->getDriver()->getConfig($function, $params) : false;
+        try {
+            // Extract the configuration from the driver if available:
+            $functionConfig = $this->checkCapability(
+                'getConfig', [$function, $params], true
+            ) ? $this->getDriver()->getConfig($function, $params) : false;
 
-        // See if we have a corresponding check method to analyze the response:
-        $checkMethod = "checkMethod" . $function;
-        if (!method_exists($this, $checkMethod)) {
+            // See if we have a corresponding check method to analyze the response:
+            $checkMethod = "checkMethod" . $function;
+            if (!method_exists($this, $checkMethod)) {
+                return false;
+            }
+
+            // Send back the settings:
+            return $this->$checkMethod($functionConfig, $params);
+        } catch (ILSException $e) {
+            $this->logError(
+                "checkFunction($function) with params: " . print_r($params, true)
+                . ' failed: ' . $e->getMessage()
+            );
             return false;
         }
-
-        // Send back the settings:
-        return $this->$checkMethod($functionConfig, $params);
     }
 
     /**
@@ -459,6 +469,10 @@ class Connection implements TranslatorAwareInterface
             && isset($functionConfig['HMACKeys'])
         ) {
             $response = ['function' => 'placeILLRequest'];
+            if (isset($functionConfig['defaultRequiredDate'])) {
+                $response['defaultRequiredDate']
+                    = $functionConfig['defaultRequiredDate'];
+            }
             $response['HMACKeys'] = explode(':', $functionConfig['HMACKeys']);
             if (isset($functionConfig['extraFields'])) {
                 $response['extraFields'] = $functionConfig['extraFields'];
@@ -710,21 +724,33 @@ class Connection implements TranslatorAwareInterface
      *
      * @param string $method Method to check
      * @param array  $params Array of passed parameters (optional)
+     * @param bool   $throw  Whether to throw exceptions instead of returning false
      *
      * @return bool
+     * @throws ILSException
      */
-    public function checkCapability($method, $params = [])
+    public function checkCapability($method, $params = [], $throw = false)
     {
-        // First check that the function is callable without the expense of
-        // initializing the driver:
-        if (is_callable([$this->getDriverClass(), $method])) {
-            // At least drivers implementing the __call() magic method must also
-            // implement supportsMethod() to verify that the method is actually
-            // usable:
-            if (method_exists($this->getDriverClass(), 'supportsMethod')) {
-                return $this->getDriver()->supportsMethod($method, $params);
+        try {
+            // First check that the function is callable without the expense of
+            // initializing the driver:
+            if (is_callable([$this->getDriverClass(), $method])) {
+                // At least drivers implementing the __call() magic method must also
+                // implement supportsMethod() to verify that the method is actually
+                // usable:
+                if (method_exists($this->getDriverClass(), 'supportsMethod')) {
+                    return $this->getDriver()->supportsMethod($method, $params);
+                }
+                return true;
             }
-            return true;
+        } catch (ILSException $e) {
+            $this->logError(
+                "checkCapability($method) with params: " . print_r($params, true)
+                . ' failed: ' . $e->getMessage()
+            );
+            if ($throw) {
+                throw $e;
+            }
         }
 
         // If we got this far, the feature is unsupported:
@@ -742,7 +768,7 @@ class Connection implements TranslatorAwareInterface
     {
         return isset($this->config->holdings_text_fields)
             ? $this->config->holdings_text_fields->toArray()
-            : ['notes', 'summary', 'supplements', 'indexes'];
+            : ['holdings_notes', 'summary', 'supplements', 'indexes'];
     }
 
     /**

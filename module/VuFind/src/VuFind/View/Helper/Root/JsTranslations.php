@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 use Zend\View\Helper\AbstractHelper;
@@ -31,11 +31,11 @@ use Zend\View\Helper\AbstractHelper;
 /**
  * JsTranslations helper for passing translation text to Javascript
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class JsTranslations extends AbstractHelper
 {
@@ -87,19 +87,30 @@ class JsTranslations extends AbstractHelper
     }
 
     /**
-     * Generate Javascript from the internal strings.
+     * Generate JSON from the internal strings.
      *
      * @return string
      */
-    public function getScript()
+    public function getJSON()
     {
         $parts = [];
         foreach ($this->strings as $k => $v) {
             $translation = is_array($v)
                 ? call_user_func_array([$this->transEsc, '__invoke'], $v)
                 : $this->transEsc->__invoke($v);
-            $parts[] = $k . ': "' . addslashes($translation) . '"';
+            $parts[] = '"' . addslashes($k) . '": "'
+                . addslashes($translation) . '"';
         }
-        return $this->varName . ' = {' . implode(',', $parts) . '};';
+        return '{' . implode(',', $parts) . '}';
+    }
+
+    /**
+     * Assign JSON to a variable.
+     *
+     * @return string
+     */
+    public function getScript()
+    {
+        return $this->varName . ' = ' . $this->getJSON() . ';';
     }
 }

@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
 
 /**
  * Model for Summon records.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 class Summon extends SolrDefault
 {
@@ -138,21 +138,15 @@ class Summon extends SolrDefault
     }
 
     /**
-     * Get a highlighted author string, if available.
+     * Get highlighted author data, if available.
      *
-     * @return string
+     * @return array
      */
-    public function getHighlightedAuthor()
+    public function getRawAuthorHighlights()
     {
-        // Don't check for highlighted values if highlighting is disabled;
-        // also, don't try to highlight multi-author works, because it will
-        // cause display problems -- it's currently impossible to properly
-        // synchronize the 'Author' and 'Author_xml' lists.
-        if (!$this->highlight || count($this->fields['Author']) > 1) {
-            return '';
-        }
-        return isset($this->fields['Author']) ?
-            $this->fields['Author'][0] : '';
+        // Don't check for highlighted values if highlighting is disabled.
+        return ($this->highlight && isset($this->fields['Author']))
+            ? $this->fields['Author'] : [];
     }
 
     /**
@@ -283,17 +277,6 @@ class Summon extends SolrDefault
     }
 
     /**
-     * Get the main author of the record.
-     *
-     * @return string
-     */
-    public function getPrimaryAuthor()
-    {
-        return isset($this->fields['Author_xml'][0]['fullname']) ?
-            $this->fields['Author_xml'][0]['fullname'] : '';
-    }
-
-    /**
      * Pass in a date converter
      *
      * @param \VuFind\Date\Converter $dc Date converter
@@ -364,15 +347,15 @@ class Summon extends SolrDefault
     }
 
     /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthor()).
+     * Get an array of all primary authors.
      *
      * @return array
      */
-    public function getSecondaryAuthors()
+    public function getPrimaryAuthors()
     {
         $authors = [];
         if (isset($this->fields['Author_xml'])) {
-            for ($i = 1; $i < count($this->fields['Author_xml']); $i++) {
+            for ($i = 0; $i < count($this->fields['Author_xml']); $i++) {
                 if (isset($this->fields['Author_xml'][$i]['fullname'])) {
                     $authors[] = $this->fields['Author_xml'][$i]['fullname'];
                 }

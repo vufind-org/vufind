@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 
@@ -36,11 +36,11 @@ use VuFind\Exception\Auth as AuthException,
 /**
  * Controller for the user account area.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class MyResearchController extends AbstractBase
 {
@@ -146,10 +146,7 @@ class MyResearchController extends AbstractBase
             return $this->forwardTo('MyResearch', 'Home');
         }
 
-        // We may have come in from a lightbox.  In this case, a prior module
-        // will not have set the followup information.  We should grab the referer
-        // so the user doesn't get lost.
-        // i.e. if there's already a followup url, keep it; otherwise set one.
+        // If there's already a followup url, keep it; otherwise set one.
         if (!$this->getFollowupUrl()) {
             $this->setFollowupUrlToReferer();
         }
@@ -198,12 +195,8 @@ class MyResearchController extends AbstractBase
             // Also don't attempt to process a login that hasn't happened yet;
             // if we've just been forced here from another page, we need the user
             // to click the session initiator link before anything can happen.
-            //
-            // Finally, we don't want to auto-forward if we're in a lightbox, since
-            // it may cause weird behavior -- better to display an error there!
             if (!$this->params()->fromPost('processLogin', false)
                 && !$this->params()->fromPost('forcingLogin', false)
-                && !$this->inLightbox()
             ) {
                 $this->getRequest()->getPost()->set('processLogin', true);
                 return $this->forwardTo('MyResearch', 'Home');
@@ -228,6 +221,14 @@ class MyResearchController extends AbstractBase
     {
         // Don't log in if already logged in!
         if ($this->getAuthManager()->isLoggedIn()) {
+            // inLightbox (only instance)
+            if ($this->getRequest()->getQuery('layout', 'no') === 'lightbox'
+                || 'layout/lightbox' == $this->layout()->getTemplate()
+            ) {
+                $response = $this->getResponse();
+                $response->setStatusCode(205);
+                return $response;
+            }
             return $this->redirect()->toRoute('home');
         }
         $this->clearFollowupUrl();
@@ -262,10 +263,43 @@ class MyResearchController extends AbstractBase
                 '/([?&])auth_method=[^&]*&?/', '$1', $logoutTarget
             );
             $logoutTarget = rtrim($logoutTarget, '?');
+
+            // Another special case: if logging out will send the user back to
+            // the MyResearch home action, instead send them all the way to
+            // VuFind home. Otherwise, they might get logged back in again,
+            // which is confusing. Even in the best scenario, they'll just end
+            // up on a login screen, which is not helpful.
+            if ($logoutTarget == $this->getServerUrl('myresearch-home')) {
+                $logoutTarget = $this->getServerUrl('home');
+            }
         }
 
         return $this->redirect()
             ->toUrl($this->getAuthManager()->logout($logoutTarget));
+    }
+
+    /**
+     * Support method for savesearchAction(): set the saved flag in a secure
+     * fashion, throwing an exception if somebody attempts something invalid.
+     *
+     * @param int  $searchId The search ID to save/unsave
+     * @param bool $saved    The new desired state of the saved flag
+     * @param int  $userId   The user ID requesting the change
+     *
+     * @throws \Exception
+     * @return void
+     */
+    protected function setSavedFlagSecurely($searchId, $saved, $userId)
+    {
+        $searchTable = $this->getTable('Search');
+        $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
+        $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
+        if (empty($row)) {
+            throw new \Exception('Access denied.');
+        }
+        $row->saved = $saved ? 1 : 0;
+        $row->user_id = $userId;
+        $row->save();
     }
 
     /**
@@ -275,18 +309,23 @@ class MyResearchController extends AbstractBase
      */
     public function savesearchAction()
     {
+        // Fail if saved searches are disabled.
+        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        if ($check->getSavedSearchSetting() === 'disabled') {
+            throw new \Exception('Saved searches disabled.');
+        }
+
         $user = $this->getUser();
         if ($user == false) {
             return $this->forceLogin();
         }
 
         // Check for the save / delete parameters and process them appropriately:
-        $search = $this->getTable('Search');
         if (($id = $this->params()->fromQuery('save', false)) !== false) {
-            $search->setSavedFlag($id, true, $user->id);
+            $this->setSavedFlagSecurely($id, true, $user->id);
             $this->flashMessenger()->addMessage('search_save_success', 'success');
         } else if (($id = $this->params()->fromQuery('delete', false)) !== false) {
-            $search->setSavedFlag($id, false);
+            $this->setSavedFlagSecurely($id, false, $user->id);
             $this->flashMessenger()->addMessage('search_unsave_success', 'success');
         } else {
             throw new \Exception('Missing save and delete parameters.');
@@ -520,7 +559,7 @@ class MyResearchController extends AbstractBase
         // Get current record (and, if applicable, selected list ID) for convenience:
         $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
         $source = $this->params()->fromPost(
-            'source', $this->params()->fromQuery('source', 'VuFind')
+            'source', $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
         );
         $driver = $this->getRecordLoader()->load($id, $source, true);
         $listID = $this->params()->fromPost(
@@ -614,7 +653,8 @@ class MyResearchController extends AbstractBase
         );
         if ($deleteId) {
             $deleteSource = $this->params()->fromPost(
-                'source', $this->params()->fromQuery('source', 'VuFind')
+                'source',
+                $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
             );
             // If the user already confirmed the operation, perform the delete now;
             // otherwise prompt for confirmation:
@@ -684,13 +724,15 @@ class MyResearchController extends AbstractBase
             // to the save screen; otherwise, send them back to the list they
             // just edited.
             $recordId = $this->params()->fromQuery('recordId');
-            $recordSource = $this->params()->fromQuery('recordSource', 'VuFind');
+            $recordSource
+                = $this->params()->fromQuery('recordSource', DEFAULT_SEARCH_BACKEND);
             if (!empty($recordId)) {
                 $details = $this->getRecordRouter()->getActionRouteDetails(
                     $recordSource . '|' . $recordId, 'Save'
                 );
-                return $this
-                    ->lightboxAwareRedirect($details['route'], $details['params']);
+                return $this->redirect()->toRoute(
+                    $details['route'], $details['params']
+                );
             }
 
             // Similarly, if the user is in the process of bulk-saving records,
@@ -703,13 +745,13 @@ class MyResearchController extends AbstractBase
                 foreach ($bulkIds as $id) {
                     $params[] = urlencode('ids[]') . '=' . urlencode($id);
                 }
-                $saveUrl = $this->getLightboxAwareUrl('cart-save');
+                $saveUrl = $this->url()->fromRoute('cart-save');
                 $saveUrl .= (strpos($saveUrl, '?') === false) ? '?' : '&';
                 return $this->redirect()
                     ->toUrl($saveUrl . implode('&', $params));
             }
 
-            return $this->lightboxAwareRedirect('userList', ['id' => $finalId]);
+            return $this->redirect()->toRoute('userList', ['id' => $finalId]);
         } catch (\Exception $e) {
             switch(get_class($e)) {
             case 'VuFind\Exception\ListPermission':
@@ -830,7 +872,8 @@ class MyResearchController extends AbstractBase
     protected function getDriverForILSRecord($current)
     {
         $id = isset($current['id']) ? $current['id'] : null;
-        $source = isset($current['source']) ? $current['source'] : 'VuFind';
+        $source = isset($current['source'])
+            ? $current['source'] : DEFAULT_SEARCH_BACKEND;
         $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
             ->load($id, $source, true);
         $record->setExtraDetail('ils_details', $current);
@@ -1120,7 +1163,8 @@ class MyResearchController extends AbstractBase
                 if (!isset($row['id']) || empty($row['id'])) {
                     throw new \Exception();
                 }
-                $source = isset($row['source']) ? $row['source'] : 'VuFind';
+                $source = isset($row['source'])
+                    ? $row['source'] : DEFAULT_SEARCH_BACKEND;
                 $row['driver'] = $this->getServiceLocator()
                     ->get('VuFind\RecordLoader')->load($row['id'], $source);
                 $row['title'] = $row['driver']->getShortTitle();

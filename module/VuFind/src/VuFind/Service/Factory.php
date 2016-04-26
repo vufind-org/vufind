@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Service;
 use Zend\ServiceManager\ServiceManager;
@@ -31,16 +31,31 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Factory for various top-level VuFind services.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  *
  * @codeCoverageIgnore
  */
 class Factory
 {
+    /**
+     * Construct the Account Capabilities helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Config\AccountCapabilities
+     */
+    public static function getAccountCapabilities(ServiceManager $sm)
+    {
+        return new \VuFind\Config\AccountCapabilities(
+            $sm->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\AuthManager')
+        );
+    }
+
     /**
      * Construct the Auth Plugin Manager.
      *
@@ -530,6 +545,22 @@ class Factory
     }
 
     /**
+     * Construct the record cache.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Record\Cache
+     */
+    public static function getRecordCache(ServiceManager $sm)
+    {
+        return new \VuFind\Record\Cache(
+            $sm->get('VuFind\RecordDriverPluginManager'),
+            $sm->get('VuFind\Config')->get('RecordCache'),
+            $sm->get('VuFind\DbTablePluginManager')->get('Record')
+        );
+    }
+
+    /**
      * Construct the RecordDriver Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -552,7 +583,8 @@ class Factory
     {
         return new \VuFind\Record\Loader(
             $sm->get('VuFind\Search'),
-            $sm->get('VuFind\RecordDriverPluginManager')
+            $sm->get('VuFind\RecordDriverPluginManager'),
+            $sm->get('VuFind\RecordCache')
         );
     }
 
@@ -644,6 +676,20 @@ class Factory
     }
 
     /**
+     * Construct the search memory helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\Memory
+     */
+    public static function getSearchMemory(ServiceManager $sm)
+    {
+        return new \VuFind\Search\Memory(
+            new \Zend\Session\Container('Search', $sm->get('VuFind\SessionManager'))
+        );
+    }
+
+    /**
      * Construct the Search\Options Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -724,28 +770,24 @@ class Factory
     }
 
     /**
-     * Construct the Session Manager.
+     * Construct the SearchTabs helper.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \Zend\Session\SessionManager
+     * @return \VuFind\Search\SearchTabsHelper
      */
-    public static function getSessionManager(ServiceManager $sm)
+    public static function getSearchTabsHelper(ServiceManager $sm)
     {
-        $cookieManager = $sm->get('VuFind\CookieManager');
-        $sessionConfig = new \Zend\Session\Config\SessionConfig();
-        $options = [
-            'cookie_path' => $cookieManager->getPath(),
-            'cookie_secure' => $cookieManager->isSecure()
-        ];
-        $domain = $cookieManager->getDomain();
-        if (!empty($domain)) {
-            $options['cookie_domain'] = $domain;
-        }
-
-        $sessionConfig->setOptions($options);
-
-        return new \Zend\Session\SessionManager($sessionConfig);
+        $config = $sm->get('VuFind\Config')->get('config');
+        $tabConfig = isset($config->SearchTabs)
+            ? $config->SearchTabs->toArray() : [];
+        $filterConfig = isset($config->SearchTabsFilters)
+            ? $config->SearchTabsFilters->toArray() : [];
+        return new \VuFind\Search\SearchTabsHelper(
+            $sm->get('VuFind\SearchResultsPluginManager'),
+            $tabConfig, $filterConfig,
+            $sm->get('Application')->getRequest()
+        );
     }
 
     /**

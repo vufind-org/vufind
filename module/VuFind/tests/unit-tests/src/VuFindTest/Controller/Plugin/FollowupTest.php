@@ -20,25 +20,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Controller\Plugin;
 
 use VuFind\Controller\Plugin\Followup;
 use VuFindTest\Unit\TestCase as TestCase;
+use Zend\Session\Container;
 
 /**
  * Followup controller plugin tests.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class FollowupTest extends TestCase
 {
@@ -49,7 +50,7 @@ class FollowupTest extends TestCase
      */
     public function testClear()
     {
-        $f = new Followup();
+        $f = new Followup(new Container('test'));
         $f->setController($this->getMockController());
         $this->assertFalse($f->clear('url'));  // nothing to clear yet
         $f->store();
@@ -64,7 +65,7 @@ class FollowupTest extends TestCase
      */
     public function testRetrieve()
     {
-        $f = new Followup();
+        $f = new Followup(new Container('test'));
         $f->setController($this->getMockController());
         $f->store();
         // standard controller-provided URL retrieval:
@@ -82,7 +83,7 @@ class FollowupTest extends TestCase
      */
     public function testRetrieveAndClear()
     {
-        $f = new Followup();
+        $f = new Followup(new Container('test'));
         $f->store(['foo' => 'bar'], 'baz');
         $this->assertEquals('bar', $f->retrieveAndClear('foo'));
         $this->assertEquals('baz', $f->retrieveAndClear('url'));

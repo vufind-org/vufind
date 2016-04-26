@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Log;
 use VuFind\Log\Logger;
@@ -31,11 +31,11 @@ use VuFind\Log\Logger;
 /**
  * Sitemap Test Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class LoggerTest extends \VuFindTest\Unit\TestCase
 {
@@ -53,11 +53,12 @@ Array
 (
     [REMOTE_ADDR] => 1.2.3.4
     [HTTP_USER_AGENT] => Fake browser
+    [HTTP_HOST] => localhost:80
     [REQUEST_URI] => /foo/bar
 )
 CONTEXT;
             return $a[1] === 'test'
-                && $a[2] === 'test(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, Request URI = /foo/bar)'
+                && $a[2] === 'test(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, Host = localhost:80, Request URI = /foo/bar)'
                 && false !== strpos($a[3], $a[2])
                 && false !== strpos($a[3], 'Backtrace:')
                 && false !== strpos($a[3], 'line')
@@ -85,6 +86,7 @@ CONTEXT;
                 [
                     'REMOTE_ADDR' => '1.2.3.4',
                     'HTTP_USER_AGENT' => 'Fake browser',
+                    'HTTP_HOST' => 'localhost:80',
                     'REQUEST_URI' => '/foo/bar'
                 ]
             );

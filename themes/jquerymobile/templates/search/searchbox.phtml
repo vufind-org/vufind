@@ -12,8 +12,8 @@
   );
   $handlerCount = count($handlers);
   $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
-  $lastSort = $options->getLastSort();
-  $lastLimit = $options->getLastLimit();
+  $lastSort = $this->searchMemory()->getLastSort($options->getSearchClassId());
+  $lastLimit = $this->searchMemory()->getLastLimit($options->getSearchClassId());
 ?>
 <form method="get" action="<?=$this->url($basicSearch)?>" data-ajax="false">
   <label class="offscreen" for="searchForm_lookfor">

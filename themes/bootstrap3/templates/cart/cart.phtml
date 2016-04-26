@@ -3,11 +3,12 @@
   $this->headTitle($this->translate('Book Bag'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
-    . '<li class="active">' . $this->transEsc('Book Bag') . '</li>';
+  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
 ?>
+<h2><?=$this->transEsc('Book Bag') ?></h2>
 <?=$this->flashmessages()?>
-<form class="form-inline" action="<?=$this->url('cart-home')?>" method="post"  name="cartForm">
+<form class="form-inline" action="<?=$this->url('cart-processor')?>" method="post"  name="cartForm" data-lightbox-onsubmit="cartFormHandler">
+  <input type="hidden" id="dropdown_value"/>
   <? if (!$this->cart()->isEmpty()): ?>
     <div class="cart-controls clearfix">
       <div class="checkbox pull-left flip">
@@ -42,7 +43,7 @@
           <?=$this->transEsc('Delete')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
-          <li><a id="cart-confirm-delete" onClick="submitFormWithIds(this, {'delete':'delete'})" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a id="cart-confirm-delete" onClick="submitFormWithButton(this, 'delete')" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
           <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
         </ul>
       </div>
@@ -52,7 +53,7 @@
           <?=$this->transEsc('Empty Book Bag')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
-          <li><a id="cart-confirm-empty" onClick="submitCartForm(this, {'empty':'empty'})" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a id="cart-confirm-empty" onClick="submitFormWithButton(this, 'empty')" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
           <li><a onClick="$('.fa.fa-spinner').remove()"><?=$this->transEsc('confirm_dialog_no')?></a></li>
         </ul>
       </div>
@@ -60,52 +61,13 @@
   <? endif; ?>
   <?=$this->render('cart/contents.phtml')?>
 </form>
+
 <?
   $script = <<<JS
-  function determineCallback(elem) {
-    var modal = $(elem).parents('.modal');
-    if(modal.length > 0) {
-      return Lightbox.changeContent;
-    } else {
-      console.log('!');
-      return function() {location.reload()}
-    }
+  function submitFormWithButton(link, name) {
+    $('#dropdown_value').attr('name', name).val(1);
+    $(link).closest('form').submit();
   }
-  function submitCartForm(elem, data) {
-    var url = path+'/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Home';
-    $.post(url, data, determineCallback(elem));
-  }
-  function submitFormWithIds(elem, data) {
-    data['ids[]'] = [];
-    var form = $(elem).closest('form')[0];
-    var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
-    for(var i=0;i<checkboxes.length;i++) {
-      data['ids[]'].push(checkboxes[i].value);
-    }
-    submitCartForm(elem, data);
-  }
-  $('[name=cartForm] [type=submit]').click(function() {
-    // Remove other clicks
-    $('[name=cartForm] [clicked=true]').attr('clicked', false);
-    // Add useful information
-    $(this).attr("clicked", "true");
-  });
-  $('[name=cartForm]').submit(function() {
-    var submit = $(this).find('[clicked=true]').attr('name');
-    if(submit == 'delete' || submit == 'empty') {
-      return false;
-    } else {
-      return true;
-    }
-  });
-  $('#cartDelete').on('show.bs.dropdown', function () {
-    var form = $(this).closest('form')[0];
-    var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
-    if(checkboxes.length == 0) {
-      Lightbox.displayError(vufindString['bulk_noitems_advice']);
-      return false;
-    }
-  });
 JS;
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Auth;
 use VuFind\Auth\ChoiceAuth, VuFind\Auth\PluginManager,
@@ -33,11 +33,11 @@ use VuFind\Auth\ChoiceAuth, VuFind\Auth\PluginManager,
 /**
  * ChoiceAuth test class.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
 {
@@ -51,7 +51,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     public function testBadConfiguration()
     {
-        $ca = new ChoiceAuth();
+        $ca = new ChoiceAuth($this->getSessionContainer());
         $ca->setConfig(new Config([]));
     }
 
@@ -65,7 +65,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     public function testMissingPluginManager()
     {
-        $ca = new ChoiceAuth();
+        $ca = new ChoiceAuth($this->getSessionContainer());
         $ca->getPluginManager();
     }
 
@@ -145,12 +145,11 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     public function testLogout()
     {
-        $session = new \Zend\Session\Container('ChoiceAuth');
-        $session->auth_method = 'Shibboleth';
+        $session = $this->getSessionContainer('Shibboleth');
         $pm = $this->getMockPluginManager();
         $shib = $pm->get('Shibboleth');
         $shib->expects($this->once())->method('logout')->with($this->equalTo('http://foo'))->will($this->returnValue('http://bar'));
-        $ca = $this->getChoiceAuth($pm);
+        $ca = $this->getChoiceAuth($pm, $session);
         $this->assertEquals('http://bar', $ca->logout('http://foo'));
     }
 
@@ -201,16 +200,36 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Get a dummy session container.
+     *
+     * @param string $method Auth method to set in container (null for none).
+     *
+     * @return \Zend\Session\Container
+     */
+    protected function getSessionContainer($method = null)
+    {
+        $mock = $this->getMockBuilder('Zend\Session\Container')
+            ->setMethods(['__get', '__isset', '__set', '__unset'])
+            ->disableOriginalConstructor()->getMock();
+        if ($method) {
+            $mock->expects($this->any())->method('__isset')->with($this->equalTo('auth_method'))->will($this->returnValue(true));
+            $mock->expects($this->any())->method('__get')->with($this->equalTo('auth_method'))->will($this->returnValue($method));
+        }
+        return $mock;
+    }
+
+    /**
      * Get a ChoiceAuth object.
      *
-     * @param PluginManager $pm         Plugin manager
-     * @param string        $strategies Strategies setting
+     * @param PluginManager           $pm         Plugin manager
+     * @param \Zend\Session\Container $session    Session container
+     * @param string                  $strategies Strategies setting
      *
      * @return ChoiceAuth
      */
-    protected function getChoiceAuth($pm = null, $strategies = 'Database,Shibboleth')
+    protected function getChoiceAuth($pm = null, $session = null, $strategies = 'Database,Shibboleth')
     {
-        $ca = new ChoiceAuth();
+        $ca = new ChoiceAuth($session ?: $this->getSessionContainer());
         $ca->setConfig(
             new Config(['ChoiceAuth' => ['choice_order' => $strategies]])
         );

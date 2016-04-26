@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
 use Zend\Db\Sql\Expression, Zend\Db\Sql\Select;
@@ -31,11 +31,11 @@ use Zend\Db\Sql\Expression, Zend\Db\Sql\Select;
 /**
  * Table Definition for tags
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Tags extends Gateway
 {
@@ -100,7 +100,7 @@ class Tags extends Gateway
      *
      * @return array
      */
-    public function getForResource($id, $source = 'VuFind', $limit = 0,
+    public function getForResource($id, $source = DEFAULT_SEARCH_BACKEND, $limit = 0,
         $list = null, $user = null, $sort = 'count', $userToCheck = null
     ) {
         return $this->select(

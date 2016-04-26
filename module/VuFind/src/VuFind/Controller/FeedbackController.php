@@ -4,11 +4,11 @@
  *
  * PHP version 5
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Josiah Knoll <jk1135@ship.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 use Zend\Mail as Mail;
@@ -18,11 +18,11 @@ use Zend\Mail as Mail;
  *
  * Controls the Feedback
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Josiah Knoll <jk1135@ship.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class FeedbackController extends AbstractBase
 {

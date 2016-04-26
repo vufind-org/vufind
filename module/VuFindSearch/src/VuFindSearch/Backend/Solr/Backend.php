@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\Solr;
 
@@ -50,11 +50,11 @@ use VuFindSearch\Exception\InvalidArgumentException;
 /**
  * SOLR backend.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class Backend extends AbstractBackend
     implements SimilarInterface, RetrieveBatchInterface, RandomInterface
@@ -163,6 +163,8 @@ class Backend extends AbstractBackend
      */
     public function retrieveBatch($ids, ParamBag $params = null)
     {
+        $params = $params ?: new ParamBag();
+
         // Load 100 records at a time; this is a good number to avoid memory
         // problems while still covering a lot of ground.
         $pageSize = 100;
@@ -177,13 +179,9 @@ class Backend extends AbstractBackend
         while (count($ids) > 0) {
             $currentPage = array_splice($ids, 0, $pageSize, []);
             $currentPage = array_map($formatIds, $currentPage);
-            $params = new ParamBag(
-                [
-                    'q' => 'id:(' . implode(' OR ', $currentPage) . ')',
-                    'start' => 0,
-                    'rows' => $pageSize
-                ]
-            );
+            $params->set('q', 'id:(' . implode(' OR ', $currentPage) . ')');
+            $params->set('start', 0);
+            $params->set('rows', $pageSize);
             $this->injectResponseWriter($params);
             $next = $this->createRecordCollection(
                 $this->connector->search($params)
@@ -386,7 +384,7 @@ class Backend extends AbstractBackend
         ) {
             throw new RemoteErrorException(
                 "Alphabetic Browse index missing.  See " .
-                "http://vufind.org/wiki/alphabetical_heading_browse for " .
+                "https://vufind.org/wiki/indexing:alphabetical_heading_browse for " .
                 "details on generating the index.",
                 $e->getCode(), $e->getResponse(), $e->getPrevious()
             );

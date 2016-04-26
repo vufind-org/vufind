@@ -7,14 +7,18 @@ env:
   - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
 
 before_script:
-  - pear install pear/PHP_CodeSniffer
+  # Note: locked phpcs to 2.3.4 due to a bug in 2.4.0; can relax restriction after next release.
+  - pear install pear/PHP_CodeSniffer-2.3.4
+  - pear install pear/Http_Request2
   - pear channel-discover pear.phing.info
   - pear install phing/phing
   - composer global require fabpot/php-cs-fixer
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - phpenv config-rm xdebug.ini
   - phpenv rehash
 
 script:
+  - phing composer
   - phpunit --stderr --configuration module/VuFind/tests/phpunit.xml
   - phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php $PWD/module
   - phing php-cs-fixer-dryrun

@@ -19,32 +19,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\Solr;
 
 /**
  * Solr Search Options
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Options extends \VuFind\Search\Base\Options
 {
-    /**
-     * Pre-assigned filters
-     *
-     * @var array
-     */
-    protected $hiddenFilters = [];
-
     /**
      * Hierarchical facets
      *
@@ -159,6 +152,18 @@ class Options extends \VuFind\Search\Base\Options
                 $facetSettings->Advanced_Settings->translated_facets->toArray()
             );
         }
+        if (isset($facetSettings->Advanced_Settings->delimiter)) {
+            $this->setDefaultFacetDelimiter(
+                $facetSettings->Advanced_Settings->delimiter
+            );
+        }
+        if (isset($facetSettings->Advanced_Settings->delimited_facets)
+            && count($facetSettings->Advanced_Settings->delimited_facets) > 0
+        ) {
+            $this->setDelimitedFacets(
+                $facetSettings->Advanced_Settings->delimited_facets->toArray()
+            );
+        }
         if (isset($facetSettings->Advanced_Settings->special_facets)) {
             $this->specialAdvancedFacets
                 = $facetSettings->Advanced_Settings->special_facets;
@@ -222,28 +227,6 @@ class Options extends \VuFind\Search\Base\Options
                     = $searchSettings->ShardPreferences->showCheckboxes;
             }
         }
-    }
-
-    /**
-     * Add a hidden (i.e. not visible in facet controls) filter query to the object.
-     *
-     * @param string $fq Filter query for Solr.
-     *
-     * @return void
-     */
-    public function addHiddenFilter($fq)
-    {
-        $this->hiddenFilters[] = $fq;
-    }
-
-    /**
-     * Get an array of hidden filters.
-     *
-     * @return array
-     */
-    public function getHiddenFilters()
-    {
-        return $this->hiddenFilters;
     }
 
     /**

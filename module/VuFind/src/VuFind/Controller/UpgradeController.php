@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -19,27 +20,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 use ArrayObject, VuFind\Config\Locator as ConfigLocator,
     VuFind\Cookie\Container as CookieContainer,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Mvc\MvcEvent,
-    Zend\Session\Container as SessionContainer;
+    Zend\Mvc\MvcEvent;
 
 /**
  * Class controls VuFind upgrading.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class UpgradeController extends AbstractBase
 {
@@ -53,7 +55,7 @@ class UpgradeController extends AbstractBase
     /**
      * Session container
      *
-     * @var SessionContainer
+     * @var \Zend\Session\Container
      */
     protected $session;
 
@@ -67,10 +69,12 @@ class UpgradeController extends AbstractBase
     /**
      * Constructor
      *
-     * @param \VuFind\Cookie\CookieManager $cookieManager Cookie manager
+     * @param \VuFind\Cookie\CookieManager $cookieManager    Cookie manager
+     * @param \Zend\Session\Container      $sessionContainer Session container
      */
-    public function __construct(\VuFind\Cookie\CookieManager $cookieManager)
-    {
+    public function __construct(\VuFind\Cookie\CookieManager $cookieManager,
+        \Zend\Session\Container $sessionContainer
+    ) {
         // We want to use cookies for tracking the state of the upgrade, since the
         // session is unreliable -- if the user upgrades a configuration that uses
         // a different session handler than the default one, we'll lose track of our
@@ -81,7 +85,7 @@ class UpgradeController extends AbstractBase
         // safely use the session for storing some values.  We'll use this for the
         // temporary storage of root database credentials, since it is unwise to
         // send such sensitive values around as cookies!
-        $this->session = new SessionContainer('upgrade');
+        $this->session = $sessionContainer;
 
         // We should also use the session for storing warnings once we know it will
         // be stable; this will prevent the cookies from getting too big.
@@ -97,7 +101,7 @@ class UpgradeController extends AbstractBase
      *
      * @return void
      */
-    public function preDispatch(MvcEvent $e)
+    public function validateAutoConfigureConfig(MvcEvent $e)
     {
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
@@ -119,7 +123,9 @@ class UpgradeController extends AbstractBase
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
+        $events->attach(
+            MvcEvent::EVENT_DISPATCH, [$this, 'validateAutoConfigureConfig'], 1000
+        );
     }
 
     /**
@@ -261,6 +267,63 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Support method for fixdatabaseAction() -- clean up legacy 'VuFind'
+     * source values in the database.
+     *
+     * @return void
+     */
+    protected function fixVuFindSourceInDatabase()
+    {
+        $resource = $this->getTable('resource');
+        $resourceWhere = ['source' => 'VuFind'];
+        $resourceRows = $resource->select($resourceWhere);
+        if (count($resourceRows) > 0) {
+            $resource->update(['source' => 'Solr'], $resourceWhere);
+            $this->session->warnings->append(
+                'Converted ' . count($resourceRows)
+                . ' legacy "VuFind" source value(s) in resource table'
+            );
+        }
+
+        $userStatsFields = $this->getTable('userstatsfields');
+        $usfWhere = ['field' => 'recordSource', 'value' => 'VuFind'];
+        $usfRows = $userStatsFields->select($usfWhere);
+        if (count($usfRows) > 0) {
+            $userStatsFields->update(['value' => 'Solr'], $usfWhere);
+            $this->session->warnings->append(
+                'Converted ' . count($usfRows)
+                . ' legacy "VuFind" source value(s) in user_stats_fields table'
+            );
+        }
+    }
+
+    /**
+     * Support method for fixdatabaseAction() -- add checksums to search table rows.
+     *
+     * @return void
+     */
+    protected function fixSearchChecksumsInDatabase()
+    {
+        $manager = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager');
+        $search = $this->getTable('search');
+        $searchWhere = ['checksum' => null, 'saved' => 1];
+        $searchRows = $search->select($searchWhere);
+        if (count($searchRows) > 0) {
+            foreach ($searchRows as $searchRow) {
+                $searchObj = $searchRow->getSearchObject()->deminify($manager);
+                $url = $searchObj->getUrlQuery()->getParams();
+                $checksum = crc32($url) & 0xFFFFFFF;
+                $searchRow->checksum = $checksum;
+                $searchRow->save();
+            }
+            $this->session->warnings->append(
+                'Added checksum to ' . count($searchRows) . ' rows in search table'
+            );
+        }
+    }
+
+    /**
      * Upgrade the database.
      *
      * @return mixed
@@ -374,6 +437,21 @@ class UpgradeController extends AbstractBase
             $dupeTags = $this->getTable('Tags')->getDuplicates();
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->forwardTo('Upgrade', 'FixDuplicateTags');
+            }
+
+            // Clean up the "VuFind" source, if necessary.
+            $this->fixVuFindSourceInDatabase();
+
+            // Add checksums to all saved searches but catch exceptions (e.g. in case
+            // column checksum does not exist yet because of sqllog).
+            try {
+                $this->fixSearchChecksumsInDatabase();
+            } catch (\Exception $e) {
+                $this->session->warnings->append(
+                    'Could not fix checksums in table search - maybe column ' .
+                    'checksum is missing? Exception thrown with ' .
+                    'message: ' . $e->getMessage()
+                );
             }
         } catch (\Exception $e) {
             $this->flashMessenger()->addMessage(
@@ -605,6 +683,19 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Make sure we only skip the actions the user wants us to.
+     *
+     * @return void
+     */
+    protected function processSkipParam()
+    {
+        $skip = $this->params()->fromPost('skip', []);
+        foreach (['config', 'database', 'metadata'] as $action) {
+            $this->cookie->{$action . 'Okay'} = in_array($action, (array)$skip);
+        }
+    }
+
+    /**
      * Prompt the user for a source version (to upgrade from 2.x).
      *
      * @return mixed
@@ -628,6 +719,7 @@ class UpgradeController extends AbstractBase
                 $this->cookie->sourceDir = realpath(APPLICATION_PATH);
                 // Clear out request to avoid infinite loop:
                 $this->getRequest()->getPost()->set('sourceversion', '');
+                $this->processSkipParam();
                 return $this->forwardTo('Upgrade', 'Home');
             }
         }
@@ -665,19 +757,19 @@ class UpgradeController extends AbstractBase
         }
 
         // Now make sure we have a configuration file ready:
-        if (!isset($this->cookie->configOkay)) {
+        if (!isset($this->cookie->configOkay) || !$this->cookie->configOkay) {
             return $this->redirect()->toRoute('upgrade-fixconfig');
         }
 
         // Now make sure the database is up to date:
-        if (!isset($this->cookie->databaseOkay)) {
+        if (!isset($this->cookie->databaseOkay) || !$this->cookie->databaseOkay) {
             return $this->redirect()->toRoute('upgrade-fixdatabase');
         }
 
         // Check for missing metadata in the resource table; note that we do a
         // redirect rather than a forward here so that a submit button clicked
         // in the database action doesn't cause the metadata action to also submit!
-        if (!isset($this->cookie->metadataOkay)) {
+        if (!isset($this->cookie->metadataOkay) || !$this->cookie->metadataOkay) {
             return $this->redirect()->toRoute('upgrade-fixmetadata');
         }
 
@@ -718,4 +810,3 @@ class UpgradeController extends AbstractBase
         return $this->forwardTo('Upgrade', 'Home');
     }
 }
-

@@ -297,3 +297,10 @@ p.citationText {
   vertical-align: super;
 }
 #tagList .tag .tag-form {display: inline;}
+
+span[class^="services-"], span[class*=" services-"] span:first-of-type::before {
+    content: "";
+}
+span[class^="services-"], span[class*=" services-"] span::before {
+    content: ", ";
+}

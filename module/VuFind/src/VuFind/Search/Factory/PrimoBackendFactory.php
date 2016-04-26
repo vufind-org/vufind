@@ -20,11 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\Factory;
 
@@ -34,17 +34,20 @@ use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 use VuFindSearch\Backend\Primo\QueryBuilder;
 use VuFindSearch\Backend\Primo\Backend;
 
+use VuFind\Search\Primo\InjectOnCampusListener;
+use VuFind\Search\Primo\PrimoPermissionHandler;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
 
 /**
  * Factory for Primo Central backends.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class PrimoBackendFactory implements FactoryInterface
 {
@@ -84,8 +87,12 @@ class PrimoBackendFactory implements FactoryInterface
         if ($this->serviceLocator->has('VuFind\Logger')) {
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }
+
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
+
+        $this->createListeners($backend);
+
         return $backend;
     }
 
@@ -105,17 +112,36 @@ class PrimoBackendFactory implements FactoryInterface
     }
 
     /**
+     * Create listeners.
+     *
+     * @param Backend $backend Backend
+     *
+     * @return void
+     */
+    protected function createListeners(Backend $backend)
+    {
+        $events = $this->serviceLocator->get('SharedEventManager');
+
+        $this->getInjectOnCampusListener()->attach($events);
+    }
+
+    /**
      * Create the Primo Central connector.
      *
      * @return Connector
      */
     protected function createConnector()
     {
-        // Load credentials and port number:
-        $id = isset($this->primoConfig->General->apiId)
-            ? $this->primoConfig->General->apiId : null;
-        $port = isset($this->primoConfig->General->port)
-            ? $this->primoConfig->General->port : 1701;
+        // Get the PermissionHandler
+        $permHandler = $this->getPermissionHandler();
+
+        // Load url and credentials:
+        if (!isset($this->primoConfig->General->url)) {
+            throw new \Exception('Missing url in Primo.ini');
+        }
+        $instCode = isset($permHandler)
+            ? $permHandler->getInstCode()
+            : null;
 
         // Build HTTP client:
         $client = $this->serviceLocator->get('VuFind\Http')->createClient();
@@ -123,39 +149,11 @@ class PrimoBackendFactory implements FactoryInterface
             ? $this->primoConfig->General->timeout : 30;
         $client->setOptions(['timeout' => $timeout]);
 
-        $connector = new Connector($id, $this->getInstCode(), $client, $port);
+        $connector = new Connector(
+            $this->primoConfig->General->url, $instCode, $client
+        );
         $connector->setLogger($this->logger);
         return $connector;
-    }
-
-    /**
-     * Determine the institution code
-     *
-     * @return string
-     */
-    protected function getInstCode()
-    {
-        $codes = isset($this->primoConfig->Institutions->code)
-            ? $this->primoConfig->Institutions->code : [];
-        $regex = isset($this->primoConfig->Institutions->regex)
-            ? $this->primoConfig->Institutions->regex : [];
-        if (empty($codes) || empty($regex) || count($codes) != count($regex)) {
-            throw new \Exception('Check [Institutions] settings in Primo.ini');
-        }
-
-        $request = $this->serviceLocator->get('Request');
-        $ip = $request->getServer('REMOTE_ADDR');
-
-        for ($i = 0; $i < count($codes); $i++) {
-            if (preg_match($regex[$i], $ip)) {
-                return $codes[$i];
-            }
-        }
-
-        throw new \Exception(
-            'Could not determine institution code. [Institutions] settings '
-            . 'should include a catch-all rule at the end.'
-        );
     }
 
     /**
@@ -183,5 +181,37 @@ class PrimoBackendFactory implements FactoryInterface
             return $driver;
         };
         return new RecordCollectionFactory($callback);
+    }
+
+    /**
+     * Get a OnCampus Listener
+     *
+     * @return InjectOnCampusListener
+     */
+    protected function getInjectOnCampusListener()
+    {
+        $listener = new InjectOnCampusListener($this->getPermissionHandler());
+        return $listener;
+    }
+
+    /**
+     * Get a PrimoPermissionHandler
+     *
+     * @return PrimoPermissionHandler
+     */
+    protected function getPermissionHandler()
+    {
+        if (isset($this->primoConfig->Institutions)) {
+            $permHandler = new PrimoPermissionHandler(
+                $this->primoConfig->Institutions
+            );
+            $permHandler->setAuthorizationService(
+                $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+            );
+            return $permHandler;
+        }
+
+        // If no PermissionHandler can be set, return null
+        return null;
     }
 }

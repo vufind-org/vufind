@@ -3,24 +3,23 @@
   $this->headTitle($this->translate('Comments') . ': ' . $this->driver->getBreadcrumb());
 ?>
 
-<div id="commentList">
+<div class="comment-list">
   <?=$this->render('record/comments-list.phtml')?>
 </div>
-<form class="comment" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post">
+<form class="comment-form row" name="commentRecord" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post">
   <div class="row">
     <div class="col-sm-3 name">
       <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
-      <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>"/>
+      <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>"/>
       <strong><?=$this->transEsc("Your Comment")?></strong>
     </div>
     <div class="col-sm-9">
       <? $user = $this->auth()->isLoggedIn() ?>
       <? if($user): ?>
-        <textarea id="comment" name="comment" class="form-control" rows="3" required></textarea><br/>
+        <textarea name="comment" class="form-control" rows="3" required></textarea><br/>
         <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
       <? else: ?>
-        <textarea id="comment" name="comment" class="form-control" rows="3" disabled></textarea><br/>
-        <input onClick="Lightbox.get('MyResearch', 'UserLogin'); return false;" class="btn btn-primary" type="submit" value="<?=$this->transEsc("You must be logged in first")?>"/>
+        <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary" data-lightbox title="Login"><i class="fa fa-sign-in"></i> <?=$this->transEsc("You must be logged in first") ?></a>
       <? endif; ?>
     </div>
   </div>

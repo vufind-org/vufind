@@ -19,22 +19,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
  * EDS Record Controller
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class EdsrecordController extends AbstractRecord
 {
@@ -60,11 +61,14 @@ class EdsrecordController extends AbstractRecord
     {
         $driver = $this->loadRecord();
         //if the user is a guest, redirect them to the login screen.
-        if (!$this->isAuthenticationIP() && false == $this->getUser()) {
-            return $this->forceLogin();
-        } else {
-            return $this->redirect()->toUrl($driver->getPdfLink());
+        $auth = $this->getAuthorizationService();
+        if (!$auth->isGranted('access.EDSExtendedResults')) {
+            if (!$this->getUser()) {
+                return $this->forceLogin();
+            }
+            throw new ForbiddenException('Access denied.');
         }
+        return $this->redirect()->toUrl($driver->getPdfLink());
     }
 
     /**
@@ -77,17 +81,5 @@ class EdsrecordController extends AbstractRecord
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
-    }
-
-     /**
-     * Is IP Authentication being used?
-     *
-     * @return bool
-     */
-    protected function isAuthenticationIP()
-    {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
-        return (isset($config->EBSCO_Account->ip_auth)
-            && 'true' ==  $config->EBSCO_Account->ip_auth);
     }
 }

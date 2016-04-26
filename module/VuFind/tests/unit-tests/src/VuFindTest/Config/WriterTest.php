@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Config;
 use VuFind\Config\Writer;
@@ -31,12 +31,12 @@ use VuFind\Config\Writer;
 /**
  * Config Writer Test Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class WriterTest extends \VuFindTest\Unit\TestCase
 {
@@ -150,10 +150,12 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $test = new Writer('fake.ini', $cfg);
         $test->set('test', 'key2', 'val2');
         $test->set('test', 'key1', 'val1b');
+        $test->set('test', 'keyQuote', 'I "quoted" it');
         $ini = parse_ini_string($test->getContent(), true);
         $this->assertEquals('val1b', $ini['test']['key1']);
         $this->assertEquals('val2', $ini['test']['key2']);
         $this->assertEquals('val3', $ini['test']['key3']);
+        $this->assertEquals('I "quoted" it', $ini['test']['keyQuote']);
     }
 
     /**
@@ -223,5 +225,20 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $test = new Writer('fake.ini', ['general' => ['foo' => 'bar', 'foofoofoofoofoofo' => 'baz']]);
         $expected = "[general]\nfoo              = \"bar\"\nfoofoofoofoofoofo = \"baz\"\n";
         $this->assertEquals($expected, $test->getContent());
+    }
+
+    /**
+     * Test clearing values.
+     *
+     * @return void
+     */
+    public function testClear()
+    {
+        $cfg = "[a]\nb[]=1\nb[]=2\n[b]\nc=3\n";
+        $test = new Writer('fake.ini', $cfg);
+        $test->clear('a', 'b[]');   // clear array
+        $test->clear('b', 'c');     // clear single value
+        $test->clear('z', 'z');     // clear value that does not exist
+        $this->assertEquals("[a]\n[b]", trim($test->getContent()));
     }
 }

@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Content
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Content\Covers;
 use Zend\ServiceManager\ServiceManager;
@@ -31,11 +31,11 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Factory for instantiating content loaders
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Content
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  *
  * @codeCoverageIgnore
  */
@@ -74,6 +74,25 @@ class Factory
             throw new \Exception("Booksite 'key' not set in VuFind config");
         }
         return new Booksite($url, $config->Booksite->key);
+    }
+
+    /**
+     * Create Buchhandel.de loader
+     *
+     * @param ServiceManager $sm Service manager
+     *
+     * @return mixed
+     */
+    public static function getBuchhandel(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $url = isset($config->Buchhandel->url)
+            ? trim($config->Buchhandel->url, '/') . '/'
+            : 'https://api.vlb.de/api/v1/cover/';
+        if (!isset($config->Buchhandel->token)) {
+            throw new \Exception("Buchhandel.de 'token' not set in VuFind config");
+        }
+        return new Buchhandel($url, $config->Buchhandel->token);
     }
 
     /**

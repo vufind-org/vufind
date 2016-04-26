@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Controller\Plugin;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin,
@@ -32,11 +32,11 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin,
 /**
  * Class for managing "next" and "previous" navigation within result sets.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class ResultScroller extends AbstractPlugin
 {
@@ -57,14 +57,15 @@ class ResultScroller extends AbstractPlugin
     /**
      * Constructor. Create a new search result scroller.
      *
-     * @param bool $enabled Is the scroller enabled?
+     * @param SessionContainer $session Session container
+     * @param bool             $enabled Is the scroller enabled?
      */
-    public function __construct($enabled = true)
+    public function __construct(SessionContainer $session, $enabled = true)
     {
         $this->enabled = $enabled;
 
         // Set up session namespace for the class.
-        $this->data = new SessionContainer('ResultScroller');
+        $this->data = $session;
     }
 
     /**
@@ -322,7 +323,7 @@ class ResultScroller extends AbstractPlugin
                 = isset($this->data->total) ? $this->data->total : 0;
 
             // build a full ID string using the driver:
-            $id = $driver->getResourceSource() . '|' . $driver->getUniqueId();
+            $id = $driver->getSourceIdentifier() . '|' . $driver->getUniqueId();
 
             // find where this record is in the current result page
             $pos = is_array($this->data->currIds)
@@ -396,7 +397,8 @@ class ResultScroller extends AbstractPlugin
             if (!($record instanceof \VuFind\RecordDriver\AbstractBase)) {
                 return false;
             }
-            $retVal[] = $record->getResourceSource() . '|' . $record->getUniqueId();
+            $retVal[]
+                = $record->getSourceIdentifier() . '|' . $record->getUniqueId();
         }
         return $retVal;
     }

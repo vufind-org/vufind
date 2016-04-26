@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Content
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Content\Covers;
 
 /**
  * ContentCafe cover content loader.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Content
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class ContentCafe extends \VuFind\Content\AbstractCover
 {
@@ -62,7 +62,7 @@ class ContentCafe extends \VuFind\Content\AbstractCover
         $this->password = $config->pw;
         $this->baseURL = isset($config->url)
             ? $config->url : 'http://contentcafe2.btol.com';
-        $this->supportsIsbn = $this->cacheAllowed = true;
+        $this->supportsUpc = $this->supportsIsbn = $this->cacheAllowed = true;
     }
 
     /**
@@ -78,12 +78,17 @@ class ContentCafe extends \VuFind\Content\AbstractCover
     public function getUrl($key, $size, $ids)
     {
         $size = strtoupper(substr($size, 0, 1));
-        if (!isset($ids['isbn'])) {
+
+        if (isset($ids['isbn'])) {
+            $value = $ids['isbn']->get13();
+        } elseif (isset($ids['upc'])) {
+            $value = urlencode($ids['upc']);
+        } else {
             return false;
         }
-        $isbn = $ids['isbn']->get13();
+
         return $this->baseURL . '/ContentCafe/Jacket.aspx'
             . "?UserID={$key}&Password={$this->password}&Return=1" .
-            "&Type={$size}&Value={$isbn}&erroroverride=1";
+            "&Type={$size}&Value={$value}&erroroverride=1";
     }
 }

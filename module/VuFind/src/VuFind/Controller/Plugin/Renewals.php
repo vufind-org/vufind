@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
@@ -31,11 +31,11 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 /**
  * Zend action helper to perform renewal-related actions
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Renewals extends AbstractPlugin
 {
@@ -86,7 +86,9 @@ class Renewals extends AbstractPlugin
         if (!empty($all)) {
             $ids = $request->get('renewAllIDS');
         } else if (!empty($selected)) {
-            $ids = $request->get('renewSelectedIDS');
+            $ids = $request->get('selectAll')
+                ? $request->get('selectAllIDS')
+                : $request->get('renewSelectedIDS');
         } else {
             $ids = [];
         }

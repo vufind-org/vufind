@@ -19,12 +19,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\DAIA;
@@ -37,11 +37,11 @@ use InvalidArgumentException;
 /**
  * ILS driver test
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
@@ -59,12 +59,14 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'barcode' => "1",
                 'reserve' => "N",
                 'callnumber' => "ABC 12",
-                'location' => "Abteilung III",
-                'locationhref' => false
+                'location' => "Example Library for DAIA Tests - Abteilung III",
+                'locationhref' => false,
+                'item_notes' => [],
+                'services' => ['loan', 'presentation']
             ],
         1 =>
             [
-                'status' => 'nur Kopie',
+                'status' => '',
                 'availability' => true,
                 'duedate' => null,
                 'requests_placed' => '',
@@ -75,8 +77,10 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'barcode' => "1",
                 'reserve' => "N",
                 'callnumber' => "DEF 34",
-                'location' => "Abteilung III",
-                'locationhref' => false
+                'location' => "Example Library for DAIA Tests - Abteilung III",
+                'locationhref' => false,
+                'item_notes' => ['mit Zustimmung', 'nur Kopie'],
+                'services' => ['loan', 'presentation']
             ],
         2 =>
             [
@@ -91,8 +95,10 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'barcode' => "1",
                 'reserve' => "N",
                 'callnumber' => "GHI 56",
-                'location' => "Abteilung III",
-                'locationhref' => false
+                'location' => "Example Library for DAIA Tests - Abteilung III",
+                'locationhref' => false,
+                'item_notes' => [],
+                'services' => []
             ],
     ];
 
@@ -126,7 +132,6 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $result = $conn->getStatus('027586081');
 
         // exact result for using the DAIA.php with testfile daia.json
-
 
         $this->assertEquals($result, $this->testResult);
     }
