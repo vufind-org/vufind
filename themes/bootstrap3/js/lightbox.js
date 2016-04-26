@@ -143,6 +143,15 @@ VuFind.register('lightbox', function() {
           _refreshPage();
           return;
         }
+        // Place Hold error isolation
+        if (obj.url.match(/\/Record/) && (obj.url.match(/Hold\?/) || obj.url.match(/Request\?/))) {
+          var testDiv = $('<div/>').html(html);
+          var error = testDiv.find('.flash-message.alert-danger');
+          if (error.length && testDiv.find('.record').length) {
+            showAlert(error[0].innerHTML, 'danger');
+            return false;
+          }
+        }
         if ( // Close the lightbox after deliberate login
           obj.method                                                                // is a form
           && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/))               // that matches login/create account
@@ -161,6 +170,7 @@ VuFind.register('lightbox', function() {
           } else {
             VuFind.lightbox.refreshOnClose = true;
           }
+          _currentUrl = _originalUrl; // Now that we're logged in, where were we?
         }
         _update(html);
       })
