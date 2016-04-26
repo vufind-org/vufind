@@ -2,7 +2,7 @@
 <? $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled'; ?>
 <table class="table">
   <tr>
-    <th width="20%"><?=$this->transEsc("history_time")?></th>
+    <th><?=$this->transEsc("history_time")?></th>
     <th><?=$this->transEsc("history_search")?></th>
     <th><?=$this->transEsc("history_limits")?></th>
     <th><?=$this->transEsc("history_results")?></th>
@@ -19,11 +19,16 @@
         ?></a>
       </td>
       <td>
-        <? $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList() as $field => $filters): ?>
+        <? $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList(true) as $field => $filters): ?>
           <? foreach ($filters as $i => $filter): ?>
             <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?>
             <strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?><br/>
           <? endforeach; ?>
+        <? endforeach; ?>
+        <? foreach($info->getParams()->getCheckboxFacets() as $facet): ?>
+          <? if ($facet['selected']): ?>
+            <strong><?=$this->transEsc($facet['desc'])?></strong><br/>
+          <? endif; ?>
         <? endforeach; ?>
       </td>
       <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>

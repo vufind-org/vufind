@@ -5,7 +5,7 @@ $this->headScript()->appendFile("record.js");
 $this->headScript()->appendFile("check_save_statuses.js");
 // Activate Syndetics Plus if necessary:
 if ($this->syndeticsPlus()->isActive()) {
-  echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+  $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
 }
 
 // Add RDF header link if applicable:
@@ -14,7 +14,7 @@ if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
 }
 
 // Set up breadcrumbs:
-$this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
+$this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
     '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
 $this->layout()->title = $this->driver->getShortTitle();
 ?>
@@ -23,9 +23,7 @@ $this->layout()->title = $this->driver->getShortTitle();
   <ul class="pager hide-for-print">
     <? if ($this->scrollData['previousRecord']): ?>
       <li>
-        <a class="button" role="button" href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>"
-           rel="nofollow">&laquo; <?=$this->transEsc('Prev')?>
-        </a>
+        <a class="button" role="button" href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>" rel="nofollow">&laquo; <?=$this->transEsc('Prev')?></a>
       </li>
     <? else: ?>
       <li class="disabled">
@@ -35,9 +33,7 @@ $this->layout()->title = $this->driver->getShortTitle();
     #<?=$this->localizedNumber($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->localizedNumber($this->scrollData['resultTotal']) . ' ' . $this->transEsc('results')?>
     <? if ($this->scrollData['nextRecord']): ?>
       <li>
-        <a class="button" role="button" href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>"
-           rel="nofollow"><?=$this->transEsc('Next')?> &raquo;
-        </a>
+        <a class="button" role="button" href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>" rel="nofollow"><?=$this->transEsc('Next')?> &raquo;</a>
       </li>
     <? else: ?>
       <li class="disabled">
@@ -51,9 +47,9 @@ $this->layout()->title = $this->driver->getShortTitle();
 
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
-    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId"/>
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource"/>
+    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
     </div>
@@ -61,13 +57,13 @@ $this->layout()->title = $this->driver->getShortTitle();
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
       <div class="record-tabs">
-        <ul class="tabs"><? /* DO NOT use standard data-tab option here as it triggers Foundation's normal tab behaviour while Vufind only uses tab appearance! FIXME CK */ ?>
+        <ul class="recordTabs tabs"><? /* DO NOT use standard data-tab option here as it triggers Foundation's normal tab behaviour while Vufind only uses tab appearance! FIXME CK */ ?>
           <? foreach ($this->tabs as $tab => $obj): ?>
             <? // add current tab to breadcrumbs if applicable:
             $desc = $obj->getDescription();
             $tab_classes = array();
             if (0 === strcasecmp($this->activeTab, $tab)) {
-              if (!$this->ajaxTabs || !$obj->supportsAjax()) {
+              if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
                 $tab_classes[] = 'active';
               }
               $tab_classes[] = 'initiallyActive';
@@ -77,16 +73,16 @@ $this->layout()->title = $this->driver->getShortTitle();
             if (!$obj->isVisible()) { $tab_classes[] = 'hide'; }
             if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
             ?>
+              <? /* next line: moved everything inside class to avoid double class tag - CK */ ?>
            <li class="tab-title <?=count($tab_classes) > 0 ? ' ' . implode(' ', $tab_classes) . ' ' : ' '?>">
-             <? /* <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>*/ ?>
               <a class="<?=strtolower($tab)?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
             </li>
           <? endforeach; ?>
         </ul>
-
-        <div class="tabs-content">
-          <? if (!$this->ajaxTabs || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div class="content active" id="<?=$this->activeTab?>-tab">
+      <? /* next line: we need the id - CK */ ?>
+      <div class="tabs-content" id="record-tabs">
+        <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+            <div class="content active <?=$this->activeTab?>-tab">
             <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : ''?>
             </div>
           <? endif; ?>
@@ -104,3 +100,4 @@ $this->layout()->title = $this->driver->getShortTitle();
   </div>
 </div>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET');?>
+<!-- record - VIEW.phtml end-->

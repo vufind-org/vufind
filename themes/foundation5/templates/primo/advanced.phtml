@@ -57,32 +57,32 @@
               <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
               <div class="row">
                 <div class="medium-3 columns">
-                  <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="auto">
+                  <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="auto-width">
                   <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                     <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                   <? endforeach; ?>
                   </select>
                 </div>
                 <div class="medium-3 columns">
-                  <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="auto">
+                  <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="auto-width">
                     <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
                       <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                     <? endforeach; ?>
                   </select>
                 </div>
                 <div class="medium-6 columns">
-                  <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="auto"/>
+                  <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="auto-width"/>
                 </div>
               </div>
             <? endfor; ?>
           </div>
         </div>
       <? endfor; ?>
-      <? $lastSort = $this->options->getLastSort(); ?>
+      <? $lastSort = $this->searchMemory()->getLastSort($this->options->getSearchClassId()); ?>
       <? if (!empty($lastSort)): ?>
         <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
       <? endif; ?>
-      <input type="submit" class="button small" name="submit" role="button" value="<?=$this->transEsc("Find")?>"/>
+      <input type="submit" class="button small" name="submit" value="<?=$this->transEsc("Find")?>"/>
     </div>
 
     <div class="<?=$this->layoutClass('sidebar')?>">

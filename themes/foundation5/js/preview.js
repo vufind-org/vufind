@@ -8,7 +8,7 @@ function getGoogleOptions() {
     for(var key in opts_temp) {
         var arr = opts_temp[key].split(':');
         options[arr[0]] = arr[1].split(',');
-}
+    }
     return options;
 }
 function getOLOptions() {
@@ -20,7 +20,7 @@ function getHTPreviews(skeys) {
     var bibkeys = skeys.split(/\s+/);
     // fetch 20 books at time if there are more than 20
     // since hathitrust only allows 20 at a time
-    // as per http://vufind.org/jira/browse/VUFIND-317
+    // as per https://vufind.org/jira/browse/VUFIND-317
     var batch = [];
     for(var i = 0; i < bibkeys.length; i++) {
         batch.push(bibkeys[i]);
@@ -34,7 +34,7 @@ function getHTPreviews(skeys) {
 }
 
 function applyPreviewUrl($link, url) {
-    // Update the preview button: // check for correctness - fixme CK
+    // Update the preview button:
     $link.attr('href', url).removeClass('hide');
 
     // Update associated record thumbnail, if any:
@@ -59,7 +59,7 @@ function processGBSBookInfo(booksInfo) {
     var viewOptions = getGoogleOptions();
     if (viewOptions['link'] && viewOptions['link'].length > 0) {
         processBookInfo(booksInfo, 'previewGBS', viewOptions['link']);
-}
+    }
     if (viewOptions['tab'] && viewOptions['tab'].length > 0) {
         // check for "embeddable: true" in bookinfo
         for (var bibkey in booksInfo) {
@@ -67,8 +67,8 @@ function processGBSBookInfo(booksInfo) {
             if (bookInfo) {
                 if (viewOptions['tab'].indexOf(bookInfo.preview)>= 0
                 && (bookInfo.embeddable)) {
-                    // make tab visible // check for correctness - fixme CK
-                    $('ul.recordTabs li.hide a#preview').parent().removeClass('hide');
+                    // make tab visible
+                    $('ul.recordTabs li.hide a.preview').parent().removeClass('hide');
                 }
             }
         }

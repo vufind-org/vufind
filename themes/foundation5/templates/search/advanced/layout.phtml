@@ -8,7 +8,7 @@ $this->layout()->searchbox = false;
 
 // Set up breadcrumbs:
 $this->layout()->breadcrumbs = '<li>';
-$lastSearchLink = $this->getLastSearchLink($this->transEsc('Search'));
+$lastSearchLink = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
 $this->layout()->breadcrumbs .= !empty($lastSearchLink)
     ? $lastSearchLink : $this->transEsc('Search');
 $this->layout()->breadcrumbs .= '</li> <li class="active">' . $this->transEsc('Advanced') . '</li>';
@@ -24,8 +24,10 @@ if (isset($this->saved) && is_object($this->saved)) {
   }
   $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
   $searchFilters = $this->saved->getParams()->getFilterList();
+  $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
 } else {
   $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
+  $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, true);
 }
 
 // Step 1: Load the javascript
@@ -62,14 +64,22 @@ if (isset($searchDetails) && is_object($searchDetails)) {
 
 <?= $this->flashmessages() ?>
 <form role="search" name="searchForm" id="advSearchForm" method="get" action="<?= $this->url($this->options->getSearchAction()) ?>">
+  <? foreach ($hiddenFilters as $key => $filter): ?>
+    <? foreach ($filter as $value): ?>
+      <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
+    <? endforeach; ?>
+  <? endforeach; ?>
   <div class="row">
     <div class="<?= $this->layoutClass('mainbody') ?>">
-      <input type="hidden" name="sort" value="relevance">
+      <? $lastSort = $this->searchMemory()->getLastSort($this->searchClassId); ?>
+      <? if (!empty($lastSort)): ?>
+        <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
+      <? endif; ?>
       <div class="clearfix">
         <h2 class="left"><?= $this->transEsc('Advanced Search') ?></h2>
         <div id="groupJoin" class="right hide">
           <label for="groupJoinOptions"><?= $this->transEsc("search_match") ?>:</label>
-          <select id="groupJoinOptions" name="join" class="auto"><? /* leave class=auto - was form-control and used in advanced_search.js - CK */ ?>
+          <select id="groupJoinOptions" name="join" class="auto-width"><? /* leave class=auto-width - was form-control and used in advanced_search.js - CK */ ?>
             <option value="AND"<? if ($searchDetails && $searchDetails->getOperator() == 'ALL'): ?> selected<? endif ?>><?= $this->transEsc('group_AND') ?></option>
             <option value="OR"<? if ($searchDetails && $searchDetails->getOperator() == 'OR'): ?> selected<? endif ?>><?= $this->transEsc('group_OR') ?></option>
           </select>
@@ -108,7 +118,7 @@ if (isset($searchDetails) && is_object($searchDetails)) {
                             <input name="lookfor<?= $group ?>[]" id="search_lookfor<?= $group . '_' . $search ?>" class="input_slot" type="text"<? if (isset($setQueries[$group][$search])): ?> value="<?= $this->escapeHtml($setQueries[$group][$search]->getString()) ?>"<? endif; ?>><? /* Leave input_slot  in - used in advancedsearch.js */ ?>
                           </div>
                           <div class="small-10 medium-4 columns">
-                            <select class="type auto" name="type<?= $group ?>[]">
+                            <select class="type auto-width" name="type<?= $group ?>[]">
                               <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                                 <option
                                     value="<?= $this->escapeHtml($searchVal) ?>"<? if (isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()): ?> selected<? endif; ?>><?= $this->transEsc($searchDesc) ?></option>
@@ -134,7 +144,7 @@ if (isset($searchDetails) && is_object($searchDetails)) {
               </div>
               <div class="medium-3 columns match">
                 <label class="search_bool"><?= $this->transEsc("search_match") ?>:&nbsp;</label>
-                <select name="bool<?= $group ?>[]" id="search_bool<?= $group ?>" class="auto">
+                <select name="bool<?= $group ?>[]" id="search_bool<?= $group ?>" class="auto-width">
                   <option value="AND"<? if (isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]): ?> selected<? endif; ?>><?= $this->transEsc("search_AND") ?></option>
                   <option value="OR"<? if (isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]): ?> selected<? endif; ?>><?= $this->transEsc("search_OR") ?></option>
                   <option value="NOT"<? if (isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]): ?> selected<? endif; ?>><?= $this->transEsc("search_NOT") ?></option>
@@ -188,11 +198,10 @@ if (isset($searchDetails) && is_object($searchDetails)) {
         <h4><?= $this->transEsc("Search Tips") ?></h4>
         <ul class="side-nav">
           <li>
-            <a class="help-link" href="<?= $this->url('help-home') ?>?topic=advsearch"
-               title="<?= $this->transEsc('Help with Advanced Search') ?>"><?= $this->transEsc("Help with Advanced Search") ?></a>
+            <a class="help-link" data-lightbox href="<?= $this->url('help-home') ?>?topic=advsearch"><?= $this->transEsc("Help with Advanced Search") ?></a>
           </li>
           <li>
-            <a class="help-link" href="<?= $this->url('help-home') ?>?topic=search" title="<?= $this->transEsc('Help with Search Operators') ?>"><?= $this->transEsc("Help with Search Operators") ?></a>
+            <a class="help-link" data-lightbox href="<?= $this->url('help-home') ?>?topic=search"><?= $this->transEsc("Help with Search Operators") ?></a>
           </li>
         </ul>
       </div>

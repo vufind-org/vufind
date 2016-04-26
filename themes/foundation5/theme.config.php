@@ -28,6 +28,7 @@ return array(
     'factories' => array(
       'flashmessages' => 'VuFind\View\Helper\Foundation\Factory::getFlashmessages',
       'layoutclass' => 'VuFind\View\Helper\Foundation\Factory::getLayoutClass',
+      'recaptcha' => 'VuFind\View\Helper\Foundation\Factory::getRecaptcha',
     ),
     'invokables' => array(
       'highlight' => 'VuFind\View\Helper\Foundation\Highlight',

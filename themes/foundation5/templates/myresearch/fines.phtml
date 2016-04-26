@@ -9,13 +9,15 @@ $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') .
 <div class="row">
   <div class="<?= $this->layoutClass('mainbody') ?>">
     <h2><?= $this->transEsc('Your Fines') ?></h2>
+  <?=$this->flashmessages()?>
 
     <?= $this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
 
     <? if (empty($this->fines)): ?>
       <?= $this->transEsc('You do not have any fines') ?>
     <? else: ?>
-      <table class="table" summary="<?= $this->transEsc('Your Fines') ?>">
+      <table class="table">
+        <caption class="sr-only"><?=$this->transEsc('Your Fines')?></caption>
         <tr>
           <th><?= $this->transEsc('Title') ?></th>
           <th><?= $this->transEsc('Checked Out') ?></th>

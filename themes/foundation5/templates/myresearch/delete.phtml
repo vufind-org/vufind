@@ -4,7 +4,7 @@
   <div id="popupDetails">
     <h2><?=$this->transEsc('delete_selected_favorites')?></h2>
     <? if (!$this->list): ?>
-      <div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc("fav_delete_warn") ?></div>
+      <div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="alertdialog"><?=$this->transEsc("fav_delete_warn") ?></div>
     <? else: ?>
       <h3><?=$this->transEsc("List") ?>: <?=$this->escapeHtml($this->list->title) ?></h3>
     <? endif; ?>
@@ -14,7 +14,7 @@
       <?=$this->escapeHtml($favorite->getBreadcrumb())?><br />
     <? endforeach; ?>
     <br />
-    <input class="button small" type="submit" name="submit" role="button" value="<?=$this->transEsc('Delete')?>"/>
+    <input class="button small" type="submit" name="submit" value="<?=$this->transEsc('Delete')?>"/>
     <? foreach ($this->deleteIDS as $deleteID): ?>
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($deleteID)?>" />
     <? endforeach; ?>

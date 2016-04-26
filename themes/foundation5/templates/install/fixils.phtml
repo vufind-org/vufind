@@ -17,7 +17,7 @@
     <div class="row">
       <label for="driver" class="medium-2 columns">Pick a driver:</label>
       <div class="medium-10 columns">
-        <select id="driver" name="driver" class="auto">
+        <select id="driver" name="driver" class="auto-width">
           <? foreach ($this->drivers as $driver): ?>
             <option value="<?=$this->escapeHtmlAttr($driver)?>"><?=$this->escapeHtml($driver)?></option>
           <? endforeach; ?>
@@ -26,13 +26,13 @@
     </div>
     <div class="row">
       <div class="medium-10 columns medium-offset-2">
-        <input type="submit" class="button small" role="button" aria-label="submit form"/>
+        <input type="submit" class="button small" aria-label="submit form"/>
       </div>
     </div>
   </form>
 
   <p>If your ILS is not available in this list, you may be able to write your own driver.  See the
-  <a href="http://vufind.org/wiki/vufind2:developer_manual" target="_new">Developer Manual</a>.</p>
+  <a href="https://vufind.org/wiki/development" target="_new">Developer Manual</a>.</p>
 <? else: ?>
   <p>VuFind is having trouble communicating with your Integrated Library System (ILS).  Check your configuration.
   You may need to edit the file at <strong><?=$this->escapeHtml($this->configPath)?></strong> and fill in some

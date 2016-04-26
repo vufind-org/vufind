@@ -15,7 +15,7 @@
       <? endforeach; ?>
 
       <label class="displayBlock" for="searchModes"><?=$this->transEsc('Search Mode')?></label>
-      <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" class="auto">
+      <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" class="auto-width">
         <? foreach ($this->searchModes as $field => $searchMode):
           $value = $searchMode['Value'] ?>
           <option <?=(isset($searchMode['selected']) && $searchMode['selected'])?'selected="selected"':''?> value="SEARCHMODE:<?=$this->escapeHtmlAttr($value)?>">
@@ -33,7 +33,7 @@
         <? switch($facet['Type']){
             case 'multiselectvalue': ?>
               <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>"><?=$this->transEsc($facet['Label'])?></label><br/>
-              <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="auto">
+              <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="auto-width">
                 <? foreach ($facet['LimiterValues'] as $id => $facetValue): ?>
                   <? $value = $facetValue['Value']; ?>
                   <option value="<?='LIMIT|'.$this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
@@ -82,11 +82,11 @@
       <div class="row">
         <div class="medium-6 columns">
           <label for="PublicationDatefrom"><?=$this->transEsc('date_from')?>:</label>
-          <input type="text" name="PublicationDatefrom" id="PublicationDatefrom" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[0])?>" class="auto"/>
+          <input type="text" name="PublicationDatefrom" id="PublicationDatefrom" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[0])?>" class="auto-width"/>
 </div>
         <div class="medium-6 columns">
           <label for="PublicationDateto"><?=$this->transEsc('date_to')?>:</label>
-          <input type="text" name="PublicationDateto" id="PublicationDateto" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[1])?>" class="auto"/>
+          <input type="text" name="PublicationDateto" id="PublicationDateto" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[1])?>" class="auto-width"/>
         </div>
       </div>
         <div class="slider-container">

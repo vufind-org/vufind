@@ -15,7 +15,8 @@
     <? if ($this->libraryCards->count() == 0): ?>
       <div><?=$this->transEsc('You do not have any library cards')?></div>
     <? else: ?>
-      <table class="table" summary="<?=$this->transEsc('Library Cards')?>">
+      <table class="table">
+        <caption class="sr-only"><?=$this->transEsc('Library Cards')?></caption>
       <tr>
         <th><?=$this->transEsc('Library Card Name')?></th>
         <? if ($this->multipleTargets): ?>
@@ -54,7 +55,7 @@
     <? endif; ?>
 
     <div class="button-group">
-      <a href="<?=$this->url('editLibraryCard') ?>NEW" class="button link" title="<?=$this->transEsc('Add a Library Card')?>"><i class="fa fa-edit"></i> <?=$this->transEsc('Add a Library Card')?></a>
+      <a href="<?=$this->url('editLibraryCard') ?>NEW" class="button link"><i class="fa fa-edit"></i> <?=$this->transEsc('Add a Library Card')?></a>
     </div>
   </div>
 

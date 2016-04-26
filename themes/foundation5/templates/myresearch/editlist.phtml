@@ -12,19 +12,19 @@ $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') .
 <?= $this->flashmessages() ?>
 <div class="row">
   <div class="small-12 columns">
-    <h4><?= $this->transEsc($pageTitle); ?></h4>
+    <h2><?= $this->transEsc($pageTitle); ?></h2>
 
     <form class="form edit-list-form" method="post" name="<?= empty($this->list->id) ? 'newList' : 'editListForm' ?>">
       <input type="hidden" name="id" value="<?= empty($this->list->id) ? 'NEW' : $this->list->id ?>"/>
       <label class="medium-3 columns" for="list_title"><?= $this->transEsc('List'); ?>:</label>
 
       <div class="medium-9 columns">
-        <input id="list_title" class="auto" type="text" name="title" value="<?= isset($this->list['title']) ? $this->escapeHtml($this->list['title']) : '' ?>"/>
+        <input id="list_title" class="auto-width" type="text" name="title" value="<?= isset($this->list['title']) ? $this->escapeHtml($this->list['title']) : '' ?>"/>
       </div>
       <label class="medium-3 columns" for="list_desc"><?= $this->transEsc('Description') ?></label>
 
       <div class="medium-9 columns">
-        <textarea id="list_desc" class="auto" name="desc" rows="3"><?= isset($this->list['description']) ? $this->escapeHtml($this->list['description']) : '' ?></textarea>
+        <textarea id="list_desc" class="auto-width" name="desc" rows="3"><?= isset($this->list['description']) ? $this->escapeHtml($this->list['description']) : '' ?></textarea>
       </div>
 
       <? if ($this->userlist()->getMode() === 'public_only'): ?>
@@ -47,7 +47,7 @@ $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') .
         <? endif; ?>
 
         <div class="medium-9 medium-offset-3 columns">
-          <input class="button small" type="submit" name="submit" role="button" value="<?= $this->transEsc('Save') ?>"/>
+          <input class="button small" type="submit" name="submit" value="<?= $this->transEsc('Save') ?>"/>
         </div>
 
     </form>

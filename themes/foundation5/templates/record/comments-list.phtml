@@ -1,7 +1,7 @@
 <!-- record - COMMENTS-LIST.phtml -->
 <? $comments = $this->driver->getComments(); ?>
 <? if (empty($comments) || count($comments) == 0): ?>
-  <div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc('Be the first to leave a comment')?>!</div>
+  <div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="alertdialog"><?=$this->transEsc('Be the first to leave a comment')?>!</div>
 <? else: ?>
   <? foreach ($comments as $comment): ?>
     <div class="comment row">

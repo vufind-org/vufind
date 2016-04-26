@@ -1,7 +1,8 @@
-<h3><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
+<h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
 <a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc('View Full ' . ($this->driver->isCollection() ? 'Collection' : 'Record'))?></a>
 
-<table class="table" summary="<?=$this->transEsc('Bibliographic Details')?>">
+<table class="table">
+  <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
   <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
   <? if ($summary): ?>
     <tr valign="top">
@@ -13,15 +14,19 @@
   <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
   <? if (isset($authors['main']) && !empty($authors['main'])): ?>
     <tr valign="top">
-      <th><?=$this->transEsc('Main Author')?>: </th>
-      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></td>
+      <th><?=$this->transEsc(count($authors['main']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
+      <td>
+        <? $i = 0; foreach ($authors['main'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?><? endforeach; ?>
+      </td>
     </tr>
   <? endif; ?>
 
   <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
     <tr valign="top">
-      <th><?=$this->transEsc('Corporate Author')?>: </th>
-      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></td>
+      <th><?=$this->transEsc(count($authors['corporate']) > 1 ? 'Corporate Author' : 'Corporate Authors')?>: </th>
+      <td>
+        <? $i = 0; foreach ($authors['corporate'] as $corporate => $roles): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $corporate)?>"><?=$this->escapeHtml($corporate)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?><? endforeach; ?>
+      </td>
     </tr>
   <? endif; ?>
 

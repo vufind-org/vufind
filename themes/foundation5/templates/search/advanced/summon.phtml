@@ -9,7 +9,7 @@
       <? foreach ($this->facetList as $field => $list): ?>
         <div class="medium-<?=floor(12/count($this->facetList)) ?> columns">
           <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
-          <select class="auto" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
+          <select class="auto-width" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
             <?
               // Sort the current facet list alphabetically; we'll use this data
               // along with the foreach below to display facet options in the

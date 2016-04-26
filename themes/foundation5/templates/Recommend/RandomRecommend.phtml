@@ -3,8 +3,9 @@
 if (count($recommend) > 0): ?>
   <ul class="accordion random <?= $this->recommend->getDisplayMode() ?>" data-accordion>
     <li class="accordion-navigation title">
-      <a href="#side-collapse-randomrecommend"><?= $this->transEsc("random_recommendation_title") ?></a>
-
+      <a href="#side-collapse-randomrecommend">
+        <?= $this->transEsc("random_recommendation_title") ?>
+      </a>
       <div id="side-collapse-randomrecommend" class="content <? if (!in_array('RandomRecommend', $collapsedFacets)): ?> active<? endif ?>">
         <? foreach ($recommend as $driver): ?>
           <ul>
@@ -19,8 +20,8 @@ if (count($recommend) > 0): ?>
               $format = isset($formats[0]) ? $formats[0] : ''; ?>
               <a href="<?= $this->recordLink()->getUrl($driver) ?>" class="title <?= $this->record($driver)->getFormatClass($format) ?> clearfix">
                 <?= $this->record($driver)->getTitleHtml() ?>
-                <? $summAuthor = $driver->getPrimaryAuthor(); ?>
-                <span class="small<? if (!empty($summAuthor)): ?> right<? endif; ?>">
+                <? $summAuthors = $driver->getPrimaryAuthors(); ?>
+                <span class="small<? if (!empty($summAuthors)): ?> right<? endif; ?>">
                     <? $summDate = $driver->getPublicationDates(); ?>
                   <? if (!empty($summDate)): ?>
                     <?= $this->transEsc('Published') ?>
@@ -30,11 +31,11 @@ if (count($recommend) > 0): ?>
                   <? endif; ?>
                     </span>
               </a>
-              <? if (!empty($summAuthor)): ?>
-                <a class="small text-right" href="<?= $this->record($driver)->getLink('author', $summAuthor) ?>">
-                  <span><?= $this->transEsc('By') ?></span>
-                  <?= $this->escapeHtml($summAuthor) ?>
-                </a>
+              <? if (!empty($summAuthors)): ?>
+                  <span class="small text-right">
+                    <?= $this->transEsc('By') ?>
+                    <a href="<?=$this->record($driver)->getLink('author', $summAuthors[0])?>"><?=$this->escapeHtml($summAuthors[0])?></a><? if (count($summAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
+                  </span>
               <? endif; ?>
             </li>
           </ul>

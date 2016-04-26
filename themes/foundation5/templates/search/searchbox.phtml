@@ -15,26 +15,38 @@ $handlerCount = count($handlers);
 $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
 $searchHome = $options->getSearchHomeAction();
 $advSearch = $options->getAdvancedSearchAction();
-$lastSort = $options->getLastSort();
-$lastLimit = $options->getLastLimit();
+    $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+    $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
+    $ignoreHiddenFilterMemory = isset($this->ignoreHiddenFilterMemory) && $this->ignoreHiddenFilterMemory;
+    $ignoreHiddenFiltersInRequest = isset($this->ignoreHiddenFiltersInRequest) && $this->ignoreHiddenFiltersInRequest;
+    $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
+    if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
+        $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
+        if (empty($hiddenFilters)) {
+            $hiddenFilters = $this->searchtabs()->getHiddenFilters($this->searchClassId);
+    }
+        }
+    $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
 ?>
 <? if ($this->searchType == 'advanced'): ?>
   <div class="searchForm">
-    <? $tabs = $this->render('search/searchTabs'); ?>
+    <? $tabs = $this->context($this)->renderInContext('search/searchTabs', ['hiddenFilters' => $hiddenFilters]); ?>
     <? if (!empty($tabs)): ?><?= $tabs ?><div class="tabs-content clearfix"><? endif; ?>
       <p class="adv_search_terms"><?= $this->transEsc("Your search terms") ?> : "<strong><?= $this->escapeHtml($this->lookfor) ?></strong>"</p>
       <ul class="adv_search_links">
         <li><a href="<?= $this->url($advSearch) ?>?edit=<?= $this->escapeHtmlAttr($this->searchId) ?>"><?= $this->transEsc("Edit this Advanced Search") ?></a></li>
-        <li><a href="<?= $this->url($advSearch) ?>"><?= $this->transEsc("Start a new Advanced Search") ?></a></li>
-        <li><a href="<?= $this->url($searchHome) ?>"><?= $this->transEsc("Start a new Basic Search") ?></a></li>
+        <li><a href="<?= $this->url($advSearch) . $hiddenFilterParams?>"><?= $this->transEsc("Start a new Advanced Search") ?></a></li>
+        <li><a href="<?= $this->url($searchHome) . $hiddenFilterParams?>"><?= $this->transEsc("Start a new Basic Search") ?></a></li>
       </ul>
       <? if (!empty($tabs)): ?></div><? endif; ?>
   </div>
 <? else: ?>
-<form  class="searchForm inline" role="search" method="get" action="<?= $this->url($basicSearch) ?>" name="searchForm" autocomplete="off">
-  <?= $this->render('search/searchTabs'); ?>
+<form class="searchForm inline" role="search" method="get" action="<?= $this->url($basicSearch) ?>" name="searchForm" autocomplete="off">
+  <?= $this->context($this)->renderInContext('search/searchTabs', ['hiddenFilters' => $hiddenFilters]); ?>
   <ul class="left list-unstyled">
-    <li class="has-form"><input class="searchForm_lookfor form-control search-query<? if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"/></li>
+    <li class="has-form">
+      <input class="searchForm_lookfor form-control search-query<? if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"/>
+    </li>
     <? if ($handlerCount > 1): ?>
       <li class="has-form">
         <select class="searchForm_type form-control" name="type" data-native-menu="false">
@@ -47,11 +59,11 @@ $lastLimit = $options->getLastLimit();
       <input type="hidden" name="type" value="<?= $this->escapeHtmlAttr($handlers[0]['value']) ?>"/>
     <? endif; ?>
     <li class="has-form">
-      <button type="submit" class="postfix" role="button"><i class="fa fa-search"></i> <?= $this->transEsc("Find") ?></button>
+      <button type="submit" class="postfix"><i class="fa fa-search"></i> <?= $this->transEsc("Find") ?></button>
     </li>
     <? if ($advSearch): ?>
       <li class="has-form">
-        <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : '') ?>" class="button secondary postfix" role="button" rel="nofollow"><?= $this->transEsc("Advanced") ?></a>
+        <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>" class="button secondary postfix" role="button" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
       </li>
     <? endif; ?>
   </ul>
@@ -78,8 +90,8 @@ $lastLimit = $options->getLastLimit();
   <? if ((isset($hasDefaultsApplied) && $hasDefaultsApplied) || !empty($filterDetails)): ?>
     <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
     <div class="checkbox" id="keepfilters">
-        <input onChange="$('.applied-filter').click()" type="checkbox"<?= $defaultFilterState ?> class="searchFormKeepFilters"/>
-      <label><?= $this->transEsc("basic_search_keep_filters") ?></label>
+      <input onChange="$('.applied-filter').click()" type="checkbox"<?= $defaultFilterState ?> class="searchFormKeepFilters"/>
+      <label><?=$this->transEsc("basic_search_keep_filters")?></label>
     </div>
     <div class="hide">
       <? foreach ($filterDetails as $current): ?>
@@ -93,6 +105,11 @@ $lastLimit = $options->getLastLimit();
       <? endif; ?>
     </div>
   <? endif; ?>
+    <? foreach ($hiddenFilters as $key => $filter): ?>
+      <? foreach ($filter as $value): ?>
+        <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
+      <? endforeach; ?>
+    <? endforeach; ?>
   <?
   /* Show hidden field for active search class when in combined handler mode. */
   if ($this->searchbox()->combinedHandlersActive()) {
@@ -107,6 +124,6 @@ $lastLimit = $options->getLastLimit();
   }
   ?>
 </form>
-  <script type="text/javascript">$(".searchForm_lookfor:visible").focus()</script>
+<script type="text/javascript">$(".searchForm_lookfor:visible").focus()</script>
 <? endif; ?>
 <!-- search - searchbox.PHTML end -->

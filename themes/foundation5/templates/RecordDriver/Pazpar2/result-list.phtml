@@ -1,9 +1,9 @@
 <!-- recordDriver - pazpar2 - RESULT-LIST.phtml -->
-<div class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?> small-11 columns">
+<div class="result source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?> small-11 columns">
   <div class="row">
     <div>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
     </div>
     <? $cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver)); ?>
     <? if ($cover): ?>
@@ -15,20 +15,17 @@
     <div class="small-9 columns middle">
     <? endif ?>
       <div>
-        <b>
+        <strong>
           <?=$this->record($this->driver)->getTitleHtml()?>
-        </b>
+        </strong>
       </div>
 
       <div>
-        <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
+        <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
         <?=$this->transEsc('by')?>
-        <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
-          $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
-          echo !empty($summHighlightedAuthor)
-              ? $this->highlight($summHighlightedAuthor)
-              : $this->escapeHtml($summAuthor);
-        ?></a>
+          <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
+            <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
+          <? endforeach; ?>
         <? endif; ?>
 
         <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
@@ -44,7 +41,7 @@
         if (!empty($summInCollection)): ?>
           <? foreach ($summInCollection as $collId => $collText): ?>
             <div>
-              <b><?=$this->transEsc("in_collection_label")?></b>
+              <strong><?=$this->transEsc("in_collection_label")?></strong>
               <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
                 <?=$this->escapeHtml($collText)?>
               </a>

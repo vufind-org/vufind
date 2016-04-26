@@ -28,11 +28,11 @@
         <div class="medium-9 columns">
           <div class="row">
             <div class="medium-6 columns">
-              <input id="search_lookfor0_<?=$search ?>" name="lookfor0[]" class="auto" type="text" value=""/>
+              <input id="search_lookfor0_<?=$search ?>" name="lookfor0[]" class="auto-width" type="text" value=""/>
             </div>
             <span class="medium-1 columns help-block hide-for-small"><?=$this->transEsc("in")?></span>
             <div class="medium-4 columns middle">
-              <select id="search_type0_<?=$search ?>" name="type0[]" class="type auto">
+              <select id="search_type0_<?=$search ?>" name="type0[]" class="type auto-width">
                 <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                   <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
                 <? endforeach; ?>

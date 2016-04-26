@@ -3,7 +3,7 @@
   <label class="medium-3 columns" for="login_target"><?=$this->transEsc('login_target')?>:</label>
   <div class="medium-9 columns">
     <?$currentTarget = $this->request->get('target'); if (!$currentTarget) $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();?>
-    <select id="login_target" name="target" class="auto">
+    <select id="login_target" name="target" class="auto-width">
     <?foreach ($this->auth()->getManager()->getLoginTargets() as $target):?>
       <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
     <? endforeach ?>
@@ -13,13 +13,13 @@
 <div class="row">
   <label class="medium-3 columns" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
   <div class="medium-9 columns">
-    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="auto"/>
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="auto-width"/>
   </div>
 </div>
 <div class="row">
   <label class="medium-3 columns" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
   <div class="medium-9 columns">
-    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" type="password" name="password" class="auto"/>
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" type="password" name="password" class="auto-width"/>
   </div>
 </div>
 <!-- auth - multiils - loginfields.phtml - END -->

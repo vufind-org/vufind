@@ -5,7 +5,7 @@ $this->headScript()->appendFile("record.js");
 $this->headScript()->appendFile("check_save_statuses.js");
 // Activate Syndetics Plus if necessary:
 if ($this->syndeticsPlus()->isActive()) {
-  echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+  $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
 }
 
 // Add RDF header link if applicable:
@@ -17,7 +17,7 @@ if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
 $tree = (strtolower($this->activeTab) == 'hierarchytree');
 
 // Set up breadcrumbs:
-$lastSearch = $this->getLastSearchLink($this->transEsc('Search'));
+$lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
 if (!empty($lastSearch)) {
   $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
 }
@@ -50,47 +50,45 @@ $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home')
 <div class="row">
   <div class="<?=$tree ? 'medium-12 columns' : $this->layoutClass('mainbody')?>">
     <div class="record">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id"/>
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource"/>
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getCollectionMetadata()?>
     </div>
 
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
-      <ul class="record-tabs tabs"><? /*<!-- DO NOT use standard data-tab option (<ul class="recordTabs tabs" data-tab>) here as it triggers Foundation's normal tab behaviour while Vufind only uses tab appearance! FIXME CK */ ?>
+    <div class="record-tabs">
+      <ul class="recordTabs tabs"><? /*<!-- DO NOT use standard data-tab option here as it triggers Foundation's normal tab behaviour while Vufind only uses tab appearance! FIXME CK */ ?>
         <? foreach ($this->tabs as $tab => $obj): ?>
           <? // add current tab to breadcrumbs if applicable:
           $desc = $obj->getDescription();
           $tab_classes = array();
           if (0 === strcasecmp($this->activeTab, $tab)) {
-            if (!$this->ajaxTabs || !$obj->supportsAjax()) {
+            if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
               $tab_classes[] = 'active';
             }
             $tab_classes[] = 'initiallyActive';
             $this->layout()->breadcrumbs .= ' <li class="active">' . $this->transEsc($desc) . '</li>';
             $activeTabObj = $obj;
           }
-          if (!$obj->isVisible()) {
-            $tab_classes[] = 'hide';
-          }
-          if (!$obj->supportsAjax()) {
-            $tab_classes[] = 'noajax';
-          }
+          if (!$obj->isVisible()) { $tab_classes[] = 'hide'; }
+          if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
           ?>
-          <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+          <li<?=count($tab_classes) > 0 ? ' class="tab-title ' . implode(' ', $tab_classes) . '"' : ''?>>
             <a class="<?=strtolower($tab)?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
           </li>
         <? endforeach; ?>
       </ul>
-
-      <div class="tabs-content collectionDetails<?=$tree ? 'Tree' : ''?>">
-        <? if (!$this->ajaxTabs || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-          <div class="content active <?=$this->activeTab?>-tab">
+      <?/* next line: we need the ID here - CK */?>
+      <div class="tabs-content collectionDetails<?=$tree ? 'Tree' : ''?>" id="record-tabs">
+        <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+	    <div class="content active" id="<?=$this->activeTab ?>-tab">
             <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : ''?>
           </div>
         <? endif; ?>
       </div>
+    </div>
     <? endif; ?>
 
     <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
@@ -105,3 +103,4 @@ $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home')
   <? endif; ?>
 </div>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET');?>
+<!-- collection - VIEW.phtml end -->

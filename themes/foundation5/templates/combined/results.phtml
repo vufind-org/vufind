@@ -43,11 +43,12 @@
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
   $this->headScript()->appendFile("check_save_statuses.js");
+  $this->headScript()->appendFile("combined-search.js");
   // Style
   $this->headLink()->appendStylesheet('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
-<form method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+<form method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
   <? $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
     <div>
       <? foreach ($recs as $current): ?>
@@ -58,11 +59,11 @@
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
         <?
           $viewParams = array(
-            'searchClassId' => $searchClassId,
-      'combinedResults' => $this->combinedResults,
-      'supportsCartOptions' => $this->supportsCartOptions,
-      'showCartControls' => $this->showCartControls,
-      'showBulkOptions' => $this->showBulkOptions
+              'searchClassId' => $searchClassId,
+              'combinedResults' => $this->combinedResults,
+              'supportsCartOptions' => $this->supportsCartOptions,
+              'showCartControls' => $this->showCartControls,
+              'showBulkOptions' => $this->showBulkOptions
           );
         ?>
   <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>

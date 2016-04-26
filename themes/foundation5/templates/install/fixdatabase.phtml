@@ -16,7 +16,7 @@
   <div class="row">
     <label class="medium-3 columns" for="dbname">Select database type:</label>
     <div class="medium-9 columns">
-      <select name="driver" class="auto">
+      <select name="driver" class="auto-width">
         <option value="mysql">MySQL</option>
         <option <? if ($driver == 'pgsql'): ?>selected="selected" <? endif; ?>value="pgsql">PostgreSQL</option>
       </select>
@@ -25,31 +25,31 @@
   <div class="row">
     <label class="medium-3 columns" for="dbname">New database name:</label>
     <div class="medium-9 columns">
-      <input type="text" name="dbname" value="<?=$this->escapeHtmlAttr($this->dbname)?>" class="auto"/>
+      <input type="text" name="dbname" value="<?=$this->escapeHtmlAttr($this->dbname)?>" class="auto-width"/>
     </div>
   </div>
   <div class="row">
     <label class="medium-3 columns" for="dbuser">New database user:</label>
     <div class="medium-9 columns">
-      <input type="text" name="dbuser" value="<?=$this->escapeHtmlAttr($this->dbuser)?>" class="auto"/>
+      <input type="text" name="dbuser" value="<?=$this->escapeHtmlAttr($this->dbuser)?>" class="auto-width"/>
     </div>
   </div>
   <div class="row">
     <label class="medium-3 columns" for="dbpass">New user password:</label>
     <div class="medium-9 columns">
-      <input type="password" name="dbpass" value="" class="auto"/>
+      <input type="password" name="dbpass" value="" class="auto-width"/>
     </div>
   </div>
   <div class="row">
     <label class="medium-3 columns" for="dbpassconfirm">Confirm new user password:</label>
     <div class="medium-9 columns">
-      <input type="password" name="dbpassconfirm" value="" class="auto"/>
+      <input type="password" name="dbpassconfirm" value="" class="auto-width"/>
     </div>
   </div>
   <div class="row">
     <label class="medium-3 columns" for="dbhost">MySQL Host:</label>
     <div class="medium-9 columns">
-      <input type="text" name="dbhost" value="<?=$this->escapeHtmlAttr($this->dbhost)?>" class="auto"/>
+      <input type="text" name="dbhost" value="<?=$this->escapeHtmlAttr($this->dbhost)?>" class="auto-width"/>
     </div>
   </div>
   <div class="row">
@@ -61,24 +61,24 @@
   <div class="row">
     <label class="medium-3 columns" for="dbrootuser">MySQL Root User:</label>
     <div class="medium-9 columns">
-      <input type="text" name="dbrootuser" value="<?=$this->escapeHtmlAttr($this->dbrootuser)?>" class="auto"/>
+      <input type="text" name="dbrootuser" value="<?=$this->escapeHtmlAttr($this->dbrootuser)?>" class="auto-width"/>
     </div>
   </div>
   <div class="row">
     <label class="medium-3 columns" for="dbrootpass">MySQL Root Password:</label>
     <div class="medium-9 columns">
-      <input type="password" name="dbrootpass" value="" class="auto"/>
+      <input type="password" name="dbrootpass" value="" class="auto-width"/>
     </div>
   </div>
   <div class="row">
     <div class="medium-9 columns medium-offset-3">
-      <input class="button small" type="submit" name="submit" role="button" value="<?=$this->transEsc('Submit') ?>" />
+      <input class="button small" type="submit" name="submit" value="<?=$this->transEsc('Submit') ?>" />
     </div>
   </div>
   <div class="row">
     <label class="medium-3 columns" for="printsql">If you don't have the credentials or you wish to print the SQL out :</label>
     <div class="medium-9 columns">
-      <p class="auto-static">Click here to <input class="button secondary small" role="button" type="submit" name="printsql" value="Skip"/> credentials.</p>
+      <p class="auto-static">Click here to <input class="button secondary small" type="submit" name="printsql" value="Skip"/> credentials.</p>
     </div>
   </div>
 </form>

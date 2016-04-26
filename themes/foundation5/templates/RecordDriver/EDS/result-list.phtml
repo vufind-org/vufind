@@ -4,7 +4,7 @@
   $accessLevel = $this->driver->getAccessLevel();
   $restrictedView = empty($accessLevel) ? false : true;
 ?>
-<div class="small-11 columns source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+<div class="small-11 columns source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
   <div class="row">
     <div class="small-3 medium-2 columns left">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
@@ -28,7 +28,7 @@
                   <?=$item['Data']?> </a>
                 <?else:?>
                 <p>
-                  <b><?=$this->transEsc($item['Label'])?>:</b>
+                  <strong><?=$this->transEsc($item['Label'])?>:</strong>
                   <?=$item['Data']?>
                 </p>
                 <?endif;?>
@@ -97,10 +97,10 @@
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
-        <i class="fa fa-fw fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+        <i class="fa fa-fw fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
 
         <? /* Saved lists */ ?>
-        <div class="savedLists alert-box info hide" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
+        <div class="savedLists alert-box info hide" data-alert tabindex="0" aria-live="assertive" role="alertdialog">
           <strong><?=$this->transEsc("Saved in")?>:</strong>
         </div>
       <? endif; ?>
@@ -111,7 +111,7 @@
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
             <i class="fa fa-fw fa-sitemap"></i>
-          <a class="hierarchyTreeLinkText modal-link" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
+          <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
               <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
             </a>
           </div>

@@ -1,6 +1,6 @@
 <? $summonTopics = $this->recommend->getResults(); if (!empty($summonTopics)): $summonTopics = current($summonTopics); ?>
 <div class="authorbox">
-  <p><b><?=$this->transEsc('Suggested Topics')?></b></p>
+  <p><strong><?=$this->transEsc('Suggested Topics')?></strong></p>
   <? if (isset($summonTopics['title'])): ?>
     <p>
       <a href="<?=$this->url('summon-search')?>?lookfor=%22<?=urlencode($summonTopics['title'])?>%22"><?=$this->escapeHtml($summonTopics['title'])?></a><br />
@@ -10,7 +10,7 @@
   <? endif; ?>
   <? if (isset($summonTopics['relatedTopics']) && !empty($summonTopics['relatedTopics'])): ?>
     <p>
-      <b><?=$this->transEsc('wcterms_exact')?>:</b>
+      <strong><?=$this->transEsc('wcterms_exact')?>:</strong>
       <? foreach ($summonTopics['relatedTopics'] as $i => $topic): ?><? if ($i > 0): ?>, <? endif; ?><a href="<?=$this->url('summon-search')?>?lookfor=%22<?=urlencode($topic['title'])?>%22"><?=$this->escapeHtml($topic['title'])?></a><? endforeach; ?>
     </p>
   <? endif; ?>

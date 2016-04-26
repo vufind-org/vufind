@@ -21,7 +21,7 @@
           <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
           <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
           <div class="button-group">
-            <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEsc("hold_cancel_selected") ?>" class="button secondary small" data-dropdown="hold_cancel_selected-dd" role="button" aria-controls="hold_cancel_selected-dd" aria-expanded="false" />
+            <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEsc("hold_cancel_selected") ?>" class="button secondary small" data-dropdown="hold_cancel_selected-dd" aria-controls="hold_cancel_selected-dd" aria-expanded="false" />
             <ul id="hold_cancel_selected-dd" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
               <li class="disabled"><a><?=$this->transEsc("confirm_hold_cancel_selected_text") ?></a></li>
               <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
@@ -29,7 +29,7 @@
             </ul>
           </div>
           <div class="button-group">
-            <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEsc("hold_cancel_all") ?>" class="button secondary small" data-dropdown="hold_cancel_all-dd" role="button" aria-controls="hold_cancel_all-dd" aria-expanded="false" />
+            <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEsc("hold_cancel_all") ?>" class="button secondary small" data-dropdown="hold_cancel_all-dd" aria-controls="hold_cancel_all-dd" aria-expanded="false" />
             <ul id="hold_cancel_all-dd" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
               <li class="disabled"><a><?=$this->transEsc("confirm_hold_cancel_all_text") ?></a></li>
               <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelAll');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
@@ -79,9 +79,9 @@
                 echo $this->transEsc('Title not available');
               }
             ?><br/>
-            <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
+            <? $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
               <?=$this->transEsc('by')?>:
-              <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
+              <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?><br/>
             <? endif; ?>
 
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
@@ -138,13 +138,15 @@
             <? if (isset($this->cancelResults['items'])): ?>
               <? foreach ($this->cancelResults['items'] as $itemId=>$cancelResult): ?>
                 <? if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
-                  <div data-alert class="alert-box alert" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc($cancelResult['status']) ?><? if ($cancelResult['sysMessage']) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
+                  <div data-alert class="alert-box alert" tabindex="0" aria-live="assertive" role="alertdialog"><?=$this->transEsc($cancelResult['status']) ?><? if ($cancelResult['sysMessage']) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
                 <? endif; ?>
               <? endforeach; ?>
             <? endif; ?>
 
             <? if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
               <div class="label success"><?=$this->transEsc("hold_available") ?></div>
+            <? elseif (isset($ilsDetails['in_transit']) && $ilsDetails['in_transit']): ?>
+              <div class="label success"><?=$this->transEsc('request_in_transit') . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], array(), $ilsDetails['in_transit']) : '') ?></div>
             <? elseif (isset($ilsDetails['position'])): ?>
               <p><strong><?=$this->transEsc("hold_queue_position") ?>:</strong> <?=$this->escapeHtml($ilsDetails['position']) ?></p>
             <? endif; ?>

@@ -12,7 +12,7 @@
 ?>
 
 <? if ($offlineMode == "ils-offline"): ?>
-  <div data-alert class="alert-box warning" tabindex="0" aria-live="assertive" role="dialogalert">
+  <div data-alert class="alert-box warning" tabindex="0" aria-live="assertive" role="alertdialog">
     <h2><?=$this->transEsc('ils_offline_title')?></h2>
     <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
     <p><?=$this->transEsc('ils_offline_login_message')?></p>
@@ -25,7 +25,7 @@
 <?=$this->flashmessages()?>
 
 <? if ($hideLogin): ?>
-  <div data-alert class="alert-box alert" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc('login_disabled')?></div>
+  <div data-alert class="alert-box alert" tabindex="0" aria-live="assertive" role="alertdialog"><?=$this->transEsc('login_disabled')?></div>
 <? else: ?>
   <?=$this->auth()->getLogin()?>
 <? endif; ?>

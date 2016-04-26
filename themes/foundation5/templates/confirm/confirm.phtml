@@ -18,10 +18,10 @@
           <? endif; ?>
         <? endforeach; ?>
       <? endif;?>
-      <input class="button small" type="submit" name="confirm" role="button" value="<?=$this->transEsc('confirm_dialog_yes') ?>" />
+      <input class="button small" type="submit" name="confirm" value="<?=$this->transEsc('confirm_dialog_yes') ?>" />
     </form>
     <form action="<?=$this->escapeHtmlAttr($this->cancel) ?>" method="post">
-      <input class="button secondary small" type="submit" name="cancel" role="button" value="<?=$this->transEsc('confirm_dialog_no') ?>" />
+      <input class="button secondary small" type="submit" name="cancel" value="<?=$this->transEsc('confirm_dialog_no') ?>" />
     </form>
     <div class="clearer"></div>
   </div>

@@ -96,7 +96,7 @@ $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
                 <? if ($rangeFacets[$title]['type'] == 'date'): ?>
                   <div class="slider-container"><input type="text" class="hide" id="<?= $this->escapeHtmlAttr($title) ?><?= $this->escapeHtml($rangeFacets[$title]['type']) ?>Slider"/></div>
                 <? endif; ?>
-                <input class="button tiny" type="submit" role="button" value="<?= $this->transEsc('Set') ?>"/>
+                <input class="button tiny" type="submit" value="<?= $this->transEsc('Set') ?>"/>
               </form>
               <? /* NO closing UL and LI here! - is closed below */ ?>
               <? /* ADAPT RANGE SLIDER JS HERE AND REMOVE BootstrapSlider JS and CSS when FNDTN6 is out - FIXME CK */ ?>
@@ -178,11 +178,11 @@ JS;
                   <? $moreClass = 'narrowGroupHidden-' . $this->escapeHtmlAttr($title) . ' hide'; ?>
                   <? if ($i == $facets_before_more): ?>
                     <li id="more-narrowGroupHidden-<?= $this->escapeHtmlAttr($title) ?>">
-                      <a href="javascript:moreFacets('narrowGroupHidden-<?= $title ?>')"><?= $this->transEsc('more') ?>&nbsp;...</a>
+                      <a href="javascript:moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?= $this->transEsc('more') ?>&nbsp;...</a>
                     </li>
                   <? endif; ?>
                   <? if ($thisFacet['isApplied']): ?>
-                    <li class="<? if ($i >= $facets_before_more): ?> <?= $moreClass ?> <? endif ?>" >
+                    <li class="<? if ($i >= $facets_before_more): ?> <?= $moreClass ?> <? endif ?>">
                       <a class="active <? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?= $this->currentPath() . $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>" >
                         <? if ($thisFacet['operator'] == 'OR'): ?>
                           <i class="fa fa-check-square-o"></i>
@@ -218,8 +218,7 @@ JS;
                     </li>
                   <? endif; ?>
                 <? endforeach; ?>
-                <? if ($i > 5): ?>
-                <li class="<?= $moreClass ?>"><a href="javascript:lessFacets('narrowGroupHidden-<?= $title ?>')"><?= $this->transEsc('less') ?>&nbsp;...</a></li><? endif; ?>
+                <? if ($i >= $facets_before_more): ?><li class="<?= $moreClass ?>"><a href="javascript:lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?= $this->transEsc('less') ?>&nbsp;...</a></li><? endif; ?>
                 <? endif; ?>
               </ul>
               <? if (in_array($title, $hierarchicalFacets)): ?>

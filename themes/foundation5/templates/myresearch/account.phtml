@@ -11,19 +11,13 @@ $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') .
 
 <form method="post" name="accountForm" id="accountForm" data-abide role="form">
   <?=$this->auth()->getCreateFields()?>
-  <? if ($this->useRecaptcha): ?>
-    <div class="row">
-      <div class="medium-9 medium-offset-3">
-        <?=$this->recaptcha()->html($this->useRecaptcha)?>
-      </div>
-    </div>
-  <? endif; ?>
+  <?=$this->recaptcha()->html($this->useRecaptcha)?>
   <div class="row">
     <div class="medium-3 columns">
       <a class="back-to-login button small" role="button" href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-chevron-left"></i> <?=$this->transEsc('Back')?></a>
     </div>
     <div class="medium-9 columns">
-      <input class="button small" role="button" type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
+      <input class="button small" type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
     </div>
   </div>
 </form>

@@ -121,8 +121,10 @@ $modules: () !default;
 // If you require to comma separate your list
 //
 //   rem-calc((16px, 32px, 48), 8px);
-
-@function rem-calc($values, $base-value: $rem-base) {
+// CUSTOMIZATION - CK -- we need to replace $rem-base in "$values, $base-value: $rem-base" with 16px
+// to counter miscalculations resulting from custom base-font size set in settings.scss
+// changing the $rem-base in 16px in settings.scss is also necessary
+@function rem-calc($values, $base-value: 16px) {
   $max: length($values);
 
   @if $max == 1 { @return convert-to-rem(nth($values, 1), $base-value); }

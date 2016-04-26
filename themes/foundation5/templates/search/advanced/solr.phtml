@@ -10,7 +10,7 @@
         <? foreach ($this->facetList as $field => $list): ?>
           <div class="medium-<?= floor(12 / count($this->facetList)) ?> columns">
             <label for="limit_<?= $this->escapeHtmlAttr(str_replace(' ', '', $field)) ?>"><?= $this->transEsc($list['label']) ?>:</label>
-            <select class="auto" id="limit_<?= $this->escapeHtmlAttr(str_replace(' ', '', $field)) ?>" name="filter[]" multiple="multiple" size="10">
+            <select class="auto-width" id="limit_<?= $this->escapeHtmlAttr(str_replace(' ', '', $field)) ?>" name="filter[]" multiple="multiple" size="10">
               <? if (is_array($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
                 <? foreach ($list['list'] as $value): ?>
                   <? $display = str_pad('', 4 * $value['level'] * 6, '&nbsp;', STR_PAD_LEFT) . $this->escapeHtml($value['displayText']); ?>

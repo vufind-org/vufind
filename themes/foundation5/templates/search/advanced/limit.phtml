@@ -4,14 +4,14 @@
 $limitList = $this->options->getLimitOptions();
 
 // If a previous limit was used, make that the default; otherwise, use the "default default"
-$lastLimit = $this->options->getLastLimit();
+$lastLimit = $this->searchMemory()->getLastLimit($this->options->getSearchClassId());
 $defaultLimit = empty($lastLimit) ? $this->options->getDefaultLimit() : $lastLimit;
 ?>
 <? if (count($limitList) > 1): ?>
   <div class="medium-4 columns">
     <fieldset>
       <legend><?= $this->transEsc('Results per page') ?></legend>
-      <select id="limit" name="limit" class="auto">
+      <select id="limit" name="limit" class="auto-width">
         <? foreach ($limitList as $limitVal): ?>
           <option value="<?= $this->escapeHtmlAttr($limitVal) ?>" <?= ($limitVal == $defaultLimit) ? 'selected="selected"' : '' ?>><?= $this->escapeHtml($limitVal) ?></option>
         <? endforeach; ?>

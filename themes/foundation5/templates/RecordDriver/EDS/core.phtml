@@ -51,7 +51,8 @@
   <div class="medium-9 columns">
     <h3 property="name"><?=$this->driver->getTitle()?></h3>
 
-    <table class="table" summary="<?=$this->transEsc('Bibliographic Details')?>">
+    <table class="table">
+      <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
       <? foreach ($items as $key => $item): ?>
         <? if (!empty($item['Data'])): ?>
         <tr>

@@ -16,7 +16,7 @@
     <form method="get" name="reservesSearchForm">
       <label for="reservesSearchForm_lookfor"><?=$this->transEsc("Your search terms")?></label>
       <input id="reservesSearchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtmlAttr($reservesLookfor)?>" <?=$this->searchOptions('SolrReserves')->autocompleteEnabled() ? ' class="autocomplete searcher:SolrReserves type:Reserves"' : ''?> />
-      <input class="button secondary small" type="submit" name="submit" role="button" value="<?=$this->transEsc("Find")?>"/>
+      <input class="button secondary small" type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
     </form>
     <script type="text/javascript">$("#reservesSearchForm_lookfor").focus()</script>
 

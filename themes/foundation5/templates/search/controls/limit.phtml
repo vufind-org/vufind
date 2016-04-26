@@ -4,7 +4,7 @@
 <? if (count($limitList) > 1): ?>
   <form class="limit" action="<?=$this->currentPath() . $this->results->getUrlQuery()->setLimit(null)?>" method="post">
     <label class="inline" for="limit"><?=$this->transEsc('Results per page')?></label>
-    <select id="limit" name="limit" class="jumpMenu auto">
+    <select id="limit" name="limit" class="jumpMenu auto-width">
       <? foreach ($limitList as $limitVal => $limitData): ?>
         <option value="<?=$this->escapeHtmlAttr($limitVal)?>"<?=$limitData['selected']?' selected="selected"':''?>><?=$this->escapeHtml($limitData['desc'])?></option>
       <? endforeach; ?>

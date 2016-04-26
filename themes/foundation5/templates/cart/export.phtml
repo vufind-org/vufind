@@ -4,7 +4,7 @@
 $this->headTitle($this->translate('Export Favorites'));
 
 // Set up breadcrumbs:
-$this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+$this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
     . '<li><a href="' .$this->url('cart-home'). '">' .$this->transEsc('Cart'). '</a></li> '
     . '<li class="active">' . $this->transEsc('Export Favorites') . '</li>';
 ?>
@@ -15,13 +15,13 @@ $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc
 <? if (!empty($this->exportOptions)): ?>
   <form method="post" action="<?=$this->url('cart-export')?>" name="exportForm" title="<?=$this->transEsc('Export Items')?>">
     <? foreach ($this->records as $current): ?>
-      <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+      <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>" />
     <? endforeach; ?>
     <div class="row">
       <label class="medium-3 columns"><?=$this->transEsc('Title')?></label>
       <div class="medium-9 columns">
         <? if(count($this->records) > 1): ?>
-          <button type="button" class="button secondary small hide" data-dropdown="itemhide" role="button" aria-controls="itemhide" aria-expanded="false">
+          <button type="button" class="button secondary small hide" data-dropdown="itemhide"  aria-controls="itemhide" aria-expanded="false">
             <?=count($this->records).' '.$this->transEsc('items') ?>
           </button>
           <ul id="itemhide" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
@@ -30,14 +30,14 @@ $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc
             <? endforeach; ?>
           </ul>
         <? else: ?>
-          <p class="auto"><?=$this->records[0]->getBreadcrumb() ?></p>
+          <p class="auto-width"><?=$this->records[0]->getBreadcrumb() ?></p>
         <? endif; ?>
       </div>
     </div>
     <div class="row">
       <label for="format" class="medium-3 columns"><?=$this->transEsc('Format')?>:</label>
       <div class="medium-9 columns">
-        <select name="format" id="format" class="auto">
+        <select name="format" id="format" class="auto-width">
           <? foreach ($this->exportOptions as $exportOption): ?>
             <option value="<?=$this->escapeHtmlAttr($exportOption)?>"><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
           <? endforeach; ?>
@@ -46,7 +46,7 @@ $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc
     </div>
     <div class="row">
       <div class="medium-9 columns medium-offset-3">
-        <input class="button secondary small" role="button" type="submit" name="submit" value="<?=$this->transEsc('Export')?>"/>
+        <input class="button secondary small" type="submit" name="submit" value="<?=$this->transEsc('Export')?>"/>
       </div>
     </div>
   </form>

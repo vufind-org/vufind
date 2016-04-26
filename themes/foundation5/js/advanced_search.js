@@ -24,7 +24,7 @@ function addSearch(group, fieldValues)
   // Preset Values
   if(typeof fieldValues.term !== "undefined") {
     $newSearch.find('input.input_slot').attr('value', fieldValues.term);
-    }
+  }
   if(typeof fieldValues.field !== "undefined") {
     $newSearch.find('select.type option[value="'+fieldValues.field+'"]').attr('selected', 1);
   }
@@ -88,7 +88,7 @@ function addGroup(firstTerm, firstField, join)
     .removeClass('hide');
   $newGroup.find('.group-close')
     .attr('onClick', 'deleteGroup('+nextGroup+')');
-  $newGroup.find('select.auto')
+  $newGroup.find('select.auto-width')
     .attr('id', 'search_bool'+nextGroup)
     .attr('name', 'bool'+nextGroup+'[]');
   $newGroup.find('.search_bool')

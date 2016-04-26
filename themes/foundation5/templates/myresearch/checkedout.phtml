@@ -23,8 +23,8 @@
             <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
             <?=$this->transEsc('select_page')?> |
           </label>
-          <input type="submit" class="button secondary small" name="renewSelected" role="button" value="<?=$this->transEsc("renew_selected")?>" />
-          <input type="submit" class="button secondary small" name="renewAll" role="button" value="<?=$this->transEsc('renew_all')?>" />
+          <input type="submit" class="button secondary small" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+          <input type="submit" class="button secondary small" id="renewAll" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
         </div>
         </div>
       <? endif; ?>
@@ -64,35 +64,36 @@
             <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
             <div class="small-1 columns">
               <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
-              <input class="left checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
-              <input class="left" type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
-              <input class="left" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+              <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
+              <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+              <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
             </div>
             <? endif; ?>
 
             <? $cover = $this->record($resource)->getCover('checkedout', 'small'); ?>
             <? if ($cover): ?>
-            <div class="small-2 columns text-center">
+            <div class="small-11 medium-2 columns text-center">
               <? /* Display thumbnail if appropriate: */ ?>
               <?=$cover?>
             </div>
 
-            <div class="small-6 columns">
+            <div class="small-12 medium-6 columns">
             <? else: ?>
-            <div class="small-9 columns">
+            <div class="medium-9 columns">
             <? endif; ?>
           <? else: ?>
+      
           <? /* If renewals NOT enabled in config.ini, make columns wider */ ?>
             <? $cover = $this->record($resource)->getCover('checkedout', 'small'); ?>
             <? if ($cover): ?>
-            <div class="small-2 columns text-center">
+            <div class="small-11 medium-2 columns text-center">
               <? /* Display thumbnail if appropriate: */ ?>
               <?= $cover ?>
             </div>
 
-            <div class="small-7 columns">
+            <div class="small-12 medium-6 columns">
             <? else: ?>
-            <div class="small-9 columns">
+            <div class="medium-9 columns">
             <? endif; ?>
           <? endif; ?>
 
@@ -111,9 +112,9 @@
                 echo $this->transEsc('Title not available');
               }
             ?><br />
-            <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
+            <? $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
               <?=$this->transEsc('by')?>:
-              <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
+              <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?><br/>
             <? endif; ?>
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=str_replace('class="', 'class="label info ', $this->record($resource)->getFormatList())?>
@@ -154,24 +155,24 @@
               <? if (isset($renewDetails['success']) && $renewDetails['success']): ?>
                 <? $showStatus = false; ?>
                 <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($renewDetails['new_date'])?> <? if (isset($renewDetails['new_time'])): ?><?=$this->escapeHtml($renewDetails['new_time'])?><? endif; ?></strong>
-                <div data-alert class="alert-box success" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc('renew_success')?></div>
+                <div data-alert class="alert-box success" tabindex="0" aria-live="assertive" role="alertdialog"><?=$this->transEsc('renew_success')?></div>
               <? else: ?>
                 <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <?=$this->escapeHtml($ilsDetails['dueTime'])?><? endif; ?></strong>
-                <div data-alert class="alert-box warning" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc('renew_fail')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escapeHtml($renewDetails['sysMessage'])?><? endif; ?></div>
+                <div data-alert class="alert-box warning" tabindex="0" aria-live="assertive" role="alertdialog"><?=$this->transEsc('renew_fail')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escapeHtml($renewDetails['sysMessage'])?><? endif; ?></div>
               <? endif; ?>
             <? else: ?>
               <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <?=$this->escapeHtml($ilsDetails['dueTime'])?><? endif; ?></strong>
               <? if ($showStatus): ?>
                 <? if (isset($ilsDetails['dueStatus']) && $ilsDetails['dueStatus'] == "overdue"): ?>
-                  <div data-alert class="alert-box alert" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc("renew_item_overdue")?></div>
+                  <div data-alert class="alert-box alert" tabindex="0" aria-live="assertive" role="alertdialog"><?=$this->transEsc("renew_item_overdue")?></div>
                 <? elseif (isset($ilsDetails['dueStatus']) && $ilsDetails['dueStatus'] == "due"): ?>
-                  <div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc("renew_item_due")?></div>
+                  <div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="alertdialog"><?=$this->transEsc("renew_item_due")?></div>
                 <? endif; ?>
               <? endif; ?>
             <? endif; ?>
 
             <? if ($showStatus && isset($ilsDetails['message']) && !empty($ilsDetails['message'])): ?>
-              <div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc($ilsDetails['message'])?></div>
+              <div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="alertdialog"><?=$this->transEsc($ilsDetails['message'])?></div>
             <? endif; ?>
             <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_link'])): ?>
               <a href="<?=$this->escapeHtmlAttr($ilsDetails['renew_link'])?>"><?=$this->transEsc('renew_item')?></a>
@@ -182,7 +183,7 @@
       <? if ($this->renewForm): ?></form><? endif; ?>
       <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml') : ''?>
     <? else: ?>
-      <?=$this->transEsc('You do not have any items checked out')?>.
+      <?=$this->transEsc('You do not have any items checked out')?>.     
     <? endif; ?>
   </div>
 

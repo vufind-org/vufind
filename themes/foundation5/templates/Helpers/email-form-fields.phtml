@@ -2,7 +2,7 @@
 <div class="row">
   <label class="medium-3 columns" for="email_to"><?=$this->transEsc('To')?>:</label>
   <div class="medium-9 columns">
-    <input type="<?=$this->maxRecipients != 1 ? 'text' : 'email'?>" id="email_to" class="auto" oninvalid="$('#modal .fa-spinner').remove()" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
+    <input type="<?=$this->maxRecipients != 1 ? 'text' : 'email'?>" id="email_to" class="auto-width" oninvalid="$('#modal .fa-spinner').remove()" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
     <? if ($this->maxRecipients != 1): ?>
       <br />
       <?=$this->transEsc('email_multiple_recipients_note')?>
@@ -16,7 +16,7 @@
   <div class="row">
     <label class="medium-3 columns" for="email_from"><?=$this->transEsc('From')?>:</label>
     <div class="medium-9 columns">
-      <input type="email" id="email_from" oninvalid="$('#modal .fa-spinner').remove()" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="auto"/>
+      <input type="email" id="email_from" oninvalid="$('#modal .fa-spinner').remove()" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="auto-width"/>
     </div>
   </div>
 <? endif; ?>
@@ -24,14 +24,14 @@
   <div class="row">
     <label class="medium-3 columns" for="email_subject"><?=$this->transEsc('email_subject')?>:</label>
     <div class="medium-9 columns">
-      <input type="text" id="email_subject" oninvalid="$('#modal .fa-spinner').remove()" name="subject" value="<?=isset($this->subject) ? $this->subject : ''?>" size="40" class="auto"/>
+      <input type="text" id="email_subject" oninvalid="$('#modal .fa-spinner').remove()" name="subject" value="<?=isset($this->subject) ? $this->subject : ''?>" size="40" class="auto-width"/>
     </div>
   </div>
 <? endif; ?>
 <div class="row">
   <label class="medium-3 columns" for="email_message"><?=$this->transEsc('Message')?>:</label>
   <div class="medium-9 columns">
-    <textarea id="email_message" class="auto" name="message" rows="4"><?=isset($this->message) ? $this->message : ''?></textarea>
+    <textarea id="email_message" class="auto-width" name="message" rows="4"><?=isset($this->message) ? $this->message : ''?></textarea>
   </div>
 </div>
 <? if ($this->disableFrom && $this->userEmailInFrom): ?>
@@ -45,14 +45,10 @@
     </div>
   </div>
 <? endif ?>
+<?=$this->recaptcha()->html($this->useRecaptcha) ?>
 <div class="row">
   <div class="medium-9 columns medium-offset-3">
-    <?=$this->recaptcha()->html($this->useRecaptcha) ?>
-  </div>
-</div>
-<div class="row">
-  <div class="medium-9 columns medium-offset-3">
-    <input type="submit" class="button small" role="button" name="submit" value="<?=$this->transEsc('Send')?>"/>
+    <input type="submit" class="button small" name="submit" value="<?=$this->transEsc('Send')?>"/>
   </div>
 </div>
 <!-- helpers - email-form-fields.phtml - END -->

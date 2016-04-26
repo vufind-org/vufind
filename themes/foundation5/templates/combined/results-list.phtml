@@ -50,7 +50,7 @@
 <? /* End Listing Options */ ?>
 
 <? if ($recordTotal < 1): ?>
-  <p data-alert class="alert-box alert" tabindex="0" aria-live="assertive" role="dialogalert">
+  <p data-alert class="alert-box alert" tabindex="0" aria-live="assertive" role="alertdialog">
     <? if (isset($view->overrideEmptyMessage)): ?>
       <?=$view->overrideEmptyMessage?>
     <? else: ?>
@@ -58,7 +58,7 @@
     <? endif; ?>
   </p>
   <? if (isset($view->parseError)): ?>
-    <p data-alert class="alert-box alert" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc('nohit_parse_error')?></p>
+    <p data-alert class="alert-box alert" tabindex="0" aria-live="assertive" role="alertdialog"><?=$this->transEsc('nohit_parse_error')?></p>
   <? endif; ?>
   <? foreach (($top = $results->getRecommendations('top')) as $current): ?>
     <?=$this->recommend($current)?>

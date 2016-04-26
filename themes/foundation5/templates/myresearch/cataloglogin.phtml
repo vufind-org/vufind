@@ -10,7 +10,7 @@
     $offlineMode = $this->ils()->getOfflineMode();
 ?>
 <? if ($offlineMode == "ils-offline"): ?>
-  <div data-alert class="alert-box warning" tabindex="0" aria-live="assertive" role="dialogalert">
+  <div data-alert class="alert-box warning" tabindex="0" aria-live="assertive" role="alertdialog">
     <h2><?=$this->transEsc('ils_offline_title')?></h2>
     <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
     <p><?=$this->transEsc('ils_offline_login_message')?></p>
@@ -21,12 +21,12 @@
   <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
   <?=$this->flashmessages()?>
   <p><?=$this->transEsc('cat_establish_account')?></p>
-  <form method="post" class="form-horizontal">
+  <form method="post" action="<?=$this->serverUrl(true)?>">
     <? if ($this->targets !== null): ?>
     <div class="row">
       <label class="medium-2 columns" for="login_target"><?=$this->transEsc('login_target')?>:</label>
       <div class="medium-10 columns">
-        <select id="login_target" name="target" class="auto">
+        <select id="login_target" name="target" class="auto-width">
         <? foreach ($this->targets as $target): ?>
           <option value="<?=$this->escapeHtmlAttr($target)?>"><?=$this->transEsc("source_$target", null, $target)?></option>
         <? endforeach; ?>
@@ -37,13 +37,13 @@
     <div class="row">
       <label class="medium-2 columns" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
       <div class="medium-10 columns">
-        <input id="profile_cat_username" type="text" name="cat_username" value="" class="auto"/>
+        <input id="profile_cat_username" type="text" name="cat_username" value="" class="auto-width"/>
       </div>
     </div>
     <div class="row">
       <label class="medium-2 columns" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
       <div class="medium-10 columns">
-        <input id="profile_cat_username" type="password" name="cat_password" value="" class="row"/>
+        <input id="profile_cat_password" type="password" name="cat_password" value="" class="auto-width"/>
       </div>
     </div>
     <div class="row">

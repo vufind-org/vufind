@@ -6,7 +6,7 @@
 <table class="citation table">
   <? foreach ($this->driver->getRawData() as $field => $values): ?>
     <tr>
-      <th width="30%"><?=$this->escapeHtml($field)?></th>
+      <th><?=$this->escapeHtml($field)?></th>
       <td>
         <? if (!is_array($values)) { $values = array($values); } ?>
         <? foreach ($values as $value): ?>

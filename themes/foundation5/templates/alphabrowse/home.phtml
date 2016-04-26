@@ -29,7 +29,7 @@
     <label for="alphaBrowseForm_source" class="right"><?=$this->transEsc('Browse Alphabetically') ?></label>
   </div>
   <div class="small-9 columns">
-    <select id="alphaBrowseForm_source" name="source" class="auto">
+    <select id="alphaBrowseForm_source" name="source" class="auto-width">
       <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
       <option value="<?=$this->escapeHtmlAttr($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
       <? endforeach; ?>
@@ -41,8 +41,8 @@
       <label for="alphaBrowseForm_from" class="right"><?=$this->transEsc('starting from') ?></label>
     </div>
     <div class="small-9 columns">
-      <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>" class="auto"/>
-      <input class="button secondary small" type="submit" value="<?=$this->transEsc('Browse') ?>" role="button" aria-label="submit form"/>
+      <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>" class="auto-width"/>
+      <input class="button secondary small" type="submit" value="<?=$this->transEsc('Browse') ?>" aria-label="submit form"/>
     </div>
   </div>
 </form>
@@ -76,13 +76,13 @@
           <tr>
               <? endif; ?>
           <td class="<?=$this->source ?>">
-            <b>
+            <strong>
               <? if ($url = $this->alphabrowse()->getUrl($this->source, $item)): ?>
                 <a href="<?=$this->escapeHtmlAttr($url)?>"><?=$this->escapeHtml($item['heading'])?></a>
             <? else: ?>
                 <?=$this->escapeHtml($item['heading'])?>
             <? endif; ?>
-            </b>
+            </strong>
 
             <? if (count($item['useInstead']) > 0): ?>
               <div>

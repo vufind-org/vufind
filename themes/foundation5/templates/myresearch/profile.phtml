@@ -38,12 +38,12 @@
         ?>
         <td>
           <form id="profile_form" method="post">
-            <select id="home_library" name="home_library" class="auto">
+            <select id="home_library" name="home_library" class="auto-width">
               <? foreach ($this->pickup as $lib): ?>
                 <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
               <? endforeach; ?>
             </select>
-            <input class="button secondary small" type="submit" role="button" value="<?=$this->transEsc('Save')?>" />
+            <input class="button secondary small" type="submit" value="<?=$this->transEsc('Save')?>" />
           </form>
         </td>
       <? endif; ?>

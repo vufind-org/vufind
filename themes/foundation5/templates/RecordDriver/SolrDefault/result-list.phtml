@@ -1,12 +1,12 @@
 <!-- recordDriver - solrDefault - RESULT-LIST.phtml -->
-<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?> small-11 columns">
+<div class="<?=$this->driver->supportsAjaxStatus() ? 'ajaxItem ' : ''?> small-11 columns">
   <div class="row">
     <div>
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId"/>
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource"/>
     </div>
     <? if ($cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver))): ?>
-      <div class="small-3 medium-2 columns left"><?= $cover ?></div>
+    <div class="small-3 medium-2 columns left"><?=$cover?></div>
     <? endif ?>
     <div class="<?=$cover ? 'small-6 medium-7' : 'small-9'?> columns middle">
       <div>
@@ -17,28 +17,23 @@
 
       <div>
         <? if ($this->driver->isCollection()): ?>
-          <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+          <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary()));?>
         <? else: ?>
-          <? $summAuthor = $this->driver->getPrimaryAuthor();
-          if (!empty($summAuthor)): ?>
+          <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
             <?=$this->transEsc('by')?>
-            <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>" class="author"><?
-              $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
-              echo !empty($summHighlightedAuthor)
-                  ? $this->highlight($summHighlightedAuthor)
-                  : $this->escapeHtml($summAuthor);
-              ?>
-            </a>
+            <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
+              <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>" class="author"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
+            <? endforeach; ?>
           <? endif; ?>
 
-          <? $journalTitle = $this->driver->getContainerTitle();
-          $summDate = $this->driver->getPublicationDates(); ?>
+          <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
           <? if (!empty($journalTitle)): ?>
             <?=!empty($summAuthor) ? '<br />' : ''?>
             <?=$this->transEsc('Published in')?>
+            <? $containerSource = $this->driver->getSourceIdentifier(); ?>
             <? $containerID = $this->driver->getContainerRecordID(); ?>
             <? /* TODO: handle highlighting more elegantly here: */?>
-            <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)))?>"><?=$this->highlight($journalTitle)?></a>
+            <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
             <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
           <? elseif (!empty($summDate)): ?>
             <?=!empty($summAuthor) ? '<br />' : ''?>
@@ -47,7 +42,7 @@
           <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
             <? foreach ($summInCollection as $collId => $collText): ?>
               <div>
-                <b><?=$this->transEsc("in_collection_label")?></b>
+                <strong><?=$this->transEsc("in_collection_label")?></strong>
                 <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
                   <?=$this->escapeHtml($collText)?>
                 </a>
@@ -60,10 +55,10 @@
       <? if (!$this->driver->isCollection()): ?>
         <? if ($snippet = $this->driver->getHighlightedSnippet()): ?>
           <? if (!empty($snippet['caption'])): ?>
-            <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
+            <strong><?=$this->transEsc($snippet['caption'])?>:</strong> ';
           <? endif; ?>
           <? if (!empty($snippet['snippet'])): ?>
-            <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
+            <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet'])?>...<span class="quoteend">&#8221;</span><br/>
           <? endif; ?>
         <? endif; ?>
       <? endif; ?>
@@ -168,22 +163,20 @@
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
-        <i class="fa fa-fw fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" data-id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
-
+        <i class="fa fa-fw fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
         <? /* Saved lists */ ?>
-        <div class="savedLists hide alert-box info" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
+        <div class="savedLists alert-box info hide" data-alert tabindex="0" aria-live="assertive" role="alertdialog">
           <strong><?=$this->transEsc("Saved in")?>:</strong>
         </div>
       <? endif; ?>
 
       <? /* Hierarchy tree link */ ?>
-      <? $trees = $this->driver->tryMethod('getHierarchyTrees');
-      if (!empty($trees)): ?>
+      <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
         <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
             <i class="fa fa-fw fa-sitemap"></i>
-            <a class="hierarchyTreeLinkText modal-link" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
+            <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab')?>?hierarchy=<?=urlencode($hierarchyID)?>" data-lightbox-post="tab=hierarchytree">
               <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
             </a>
           </div>

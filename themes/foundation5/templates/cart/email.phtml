@@ -4,20 +4,20 @@
 $this->headTitle($this->translate('email_selected_favorites'));
 
 // Set up breadcrumbs:
-$this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+$this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
     . '<li><a href="' .$this->url('cart-home'). '">' .$this->transEsc('Cart'). '</a></li> '
     . '<li class="active">' . $this->transEsc('email_selected_favorites') . '</li>';
 ?>
 <?=$this->flashmessages()?>
   <form action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
     <? foreach ($this->records as $current): ?>
-      <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+      <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>" />
     <? endforeach; ?>
     <div class="row">
       <label class="medium-3 columns"><?=$this->transEsc('Title')?></label>
       <div class="medium-9 columns">
         <? if(count($this->records) > 1): ?>
-          <button type="button" class="button secondary small hide" data-dropdown="itemhide" role="button" aria-controls="itemhide" aria-expanded="false">
+          <button type="button" class="button secondary small hide" data-dropdown="itemhide" aria-controls="itemhide" aria-expanded="false">
             <?=count($this->records).' '.$this->transEsc('items') ?>
           </button>
           <ul id="itemhide" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
@@ -26,7 +26,7 @@ $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc
               <? endforeach; ?>
           </ul>
         <? else: ?>
-          <p class="auto"><?=$this->records[0]->getBreadcrumb() ?></p>
+          <p class="auto-width"><?=$this->records[0]->getBreadcrumb() ?></p>
         <? endif; ?>
       </div>
     </div>

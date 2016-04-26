@@ -12,7 +12,7 @@
     <div class="row">
       <label for="reserves_by_course" class="medium-2 columns"><?=$this->transEsc('By Course')?>:</label>
       <div class="medium-5 columns">
-        <select name="course" id="reserves_by_course" class="auto">
+        <select name="course" id="reserves_by_course" class="auto-width">
           <option></option>
           <? foreach ($this->courseList as $courseId => $courseName): ?>
             <option value="<?=$this->escapeHtmlAttr($courseId)?>"><?=$this->escapeHtml($courseName)?></option>
@@ -20,7 +20,7 @@
         </select>
       </div>
       <div class="medium-2 columns">
-        <input class="button small" type="submit" name="submit" role="button" value="<?=$this->transEsc('Find')?>"/>
+        <input class="button small" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
       </div>
     </div>
   <? endif; ?>
@@ -29,7 +29,7 @@
     <div class="row">
       <label for="reserves_by_inst" class="medium-2 columns"><?=$this->transEsc('By Instructor')?>:</label>
       <div class="medium-5 columns">
-        <select name="inst" id="reserves_by_inst" class="auto">
+        <select name="inst" id="reserves_by_inst" class="auto-width">
           <option></option>
           <? foreach ($this->instList as $instId => $instName): ?>
             <option value="<?=$this->escapeHtmlAttr($instId)?>"><?=$this->escapeHtml($instName)?></option>
@@ -37,7 +37,7 @@
         </select>
       </div>
       <div class="medium-2 columns">
-        <input class="button small" type="submit" name="submit" role="button" value="<?=$this->transEsc('Find')?>"/>
+        <input class="button small" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
       </div>
     </div>
   <? endif; ?>
@@ -46,7 +46,7 @@
     <div class="row">
       <label for="reserves_by_dept" class="medium-2 columns"><?=$this->transEsc('By Department')?>:</label>
       <div class="medium-5 columns">
-        <select name="dept" id="reserves_by_dept" class="auto">
+        <select name="dept" id="reserves_by_dept" class="auto-width">
           <option></option>
           <? foreach ($this->deptList as $deptId => $deptName): ?>
             <option value="<?=$this->escapeHtmlAttr($deptId)?>"><?=$this->escapeHtml($deptName)?></option>
@@ -54,7 +54,7 @@
         </select>
       </div>
       <div class="medium-2 columns">
-        <input class="button small" type="submit" name="submit" role="button" value="<?=$this->transEsc('Find')?>"/>
+        <input class="button small" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
       </div>
     </div>
   <? endif; ?>

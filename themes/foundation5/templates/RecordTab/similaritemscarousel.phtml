@@ -3,25 +3,28 @@
 <h4><?=$this->transEsc('Similar Items')?></h4>
 <? $similarRecords = $this->tab->getResults(); ?>
 <? if (!empty($similarRecords)): ?>
+  <? $perPage = 4 ?>
   <div id="similar-items-carousel" class="carousel autoplay hide-for-print">
     <? foreach ($similarRecords as $index=>$data): ?>
       <div class="carousel-item">
         <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
-                <? $thumb = $this->record($data)->getThumbnail('large'); ?>
-                <img src="<?=$thumb ?>" title="<?=$data->getTitle() ?>"/>
-                <div class="content">
-                  <? $formats = $data->getFormats(); ?>
-                  <i class="fa fa-x<? if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><? endif; ?>"></i>
-                  <?=$this->escapeHtml($data->getTitle())?>
-                  <? $author = $data->getPrimaryAuthor(); if (!empty($author)): ?>
-                    <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($author);?>
-                  <? endif; ?>
-                  <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
-                    <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
-                  <? endif; ?>
-                </div>
+          <? $thumb = $this->record($data)->getThumbnail('large'); ?>
+          <img src="<?=$thumb ?>" title="<?=$data->getTitle() ?>"/>
+          <div class="content">
+            <? $formats = $data->getFormats(); ?>
+            <i class="fa fa-x<? if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><? endif; ?>"></i>
+            <?=$this->escapeHtml($data->getTitle())?>
+            <? $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
+              <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><? if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
+            <? endif; ?>
+            <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
+              <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+            <? endif; ?>
+          </div>
         </a>
       </div>
+    <? if(($index+1) % $perPage == 0 && $index < count($similarRecords)-1): ?>
+    <? endif; ?>
   <? endforeach; ?>
   </div>
 <? else: ?>
@@ -31,7 +34,6 @@
 <?
 // Set up carousel script and adapt values below
 $this->inlineScript()->appendFile('vendor/slick.min.js');
-
 $js = <<<JS
 $(document).ready(function(){
     $('.autoplay').slick({
@@ -40,11 +42,30 @@ $(document).ready(function(){
       autoplay: true,
       autoplaySpeed: 9000,
       accessibility: true,
-      prevArrow: '<button type="button" class="slick-prev" role="button" aria-label="submit form"><span></span></button>',
-      nextArrow: '<button type="button" class="slick-next" role="button" aria-label="submit form"><span></span></button>'
+      prevArrow: '<button type="button" class="slick-prev" aria-label="submit form"><span></span></button>',
+      nextArrow: '<button type="button" class="slick-next" aria-label="submit form"><span></span></button>'
     });
   });
 JS;
+
+$jsheight = <<<JS
+var normalizeHeightCount = $('#similar-items-carousel img').length;
+function normalizeHeights() {
+  if(--normalizeHeightCount > 0) return;
+  var tallest = 0;
+  var items = $('#similar-items-carousel .hover-overlay');
+  items.each(function() { //add heights to array
+    if(tallest < $(this).height()) {
+      tallest = $(this).height();
+      }
+   });
+  items.css('min-height', (tallest+25) + 'px');
+}
+$('#similar-items-carousel img').load(normalizeHeights);
+JS;
 echo $this->inlineScript()->appendScript($js);
+echo $this->inlineScript()->appendScript($jsheight);
 ?>
+
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsheight, 'SET') ?>
 <!-- recordtab - similaritemscarousel.phtml - END -->

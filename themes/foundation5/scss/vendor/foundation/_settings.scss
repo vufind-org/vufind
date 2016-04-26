@@ -83,10 +83,12 @@ $include-html-global-classes: $include-html-classes;
 // $include-html-grid-classes: $include-html-classes;
 // $include-xl-html-grid-classes: false;
 
-// Setting the basic width to 75rem = 1152px
-//$row-width: rem-calc(1000);
-// Customisation next line - CK
-$row-width: rem-calc(1152);
+// Setting the basic width to 84rem*14px = 1176px - originally with 16px basefont we had 1152px
+// Customisation of next entry: rem calc is based on our customized base font size 14px - this is a glitch in FNDTN
+// to make up for it use FIXED recalculated value below (1176 = 84*14 and dividable by 12)
+// original entry was
+//$row-width: rem-calc(1152);
+$row-width: 1176px;
 //$total-columns: 12;
 //$column-gutter: rem-calc(30);
 

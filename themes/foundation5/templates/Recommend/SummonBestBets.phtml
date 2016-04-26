@@ -5,7 +5,7 @@
       <? if (isset($current['link']) && !empty($current['link'])):?>
         <a href="<?=$this->escapeHtmlAttr($current['link'])?>"><?=$this->escapeHtml($current['title'])?></a>
       <? else: ?>
-        <b><?=$this->escapeHtml($current['title'])?></b>
+        <strong><?=$this->escapeHtml($current['title'])?></strong>
       <? endif; ?>
       <br/><?=$current['description']?>
     </p>

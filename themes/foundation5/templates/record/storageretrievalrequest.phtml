@@ -4,7 +4,7 @@
     $this->headTitle($this->translate('storage_retrieval_request_place_text') . ': ' . $this->driver->getBreadcrumb());
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li>')
+    $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li>')
         . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>'
         . '<li class="active">' . $this->transEsc('storage_retrieval_request_place_text') . '</li>';
 ?>
@@ -13,9 +13,10 @@
 <p class="helptext"><?=$this->helpText?></p>
 <? endif; ?>
 
-<?=$this->flashmessages()?>
+
 <div class="storage-retrieval-request-form">
   <form name="placeStorageRetrievalRequest" method="post">
+    <?=$this->flashmessages()?>
     <? if (in_array("item-issue", $this->extraFields)): ?>
       <div class="row">
         <div class="medium-3 columns controls">
@@ -34,15 +35,15 @@
         <div id="storageRetrievalRequestReference" class="storageRetrievalRequestReference">
           <label class="medium-3 columns"><?=$this->transEsc('storage_retrieval_request_volume')?>:</label>
           <div class="medium-9 columns">
-            <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['volume']) ? $this->escapeHtmlAttr($this->gatheredDetails['volume']) : ''?>" class="auto"/><br/>
+            <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['volume']) ? $this->escapeHtmlAttr($this->gatheredDetails['volume']) : ''?>" class="auto-width"/><br/>
           </div>
           <label class="medium-3 columns"><?=$this->transEsc('storage_retrieval_request_issue')?>:</label>
           <div class="medium-9 columns">
-            <input type="text" name="gatheredDetails[issue]" value="<?=isset($this->gatheredDetails['issue']) ? $this->escapeHtmlAttr($this->gatheredDetails['issue']) : ''?>" class="auto"/><br/>
+            <input type="text" name="gatheredDetails[issue]" value="<?=isset($this->gatheredDetails['issue']) ? $this->escapeHtmlAttr($this->gatheredDetails['issue']) : ''?>" class="auto-width"/><br/>
           </div>
           <label class="medium-3 columns"><?=$this->transEsc('storage_retrieval_request_year')?>:</label>
           <div class="medium-9 columns">
-            <input type="text" name="gatheredDetails[year]" value="<?=isset($this->gatheredDetails['year']) ? $this->escapeHtmlAttr($this->gatheredDetails['year']) : ''?>" class="auto"/><br/>
+            <input type="text" name="gatheredDetails[year]" value="<?=isset($this->gatheredDetails['year']) ? $this->escapeHtmlAttr($this->gatheredDetails['year']) : ''?>" class="auto-width"/><br/>
           </div>
         </div>
       </div>
@@ -52,7 +53,7 @@
       <div class="row">
         <label class="medium-3 columns"><?=$this->transEsc("hold_required_by")?>:</label>
         <div class="medium-9 columns">
-          <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="auto"/>
+          <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="auto-width"/>
           (<?=$this->dateTime()->getDisplayDateFormat()?>)
         </div>
       </div>
@@ -72,7 +73,7 @@
           ?>
           <label class="medium-3 columns"><?=$this->transEsc("pick_up_location")?>:</label>
           <div class="medium-9 columns">
-            <select name="gatheredDetails[pickUpLocation]" class="auto">
+            <select name="gatheredDetails[pickUpLocation]" class="auto-width">
             <? if ($selected === false): ?>
               <option value="" selected="selected">
                 <?=$this->transEsc('select_pickup_location')?>
@@ -95,14 +96,14 @@
       <div class="row">
         <label class="medium-3 columns"><?=$this->transEsc("Comments")?>:</label>
         <div class="medium-9 columns">
-          <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="auto"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
+          <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="auto-width"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
         </div>
       </div>
     <? endif; ?>
 
     <div class="row">
       <div class="medium-9 columns medium-offset-3">
-        <input class="button small" type="submit" name="placeStorageRetrievalRequest" role="button" value="<?=$this->transEsc('storage_retrieval_request_submit_text')?>"/>
+        <input class="button small" type="submit" name="placeStorageRetrievalRequest" value="<?=$this->transEsc('storage_retrieval_request_submit_text')?>"/>
       </div>
     </div>
   </form>

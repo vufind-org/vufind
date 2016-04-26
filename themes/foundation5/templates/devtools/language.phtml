@@ -55,7 +55,7 @@ $this->headTitle($this->translate('Language'));
 
             <div id="missing_<?= $langCode ?>" class="content">
               <div class="accordion-inner">
-                <textarea class="auto" rows="15"><? foreach ($diffs['notInL2'] as $key): ?><?= $this->escapeHtml($key) ?> = "<?= $this->escapeHtml($main[$key]) ?>"
+                <textarea class="auto-width" rows="15"><? foreach ($diffs['notInL2'] as $key): ?><?= $this->escapeHtml($key) ?> = "<?= $this->escapeHtml($main[$key]) ?>"
                   <? endforeach; ?></textarea>
               </div>
             </div>

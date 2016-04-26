@@ -17,11 +17,11 @@
     <li>If you have customized code or templates in your previous version, you will need to adapt those changes to the new architecture.</li>
   <? else: ?>
     <li>You should look over the configuration files in <?=$this->escapeHtml($this->configDir)?> and make sure settings look correct.  The automatic update process sometimes re-enables disabled settings and removes comments.  Backups of your old configurations have been created for comparison purposes.</li>
-    <li>If you have customized code or templates in your previous version, you should test them to be sure they still work correctly; see the <a href="http://vufind.org/wiki/changelog">changelog</a> for notes on possible breaks in backward compatibility.</li>
+    <li>If you have customized code or templates in your previous version, you should test them to be sure they still work correctly; see the <a href="https://vufind.org/wiki/changelog">changelog</a> for notes on possible breaks in backward compatibility.</li>
   <? endif; ?>
   <li>You should reindex all of your content.</li>
   <li>You may want to check for problems on the <a href="<?=$this->url('install-home')?>"><?=$this->transEsc('auto_configure_title')?></a> page.</li>
 </ol>
 
-<p>For the latest notes on upgrading, see the <a href="http://vufind.org/wiki/vufind2:migration_notes">online documentation</a>.</p>
-<p>For help, feel free to use the mailing lists on the <a href="http://vufind.org/support.php">support page</a>.</p>
+<p>For the latest notes on upgrading, see the <a href="https://vufind.org/wiki/vufind2:migration_notes">online documentation</a>.</p>
+<p>For help, feel free to use the mailing lists on the <a href="https://vufind.org/support.php">support page</a>.</p>

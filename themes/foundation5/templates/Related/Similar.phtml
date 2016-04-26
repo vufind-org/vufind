@@ -10,8 +10,8 @@
         <a href="<?=$this->recordLink()->getUrl($data)?>">
           <?=$this->escapeHtml($data->getTitle())?>
         </a>
-        <? $author = $data->getPrimaryAuthor(); if (!empty($author)): ?>
-          <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($author);?>
+        <? $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
+          <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><? if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
         <? endif; ?>
         <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
           <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
