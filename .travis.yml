@@ -10,8 +10,7 @@ env:
   - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
 
 before_script:
-  # Note: locked phpcs to 2.3.4 due to a bug in 2.4.0; can relax restriction after next release.
-  - pear install pear/PHP_CodeSniffer-2.3.4
+  - pear install pear/PHP_CodeSniffer
   - pear install pear/Http_Request2
   - pear channel-discover pear.phing.info
   - pear install phing/phing
