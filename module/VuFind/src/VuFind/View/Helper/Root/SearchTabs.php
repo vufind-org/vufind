@@ -313,7 +313,6 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         // If an advanced search is available, link there; otherwise, just go
         // to the search home:
         $results = $this->results->get($class);
-        $urlParams = $results->getUrlQuery()->getParams(false);
         $url = $this->url->__invoke($results->getOptions()->getSearchHomeAction())
             . $this->buildUrlHiddenFilters($results, $filters);
         return [

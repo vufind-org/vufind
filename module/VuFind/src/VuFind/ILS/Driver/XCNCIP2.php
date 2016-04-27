@@ -1334,7 +1334,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($itemAgencyId, $requestId, $bibId) = explode("|", $cancelDetails);
+            list($itemAgencyId, $requestId) = explode("|", $cancelDetails);
             $request = $this->getCancelRequest(
                 $username, $password, $patronAgency,
                 $itemAgencyId, $requestId, "Hold"
@@ -1406,7 +1406,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($itemAgencyId, $requestId, $bibId) = explode("|", $cancelDetails);
+            list($itemAgencyId, $requestId) = explode("|", $cancelDetails);
             $request = $this->getCancelRequest(
                 $username,
                 $password,
@@ -1474,7 +1474,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $details = [];
         foreach ($renewDetails['details'] as $agencyId_renewId) {
-            list($agencyId, $renewId, $bibId) = explode("|", $agencyId_renewId);
+            list($agencyId, $renewId) = explode("|", $agencyId_renewId);
             $request = $this->getRenewRequest(
                 $renewDetails['patron']['cat_username'],
                 $renewDetails['patron']['cat_password'], $renewId,
@@ -1757,6 +1757,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (!is_null($patron_agency_id)) {
             $ret .=
                    '<ns1:InitiationHeader>' .
+                        '<ns1:FromAgencyId>' .
+                            '<ns1:AgencyId>' .
+                                htmlspecialchars($patron_agency_id) .
+                            '</ns1:AgencyId>' .
+                        '</ns1:FromAgencyId>' .
                         '<ns1:ToAgencyId>' .
                             '<ns1:AgencyId>' .
                                 htmlspecialchars($patron_agency_id) .

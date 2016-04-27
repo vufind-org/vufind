@@ -6,17 +6,25 @@ window.console = window.console || {log: function () {}};
 var VuFind = (function() {
   var defaultSearchBackend = null;
   var path = null;
+  var _initialized = false;
   var _submodules = [];
   var _translations = {};
 
   var register = function(name, module) {
-    _submodules.push(name);
-    this[name] = 'function' == typeof module ? module() : module;
+    if (_submodules.indexOf(name) === -1) {
+      _submodules.push(name);
+      this[name] = typeof module == 'function' ? module() : module;
+    }
+    // If the object has already initialized, we should auto-init on register:
+    if (_initialized) {
+      this[name].init();
+    }
   };
   var init = function() {
     for (var i=0; i<_submodules.length; i++) {
       this[_submodules[i]].init();
     }
+    _initialized = true;
   };
 
   var addTranslations = function(s) {
