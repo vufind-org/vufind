@@ -709,19 +709,36 @@ class AbstractSearch extends AbstractBase
     public function facetListAction()
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-
+        // Get results
         $results = $this->getResultsManager()->get($this->searchClassId);
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
-
+        // Get parameters
         $facet = $this->params()->fromQuery('facet');
-        $facets = $results->getFullFieldFacets([$facet], false);
+        $page = $this->params()->fromQuery('page', 1);
+        $sort = $this->params()->fromQuery('sort', 'count');
+        // TODO: config
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
+        $limit = isset($config->Results_Settings->lightboxLimit)
+            ? $config->Results_Settings->lightboxLimit
+            : 30;
+        $limit = $this->params()->fromQuery('limit', $limit);
+        $facets = $results->getFullFieldFacets(
+            [$facet], false, $limit, $sort, $page
+        );
+        $anotherPage = false;
+        $list = $facets[$facet]['data']['list'];
+        if (count($list) > $limit) {
+            $anotherPage = true;
+            $list = array_slice($list, 0, $limit);
+        }
 
         $view = $this->createViewModel(
             [
-                'data' => $facets[$facet]['data']['list'],
+                'data' => $list,
                 'facet' => $facet,
-                'results' => $results
+                'results' => $results,
+                'anotherPage' => $anotherPage
             ]
         );
         $view->setTemplate('search/facet-list');

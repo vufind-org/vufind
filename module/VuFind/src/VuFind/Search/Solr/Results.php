@@ -294,11 +294,12 @@ class Results extends \VuFind\Search\Base\Results
      * may be useful for very large amounts of facets that can break the JSON parse
      * method because of PHP out of memory exceptions (default = -1, no limit).
      * @param string $facetSort    A facet sort value to use (null to retain current)
+     * @param int    $page         Offsets results and returns limit+1 (page check)
      *
      * @return array an array with the facet values for each index field
      */
     public function getFullFieldFacets($facetfields, $removeFilter = true,
-        $limit = -1, $facetSort = null
+        $limit = -1, $facetSort = null, $page = null
     ) {
         $clone = clone($this);
         $params = $clone->getParams();
@@ -306,6 +307,12 @@ class Results extends \VuFind\Search\Base\Results
         // Manipulate facet settings temporarily:
         $params->resetFacetConfig();
         $params->setFacetLimit($limit);
+        if (null !== $page && $limit != -1) {
+            $offset = ($page-1) * $limit;
+            $params->setFacetOffset($offset);
+            // Return limit plus one so we know there's another page
+            $params->setFacetLimit($limit + 1);
+        }
         if (null !== $facetSort) {
             $params->setFacetSort($facetSort);
         }
