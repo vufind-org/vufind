@@ -173,7 +173,7 @@ JS;
                 <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>"><?=$this->transEsc('more')?> ...</a>
                 <? break; ?>
               <? else: ?>
-                <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onClick="moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('more')?> ...</a>
+                <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onClick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('more')?> ...</a>
               <? endif; ?>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
