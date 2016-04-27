@@ -42,7 +42,9 @@
 ; Example: remove links with a specific attribute
 ; htmlContentSearch[] = '<a rel="nofollow".*?<\/a>'
 ; htmlContentReplace[] = ''
-
+;
+; Item date format on content page or modal
+; contentDateFormat = "j.n.Y"
 
 ; Content elements to hide (by default all elments are shown):
 
@@ -51,6 +53,7 @@
 ; content[link] = 0
 ; content[image] = 0
 ; content[date] = 0
+; content[contentDate] = 0
  
 ;; Optional list settings:
 

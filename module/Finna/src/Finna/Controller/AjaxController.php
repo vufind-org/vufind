@@ -829,11 +829,26 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $items = $feed['items'];
         $config = $feed['config'];
         $modal = $feed['modal'];
+        $contentPage = $feed['contentPage'] && !$modal;
 
-        return $this->output(
-            isset($items[$num]) ? $items[$num] : false,
-            self::STATUS_OK
-        );
+        $result = false;
+        if (isset($items[$num])) {
+            $result['item'] = $items[$num];
+        }
+
+        if ($contentPage && !empty($items)) {
+            $baseUrl = $this->url()->fromRoute('feed-content-page', ['page' => $id]);
+            $titles = [];
+            foreach ($items as $item) {
+                $titles[] = $item['title'];
+            }
+            $result['navigation'] = $this->getViewRenderer()->partial(
+                'feedcontent/navigation',
+                ['baseUrl' => $baseUrl, 'items' => $titles, 'num' => $num]
+            );
+        }
+
+        return $this->output($result, self::STATUS_OK);
     }
 
     /**

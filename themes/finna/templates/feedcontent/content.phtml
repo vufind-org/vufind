@@ -19,14 +19,26 @@ JS;
 
 <?=$this->headScript()?>
 <div class="row">
-  <div class="col-xs-12 feed-content" data-feed="<?=$this->escapeHtmlAttr($this->feed)?>" data-num="<?=$this->escapeHtmlAttr($this->element)?>">
+  <div class="col-<?= $this->modal ? 'xs-12' : 'sm-9'?> feed-content" data-feed="<?=$this->escapeHtmlAttr($this->feed)?>" data-num="<?=$this->escapeHtmlAttr($this->element)?>">
+
   <? if ($this->modal): ?>
+    <div class="date"><?=$this->transEsc('Published');?>: <span></span></div>
     <div class="holder"></div>
+  </div>
+
   <? else: ?>
     <div class="row">
-      <div class="col-md-10 col-lg-8 holder"></div>
+      <div class="col-xs-12 col-md-11 col-lg-10">
+        <div class="date"><?=$this->transEsc('Published');?>: <span></span></div>
+        <div class="holder"></div>
+      </div>
     </div>
-  <? endif; ?>
   </div>
+  <div class="col-sm-3 sidebar">
+    <div><h3 class="article-navigation-header"><?=$this->translate('content-feed-navigation')?></h3></div>
+    <div class="article-navigation-wrapper"></div>
+  </div>
+  <? endif; ?>
+
 </div>
 <!-- END of: finna - feedcontent/content.phtml -->

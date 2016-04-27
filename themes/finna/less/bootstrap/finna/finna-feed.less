@@ -312,8 +312,65 @@
     }
     
 }
-.template-dir-feedcontent.template-name-content {
-    .feed-content img {
-        height: auto;
+
+// mixin for image prosessing on fulltext rss feeds
+.rss-content-image {
+    height: auto;
+    max-width: 100%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+// rss-feeds on content page
+.main.template-dir-feedcontent.template-name-content {
+    & .feed-content {
+        & img {
+            .rss-content-image();
+        }
+        & .date {
+            font-weight: bold;
+            background: #DFDFDF;
+            text-transform: uppercase;
+            padding: 5px;
+            margin-bottom: 10px;
+            display: none;
+            font-size: .9em;
+        }
+    }
+    & .article-navigation-header {
+        display: none;
+        margin-top: 0;
+        padding-top: 0;
+        @media (max-width: @screen-xs-max) {
+            margin-top: 10px;
+            padding-top: 10px;
+            background-color: white;
+            border-top: 1px solid @gray-mid-light;
+        }
+        & .menu-label {
+            display: none;
+        }
+    }
+    & ul.article-links li {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 1.05em;
+        word-wrap: break-word;
+    }
+}
+
+// rss-feed in modal window
+#modal.feed-content {
+    & .modal-dialog {
+        & img {
+            .rss-content-image();
+            max-width: 100% !important;
+            height: auto !important;
+        }
+        & .date {
+            color: @gray-light;
+            margin-bottom: 15px;
+            display: none;
+        }
     }
 }
