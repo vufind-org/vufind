@@ -1,0 +1,10 @@
+<? foreach ($channels as $channel): ?>
+  <h2><?=$this->escapeHtml($channel['title'])?></h2>
+  <? foreach ($channel['contents'] as $item): ?>
+    <div>
+      <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>">
+        <?=$this->escapeHtml($item['title'])?>
+      </a>
+    </div>
+  <? endforeach; ?>
+<? endforeach; ?>
