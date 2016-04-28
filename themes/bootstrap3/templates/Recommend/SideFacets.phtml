@@ -173,7 +173,7 @@ JS;
                 <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>"><?=$this->transEsc('more')?> ...</a>
                 <? break; ?>
               <? else: ?>
-                <a <?=$idAndClass ?> href="javascript:moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('more')?> ...</a>
+                <a <?=$idAndClass ?> href="#" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('more')?> ...</a>
               <? endif; ?>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
@@ -213,7 +213,7 @@ JS;
               <? endif; ?>
             <? endif; ?>
           <? endforeach; ?>
-          <? if ($i >= $facets_before_more): ?><a class="list-group-item narrow-toggle <?=$moreClass ?>" href="javascript:lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('less')?> ...</a><? endif; ?>
+          <? if ($i >= $facets_before_more): ?><a class="list-group-item narrow-toggle <?=$moreClass ?>" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('less')?> ...</a><? endif; ?>
         <? endif; ?>
         <? if (in_array($title, $hierarchicalFacets)): ?>
           </noscript>
