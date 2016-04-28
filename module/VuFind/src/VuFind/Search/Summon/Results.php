@@ -237,7 +237,6 @@ class Results extends \VuFind\Search\Base\Results
             // Set operator:
             $current['counts'][$facetIndex]['operator']
                 = $this->getParams()->getFacetOperator($field);
-
             // Create display value:
             $current['counts'][$facetIndex]['displayText'] = $translate
                 ? $this->translate("$transTextDomain::{$facetDetails['value']}")
@@ -321,5 +320,49 @@ class Results extends \VuFind\Search\Base\Results
     public function getTopicRecommendations()
     {
         return $this->topicRecommendations;
+    }
+
+    /**
+     * Get complete facet counts for several index fields
+     *
+     * @param array  $facetfields  name of the Solr fields to return facets for
+     * @param bool   $removeFilter Clear existing filters from selected fields (true)
+     * or retain them (false)?
+     * @param int    $limit        A limit for the number of facets returned, this
+     * may be useful for very large amounts of facets that can break the JSON parse
+     * method because of PHP out of memory exceptions (default = -1, no limit).
+     * @param string $facetSort    A facet sort value to use (null to retain current)
+     * @param int    $page         Offsets results and returns limit+1 (page check)
+     *
+     * @return array an array with the facet values for each index field
+     */
+    public function getFullFieldFacets($facetfields, $removeFilter = true,
+        $limit = -1, $facetSort = null, $page = null
+    ) {
+        $query  = $this->getParams()->getQuery();
+        $offset = null !== $page && $limit != -1
+            ? $offset = ($page-1) * $limit
+            : 0;
+        foreach ($facetfields as $facet) {
+            $this->getParams()->addFacet($facet . ',or,' . $page . ',' . $limit);
+        }
+        $params = $this->getParams()->getBackendParameters();
+        $collection = $this->getSearchService()->search(
+            'Summon', $query, $offset, $limit, $params
+        );
+
+        $facets = $collection->getFacets();
+        foreach ($facets as $data) {
+            if(in_array($data['displayName'], $facetfields)) {
+                $formatted = $this->formatFacetData($data);
+                $ret[$data['displayName']] = [
+                    'data' => [
+                        'label' => $data['displayName'],
+                        'list' => $formatted['counts']
+                    ]
+                ];
+            }
+        }
+        return $ret;
     }
 }

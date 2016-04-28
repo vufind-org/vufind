@@ -715,7 +715,7 @@ class AbstractSearch extends AbstractBase
         $params->initFromRequest($this->getRequest()->getQuery());
         // Get parameters
         $facet = $this->params()->fromQuery('facet');
-        $page = $this->params()->fromQuery('page', 1);
+        $page = (int) $this->params()->fromQuery('page', 1);
         $sort = $this->params()->fromQuery('sort', 'count');
         // TODO: config
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
@@ -726,11 +726,12 @@ class AbstractSearch extends AbstractBase
         $facets = $results->getFullFieldFacets(
             [$facet], false, $limit, $sort, $page
         );
-        $anotherPage = false;
         $list = $facets[$facet]['data']['list'];
+        $anotherPage = true;
         if (count($list) > $limit) {
-            $anotherPage = true;
             $list = array_slice($list, 0, $limit);
+        } else if (count($list) < $limit) {
+            $anotherPage = false;
         }
 
         $view = $this->createViewModel(

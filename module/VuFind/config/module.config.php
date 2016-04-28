@@ -771,7 +771,7 @@ $staticRoutes = [
     'Search/Advanced', 'Search/Email', 'Search/FacetList', 'Search/History',
     'Search/Home', 'Search/NewItem', 'Search/OpenSearch', 'Search/Reserves',
     'Search/Results', 'Search/Suggest',
-    'Summon/Advanced', 'Summon/Home', 'Summon/Search',
+    'Summon/Advanced', 'Summon/FacetList', 'Summon/Home', 'Summon/Search',
     'Tag/Home',
     'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixDuplicateTags',
     'Upgrade/FixConfig', 'Upgrade/FixDatabase', 'Upgrade/FixMetadata',
