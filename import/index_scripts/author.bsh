@@ -15,9 +15,9 @@ org.solrmarc.index.SolrIndexer indexer = null;
  * no declared relator.
  * @param relatorConfig    The setting in author-classification.ini which
  * defines which relator terms are acceptable (or a colon-delimited list)
- * @return Boolean
+ * @return Integer         Number of matches for given authorField and relators
  */
-public Boolean authorHasAppropriateRelator(DataField authorField,
+public Integer authorHasAppropriateRelator(DataField authorField,
     String[] noRelatorAllowed, String relatorConfig
 ) {
     // get tag number from Field
@@ -25,25 +25,40 @@ public Boolean authorHasAppropriateRelator(DataField authorField,
     List subfieldE = normalizeRelatorSubfieldList(authorField.getSubfields('e'));
     List subfield4 = normalizeRelatorSubfieldList(authorField.getSubfields('4'));
 
+    // counter to be returned
+    int counter = 0;
+    int iteratorE = 0;
+    int iterator4 = 0;
+
     // if no relator is found, check to see if the current tag is in the "no
     // relator allowed" list.
     if (subfieldE.size() == 0 && subfield4.size() == 0) {
-        return Arrays.asList(noRelatorAllowed).contains(tag);
+        if (Arrays.asList(noRelatorAllowed).contains(tag)) {
+            counter++;
+        }
+        return counter;
     }
 
     // If we got this far, we need to figure out what type of relation they have
     List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
     for (int j = 0; j < subfield4.size(); j++) {
         if (permittedRoles.contains(subfield4.get(j).getData())) {
-            return true;
+            iteratorE++;
         }
     }
     for (int j = 0; j < subfieldE.size(); j++) {
         if (permittedRoles.contains(subfieldE.get(j).getData())) {
-            return true;
+            iterator4++;
         }
     }
-    return false;
+
+    if (iteratorE >= iterator4) {
+        counter = iteratorE;
+    } else {
+        counter = iterator4;
+    }
+
+    return counter;
 }
 
 /**
@@ -100,18 +115,21 @@ public List getAuthorsFilteredByRelator(Record record, String tagList,
         while (fieldsIter.hasNext()){
             authorField = (DataField) fieldsIter.next();
             //add all author types to the result set
-            if (authorHasAppropriateRelator(authorField, noRelatorAllowed, relatorConfig)) {
-                for (String subfields : parsedTagList.get(authorField.getTag())) {
-                    String current = indexer.getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
-                    // TODO: we may eventually be able to use this line instead,
-                    // but right now it's not handling separation between the
-                    // subfields correctly, so it's commented out until that is
-                    // fixed.
-                    //String current = authorField.getSubfieldsAsString(subfields);
-                    if (null != current) {
-                        result.add(current);
-                        if (firstOnly) {
-                            return result;
+            int matchCounter = authorHasAppropriateRelator(authorField, noRelatorAllowed, relatorConfig);
+            if (matchCounter > 0) {
+                for (int i=0; i<matchCounter; i++) {
+                    for (String subfields : parsedTagList.get(authorField.getTag())) {
+                        String current = indexer.getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
+                        // TODO: we may eventually be able to use this line instead,
+                        // but right now it's not handling separation between the
+                        // subfields correctly, so it's commented out until that is
+                        // fixed.
+                        //String current = authorField.getSubfieldsAsString(subfields);
+                        if (null != current) {
+                            result.add(current);
+                            if (firstOnly) {
+                                return result;
+                            }
                         }
                     }
                 }
@@ -194,29 +212,32 @@ public List getRelatorsFilteredByRelator(Record record, String tagList,
         while (fieldsIter.hasNext()){
             authorField = (DataField) fieldsIter.next();
             //add all author types to the result set
-            if (authorHasAppropriateRelator(authorField, noRelatorAllowed, relatorConfig)) {
+            int matchCounter = authorHasAppropriateRelator(authorField, noRelatorAllowed, relatorConfig);
+            if (matchCounter > 0) {
                 List subfieldE = normalizeRelatorSubfieldList(authorField.getSubfields('e'));
                 List subfield4 = normalizeRelatorSubfieldList(authorField.getSubfields('4'));
-    
-                // get the first non-empty subfield
-                String relator = defaultRelator;
 
-                // try subfield E first
-                for (int j = 0; j < subfieldE.size(); j++) {
-                    if (!subfieldE.get(j).getData().isEmpty()) {
-                        relator = subfieldE.get(j).getData();
-                        continue;
-                    }
-                }
-                // try subfield 4 now and overwrite relator as subfield 4 is most important
-                for (int j = 0; j < subfield4.size(); j++) {
-                    if (!subfield4.get(j).getData().isEmpty()) {
-                        relator = subfield4.get(j).getData();
-                        continue;
-                    }
-                }
+                for (int i = 0; i < matchCounter; i++) {
+                    // get the first non-empty subfield
+                    String relator = defaultRelator;
 
-                result.add(relator);
+                    // try subfield E first
+                    for (int j = 0; j < subfieldE.size(); j++) {
+                        if (!subfieldE.get(j).getData().isEmpty() && j == i) {
+                            relator = subfieldE.get(j).getData();
+                            continue;
+                        }
+                    }
+                    // try subfield 4 now and overwrite relator as subfield 4 is most important
+                    for (int j = 0; j < subfield4.size(); j++) {
+                        if (!subfield4.get(j).getData().isEmpty() && j == i) {
+                            relator = subfield4.get(j).getData();
+                            continue;
+                        }
+                    }
+
+                    result.add(relator);
+                }
             }
         }
     }
