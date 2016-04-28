@@ -21,7 +21,7 @@
     </a>
   <? endforeach; ?>
   <? if ($this->anotherPage): ?>
-    <a href="#nextpage" class="list-group-item js-facet-next-page" data-page="2"><?=$this->translate('more') ?></a>
+    <a href="#nextpage" class="list-group-item js-facet-next-page" data-page="2" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>"><?=$this->translate('more') ?></a>
   <? endif; ?>
 </div>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
@@ -34,14 +34,16 @@
   var modal = $('#modal');
   var list = modal.find('.full-facet-list');
   var sortButtons = modal.find('.js-facet-sort');
+  var lastsort, lastlimit;
   function sortAjax(sort) {
     var limit =modal.find('.js-facet-item').length;
-    $.ajax('{$url}&layout=lightbox&sort='+sort+'&limit='+limit)
+    $.ajax('{$url}&layout=lightbox&facetsort='+sort+'&facetlimit='+limit)
       .done(function facetSortTitleDone(data) {
         list.find('.js-facet-item').remove();
         list.prepend($('<span>'+data+'</span>').find('.js-facet-item'));
       });
     sortButtons.removeClass('active');
+    $('.js-facet-next-page').attr('data-sort', sort);
   }
   sortButtons.click(function facetSortButton() {
     sortAjax(this.dataset.sort);
@@ -56,7 +58,7 @@ $('.js-facet-next-page').click(function facetLightboxMore() {
   }
   button.attr('disabled', 1);
   button.text(VuFind.translate('loading')+'...');
-  $.ajax('{$url}&layout=lightbox&page='+page)
+  $.ajax('{$url}&layout=lightbox&facetpage='+page+'&facetsort='+this.dataset.sort+'&facetlimit='+parseInt(this.dataset.limit))
     .done(function facetLightboxMoreDone(data) {
       var htmlDiv = $('<div>'+data+'</div>');
       button.before(htmlDiv.find('.js-facet-item'));

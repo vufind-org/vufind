@@ -711,20 +711,26 @@ class AbstractSearch extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         // Get results
         $results = $this->getResultsManager()->get($this->searchClassId);
-        $options = $results->getOptions();
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
         // Get parameters
         $facet = $this->params()->fromQuery('facet');
-        $page = (int) $this->params()->fromQuery('page', 1);
-        $sort = $this->params()->fromQuery('sort', 'count');
+        $page = (int) $this->params()->fromQuery('facetpage', 1);
+        $options = $results->getOptions();
+        $facetSortOptions = $options->getFacetSortOptions();
+        $sort = $this->params()->fromQuery('facetsort');
+        if ($sort === null || !in_array($sort, array_keys($facetSortOptions))) {
+            $sort = empty($facetSortOptions)
+                ? 'count'
+                : current(array_keys($facetSortOptions));
+        }
         // TODO: config
         $config = $this->getServiceLocator()->get('VuFind\Config')
             ->get($options->getFacetsIni());
         $limit = isset($config->Results_Settings->lightboxLimit)
             ? $config->Results_Settings->lightboxLimit
             : 30;
-        $limit = $this->params()->fromQuery('limit', $limit);
+        $limit = $this->params()->fromQuery('facetlimit', $limit);
         $facets = $results->getFullFieldFacets(
             [$facet], false, $limit, $sort, $page
         );
@@ -743,7 +749,7 @@ class AbstractSearch extends AbstractBase
                 'results' => $results,
                 'anotherPage' => $anotherPage,
                 'sort' => $sort,
-                'sortOptions' => $options->getFacetSortOptions()
+                'sortOptions' => $facetSortOptions
             ]
         );
         $view->setTemplate('search/facet-list');
