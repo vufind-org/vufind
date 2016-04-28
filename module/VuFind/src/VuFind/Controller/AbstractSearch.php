@@ -711,6 +711,7 @@ class AbstractSearch extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         // Get results
         $results = $this->getResultsManager()->get($this->searchClassId);
+        $options = $results->getOptions();
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
         // Get parameters
@@ -739,7 +740,9 @@ class AbstractSearch extends AbstractBase
                 'data' => $list,
                 'facet' => $facet,
                 'results' => $results,
-                'anotherPage' => $anotherPage
+                'anotherPage' => $anotherPage,
+                'sort' => $sort,
+                'sortOptions' => $options->getFacetSortOptions()
             ]
         );
         $view->setTemplate('search/facet-list');

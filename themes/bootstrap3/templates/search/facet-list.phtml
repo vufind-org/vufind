@@ -1,5 +1,11 @@
-<button class="btn btn-default js-facet-sort-title"><?=$this->translate('Sort By Title') ?></button>
-<button class="btn btn-default js-facet-sort-count hidden"><?=$this->translate('Sort By Count') ?></button>
+<? if (!empty($this->sortOptions)): ?>
+  <label><?=$this->translate('Sort') ?></label>
+  <div class="btn-group">
+    <? foreach ($this->sortOptions as $key=>$sort): ?>
+      <button class="btn btn-default js-facet-sort<? if($this->sort == $key): ?> active<? endif; ?>" data-sort="<?=$key ?>"><?=$this->translate($sort) ?></button>
+    <? endforeach; ?>
+  </div>
+<? endif; ?>
 <div class="full-facet-list list-group">
   <? foreach ($this->data as $item): ?>
     <? $addURL = $this->url('search-results').$this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator']); ?>
@@ -27,8 +33,7 @@
 (function lightboxFacetSorting() {
   var modal = $('#modal');
   var list = modal.find('.full-facet-list');
-  var titleSortButton = modal.find('.js-facet-sort-title');
-  var countSortButton = modal.find('.js-facet-sort-count');
+  var sortButtons = modal.find('.js-facet-sort');
   function sortAjax(sort) {
     var limit =modal.find('.js-facet-item').length;
     $.ajax('{$url}&layout=lightbox&sort='+sort+'&limit='+limit)
@@ -36,14 +41,11 @@
         list.find('.js-facet-item').remove();
         list.prepend($('<span>'+data+'</span>').find('.js-facet-item'));
       });
-    titleSortButton.toggleClass('hidden');
-    countSortButton.toggleClass('hidden');
+    sortButtons.removeClass('active');
   }
-  titleSortButton.click(function facetSortTitle() {
-    sortAjax('title');
-  });
-  countSortButton.click(function facetSortCount() {
-    sortAjax('count');
+  sortButtons.click(function facetSortButton() {
+    sortAjax(this.dataset.sort);
+    $(this).addClass('active');
   });
 }());
 $('.js-facet-next-page').click(function facetLightboxMore() {

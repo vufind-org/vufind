@@ -51,6 +51,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $sortOptions = [];
 
     /**
+     * Available sort options for facets
+     *
+     * @var array
+     */
+    protected $facetSortOptions = [];
+
+    /**
      * Overall default sort option
      *
      * @var string
@@ -422,6 +429,16 @@ abstract class Options implements TranslatorAwareInterface
     public function getSortOptions()
     {
         return $this->sortOptions;
+    }
+
+    /**
+     * Get an array of sort options for facets.
+     *
+     * @return array
+     */
+    public function getFacetSortOptions()
+    {
+        return $this->facetSortOptions;
     }
 
     /**
