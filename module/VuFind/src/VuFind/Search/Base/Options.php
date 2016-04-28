@@ -709,6 +709,17 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Return the route name for the search results action.
+     * false to cover unimplemented drivers
+     *
+     * @return false
+     */
+    public function getFacetListAction()
+    {
+        return false;
+    }
+
+    /**
      * Does this search option support the cart/book bag?
      *
      * @return bool
