@@ -308,7 +308,7 @@ class Results extends \VuFind\Search\Base\Results
         $params->resetFacetConfig();
         $params->setFacetLimit($limit);
         if (null !== $page && $limit != -1) {
-            $offset = ($page-1) * $limit;
+            $offset = ($page - 1) * $limit;
             $params->setFacetOffset($offset);
             // Return limit plus one so we know there's another page
             $params->setFacetLimit($limit + 1);

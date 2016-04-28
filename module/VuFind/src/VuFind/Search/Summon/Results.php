@@ -341,7 +341,7 @@ class Results extends \VuFind\Search\Base\Results
     ) {
         $query  = $this->getParams()->getQuery();
         $offset = null !== $page && $limit != -1
-            ? $offset = ($page-1) * $limit
+            ? $offset = ($page - 1) * $limit
             : 0;
         foreach ($facetfields as $facet) {
             $this->getParams()->addFacet($facet . ',or,' . $page . ',' . $limit);
@@ -353,7 +353,7 @@ class Results extends \VuFind\Search\Base\Results
 
         $facets = $collection->getFacets();
         foreach ($facets as $data) {
-            if(in_array($data['displayName'], $facetfields)) {
+            if (in_array($data['displayName'], $facetfields)) {
                 $formatted = $this->formatFacetData($data);
                 $ret[$data['displayName']] = [
                     'data' => [
