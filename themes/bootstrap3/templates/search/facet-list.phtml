@@ -37,7 +37,7 @@
 <?
   $options = $this->searchOptions($this->searchClassId);
   $facetLightbox = $options->getFacetListAction();
-  $url = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$this->facet;
+  $url = str_replace('&amp;', '&', $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$this->facet);
   $script = <<<JS
 (function lightboxFacetSorting() {
   var modal = $('#modal');

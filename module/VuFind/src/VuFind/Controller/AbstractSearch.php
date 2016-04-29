@@ -718,7 +718,7 @@ class AbstractSearch extends AbstractBase
         $page = (int) $this->params()->fromQuery('facetpage', 1);
         $options = $results->getOptions();
         $facetSortOptions = $options->getFacetSortOptions();
-        $sort = $this->params()->fromQuery('facetsort');
+        $sort = $this->params()->fromQuery('facetsort', null);
         if ($sort === null || !in_array($sort, array_keys($facetSortOptions))) {
             $sort = empty($facetSortOptions)
                 ? 'count'
