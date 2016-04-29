@@ -1757,6 +1757,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (!is_null($patron_agency_id)) {
             $ret .=
                    '<ns1:InitiationHeader>' .
+                        '<ns1:FromAgencyId>' .
+                            '<ns1:AgencyId>' .
+                                htmlspecialchars($patron_agency_id) .
+                            '</ns1:AgencyId>' .
+                        '</ns1:FromAgencyId>' .
                         '<ns1:ToAgencyId>' .
                             '<ns1:AgencyId>' .
                                 htmlspecialchars($patron_agency_id) .

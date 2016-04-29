@@ -1055,7 +1055,7 @@ class SolrMarc extends SolrDefault
     {
         if ($this->hasILS()) {
             $biblioLevel = strtolower($this->getBibliographicLevel());
-            if ("monograph" == $biblioLevel || strstr("part", $biblioLevel)) {
+            if ("monograph" == $biblioLevel || strstr($biblioLevel, "part")) {
                 if ($this->ils->getTitleHoldsMode() != "disabled") {
                     return $this->titleHoldLogic->getHold($this->getUniqueID());
                 }

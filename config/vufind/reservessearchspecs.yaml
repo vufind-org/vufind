@@ -12,11 +12,11 @@ AllFields:
     course:
       - [onephrase, 1000]
       - [and, 750]
-      - [or, 10] 
+      - [or, 10]
     instructor:
       - [onephrase, 1000]
       - [and, 750]
-      - [or, 10] 
+      - [or, 10]
     department:
       - [onephrase, 1000]
       - [and, 750]
@@ -28,7 +28,7 @@ Instructor:
     instructor:
       - [onephrase, 1000]
       - [and, 750]
-      - [or, 10] 
+      - [or, 10]
 Course:
   DismaxFields:
     - course^400
@@ -36,7 +36,7 @@ Course:
     course:
       - [onephrase, 1000]
       - [and, 750]
-      - [or, 10]   
+      - [or, 10]
 Department:
   DismaxFields:
     - department^400

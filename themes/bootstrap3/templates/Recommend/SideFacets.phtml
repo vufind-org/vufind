@@ -90,6 +90,7 @@
           </div>
           <? if ($rangeFacets[$title]['type'] == 'date'): ?>
             <? $this->headScript()->appendFile('vendor/bootstrap-slider.js'); ?>
+            <? $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css'); ?>
             <?
               $min = !empty($rangeFacets[$title]['values'][0]) ? min($rangeFacets[$title]['values'][0], 1400) : 1400;
               $future = date('Y', time()+31536000);

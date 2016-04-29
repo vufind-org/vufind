@@ -306,8 +306,10 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal #email_from')->setValue('asdf@vufind.org');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
-        // Check for confirmation message
+        // Check for confirmation message and close lightbox
         $this->findCss($page, '.modal .alert-success');
+        $this->findCss($page, '.modal .close')->click();
+        $this->snooze();
         // Logout
         $this->findCss($page, '.logoutOptions a.logout')->click();
     }

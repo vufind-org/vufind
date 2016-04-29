@@ -7,7 +7,6 @@ return array(
         //'vendor/font-awesome.min.css',
         //'bootstrap-custom.css',
         'compiled.css',
-        'vendor/bootstrap-slider.min.css',
         'print.css:print',
     ),
     'js' => array(
