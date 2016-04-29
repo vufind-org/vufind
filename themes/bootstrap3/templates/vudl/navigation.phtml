@@ -30,7 +30,7 @@
           <li role="presentation" class="dropdown-header"><?=$this->transEsc('Choose a collection') ?></li>
           <? foreach($uniqueParents as $trail): ?>
             <li role="presentation">
-              <a role="menuitem" tabindex="-1" href="<?=$siblingHref ?>&trail=<?=$trail['id'] ?>&prev=1">
+              <a role="menuitem" tabindex="-1" href="<?=$siblingHref ?>&amp;trail=<?=$trail['id'] ?>&amp;prev=1">
                 <?=$trail['title'] ?>
               </a>
             </li>
@@ -39,7 +39,7 @@
       </li>
     <? else: ?>
       <li>
-        <a href="<?=$siblingHref ?>&prev=1" class="btn btn-default" title="<?=$this->transEsc('Prev Item in Collection')?>">
+        <a href="<?=$siblingHref ?>&amp;prev=1" class="btn btn-default" title="<?=$this->transEsc('Prev Item in Collection')?>">
           <i class="fa fa-angle-left" aria-hidden="true"></i>
           <?=$this->transEsc('Prev Item')?>
         </a>
@@ -62,7 +62,7 @@
           <li role="presentation" class="dropdown-header"><?=$this->transEsc('Choose a collection') ?></li>
           <? foreach($uniqueParents as $trail): ?>
             <li role="presentation">
-              <a role="menuitem" tabindex="-1" href="<?=$siblingHref ?>&trail=<?=$trail['id'] ?>&next=1">
+              <a role="menuitem" tabindex="-1" href="<?=$siblingHref ?>&amp;trail=<?=$trail['id'] ?>&amp;next=1">
                 <?=$trail['title'] ?>
               </a>
             </li>
@@ -71,7 +71,7 @@
       </li>
     <? else: ?>
       <li>
-        <a href="<?=$siblingHref ?>&next=1" class="btn btn-default" title="<?=$this->transEsc('Next Item in Collection')?>">
+        <a href="<?=$siblingHref ?>&amp;next=1" class="btn btn-default" title="<?=$this->transEsc('Next Item in Collection')?>">
           <?=$this->transEsc('Next Item')?>
           <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>
