@@ -56,9 +56,11 @@
   function sortAjax(sort) {
     var list = modal.find('#facet-list-'+sort);
     if (list.find('.js-facet-item').length === 0) {
+      list.find('.js-facet-next-page').text(VuFind.translate('loading')+'...');
       $.ajax('{$url}&layout=lightbox&facetsort='+sort)
         .done(function facetSortTitleDone(data) {
           list.prepend($('<span>'+data+'</span>').find('.js-facet-item'));
+          list.find('.js-facet-next-page').text(VuFind.translate('more'));
         });
     }
     modal.find('.full-facet-list').addClass('hidden');
