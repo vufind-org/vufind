@@ -2,11 +2,14 @@
   <label><?=$this->translate('Sort') ?></label>
   <div class="btn-group">
     <? foreach ($this->sortOptions as $key=>$sort): ?>
-      <button class="btn btn-default js-facet-sort<? if($this->sort == $key): ?> active<? endif; ?>" data-sort="<?=$key ?>"><?=$this->translate($sort) ?></button>
+      <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet='.$this->facet . '&facetpage=1&facetsort=' . $key ?>" class="btn btn-default js-facet-sort<? if($this->sort == $key): ?> active<? endif; ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate($sort) ?></a>
     <? endforeach; ?>
   </div>
 <? endif; ?>
 <div class="full-facet-list list-group">
+  <? if ($this->page > 1): ?>
+    <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet='.$this->facet . '&facetpage=' . ($this->page-1) . '&facetsort=' . $this->sort ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev') ?></a>
+  <? endif; ?>
   <? foreach ($this->data as $item): ?>
     <? $toggleUrl = $item['isApplied']
         ? $this->url('search-results').$this->results->getUrlQuery()->removeFacet($this->facet, $item['value'], $item['operator'])
@@ -30,7 +33,7 @@
     </a>
   <? endforeach; ?>
   <? if ($this->anotherPage): ?>
-    <a href="#nextpage" class="list-group-item js-facet-next-page" data-page="2" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>"><?=$this->translate('more') ?></a>
+    <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet='.$this->facet . '&facetpage=' . ($this->page+1) . '&facetsort=' . $this->sort ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('more') ?></a>
   <? endif; ?>
 </div>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
@@ -57,6 +60,7 @@
   sortButtons.click(function facetSortButton() {
     sortAjax(this.dataset.sort);
     $(this).addClass('active');
+    return false;
   });
 }());
 $('.js-facet-next-page').click(function facetLightboxMore() {

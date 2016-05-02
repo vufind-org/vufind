@@ -745,6 +745,7 @@ class AbstractSearch extends AbstractBase
             [
                 'data' => $list,
                 'facet' => $facet,
+                'page' => $page,
                 'results' => $results,
                 'anotherPage' => $anotherPage,
                 'sort' => $sort,
