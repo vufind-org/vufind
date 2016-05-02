@@ -19,11 +19,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
- * @author   Alex Sassmannshausen, <alex.sassmannshausen@ptfs-europe.com>
+ * @author   Alex Sassmannshausen <alex.sassmannshausen@ptfs-europe.com>
+ * @author   Tom Misilo <misilot@fit.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException;
@@ -33,17 +34,16 @@ use Zend\Log\LoggerInterface;
 use VuFind\Exception\Date as DateException;
 
 /**
- * VuFind Driver for Koha, using web APIs (ILSDI) (version: 0.3)
+ * VuFind Driver for Koha, using web APIs (ILSDI)
  *
- * Last updated: 04/13/2016
  * Minimum Koha Version: 3.18.6
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Drivers
- * @author   Alex Sassmannshausen, <alex.sassmannshausen@ptfs-europe.com>
- * @author   Tom Misilo, <misilot@fit.edu>
+ * @author   Alex Sassmannshausen <alex.sassmannshausen@ptfs-europe.com>
+ * @author   Tom Misilo <misilot@fit.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
