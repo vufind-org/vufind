@@ -724,7 +724,6 @@ class AbstractSearch extends AbstractBase
                 ? 'count'
                 : current(array_keys($facetSortOptions));
         }
-        // TODO: config
         $config = $this->getServiceLocator()->get('VuFind\Config')
             ->get($options->getFacetsIni());
         $limit = isset($config->Results_Settings->lightboxLimit)
