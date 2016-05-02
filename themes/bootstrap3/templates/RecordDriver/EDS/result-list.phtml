@@ -19,26 +19,26 @@
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
 <div class="media<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
-  <? if ($this->record($this->driver)->getThumbnailAlignment() == 'left') ?>
+  <? if ($this->record($this->driver)->getThumbnailAlignment() == 'left'): ?>
     <?=$thumbnail ?>
   <? endif; ?>
   <div class="media-body">
     <div class="row">
   <div class="col-sm-8 middle">
-    <?  $items  =  $this->driver->getItems();
-      if (isset($items) && !empty($items)) :
+    <? $items = $this->driver->getItems();
+      if (isset($items) && !empty($items)):
         foreach ($items as $item):
           if (!empty($item)): ?>
             <div class="resultItemLine1">
-              <?if('Ti' == $item['Group']): ?>
+              <? if('Ti' == $item['Group']): ?>
                 <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title _record_link" >
                 <?=$item['Data']?> </a>
-              <?else:?>
+              <? else:?>
                 <p>
                   <b><?=$this->transEsc($item['Label'])?>:</b>
                   <?=$item['Data']?>
                 </p>
-              <?endif;?>
+              <? endif;?>
             </div>
           <? endif;
         endforeach;
