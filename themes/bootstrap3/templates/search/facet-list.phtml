@@ -74,8 +74,9 @@ $('.js-facet-next-page').click(function facetLightboxMore() {
   $.ajax('{$url}&layout=lightbox&facetpage='+page+'&facetsort='+this.dataset.sort+'&facetlimit='+parseInt(this.dataset.limit))
     .done(function facetLightboxMoreDone(data) {
       var htmlDiv = $('<div>'+data+'</div>');
-      button.before(htmlDiv.find('.js-facet-item'));
-      if (htmlDiv.find('.js-facet-next-page').length) {
+      var list = htmlDiv.find('.js-facet-item');
+      button.before(list);
+      if (list.length && htmlDiv.find('.js-facet-next-page').length) {
         button.attr('data-page', page + 1);
         button.text(VuFind.translate('more'));
         button.removeAttr('disabled');
