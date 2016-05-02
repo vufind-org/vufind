@@ -1,3 +1,7 @@
+<?
+  $options = $this->searchOptions($this->searchClassId);
+  $facetLightbox = $options->getFacetListAction();
+?>
 <? if (!empty($this->sortOptions)): ?>
   <label><?=$this->translate('Sort') ?></label>
   <div class="btn-group">
@@ -12,8 +16,8 @@
   <? endif; ?>
   <? foreach ($this->data as $item): ?>
     <? $toggleUrl = $item['isApplied']
-        ? $this->url('search-results').$this->results->getUrlQuery()->removeFacet($this->facet, $item['value'], $item['operator'])
-        : $this->url('search-results').$this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator'])
+        ? $this->url($options->getSearchAction()) . $this->results->getUrlQuery()->removeFacet($this->facet, $item['value'], $item['operator'])
+        : $this->url($options->getSearchAction()) . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator'])
     ?>
     <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="js-facet-item list-group-item<? if($item['isApplied']): ?> active<?endif;?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>">
       <? if (!empty($item['displayText'])): ?>
@@ -38,8 +42,6 @@
 </div>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
 <?
-  $options = $this->searchOptions($this->searchClassId);
-  $facetLightbox = $options->getFacetListAction();
   $url = str_replace('&amp;', '&', $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$this->facet);
   $script = <<<JS
 (function lightboxFacetSorting() {
