@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="vufind2" basedir="." default="main">
+<project name="vufind" basedir="." default="main">
   <property name="tmp" value="/tmp" />
   <property name="package"  value="${phing.project.name}" override="true" />
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
@@ -26,7 +26,7 @@
   <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use,eof_ending" />
 
 
-  <property name="version" value="2.5.2" />
+  <property name="version" value="3.0" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -269,18 +269,18 @@
     <delete dir="${builddir}/packages" includeemptydirs="true" failonerror="false" />
     <mkdir dir="${builddir}/packages" />
     <delete dir="${builddir}/export" includeemptydirs="true" failonerror="false" />
-    <mkdir dir="${builddir}/export/vufind/usr/local/vufind2" />
+    <mkdir dir="${builddir}/export/vufind/usr/local/vufind" />
 
     <!-- load the relevant files into the work area -->
     <phingcall target="composer" />
-    <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind2" />
-    <copy todir = "${builddir}/export/vufind/usr/local/vufind2/vendor">
+    <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind" />
+    <copy todir = "${builddir}/export/vufind/usr/local/vufind/vendor">
       <fileset dir="${srcdir}/vendor" defaultexcludes="false" />
     </copy>
 
     <!-- create a version-specific symlink so that tar/zip packages will have
          appropriate directory structures. -->
-    <exec command="ln -s ${builddir}/export/vufind/usr/local/vufind2 ${builddir}/export/vufind-${version}" />
+    <exec command="ln -s ${builddir}/export/vufind/usr/local/vufind ${builddir}/export/vufind-${version}" />
 
     <!-- build the standard tar.gz archive -->
     <echo message="Building .tar.gz...." />
@@ -292,7 +292,7 @@
 
     <!-- build the DEB package -->
     <echo message="Building .deb...." />
-    <move file="${builddir}/export/vufind/usr/local/vufind2/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
+    <move file="${builddir}/export/vufind/usr/local/vufind/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
     <exec command="chmod 0775 ${builddir}/export/vufind/DEBIAN/postinst" />
     <exec command="dpkg-deb -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" checkreturn="true" />
 

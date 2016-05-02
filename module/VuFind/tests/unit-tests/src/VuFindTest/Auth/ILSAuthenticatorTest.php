@@ -79,6 +79,9 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      * Test new catalog login failure (caused by exception).
      *
      * @return void
+     *
+     * @expectedException        VuFind\Exception\ILS
+     * @expectedExceptionMessage kaboom
      */
     public function testNewCatalogFailureByException()
     {
@@ -86,7 +89,7 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->throwException(new \VuFind\Exception\ILS('kaboom')));
         $auth = $this->getAuthenticator($manager, $connection);
-        $this->assertEquals(false, $auth->newCatalogLogin('user', 'pass'));
+        $auth->newCatalogLogin('user', 'pass');
     }
 
     /**
@@ -150,6 +153,9 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      * Test an exception during stored login attempt.
      *
      * @return void
+     *
+     * @expectedException        VuFind\Exception\ILS
+     * @expectedExceptionMessage kaboom
      */
     public function testExceptionDuringStoredLoginAttempt()
     {
@@ -157,13 +163,12 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
         $user->expects($this->any())->method('__get')->with($this->equalTo('cat_username'))->will($this->returnValue('user'));
         $user->expects($this->any())->method('__isset')->with($this->equalTo('cat_username'))->will($this->returnValue(true));
         $user->expects($this->any())->method('getCatPassword')->will($this->returnValue('pass'));
-        $user->expects($this->once())->method('clearCredentials');
         $manager = $this->getMockManager(['isLoggedIn']);
         $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue($user));
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->throwException(new \VuFind\Exception\ILS('kaboom')));
         $auth = $this->getAuthenticator($manager, $connection);
-        $this->assertEquals(false, $auth->storedCatalogLogin());
+        $auth->storedCatalogLogin();
     }
 
     /**

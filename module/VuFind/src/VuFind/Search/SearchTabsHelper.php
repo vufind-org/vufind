@@ -93,12 +93,16 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
      * @param string $searchClassId         Active search class
      * @param bool   $returnDefaultsIfEmpty Whether to return default tab filters if
      * no filters are currently active
+     * @param bool   $ignoreCurrentRequest  Whether to ignore hidden filters in
+     * the current request
      *
      * @return array
      */
-    public function getHiddenFilters($searchClassId, $returnDefaultsIfEmpty = true)
-    {
-        $filters = $this->request->getQuery('hiddenFilters');
+    public function getHiddenFilters($searchClassId, $returnDefaultsIfEmpty = true,
+        $ignoreCurrentRequest = false
+    ) {
+        $filters = $ignoreCurrentRequest
+            ? null : $this->request->getQuery('hiddenFilters');
         if (null === $filters && $returnDefaultsIfEmpty) {
             $filters = $this->getDefaultTabHiddenFilters($searchClassId);
         }

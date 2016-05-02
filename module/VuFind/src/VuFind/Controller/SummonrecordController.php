@@ -73,7 +73,7 @@ class SummonrecordController extends AbstractRecord
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function preDispatch(MvcEvent $e)
+    public function injectSummonMessage(MvcEvent $e)
     {
         $this->layout()->poweredBy
             = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
@@ -88,6 +88,8 @@ class SummonrecordController extends AbstractRecord
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
+        $events->attach(
+            MvcEvent::EVENT_DISPATCH, [$this, 'injectSummonMessage'], 1000
+        );
     }
 }

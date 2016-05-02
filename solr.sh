@@ -36,7 +36,7 @@ usage()
 # Set VUFIND_HOME
 if [ -z "$VUFIND_HOME" ]
 then
-  VUFIND_HOME=`basedir $0`
+  VUFIND_HOME=`dirname $0`
 fi
 
 if [ -z "$SOLR_HOME" ]

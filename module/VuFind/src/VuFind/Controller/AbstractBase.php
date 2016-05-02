@@ -29,6 +29,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Forbidden as ForbiddenException,
+    VuFind\Exception\ILS as ILSException,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\MvcEvent,
     Zend\View\Model\ViewModel,
@@ -64,7 +65,7 @@ class AbstractBase extends AbstractActionController
      *
      * @return void
      */
-    public function preDispatch(MvcEvent $e)
+    public function validateAccessPermission(MvcEvent $e)
     {
         // Make sure the current user has permission to access the module:
         if ($this->accessPermission
@@ -90,7 +91,7 @@ class AbstractBase extends AbstractActionController
         if ($this->accessPermission) {
             $events = $this->getEventManager();
             $events->attach(
-                MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000
+                MvcEvent::EVENT_DISPATCH, [$this, 'validateAccessPermission'], 1000
             );
         }
     }
@@ -287,9 +288,10 @@ class AbstractBase extends AbstractActionController
     /**
      * Does the user have catalog credentials available?  Returns associative array
      * of patron data if so, otherwise forwards to appropriate login prompt and
-     * returns false.
+     * returns false. If there is an ILS exception, a flash message is added and
+     * a newly created ViewModel is returned.
      *
-     * @return bool|array
+     * @return bool|array|ViewModel
      */
     protected function catalogLogin()
     {
@@ -309,15 +311,24 @@ class AbstractBase extends AbstractActionController
             if ($target) {
                 $username = "$target.$username";
             }
-            $patron = $ilsAuth->newCatalogLogin($username, $password);
+            try {
+                $patron = $ilsAuth->newCatalogLogin($username, $password);
 
-            // If login failed, store a warning message:
-            if (!$patron) {
-                $this->flashMessenger()->addMessage('Invalid Patron Login', 'error');
+                // If login failed, store a warning message:
+                if (!$patron) {
+                    $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
+                }
+            } catch (ILSException $e) {
+                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
             }
         } else {
-            // If no credentials were provided, try the stored values:
-            $patron = $ilsAuth->storedCatalogLogin();
+            try {
+                // If no credentials were provided, try the stored values:
+                $patron = $ilsAuth->storedCatalogLogin();
+            } catch (ILSException $e) {
+                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+                return $this->createViewModel();
+            }
         }
 
         // If catalog login failed, send the user to the right page:
