@@ -15,12 +15,30 @@ finna.contentFeed = (function() {
         $.getJSON(url, params)
         .done(function(response) {
             if (response.data) {
-                contentHolder.html(response.data.html);
-                var title = response.data.title;
+                var data = response.data;
+                if (typeof data.item != 'undefined' && typeof data.item.html != 'undefined') {
+                    var item = data.item;
+                    contentHolder.html(item.html);
+                    var title = item.title;
+                    if (!modal) {
+                        $('.content-header').text(title);
+                        document.title = title + ' | ' + document.title;
+                   }
+                    if (typeof item.contentDate != 'undefined') {
+                        container.find('.date span').text(item.contentDate);
+                        container.find('.date').css('display', 'inline-block');
+                    }
+                } else {
+                    contentHolder.empty().append(
+                        $('<div/>').addClass('error').text(VuFind.translate('error_occurred'))
+                    );
+                }
 
                 if (!modal) {
-                    $('.content-header').text(title);
-                    document.title = title + ' | ' + document.title;
+                    if (typeof data.navigation != 'undefined') {
+                        $('.article-navigation-wrapper').html(data.navigation);
+                        $('.article-navigation-header').show();
+                    }
                 }
             }
         })
