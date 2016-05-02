@@ -207,44 +207,46 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testFacetLightbox()
     {
+        $limit = 4;
         $this->changeConfigs(
             [
                 'facets' => [
                     'Results_Settings' => [
                         'showMoreInLightbox[*]' => true,
-                        'lightboxLimit' => 5
+                        'lightboxLimit' => $limit
                     ]
                 ]
             ]
         );
-        $page = $this->performSearch('test');
+        $page = $this->performSearch('building:weird_ids.mrc');
         // Open the geographic facet
-        $geoMore = $this->findCss($page, '#more-narrowGroupHidden-geographic_facet');
+        $geoMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
         $geoMore->click();
         $this->snooze();
         $items = $page->findAll('css', '#modal .js-facet-item');
-        $this->assertEquals(5, count($items));
+        $this->assertEquals($limit, count($items));
         // more
         $this->findCss($page, '#modal .js-facet-next-page')->click();
         $this->snooze();
         $items = $page->findAll('css', '#modal .js-facet-item');
-        $this->assertEquals(10, count($items));
+        $this->assertEquals($limit*2, count($items));
         // sort by title
         $this->findCss($page, '[data-sort="index"]')->click();
         $this->snooze();
         $items = $page->findAll('css', '#modal .js-facet-item');
-        $this->assertEquals(10, count($items)); // maintain number of items
+        $this->assertEquals($limit*2, count($items)); // maintain number of items
         $this->assertEquals(
-            'Africa 5', $this->findAndAssertLink($page, 'Africa 5')->getText()
+            'The Study of Back S\ashes 1',
+            $this->findAndAssertLink($page, 'The Study of Back S\ashes 1')->getText()
         );
         // sort by index again
         $this->findCss($page, '[data-sort="count"]')->click();
         $this->snooze();
-        $this->assertEquals(10, count($items)); // maintain number of items
-        $USA = $this->findAndAssertLink($page, 'United States 1,881');
-        $this->assertEquals('United States 1,881', $USA ->getText());
+        $this->assertEquals($limit*2, count($items)); // maintain number of items
+        $weirdIDs = $this->findAndAssertLink($page, 'Weird IDs 9');
+        $this->assertEquals('Weird IDs 9', $weirdIDs->getText());
         // apply US facet
-        $USA->click();
+        $weirdIDs->click();
         $this->snooze();
         $geoMore->click();
         $this->findCss($page, '#modal .js-facet-item.active')->click();
