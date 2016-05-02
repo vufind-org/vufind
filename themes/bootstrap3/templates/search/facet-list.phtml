@@ -10,54 +10,60 @@
     <? endforeach; ?>
   </div>
 <? endif; ?>
-<div class="full-facet-list list-group">
-  <? if ($this->page > 1): ?>
-    <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet='.$this->facet . '&facetpage=' . ($this->page-1) . '&facetsort=' . $this->sort ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev') ?></a>
-  <? endif; ?>
-  <? foreach ($this->data as $item): ?>
-    <? $toggleUrl = $item['isApplied']
-        ? $this->url($options->getSearchAction()) . $this->results->getUrlQuery()->removeFacet($this->facet, $item['value'], $item['operator'])
-        : $this->url($options->getSearchAction()) . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator'])
-    ?>
-    <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="js-facet-item list-group-item<? if($item['isApplied']): ?> active<?endif;?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>">
-      <? if (!empty($item['displayText'])): ?>
-        <?=$this->escapeHtml($item['displayText'])?>
-      <? else: ?>
-        &nbsp;
+<? foreach ($this->sortOptions as $key=>$sort): ?>
+  <? $active = $this->sort == $key; ?>
+  <div class="full-facet-list list-group<? if(!$active): ?> hidden<? endif; ?>" id="facet-list-<?=$key ?>">
+    <? if ($active): ?>
+      <? if ($this->page > 1): ?>
+        <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet='.$this->facet . '&facetpage=' . ($this->page-1) . '&facetsort=' . $this->sort ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev') ?></a>
       <? endif; ?>
-      <? if($item['isApplied']): ?>
-        <span class="pull-right flip">
-          <i class="fa fa-check"></i>
-        </span>
-      <? else: ?>
-        <span class="badge">
-          <?=$this->localizedNumber($item['count'])?>
-        </span>
-      <? endif; ?>
-    </a>
-  <? endforeach; ?>
-  <? if ($this->anotherPage): ?>
-    <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet='.$this->facet . '&facetpage=' . ($this->page+1) . '&facetsort=' . $this->sort ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('more') ?></a>
-  <? endif; ?>
-</div>
+      <? foreach ($this->data as $item): ?>
+        <? $toggleUrl = $item['isApplied']
+            ? $this->url($options->getSearchAction()) . $this->results->getUrlQuery()->removeFacet($this->facet, $item['value'], $item['operator'])
+            : $this->url($options->getSearchAction()) . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], $item['operator'])
+        ?>
+        <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="js-facet-item list-group-item<? if($item['isApplied']): ?> active<?endif;?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>">
+          <? if (!empty($item['displayText'])): ?>
+            <?=$this->escapeHtml($item['displayText'])?>
+          <? else: ?>
+            &nbsp;
+          <? endif; ?>
+          <? if($item['isApplied']): ?>
+            <span class="pull-right flip">
+              <i class="fa fa-check"></i>
+            </span>
+          <? else: ?>
+            <span class="badge">
+              <?=$this->localizedNumber($item['count'])?>
+            </span>
+          <? endif; ?>
+        </a>
+      <? endforeach; ?>
+    <? endif; ?>
+    <? if ($this->anotherPage): ?>
+      <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet='.$this->facet . '&facetpage=' . ($this->page+1) . '&facetsort=' . $key ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate('more') ?></a>
+    <? endif; ?>
+  </div>
+<? endforeach; ?>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
 <?
   $url = str_replace('&amp;', '&', $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$this->facet);
   $script = <<<JS
 (function lightboxFacetSorting() {
   var modal = $('#modal');
-  var list = modal.find('.full-facet-list');
   var sortButtons = modal.find('.js-facet-sort');
   var lastsort, lastlimit;
   function sortAjax(sort) {
-    var limit =modal.find('.js-facet-item').length;
-    $.ajax('{$url}&layout=lightbox&facetsort='+sort+'&facetlimit='+limit)
-      .done(function facetSortTitleDone(data) {
-        list.find('.js-facet-item').remove();
-        list.prepend($('<span>'+data+'</span>').find('.js-facet-item'));
-      });
+    var list = modal.find('#facet-list-'+sort);
+    if (list.find('.js-facet-item').length === 0) {
+      $.ajax('{$url}&layout=lightbox&facetsort='+sort)
+        .done(function facetSortTitleDone(data) {
+          list.prepend($('<span>'+data+'</span>').find('.js-facet-item'));
+        });
+    }
+    modal.find('.full-facet-list').addClass('hidden');
+    list.removeClass('hidden');
     sortButtons.removeClass('active');
-    $('.js-facet-next-page').attr('data-sort', sort);
   }
   sortButtons.click(function facetSortButton() {
     sortAjax(this.dataset.sort);
@@ -73,7 +79,7 @@ $('.js-facet-next-page').click(function facetLightboxMore() {
   }
   button.attr('disabled', 1);
   button.text(VuFind.translate('loading')+'...');
-  $.ajax('{$url}&layout=lightbox&facetpage='+page+'&facetsort='+this.dataset.sort+'&facetlimit='+parseInt(this.dataset.limit))
+  $.ajax('{$url}&layout=lightbox&facetpage='+page+'&facetsort='+this.dataset.sort)
     .done(function facetLightboxMoreDone(data) {
       var htmlDiv = $('<div>'+data+'</div>');
       var list = htmlDiv.find('.js-facet-item');
