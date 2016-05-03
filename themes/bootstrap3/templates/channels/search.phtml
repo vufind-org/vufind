@@ -1,7 +1,7 @@
 <? foreach ($channels as $key=>$channel): ?>
   <h2><?=$this->escapeHtml($channel['title'])?></h2>
   <? $channelID = 'channel-' . $key; ?>
-  <div id="<?=$channelID ?>" class="channel carousel slide" data-ride="carousel">
+  <div id="<?=$channelID ?>" class="channel carousel slide" data-ride="carousel" data-interval="false">
     <!-- Indicators -->
     <ol class="carousel-indicators">
       <? for ($i=0; $i<ceil(count($channel['contents'])/4); $i++): ?>
