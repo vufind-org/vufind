@@ -75,7 +75,7 @@ class Facets implements ChannelProviderInterface
     /**
      * Constructor
      *
-     * @param 
+     * @param ResultsManager $rm Results manager
      */
     public function __construct(ResultsManager $rm)
     {
