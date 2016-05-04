@@ -116,6 +116,18 @@ class Factory
     }
 
     /**
+     * Construct the Channel Provider Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\ChannelProvider\PluginManager
+     */
+    public static function getChannelProviderPluginManager(ServiceManager $sm)
+    {
+        return static::getGenericPluginManager($sm, 'ChannelProvider');
+    }
+
+    /**
      * Construct the config manager.
      *
      * @param ServiceManager $sm Service manager.

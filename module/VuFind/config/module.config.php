@@ -134,6 +134,7 @@ $config = [
             'VuFind\AutocompletePluginManager' => 'VuFind\Service\Factory::getAutocompletePluginManager',
             'VuFind\CacheManager' => 'VuFind\Service\Factory::getCacheManager',
             'VuFind\Cart' => 'VuFind\Service\Factory::getCart',
+            'VuFind\ChannelProviderPluginManager' => 'VuFind\Service\Factory::getChannelProviderPluginManager',
             'VuFind\Config' => 'VuFind\Service\Factory::getConfig',
             'VuFind\ContentPluginManager' => 'VuFind\Service\Factory::getContentPluginManager',
             'VuFind\ContentAuthorNotesPluginManager' => 'VuFind\Service\Factory::getContentAuthorNotesPluginManager',
@@ -285,6 +286,11 @@ $config = [
                     'solrreservesautocomplete' => 'SolrReserves',
                     'tagautocomplete' => 'Tag',
                 ],
+            ],
+            'channelprovider' => [
+                'factories' => [
+                    'facets' => 'VuFind\ChannelProvider\Factory::getFacets',
+                ]
             ],
             'content' => [
                 'factories' => [

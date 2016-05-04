@@ -55,9 +55,7 @@ class ChannelsController extends AbstractBase
             $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
         );
 
-        $provider = new \VuFind\ChannelProvider\Facets(
-            $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-        );
+        $provider = $this->getChannelProvider('facets');
         $view->channels = $provider->getFromRecord($record);
         $view->setTemplate('channels/search');
         return $view;
@@ -79,9 +77,7 @@ class ChannelsController extends AbstractBase
             + $this->getRequest()->getPost()->toArray();
         $searchClassId = 'Solr';
 
-        $provider = new \VuFind\ChannelProvider\Facets(
-            $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-        );
+        $provider = $this->getChannelProvider('facets');
 
         $callback = function ($runner, $params, $searchClassId) use ($provider) {
             $provider->configureSearchParams($params);
@@ -90,5 +86,18 @@ class ChannelsController extends AbstractBase
 
         $view->channels = $provider->getFromSearch($results);
         return $view;
+    }
+
+    /**
+     * Convenience method to retrieve a channel provider.
+     *
+     * @param string $id Service name for channel provider.
+     *
+     * @return \VuFind\ChannelProvider\ChannelProviderInterface
+     */
+    protected function getChannelProvider($id)
+    {
+        return $this->getServiceLocator()
+            ->get('VuFind\ChannelProviderPluginManager')->get($id);
     }
 }
