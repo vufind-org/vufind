@@ -39,7 +39,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Facets
+class Facets implements ChannelProviderInterface
 {
     /**
      * Facet fields to use (field name => description).
