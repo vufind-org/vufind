@@ -85,9 +85,12 @@ class Facets
             $currentValueCount = 0;
             foreach ($facetList[$field]['list'] as $current) {
                 if (!$current['isApplied']) {
-                    $channels[] = $this
+                    $channel = $this
                         ->buildChannelFromFacet($results, $field, $current);
-                    $currentValueCount++;
+                    if (count($channel['contents']) > 0) {
+                        $channels[] = $channel;
+                        $currentValueCount++;
+                    }
                 }
                 if ($currentValueCount >= $maxValuesToSuggestPerField) {
                     break;
@@ -138,7 +141,12 @@ class Facets
     {
         $newResults = clone($results);
         $params = $newResults->getParams();
-        $params->addFilter("$field:{$value['value']}");
+
+        // Determine the filter for the current channel, and add it:
+        $filter = "$field:{$value['value']}";
+        $params->addFilter($filter);
+
+        // Run the search and convert the results into a channel:
         $newResults->performAndProcessSearch();
         return [
             'title' => "{$this->fields[$field]}: {$value['displayText']}",
