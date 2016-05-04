@@ -296,9 +296,9 @@ class Results extends \VuFind\Search\Base\Results
      * @param string $facetSort    A facet sort value to use (null to retain current)
      * @param int    $page         Offsets results and returns limit+1 (page check)
      *
-     * @return array an array with the facet values for each index field
+     * @return mixed a list facet values for each index field and a next page boolean
      */
-    public function getFullFieldFacets($facetfields, $removeFilter = true,
+    public function getPartialFieldFacets($facetfields, $removeFilter = true,
         $limit = -1, $facetSort = null, $page = null
     ) {
         $clone = clone($this);
@@ -347,7 +347,45 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         // Send back data:
-        return $result;
+        return [
+            'more' => isset($page) && count($result) == $limit+1,
+            'list' => array_slice($result, 0, min(count($result), $limit))
+        ];
+    }
+
+    /**
+     * Get complete facet counts for several index fields
+     *
+     * @param array  $facetfields  name of the Solr fields to return facets for
+     * @param bool   $removeFilter Clear existing filters from selected fields (true)
+     * or retain them (false)?
+     * @param int    $limit        A limit for the number of facets returned, this
+     * may be useful for very large amounts of facets that can break the JSON parse
+     * method because of PHP out of memory exceptions (default = -1, no limit).
+     * @param string $facetSort    A facet sort value to use (null to retain current)
+     * @param int    $page         Offsets results and returns limit+1 (page check)
+     *
+     * @return array an array with the facet values for each index field
+     */
+    public function getFullFieldFacets($facetfields, $removeFilter = true,
+        $limit = -1, $facetSort = null
+    ) {
+        $page = 1;
+        $facets = [];
+        if ($limit == -1) {
+            do {
+                $facetpage = $this->getPartialFieldFacets(
+                    $facetfields, $removeFilter, 30, $facetSort, $page
+                );
+                $facets = array_merge($facets, $facetpage['list']);
+            } while ($facetpage['more']);
+        } else {
+            $facetpage = $this->getPartialFieldFacets(
+                $facetfields, $removeFilter, $limit, $facetSort
+            );
+            $facets = $facetpage['list'];
+        }
+        return $facets;
     }
 
     /**
