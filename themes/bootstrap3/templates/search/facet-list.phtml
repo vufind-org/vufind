@@ -6,16 +6,16 @@
   <label><?=$this->translate('Sort') ?></label>
   <div class="btn-group">
     <? foreach ($this->sortOptions as $key=>$sort): ?>
-      <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet='.$this->facet . '&facetpage=1&facetsort=' . $key ?>" class="btn btn-default js-facet-sort<? if($this->sort == $key): ?> active<? endif; ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate($sort) ?></a>
+      <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetpage=1&amp;facetsort=' . urlencode($key) ?>" class="btn btn-default js-facet-sort<? if($this->sort == $key): ?> active<? endif; ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate($sort) ?></a>
     <? endforeach; ?>
   </div>
 <? endif; ?>
 <? foreach ($this->sortOptions as $key=>$sort): ?>
   <? $active = $this->sort == $key; ?>
-  <div class="full-facet-list list-group<? if(!$active): ?> hidden<? endif; ?>" id="facet-list-<?=$key ?>">
+  <div class="full-facet-list list-group<? if(!$active): ?> hidden<? endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
     <? if ($active): ?>
       <? if ($this->page > 1): ?>
-        <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet='.$this->facet . '&facetpage=' . ($this->page-1) . '&facetsort=' . $this->sort ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev') ?></a>
+        <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetpage=' . ($this->page-1) . '&amp;facetsort=' . $this->sort ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev') ?></a>
       <? endif; ?>
       <? foreach ($this->data as $item): ?>
         <? $toggleUrl = $item['isApplied']
@@ -41,13 +41,13 @@
       <? endforeach; ?>
     <? endif; ?>
     <? if ($this->anotherPage): ?>
-      <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet='.$this->facet . '&facetpage=' . ($this->page+1) . '&facetsort=' . $key ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate('more') ?></a>
+      <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetpage=' . ($this->page+1) . '&amp;facetsort=' . urlencode($key) ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->translate('more') ?></a>
     <? endif; ?>
   </div>
 <? endforeach; ?>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
 <?
-  $url = str_replace('&amp;', '&', $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$this->facet);
+  $url = str_replace('&amp;', '&', $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet=' . urlencode($this->facet));
   $script = <<<JS
 (function lightboxFacetSorting() {
   var modal = $('#modal');
