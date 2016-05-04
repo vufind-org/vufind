@@ -59,5 +59,16 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
     <div class="col-xs-12 text-center">
       <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
     </div>
+  </div>
+</div>
+<div class="container-fluid searchtools-background">
+  <div class="container">
+    <div class="row">
+      <div class="searchtools hidden-print col-xs-12">
+        <? $this->results->getParams()->setPage(1); ?>
+        <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+      </div>
+    </div>
+  </div>
 </div>
 <!-- END of: finna - list/list.phtml -->

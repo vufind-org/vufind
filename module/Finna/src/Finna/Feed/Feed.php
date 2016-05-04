@@ -238,7 +238,12 @@ class Feed implements \Zend\Log\LoggerAwareInterface
             } else if (substr($url, 0, 1) === '/') {
                 // Relative URL
                 $url = substr($viewUrl, 0, -1) . $url;
-                $channel = Reader::import($url);
+                try {
+                    $channel = Reader::import($url);
+                } catch (\Exception $e) {
+                    $this->logError("Error importing feed from url $url");
+                    $this->logError("   " . $e->getMessage());
+                }
             } else {
                 // Local file
                 if (!is_file($url)) {

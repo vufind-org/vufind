@@ -82,6 +82,27 @@ class ListController extends \Finna\Controller\MyResearchController
 
             $username = $this->getListUsername($results->getListObject()->user_id);
 
+            // Special case: If we're in RSS view, we need to render differently:
+            if (isset($params) && $params->getView() == 'rss') {
+                $response = $this->getResponse();
+                $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
+
+                if (!$listObj = $results->getListObject()) {
+                    return $this->notFoundAction();
+                }
+
+                $feed = $this->getViewRenderer()->plugin('resultfeed');
+                $feed->setList($listObj);
+                $feed = $feed($results);
+                $feed->setTitle($listObj->title);
+                if ($desc = $listObj->description) {
+                    $feed->setDescription($desc);
+                }
+                $feed->setLink($this->getServerUrl('home') . "List/$lid");
+                $response->setContent($feed->export('rss'));
+                return $response;
+            }
+
             $view = $this->createViewModel(
                 [
                     'params' => $params,

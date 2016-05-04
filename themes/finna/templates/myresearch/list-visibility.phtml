@@ -8,7 +8,10 @@
   <? if ($public): ?>
   <div class="list-url">
     <?= $this->translate('Public List URL'); ?>
-    <div><a href="<?= $this->listUrl; ?>"><?= $this->listUrl; ?></a></div>
+    <div>
+      <a href="<?= $this->listUrl; ?>"><?= $this->listUrl; ?></a>
+      <a href="<?= $this->listUrl; ?>?view=rss" class="feed"><i class="fa fa-rss"></i></a>
+    </div>
    </div>
    <? endif; ?>
 </div>

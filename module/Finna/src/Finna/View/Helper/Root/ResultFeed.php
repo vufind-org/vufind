@@ -42,6 +42,25 @@ namespace Finna\View\Helper\Root;
 class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
 {
     /**
+     * User list object
+     *
+     * @var Db\Row\UserList
+     */
+    protected $list = null;
+
+    /**
+     * Set user list for this feed.
+     *
+     * @param Db\Row\UserList $list List
+     *
+     * @return void
+     */
+    public function setList($list)
+    {
+        $this->list = $list;
+    }
+
+    /**
      * Support method to turn a record driver object into an RSS entry.
      *
      * @param Feed                              $feed   Feed to update
@@ -70,10 +89,20 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
             }
         }
         $entry->setLink($url);
-        $date = $this->getDateModified($record);
-        if (!empty($date)) {
-            $entry->setDateModified($date);
+
+        if ($this->list) {
+            if ($saved = $record->getListSavedDate(
+                $this->list->id, $this->list->user_id
+            )) {
+                $entry->setDateModified(new \DateTime($saved));
+            }
+        } else {
+            $date = $this->getDateModified($record);
+            if (!empty($date)) {
+                $entry->setDateModified($date);
+            }
         }
+
         $formats = $record->tryMethod('getFormats');
         if (is_array($formats)) {
             // Take only the most specific format and get rid of level indicator
@@ -100,7 +129,13 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
             ]
         );
         $entry->setCommentCount(count($record->getComments()));
-        $summaries = array_filter($record->tryMethod('getSummary'));
+        $summaries = [];
+        if (isset($this->list)) {
+            $summaries = $record->getListNotes($this->list->id);
+        }
+        if (empty($summaries)) {
+            $summaries = array_filter($record->tryMethod('getSummary'));
+        }
         if (!empty($summaries)) {
             $entry->setDescription(implode(' -- ', $summaries));
         }
