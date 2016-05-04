@@ -27,7 +27,6 @@
  */
 namespace VuFind\Controller;
 
-use VuFindSearch\ParamBag;
 /**
  * Channels Class
  *
