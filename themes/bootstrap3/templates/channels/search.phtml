@@ -56,7 +56,7 @@ $('.carousel-record').click(function carouselPopover() {
       content: VuFind.translate('loading')+'...',
       html: true,
       placement: 'bottom',
-      trigger: 'manual',
+      trigger: 'focus',
       container: '#'+record.closest('.carousel').attr('id')
     });
     record.popover('show');
