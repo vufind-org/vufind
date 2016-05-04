@@ -41,6 +41,29 @@ namespace VuFind\Controller;
 class ChannelsController extends AbstractBase
 {
     /**
+     * Generates channels for a record.
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function recordAction()
+    {
+        $view = $this->createViewModel();
+
+        $loader = $this->getRecordLoader();
+        $record = $loader->load(
+            $this->params()->fromQuery('id'),
+            $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
+        );
+
+        $provider = new \VuFind\ChannelProvider\Facets(
+            $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+        );
+        $view->channels = $provider->getFromRecord($record);
+        $view->setTemplate('channels/search');
+        return $view;
+    }
+
+    /**
      * Generates channels for a search.
      *
      * @return \Zend\View\Model\ViewModel
@@ -56,7 +79,9 @@ class ChannelsController extends AbstractBase
             + $this->getRequest()->getPost()->toArray();
         $searchClassId = 'Solr';
 
-        $provider = new \VuFind\ChannelProvider\Facets();
+        $provider = new \VuFind\ChannelProvider\Facets(
+            $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+        );
 
         $callback = function ($runner, $params, $searchClassId) use ($provider) {
             $provider->configureSearchParams($params);

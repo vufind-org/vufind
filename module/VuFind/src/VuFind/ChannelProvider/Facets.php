@@ -26,7 +26,9 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
+use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
  * Facet-driven channel provider.
@@ -50,6 +52,37 @@ class Facets
     ];
 
     /**
+     * Maximum number of different fields to suggest in the channel list.
+     *
+     * @var int
+     */
+    protected $maxFieldsToSuggest = 2;
+
+    /**
+     * Maximum number of values to suggest per field.
+     *
+     * @var int
+     */
+    protected $maxValuesToSuggestPerField = 2;
+
+    /**
+     * Search results manager.
+     *
+     * @var ResultsManager
+     */
+    protected $resultsManager;
+
+    /**
+     * Constructor
+     *
+     * @param 
+     */
+    public function __construct(ResultsManager $rm)
+    {
+        $this->resultsManager = $rm;
+    }
+
+    /**
      * Hook to configure search parameters before executing search.
      *
      * @param Params $params Search parameters to adjust
@@ -64,6 +97,50 @@ class Facets
     }
 
     /**
+     * Return channel information derived from a record driver object.
+     *
+     * @param RecordDriver $driver Record driver
+     *
+     * @return array
+     */
+    public function getFromRecord(RecordDriver $driver)
+    {
+        $channels = [];
+        $fieldCount = 0;
+        $data = $driver->getRawData();
+        foreach (array_keys($this->fields) as $field) {
+            if (!isset($data[$field])) {
+                continue;
+            }
+            $currentValueCount = 0;
+            foreach ($data[$field] as $value) {
+                $results = $this->resultsManager
+                    ->get($driver->getSourceIdentifier());
+                $current = [
+                    'value' => $value,
+                    'displayText' => $value,
+                ];
+                $channel = $this
+                    ->buildChannelFromFacet($results, $field, $current);
+                if (count($channel['contents']) > 0) {
+                    $channels[] = $channel;
+                    $currentValueCount++;
+                }
+                if ($currentValueCount >= $this->maxValuesToSuggestPerField) {
+                    break;
+                }
+            }
+            if ($currentValueCount > 0) {
+                $fieldCount++;
+            }
+            if ($fieldCount >= $this->maxFieldsToSuggest) {
+                break;
+            }
+        }
+        return $channels;
+    }
+
+    /**
      * Return channel information derived from a search results object.
      *
      * @param Results $results Search results
@@ -72,9 +149,6 @@ class Facets
      */
     public function getFromSearch(Results $results)
     {
-        $maxFieldsToSuggest = 2;
-        $maxValuesToSuggestPerField = 2;
-
         $channels = [];
         $fieldCount = 0;
         $facetList = $results->getFacetList();
@@ -92,14 +166,14 @@ class Facets
                         $currentValueCount++;
                     }
                 }
-                if ($currentValueCount >= $maxValuesToSuggestPerField) {
+                if ($currentValueCount >= $this->maxValuesToSuggestPerField) {
                     break;
                 }
             }
-            if ($currentValueCount >= $maxValuesToSuggestPerField) {
+            if ($currentValueCount > 0) {
                 $fieldCount++;
             }
-            if ($fieldCount >= $maxFieldsToSuggest) {
+            if ($fieldCount >= $this->maxFieldsToSuggest) {
                 break;
             }
         }
