@@ -21,8 +21,8 @@
                 <div class="row">
             <? endif; ?>
             <div class="channel-item col-sm-3">
-              <img src="http://placehold.it/<?=rand(100, 150) ?>x<?=rand(150, 200) ?>"/><br/>
-              <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>">
+              <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="carousel-record" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
+                <img src="http://placehold.it/<?=rand(100, 150) ?>x<?=rand(150, 200) ?>"/><br/>
                 <?=$this->escapeHtml($item['title'])?>
               </a>
             </div>
@@ -43,3 +43,42 @@
     </a>
   </div>
 <? endforeach; ?>
+<?
+  $script = <<<JS
+$('.carousel-record').click(function carouselPopover() {
+  console.log('click');
+  var record = $(this);
+  if (record.data('popover')) {
+    record.popover('toggle');
+  } else {
+    record.data('popover', true);
+    record.popover({
+      content: VuFind.translate('loading')+'...',
+      html: true,
+      placement: 'bottom',
+      trigger: 'manual',
+      container: '#'+record.closest('.carousel').attr('id')
+    });
+    record.popover('show');
+    $.ajax({
+      url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
+      type: 'POST',
+      data: {tab: 'description'}
+    })
+    .done(function(data) {
+      record.data('bs.popover').options.content = '<div class="btn-group">'
+        + '<a href="'+VuFind.path+'/Channels/Record?'
+          + 'id=' + encodeURIComponent(record.attr('data-record-id'))
+          + '&source=' + encodeURIComponent(record.attr('data-record-source'))
+        +'" class="btn btn-default">More Like This</a>'
+        + '<a href="'+record.attr('href')+'" class="btn btn-default">Go To Record</a>'
+        + '</div>'
+        + data;
+      record.popover('show');
+    });
+  }
+  return false;
+});
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

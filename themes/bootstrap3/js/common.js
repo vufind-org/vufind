@@ -106,6 +106,23 @@ function lessFacets(id) {
   $('.'+id).addClass('hidden');
   $('#more-'+id).removeClass('hidden');
 }
+function getUrlRoot(url) {
+  // Parse out the base URL for the current record:
+  var urlroot = null;
+  var urlParts = url.split(/[?#]/);
+  var urlWithoutFragment = urlParts[0];
+  if (VuFind.path === '') {
+    // special case -- VuFind installed at site root:
+    var chunks = urlWithoutFragment.split('/');
+    urlroot = '/' + chunks[3] + '/' + chunks[4];
+  } else {
+    // standard case -- VuFind has its own path under site:
+    var pathInUrl = urlWithoutFragment.indexOf(VuFind.path);
+    var parts = urlWithoutFragment.substring(pathInUrl + VuFind.path.length + 1).split('/');
+    urlroot = '/' + parts[0] + '/' + parts[1];
+  }
+  return urlroot;
+}
 
 // Phone number validation
 function phoneNumberFormHandler(numID, regionCode) {
