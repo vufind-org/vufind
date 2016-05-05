@@ -621,4 +621,48 @@ abstract class Results implements ServiceLocatorAwareInterface
             [$this->getOptions(), 'translate'], func_get_args()
         );
     }
+
+    /**
+     * Get complete facet counts for several index fields
+     *
+     * @param array  $facetfields  name of the Solr fields to return facets for
+     * @param bool   $removeFilter Clear existing filters from selected fields (true)
+     * or retain them (false)?
+     * @param int    $limit        A limit for the number of facets returned, this
+     * may be useful for very large amounts of facets that can break the JSON parse
+     * method because of PHP out of memory exceptions (default = -1, no limit).
+     * @param string $facetSort    A facet sort value to use (null to retain current)
+     *
+     * @return array an array with the facet values for each index field
+     */
+    public function getFullFieldFacets($facetfields, $removeFilter = true,
+        $limit = -1, $facetSort = null
+    ) {
+        if (!method_exists($this, 'getPartialFieldFacets')) {
+            throw new \Exception('getPartialFieldFacets not implemented');
+        }
+        $page = 1;
+        $facets = [];
+        do {
+            $facetpage = $this->getPartialFieldFacets(
+                $facetfields, $removeFilter, $limit, $facetSort, $page
+            );
+            $nextfields = [];
+            foreach ($facetfields as $field) {
+                if (!isset($facets[$field])) {
+                    $facets[$field] = $facetpage[$field];
+                } else {
+                    $facets[$field]['data'] = array_merge(
+                        $facets, $facetpage[$field]['data']
+                    );
+                }
+                if ($facetpage[$field]['more']) {
+                    $nextfields[] = $field;
+                }
+            }
+            $facetfields = $nextfields;
+            $page ++;
+        } while ($limit == -1 && !empty($facetfields));
+        return $facets;
+    }
 }

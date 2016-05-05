@@ -730,16 +730,10 @@ class AbstractSearch extends AbstractBase
             ? $config->Results_Settings->lightboxLimit
             : 30;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
-        $facets = $results->getFullFieldFacets(
+        $facets = $results->getPartialFieldFacets(
             [$facet], false, $limit, $sort, $page
         );
         $list = $facets[$facet]['data']['list'];
-        $anotherPage = true;
-        if (count($list) > $limit) {
-            $list = array_slice($list, 0, $limit);
-        } else if (count($list) < $limit) {
-            $anotherPage = false;
-        }
 
         $view = $this->createViewModel(
             [
@@ -747,7 +741,7 @@ class AbstractSearch extends AbstractBase
                 'facet' => $facet,
                 'page' => $page,
                 'results' => $results,
-                'anotherPage' => $anotherPage,
+                'anotherPage' => $facets[$facet]['more'],
                 'sort' => $sort,
                 'sortOptions' => $facetSortOptions
             ]

@@ -332,17 +332,26 @@ class Results extends \VuFind\Search\Base\Results
      * may be useful for very large amounts of facets that can break the JSON parse
      * method because of PHP out of memory exceptions (default = -1, no limit).
      * @param string $facetSort    A facet sort value to use (null to retain current)
-     * @param int    $page         Offsets results and returns limit+1 (page check)
+     * @param int    $page         1 based. Offsets results by limit.
      *
      * @return array an array with the facet values for each index field
      */
-    public function getFullFieldFacets($facetfields, $removeFilter = true,
+    public function getPartialFieldFacets($facetfields, $removeFilter = true,
         $limit = -1, $facetSort = null, $page = null
     ) {
         $query  = $this->getParams()->getQuery();
-        $offset = null !== $page && $limit != -1
-            ? $offset = ($page - 1) * $limit
-            : 0;
+        // No limit not implemented with Summon: cause page loop
+        if ($limit == -1) {
+            if ($page === null) {
+                $page = 1;
+            }
+            $limit = 100;
+        }
+        $offset = 0;
+        if ($page !== null) {
+            $offset = $offset = ($page - 1) * $limit;
+            $limit ++;
+        }
         foreach ($facetfields as $facet) {
             $this->getParams()->addFacet($facet . ',or,' . $page . ',' . $limit);
         }
@@ -355,14 +364,25 @@ class Results extends \VuFind\Search\Base\Results
         foreach ($facets as $data) {
             if (in_array($data['displayName'], $facetfields)) {
                 $formatted = $this->formatFacetData($data);
+                $list = $formatted['counts'];
+                // Detect next page and crop results if necessary
+                $more = false;
+                if (isset($page) && count($list) > 0 && count($list) == $limit) {
+                    $more = true;
+                    array_pop($list);
+                }
                 $ret[$data['displayName']] = [
                     'data' => [
                         'label' => $data['displayName'],
-                        'list' => $formatted['counts']
-                    ]
+                        'list' => $list,
+                    ],
+                    'more' => $more
                 ];
             }
         }
+
+
+        // Send back data:
         return $ret;
     }
 }
