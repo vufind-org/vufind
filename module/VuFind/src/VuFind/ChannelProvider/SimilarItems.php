@@ -128,9 +128,7 @@ class SimilarItems extends AbstractChannelProvider
      * Add a new filter to an existing search results object to populate a
      * channel.
      *
-     * @param Results $results Results object
-     * @param string  $field   Field name (for filter)
-     * @param array   $value   Field value information (for filter)
+     * @param RecordDriver $driver Record driver
      *
      * @return array
      */
