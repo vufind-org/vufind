@@ -55,8 +55,14 @@ class ChannelsController extends AbstractBase
             $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
         );
 
-        $provider = $this->getChannelProvider('facets');
-        $view->channels = $provider->getFromRecord($record);
+        $providerIds = ['similaritems', 'facets'];
+        $view->channels = [];
+        foreach ($providerIds as $current) {
+            $provider = $this->getChannelProvider($current);
+            $view->channels = array_merge(
+                $view->channels, $provider->getFromRecord($record)
+            );
+        }
         $view->setTemplate('channels/search');
         return $view;
     }
@@ -77,14 +83,22 @@ class ChannelsController extends AbstractBase
             + $this->getRequest()->getPost()->toArray();
         $searchClassId = 'Solr';
 
-        $provider = $this->getChannelProvider('facets');
+        $providerIds = ['facets', 'similaritems'];
+        $providers = array_map([$this, 'getChannelProvider'], $providerIds);
 
-        $callback = function ($runner, $params, $searchClassId) use ($provider) {
-            $provider->configureSearchParams($params);
+        $callback = function ($runner, $params, $searchClassId) use ($providers) {
+            foreach ($providers as $provider) {
+                $provider->configureSearchParams($params);
+            }
         };
         $results = $runner->run($request, $searchClassId, $callback);
 
-        $view->channels = $provider->getFromSearch($results);
+        $view->channels = [];
+        foreach ($providers as $provider) {
+            $view->channels = array_merge(
+                $view->channels, $provider->getFromSearch($results)
+            );
+        }
         return $view;
     }
 

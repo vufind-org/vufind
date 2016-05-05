@@ -290,6 +290,7 @@ $config = [
             'channelprovider' => [
                 'factories' => [
                     'facets' => 'VuFind\ChannelProvider\Factory::getFacets',
+                    'similaritems' => 'VuFind\ChannelProvider\Factory::getSimilarItems',
                 ]
             ],
             'content' => [

@@ -39,7 +39,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Facets implements ChannelProviderInterface
+class Facets extends AbstractChannelProvider
 {
     /**
      * Facet fields to use (field name => description).
@@ -181,27 +181,6 @@ class Facets implements ChannelProviderInterface
     }
 
     /**
-     * Convert a search results object into channel contents.
-     *
-     * @param Results $results Results object
-     *
-     * @return array
-     */
-    protected function summarizeResults(Results $results)
-    {
-        $summary = [];
-        foreach ($results->getResults() as $current) {
-            $summary[] = [
-                'title' => $current->getTitle(),
-                'source' => $current->getSourceIdentifier(),
-                'thumbnail' => $current->getThumbnail('medium'),
-                'id' => $current->getUniqueId(),
-            ];
-        }
-        return $summary;
-    }
-
-    /**
      * Add a new filter to an existing search results object to populate a
      * channel.
      *
@@ -224,7 +203,7 @@ class Facets implements ChannelProviderInterface
         $newResults->performAndProcessSearch();
         return [
             'title' => "{$this->fields[$field]}: {$value['displayText']}",
-            'contents' => $this->summarizeResults($newResults)
+            'contents' => $this->summarizeRecordDrivers($newResults->getResults())
         ];
     }
 }

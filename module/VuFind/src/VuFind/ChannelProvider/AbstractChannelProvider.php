@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for ChannelProvider plugins.
+ * Facet-driven channel provider.
  *
  * PHP version 5
  *
@@ -26,44 +26,36 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
-use Zend\ServiceManager\ServiceManager;
 
 /**
- * Factory for ChannelProvider plugins.
+ * Facet-driven channel provider.
  *
  * @category VuFind
  * @package  Channels
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @codeCoverageIgnore
  */
-class Factory
+abstract class AbstractChannelProvider implements ChannelProviderInterface
 {
     /**
-     * Construct the Facets channel provider.
+     * Convert a search results object into channel contents.
      *
-     * @param ServiceManager $sm Service manager.
+     * @param array|\Traversable $drivers Record drivers to summarize.
      *
-     * @return Facets
+     * @return array
      */
-    public static function getFacets(ServiceManager $sm)
+    protected function summarizeRecordDrivers($drivers)
     {
-        return new Facets(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-        );
-    }
-
-    /**
-     * Construct the SimilarItems channel provider.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return SimilarItems
-     */
-    public static function getSimilarItems(ServiceManager $sm)
-    {
-        return new SimilarItems($sm->getServiceLocator()->get('VuFind\Search'));
+        $summary = [];
+        foreach ($drivers as $current) {
+            $summary[] = [
+                'title' => $current->getTitle(),
+                'source' => $current->getSourceIdentifier(),
+                'thumbnail' => $current->getThumbnail('medium'),
+                'id' => $current->getUniqueId(),
+            ];
+        }
+        return $summary;
     }
 }
