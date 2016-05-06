@@ -2,6 +2,7 @@ $(document).ready(function channelReady() {
   $('.channel').flickity({
     cellAlign: 'left',
     contain: true,
+    freeScroll: true,
     pageDots: false
   });
   $('.channel-record').click(function channelRecord() { return false; });
