@@ -355,7 +355,6 @@ class Results extends \VuFind\Search\Base\Results
             $result[$key]['data'] = $value;
         }
 
-
         // Send back data:
         return $result;
     }

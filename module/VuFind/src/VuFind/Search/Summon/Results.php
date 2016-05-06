@@ -381,7 +381,6 @@ class Results extends \VuFind\Search\Base\Results
             }
         }
 
-
         // Send back data:
         return $ret;
     }
