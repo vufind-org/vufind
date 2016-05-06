@@ -43,17 +43,17 @@ $basePath = '/vufind';
 try {
     $opts = new Getopt(
         array(
-        'use-defaults' => 
+        'use-defaults' =>
            'Use VuFind Defaults to Configure (ignores any other arguments passed)',
-        'overridedir=s' => 
+        'overridedir=s' =>
            "Where would you like to store your local settings? [{$baseDir}/local]",
-        'module-name=s' => 
+        'module-name=s' =>
            'What module name would you like to use? Use disabled, to not use',
-        'basepath=s' => 
+        'basepath=s' =>
            'What base path should be used in VuFind\'s URL? [/vufind]',
-        'multisite-w' => 
+        'multisite-w' =>
            'Specify we are going to setup a multisite. Options: directory and host',
-        'hostname=s' => 
+        'hostname=s' =>
             'Specify the hostname for the VuFind Site, When multisite=host',
         'non-interactive' =>
             'Use settings if provided via arguments, otherwise use defaults',
@@ -372,7 +372,8 @@ function validateModule($module)
 {
     $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
     $illegalModules = array(
-        '        'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest', 'VuFindTheme',
+        'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
+        'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest', 'VuFindTheme',
     );
     if (in_array($module, $illegalModules)) {
         return "{$module} is a reserved module name; please try another.";
