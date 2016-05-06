@@ -1,53 +1,30 @@
+<? $this->headScript()->appendFile('vendor/flickity.pkgd.min.js'); ?>
+<? $this->headLink()->appendStylesheet('vendor/flickity.min.css'); ?>
 <? foreach ($channels as $key=>$channel): ?>
   <h2><?=$this->escapeHtml($channel['title'])?></h2>
   <? $channelID = 'channel-' . $key; ?>
-  <div id="<?=$channelID ?>" class="channel carousel slide" data-ride="carousel" data-interval="false">
-    <!-- Indicators -->
-    <ol class="carousel-indicators">
-      <? for ($i=0; $i<ceil(count($channel['contents'])/4); $i++): ?>
-        <li data-target="#<?=$channelID ?>" data-slide-to="<?=$i ?>"<? if($i == 0): ?> class="active"<?endif;?>></li>
-      <? endfor; ?>
-    </ol>
+  <div id="<?=$channelID ?>" class="channel">
     <!-- Wrapper for slides -->
-    <div class="carousel-inner" role="listbox">
-      <div class="item active">
-        <div class="row">
-          <? $count = 0; ?>
-          <? foreach ($channel['contents'] as $item): ?>
-            <? if ($count > 0 && $count % 4 == 0): ?>
-                </div><!--row-->
-              </div><!--item-->
-              <div class="item">
-                <div class="row">
-            <? endif; ?>
-            <div class="channel-item col-sm-3">
-              <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="carousel-record" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
-                <img src="http://placehold.it/<?=rand(100, 150) ?>x<?=rand(150, 200) ?>"/><br/>
-                <?=$this->escapeHtml($item['title'])?>
-              </a>
-            </div>
-            <? $count++; ?>
-          <? endforeach; ?>
-        </div>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <a class="left carousel-control" href="#<?=$channelID ?>" role="button" data-slide="prev">
-      <span class="fa fa-chevron-left glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="right carousel-control" href="#<?=$channelID ?>" role="button" data-slide="next">
-      <span class="fa fa-chevron-right glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
+    <? foreach ($channel['contents'] as $item): ?>
+      <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
+        <div class="img" style="background-image:url(http://placehold.it/<?=rand(100, 150) ?>x<?=rand(150, 200) ?>)"></div>
+        <?=$this->escapeHtml($item['title'])?>
+      </a>
+    <? endforeach; ?>
   </div>
 <? endforeach; ?>
 <?
   $script = <<<JS
-$('.carousel-record').click(function carouselPopover() {
-  console.log('click');
-  var record = $(this);
+$('.channel').flickity({
+  cellAlign: 'left',
+  contain: true,
+  pageDots: false
+});
+$('.channel-record').click(function channelRecord() { return false; });
+$('.channel').on('staticClick', function(event, pointer, cellElement, cellIndex) {
+  console.log(event);
+  event.originalEvent.preventDefault();
+  var record = $(cellElement);
   if (record.data('popover')) {
     record.popover('toggle');
   } else {
@@ -57,7 +34,7 @@ $('.carousel-record').click(function carouselPopover() {
       html: true,
       placement: 'bottom',
       trigger: 'focus',
-      container: '#'+record.closest('.carousel').attr('id')
+      container: '#'+record.closest('.channel').attr('id')
     });
     record.popover('show');
     $.ajax({
@@ -66,7 +43,8 @@ $('.carousel-record').click(function carouselPopover() {
       data: {tab: 'description'}
     })
     .done(function(data) {
-      record.data('bs.popover').options.content = '<div class="btn-group">'
+      record.data('bs.popover').options.content = '<h2>'+record.text()+'</h2>'
+        + '<div class="btn-group btn-group-justified">'
         + '<a href="'+VuFind.path+'/Channels/Record?'
           + 'id=' + encodeURIComponent(record.attr('data-record-id'))
           + '&source=' + encodeURIComponent(record.attr('data-record-source'))

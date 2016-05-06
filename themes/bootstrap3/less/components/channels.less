@@ -1,32 +1,21 @@
-.channel.carousel {
-  padding-bottom: 3rem;
-
-  .carousel-control { width: 10%; }
-  .row {
-    width: 80%;
-    margin: auto;
-  }
-}
-.channel .carousel-indicators {
-  bottom: 0;
-  margin-bottom: 0;
-}
-.channel .carousel-indicators li {
-  width: 14px;
-  height: 14px;
-  margin: 0 2px;
-  border-color: #fff;
-  background-color: @gray;
-  box-shadow: none;
-}
-.channel .carousel-indicators li.active {
-  border-color: @gray;
-  background-color: #fff;
-}
-.channel .channel-item {
+.channel .channel-record {
+  display: inline-block;
+  min-width: 150px;
+  max-width: 15%;
+  max-height: 300px;
+  padding: 0 .5rem;
   text-align: center;
+  text-overflow: ellipsis;
+}
+.channel .channel-record .img {
+  max-width: 100%;
+  height: 200px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 .channel .popover {
   width: 500px;
   max-width: none;
 }
+.flickity-prev-next-button { top: 35%; }
