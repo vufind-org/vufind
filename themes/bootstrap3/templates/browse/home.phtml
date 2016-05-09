@@ -40,14 +40,14 @@
     <div class="browse list-group col-sm-3<? if (!empty($this->resultList)): ?> hidden-xs<? endif ?>" id="list3">
     <? foreach($this->secondaryList as $secondary): ?>
       <? $url = $BROWSE_BASE . '?findby=' . urlencode($this->findby)
-          . '&category=' . urlencode($this->category)
-          . '&query=' . urlencode($secondary['value']);
+          . '&amp;category=' . urlencode($this->category)
+          . '&amp;query=' . urlencode($secondary['value']);
         if ($this->facetPrefix) {
-          $url .= '&facet_prefix=' . urlencode($secondary['displayText']);
+          $url .= '&amp;facet_prefix=' . urlencode($secondary['displayText']);
         }
         if ($this->secondaryParams) {
           foreach($this->secondaryParams as $var=>$val) {
-            $url .= '&' . $var .'=' . urlencode($val);
+            $url .= '&amp;' . $var .'=' . urlencode($val);
           }
         }
         $viewRecord = !empty($this->categoryList) && $this->currentAction != 'Tag' && $this->findby != 'alphabetical';
