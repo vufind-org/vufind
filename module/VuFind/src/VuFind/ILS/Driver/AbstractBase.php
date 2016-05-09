@@ -101,7 +101,8 @@ abstract class AbstractBase implements DriverInterface
      */
     protected function formatCacheKey($key)
     {
-        return str_replace("\\", "_", get_class($this)) . '-' . md5(json_encode($this->config) . "|$key");
+        return str_replace("\\", "_", get_class($this)) . '-'
+            . md5(json_encode($this->config) . "|$key");
     }
 
     /**
