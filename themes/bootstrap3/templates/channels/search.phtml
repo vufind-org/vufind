@@ -2,13 +2,17 @@
 <? $this->headScript()->appendFile('vendor/flickity.pkgd.min.js'); ?>
 <? $this->headLink()->appendStylesheet('vendor/flickity.min.css'); ?>
 <? foreach ($channels as $key=>$channel): ?>
-  <h2><?=$this->escapeHtml($channel['title'])?></h2>
+  <div class="channel-title">
+    <a href="<?=$channel['searchUrl'] ?>" class="pull-left"><i class="fa fa-fw fa-search" title="<?=$this->transEsc('Back to Search Results') ?>"></i></a>
+    <a href="<?=$channel['channelsUrl'] ?>" class="pull-left"><i class="fa fa-fw fa-plus-circle" title="<?=$this->transEsc('More Topics') ?>"></i></a>
+    <h2 class="pull-left"><?=$this->escapeHtml($channel['title'])?></h2>
+  </div>
   <? $channelID = 'channel-' . $key; ?>
-  <div id="<?=$channelID ?>" class="channel">
+  <div id="<?=$channelID ?>" class="channel" style="clear:both">
     <!-- Wrapper for slides -->
     <? foreach ($channel['contents'] as $item): ?>
       <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
-        <div class="img" style="background-image:url(http://placehold.it/<?=rand(100, 150) ?>x<?=rand(150, 200) ?>)"></div>
+        <div class="img" style="background-image:url(<?=$this->record($item)->getThumbnail('medium') ?>)"></div>
         <?=$this->escapeHtml($item['title'])?>
       </a>
     <? endforeach; ?>
