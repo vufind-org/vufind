@@ -208,23 +208,6 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test getController.
-     *
-     * @return void
-     */
-    public function testGetController()
-    {
-        // Default (Solr) case:
-        $driver = new \VuFindTest\RecordDriver\TestHarness();
-        $record = $this->getRecord($driver);
-        $this->assertEquals('Record', $record->getController());
-
-        // Custom source case:
-        $driver->setSourceIdentifier('Foo');
-        $this->assertEquals('Foorecord', $record->getController());
-    }
-
-    /**
      * Test getPreviews.
      *
      * @return void
