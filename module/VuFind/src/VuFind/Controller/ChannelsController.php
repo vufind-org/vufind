@@ -81,7 +81,8 @@ class ChannelsController extends AbstractBase
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
-        $searchClassId = 'Solr';
+        $searchClassId = $this->params()
+            ->fromQuery('source', DEFAULT_SEARCH_BACKEND);
 
         $providerIds = ['facets', 'similaritems'];
         $providers = array_map([$this, 'getChannelProvider'], $providerIds);
