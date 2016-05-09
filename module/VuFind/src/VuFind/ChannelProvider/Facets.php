@@ -29,6 +29,7 @@ namespace VuFind\ChannelProvider;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use Zend\Mvc\Controller\Plugin\Url;
 
 /**
  * Facet-driven channel provider.
@@ -73,13 +74,22 @@ class Facets extends AbstractChannelProvider
     protected $resultsManager;
 
     /**
+     * URL helper
+     *
+     * @var Url
+     */
+    protected $url;
+
+    /**
      * Constructor
      *
-     * @param ResultsManager $rm Results manager
+     * @param ResultsManager $rm  Results manager
+     * @param Url            $url URL helper
      */
-    public function __construct(ResultsManager $rm)
+    public function __construct(ResultsManager $rm, Url $url)
     {
         $this->resultsManager = $rm;
+        $this->url = $url;
     }
 
     /**
@@ -199,10 +209,18 @@ class Facets extends AbstractChannelProvider
         $filter = "$field:{$value['value']}";
         $params->addFilter($filter);
 
+        $query = $newResults->getUrlQuery()->addFilter($filter);
+        $searchUrl = $this->url->fromRoute($params->getOptions()->getSearchAction())
+            . $query;
+        $channelsUrl = $this->url->fromRoute('channels-search') . $searchUrl
+            . '&source=' . urlencode($params->getSearchClassId());
+
         // Run the search and convert the results into a channel:
         $newResults->performAndProcessSearch();
         return [
             'title' => "{$this->fields[$field]}: {$value['displayText']}",
+            'searchUrl' => $searchUrl,
+            'channelsUrl' => $channelsUrl,
             'contents' => $this->summarizeRecordDrivers($newResults->getResults())
         ];
     }

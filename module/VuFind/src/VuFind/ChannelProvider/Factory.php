@@ -51,7 +51,8 @@ class Factory
     public static function getFacets(ServiceManager $sm)
     {
         return new Facets(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
+            $sm->getServiceLocator()->get('ControllerPluginManager')->get('url')
         );
     }
 
