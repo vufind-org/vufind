@@ -389,6 +389,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
                             <field name="author">
                                 <xsl:value-of select="normalize-space()"/>
                             </field>
+                            <!-- use first author value for sorting -->
+                            <xsl:if test="position()=1">
+                                <field name="author_sort">
+                                    <xsl:value-of select="normalize-space()"/>
+                                </field>
+                            </xsl:if>
+                        </xsl:if>
+                    </xsl:for-each>
+                </xsl:if>
+
+                <xsl:if test="$DC//dc:contributor">
+                    <xsl:for-each select="$DC//dc:contributor">
+                        <xsl:if test="normalize-space()">
+                            <field name="author2">
+                                <xsl:value-of select="normalize-space()"/>
+                            </field>
                         </xsl:if>
                     </xsl:for-each>
                 </xsl:if>
