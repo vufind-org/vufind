@@ -56,6 +56,7 @@
           <?=$this->transEsc("Showing")?>
           <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
           <? if (!isset($this->skipTotalCount)): ?>
+            <? $this->layout()->srmessage = $recordTotal . ' ' . $this->transEsc('results'); ?>
             <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
           <? endif; ?>
           <? if (isset($this->overrideSearchHeading)): ?>
@@ -86,7 +87,8 @@
         <? if (isset($this->overrideEmptyMessage)): ?>
           <?=$this->overrideEmptyMessage?>
         <? else: ?>
-          <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+          <? $this->layout()->srmessage = $this->transEsc('nohit_prefix') . ' - ' . $this->escapeHtml($lookfor) . ' - ' . $this->transEsc('nohit_suffix'); ?>
+          <?=$this->layout()->srmessage ?>
         <? endif; ?>
       </p>
       <? if (isset($this->parseError)): ?>
