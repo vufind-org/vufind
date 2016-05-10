@@ -596,7 +596,8 @@ class Server
 
         // Get non-deleted records from the Solr index:
         $result = $this->listRecordsGetNonDeleted(
-            $from, $until, $solrOffset, $solrLimit, $params['set']
+            $from, $until, $solrOffset, $solrLimit,
+            isset($params['set']) ? $params['set'] : ''
         );
         $nonDeletedCount = $result->getResultTotal();
         $format = $params['metadataPrefix'];
