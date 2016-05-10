@@ -100,7 +100,8 @@ trait HoldsTrait
         $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
             && !empty($requestGroups)
             && (empty($gatheredDetails['level'])
-                || $gatheredDetails['level'] != 'copy');
+                || ($gatheredDetails['level'] != 'copy'
+                    || count($requestGroups) > 1));
 
         $pickupDetails = $gatheredDetails;
         if (!$requestGroupNeeded && !empty($requestGroups)
