@@ -124,6 +124,9 @@ JS;
     ?>
     <header class="hidden-print">
       <div class="container navbar">
+        <? if (isset($this->layout()->srmessage)): ?>
+          <span class="sr-only"><?=$this->layout()->srmessage ?></span>
+        <? endif; ?>
         <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
         <?=$this->render('header.phtml')?>
       </div>
