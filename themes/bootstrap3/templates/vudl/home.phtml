@@ -1,0 +1,39 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate($this->translate($this->title)));
+
+  // Set default value if necessary:
+  if (!isset($this->searchClassId)) {
+    $this->searchClassId = 'Solr';
+  }
+
+  // Load search actions and settings (if any):
+  $options = $this->searchOptions($this->searchClassId);
+  $basicSearch = $options->getSearchAction();
+  $advSearch = $options->getAdvancedSearchAction();
+  $this->layout()->selectedTab = 'digital';
+  $this->layout()->showBreadcrumbs = false;
+?>
+<div class="hero-unit">
+  <div id="grid-container">
+    <div id="grid">
+      <?  foreach($this->thumbnails as $thumbnail): ?>
+        <a href="<?=$this->url('collection', array('id'=>$thumbnail['id'])) ?>" title="<?=$thumbnail['label'] ?>" class="item"><img style="width:<?=(40*rand(2,4))-4 ?>px;margin:2px 0" src="<?=$thumbnail['img'] ?>"></a>
+      <?  endforeach; ?>
+    </div>
+  </div>
+  <a class="btn btn-primary btn-lg" alt="<?=$this->transEsc('Browse the Collection')?>" href="<?=$this->url('vudl-default-collection') ?>"><?=$this->transEsc('Browse the Collection')?> <i class="fa fa-double-angle-right"></i></a>
+  <script src="<?=$this->imageLink('../js/vendor/masonry.min.js') ?>"></script>
+  <script>
+    window.onload = function() {
+      var container = document.getElementById('grid');
+      var limit = 10;
+      do {
+        new Masonry( container , {
+          columnWidth: 40,
+          isFitWidth: true
+        });
+      } while(limit-- && container.offsetHeight > 370);
+    };
+  </script>
+</div>

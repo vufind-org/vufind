@@ -1,0 +1,81 @@
+<?
+  // Parent collections for Prev/Next Item
+  $parents = array();
+  $parentKeys = array();
+  foreach($this->parents as $trail) {
+    if(is_array($trail)) {
+      end($trail);
+    }
+    if(!in_array(key($trail), $parentKeys)) {
+      $uniqueParents[] = array(
+        'id'    => key($trail),
+        'title' => current($trail)
+      );
+      $parentKeys[] = key($trail);
+    }
+  }
+  $siblingHref = $this->url('vudl-sibling') . '?id=' . $this->layout()->vudlID;
+  if(count($uniqueParents) <= 1) {
+    $siblingHref .= '&trail=' . $uniqueParents[0]['id'];
+  }
+?>
+<nav class="sibling-form navbar" role="navigation">
+  <ul class="nav navbar-nav">
+    <? if(count($uniqueParents) > 1): ?>
+      <li class="dropdown">
+        <a id="sibling-prev" class="btn btn-default" data-toggle="dropdown" title="<?=$this->transEsc('Prev Item in Collection')?>">
+          <?=$this->transEsc('Prev Item')?> <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="sibling-prev">
+          <li role="presentation" class="dropdown-header"><?=$this->transEsc('Choose a collection') ?></li>
+          <? foreach($uniqueParents as $trail): ?>
+            <li role="presentation">
+              <a role="menuitem" tabindex="-1" href="<?=$siblingHref ?>&trail=<?=$trail['id'] ?>&prev=1">
+                <?=$trail['title'] ?>
+              </a>
+            </li>
+          <? endforeach; ?>
+        </ul>
+      </li>
+    <? else: ?>
+      <li>
+        <a href="<?=$siblingHref ?>&prev=1" class="btn btn-default" title="<?=$this->transEsc('Prev Item in Collection')?>">
+          <i class="fa fa-angle-left"></i>
+          <?=$this->transEsc('Prev Item')?>
+        </a>
+      </li>
+    <? endif; ?>
+    <li class="btn-group">
+      <a href="javascript:prevPage()" class="turn-button btn btn-default<? if($this->outline['counts'][$this->initList] <= 1): ?> hidden<? endif; ?>">Prev Page</a>
+      <a href="<?=$this->url('vudl-grid', array('id'=>$this->id)) ?>" class="grid-btn btn btn-default">
+        <i class="fa fa-th hidden-xs"></i>
+        <span class="visible-xs-inline"><?=$this->transEsc('grid_view') ?></span>
+      </a>
+      <a href="javascript:nextPage()" class="turn-button btn btn-default<? if($this->outline['counts'][$this->initList] <= 1): ?> hidden<? endif; ?>">Next Page</a>
+    </li>
+    <? if(count($uniqueParents) > 1): ?>
+      <li class="dropdown">
+        <a id="sibling-next" class="btn btn-default" data-toggle="dropdown" title="<?=$this->transEsc('Next Item in Collection')?>">
+          <?=$this->transEsc('Next Item')?> <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="sibling-next">
+          <li role="presentation" class="dropdown-header"><?=$this->transEsc('Choose a collection') ?></li>
+          <? foreach($uniqueParents as $trail): ?>
+            <li role="presentation">
+              <a role="menuitem" tabindex="-1" href="<?=$siblingHref ?>&trail=<?=$trail['id'] ?>&next=1">
+                <?=$trail['title'] ?>
+              </a>
+            </li>
+          <? endforeach; ?>
+        </ul>
+      </li>
+    <? else: ?>
+      <li>
+        <a href="<?=$siblingHref ?>&next=1" class="btn btn-default" title="<?=$this->transEsc('Next Item in Collection')?>">
+          <?=$this->transEsc('Next Item')?>
+          <i class="fa fa-angle-right"></i>
+        </a>
+      </li>
+    <? endif; ?>
+  </ul>
+</nav>

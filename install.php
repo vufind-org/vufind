@@ -372,7 +372,7 @@ function validateModule($module)
 {
     $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
     $illegalModules = array(
-        'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
+        'VuDL', 'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
         'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest', 'VuFindTheme',
     );
     if (in_array($module, $illegalModules)) {

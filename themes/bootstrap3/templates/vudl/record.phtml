@@ -1,0 +1,100 @@
+<?
+  $this->headTitle($this->translate($this->title) .' - '. $this->details['title']['value']);
+
+  // Multiple breadcrumbs
+  $this->layout()->breadcrumbs = $this->parents;
+  $this->layout()->title = $this->details['title']['value'];
+  $this->layout()->from = $this->from;
+
+  // Get first list name
+  foreach($this->outline as $list=>$v) {
+    if($list == 'counts') continue;
+    $listName = $list;
+    break;
+  }
+
+  // HEADER FILES
+  $this->headLink()->appendStylesheet('vudl.css');
+  $this->headScript()->appendFile('vudl/canvas-zoomy.js');
+  $this->headScript()->appendFile('vudl/config.js');
+  $this->headScript()->appendFile('vudl/record.js');
+
+  // Compact header
+  $this->layout()->headerType = 'record';
+  $this->layout()->vudlID = $this->id;
+  $this->layout()->hierarchyID = $this->hierarchyID;
+  $this->layout()->parents = $this->parents;
+  $this->layout()->siblings = $this->siblings;
+
+  function json_php_encode($op, $quotes = false) {
+    if($quotes) {
+      return str_replace('"', "'", str_replace("'", "\\'", str_replace('\/', '/', json_encode($op))));
+    } else {
+      return str_replace('\/', '/', json_encode($op));
+    }
+  }
+?>
+<script>
+  var documentID = '<?=$this->id ?>';
+  var initPage = $.parseJSON('<?=str_replace('\"', "\'", json_encode($this->outline['lists'][$this->initList][$this->initPage], JSON_HEX_APOS | JSON_HEX_AMP)) ?>');
+  var currentList = <?=$this->initList ?>;
+
+  counts = $.parseJSON('<?=json_encode($this->outline['counts'], JSON_HEX_APOS | JSON_HEX_AMP) ?>');
+  <? if(count($this->outline['lists'][$this->initList]) >= $this->outline['counts'][$this->initList]): ?>
+    loading_pages = false;
+  <? endif; ?>
+</script>
+<?=$this->context($this)->renderInContext('vudl/navigation.phtml', array()); ?>
+<div class="vudl row">
+  <div class="panel-group col-sm-3" id="side-nav">
+    <div class="panel">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#side-nav" id="side-nav-toggle">
+            <i class="fa fa-caret-left"></i>
+            <i class="fa fa-caret-left"></i>
+            <i class="fa fa-caret-left"></i>
+          </a>
+        </h4>
+      </div>
+    </div>
+    <?=$this->context($this)->renderInContext('vudl/details.phtml', array())?>
+    <? foreach($this->outline['lists'] as $key=>$list): ?>
+      <div class="panel">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#side-nav" href="#collapse<?=$key ?>">
+            <?=$this->outline['names'][$key] ?>
+            </a>
+          </h4>
+        </div>
+        <div id="collapse<?=$key ?>" class="panel-collapse collapse<? if($key==$this->initList): ?> in<? endif; ?>">
+          <div class="panel-body item-list" id="list<?=$key ?>" list-index="<?=$key ?>">
+            <!-- PRE LOADING PLACEHOLDERS -->
+            <? for($i=0;$i<current(array_keys($list))-1;$i++): ?>
+              <a class="page-link unloaded" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
+            <? endfor; ?>
+            <!-- LOADED ITEMS -->
+            <? foreach($list as $j=>$item): ?>
+              <a title="<?=$item['id'] ?>" onClick="ajaxGetView(<?=json_php_encode($item, true) ?>, this)" class="page-link active<?=$key == $this->initList && $j == $this->initPage ?' selected':''?>" id="item<?=$j?>">
+              <? if(isset($item['thumbnail'])): ?>
+                <img src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/><br/>
+              <? else: ?>
+                <i class="fa fa-file file-<?=$item['fulltype'] ?>"></i><br/>
+              <? endif; ?>
+                <?=$item['label'] ?>
+              </a>
+            <? endforeach; ?>
+            <!-- POST LOADING PLACEHOLDERS -->
+            <? if(isset($this->outline['counts'][$key])): ?>
+              <? for($i=$this->initPage+count($list);$i<$this->outline['counts'][$key];$i++): ?>
+                <a class="page-link unloaded" id="item<?=($i) ?>" title="<?=$i ?>">Loading...</a>
+              <? endfor; ?>
+            <? endif; ?>
+          </div>
+        </div>
+      </div>
+    <? endforeach; ?>
+  </div>
+  <div id="view" class="col-sm-9"></div>
+</div>

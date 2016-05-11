@@ -1,0 +1,80 @@
+<?
+  $this->headTitle($this->translate($this->title) .' - '. $this->details['title']['value']);
+
+  // Multiple breadcrumbs
+  $this->layout()->breadcrumbs = $this->parents;
+  $this->layout()->title = $this->details['title']['value'];
+  $this->layout()->from = $this->from;
+
+  // Facebook image meta
+  $this->layout()->facebookImage = $this->outline['lists'][0][$this->initPage]['medium'];
+  $this->layout()->facebookTitle = $this->details['title']['value'];
+
+  // HEADER FILES
+  $this->headLink()->appendStylesheet('vudl.css');
+  $this->headScript()->appendFile('vudl/grid.js');
+
+  // Compact header
+  $this->layout()->headerType = 'grid';
+  $this->layout()->vudlID = $this->id;
+  $this->layout()->hierarchyID = $this->hierarchyID;
+  $this->layout()->siblings = $this->siblings;
+  $this->layout()->parents = $this->parents;
+
+  function json_php_encode($op, $quotes = false) {
+    if($quotes) {
+      return str_replace('"', "'", str_replace('\/', '/', json_encode($op)));
+    } else {
+      return str_replace('\/', '/', json_encode($op));
+    }
+  }
+?>
+<script>
+  var documentID = '<?=$this->id ?>';
+  var initPage = <?=isset($this->initPage) ? $this->initPage : 0 ?>;
+</script>
+<div class="vudl row">
+  <div class="col-sm-3">
+    <?=$this->context($this)->renderInContext('vudl/details.phtml', array())?>
+  </div>
+  <div class="col-sm-9">
+    <div class="row">
+      <? $index=0; foreach($this->outline['lists'] as $key=>$list): ?>
+        <!-- PRE LOADING PLACEHOLDERS -->
+        <? for($i=0;$i<current(array_keys($list))-1;$i++, $index++): ?>
+          <a class="col-sm-3 page-grid" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
+        <? endfor; ?>
+        <!-- LOADED ITEMS -->
+        <? foreach($list as $i=>$item): ?>
+          <a class="col-sm-3 page-grid" href="<?=$this->url('vudl-record', array('id'=>$item['id'])) ?>" title="<?=$item['id'] ?>" id="item<?=$index?>">
+            <? if(isset($item['thumbnail'])): ?>
+              <img src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/>
+            <? else: ?>
+              <img class="<?=$item['fulltype'] ?>" src="<?=$this->imageLink('vudl/'.$item['fulltype'].'.png') ?>"/>
+            <? endif; ?>
+            <br/><?=$this->transEsc($item['label']) ?>
+          </a>
+          <? $index++; ?>
+        <? endforeach; ?>
+        <!-- POST LOADING PLACEHOLDERS -->
+        <? if(isset($this->outline['counts'][$key])): ?>
+          <? for($i=$this->initPage+count($list);$i<$this->outline['counts'][$key];$i++, $index++): ?>
+            <a class="col-sm-3 page-grid" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
+          <? endfor; ?>
+        <? endif; ?>
+      <? endforeach; ?>
+    </div>
+  </div>
+</div>
+<script>
+  $.ajax({dataType:'json',
+    url:'../VuDL/ajax?method=pageAjax&record=<?=$this->id ?>&start=0&end=16',
+    success:ajaxLoadPages,
+    error:function(d,e){
+      console.log(d);console.log(e)
+    }
+  });
+  counts = $.parseJSON('<?=json_encode($this->outline['counts'], JSON_HEX_APOS | JSON_HEX_AMP) ?>');
+  $('.accordion').removeClass('hidden');
+  $('#collapse_details').addClass('in');
+</script>

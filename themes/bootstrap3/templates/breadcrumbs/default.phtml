@@ -1,4 +1,5 @@
 <li><a href="<?=$this->url('home')?>"><?=$this->transEsc('Home')?></a></li>
+<li><a href="<?=$this->url('vudl-default-collection')?>"><?=$this->transEsc('Collections') ?></a></li>
 <? $current = $this->layout()->breadcrumbs; $current = current($current); ?>
 <? foreach($current as $id=>$parent): ?>
   <li><a href="<?=$this->url('collection', array('id'=>$id)) ?>"><?=$parent ?></a></li>

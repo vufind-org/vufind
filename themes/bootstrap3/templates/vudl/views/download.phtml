@@ -1,0 +1,23 @@
+<script>
+  // Mandatory update function
+  updateFunction = function(data, tab) {
+    $('#file-download').attr("action", data['master']);
+  };
+  $(document).ready(function() {
+    currentTab = "master-tab";
+    $('#view .nav-tabs li.opener a').addClass('hidden');
+  });
+</script>
+<ul class="nav nav-tabs">
+  <li class="static opener">
+    <a onClick="toggleSideNav()">
+      <i class="fa fa-caret-right"></i>
+      <i class="fa fa-caret-right"></i>
+      <i class="fa fa-caret-right"></i>
+    </a>
+  </li>
+  <li class="active"><a href="#master" id="master-tab">Downloads</a></li>
+</ul>
+<div class="tab-container text-center tab-content">
+  <?=$this->context($this)->renderInContext('vudl/master-tab.phtml', array())?>
+</div>

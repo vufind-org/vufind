@@ -1,0 +1,81 @@
+<?php
+  $skip = array(
+    'license', 'special_license', 'description', 'title'
+  );
+  $no_link = array('title', 'description');
+?>
+<div class="panel">
+  <div class="panel-heading">
+    <h4 class="panel-title">
+      <a data-toggle="collapse" data-parent="#side-nav" href="#collapse_details">
+        <?=$this->transEsc('Summary & Rights') ?>
+      </a>
+    </h4>
+  </div>
+  <div id="collapse_details" class="panel-collapse collapse">
+    <div class="panel-body details">
+      <table class="table">
+        <tr><td><?=$this->transEsc('Full Title') ?></td><td><?=$this->details['title']['value'] ?></td></tr>
+        <? foreach ($this->details as $attr=>$val):
+          // Skip items not placed in this table
+          if(in_array($attr, $skip)) continue; ?>
+          <tr><td><?=$this->transEsc($val['title']) ?></td><td>
+            <? // Special format for first_indexed ?>
+            <? if($attr == 'first_indexed'): ?>
+              <?=date_create($val['value'])->format('j F Y') ?>
+
+            <? // If we need exploding and backlinking ?>
+            <? elseif($attr == 'topic' || $attr == 'series'): ?>
+              <? if(!is_array($val['value'])) $val['value'] = array($val['value']); ?>
+              <? if(count($val['value']) > 1): ?><ul class="list-unstyled"><? endif ?>
+              <? foreach($val['value'] as $v): ?>
+                <? if(count($val['value']) > 1): ?><li><? endif ?>
+               <? $parts = explode(' -- ', $v);
+                  $filter = '';
+                  foreach($parts as $i=>$p):
+                    $filter .= ' '.$p; ?>
+                    <?=$i>0 ? ' &gt; ' : '' ?><a class="backlink" href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode(trim($filter)) ?>"><?=$p ?></a>
+               <? endforeach; ?>
+                <? if(count($val['value']) > 1): ?></li><? endif ?>
+              <? endforeach; ?>
+              <? if(count($val['value']) > 1): ?></ul><? endif ?>
+
+            <? // Items not useful to link ?>
+            <? elseif(in_array($attr, $no_link)): ?>
+              <?=is_array($val['value']) ? implode('<br/>', $val['value']) : $val['value'] ?>
+
+            <? // Array handling ?>
+            <? elseif(is_array($val['value'])): ?>
+              <? if(count($val['value']) == 1): ?>
+                <a href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode($val['value'][0]) ?>"><?=$val['value'][0] ?></a>
+              <? else: ?>
+                <ul class="list-unstyled">
+                <? foreach($val['value'] as $v): ?>
+                   <li><a href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode($v) ?>"><?=$v ?></a></li>
+                <? endforeach; ?>
+                </ul>
+              <? endif; ?>
+
+            <? // The rest are linked ?>
+            <? else: ?>
+              <a href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode($val['value']) ?>"><?=$val['value'] ?></a>
+            <? endif; ?>
+          </td></tr>
+        <? endforeach; ?>
+        <? if(isset($this->details['license'])): ?>
+          <? if(!$this->details['special_license']): ?>
+            <tr><td>License</td><td><a href="<?=$this->details['license'] ?>"><?=$this->details['license'] ?></a></td></tr>
+          <? endif; ?>
+        <? endif; ?>
+      </table>
+      <? if(isset($this->details['license'])): ?>
+        <div class="copyright">
+          <?=$this->render('/vudl/licenses/'.$this->details['special_license'], array('details'=>$this->details)); ?>
+        </div>
+      <? endif; ?>
+      <a href="<?=$this->url('record', array('id'=>$this->id))?>"><i class="fa fa-list"></i> <?=$this->transEsc('More Details') ?></a><br/>
+      <a href="<?=$this->url('vudl-record', array('id'=>$this->id))?>"><i class="fa fa-book"></i> <?=$this->transEsc('Permanent Link') ?></a>
+      <? if(isset($this->details['description'])): ?><p class="description"><?=html_entity_decode($this->details['description']['value'], 2 /*ENT_COMPAT|ENT_HTML401*/, 'UTF-8') ?></p><? endif ?>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<script>
+  var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
+  var videoSupported = document.createElement('video').canPlayType('video/mpeg')
+    || document.createElement('video').canPlayType('video/ogg')
+    || document.createElement('video').canPlayType(data['mimetype']);
+  updateFunction = mobile ? false : function(data, tab) {
+    if (videoSupported) {
+      var html = '<source src="'+data['ogg']+'?download=true"/>'
+      + '<source src="'+data['mp4']+'?download=true"/>'
+      + '<source src="'+data[data['master']]+'?download=true"/>';
+      var video = $('video');
+      video.trigger('pause').html(html).removeClass('hidden');
+      video[0].load();
+    }
+  };
+  $(document).ready(function() {
+    currentTab = "master-tab";
+    $('#view .nav-tabs li.opener a').addClass('hidden');
+  });
+</script>
+<ul class="nav nav-tabs">
+  <li class="static opener">
+    <a onClick="toggleSideNav()">
+      <i class="fa fa-caret-right"></i>
+      <i class="fa fa-caret-right"></i>
+      <i class="fa fa-caret-right"></i>
+    </a>
+  </li>
+  <li class="active"><a>Player and Downloads</a></li>
+</ul>
+<div class="tab-container text-center tab-content">
+  <video controls>
+    <? if(isset($this->ogg)): ?><source src="<?=$this->ogg ?>?download=true"/><?endif?>
+    <? if(isset($this->mp4)): ?><source src="<?=$this->mp4 ?>?download=true"/><?endif?>
+    <? if(!isset($this->ogg) && !isset($this->mp4)): ?><source src="<?=$this->master ?>?download=true"/><?endif?>
+  </video>
+  <br/><br/>
+  <?=$this->context($this)->renderInContext('vudl/master-tab.phtml', array())?>
+</div>

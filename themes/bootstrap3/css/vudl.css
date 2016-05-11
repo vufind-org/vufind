@@ -1,0 +1,61 @@
+.grid-btn {font-size:14px}
+.sibling-form .navbar-nav {display:table;float:none;margin:auto}
+.sibling-form .navbar-nav li {margin:0 4px}
+.sibling-form .navbar {min-height:1px}
+.sibling-form .navbar-nav > li > a {
+  padding-top:6px;
+  padding-bottom:6px;
+}
+
+/* Navbar buttons */
+.sibling-form .navbar-nav li a.btn.btn-default:active,
+.sibling-form .navbar-nav li a.btn.btn-default:focus,
+.sibling-form .navbar-nav li a.btn.btn-default:hover {
+  color:#FFF;
+  background-color:#333;
+  border-color:#ADADAD;
+}
+
+.panel {border:1px solid #DDD}
+.panel .panel-heading {background:#EEE}
+.panel-collapse {max-height:500px;overflow-y:auto}
+
+.details {text-align:center}
+.details .copyright {margin-bottom:1em}
+.details .description {margin-top:1em;text-align:left}
+.details .table {text-align:left}
+
+.page-link {
+  display:block;
+  margin:1em 0;
+  text-align:center;
+  width:100%;
+}
+.page-link.active {cursor:pointer}
+.page-link.loading {color:#059}
+.page-link.selected {background:#D9EDF7}
+.page-link .fa {font-size:7em}
+
+.page-grid {text-align:center}
+
+.panel .panel-heading a,
+.panel .panel-heading a i.fa,
+.nav-tabs .static.opener a {
+  cursor:pointer;
+}
+
+#view #preview {max-width:100%}
+.front {position:absolute;left:10%;top:150px;width:80%;z-index:5}
+
+#zoomy {background:#F0F0F0}
+
+#allFiles .btn {display:block;margin:auto;max-width:400px}
+#download-button .details {font-size:14px}
+div.xml { display:block;font:10pt Courier;text-align:left;padding-left:1em }
+div.xml.collapsed > div { display:none;margin-left:2px }
+
+.fa.fa-file:before {content: "\f0f6";}
+.fa.file-audio:before {content: "\f1c7";}
+.fa.file-msexcel:before {content: "\f1c3";}
+.fa.file-msword:before {content: "\f1c2";}
+.fa.file-pdf:before {content: "\f1c1";}

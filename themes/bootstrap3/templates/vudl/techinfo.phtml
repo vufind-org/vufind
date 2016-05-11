@@ -1,0 +1,74 @@
+<!-- ALL FILES -->
+<div class="panel-group">
+  <div class="panel">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#techinfo" href="#allFiles">
+          <?=$this->transEsc('All Files')?>
+        </a>
+      </h4>
+    </div>
+    <div id="allFiles" class="panel-collapse collapse">
+      <div class="panel-body">
+        <? foreach ($this->record as $key=>$link): ?>
+          <? $mtKey = array_search(strToUpper($key), $this->record['datastreams']); ?>
+          <? if (
+            is_array($this->record[$key])
+            || strpos($this->record['mimetypes'][$mtKey], 'text') !== false
+            || strpos($this->record['mimetypes'][$mtKey], 'xml') !== false
+            || strpos($key, '-') !== false
+            || $key == 'techinfo'
+          ) continue; ?>
+          <a class="btn btn-default clearfix" href="<?=$this->url(
+            'files',
+            array(
+              'id'=>$this->record['id'],
+              'type'=>strtoupper($key)
+            )
+          )?>?download=true">
+            <span class="pull-left flip"><?=strToUpper($this->transEsc($key)) ?></span>
+            <? if (isset($this->record['mimetypes'])): ?>
+              <span class="pull-right flip small"><?=$this->record['mimetypes'][$mtKey] ?></span>
+            <? endif; ?>
+          </a>
+        <? endforeach; ?>
+      </div>
+    </div>
+  </div>
+
+  <!-- OCR --->
+  <? if (isset($this->record['ocr-dirty'])): ?>
+    <div class="panel">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#techinfo" href="#ocr">
+            <?=$this->transEsc('Computer Generated Transcription (OCR)')?>
+          </a>
+        </h4>
+      </div>
+      <div id="ocr" class="panel-collapse collapse">
+        <div class="panel-body">
+          <pre><?=$this->record['ocr-dirty'] ?></pre>
+        </div>
+      </div>
+    </div>
+  <? endif; ?>
+
+  <!-- Technical Information XML --->
+  <? if (isset($this->record['techinfo'])): ?>
+    <div class="panel">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#techinfo" href="#xml">
+            <?=$this->transEsc('Technical Information (Master File)')?>
+          </a>
+        </h4>
+      </div>
+      <div id="xml" class="panel-collapse collapse">
+        <div class="panel-body">
+          <?=$this->vudl()->formatTechInfo($this->record['techinfo'])?>
+        </div>
+      </div>
+    </div>
+  <? endif; ?>
+</div>
