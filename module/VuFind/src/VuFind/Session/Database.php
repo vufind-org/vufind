@@ -79,7 +79,7 @@ class Database extends AbstractBase
      *
      * @param string $sess_id The session ID to destroy
      *
-     * @return void
+     * @return bool
      */
     public function destroy($sess_id)
     {
@@ -98,7 +98,7 @@ class Database extends AbstractBase
      *
      * @param int $sess_maxlifetime Maximum session lifetime.
      *
-     * @return void
+     * @return bool
      */
     public function gc($sess_maxlifetime)
     {

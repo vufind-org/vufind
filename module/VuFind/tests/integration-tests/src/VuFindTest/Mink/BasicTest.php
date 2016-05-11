@@ -105,4 +105,23 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
             $this->findCss($page, 'footer .help-link')->getHTML()
         );
     }
+
+    /**
+     * Test lightbox jump links
+     *
+     * @return void
+     */
+    public function testLightboxJumps()
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        // Open Search tips lightbox
+        $this->findCss($page, 'footer .help-link')->click();
+        // Click a jump link
+        $this->findCss($page, '.modal-body .HelpMenu a')->click();
+        // Make sure we're still in the Search Tips
+        $this->snooze();
+        $this->findCss($page, '.modal-body .HelpMenu');
+    }
 }

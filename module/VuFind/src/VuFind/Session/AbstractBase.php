@@ -143,5 +143,6 @@ abstract class AbstractBase implements SaveHandlerInterface,
         // Anecdotal testing Today and Yesterday seems to indicate destroy()
         //   is called by the garbage collector and everything is good.
         // Something to keep in mind though.
+        return true;
     }
 }
