@@ -18,9 +18,12 @@
   <div class="media-body">
     <div class="row">
       <div class="col-sm-8 middle">
-        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-          <?=$this->record($this->driver)->getTitleHtml()?>
-        </a>
+        <div>
+          <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+            <?=$this->record($this->driver)->getTitleHtml()?>
+          </a>
+        </div>
+
         <div>
           <? if($this->driver->isCollection()): ?>
             <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
@@ -128,7 +131,7 @@
           <? if (!is_array($urls)) $urls = array();
             if(!$this->driver->isCollection()):
               foreach ($urls as $current): ?>
-                <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
+                <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
             <? endforeach; ?>
           <? endif; ?>
         <? endif; ?>
@@ -150,7 +153,7 @@
             $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
           ?>
           <span class="hidden-xs">
-            <i class="fa fa-fw fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
+            <i class="fa fa-fw fa-qrcode" aria-hidden="true"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
             <div class="qrcode hidden">
               <script type="text/template" class="qrCodeImgTag">
                 <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
@@ -161,7 +164,7 @@
 
         <? if ($this->userlist()->getMode() !== 'disabled'): ?>
           <? /* Add to favorites */ ?>
-          <i class="fa fa-fw fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+          <i class="fa fa-fw fa-star" aria-hidden="true"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
           <? /* Saved lists */ ?>
           <div class="savedLists alert alert-info hidden">
             <strong><?=$this->transEsc("Saved in")?>:</strong>
@@ -169,12 +172,11 @@
         <? endif; ?>
 
         <? /* Hierarchy tree link */ ?>
-        <? $trees = $this->driver->tryMethod('getHierarchyTrees'); ?>
-        <? if (!empty($trees)): ?>
+        <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
           <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
             <div class="hierarchyTreeLink">
               <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-              <i class="fa fa-fw fa-sitemap"></i>
+              <i class="fa fa-fw fa-sitemap" aria-hidden="true"></i>
               <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab')?>?hierarchy=<?=urlencode($hierarchyID)?>" data-lightbox-post="tab=hierarchytree">
                 <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
               </a>
