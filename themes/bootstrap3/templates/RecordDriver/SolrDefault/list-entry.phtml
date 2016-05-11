@@ -9,21 +9,33 @@
     $list_id = null;
     $user_id = $this->user ? $this->user->id : null;
   }
-?>
+  // Thumbnail
+  $cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+  $thumbnail = false;
+  if ($cover):
+    ob_start(); ?>
+    <div class="media-<?=$this->record($this->driver)->getThumbnailAlignment() ?> <?=$this->record($this->driver)->getCoverSize($this->params) ?>">
+      <?=$cover ?>
+    </div>
+    <? $thumbnail = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+<? endif; ?>
 <div class="result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
   <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
-  <label class="pull-left flip"><?=$this->record($this->driver)->getCheckbox() ?></label>
+  <div class="checkbox hidden-print">
+    <label><?=$this->record($this->driver)->getCheckbox()?></label>
+  </div>
   <div class="media">
-    <? if ($cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver))): ?>
-      <div class="media-left <?=$coversize ?>"><?=$cover ?></div>
-    <? endif ?>
+    <? if ($thumbnail && $this->record($this->driver)->getThumbnailAlignment() == 'left'): ?>
+      <?=$thumbnail ?>
+    <? endif; ?>
     <div class="media-body">
       <div class="row">
         <div class="col-sm-8">
           <div class="resultItemLine1">
             <? $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
             <? if (!$missing): ?><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><? endif; ?>
-              <?=$this->record($this->driver)->getTitleHtml()?>
+              <span class="title"><?=$this->record($this->driver)->getTitleHtml()?></span>
             <? if (!$missing): ?></a><? endif; ?>
           </div>
 
@@ -61,56 +73,57 @@
           </div>
 
           <div class="last">
-          <? if(!$this->driver->isCollection()) {
-              if ($snippet = $this->driver->getHighlightedSnippet()) {
-                if (!empty($snippet['caption'])) {
-                  echo '<strong>' . $this->transEsc($snippet['caption']) . ':</strong> ';
+            <? if(!$this->driver->isCollection()) {
+                if ($snippet = $this->driver->getHighlightedSnippet()) {
+                  if (!empty($snippet['caption'])) {
+                    echo '<strong>' . $this->transEsc($snippet['caption']) . ':</strong> ';
+                  }
+                  if (!empty($snippet['snippet'])) {
+                    echo '<span class="quotestart">&#8220;</span>...' . $this->highlight($snippet['snippet']) . '...<span class="quoteend">&#8221;</span><br/>';
+                  }
                 }
-                if (!empty($snippet['snippet'])) {
-                  echo '<span class="quotestart">&#8220;</span>...' . $this->highlight($snippet['snippet']) . '...<span class="quoteend">&#8221;</span><br/>';
-                }
-              }
-            } ?>
+              } ?>
 
-          <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
-              null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
-              $user_id, 'tag'
-             ) : array();
-          ?>
-          <? if (count($listTags) > 0): ?>
-            <strong><?=$this->transEsc('Your Tags')?>:</strong>
-            <? foreach ($listTags as $tag): ?>
-              <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a>
-            <? endforeach; ?>
-            <br/>
-          <? endif; ?>
-          <? $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
-          <? if (count($listNotes) > 0): ?>
-            <strong><?=$this->transEsc('Notes')?>:</strong>
-            <? if (count($listNotes) > 1): ?><br/><? endif; ?>
-            <? foreach ($listNotes as $note): ?>
-              <?=$this->escapeHtml($note)?><br/>
-            <? endforeach; ?>
-          <? endif; ?>
-
-          <? if (count($this->lists) > 0): ?>
-              <strong><?=$this->transEsc('Saved in')?>:</strong>
-              <? $i=0;foreach($this->lists as $current): ?>
-                  <a href="<?=$this->url('userList', array('id' => $current->id))?>"><?=$this->escapeHtml($current->title)?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
+            <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
+                null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
+                $user_id, 'tag'
+               ) : array();
+            ?>
+            <? if (count($listTags) > 0): ?>
+              <strong><?=$this->transEsc('Your Tags')?>:</strong>
+              <? foreach ($listTags as $tag): ?>
+                <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a>
               <? endforeach; ?>
               <br/>
-          <? endif; ?>
-            <div class="callnumAndLocation">
+            <? endif; ?>
+            <? $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
+            <? if (count($listNotes) > 0): ?>
+              <strong><?=$this->transEsc('Notes')?>:</strong>
+              <? if (count($listNotes) > 1): ?><br/><? endif; ?>
+              <? foreach ($listNotes as $note): ?>
+                <?=$this->escapeHtml($note)?><br/>
+              <? endforeach; ?>
+            <? endif; ?>
+
+            <? if (count($this->lists) > 0): ?>
+                <strong><?=$this->transEsc('Saved in')?>:</strong>
+                <? $i=0;foreach($this->lists as $current): ?>
+                    <a href="<?=$this->url('userList', array('id' => $current->id))?>"><?=$this->escapeHtml($current->title)?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
+                <? endforeach; ?>
+                <br/>
+            <? endif; ?>
+
+            <div class="callnumAndLocation ajax-availability hidden">
               <? if ($this->driver->supportsAjaxStatus()): ?>
                 <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
                 <span class="callnumber ajax-availability hidden">
-                  <?=$this->transEsc('Loading')?>...
-                </span><br class="hideIfDetailed"/>
+                  <?=$this->transEsc('Loading')?>...<br/>
+                </span>
                 <strong><?=$this->transEsc('Located')?>:</strong>
                 <span class="location ajax-availability hidden">
                   <?=$this->transEsc('Loading')?>...
                 </span>
-                <div class="locationDetails hidden"></div>
+                <div class="locationDetails"></div>
               <? else: ?>
                 <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
                   <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
@@ -176,5 +189,8 @@
         </div>
       </div>
     </div>
+    <? if ($thumbnail && $this->record($this->driver)->getThumbnailAlignment() == 'right'): ?>
+      <?=$thumbnail ?>
+    <? endif; ?>
   </div>
 </div>

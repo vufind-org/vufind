@@ -6,12 +6,13 @@
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
-  .checkbox {
-    float: left;
-    padding-right: 1rem;
-  }
+  .checkbox { float: left; }
   .media,
   .media-body { overflow: visible; }
+  .media-body .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
   .media {
     margin-top: 0;
     margin-bottom: 1rem;
@@ -36,7 +37,7 @@
       img { max-width: @thumbnail-width-large; }
     }
   }
-  a.title {font-weight: bold;}
+  .title {font-weight: bold;}
   @media (max-width: 767px) {
     a { text-decoration: underline; }
   }
