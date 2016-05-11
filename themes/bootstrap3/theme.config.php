@@ -4,9 +4,9 @@ return array(
     'css' => array(
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
+        //'vendor/font-awesome.min.css',
         //'bootstrap-custom.css',
         'compiled.css',
-        'vendor/font-awesome.min.css',
         'print.css:print',
     ),
     'js' => array(

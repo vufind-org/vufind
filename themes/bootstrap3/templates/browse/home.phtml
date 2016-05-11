@@ -15,7 +15,7 @@
     <? foreach ($this->browseOptions as $item=>$currentOption): ?>
       <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>" class="list-group-item<? if($currentOption['action'] == $this->currentAction): ?> active<? endif; ?>">
         <?=$this->transEsc($currentOption['description']) ?>
-        <span class="pull-right flip"><i class="fa fa-angle-right"></i></span>
+        <span class="pull-right flip"><i class="fa fa-angle-right" title="<?=$this->transEsc('more') ?>"></i></span>
       </a>
     <? endforeach; ?>
   </div>
@@ -26,7 +26,7 @@
         <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&amp;query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>" class="list-group-item clearfix<? if ($this->findby == $findby): ?> active<? endif; ?>">
           <? if(is_string($category)): ?>
             <?=$this->transEsc($category)?>
-            <span class="pull-right flip"><i class="fa fa-angle-right"></i></span>
+            <span class="pull-right flip"><i class="fa fa-angle-right" title="<?=$this->transEsc('more') ?>"></i></span>
           <? else: ?>
             <?=$this->transEsc($category['text'])?>
             <span class="badge"><?=number_format($category['count'])?></span>
@@ -57,7 +57,7 @@
         <? if ($this->findby != 'alphabetical' && isset($secondary['count'])): ?>
           <span class="badge"><?=number_format($secondary['count']) ?></span>
         <? else: ?>
-          <span class="pull-right flip"><i class="fa fa-angle-right"></i></span>
+          <span class="pull-right flip"><i class="fa fa-angle-right" title="<?=$this->transEsc('more') ?>"></i></span>
         <? endif; ?>
       </a>
       <? if($viewRecord): ?>
