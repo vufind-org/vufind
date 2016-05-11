@@ -272,8 +272,8 @@
       $checkILLRequest = isset($row['checkILLRequest']) && $row['checkILLRequest'];
       // AJAX block record?
       $block = !$check && isset($row['addLink']) && $row['addLink'] === 'block';
-      $blockStorageRetrievalRequest = !$checkStorageRetrievalRequest && isset($row['addStorageRetrievalRequestLink']) && $row['addStorageRetrievalRequestLink'];
-      $blockILLRequest = !$checkILLRequest && isset($row['addILLRequestLink']) && $row['addILLRequestLink'];
+      $blockStorageRetrievalRequest = !$checkStorageRetrievalRequest && isset($row['addStorageRetrievalRequestLink']) && $row['addStorageRetrievalRequestLink'] === 'block';
+      $blockILLRequest = !$checkILLRequest && isset($row['addILLRequestLink']) && $row['addILLRequestLink'] === 'block';
     ?>
     <div vocab="http://schema.org/" typeof="Offer" class="copy-details <?=$holdingsDetails?> row">
       <? if (isset($row['branch']) && isset($row['department'])): ?>
@@ -324,6 +324,15 @@
                 <a class="<?=$check ? "{$holdingsDetails}CheckRequest " : ''?>inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate("Recall This") . $dialogTitle); ?>"><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
               </div>
             <? endif; ?>
+          <? endif; ?>
+          <? if (isset($row['item_notes'])): ?>
+            <div class="item-notes">
+              <ul>
+                <? foreach ($row['item_notes'] as $item_note): ?>
+                  <li><?=$this->escapeHtml($item_note) ?></li>
+                <? endforeach; ?>
+              </ul>
+            </div>
           <? endif; ?>
         <? endif; ?>
         <? /* Embed item structured data: library, barcode, call number */ ?>
