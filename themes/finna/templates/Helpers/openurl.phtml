@@ -1,6 +1,6 @@
 <!-- START of: finna - Helpers/openurl.phtml -->
 <?
-  $this->headScript()->appendFile("openurl.js");
+  echo $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'openurl.js', 'SET');
   $classes = '';
   if ($this->openUrlEmbed) {
     $classes = "fulltext";

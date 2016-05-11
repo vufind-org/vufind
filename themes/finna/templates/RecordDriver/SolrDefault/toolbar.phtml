@@ -8,9 +8,8 @@
   }
 
   // Set up some variables for convenience:
-  $id = $this->driver->getUniqueId();
   $cart = $this->cart();
-  $cartId = $this->driver->getSourceIdentifier() . '|' . $id;
+  $cartId = $this->driver->getSourceIdentifier() . '|' . $this->driver->getUniqueId();
   $largeThumb = $this->record($this->driver)->getThumbnail('large');
 ?>
 <div class="row hidden-xs">
