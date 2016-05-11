@@ -9,7 +9,6 @@
 
   // Set up some variables for convenience:
   $id = $this->driver->getUniqueId();
-  $controllerClass = 'controller:' . $this->record($this->driver)->getController();
   $cart = $this->cart();
   $cartId = $this->driver->getSourceIdentifier() . '|' . $id;
   $mediumThumb = $this->record($this->driver)->getThumbnail('medium');
@@ -25,7 +24,7 @@
   <div class="mobile-toolbar">
     <ul class="nav nav-pills mobile-actions hidden-print">
           <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <li><a class="save-record-mobile <?=$controllerClass?>" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-plus"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
+          <li><a class="save-record-mobile" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-plus"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
           <? endif; ?>
 
           <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
@@ -42,7 +41,7 @@
           <? endif; ?>
 
           <? if (count($this->driver->getCitationFormats()) > 0): ?>
-          <li><a class="cite-record-mobile <?=$controllerClass?>" data-lightbox href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><i class="fa fa-asterisk"></i> <span class="sr-only"><?=$this->transEsc('Cite this')?></span></a></li>
+          <li><a class="cite-record-mobile" data-lightbox href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><i class="fa fa-asterisk"></i> <span class="sr-only"><?=$this->transEsc('Cite this')?></span></a></li>
           <? endif; ?>
 
           <li><span class="hidden-xs hidden-sm"><a href="javascript:window.print()"><i class="fa fa-print" rel="nofollow"></i> <?=$this->transEsc('Print')?></a></span></li>
@@ -72,7 +71,7 @@
             <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=$this->url('record-sms', array('id'=>$id)) ?>" data-action="share/whatsapp/share" rel="nofollow"><i class="fa fa-phone"></i></a></span>
           </li>
           <? endif; ?>
-          <li class="mail-record"><a class="mail-record-mobile <?=$controllerClass?>" data-lightbox href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope"></i> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
+          <li class="mail-record"><a class="mail-record-mobile" data-lightbox href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope"></i> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
         </ul>
       </li>
     </ul>
