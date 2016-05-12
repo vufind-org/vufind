@@ -2,9 +2,9 @@
 @thumbnail-width-medium: 100px;
 @thumbnail-width-large: 160px;
 
-.bulkActionButtons label {display: inline-block;}
-.bulkActionButtons label input {margin-top: 2px;}
-.grid { @media (max-width: 767px) {min-height: 250px;} }
+.bulkActionButtons label { display: inline-block; }
+.bulkActionButtons label input { margin-top: 2px; }
+.grid { @media (max-width: 767px) { min-height: 250px; } }
 .result {
   .checkbox { float: left; }
   .media,
@@ -37,7 +37,7 @@
       img { max-width: @thumbnail-width-large; }
     }
   }
-  .title {font-weight: bold;}
+  .title { font-weight: bold; }
   @media (max-width: 767px) {
     a { text-decoration: underline; }
   }
@@ -45,38 +45,40 @@
     .checkbox { padding: 0; }
     .media-left { padding-right: 0; }
   }
+}
+
+.result.embedded {
+  .title {
+    padding-left: 1.5rem;
+    border-left: 1px solid transparent;
+  }
+  .title.expanded {
+    &:extend(.list-group-item);
+    margin-top: -11px;
+    margin-left: .75rem;
+    padding-left: .75rem;
+    border-top-left-radius: @border-radius-base;
+    border-top-right-radius: @border-radius-base;
+    &::before {
+      content: '\25BC';
+      position: absolute;
+      right: 15px;
+      color: @gray;
+    }
+  }
   .loading {
     &:extend(.list-group-item);
     margin-left: .75rem;
     background: #fff;
   }
-}
-
-.result.embedded .title {
-  padding-left: 1.5rem;
-  border-left: 1px solid transparent;
-}
-.result.embedded .title.expanded {
-  &:extend(.list-group-item);
-  margin-top: -11px;
-  margin-left: .75rem;
-  padding-left: .75rem;
-  border-top-left-radius: @border-radius-base;
-  border-top-right-radius: @border-radius-base;
-  &::before {
-    content: '\25BC';
-    position: absolute;
-    right: 15px;
-    color: @gray;
+  .long-view {
+    margin-left: .75rem;
+    padding: .5rem;
+    border: 1px solid @list-group-border;
+    background-color: #fff;
+    border-bottom-left-radius: @border-radius-base;
+    border-bottom-right-radius: @border-radius-base;
   }
-}
-.media-body .long-view {
-  margin-left: .75rem;
-  padding: .5rem;
-  border: 1px solid @list-group-border;
-  background-color: @list-group-bg;
-  border-bottom-left-radius: @border-radius-base;
-  border-bottom-right-radius: @border-radius-base;
 }
 
 .search-controls .alert {margin-bottom: 0;}
