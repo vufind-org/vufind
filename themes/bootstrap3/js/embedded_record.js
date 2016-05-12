@@ -28,13 +28,14 @@ function removeFromEmbeddedCookie(id) {
 function loadEmbeddedCookies() {
   var cookies = localStorage.getItem(_EMBEDDED_COOKIE);
   var items = cookies.split(_EMBEDDED_DELIM);
-  var hiddenIds = $('.hiddenId');
   var doomed = [];
+  var hiddenIds;
   var parts;
   var result;
   var i;
   var j;
   if (!cookies) return;
+  hiddenIds = $('.hiddenId');
   for (i = 0; i < items.length; i++) {
     parts = items[i].split(':::');
     _EMBEDDED_STATUS[parts[0]] = parts[1] || null;
