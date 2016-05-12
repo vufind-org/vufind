@@ -34,7 +34,7 @@
         <div class="col-sm-8">
           <div class="resultItemLine1">
             <? $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
-            <? if (!$missing): ?><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><? endif; ?>
+            <? if (!$missing): ?><a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>"><? endif; ?>
               <span class="title"><?=$this->record($this->driver)->getTitleHtml()?></span>
             <? if (!$missing): ?></a><? endif; ?>
           </div>
