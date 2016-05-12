@@ -736,6 +736,63 @@ class AjaxController extends AbstractBase
     }
 
     /**
+     * Get record for integrated list view.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getRecordDetailsAjax()
+    {
+        $driver = $this->getRecordLoader()->load(
+            $this->params()->fromQuery('id'),
+            $this->params()->fromQuery('source')
+        );
+        $viewtype = preg_replace(
+            '/\W/', '',
+            trim(strtolower($this->params()->fromQuery('type')))
+        );
+        $request = $this->getRequest();
+        $config = $this->getServiceLocator()->get('Config');
+        $sconfig = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
+
+        $allowed = isset($sconfig['List']['embeddedTabs'])
+            ? $sconfig->List->embeddedTabs->toArray()
+            : [];
+        if (isset($sconfig['List']['embeddedTabs'])
+            && !empty($sconfig['List']['embeddedTabs'])
+        ) {
+            $class = get_class($driver);
+            $configTabs = & $config['vufind']['recorddriver_tabs'][$class]['tabs'];
+            foreach ($configTabs as $tab => $content) {
+                if (!in_array($tab, $allowed)) {
+                    unset($configTabs[$tab]);
+                }
+            }
+        }
+
+        $recordTabPlugin = $this->getServiceLocator()
+            ->get('VuFind\RecordTabPluginManager');
+        $details = $recordTabPlugin
+            ->getTabDetailsForRecord(
+                $driver,
+                $config['vufind']['recorddriver_tabs'],
+                $request,
+                'Information'
+            );
+
+        $html = $this->getViewRenderer()
+            ->render(
+                "record/ajaxview-" . $viewtype . ".phtml",
+                [
+                    'defaultTab' => $details['default'],
+                    'driver' => $driver,
+                    'tabs' => $details['tabs'],
+                    'confenabled' => $allowed
+                ]
+            );
+        return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
      * Get map data on search results and output in JSON
      *
      * @param array $fields Solr fields to retrieve data from

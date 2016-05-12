@@ -1,0 +1,84 @@
+<?
+  $this->defaultTab = strtolower($this->defaultTab);
+  $idSuffix = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
+?>
+<div class="search_tabs record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="tabs_<?=$idSuffix?>">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffix?>" />
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+  <?=$this->flashmessages()?>
+
+  <a name="tabnav"></a>
+  <ul class="recordTabs nav nav-tabs">
+    <? if (empty($this->confenabled) || in_array('Information', $this->confenabled)): ?>
+      <? $coreMetadata = trim($this->record($this->driver)->getCoreMetadata()); ?>
+      <? if (!empty($coreMetadata)): ?>
+        <li<? if($this->defaultTab === 'information'): ?> class="active"<? endif; ?>>
+          <a id="information_<?=$idSuffix?>" data-toggle="tab" data-target="#information_<?=$idSuffix?>-tab" class="noajax">
+            <?=$this->translate('ajaxview_label_information') ?>
+          </a>
+        </li>
+      <? endif; ?>
+    <? endif; ?>
+
+    <? foreach ($this->tabs as $tab => $obj): ?>
+      <? // add current tab to breadcrumbs if applicable:
+        $desc = $obj->getDescription();
+        $tab_classes = array();
+        if ($this->defaultTab === strtolower($tab)) {
+          if (!$this->ajaxTabs || !$obj->supportsAjax()) {
+            $tab_classes[] = 'active';
+          }
+        }
+        if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
+        if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+      ?>
+      <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+        <a id="<?=strtolower($tab)?>_<?=$idSuffix?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-tab"><?=$this->transEsc($desc)?></a>
+      </li>
+    <? endforeach; ?>
+
+    <? if (empty($this->confenabled) || in_array('Tools', $this->confenabled)): ?>
+      <? $toolbar = trim($this->record($this->driver)->getToolbar()); ?>
+      <? if (!empty($toolbar)): ?>
+        <li<? if($this->defaultTab === 'tools'): ?> class="active"<? endif; ?>>
+          <a id="tools_<?=$idSuffix?>" data-toggle="tab" data-target="#tools_<?=$idSuffix?>-tab" class="noajax">
+          <?=$this->translate('ajaxview_label_tools') ?>
+          </a>
+        </li>
+      <? endif; ?>
+    <? endif; ?>
+
+    <? if (empty($this->confenabled) || in_array('Related', $this->confenabled)): ?>
+      <? $list = $this->related()->getList($this->driver); ?>
+      <? if (!empty($list)): ?>
+        <li<? if($this->defaultTab === 'related'): ?> class="active"<? endif; ?>>
+          <a id="related_<?=$idSuffix?>" data-toggle="tab" data-target="#related_<?=$idSuffix?>-tab" class="noajax">
+            <?=$this->transEsc("Related Items")?>
+          </a>
+        </li>
+      <? endif; ?>
+    <? endif; ?>
+  </ul>
+  <div class="tab-content">
+    <? if (!empty($coreMetadata)): ?>
+      <div class="tab-pane<? if($this->defaultTab === 'information'): ?> active<? endif; ?>" id="information_<?=$idSuffix?>-tab">
+        <?=$coreMetadata ?>
+      </div>
+    <? endif; ?>
+    <? foreach ($this->tabs as $tab => $obj): ?>
+      <div class="tab-pane<? if($this->defaultTab === strtolower($tab)): ?> active<? endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffix?>-tab"></div>
+    <? endforeach; ?>
+    <? if (!empty($toolbar)): ?>
+      <div class="tab-pane<? if($this->defaultTab === 'tools'): ?> active<? endif; ?>" id="tools_<?=$idSuffix?>-tab">
+        <?=$toolbar ?>
+      </div>
+    <? endif; ?>
+    <? if (!empty($list)): ?>
+      <div class="tab-pane<? if($this->defaultTab === 'related'): ?> active<? endif; ?>" id="related_<?=$idSuffix?>-tab">
+        <? foreach ($list as $current): ?>
+          <?=$this->related()->render($current)?>
+        <? endforeach; ?>
+      </div>
+     <? endif; ?>
+  </div>
+</div>

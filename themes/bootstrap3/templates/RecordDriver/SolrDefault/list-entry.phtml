@@ -29,7 +29,7 @@
     <? if ($thumbnail && $this->record($this->driver)->getThumbnailAlignment() == 'left'): ?>
       <?=$thumbnail ?>
     <? endif; ?>
-    <div class="media-body">
+    <div class="media-body short-view">
       <div class="row">
         <div class="col-sm-8">
           <div class="resultItemLine1">
@@ -192,5 +192,7 @@
     <? if ($thumbnail && $this->record($this->driver)->getThumbnailAlignment() == 'right'): ?>
       <?=$thumbnail ?>
     <? endif; ?>
+  </div>
+</div>
   </div>
 </div>

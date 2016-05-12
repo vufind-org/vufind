@@ -142,6 +142,10 @@ class Options extends \VuFind\Search\Base\Options
         } else {
             $this->viewOptions = ['list' => 'List'];
         }
+        // Load list view for result (full or tabs,accordion or something else)
+        if (isset($searchSettings->List->view)) {
+            $this->listviewOption = $searchSettings->List->view;
+        }
 
         // Load facet preferences
         $facetSettings = $configLoader->get($this->facetsIni);
