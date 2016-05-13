@@ -363,6 +363,7 @@ class Params extends \VuFind\Search\Base\Params
             $this->initAdvancedFacets();
             $this->initBasicFacets();
         }
+        $this->initCheckboxFacets();
     }
 
     /**

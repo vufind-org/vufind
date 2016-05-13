@@ -1,6 +1,6 @@
 /*global Cookies, VuFind */
 
-VuFind.cart = (function() {
+VuFind.register('cart', function() {
   var _COOKIE = 'vufind_cart';
   var _COOKIE_SOURCES = 'vufind_cart_src';
   var _COOKIE_DELIM = "\t";
@@ -8,7 +8,7 @@ VuFind.cart = (function() {
 
   var setDomain = function(domain) {
     _COOKIE_DOMAIN = domain;
-  }
+  };
 
   var _uniqueArray = function(op) {
     var ret = [];
@@ -18,7 +18,7 @@ VuFind.cart = (function() {
       }
     }
     return ret;
-  }
+  };
 
   var _getItems = function() {
     var items = Cookies.getItem(_COOKIE);
@@ -26,14 +26,14 @@ VuFind.cart = (function() {
       return items.split(_COOKIE_DELIM);
     }
     return [];
-  }
+  };
   var _getSources = function() {
     var items = Cookies.getItem(_COOKIE_SOURCES);
     if(items) {
       return items.split(_COOKIE_DELIM);
     }
     return [];
-  }
+  };
   var getFullItems = function() {
     var items = _getItems();
     var sources = _getSources();
@@ -45,12 +45,12 @@ VuFind.cart = (function() {
       full[full.length] = sources[items[i].charCodeAt(0)-65]+'|'+items[i].substr(1);
     }
     return full;
-  }
+  };
 
   var updateCount = function() {
     var items = _getItems();
     $('#cartItems strong').html(items.length);
-  }
+  };
 
   var addItem = function(id,source) {
     if(!source) {
@@ -70,7 +70,7 @@ VuFind.cart = (function() {
     Cookies.setItem(_COOKIE, $.unique(cartItems).join(_COOKIE_DELIM), false, '/', _COOKIE_DOMAIN);
     updateCount();
     return true;
-  }
+  };
   var removeItem = function(id,source) {
     var cartItems = _getItems();
     var cartSources = _getSources();
@@ -113,7 +113,7 @@ VuFind.cart = (function() {
       return true;
     }
     return false;
-  }
+  };
 
   var _cartNotificationTimeout = false;
   var _registerUpdate = function($form) {
@@ -163,7 +163,34 @@ VuFind.cart = (function() {
         return false;
       });
     }
-  }
+  };
+
+  var init = function() {
+    // Record buttons
+    var $cartId = $('.cartId');
+    if($cartId.length > 0) {
+      $cartId.each(function() {
+        var cartId = this.value.split('|');
+        var currentId = cartId[1];
+        var currentSource = cartId[0];
+        var $parent = $(this).parent();
+        $parent.find('.cart-add.correct,.cart-remove.correct').removeClass('correct hidden');
+        $parent.find('.cart-add').click(function() {
+          addItem(currentId,currentSource);
+          $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
+        });
+        $parent.find('.cart-remove').click(function() {
+          removeItem(currentId,currentSource);
+          $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
+        });
+      });
+    } else {
+      // Search results
+      var $form = $('form[name="bulkActionForm"]');
+      _registerUpdate($form);
+    }
+    $("#updateCart, #bottom_updateCart").popover({content:'', html:true, trigger:'manual'});
+  };
 
   // Reveal
   return {
@@ -173,36 +200,10 @@ VuFind.cart = (function() {
     getFullItems: getFullItems,
     updateCount: updateCount,
     setDomain: setDomain,
-    // Lightbox handler
-    // Setup
-    ready: function() {
-      // Record buttons
-      var $cartId = $('.cartId');
-      if($cartId.length > 0) {
-        $cartId.each(function() {
-          var cartId = this.value.split('|');
-          var currentId = cartId[1];
-          var currentSource = cartId[0];
-          var $parent = $(this).parent();
-          $parent.find('.cart-add.correct,.cart-remove.correct').removeClass('correct hidden');
-          $parent.find('.cart-add').click(function() {
-            addItem(currentId,currentSource);
-            $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
-          });
-          $parent.find('.cart-remove').click(function() {
-            removeItem(currentId,currentSource);
-            $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
-          });
-        });
-      } else {
-        // Search results
-        var $form = $('form[name="bulkActionForm"]');
-        _registerUpdate($form);
-      }
-      $("#updateCart, #bottom_updateCart").popover({content:'', html:true, trigger:'manual'});
-    }
+    // Init
+    init: init
   };
-})();
+});
 
 // Building an array and checking indexes prevents a race situation
 // We want to prioritize empty over printing
@@ -217,8 +218,6 @@ var cartFormHandler = function(event, data) {
   if (keys.indexOf('print') > -1) {
     return true;
   }
-}
+};
 
 document.addEventListener('VuFind.lightbox.closed', VuFind.cart.updateCount, false);
-
-$(document).ready(VuFind.cart.ready);

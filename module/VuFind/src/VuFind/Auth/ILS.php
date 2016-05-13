@@ -28,7 +28,8 @@
  */
 namespace VuFind\Auth;
 
-use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Auth as AuthException,
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS authentication module.
@@ -136,10 +137,14 @@ class ILS extends AbstractBase
      */
     public function supportsPasswordChange()
     {
-        return false !== $this->getCatalog()->checkFunction(
-            'changePassword',
-            ['patron' => $this->getLoggedInPatron()]
-        );
+        try {
+            return false !== $this->getCatalog()->checkFunction(
+                'changePassword',
+                ['patron' => $this->getLoggedInPatron()]
+            );
+        } catch (ILSException $e) {
+            return false;
+        }
     }
 
     /**

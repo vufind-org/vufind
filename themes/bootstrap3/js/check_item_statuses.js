@@ -61,17 +61,17 @@ function checkItemStatuses(container) {
         for (var x=0; x<result.locationList.length; x++) {
           locationListHTML += '<div class="groupLocation">';
           if (result.locationList[x].availability) {
-            locationListHTML += '<i class="fa fa-ok text-success"></i> <span class="text-success">'
+            locationListHTML += '<i class="fa fa-ok text-success" aria-hidden="true"></i> <span class="text-success">'
               + result.locationList[x].location + '</span> ';
           } else if (typeof(result.locationList[x].status_unknown) !== 'undefined'
               && result.locationList[x].status_unknown
           ) {
             if (result.locationList[x].location) {
-              locationListHTML += '<i class="fa fa-status-unknown text-warning"></i> <span class="text-warning">'
+              locationListHTML += '<i class="fa fa-status-unknown text-warning" aria-hidden="true"></i> <span class="text-warning">'
                 + result.locationList[x].location + '</span> ';
             }
           } else {
-            locationListHTML += '<i class="fa fa-remove text-danger"></i> <span class="text-danger"">'
+            locationListHTML += '<i class="fa fa-remove text-danger" aria-hidden="true"></i> <span class="text-danger"">'
               + result.locationList[x].location + '</span> ';
           }
           locationListHTML += '</div>';

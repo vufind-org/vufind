@@ -512,14 +512,16 @@ class Params implements ServiceLocatorAwareInterface
     {
         // Check for a view parameter in the url.
         $view = $request->get('view');
-        $validViews = $this->getOptions()->getViewOptions();
+        $validViews = array_keys($this->getOptions()->getViewOptions());
         if ($view == 'rss') {
             // RSS is a special case that does not require config validation
             $this->setView('rss');
-        } else if (!empty($view) && in_array($view, array_keys($validViews))) {
+        } else if (!empty($view) && in_array($view, $validViews)) {
             // make sure the url parameter is a valid view
             $this->setView($view);
-        } else if (!empty($this->lastView)) {
+        } else if (!empty($this->lastView)
+            && in_array($this->lastView, $validViews)
+        ) {
             // if there is nothing in the URL, see if we had a previous value
             // injected based on session information.
             $this->setView($this->lastView);
@@ -909,7 +911,7 @@ class Params implements ServiceLocatorAwareInterface
         // Extract the facet field name from the filter, then add the
         // relevant information to the array.
         list($fieldName) = explode(':', $filter);
-        $this->checkboxFacets[$fieldName]
+        $this->checkboxFacets[$fieldName][]
             = ['desc' => $desc, 'filter' => $filter];
     }
 
@@ -917,10 +919,13 @@ class Params implements ServiceLocatorAwareInterface
      * Get a user-friendly string to describe the provided facet field.
      *
      * @param string $field Facet field name.
+     * @param string $value Facet value.
      *
      * @return string       Human-readable description of field.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getFacetLabel($field)
+    public function getFacetLabel($field, $value = null)
     {
         if (!isset($this->facetConfig[$field])
             && isset($this->facetAliases[$field])
@@ -987,7 +992,7 @@ class Params implements ServiceLocatorAwareInterface
                 if (!isset($skipList[$field])
                     || !in_array($value, $skipList[$field])
                 ) {
-                    $facetLabel = $this->getFacetLabel($field);
+                    $facetLabel = $this->getFacetLabel($field, $value);
                     $list[$facetLabel][] = $this->formatFilterListEntry(
                         $field, $value, $operator, $translate
                     );
@@ -1069,12 +1074,14 @@ class Params implements ServiceLocatorAwareInterface
     protected function getCheckboxFacetValues()
     {
         $list = [];
-        foreach ($this->checkboxFacets as $current) {
-            list($field, $value) = $this->parseFilter($current['filter']);
-            if (!isset($list[$field])) {
-                $list[$field] = [];
+        foreach ($this->checkboxFacets as $facets) {
+            foreach ($facets as $current) {
+                list($field, $value) = $this->parseFilter($current['filter']);
+                if (!isset($list[$field])) {
+                    $list[$field] = [];
+                }
+                $list[$field][] = $value;
             }
-            $list[$field][] = $value;
         }
         return $list;
     }
@@ -1088,20 +1095,18 @@ class Params implements ServiceLocatorAwareInterface
     {
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
-        $facets = [];
-        foreach ($this->checkboxFacets as $field => $details) {
-            $facets[$field] = $details;
-            if ($this->hasFilter($details['filter'])) {
-                $facets[$field]['selected'] = true;
-            } else {
-                $facets[$field]['selected'] = false;
+        $result = [];
+        foreach ($this->checkboxFacets as $facets) {
+            foreach ($facets as $facet) {
+                $facet['selected'] = $this->hasFilter($facet['filter']);
+                // Is this checkbox always visible, even if non-selected on the
+                // "no results" screen?  By default, no (may be overridden by
+                // child classes).
+                $facet['alwaysVisible'] = false;
+                $result[] = $facet;
             }
-            // Is this checkbox always visible, even if non-selected on the
-            // "no results" screen?  By default, no (may be overridden by
-            // child classes).
-            $facets[$field]['alwaysVisible'] = false;
         }
-        return $facets;
+        return $result;
     }
 
     /**
@@ -1766,5 +1771,25 @@ class Params implements ServiceLocatorAwareInterface
     public function hasDefaultsApplied()
     {
         return $this->defaultsApplied;
+    }
+
+    /**
+     * Initialize checkbox facet settings for the specified configuration sections.
+     *
+     * @param string $facetList Config section containing fields to activate
+     * @param string $cfgFile   Name of configuration to load
+     *
+     * @return bool             True if facets set, false if no settings found
+     */
+    protected function initCheckboxFacets($facetList = 'CheckboxFacets',
+        $cfgFile = 'facets'
+    ) {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($cfgFile);
+        if (empty($config->$facetList)) {
+            return false;
+        }
+        foreach ($config->$facetList as $key => $value) {
+            $this->addCheckboxFacet($key, $value);
+        }
     }
 }

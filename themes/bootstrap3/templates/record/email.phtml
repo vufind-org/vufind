@@ -8,7 +8,7 @@
     . '<li class="active">' . $this->transEsc('Email Record') . '</li>';
 ?>
 <h2><?=$this->transEsc('Email Record') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
-<form class="form-horizontal" method="post" name="emailRecord">
+<form class="form-horizontal" method="post" action="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" name="emailRecord">
   <?=$this->flashmessages()?>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />

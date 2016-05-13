@@ -329,25 +329,6 @@ class Record extends AbstractHelper
     }
 
     /**
-     * Get the name of the controller used by the record route.
-     *
-     * @return string
-     */
-    public function getController()
-    {
-        // Figure out controller using naming convention based on resource
-        // source:
-        $source = $this->driver->getSourceIdentifier();
-        if ($source == DEFAULT_SEARCH_BACKEND) {
-            // Default source is special case -- it uses the basic record
-            // controller.
-            return 'Record';
-        }
-        // All other controllers will correspond with the record source:
-        return ucwords(strtolower($source)) . 'record';
-    }
-
-    /**
      * Render the link of the specified type.
      *
      * @param string $type    Link type
@@ -357,9 +338,12 @@ class Record extends AbstractHelper
      */
     public function getLink($type, $lookfor)
     {
-        return $this->renderTemplate(
+        $link = $this->renderTemplate(
             'link-' . $type . '.phtml', ['lookfor' => $lookfor]
         );
+        $link .= $this->getView()->plugin('searchTabs')
+            ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
+        return $link;
     }
 
     /**

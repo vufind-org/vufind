@@ -371,6 +371,10 @@ class SearchController extends AbstractSearch
             $url->setSuppressQuery(true);
         }
 
+        // We don't want new items hidden filters to propagate to other searches:
+        $view->ignoreHiddenFilterMemory = true;
+        $view->ignoreHiddenFiltersInRequest = true;
+
         return $view;
     }
 
