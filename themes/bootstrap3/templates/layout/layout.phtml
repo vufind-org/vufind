@@ -124,7 +124,7 @@ JS;
     ?>
     <header class="hidden-print">
       <div class="container navbar">
-        <? if (isset($this->layout()->srmessage)): ?>
+        <? if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
           <span class="sr-only"><?=$this->layout()->srmessage ?></span>
         <? endif; ?>
         <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
