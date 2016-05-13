@@ -7,22 +7,16 @@ module.exports = function(grunt) {
       compile: {
         options: {
           paths: ["themes/bootprint3/less", "themes/bootstrap3/less"],
-          compress: true
+          compress: true,
+          modifyVars: {
+            'fa-font-path': '"fonts"',
+            'img-path': '"../images"',
+          }
         },
         files: {
           "themes/bootstrap3/css/compiled.css": "themes/bootstrap3/less/bootstrap.less",
           "themes/bootprint3/css/compiled.css": "themes/bootprint3/less/bootprint.less",
         }
-      }
-    },
-    replace: {
-      another_example: {
-        src: ['themes/bootstrap3/css/compiled.css', 'themes/bootprint3/css/compiled.css'],
-        overwrite: true,                 // overwrite matched source files
-        replacements: [{
-          from: '../images',
-          to: 'images'
-        }]
       }
     },
     css: {
@@ -70,7 +64,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-text-replace');
 
   grunt.registerTask('default', ['less', 'replace', 'uglify']);
-  grunt.registerTask('lesscss', ['less', 'replace']);
+  grunt.registerTask('cssless', ['less', 'replace']);
   grunt.registerTask('js', ['uglify']);
 
   grunt.registerMultiTask('css', function (arg1, arg2) {
