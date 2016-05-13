@@ -26,27 +26,31 @@ module.exports = function(grunt) {
           style: 'compress'
         },
         files: {
-          "themes/bootstrap3/css/compiled.css": "themes/bootstrap3/sassconverted/bootstrap.scss",
-          //"themes/bootprint3/css/compiled.css": "themes/bootprint3/sassconverted/bootprint.scss"
+          "themes/bootstrap3/css/compiled.css": "themes/bootstrap3/sass/bootstrap.scss",
+          "themes/bootprint3/css/compiled.css": "themes/bootprint3/sass/bootprint.scss"
         }
       }
     },
     lessToSass: {
       convert: {
-        files: [{
-          expand: true,
-          cwd: 'themes/bootstrap3/less',
-          src: ['*.less', 'components/*.less'],
-          ext: '.scss',
-          dest: 'themes/bootstrap3/sassconverted'
-        }],
+        files: [
+          {
+            expand: true,
+            cwd: 'themes/bootstrap3/less',
+            src: ['*.less', 'components/*.less'],
+            ext: '.scss',
+            dest: 'themes/bootstrap3/sass'
+          },
+          {
+            expand: true,
+            cwd: 'themes/bootprint3/less',
+            src: ['*.less'],
+            ext: '.scss',
+            dest: 'themes/bootprint3/sass'
+          }
+        ],
         options: {
           replacements: [
-            {
-              pattern: /(\s+)&\:extend\(([^\)]+)\);/gi,
-              replacement: '$1@extend $2;',
-              order: 2
-            },
             {
               pattern: 'vendor/bootstrap/bootstrap',
               replacement: 'vendor/bootstrap',
@@ -57,6 +61,26 @@ module.exports = function(grunt) {
               replacement: function (match, space, $1, $2) {
                 return space+'@include '+$1+'('+$2.replace(/;/g, ',')+');';
               },
+              order: 3
+            },
+            {
+              pattern: / !default; }/gi,
+              replacement: '; }',
+              order: 3
+            },
+            {
+              pattern: /(\s+)&\:extend\(([^\)]+)\);/gi,
+              replacement: '$1@extend $2;',
+              order: 4
+            },
+            {
+              pattern: '$fa-font-path: "../../../fonts" !default;',
+              replacement: '$fa-font-path: "fonts";',
+              order: 3
+            },
+            {
+              pattern: '$img-path: "../../images" !default;',
+              replacement: '$img-path: "../images";',
               order: 3
             }
           ]

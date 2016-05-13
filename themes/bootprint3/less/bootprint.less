@@ -41,11 +41,18 @@ body {
     }
   }
 }
-.btn-danger, .btn-danger:hover  {border-color:darken(@brand-danger,  12%);font-weight:bold;}
-.btn-info,   .btn-info:hover    {border-color:darken(@brand-info,    12%);font-weight:bold;}
-.btn-primary,.btn-primary:hover {border-color:darken(@brand-primary, 12%);font-weight:bold;}
-.btn-success,.btn-success:hover {border-color:darken(@brand-success, 12%);font-weight:bold;}
-.btn-warning,.btn-warning:hover {border-color:darken(@brand-warning, 12%);font-weight:bold;}
+.btn:not(.btn-default) { font-weight:bold; }
+.btn-danger,
+.btn-danger:hover  { border-color:darken(@brand-danger,  12%); }
+.btn-info,
+.btn-info:hover    { border-color:darken(@brand-info,    12%); }
+.btn-primary,
+.btn-primary:hover { border-color:darken(@brand-primary, 12%); }
+.btn-success,
+.btn-success:hover { border-color:darken(@brand-success, 12%); }
+.btn-warning,
+.btn-warning:hover { border-color:darken(@brand-warning, 12%); }
+
 h2 {margin:0 8px 8px}
 input[type="radio"], input[type="checkbox"] {
   margin:0 auto;
@@ -346,19 +353,22 @@ body.offcanvas.active .offcanvas-toggle {box-shadow: none;}
   .list-group-item {
     padding:7px 10px 6px;
     &.active {
-      background:@active-orange;
-      border-color:@active-orange;
-      color:#FFF;
-      &:hover {background:@active-orange;border-color:@active-orange;}
-      .badge {color:@active-orange;}
+      background: @active-orange;
+      border-color: @active-orange;
+      color: #FFF;
+      &:hover {
+        background: @active-orange;
+        border-color: @active-orange;
+      }
+      .badge { color: @active-orange; }
     }
   }
   & .slider-container {
-    margin:4px auto 10px;
-    width:95%;
+    margin: 4px auto 10px;
+    width: 95%;
     .slider-handle {
-      background:#619144;
-      opacity:1;
+      background: #619144;
+      opacity: 1;
     }
   }
 }
