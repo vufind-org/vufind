@@ -104,15 +104,14 @@ module.exports = function(grunt) {
       options: {
         mangle: false
       },
-      vendor_min: {
-        files: {
+      vendor_min: { // after running uglify:vendor_min, change your theme.config.php
+        files: {    // to only load vendor.min.js instead of all the js/vendor files
           'themes/bootstrap3/js/vendor.min.js': [
-            'themes/bootstrap3/js/vendor/jquery.min.js',
+            'themes/bootstrap3/js/vendor/jquery.min.js',       // these two need to go first
             'themes/bootstrap3/js/vendor/bootstrap.min.js',
             'themes/bootstrap3/js/vendor/*.js',
-            '!themes/bootstrap3/js/vendor/bootlint.min.js',     // comment to lint bootstrap syntax
-            '!themes/bootstrap3/js/vendor/bootstrap-slider.js', // not "use strict" compatible
-            'themes/bootstrap3/js/autocomplete.js'
+            'themes/bootstrap3/js/autocomplete.js',
+            '!themes/bootstrap3/js/vendor/bootstrap-slider.js' // skip, not "use strict" compatible
           ]
         }
       }
