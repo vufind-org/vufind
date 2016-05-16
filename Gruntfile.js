@@ -51,37 +51,47 @@ module.exports = function(grunt) {
         ],
         options: {
           replacements: [
-            {
-              pattern: 'vendor/bootstrap/bootstrap',
-              replacement: 'vendor/bootstrap',
-              order: 2
-            },
-            {
+            { // Replace ; in include with ,
               pattern: /(\s+)@include ([^\(]+)\(([^\)]+)\);/gi,
               replacement: function (match, space, $1, $2) {
                 return space+'@include '+$1+'('+$2.replace(/;/g, ',')+');';
               },
               order: 3
             },
-            {
+            { // Inline &:extends converted
+              pattern: /&:extend\(([^\)]+)\)/gi,
+              replacement: '@extend $1',
+              order: 3
+            },
+            { // Inline variables not default
               pattern: / !default; }/gi,
               replacement: '; }',
               order: 3
             },
-            {
-              pattern: /(\s+)&\:extend\(([^\)]+)\);/gi,
-              replacement: '$1@extend $2;',
+            {  // VuFind: Correct paths
+              pattern: 'vendor/bootstrap/bootstrap',
+              replacement: 'vendor/bootstrap',
               order: 4
             },
             {
               pattern: '$fa-font-path: "../../../fonts" !default;',
               replacement: '$fa-font-path: "fonts";',
-              order: 3
+              order: 4
             },
             {
               pattern: '$img-path: "../../images" !default;',
               replacement: '$img-path: "../images";',
-              order: 3
+              order: 4
+            },
+            { // VuFind: Bootprint fixes
+              pattern: '@import "bootstrap";\n@import "variables";',
+              replacement: '@import "variables", "bootstrap";',
+              order: 4
+            },
+            {
+              pattern: '$brand-primary: #619144 !default;',
+              replacement: '$brand-primary: #619144;',
+              order: 4
             }
           ]
         }
