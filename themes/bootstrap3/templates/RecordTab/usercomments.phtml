@@ -19,7 +19,7 @@
         <textarea name="comment" class="form-control" rows="3" required></textarea><br/>
         <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
       <? else: ?>
-        <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary" data-lightbox title="Login"><i class="fa fa-sign-in"></i> <?=$this->transEsc("You must be logged in first") ?></a>
+        <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary" data-lightbox title="Login"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("You must be logged in first") ?></a>
       <? endif; ?>
     </div>
   </div>

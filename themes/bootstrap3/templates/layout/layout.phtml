@@ -124,6 +124,9 @@ JS;
     ?>
     <header class="hidden-print">
       <div class="container navbar">
+        <? if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+          <span class="sr-only"><?=$this->layout()->srmessage ?></span>
+        <? endif; ?>
         <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
         <?=$this->render('header.phtml')?>
       </div>
@@ -157,7 +160,7 @@ JS;
       </div>
     </header>
     <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
-      <div class="container">
+      <div id="content" class="container">
         <?=$this->layout()->content ?>
       </div>
     </div>
@@ -176,7 +179,7 @@ JS;
         </div>
       </div>
     </div>
-    <div class="offcanvas-toggle" data-toggle="offcanvas"><i class="fa"></i></div>
+    <div class="offcanvas-toggle" data-toggle="offcanvas"><i class="fa" title="<?=$this->transEsc('sidebar_expand') ?>"></i></div>
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>

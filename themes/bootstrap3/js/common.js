@@ -154,6 +154,7 @@ function setupOffcanvas() {
       } else {
         $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
       }
+      $('.offcanvas-toggle .fa').attr('title', VuFind.translate(active ? 'sidebar_close' : 'sidebar_expand'));
     });
     $('[data-toggle="offcanvas"]').click().click();
   } else {
@@ -202,7 +203,6 @@ function setupAutocomplete() {
   $('.searchForm_type').change(function() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
     $lookfor.autocomplete('clear cache');
-    $lookfor.focus();
   });
 }
 
