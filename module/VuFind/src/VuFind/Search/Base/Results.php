@@ -653,7 +653,7 @@ abstract class Results implements ServiceLocatorAwareInterface
                     $facets[$field] = $facetpage[$field];
                 } else {
                     $facets[$field]['data'] = array_merge(
-                        $facets, $facetpage[$field]['data']
+                        $facets[$field]['data'], $facetpage[$field]['data']
                     );
                 }
                 if ($facetpage[$field]['more']) {
