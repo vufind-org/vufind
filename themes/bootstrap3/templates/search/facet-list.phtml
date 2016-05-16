@@ -1,8 +1,14 @@
 <?
   $options = $this->searchOptions($this->searchClassId);
   $facetLightbox = $options->getFacetListAction();
+  if (empty($this->sortOptions)) {
+    $this->sort = 'default';
+    $this->sortOptions = [
+      'default' => 'default'
+    ];
+  }
 ?>
-<? if (!empty($this->sortOptions)): ?>
+<? if (count($this->sortOptions) > 1): ?>
   <label><?=$this->translate('Sort') ?></label>
   <div class="btn-group">
     <? foreach ($this->sortOptions as $key=>$sort): ?>
