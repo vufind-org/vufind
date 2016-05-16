@@ -71,20 +71,6 @@ class Factory
     }
 
     /**
-     * Factory for LBS4 driver.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return LBS4
-     */
-    public static function getLBS4(ServiceManager $sm)
-    {
-        return new LBS4(
-            $sm->getServiceLocator()->get('VuFind\DateConverter')
-        );
-    }
-
-    /**
      * Factory for Demo driver.
      *
      * @param ServiceManager $sm Service manager.
