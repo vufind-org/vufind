@@ -201,7 +201,6 @@ function setupAutocomplete() {
   $('.searchForm_type').change(function() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
     $lookfor.autocomplete('clear cache');
-    $lookfor.focus();
   });
 }
 
