@@ -17,7 +17,7 @@ VuFind.register('openurl', function() {
     });
   };
 
-  var _embedOpenUrlLinks = function(element) {
+  var embedOpenUrlLinks = function(element) {
     // Extract the OpenURL associated with the clicked element:
     var openUrl = element.children('span.openUrl:first').attr('title');
 
@@ -53,11 +53,14 @@ VuFind.register('openurl', function() {
 
     // assign action to the openUrlEmbed link class
     container.find('.openUrlEmbed a').unbind('click').click(function() {
-      _embedOpenUrlLinks($(this));
+      embedOpenUrlLinks($(this));
       return false;
     });
 
     container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
   };
-  return {init: init};
+  return {
+    init: init,
+    embedOpenUrlLinks: embedOpenUrlLinks
+  };
 });
