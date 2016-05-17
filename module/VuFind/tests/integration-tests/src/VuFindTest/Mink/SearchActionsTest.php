@@ -223,25 +223,30 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $geoMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
         $geoMore->click();
         $this->snooze();
-        $items = $page->findAll('css', '#modal .js-facet-item');
+        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit, count($items));
         // more
         $this->findCss($page, '#modal .js-facet-next-page')->click();
         $this->snooze();
-        $items = $page->findAll('css', '#modal .js-facet-item');
+        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit * 2, count($items));
         // sort by title
         $this->findCss($page, '[data-sort="index"]')->click();
         $this->snooze();
-        $items = $page->findAll('css', '#modal .js-facet-item');
-        $this->assertEquals($limit * 2, count($items)); // maintain number of items
+        $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
+        $this->assertEquals($limit, count($items)); // reset number of items
         $this->assertEquals(
-            'The Study of Back S\ashes 1',
-            $this->findAndAssertLink($page, 'The Study of Back S\ashes 1')->getText()
+            'Fiction 7 '
+            . 'The Study Of P|pes 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 '
+            . 'The Study of "Important" Things 1 '
+            . 'more',
+            $this->findCss($page, '#modal #facet-list-index')->getText()
         );
         // sort by index again
         $this->findCss($page, '[data-sort="count"]')->click();
         $this->snooze();
+        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit * 2, count($items)); // maintain number of items
         $weirdIDs = $this->findAndAssertLink($page, 'Weird IDs 9');
         $this->assertEquals('Weird IDs 9', $weirdIDs->getText());
