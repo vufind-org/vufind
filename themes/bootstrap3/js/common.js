@@ -148,7 +148,7 @@ function setupOffcanvas() {
       var active = $('body.offcanvas').hasClass('active');
       var right = $('body.offcanvas').hasClass('offcanvas-right');
       if((active && !right) || (!active && right)) {
-        $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left')
+        $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
       } else {
         $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
       }
@@ -201,7 +201,6 @@ function setupAutocomplete() {
   $('.searchForm_type').change(function() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
     $lookfor.autocomplete('clear cache');
-    $lookfor.focus();
   });
 }
 

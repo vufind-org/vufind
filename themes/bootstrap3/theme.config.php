@@ -14,7 +14,6 @@ return array(
         'vendor/jquery.min.js',
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
-        //'vendor/bootlint.min.js',
         'autocomplete.js',
         'vendor/validator.min.js',
         'vendor/rc4.js',
