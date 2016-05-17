@@ -36,7 +36,7 @@
     <h2><?=$this->transEsc("history_recent_searches")?></h2>
     <? if (!empty($this->unsaved)): ?>
       <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => false));?>
-      <p class="text-right"><a href="?purge=true"><i class="fa fa-button fa-remove"></i> <?=$this->transEsc("history_purge")?></a></p>
+      <p class="text-right"><a href="?purge=true"><i class="fa fa-button fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_purge")?></a></p>
       <br/>
     <? else: ?>
       <h4><?=$this->transEsc("history_no_searches")?></h4>

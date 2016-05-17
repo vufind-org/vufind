@@ -78,7 +78,7 @@
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline' && $ilsLoginAvailable): ?>
     <? if (!$user): ?>
       <div class="pull-right">
-        <a href="?login=true&amp;catalogLogin=true" class="btn btn-primary login-link" data-lightbox><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
+        <a href="?login=true&amp;catalogLogin=true" class="btn btn-primary login-link" data-lightbox><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
       </div>
       <div class="clearfix"></div>
     <? elseif (!$user->cat_username): ?>
@@ -181,13 +181,13 @@
       $statuses[$this->translate('status_' . $row['status'], null, $row['status'])] = 1;
     }
     if ($available) {
-      $holdingSummary = '<span class="text-success"><i class="fa fa-ok"></i> ' . $this->transEsc('available_count', ['%%count%%' => $available]) . '</span>';
+      $holdingSummary = '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> ' . $this->transEsc('available_count', ['%%count%%' => $available]) . '</span>';
     } else if ($firstDueStr) {
-      $holdingSummary = '<span class="text-danger"><i class="fa fa-remove"></i> ' . $this->transEsc('closest_due_date', ['%%date%%' => $firstDueStr]) . '</span>';
+      $holdingSummary = '<span class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> ' . $this->transEsc('closest_due_date', ['%%date%%' => $firstDueStr]) . '</span>';
     } else if ($statuses) {
       $holdingSummary = '<span class="text-danger"> ' . $this->escapeHtml(implode(' ', array_flip($statuses))) . '</span>';
     } else {
-      $holdingSummary = '<span class="text-success"><i class="fa fa-ok"></i> ' . $this->transEsc('Available') . '</span>';
+      $holdingSummary = '<span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> ' . $this->transEsc('Available') . '</span>';
     }
 
     // N.B. $holdingsDetails also affects request checks in finna-record
@@ -235,7 +235,7 @@
   <? endif; ?>
   <div class="holdings-container-heading row">
     <div class="location col-sm-6 col-xs-6">
-      <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>"></i> <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
+      <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>" aria-hidden="true"></i> <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
       <? if ($this->holdingsSettings()->showDetailsAfterLocationGroup()): ?>
         <div class="details"><?=$this->partial('RecordTab/holdings-details.phtml', ['holdingId' => $holdingId, 'holding' => $holding, 'heading' => true]);?></div>
       <? endif; ?>
@@ -295,7 +295,7 @@
         <? else: ?>
           <? if ($row['availability']): ?>
             <? /* Begin Available Items (Holds) */ ?>
-            <span class="text-success"><i class="fa fa-ok"></i> <?=$this->transEsc(isset($row['availabilityInfo']['displayText']) ? 'status_' . $row['availabilityInfo']['displayText'] : 'Available')?><link property="availability" href="http://schema.org/InStock" /></span>
+            <span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> <?=$this->transEsc(isset($row['availabilityInfo']['displayText']) ? 'status_' . $row['availabilityInfo']['displayText'] : 'Available')?><link property="availability" href="http://schema.org/InStock" /></span>
             <div class="pull-right">
             <? if (!$journal): ?>
               <? if (!$block && isset($row['link']) && $row['link'] && $holdsAllowed): ?>
@@ -311,7 +311,7 @@
             </div>
           <? else: ?>
             <? /* Begin Unavailable Items (Recalls) */ ?>
-            <span class="text-danger"><?=$row['status'] == 'Ordered' ? '' : '<i class="fa fa-remove"></i>';?> <?=$this->transEsc('status_' . $row['status'], null, $row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /> </span>
+            <span class="text-danger"><?=$row['status'] == 'Ordered' ? '' : '<i class="fa fa-remove" aria-hidden="true"></i>';?> <?=$this->transEsc('status_' . $row['status'], null, $row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /> </span>
             <? if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
             <? if (isset($row['duedate']) && $row['duedate']): ?>
               &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>

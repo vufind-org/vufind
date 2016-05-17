@@ -16,13 +16,13 @@
 <div class="col-xs-12">
   <ul class="nav nav-pills hidden-print">
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-    <li><a class="save-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-plus"></i><span class="hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a></li>
+    <li><a class="save-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-plus" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a></li>
   <? endif; ?>
-    <li><a class="mail-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email') ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope"></i><span class="hidden-xs"> <?=$this->transEsc('Email this')?></span></a></li>
+    <li><a class="mail-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email') ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Email this')?></span></a></li>
   <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
   <? if(count($exportFormats) > 0): ?>
     <li class="dropdown">
-      <a class="export-toggle dropdown-toggle" data-toggle="dropdown" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>" rel="nofollow"><i class="fa fa-list-alt"></i><span class="hidden-xs"> <?=$this->transEsc('Export Record') ?></span></a>
+      <a class="export-toggle dropdown-toggle" data-toggle="dropdown" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>" rel="nofollow"><i class="fa fa-list-alt" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Export Record') ?></span></a>
       <ul class="dropdown-menu" role="menu">
         <? foreach ($exportFormats as $exportFormat): ?>
           <li><a <? if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow"><?=$this->transEsc('Export to')?> <?=$this->transEsc($exportFormat)?></a></li>
@@ -31,13 +31,13 @@
     </li>
   <? endif; ?>
   <? if (count($this->driver->getCitationFormats()) > 0): ?>
-    <li><a class="cite-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite') ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><i class="fa fa-asterisk"></i><span class="hidden-xs"> <?=$this->transEsc('Cite this')?></span></a></li>
+    <li><a class="cite-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite') ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><i class="fa fa-asterisk" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Cite this')?></span></a></li>
   <? endif; ?>
-  <li class="hidden-xs hidden-sm"><span><a href="javascript:window.print()" rel="nofollow"><i class="fa fa-print"></i> <?=$this->transEsc('Print')?></a></span></li>
+  <li class="hidden-xs hidden-sm"><span><a href="javascript:window.print()" rel="nofollow"><i class="fa fa-print" aria-hidden="true"></i> <?=$this->transEsc('Print')?></a></span></li>
   <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
   <? if($QRCode): ?>
   <li class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="<?=$this->escapeHtmlAttr($QRCode);?>" rel="nofollow"><i class="fa fa-qr-code"></i><span class="hidden-xs"> <?=$this->transEsc('QR Code') ?></span></a>
+    <a class="dropdown-toggle" data-toggle="dropdown" href="<?=$this->escapeHtmlAttr($QRCode);?>" rel="nofollow"><i class="fa fa-qr-code" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('QR Code') ?></span></a>
       <ul class="dropdown-menu" role="menu">
         <li class="text-center"><img src="<?=$this->escapeHtmlAttr($QRCode);?>" alt="<?=$this->transEsc('QR Code')?>" class="qrcode"/></li>
       </ul>
@@ -46,10 +46,10 @@
   <? if (!empty($addThis)): ?>
     <li class="addthis-share-buttons">
       <div class="addthis_toolbox addthis_default_style">
-        <a class="addthis_button_facebook"><i class="fa fa-facebook"></i></a>
-        <a class="addthis_button_twitter"><i class="fa fa-twitter"></i></a>
-        <a class="addthis_button_pinterest_share"><i class="fa fa-pinterest"></i></a>
-        <!-- <a class="addthis_button_google_plusone_share"><i class="fa fa-google-plus"></i></a> -->
+        <a class="addthis_button_facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+        <a class="addthis_button_twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+        <a class="addthis_button_pinterest_share"><i class="fa fa-pinterest" aria-hidden="true"></i></a>
+        <!-- <a class="addthis_button_google_plusone_share"><i class="fa fa-google-plus" aria-hidden="true"></i></a> -->
       </div>
     </li>
   <? endif; ?>

@@ -92,6 +92,7 @@
         <div<?= !$browse ? ' class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8"' : ' class="col-xs-12"' ?>>
             <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results, 'label' => $browse ? "browse_extended_" . ucfirst($browse) : 'Showing'))?>
         </div>
+        <? $this->layout()->srmessage = $this->translate('Showing') . ' ' . $this->results->getStartRecord() . ' - ' . $this->results->getEndRecord() . " / $recordTotal"; ?>
     </div>
       <? endif; ?>
 <div class="row results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
@@ -100,9 +101,11 @@
     <? if (isset($this->overrideEmptyMessage)): ?>
     <p><?=$this->overrideEmptyMessage?></p>
     <? elseif ($lookfor == '' && $this->params->getSearchClassId() == 'Primo'): ?>
-      <h4 class="no-results"><?=$this->transEsc('primo_no_searchword')?></h4>
+      <? $this->layout()->srmessage = $this->transEsc('primo_no_searchword'); ?>
+      <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
     <? else: ?>
-      <h4 class="no-results"><?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?></h4>
+      <? $this->layout()->srmessage = $this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix'); ?>
+      <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
     <? endif; ?>
     <? if (isset($this->parseError)): ?>
       <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>

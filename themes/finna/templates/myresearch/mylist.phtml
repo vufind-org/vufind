@@ -54,9 +54,9 @@
       <div class="col-xs-12 col-md-8">
       <h2 class="list-title<?= !$list ? ' no-edit' : '' ?>"><? if(!$isDefaultList): ?><i class="list-title-edit fa fa-pen"></i><? endif; ?><span><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("All Favourites")?></span></h2><br>
       <? if ($list && !empty($list->description)): ?>
-        <h5 class="list-description"><i class="list-description-edit fa fa-pen"></i><span><?=preg_replace("/\r\n|\r|\n/",'<br class="newline">', $this->escapeHtml($list->description))?></span></h5>
+        <h5 class="list-description"><i class="list-description-edit fa fa-pen" aria-hidden="true"></i><span><?=preg_replace("/\r\n|\r|\n/",'<br class="newline">', $this->escapeHtml($list->description))?></span></h5>
       <? elseif ($list && empty($list->description)): ?>
-        <h5 class="list-description"><i class="list-description-edit fa fa-pen"></i><span data-empty="1"><?=$this->transEsc('Add list description')?></span></h5>
+        <h5 class="list-description"><i class="list-description-edit fa fa-pen" aria-hidden="true"></i><span data-empty="1"><?=$this->transEsc('Add list description')?></span></h5>
       <? endif; ?>
     </div>
     </div>

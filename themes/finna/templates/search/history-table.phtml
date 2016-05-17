@@ -76,9 +76,9 @@
       </td>
       <td class="history-save">
         <? if ($this->showSaved): ?>
-          <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-remove fa-button"></i></a>
+          <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-remove fa-button" aria-hidden="true"></i></a>
         <? else: ?>
-          <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-plus-big"></i></a>
+          <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-plus-big" aria-hidden="true"></i></a>
         <? endif; ?>
       </td>
     </tr>

@@ -45,7 +45,7 @@
               }
             }
           ?>
-          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa <?=$icon?>"></i> <?=!empty($url['desc']) ? $this->transEsc('default::link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?></a>
+          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa <?=$icon?>" aria-hidden="true"></i> <?=!empty($url['desc']) ? $this->transEsc('default::link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?></a>
         <? endforeach; ?>
       <? endif; ?>
 
@@ -53,7 +53,7 @@
         <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $i => $url): ?>
           <? if (in_array($url['url'], $images) || in_array($url['url'], $renderedURLs)) { continue; } ?>
           <?=count($renderedURLs) || $i > 0 ? '<br/>' : '' ?>
-          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
+          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link" aria-hidden="true"></i> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
           <? if ($url['source']): ?>
             <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('default::source_' . $url['source'], null, $url['source']) ?>)</span>
           <? endif; ?>

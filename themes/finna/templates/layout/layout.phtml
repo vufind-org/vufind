@@ -223,7 +223,10 @@ JS;
       <div class="container-fluid navbar">
         <div class="row">
           <div class="col-xs-12">
-            <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+          <? if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+            <span class="sr-only"><?=$this->layout()->srmessage ?></span>
+          <? endif; ?>
+          <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
             <?=$this->render('navibar.phtml')?>
           </div>
         </div>
