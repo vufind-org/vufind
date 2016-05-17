@@ -7,12 +7,12 @@
 <? ob_start(); ?>
   <div class="media-<?=$this->record($this->driver)->getThumbnailAlignment() ?> <?=$this->escapeHtml($coverDetails['size'])?>">
     <? if ($coverDetails['cover']): ?>
-        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
-        <img src="<?=$this->escapeHtmlAttr($coverDetails['cover'])?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-        </a>
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
+      <img src="<?=$this->escapeHtmlAttr($coverDetails['cover'])?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+      </a>
     <? else: ?>
-        <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
-        <div><?=$this->driver->getPubType()?></div>
+      <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
+      <div><?=$this->driver->getPubType()?></div>
     <? endif; ?>
   </div>
 <? $thumbnail = ob_get_contents(); ?>
