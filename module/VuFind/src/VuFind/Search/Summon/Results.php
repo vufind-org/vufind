@@ -339,7 +339,8 @@ class Results extends \VuFind\Search\Base\Results
     public function getPartialFieldFacets($facetfields, $removeFilter = true,
         $limit = -1, $facetSort = null, $page = null
     ) {
-        $query  = $this->getParams()->getQuery();
+        $params = $this->getParams();
+        $query  = $params->getQuery();
         // No limit not implemented with Summon: cause page loop
         if ($limit == -1) {
             if ($page === null) {
@@ -347,31 +348,27 @@ class Results extends \VuFind\Search\Base\Results
             }
             $limit = 50;
         }
+        $params->resetFacetConfig();
         foreach ($facetfields as $facet) {
-            $this->getParams()->addFacet($facet . ',or,' . $page . ',' . $limit);
+            $params->addFacet($facet . ',or,' . $page . ',' . $limit);
         }
-        $params = $this->getParams()->getBackendParameters();
+        $params = $params->getBackendParameters();
         $collection = $this->getSearchService()->search(
             'Summon', $query, 0, 0, $params
         );
 
         $facets = $collection->getFacets();
+        $ret = [];
         foreach ($facets as $data) {
             if (in_array($data['displayName'], $facetfields)) {
                 $formatted = $this->formatFacetData($data);
                 $list = $formatted['counts'];
-                // Detect next page and crop results if necessary
-                $more = false;
-                if (isset($page) && count($list) > 0 && count($list) == $limit) {
-                    $more = true;
-                    array_pop($list);
-                }
                 $ret[$data['displayName']] = [
                     'data' => [
                         'label' => $data['displayName'],
                         'list' => $list,
                     ],
-                    'more' => $more
+                    'more' => null
                 ];
             }
         }

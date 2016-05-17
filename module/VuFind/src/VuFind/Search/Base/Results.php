@@ -649,19 +649,18 @@ abstract class Results implements ServiceLocatorAwareInterface
             );
             $nextfields = [];
             foreach ($facetfields as $field) {
-                // var_dump($facetpage);
-                if (!isset($facets[$field])) {
-                    // var_dump('new '.$field);
-                    $facets[$field] = $facetpage[$field];
-                } else {
-                    $facets[$field]['data']['list'] = array_merge(
-                        $facets[$field]['data']['list'], $facetpage[$field]['data']['list']
-                    );
-                    $facets[$field]['more'] = $facetpage[$field]['more'];
-                    // var_dump('merge '.$field.' '.$page.' ('.count($facets[$field]['data']['list']));
-                }
-                if ($facetpage[$field]['more']) {
-                    $nextfields[] = $field;
+                if (!empty($facetpage[$field]['data']['list'])) {
+                    if (!isset($facets[$field])) {
+                        $facets[$field] = $facetpage[$field];
+                        $facets[$field]['more'] = false;
+                    } else {
+                        $facets[$field]['data']['list'] = array_merge(
+                            $facets[$field]['data']['list'], $facetpage[$field]['data']['list']
+                        );
+                    }
+                    if ($facetpage[$field]['more'] !== false) {
+                        $nextfields[] = $field;
+                    }
                 }
             }
             $facetfields = $nextfields;
