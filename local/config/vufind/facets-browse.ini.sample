@@ -10,7 +10,7 @@ collapsedFacets = author2Str,genre_facet,language,topic_facet,first_indexed
 
 [BrowseDatabase]
 category_str_mv        = category_facet_heading
-author2Str             = Author
+author_facet           = Author
 genre_facet            = Genre
 
 [BrowseJournal]
