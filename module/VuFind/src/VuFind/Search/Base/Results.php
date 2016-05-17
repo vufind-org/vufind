@@ -655,7 +655,8 @@ abstract class Results implements ServiceLocatorAwareInterface
                         $facets[$field]['more'] = false;
                     } else {
                         $facets[$field]['data']['list'] = array_merge(
-                            $facets[$field]['data']['list'], $facetpage[$field]['data']['list']
+                            $facets[$field]['data']['list'],
+                            $facetpage[$field]['data']['list']
                         );
                     }
                     if ($facetpage[$field]['more'] !== false) {
@@ -664,7 +665,7 @@ abstract class Results implements ServiceLocatorAwareInterface
                 }
             }
             $facetfields = $nextfields;
-            $page ++;
+            $page++;
         } while ($limit == -1 && !empty($facetfields));
         return $facets;
     }
