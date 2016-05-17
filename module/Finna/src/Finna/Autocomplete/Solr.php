@@ -270,6 +270,7 @@ class Solr extends \VuFind\Autocomplete\Solr
 
     /**
      * Disable faceting.
+     *
      * @return void
      */
     public function disableFaceting()

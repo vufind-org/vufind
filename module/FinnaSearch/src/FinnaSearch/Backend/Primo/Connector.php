@@ -50,6 +50,7 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
 
     /**
      * Hidden filters
+     *
      * @var array
      */
     protected $hiddenFilters = [];
