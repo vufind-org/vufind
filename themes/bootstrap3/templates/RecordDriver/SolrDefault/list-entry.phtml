@@ -10,11 +10,12 @@
     $user_id = $this->user ? $this->user->id : null;
   }
   // Thumbnail
-  $cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+  $coverDetails = $this->record($this->driver)->getCoverDetails('list-entry', 'medium', $this->recordLink()->getUrl($this->driver));
+  $cover = $coverDetails['html'];
   $thumbnail = false;
   if ($cover):
     ob_start(); ?>
-    <div class="media-<?=$this->record($this->driver)->getThumbnailAlignment() ?> <?=$this->record($this->driver)->getCoverSize($this->params) ?>">
+    <div class="media-<?=$this->record($this->driver)->getThumbnailAlignment() ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
       <?=$cover ?>
     </div>
     <? $thumbnail = ob_get_contents(); ?>

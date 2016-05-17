@@ -416,32 +416,41 @@ class Record extends AbstractHelper
      */
     public function getCover($context, $default, $link = false)
     {
-        if (isset($this->config->Content->coversize)
-            && !$this->config->Content->coversize
-        ) {
-            // covers disabled entirely
-            $preferredSize = false;
+        $details = $this->getCoverDetails($context, $default, $link);
+        return $details['html'];
+    }
+
+    /**
+     * Get the rendered cover plus some useful parameters.
+     *
+     * @param string $context Context of code being genarated
+     * @param string $default The default size of the cover
+     * @param string $link    The link for the anchor
+     *
+     * @return array
+     */
+    public function getCoverDetails($context, $default, $link = false)
+    {
+        $details = compact('link', 'context') + [
+            'driver' => $this->driver, 'cover' => false, 'size' => false
+        ];
+        $preferredSize = $this->getCoverSize($context, $default);
+        if (empty($preferredSize)) {    // covers disabled entirely
+            $details['html'] = '';
         } else {
-            // check for context-specific overrides
-            $preferredSize = isset($this->config->Content->coversize[$context])
-                ? $this->config->Content->coversize[$context] : $default;
-        }
-        if (empty($preferredSize)) {
-            return '';
-        }
-
-        // Find best option if more than one size is defined (e.g. small:medium)
-        $cover = false;  // assume invalid until good size found below
-        foreach (explode(':', $preferredSize) as $size) {
-            if ($cover = $this->getThumbnail($size)) {
-                break;
+            // Find best option if more than one size is defined (e.g. small:medium)
+            foreach (explode(':', $preferredSize) as $size) {
+                if ($details['cover'] = $this->getThumbnail($size)) {
+                    $details['size'] = $size;
+                    break;
+                }
             }
-        }
 
-        $driver = $this->driver;    // for convenient use in compact()
-        return $this->contextHelper->renderInContext(
-            'record/cover.phtml', compact('cover', 'link', 'context', 'driver')
-        );
+            $details['html'] = $this->contextHelper->renderInContext(
+                'record/cover.phtml', $details
+            );
+        }
+        return $details;
     }
 
     /**
@@ -451,19 +460,17 @@ class Record extends AbstractHelper
      *
      * @return string
      */
-    public function getCoverSize($params)
+    protected function getCoverSize($context, $default = 'medium')
     {
         if (isset($this->config->Content->coversize)
-            && $this->config->Content->coversize
+            && !$this->config->Content->coversize
         ) {
-            $searchType = 'result-' . $params->getView();
-            if (isset($this->config->Content->coversize[$searchType])) {
-                return $this->config->Content->coversize[$searchType];
-            } else {
-                return $this->config->Content->coversize;
-            }
+            // covers disabled entirely
+            return false;
         }
-        return 'medium';
+        // check for context-specific overrides
+        return isset($this->config->Content->coversize[$context])
+            ? $this->config->Content->coversize[$context] : $default;
     }
 
     /**
@@ -475,7 +482,7 @@ class Record extends AbstractHelper
     {
         $view = $this->getView();
         $left = !isset($this->config->Site->resultThumbnailsOnLeft)
-            ? false : $this->config->Site->resultThumbnailsOnLeft;
+            ? true : $this->config->Site->resultThumbnailsOnLeft;
         $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
             ? true : $this->config->Site->mirrorThumbnailsRTL;
         if ($view->layout()->rtl && !$mirror) {

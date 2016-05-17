@@ -2,12 +2,13 @@
   $this->headLink()->appendStylesheet('EDS.css');
   $accessLevel = $this->driver->getAccessLevel();
   $restrictedView = empty($accessLevel) ? false : true;
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
 ?>
 <? ob_start(); ?>
-  <div class="media-<?=$this->record($this->driver)->getThumbnailAlignment() ?> <?=$this->record($this->driver)->getCoverSize($this->params) ?>">
-    <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
+  <div class="media-<?=$this->record($this->driver)->getThumbnailAlignment() ?> <?=$this->escapeHtml($coverDetails['size'])?>">
+    <? if ($coverDetails['cover']): ?>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
-        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <img src="<?=$this->escapeHtmlAttr($coverDetails['cover'])?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
         </a>
     <? else: ?>
         <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
@@ -127,7 +128,7 @@
       </div>
     </div>
   </div>
-  <? if ($this->record($this->driver)->getThumbnailAlignment() == 'right') ?>
+  <? if ($this->record($this->driver)->getThumbnailAlignment() == 'right'): ?>
     <?=$thumbnail ?>
   <? endif; ?>
 </div>
