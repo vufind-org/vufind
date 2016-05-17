@@ -722,7 +722,7 @@ class OAI
                 $attr .= ' xmlns:' . $key . '="' . $val . '"';
             }
         }
-        if (!empty($attr)) {
+        if (!empty($attr) && !strpos($xml, $attr)) {
             $xml = preg_replace('/>/', $attr . '>', $xml, 1);
         }
         return $xml;
