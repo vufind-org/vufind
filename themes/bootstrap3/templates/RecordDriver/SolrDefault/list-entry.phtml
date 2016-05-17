@@ -13,9 +13,10 @@
   $coverDetails = $this->record($this->driver)->getCoverDetails('list-entry', 'medium', $this->recordLink()->getUrl($this->driver));
   $cover = $coverDetails['html'];
   $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('list');
   if ($cover):
     ob_start(); ?>
-    <div class="media-<?=$this->record($this->driver)->getThumbnailAlignment() ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+    <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
       <?=$cover ?>
     </div>
     <? $thumbnail = ob_get_contents(); ?>
@@ -27,7 +28,7 @@
     <label><?=$this->record($this->driver)->getCheckbox()?></label>
   </div>
   <div class="media">
-    <? if ($thumbnail && $this->record($this->driver)->getThumbnailAlignment() == 'left'): ?>
+    <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
       <?=$thumbnail ?>
     <? endif; ?>
     <div class="media-body">
@@ -190,7 +191,7 @@
         </div>
       </div>
     </div>
-    <? if ($thumbnail && $this->record($this->driver)->getThumbnailAlignment() == 'right'): ?>
+    <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
       <?=$thumbnail ?>
     <? endif; ?>
   </div>

@@ -479,11 +479,12 @@ class Record extends AbstractHelper
      *
      * @return string
      */
-    public function getThumbnailAlignment()
+    public function getThumbnailAlignment($context = 'result')
     {
         $view = $this->getView();
-        $left = !isset($this->config->Site->resultThumbnailsOnLeft)
-            ? true : $this->config->Site->resultThumbnailsOnLeft;
+        $configField = $context . 'ThumbnailsOnLeft';
+        $left = !isset($this->config->Site->$configField)
+            ? true : $this->config->Site->$configField;
         $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
             ? true : $this->config->Site->mirrorThumbnailsRTL;
         if ($view->layout()->rtl && !$mirror) {

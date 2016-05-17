@@ -4,8 +4,11 @@
   $restrictedView = empty($accessLevel) ? false : true;
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
 ?>
-<? ob_start(); ?>
-  <div class="media-<?=$this->record($this->driver)->getThumbnailAlignment() ?> <?=$this->escapeHtml($coverDetails['size'])?>">
+<?
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  ob_start(); ?>
+  <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtml($coverDetails['size'])?>">
     <? if ($coverDetails['cover']): ?>
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
       <img src="<?=$this->escapeHtmlAttr($coverDetails['cover'])?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
@@ -20,7 +23,7 @@
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
 <div class="media<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
-  <? if ($this->record($this->driver)->getThumbnailAlignment() == 'left'): ?>
+  <? if ($thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
   <? endif; ?>
   <div class="media-body">
@@ -128,7 +131,7 @@
       </div>
     </div>
   </div>
-  <? if ($this->record($this->driver)->getThumbnailAlignment() == 'right'): ?>
+  <? if ($thumbnailAlignment == 'right'): ?>
     <?=$thumbnail ?>
   <? endif; ?>
 </div>
