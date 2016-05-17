@@ -345,19 +345,14 @@ class Results extends \VuFind\Search\Base\Results
             if ($page === null) {
                 $page = 1;
             }
-            $limit = 100;
-        }
-        $offset = 0;
-        if ($page !== null) {
-            $offset = $offset = ($page - 1) * $limit;
-            $limit ++;
+            $limit = 50;
         }
         foreach ($facetfields as $facet) {
             $this->getParams()->addFacet($facet . ',or,' . $page . ',' . $limit);
         }
         $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()->search(
-            'Summon', $query, $offset, $limit, $params
+            'Summon', $query, 0, 0, $params
         );
 
         $facets = $collection->getFacets();
