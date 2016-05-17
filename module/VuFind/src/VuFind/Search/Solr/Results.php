@@ -350,9 +350,7 @@ class Results extends \VuFind\Search\Base\Results
                 $more = true;
                 array_pop($value['list']);
             }
-            unset($result[$key]);
-            $result[$key]['more'] = $more;
-            $result[$key]['data'] = $value;
+            $result[$key] = ['more' => $more, 'data' => $value];
         }
 
         // Send back data:
