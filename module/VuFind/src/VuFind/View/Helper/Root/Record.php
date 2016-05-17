@@ -477,6 +477,8 @@ class Record extends AbstractHelper
     /**
      * Get the configured thumbnail alignment
      *
+     * @param $context string telling the context asking, prepends the config key
+     *
      * @return string
      */
     public function getThumbnailAlignment($context = 'result')
