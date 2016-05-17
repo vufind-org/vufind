@@ -1,10 +1,9 @@
-/*global embedOpenUrlLinks*/
+/*global VuFind*/
 finna.openUrl = (function() {
-
     var initLinks = function() {
         $('.openUrlEmbed a').each(function(ind, e) {
             $(e).one('inview', function(){
-                embedOpenUrlLinks($(this));
+                VuFind.openurl.embedOpenUrlLinks($(this));
             });
         });
     };
