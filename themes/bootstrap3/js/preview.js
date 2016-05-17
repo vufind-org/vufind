@@ -25,7 +25,7 @@ function getHTPreviews(skeys) {
     for(var i = 0; i < bibkeys.length; i++) {
         batch.push(bibkeys[i]);
         if ((i > 0 && i % 20 == 0) || i == bibkeys.length-1) {
-            var script = 'http://catalog.hathitrust.org/api/volumes/brief/json/'
+            var script = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
                 + batch.join('|') + '&callback=processHTBookInfo';
             $.getScript(script);
             batch = [];
@@ -68,7 +68,7 @@ function processGBSBookInfo(booksInfo) {
                 if (viewOptions['tab'].indexOf(bookInfo.preview)>= 0
                 && (bookInfo.embeddable)) {
                     // make tab visible
-                    $('ul.recordTabs li.hidden a#preview').parent().removeClass('hidden');
+                    $('ul.nav-tabs li.hidden a.preview').parent().removeClass('hidden');
                 }
             }
         }

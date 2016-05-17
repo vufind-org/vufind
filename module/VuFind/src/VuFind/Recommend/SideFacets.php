@@ -353,7 +353,7 @@ class SideFacets extends AbstractFacets
      *
      * @return int
      */
-    public function getShowMoreSetting($facetName = '*')
+    public function getShowMoreSetting($facetName)
     {
         // Look for either facet-specific configuration or else a configured
         // default. If neither is found, initialize return value to 0.

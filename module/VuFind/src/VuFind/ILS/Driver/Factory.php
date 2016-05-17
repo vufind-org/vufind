@@ -71,6 +71,20 @@ class Factory
     }
 
     /**
+     * Factory for LBS4 driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return LBS4
+     */
+    public static function getLBS4(ServiceManager $sm)
+    {
+        return new LBS4(
+            $sm->getServiceLocator()->get('VuFind\DateConverter')
+        );
+    }
+
+    /**
      * Factory for Demo driver.
      *
      * @param ServiceManager $sm Service manager.
@@ -140,6 +154,18 @@ class Factory
     public static function getNoILS(ServiceManager $sm)
     {
         return new NoILS($sm->getServiceLocator()->get('VuFind\RecordLoader'));
+    }
+
+    /**
+     * Factory for KohaILSDI driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return KohaILSDI
+     */
+    public static function getKohaILSDI(ServiceManager $sm)
+    {
+        return new KohaILSDI($sm->getServiceLocator()->get('VuFind\DateConverter'));
     }
 
     /**

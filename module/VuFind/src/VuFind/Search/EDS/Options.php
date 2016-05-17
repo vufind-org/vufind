@@ -47,42 +47,49 @@ class Options extends \VuFind\Search\Base\Options
 
     /**
      * Default search mode options
+     *
      * @var string
      */
     protected $defaultMode = 'all';
 
     /**
      * The set search mode
+     *
      * @var string
      */
     protected $searchMode;
 
     /**
      * Default expanders to apply
+     *
      * @var array
      */
     protected $defaultExpanders = [];
 
     /**
      * Available expander options
+     *
      * @var unknown
      */
     protected $expanderOptions = [];
 
     /**
      * Available limiter options
+     *
      * @var unknown
     */
     protected $limiterOptions = [];
 
     /**
-     * Wheither or not to return available facets with the search response
+     * Whether or not to return available facets with the search response
+     *
      * @var unknown
      */
     protected $includeFacets = 'y';
 
     /**
      * Available Search Options from the API
+     *
      * @var array
      */
     protected $apiInfo;

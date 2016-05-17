@@ -195,19 +195,14 @@ class Factory
         // and googleoptions[tab] is not empty.
         $active = false;
         if (isset($cfg->Content->previews)) {
-            $content_previews = explode(
-                ',', strtolower(str_replace(' ', '', $cfg->Content->previews))
+            $previews = array_map(
+                'trim', explode(',', strtolower($cfg->Content->previews))
             );
-            if (in_array('google', $content_previews)
-                && isset($cfg->Content->GoogleOptions)
+            if (in_array('google', $previews)
+                && isset($cfg->Content->GoogleOptions['tab'])
+                && strlen(trim($cfg->Content->GoogleOptions['tab'])) > 0
             ) {
-                $g_options = $cfg->Content->GoogleOptions;
-                if (isset($g_options->tab)) {
-                    $tabs = explode(',', $g_options->tab);
-                    if (count($tabs) > 0) {
-                        $active = true;
-                    }
-                }
+                $active = true;
             }
         }
         return new Preview($active);

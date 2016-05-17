@@ -4,10 +4,9 @@ return array(
     'css' => array(
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
+        //'vendor/font-awesome.min.css',
         //'bootstrap-custom.css',
         'compiled.css',
-        'vendor/font-awesome.min.css',
-        'vendor/bootstrap-slider.min.css',
         'print.css:print',
     ),
     'js' => array(
@@ -15,7 +14,6 @@ return array(
         'vendor/jquery.min.js',
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
-        //'vendor/bootlint.min.js',
         'autocomplete.js',
         'vendor/validator.min.js',
         'vendor/rc4.js',
@@ -35,8 +33,7 @@ return array(
         ),
         'invokables' => array(
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
-            'search' => 'VuFind\View\Helper\Bootstrap3\Search',
-            'vudl' => 'VuDL\View\Helper\Bootstrap3\VuDL',
+            'search' => 'VuFind\View\Helper\Bootstrap3\Search'
         )
     )
 );

@@ -87,7 +87,7 @@
         </div>
         <? /* An empty div. This is the target for the javascript that builds this screen */ ?>
         <span id="groupPlaceHolder" class="hidden">
-          <i class="fa fa-plus-circle"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('add_search_group') ?></a>
+          <i class="fa fa-plus-circle" aria-hidden="true"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('add_search_group') ?></a>
         </span>
         <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
         <div class="no-js">
@@ -129,7 +129,7 @@
                         </div>
                         <? if($group == 0 && $search == 0): ?>
                             </div>
-                          <i class="fa fa-plus-circle search_place_holder hidden"></i> <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
+                          <i class="fa fa-plus-circle search_place_holder hidden" aria-hidden="true"></i> <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
                         <? endif; ?>
                       <? endfor; ?>
                     </div>
