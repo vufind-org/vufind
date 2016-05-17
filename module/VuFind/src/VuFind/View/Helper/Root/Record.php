@@ -456,7 +456,8 @@ class Record extends AbstractHelper
     /**
      * Get the configured thumbnail size for record lists
      *
-     * @param \VuFind\Search\Base\Params $params Search parameters
+     * @param string $context Context of code being genarated
+     * @param string $default The default size of the cover
      *
      * @return string
      */
