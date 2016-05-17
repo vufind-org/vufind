@@ -265,7 +265,7 @@
           <th><?=$this->transEsc('Tags')?>: </th>
           <td>
             <a class="tag-record btn btn-link pull-right flip" href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" data-lightbox>
-              <i class="fa fa-plus"></i> <?=$this->transEsc('Add Tag')?>
+              <i class="fa fa-plus" aria-hidden="true"></i> <?=$this->transEsc('Add Tag')?>
             </a>
             <?=$this->context($this)->renderInContext('record/taglist', array('tagList'=>$tagList, 'loggedin'=>$loggedin)) ?>
           </td>
