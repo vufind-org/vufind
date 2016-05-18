@@ -295,6 +295,7 @@ class Results extends \VuFind\Search\Base\Results
      * method because of PHP out of memory exceptions (default = -1, no limit).
      * @param string $facetSort    A facet sort value to use (null to retain current)
      * @param int    $page         1 based. Offsets results by limit.
+     * @param bool   $ored         Whether or not facet is an OR facet or not
      *
      * @return array list facet values for each index field with label and more bool
      */
