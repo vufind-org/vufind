@@ -212,7 +212,7 @@ class Facets extends AbstractChannelProvider
         $query = $newResults->getUrlQuery()->addFilter($filter);
         $searchUrl = $this->url->fromRoute($params->getOptions()->getSearchAction())
             . $query;
-        $channelsUrl = $this->url->fromRoute('channels-search') . $searchUrl
+        $channelsUrl = $this->url->fromRoute('channels-search') . $query
             . '&source=' . urlencode($params->getSearchClassId());
 
         // Run the search and convert the results into a channel:
