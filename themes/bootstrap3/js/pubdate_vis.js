@@ -22,7 +22,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
     'background-color': '#fff', // background of box
     'fill': '#eee',             // box fill color
     'stroke': '#265680',        // box outline color
-    'outline-color': '#e8cfac'  // selection color
+    'outline-color': '#c38835'  // selection color
   };
   var $dateVisColorSettings = $('#dateVisColorSettings');
   for(var rule in cssColorSettings) {
@@ -47,7 +47,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
     legend: { noColumns: 2 },
     xaxis: { tickDecimals: 0 },
     yaxis: { min: 0, ticks: [] },
-    selection: {mode: "x", color: cssColorSettings['outline-color']},
+    selection: {mode: "x", color: cssColorSettings['outline-color'], minSize: 0},
     grid: { backgroundColor: cssColorSettings['background-color'] }
   };
 
