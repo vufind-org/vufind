@@ -33,8 +33,9 @@ class FeedbackController extends AbstractBase
      */
     public function homeAction()
     {
-        // no action needed
-        return $this->createViewModel();
+        $view = $this->createViewModel();
+        $view->useRecaptcha = $this->recaptcha()->active('feedback');
+        return $view;
     }
 
     /**
@@ -45,52 +46,62 @@ class FeedbackController extends AbstractBase
      */
     public function emailAction()
     {
-        $name = $this->params()->fromPost('name');
-        $users_email = $this->params()->fromPost('email');
-        $comments = $this->params()->fromPost('comments');
+        $useRecaptcha = $this->recaptcha()->active('feedback');
+        // Process form submission:
+        if ($this->formWasSubmitted('submit', $useRecaptcha)) {
+            $name = $this->params()->fromPost('name');
+            $users_email = $this->params()->fromPost('email');
+            $comments = $this->params()->fromPost('comments');
 
-        if (empty($name) || empty($users_email) || empty($comments)) {
-            throw new \Exception('Missing data.');
+            if (empty($users_email) || empty($comments)) {
+                $this->flashMessenger()->addMessage('bulk_error_missing', 'error');
+                return;
+            }
+
+            // These settings are set in the feedback settion of your config.ini
+            $config = $this->getServiceLocator()->get('VuFind\Config')
+                ->get('config');
+            $feedback = isset($config->Feedback) ? $config->Feedback : null;
+            $recipient_name = isset($feedback->recipient_name)
+                ? $feedback->recipient_name : 'Your Library';
+            $recipient_email = isset($feedback->recipient_email)
+                ? $feedback->recipient_email : null;
+            $sender_name = isset($feedback->sender_name)
+                ? $feedback->sender_name : 'VuFind Feedback';
+            $sender_email = isset($feedback->sender_email)
+                ? $feedback->sender_email : 'noreply@vufind.org';
+            $email_subject = isset($feedback->email_subject)
+                ? $feedback->email_subject : 'VuFind Feedback';
+            if ($recipient_email == null) {
+                throw new \Exception(
+                    'Feedback Module Error: Recipient Email Unset (see config.ini)'
+                );
+            }
+
+            $email_message = 'Dear  ' . $recipient_name . ",\n\n";
+            if (!empty($name)) {
+                $email_message = 'Name: ' . $name . "\n";
+            }
+            $email_message .= 'Email: ' . $users_email . "\n";
+            $email_message .= 'Comments: ' . $comments . "\n\n";
+            $email_message .= '- ' . $sender_name;
+
+            // This sets up the email to be sent
+            // Attempt to send the email and show an appropriate flash message:
+            try {
+                $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+                $mailer->send(
+                    $recipient_email, $sender_email, $email_subject, $email_message
+                );
+                $this->flashMessenger()->addMessage(
+                    'Thank you for your feedback.', 'success'
+                );
+            } catch (MailException $e) {
+                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+            }
+        } else {
+            $this->flashMessenger()->addMessage('recaptcha_not_passed', 'error');
         }
-        $validator = new \Zend\Validator\EmailAddress();
-        if (!$validator->isValid($users_email)) {
-            throw new \Exception('Email address is invalid');
-        }
-
-        // These settings are set in the feedback settion of your config.ini
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-        $feedback = isset($config->Feedback) ? $config->Feedback : null;
-        $recipient_email = isset($feedback->recipient_email)
-            ? $feedback->recipient_email : null;
-        $recipient_name = isset($feedback->recipient_name)
-            ? $feedback->recipient_name : 'Your Library';
-        $email_subject = isset($feedback->email_subject)
-            ? $feedback->email_subject : 'VuFind Feedback';
-        $sender_email = isset($feedback->sender_email)
-            ? $feedback->sender_email : 'noreply@vufind.org';
-        $sender_name = isset($feedback->sender_name)
-            ? $feedback->sender_name : 'VuFind Feedback';
-        if ($recipient_email == null) {
-            throw new \Exception(
-                'Feedback Module Error: Recipient Email Unset (see config.ini)'
-            );
-        }
-        if ($comments == "") {
-            throw new \Exception('Feedback Module Error: Comment Post Failed');
-        }
-
-        $email_message = 'Name: ' . $name . "\n";
-        $email_message .= 'Email: ' . $users_email . "\n";
-        $email_message .= 'Comments: ' . $comments . "\n";
-
-        // This sets up the email to be sent
-        $mail = new Mail\Message();
-        $mail->setBody($email_message);
-        $mail->setFrom($sender_email, $sender_name);
-        $mail->addTo($recipient_email, $recipient_name);
-        $mail->setSubject($email_subject);
-
-        $this->getServiceLocator()->get('VuFind\Mailer')->getTransport()
-            ->send($mail);
+        return $this->homeAction();
     }
 }
