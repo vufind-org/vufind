@@ -43,6 +43,18 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Construct the Resource table.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Resource
+     */
+    public static function getResource(ServiceManager $sm)
+    {
+        return new Resource($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
      * Construct the User table.
      *
      * @param ServiceManager $sm Service manager.
