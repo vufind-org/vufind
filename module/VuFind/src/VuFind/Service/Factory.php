@@ -561,17 +561,35 @@ class Factory
     }
 
     /**
-     * Construct the record cache.
+     * Construct the PermissionDeniedManager.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \VuFind\Record\Cache
+     * @return \VuFind\PermissionDeniedManager
      */
     public static function getPermissionDeniedManager(ServiceManager $sm)
     {
         return new \VuFind\PermissionDeniedManager(
             $sm->get('VuFind\Config')->get('permissionBehavior')
         );
+    }
+
+    /**
+     * Construct the PermissionManager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\PermissionManager
+     */
+    public static function getPermissionManager(ServiceManager $sm)
+    {
+            $permManager = new \VuFind\PermissionManager(
+                $sm->get('VuFind\Config')->get('permissions')
+            );
+            $permManager->setAuthorizationService(
+                $sm->get('ZfcRbac\Service\AuthorizationService')
+            );
+            return $permManager;
     }
 
     /**
@@ -797,9 +815,11 @@ class Factory
             ? $config->SearchTabs->toArray() : [];
         $filterConfig = isset($config->SearchTabsFilters)
             ? $config->SearchTabsFilters->toArray() : [];
+        $permissionConfig = isset($config->SearchTabsPermissions)
+            ? $config->SearchTabsPermissions->toArray() : [];
         return new \VuFind\Search\SearchTabsHelper(
             $sm->get('VuFind\SearchResultsPluginManager'),
-            $tabConfig, $filterConfig,
+            $tabConfig, $filterConfig, $permissionConfig,
             $sm->get('Application')->getRequest()
         );
     }

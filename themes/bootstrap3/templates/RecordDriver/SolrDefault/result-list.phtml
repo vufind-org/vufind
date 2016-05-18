@@ -153,12 +153,15 @@
       <? endif; ?>
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? $block = $this->linkdisplay()->getDisplayBlock('favorites.save'); ?>
-        <? if ($block !== false): ?>
-            <?=$block?>
-        <? else: ?>
+        <? $localBlock = $this->linkdisplay()->showLocalBlock('favorites.save'); ?>
+        <? if ($localBlock): ?>
             <? /* Add to favorites */ ?>
             <i class="fa fa-fw fa-star" aria-hidden="true"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+        <? else: ?>
+            <? $block = $this->linkdisplay()->getDisplayBlock('favorites.save'); ?>
+            <? if ($block): ?>
+                <?=$block?>
+            <? endif; ?>
         <? endif; ?>
         <? /* Saved lists */ ?>
         <div class="savedLists alert alert-info hidden">

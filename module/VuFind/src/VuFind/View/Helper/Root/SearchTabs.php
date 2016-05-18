@@ -113,14 +113,12 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         $retVal = [];
         $matchFound = false;
         $allFilters = $this->helper->getTabFilterConfig();
-        foreach ($this->helper->getTabConfig() as $key => $labelParam) {
+        $allPermissions = $this->helper->getTabPermissionConfig();
+        foreach ($this->helper->getTabConfig() as $key => $label) {
             $permissionName = null;
-            $labelArr = explode(':', $labelParam);
-            $label = $labelArr[0];
-            if (count($labelArr) > 1) {
-                $permissionName = $labelArr[1];
+            if (isset($allPermissions[$key])) {
+                $permissionName = $allPermissions[$key];
             }
-
             $class = $this->helper->extractClassName($key);
             $filters = isset($allFilters[$key]) ? (array)$allFilters[$key] : [];
             if ($class == $activeSearchClass

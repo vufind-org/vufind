@@ -159,6 +159,7 @@ $config = [
             'VuFind\ILSTitleHoldLogic' => 'VuFind\Service\Factory::getILSTitleHoldLogic',
             'VuFind\Logger' => 'VuFind\Service\Factory::getLogger',
             'VuFind\Mailer' => 'VuFind\Mailer\Factory',
+            'VuFind\PermissionManager' => 'VuFind\Service\Factory::getPermissionManager',
             'VuFind\PermissionDeniedManager' => 'VuFind\Service\Factory::getPermissionDeniedManager',
             'VuFind\ProxyConfig' => 'VuFind\Service\Factory::getProxyConfig',
             'VuFind\Recaptcha' => 'VuFind\Service\Factory::getRecaptcha',

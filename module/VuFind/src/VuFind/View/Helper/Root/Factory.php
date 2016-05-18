@@ -228,9 +228,10 @@ class Factory
      */
     public static function getLinkDisplay(ServiceManager $sm)
     {
-        $pdm = $sm->getServiceLocator()->get('VuFind\PermissionDeniedManager');
-
-        $ld = new LinkDisplay($pdm);
+        $ld = new LinkDisplay(
+            $sm->getServiceLocator()->get('VuFind\PermissionManager'),
+            $sm->getServiceLocator()->get('VuFind\PermissionDeniedManager')
+        );
         return $ld;
     }
 

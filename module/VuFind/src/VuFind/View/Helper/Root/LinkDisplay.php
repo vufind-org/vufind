@@ -28,6 +28,7 @@
  */
 namespace VuFind\View\Helper\Root;
 use VuFind\PermissionDeniedManager as PermissionDeniedManager;
+use VuFind\PermissionManager as PermissionManager;
 use Zend\View\Helper\AbstractHelper;
 
 /**
@@ -50,42 +51,82 @@ class LinkDisplay extends AbstractHelper
     protected $permissionDeniedManager;
 
     /**
+     * Permission manager to decide if a permission has been granted or not
+     *
+     * @var PermissionManager
+     */
+    protected $permissionManager;
+
+    /**
      * Constructor
      *
-     * @param PermissionsDeniedManager $permissionDeniedManager Search options
-     *                                                          plugin manager
+     * @param PermissionsManager       $permissionManager       Manager to decide
+     *                                                          if a permission has
+     *                                                          been granted or not
+     * @param PermissionsDeniedManager $permissionDeniedManager Manager for
+     *                                                          behavior on
+     *                                                          denied permissions
      */
     public function __construct(
+        PermissionManager $permissionManager,
         PermissionDeniedManager $permissionDeniedManager
     ) {
+        $this->permissionManager = $permissionManager;
         $this->permissionDeniedManager = $permissionDeniedManager;
+    }
+
+    /**
+     * Determine if a local block inside the template should be displayed
+     *
+     * @param string $context Name of the permission rule
+     *
+     * @return bool
+     */
+    public function showLocalBlock($context)
+    {
+        // Treat a non existing permission rule in this case as a granted permssion
+        // Just return true to indicate that the default can get applied
+        if ($this->permissionManager->permissionRuleExists($context) === false) {
+            return true;
+        }
+        // If permission has been granted, we do not need to continue
+        // Just return true to indicate that the default can get applied
+        if ($this->permissionManager->isAuthorized($context) === true) {
+            return true;
+        }
+        // If we are getting to this point, we know that the permission has been
+        // denied. Nevertheless show the local block if there is no
+        // permissionDeniedDisplayLogic set for this context.
+        $displayLogic = $this->permissionDeniedManager->getDisplayLogic($context);
+        if (!isset($displayLogic['action'])) {
+            return true;
+        }
+        return false;
     }
 
     /**
      * Get block to display
      *
-     * @param string                         $context Context for the permission
-     *                                                behavior
+     * @param string $context Name of the permission rule
      *
-     * @return string|bool
+     * @return string
      */
     public function getDisplayBlock($context)
     {
-        $favSaveDisplayLogic = $this->permissionDeniedManager
-            ->getDisplayLogic($context);
-        if ($favSaveDisplayLogic === false) {
-            return false;
+        $displayLogic = $this->permissionDeniedManager->getDisplayLogic($context);
+        if ($displayLogic) {
+            $return = '';
+            if ($displayLogic['action'] == 'showMessage') {
+                $return = $this->view->translate($displayLogic['value']);
+            }
+            elseif ($displayLogic['action'] == 'showTemplate') {
+                $return = $this->view->context($this->view)->renderInContext(
+                    $diplayLogic['value'],
+                    $this->permissionDeniedManager->getDisplayLogicParameters($context)
+                );
+            }
+            return $return;
         }
-        $return = '';
-        if ($favSaveDisplayLogic['action'] == 'showMessage') {
-            $return = $this->view->translate($favSaveDisplayLogic['value']);
-        }
-        elseif ($favSaveDisplayLogic['action'] == 'showTemplate') {
-            $return = $this->view->context($this->view)->renderInContext(
-                $favSaveDisplayLogic['value'],
-                $this->permissionDeniedManager->getDisplayLogicParameters($context)
-            );
-        }
-        return $return;
+        return null;
     }
 }
