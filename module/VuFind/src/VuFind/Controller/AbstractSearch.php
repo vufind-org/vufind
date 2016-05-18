@@ -731,13 +731,15 @@ class AbstractSearch extends AbstractBase
             : 30;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         $facets = $results->getPartialFieldFacets(
-            [$facet], false, $limit, $sort, $page
+            [$facet], false, $limit, $sort, $page,
+            $this->params()->fromQuery('facetop', 'AND') == 'OR'
         );
         $list = $facets[$facet]['data']['list'];
 
         $view = $this->createViewModel(
             [
                 'data' => $list,
+                'exclude' => $this->params()->fromQuery('facetexclude', 0),
                 'facet' => $facet,
                 'page' => $page,
                 'results' => $results,
