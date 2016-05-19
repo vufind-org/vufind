@@ -61,12 +61,8 @@ class FeedbackController extends AbstractBase
             $config = $this->getServiceLocator()->get('VuFind\Config')
                 ->get('config');
             $feedback = isset($config->Feedback) ? $config->Feedback : null;
-            $recipient_name = isset($feedback->recipient_name)
-                ? $feedback->recipient_name : 'Your Library';
             $recipient_email = isset($feedback->recipient_email)
                 ? $feedback->recipient_email : null;
-            $sender_name = isset($feedback->sender_name)
-                ? $feedback->sender_name : 'VuFind Feedback';
             $sender_email = isset($feedback->sender_email)
                 ? $feedback->sender_email : 'noreply@vufind.org';
             $email_subject = isset($feedback->email_subject)
@@ -77,13 +73,9 @@ class FeedbackController extends AbstractBase
                 );
             }
 
-            $email_message = 'Dear  ' . $recipient_name . ",\n\n";
-            if (!empty($name)) {
-                $email_message = 'Name: ' . $name . "\n";
-            }
+            $email_message = empty($name) ? '' : 'Name: ' . $name . "\n";
             $email_message .= 'Email: ' . $users_email . "\n";
             $email_message .= 'Comments: ' . $comments . "\n\n";
-            $email_message .= '- ' . $sender_name;
 
             // This sets up the email to be sent
             // Attempt to send the email and show an appropriate flash message:
