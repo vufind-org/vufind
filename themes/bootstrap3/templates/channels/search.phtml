@@ -3,8 +3,12 @@
 <? $this->headLink()->appendStylesheet('vendor/flickity.min.css'); ?>
 <? foreach ($channels as $key=>$channel): ?>
   <div class="channel-title">
-    <a href="<?=$channel['searchUrl'] ?>" class="pull-left"><i class="fa fa-fw fa-search" title="<?=$this->transEsc('Back to Search Results') ?>"></i></a>
-    <a href="<?=$channel['channelsUrl'] ?>" class="pull-left"><i class="fa fa-fw fa-plus-circle" title="<?=$this->transEsc('More Topics') ?>"></i></a>
+    <? if (isset($channel['searchUrl'])): ?>
+      <a href="<?=$channel['searchUrl'] ?>" class="pull-left"><i class="fa fa-fw fa-search" title="<?=$this->transEsc('Back to Search Results') ?>"></i></a>
+    <? endif; ?>
+    <? if (isset($channel['channelsUrl'])): ?>
+      <a href="<?=$channel['channelsUrl'] ?>" class="pull-left"><i class="fa fa-fw fa-plus-circle" title="<?=$this->transEsc('More Topics') ?>"></i></a>
+    <? endif; ?>
     <h2 class="pull-left"><?=$this->escapeHtml($channel['title'])?></h2>
   </div>
   <? $channelID = 'channel-' . $key; ?>

@@ -6,10 +6,19 @@ $(document).ready(function channelReady() {
     pageDots: false
   });
   $('.channel-record').click(function channelRecord() { return false; });
+  $('.channel').on('dragStart', function channelDrag() {
+    $('[aria-describedby]').popover('hide');
+  });
   $('.channel').on('staticClick', function channelPopover(event, pointer, cellElement, cellIndex) {
     var record = $(cellElement);
+    console.log();
     if (record.data('popover')) {
-      record.popover('toggle');
+      if (record.attr('aria-describedby')) {
+        record.popover('hide');
+      } else {
+        $('[aria-describedby]').popover('hide');
+        record.popover('show');
+      }
     } else {
       record.data('popover', true);
       record.popover({
@@ -19,6 +28,7 @@ $(document).ready(function channelReady() {
         trigger: 'focus',
         container: '#'+record.closest('.channel').attr('id')
       });
+      $('[aria-describedby]').popover('hide');
       record.popover('show');
       $.ajax({
         url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
@@ -26,7 +36,7 @@ $(document).ready(function channelReady() {
         data: {tab: 'description'}
       })
       .done(function channelPopoverDone(data) {
-        record.data('bs.popover').options.content = '<h2>'+record.text()+'</h2>'
+        record.data('bs.popover').options.content = '<h2>'+htmlEncode(record.text())+'</h2>'
           + '<div class="btn-group btn-group-justified">'
           + '<a href="'+VuFind.path+'/Channels/Record?'
             + 'id=' + encodeURIComponent(record.attr('data-record-id'))
