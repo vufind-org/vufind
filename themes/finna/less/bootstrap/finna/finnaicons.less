@@ -11,27 +11,19 @@
     font-weight: normal;
     font-style: normal;
 }
-@font-face {
-    font-family: 'Fontawesome';
-    src:url('../../../themes/finna/css/fonts/fontawesome-webfont.eot?adcatf');
-    src:url('../../../themes/finna/css/fonts/fontawesome-webfont.eot?#iefixadcatf') format('embedded-opentype'),
-    url('../../../themes/finna/css/fonts/fontawesome-webfont.woff?adcatf') format('woff'),
-    url('../../../themes/finna/css/fonts/fontawesome-webfont.ttf?adcatf') format('truetype'),
-    url('../../../themes/finna/css/fonts/fontawesome-webfont.svg?adcatf#Fontawesome') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-[class^="fa-"], [class*=" fa-"], .iconlabel:before, .slick-prev, .slick-next, .slick-dots li, .openUrlEmbed:before  {
-    font-family: 'icomoon';
-    speak: none;
-    text-transform: none;
-    font-weight: normal;
+.iconlabel:before, .slick-prev, .slick-next, .slick-dots li, .openUrlEmbed:before  {
+    font-family: icomoon;
     font-size: inherit;
+    font-weight: normal;
     /* Better Font Rendering =========== */
     text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+[class^="fa-"], [class*=" fa-"], .iconlabel:before, .slick-prev, .slick-next, .slick-dots li, .openUrlEmbed:before  {
+    speak: none;
+    text-transform: none;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
     text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 }
 a [class^="fa-"]:hover, a [class*=" fa-"]:hover {
@@ -40,71 +32,66 @@ a [class^="fa-"]:hover, a [class*=" fa-"]:hover {
 .disabled > a [class^="fa-"]:hover, .disabled a [class*=" fa-"]:hover {
     cursor: not-allowed;
 }
-i {
-  font-style: normal;
-}
 .fa {
-  cursor: default;
-  line-height: 1;
-  display: inline-block;
+    cursor: default;
 }
 
 .iconlabel {
-  color: @gray;
-  background: none;
-  padding: 0px;
-  font-weight: 400;
-  margin-right: 10px;
-  font-size: 1.0em;
-  &:before {
-      padding-right: 3px;
-      font-size: 1.3em;
-      vertical-align: text-bottom;
-  }
+    color: @gray;
+    background: none;
+    padding: 0px;
+    font-weight: 400;
+    margin-right: 10px;
+    font-size: 1.0em;
+    &:before {
+        padding-right: 3px;
+        font-size: 1.3em;
+        vertical-align: text-bottom;
+    }
 }
 table .iconlabel {
     line-height: 1.3em;
 }
 .template-name-results .iconlabel {
-  letter-spacing: 0px;
-  font-size: 1em;
+    letter-spacing: 0px;
+    font-size: 1em;
 }
 
 // define common image icons and set them in the middle
 .image-popup-trigger {
-        &:hover {
-            text-decoration: none;   
-        }
-        & img {
-            box-shadow: 0px 0px 0px 4px @gray-lighter inset;
-            position: relative;
-            width: 100%;
-        }
+    &:hover {
+        text-decoration: none;   
+    }
+    & img {
+        box-shadow: 0px 0px 0px 4px @gray-lighter inset;
+        position: relative;
+        width: 100%;
+    }
 
-        & .iconlabel {
-            width: 100%;
-            color: @body-bg;
-            display: none;
+    & .iconlabel {
+        width: 100%;
+        color: @body-bg;
+        display: none;
 
-            &:before {
-                padding-right: 3px;
-                position: absolute;
-                font-size: 39px;
-                color: @gray-lighter;
-                z-index: 0;
+        &:before {
+            padding-right: 3px;
+            position: absolute;
+            font-size: 39px;
+            color: @gray-lighter;
+            z-index: 0;
+            top: 50%;
+            left: 50%;
+            margin-left: -18px;
+            margin-top: -27px;
+            @media (min-width:@screen-xs-min) and (max-width:@screen-sm-max) {
+                font-size: 26px;
                 top: 50%;
                 left: 50%;
-                margin-left: -18px;
-                margin-top: -27px;
-                @media (min-width:@screen-xs-min) and (max-width:@screen-sm-max) {
-                    font-size: 26px;
-                    top: 50%;
-                    left: 50%;
-                    margin-left: -12.5px;
-                    margin-top: -18.5px;
-                }
+                margin-left: -12.5px;
+                margin-top: -18.5px;
             }
         }
+    }
     @media (max-width:@screen-xs-max) {
         & img {
             box-shadow: none;
@@ -152,13 +139,12 @@ table .iconlabel {
     }  
 }
 .fa-spinner {
-  margin-left: 5px;
+    margin-left: 5px;
 }
 .fa-spinner:before {
-  font-family:'Fontawesome';
-  content: "\f110";
-  color: gray;
-  font-size: 20px;
+    content: "\f110";
+    color: gray;
+    font-size: 20px;
 }
 #description_text .fa-spinner {
     position: absolute;
@@ -166,44 +152,42 @@ table .iconlabel {
     top: 0;
 }
 .fa-square-o:before {
-  font-family:'Fontawesome';
-  content: "\f096";
-  margin-top:-2px;
+    content: "\f096";
+    margin-top:-2px;
 }
 .fa-check-square-o:before {
-  font-family:'Fontawesome';
-  content: "\f14a";
-  margin-top: -2px;
+    content: "\f14a";
+    margin-top: -2px;
 }
 /* ---  set  navbar logo display only the logo --- */
 .navbar-header .fa-finnalogo {
-  width: 30px;
-  height: 40px;
-  background: url('../images/finna-logo.png'); // fallback if no svg support
-  background: url('../images/finna-logo.svg');
-  overflow: hidden;
-  vertical-align: middle;
-  background-repeat: no-repeat;
-  background-position: 0px 2px;
-  background-size: 340%;
-}
-.navbar-brand {
-  & div.navbar-lang-logo {
     width: 30px;
     height: 40px;
-    & div.logo-wrapper  {
-      position: absolute;
-      overflow: hidden;
-      width: 30px;
-      height: 40px;
-      & img {
-        position: relative;
-        top: -2px;
-        vertical-align: middle;
-        max-width: 340%;
-      }
+    background: url('../images/finna-logo.png'); // fallback if no svg support
+    background: url('../images/finna-logo.svg');
+    overflow: hidden;
+    vertical-align: middle;
+    background-repeat: no-repeat;
+    background-position: 0px 2px;
+    background-size: 340%;
+}
+.navbar-brand {
+    & div.navbar-lang-logo {
+        width: 30px;
+        height: 40px;
+        & div.logo-wrapper  {
+            position: absolute;
+            overflow: hidden;
+            width: 30px;
+            height: 40px;
+            & img {
+                position: relative;
+                top: -2px;
+                vertical-align: middle;
+                max-width: 340%;
+            }
+        }
     }
-  }
 }
 .logo .finnalogo {
     display: inline-block;
@@ -221,296 +205,370 @@ table .iconlabel {
         cursor: pointer;
     }
 }
-.fa-check {
-    font-family: 'FontAwesome';
-}
 .fa-checkbox_checked:before {
-	content: "\e61a";
+    font-family: icomoon;
+    content: "\e61a";
 }
 .fa-checkbox:before {
-	content: "\e61b";
+	  font-family: icomoon;
+	  content: "\e61b";
 }
 .fa-external-link:before, .openUrlEmbed:before {
+    font-family: icomoon;
     font-size: 1.18em;
 }
 .fa-www-link:before, .iconlabel.format-electronic:before, .fa-external-link:before, .openUrlEmbed:before {
-    font-family: 'FontAwesome';
     content: "\F138";
 }
 .fa-link:before {
-    font-family: 'FontAwesome';
     content: "\f0c1";
 }
 .fa-unlink:before {
-    font-family: 'FontAwesome';
     content: "\F127";
 }
 .fa-handle-left:before, .slick-prev:before {
+    font-family: icomoon;
     content: "\e60a";
 }
 .fa-handle-right:before, .slick-next:before {
+    font-family: icomoon;
     content: "\e611";
 }
 .fa-handle-close:before {
+    font-family: icomoon;
     content: "\e612";
 }
 .fa-handle-open:before {
+    font-family: icomoon;
     content: "\e613";
 }
 .fa-datevis:before {
+    font-family: icomoon;
     content: "\e614";
 }
-.fa-download:before {
-    font-family: 'FontAwesome';   
-}
 .fa-ratehalf:before {
+    font-family: icomoon;
     content: "\e607";
 }
 .fa-lock:before {
+    font-family: icomoon;
     content: "\e602";
 }
 .fa-info:before {
+    font-family: icomoon;
     content: "\e601";
 }
 .fa-zoom-out:before {
+    font-family: icomoon;
     content: "\e603";
 }
 .fa-zoom-in:before {
+    font-family: icomoon;
     content: "\e606";
 }
 .fa-info-database:before {
+    font-family: icomoon;
     content: "\e608";
 }
 .fa-browse-database:before {
+    font-family: icomoon;
     content: "\e609";
 }
 .fa-phone:before {
+    font-family: icomoon;
     content: "\e618";
 }
 
 .fa-asterisk:before {
+    font-family: icomoon;
     content: "\e619";
 }
 .fa-heart:before, .fa-plus:before, .fa-plus-square:before {
+    font-family: icomoon;
     content: "\e60c";
 }
 .fa-ratenone:before {
+    font-family: icomoon;
     content: "\e60f";
 }
 .fa-google-plus:before {
+    font-family: icomoon;
     content: "\e50";
 }
 .fa-checked:before {
+    font-family: icomoon;
     content: "\e49";
 }
 .fa-question:before {
+    font-family: icomoon;
     content: "\e610";
 }
 .fa-new-window:before {
+    font-family: icomoon;
     content: "\e046";
 }
 .fa-close-big:before {
+    font-family: icomoon;
     content: "\e045";
 }
 .fa-close:before {
+    font-family: icomoon;
     content: "\e044";
 }
 .fa-Holdings:before {
+    font-family: icomoon;
     content: "\e043";
 }
 .fa-ok:before, .slick-dots li button:before {
+    font-family: icomoon;
     content: "\e7d";
 }
 .fa-sign-in:before {
+    font-family: icomoon;
     content: "\e047";
 }
 .fa-sign-out:before {
+    font-family: icomoon;
     content: "\e042";
 }
 .fa-home:before {
+    font-family: icomoon;
     content: "\e041";
 }
 .navbar .fa-home:before {
     color: @navbar-default-link-color;
 }
 .fa-public:before {
+    font-family: icomoon;
     content: "\e040";
 }
 .fa-files:before, .fa-ComponentParts:before {
+    font-family: icomoon;
     content: "\e03f";
 }
 .fa-Details:before {
+    font-family: icomoon;
     content: "\e03e";
 }
 .fa-bookmark:before {
+    font-family: icomoon;
     content: "\e03d";
 }
 .fa-qr-code:before {
+    font-family: icomoon;
     content: "\e03c";
 }
 .fa-uniE03B:before {
+    font-family: icomoon;
     content: "\e03b";
 }
 .fa-expand:before, .fa-magnify:before {
+    font-family: icomoon;
     content: "\e03a";
 }
 .fa-condense:before {
+    font-family: icomoon;
     content: "\e61d";  
 }
 .fa-search-adv:before {
+    font-family: icomoon;
     content: "\e600";
 }
 .fa-pinterest:before {
+    font-family: icomoon;
     content: "\e038";
 }
 .fa-twitter:before {
+    font-family: icomoon;
     content: "\e037";
 }
 .fa-facebook:before {
+    font-family: icomoon;
     content: "\e036";
 }
 .fa-facebook-button:before {
+    font-family: icomoon;
     content: "\e61e";   
 }
 .fa-bell:before {
+    font-family: icomoon;
     content: "\e035";
 }
 .fa-list:before {
+    font-family: icomoon;
     content: "\e034";
 }
 .fa-cart:before {
+    font-family: icomoon;
     content: "\e033";
 }
 .fa-grid:before {
+    font-family: icomoon;
     content: "\e032";
 }
 .fa-bars:before, .fa-condensed:before {
+    font-family: icomoon;
     content: "\e031";
 }
 .fa-stop:before {
+    font-family: icomoon;
     content: "\e030";
 }
 .fa-unhappy:before {
+    font-family: icomoon;
     content: "\e02f";
 }
 .fa-times {
+    font-family: icomoon;
     margin-top:1px;
 }
 .fa-times:before, .fa-remove:before {
+    font-family: icomoon;
     content: "\e02e";
 }
 .fa-available:before {
+    font-family: icomoon;
     content: "\e02d";
 }
 .fa-sitemap:before, .fa-HierarchyTree:before {
+    font-family: icomoon;
     content: "\e02c";
 }
 .fa-ratefull:before {
+    font-family: icomoon;
     content: "\e02b";
 }
 .fa-CollectionList:before {
+    font-family: icomoon;
     content: "\e02a";
 }
 .fa-arrow-left:before {
+    font-family: icomoon;
     content: "\e029";
 }
 .icon-uniE028:before {
+    font-family: icomoon;
     content: "\e028";
 }
 .icon-uniE026:before {
+    font-family: icomoon;
     content: "\e026";
 }
 .fa-arrow-right:before {
+    font-family: icomoon;
     content: "\e025";
 }
 .icon-uniE024:before {
+    font-family: icomoon;
     content: "\e024";
 }
 .fa-arrow-up:before {
+    font-family: icomoon;
     content: "\e023";
 }
 .fa-arrow-down:before {
+    font-family: icomoon;
     content: "\e027";
 }
 .fa-background-arrow-up:before {
+    font-family: icomoon;
     content: "\e022";
 }
 .fa-list-alt:before {
+    font-family: icomoon;
     content: "\e021";
 }
 .fa-send-feedback:before {
+    font-family: icomoon;
     content: "\e020";
 }
 .fa-envelope:before, .iconlabel.format-1otherletter:before {
+    font-family: icomoon;
     content: "\e01f";
 }
 .fa-user-document:before {
+    font-family: icomoon;
     content: "\e01e";
 }
 .fa-UserComments:before {
+    font-family: icomoon;
     content: "\e01d";
 }
 .fa-Map:before {
+    font-family: icomoon;
 	  content: "\e002";
 }
 .fa-map-marker:before {
-	font-family:'Fontawesome';
     content: "\f041";
 }
 .fa-search-small:before {
+    font-family: icomoon;
     content: "\e01c";
 }
 .fa-checked-file:before {
+    font-family: icomoon;
     content: "\e01b";
 }
 .fa-reset:before {
+    font-family: icomoon;
     content: "\e01a";
 }
 .fa-minus:before {
+    font-family: icomoon;
     content: "\e019";
 }
 .fa-plus-big:before {
+    font-family: icomoon;
     content: "\e018";
 }
 .fa-plus-small:before {
+    font-family: icomoon;
     content: "\e017";
 }
 .fa-pen:before {
+    font-family: icomoon;
     content: "\e016";
 }
 .icon-uniE014:before {
+    font-family: icomoon;
     content: "\e014";
 }
 .icon-uniE013:before {
+    font-family: icomoon;
     content: "\e013";
 }
 .fa-print:before {
+    font-family: icomoon;
     content: "\e012";
 }
 .fa-search:before {
+    font-family: icomoon;
     content: "\e011";
 }
 .fa-info2:before {
+    font-family: icomoon;
     content: "\e010";
 }
 .fa-info-big:before {
+    font-family: icomoon;
     content: "\e00f";
 }
 .fa-rss:before {
-    font-family:'Fontawesome';
     content: "\f09e";
 }
 .fa-user:before {
+    font-family: icomoon;
     content: "\e00e";
 }
 .fa-star:before {
+    font-family: icomoon;
     content: "\e02b";
 }
 .fa-star-empty:before {
+    font-family: icomoon;
     content: "\e60f";
 }
 .fa-qrcode:before {
-    font-family:'Fontawesome';
     content: "\f029";
 }
 .iconlabel.format-1bookebook:before, .iconlabel.format-1bookebooksection:before, .iconlabel.format-1otherelectronic:before {
@@ -550,6 +608,7 @@ table .iconlabel {
     content: "\e007";
 }
 .fa.fa-TOC:before, .iconlabel.format-1document:before, .iconlabel.format-1documentarchive:before, .iconlabel.format-1documentarchivematerial:before, .iconlabel.format-1documentarchiveitem:before, .iconlabel.format-1documentarchivefonds:before, .iconlabel.format-1documentarchiveseries:before, .iconlabel.format-1documentarchivecollection:before, .iconlabel.format-1documentdigitizedarchiveitem:before {
+    font-family: icomoon;
     content: "\e006";
 }
 .iconlabel.format-0note:before, .iconlabel.format-0manuscript:before, .iconlabel.format-0musicalscore:before {
@@ -566,13 +625,16 @@ table .iconlabel {
 }
 
 .fa-first-page:before {
+    font-family: icomoon;
     content: "\e604";
 }
 .fa-last-page:before {
+    font-family: icomoon;
     content: "\e605";
 }
 /** toolbar icons **/
 .nav-pills .fa {
+    font-family: icomoon;
     font-size: 14px;
     padding: 0px;
     padding-right: 1px;
@@ -640,6 +702,7 @@ table .iconlabel {
 
 /* Image gallery popup icons */
 .fa-magnify {
+    font-family: icomoon;
     position: absolute;
     font-size: .9em;
     opacity: 0;
@@ -707,7 +770,6 @@ table .iconlabel {
     text-decoration:line-through;
 }
 .list-group-item.active i.fa.fa-check-square-o:before, .sidebar .list-group-item .main.applied i.fa.fa-check-square-o:before, .sidebar .list-group.facet a.list-group-item.active i.fa.fa-check:before {
-    font-family: 'FontAwesome';
     content: "\f00c";
     color: @body-bg;
 }
