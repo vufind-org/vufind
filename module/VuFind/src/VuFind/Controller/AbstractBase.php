@@ -29,7 +29,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\PermissionManager,
+    VuFind\PermissionDeniedManager,
     VuFind\Exception\ILS as ILSException,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\MvcEvent,
@@ -70,48 +70,60 @@ class AbstractBase extends AbstractActionController
     {
         if ($this->accessPermission) {
             $exceptionDescription = 'Access denied.';
-            $pm = $this->getPermissionDeniedManager();
-            $dl = $pm->getActionLogic($this->accessPermission);
+            $pm = $this->getPermissionManager();
             // Make sure the current user has permission to access the module:
-            if (isset($dl['action'])) {
-                switch ($dl['action']) {
-                    case 'promptlogin':
-                        $e->setResponse($this->forceLogin(null, [], false));
-                        break;
-                    case 'showMessage':
-                        $this->flashMessenger()->addMessage(
-                            $this->translate($dl['value']), 'error'
-                        );
-                        $e->setResponse(
-                            $this->redirect()->toRoute('error-permissiondenied')
-                        );
-                        break;
-                    case 'showTemplate':
-                        // TODO: implement me
-                        break;
-                    case 'exception':
-                        if (isset($dl['exceptionMessage'])) {
-                            $exceptionDescription = $dl['exceptionMessage'];
-                        }
-                        if (
-                            isset($dl['value'])
-                            && class_exists($dl['value'])
-                            && is_subclass_of($dl['value'], 'Exception')
-                        ) {
-                            throw new $dl['value']($exceptionDescription);
-                        }
-                        // Do not break; if the if-clause is not true,
-                        // just continue with default section
-                    default:
-                        throw new ForbiddenException($exceptionDescription);
-                        break;
+            if (
+                $pm->permissionRuleExists($this->accessPermission) !== false
+                && $pm->isAuthorized($this->accessPermission) !== true
+            ) {
+                $pdm = $this->getPermissionDeniedManager();
+                $dl = $pdm->getActionLogic($this->accessPermission);
+                if (isset($dl['exceptionMessage'])) {
+                    $exceptionDescription = $dl['exceptionMessage'];
                 }
-            }
-            else if ($dl === false) {
-                // if permission is necessary, but denied and we have no
-                // behavior rules, prompt for login as a default behavior
-                $e->setResponse($this->forceLogin(null, [], false));
-                throw new ForbiddenException($exceptionDescription);
+                if (isset($dl['action'])) {
+                    switch ($dl['action']) {
+                        case 'promptlogin':
+                            $e->setResponse($this->forceLogin(null, [], false));
+                            break;
+                        case 'showMessage':
+                            $this->flashMessenger()->addMessage(
+                                $this->translate($dl['value']), 'error'
+                            );
+                            $e->setResponse(
+                                $this->redirect()->toRoute('error-permissiondenied')
+                            );
+                            break;
+                        case 'exception':
+                            if (
+                                isset($dl['value'])
+                                && class_exists($dl['value'])
+                            ) {
+                                $exception = new $dl['value']($exceptionDescription);
+                                if (is_a($exception, 'Exception')) {
+                                    error_log(
+                                        "Custom Exception: "
+                                        .$dl['value']."(".$exceptionDescription.")"
+                                    );
+                                    throw $exception;
+                                }
+                            }
+                            // Do not break; if the if-clause is not true,
+                            // just continue with default section
+                        default:
+                            error_log(
+                                "Default Exception: ForbiddenException with message: "
+                                .$exceptionDescription
+                            );
+                            throw new ForbiddenException($exceptionDescription);
+                            break;
+                    }
+                }
+                else if ($dl === false) {
+                    // if we have no behavior rules,
+                    // prompt for login as a default behavior
+                    $e->setResponse($this->forceLogin(null, [], false));
+                }
             }
         }
         return;
@@ -273,6 +285,16 @@ class AbstractBase extends AbstractActionController
     protected function getPermissionDeniedManager()
     {
         return $this->getServiceLocator()->get('VuFind\PermissionDeniedManager');
+    }
+
+    /**
+     * Get the PermissionManager
+     *
+     * @return \VuFind\PermissionManager
+     */
+    protected function getPermissionManager()
+    {
+        return $this->getServiceLocator()->get('VuFind\PermissionManager');
     }
 
     /**
