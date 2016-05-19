@@ -89,12 +89,6 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
             'value' => 'record/ActionTest'
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
-        $mockAuth = $this->getMockBuilder('ZfcRbac\Service\AuthorizationService')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
-            ->will($this->returnValue(false));
-        $pm->setAuthorizationService($mockAuth);
 
         $this->assertEquals($expected, $pm->getActionLogic('permissionDeniedTemplate'));
         $this->assertEquals($expectedNoParams, $pm->getActionLogic('permissionDeniedTemplateNoParams'));
@@ -116,12 +110,6 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
             'exceptionMessage' => 'exception_message'
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
-        $mockAuth = $this->getMockBuilder('ZfcRbac\Service\AuthorizationService')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
-            ->will($this->returnValue(false));
-        $pm->setAuthorizationService($mockAuth);
 
         $this->assertEquals($expected, $pm->getActionLogic('permissionDeniedException'));
         $this->assertEquals([], $pm->getActionLogicParameters('permissionDeniedException'));
@@ -140,12 +128,6 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
             'action' => 'promptlogin'
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
-        $mockAuth = $this->getMockBuilder('ZfcRbac\Service\AuthorizationService')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
-            ->will($this->returnValue(false));
-        $pm->setAuthorizationService($mockAuth);
 
         $this->assertEquals($expected, $pm->getActionLogic('permissionDeniedNothing'));
     }
@@ -163,33 +145,8 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
             'action' => 'promptlogin'
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
-        $mockAuth = $this->getMockBuilder('ZfcRbac\Service\AuthorizationService')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
-            ->will($this->returnValue(false));
-        $pm->setAuthorizationService($mockAuth);
 
         $this->assertEquals($expected, $pm->getActionLogic('garbage'));
     }
 
-    /**
-     * Test a granted permission
-     * getActionLogic should return false as the PermissionDeniedManager
-     * has nothing to do
-     *
-     * @return void
-     */
-    public function testGrantedPermission()
-    {
-        $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
-        $mockAuth = $this->getMockBuilder('ZfcRbac\Service\AuthorizationService')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
-            ->will($this->returnValue(true));
-        $pm->setAuthorizationService($mockAuth);
-
-        $this->assertEquals(false, $pm->getActionLogic('permissionDeniedTemplate'));
-    }
 }
