@@ -648,7 +648,7 @@ class OAI
             if (strstr($xml, $attribute)) {
                 // echo "DEBUG: removing attribute: $attribute\n";
             } else {
-                $extractedAttributes = ($extractedAttributes == '') ? 
+                $extractedAttributes = ($extractedAttributes == '') ?
                     $attribute : $extractedAttributes . " " . $attribute;
             }
         }
