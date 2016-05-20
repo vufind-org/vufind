@@ -44,13 +44,16 @@ class FeedbackController extends AbstractBase
      */
     public function emailAction()
     {
-        // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
-            $name = $this->params()->fromPost('name');
-            $users_email = $this->params()->fromPost('email');
-            $comments = $this->params()->fromPost('comments');
+        $view = $this->createViewModel();
+        $view->useRecaptcha = $this->recaptcha()->active('feedback');
+        $view->name = $this->params()->fromPost('name');
+        $view->email = $this->params()->fromPost('email');
+        $view->comments = $this->params()->fromPost('comments');
 
-            if (empty($users_email) || empty($comments)) {
+        // Process form submission:
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+
+            if (empty($view->email) || empty($view->comments)) {
                 $this->flashMessenger()->addMessage('bulk_error_missing', 'error');
                 return;
             }
@@ -75,9 +78,9 @@ class FeedbackController extends AbstractBase
                 );
             }
 
-            $email_message = empty($name) ? '' : 'Name: ' . $name . "\n";
-            $email_message .= 'Email: ' . $users_email . "\n";
-            $email_message .= 'Comments: ' . $comments . "\n\n";
+            $email_message = empty($view->name) ? '' : 'Name: ' . $view->name . "\n";
+            $email_message .= 'Email: ' . $view->email . "\n";
+            $email_message .= 'Comments: ' . $view->comments . "\n\n";
 
             // This sets up the email to be sent
             // Attempt to send the email and show an appropriate flash message:
@@ -94,7 +97,7 @@ class FeedbackController extends AbstractBase
             } catch (MailException $e) {
                 $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             }
-            return $this->createViewModel();
         }
+        return $view;
     }
 }
