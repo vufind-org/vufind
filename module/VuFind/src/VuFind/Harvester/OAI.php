@@ -638,6 +638,19 @@ class OAI
         $xml = trim($record->metadata->asXML());
         preg_match('/^<metadata([^\>]*)>/', $xml, $extractedNs);
         $xml = preg_replace('/(^<metadata[^\>]*>)|(<\/metadata>$)/m', '', $xml);
+		// remove all attributes from extractedNs that appear deeper in xml:
+        $attributes = array();
+        preg_match_all('/(^| )[^"]*"?[^"]*"/', $extractedNs[1], $attributes);
+        $extractedAttributes = '';
+        foreach($attributes[0] as $attribute) {
+            $attribute = trim($attribute);
+            // if $attribute appears in xml, remove it:
+            if (strstr($xml, $attribute)) {
+                // echo "DEBUG: removing attribute: $attribute\n";
+            } else {
+                $extractedAttributes = ($extractedAttributes == '') ? $attribute : $extractedAttributes . " " . $attribute;
+            }
+        }
 
         // If we are supposed to inject any values, do so now inside the first
         // tag of the file:
@@ -682,7 +695,7 @@ class OAI
         }
         $xml = $this->fixNamespaces(
             $xml, $record->getDocNamespaces(),
-            isset($extractedNs[1]) ? $extractedNs[1] : ''
+            $extractedAttributes
         );
 
         return trim($xml);
