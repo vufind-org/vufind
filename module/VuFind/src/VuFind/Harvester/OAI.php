@@ -638,7 +638,7 @@ class OAI
         $xml = trim($record->metadata->asXML());
         preg_match('/^<metadata([^\>]*)>/', $xml, $extractedNs);
         $xml = preg_replace('/(^<metadata[^\>]*>)|(<\/metadata>$)/m', '', $xml);
-		// remove all attributes from extractedNs that appear deeper in xml:
+	// remove all attributes from extractedNs that appear deeper in xml:
         $attributes = array();
         preg_match_all('/(^| )[^"]*"?[^"]*"/', $extractedNs[1], $attributes);
         $extractedAttributes = '';
