@@ -240,7 +240,7 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
             . 'The Study Of P|pes 1 '
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 '
             . 'The Study of "Important" Things 1 '
-            . 'more',
+            . 'more ...',
             $this->findCss($page, '#modal #facet-list-index')->getText()
         );
         // sort by index again
