@@ -801,7 +801,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 'item_id'      => $rowItem['ITEMNO'],
                 'status'       => $status,
                 'location'     => $loc,
-                'publicNotes'  => $rowItem['PUBLICNOTES'],
+                'item_notes'  => (null == $rowItem['PUBLICNOTES']
+                    ? null : [ $rowItem['PUBLICNOTES'] ]),
                 'notes'        => $notes["MFHD"],
                 //'reserve'      => (null == $rowItem['RESERVES'])
                 //    ? 'N' : $rowItem['RESERVES'],
