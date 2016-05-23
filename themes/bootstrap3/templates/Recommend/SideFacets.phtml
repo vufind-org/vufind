@@ -1,4 +1,6 @@
 <?
+  $this->headScript()->appendFile('facet-list.js');
+
   $results = $this->recommend->getResults();
   $options = $this->searchOptions($this->searchClassId);
 ?>
