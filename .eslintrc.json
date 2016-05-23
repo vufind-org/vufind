@@ -1,6 +1,11 @@
 // npm i -g eslint
 {
   "extends": "eslint:recommended",
+  "globals": {
+    "$": false,
+    "document": false,
+    "window": false
+  },
   "rules": {
     "block-spacing" : ["error", "always"],
     "block-scoped-var": "error",
