@@ -1,6 +1,6 @@
 /*global jQuery, window, document, console, setTimeout, clearTimeout */
 /**
- * crhallberg/autocomplete.js 0.14
+ * crhallberg/autocomplete.js 0.14.1
  * ~ @crhallberg
  */
 (function ( $ ) {
@@ -240,11 +240,6 @@
 
   $.fn.autocomplete = function(settings) {
 
-    if ('undefined' == typeof settings.handler) {
-      console.error('handler function not provided for autocomplete');
-      return this;
-    }
-
     options = $.extend( {}, options, settings );
 
     return this.each(function() {
@@ -262,6 +257,9 @@
           cache[cid] = {};
         }
         return input;
+      } else if ('undefined' == typeof settings.handler) {
+        console.error('handler function not provided for autocomplete');
+        return this;
       } else {
         element = $('.autocomplete-results');
         if (element.length == 0) {
