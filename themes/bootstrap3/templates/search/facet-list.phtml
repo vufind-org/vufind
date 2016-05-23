@@ -109,7 +109,7 @@ $('.js-facet-next-page').click(function facetLightboxMore() {
       button.before(list);
       if (list.length && htmlDiv.find('.js-facet-next-page').length) {
         button.attr('data-page', page + 1);
-        button.text(VuFind.translate('more'));
+        button.text(VuFind.translate('more')+' ...');
         button.removeAttr('disabled');
       } else {
         button.remove();
