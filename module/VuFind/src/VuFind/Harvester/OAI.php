@@ -337,7 +337,7 @@ class OAI
             list($resumeSet, $resumeToken, $this->startDate)
                 = explode("\t", file_get_contents($this->lastStateFile));
         }
-    
+
         // Loop through all of the selected sets:
         foreach ($sets as $set) {
             // If we're resuming and there are multiple sets, find the right one.
@@ -1056,4 +1056,3 @@ class OAI
         Console::writeLine($str);
     }
 }
-
