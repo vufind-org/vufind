@@ -127,11 +127,6 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-contrib-sass');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-less-to-sass');
-
   grunt.registerTask('default', ['less', 'uglify']);
   grunt.registerTask('js', ['clean:uglify', 'eslint', 'uglify']);
 };
