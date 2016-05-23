@@ -99,6 +99,15 @@ module.exports = function(grunt) {
         }
       }
     },
+    clean: {
+      uglify: ['themes/bootstrap3/js/vendor.min.js']
+    },
+    eslint: {
+      options: {
+        configFile: '.eslintrc.json'
+      },
+      bootstrap3: ['themes/bootstrap3/js/*.js']
+    },
     // JS compression
     uglify: {
       options: {
@@ -124,5 +133,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-less-to-sass');
 
   grunt.registerTask('default', ['less', 'uglify']);
-  grunt.registerTask('js', ['uglify']);
+  grunt.registerTask('js', ['clean:uglify', 'eslint', 'uglify']);
 };
