@@ -6,7 +6,6 @@
     "document": false,
     "window": false
   },
-  "fix": true,
   "rules": {
     "block-spacing" : ["error", "always"],
     "block-scoped-var": "error",
