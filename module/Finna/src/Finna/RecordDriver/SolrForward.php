@@ -258,7 +258,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $result[] = [
                     'name' => (string)$agent->AgentName,
                     'date' => (string)$attributes->{'elokuva-elolevittaja-vuosi'},
-                    'method' => (string)$attributes->{'elokuva-elolevittaja-levitystapa'}
+                    'method'
+                        => (string)$attributes->{'elokuva-elolevittaja-levitystapa'}
                 ];
             }
         }
@@ -458,12 +459,11 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
             $nameAttrs = $agent->AgentName->attributes();
             $roleName = '';
             $uncredited = false;
+            $uncreditedRole = 'elokuva-elokreditoimatonnayttelija-rooli';
             if (!empty($nameAttrs->{'elokuva-elotekija-rooli'})) {
                 $roleName = $nameAttrs->{'elokuva-elotekija-rooli'};
-            } elseif (
-                !empty($nameAttrs->{'elokuva-elokreditoimatonnayttelija-rooli'})
-            ) {
-                $roleName = $nameAttrs->{'elokuva-elokreditoimatonnayttelija-rooli'};
+            } elseif (!empty($nameAttrs->{$uncreditedRole})) {
+                $roleName = $nameAttrs->{$uncreditedRole};
                 $uncredited = true;
             }
 
