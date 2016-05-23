@@ -77,6 +77,23 @@ class Factory
     }
 
     /**
+     * Factory for SolrForward record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SolrForward
+     */
+    public static function getSolrForward(ServiceManager $sm)
+    {
+        $driver = new SolrForward(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            null,
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+        );
+        return $driver;
+    }
+
+    /**
      * Factory for SolrLido record driver.
      *
      * @param ServiceManager $sm Service manager.
