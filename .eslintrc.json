@@ -1,0 +1,31 @@
+// npm i -g eslint
+{
+  "extends": "eslint:recommended",
+  "globals": {
+    "$": false,
+    "document": false,
+    "window": false
+  },
+  "fix": true,
+  "rules": {
+    "block-spacing" : ["error", "always"],
+    "block-scoped-var": "error",
+    "dot-notation": "error",
+    "eqeqeq": ["warn", "smart"],
+    "func-names": "error",
+    "guard-for-in": "warn",
+    "indent": ["error", 2],
+    "key-spacing": ["warn", { "beforeColon": false, "afterColon": true }],
+    "keyword-spacing": ["warn", { "before": true, "after": true }],
+    "linebreak-style": ["error", "unix"],
+    "no-lonely-if": "warn",
+    "no-loop-func": "error",
+    "no-multi-spaces": "warn",
+    "no-param-reassign": "error",
+    "no-shadow": "error",
+    "no-unneeded-ternary": "warn",
+    "no-unused-expressions": "error",
+    "no-unused-vars": "error",
+    "space-infix-ops": "error"
+  }
+}
