@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="vufind2" basedir="." default="main">
+<project name="vufind" basedir="." default="main">
   <property name="tmp" value="/tmp" />
   <property name="package"  value="${phing.project.name}" override="true" />
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
@@ -21,12 +21,13 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
+  <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="zombiejs" /><!-- may also be set to selenium -->
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
-  <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use" />
+  <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use,eof_ending" />
 
 
-  <property name="version" value="2.5.2" />
+  <property name="version" value="3.0" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -68,35 +69,38 @@
 
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
-    <exec command="phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuDL/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
+    <exec command="${srcdir}/vendor/bin/phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuDL/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
   </target>
 
   <!-- Measure project with phploc -->
   <target name="phploc">
-    <exec command="phploc --log-csv ${builddir}/reports/phploc.csv ${srcdir}/module" />
+    <exec command="${srcdir}/vendor/bin/phploc --log-csv ${builddir}/reports/phploc.csv ${srcdir}/module" />
   </target>
 
   <!-- PHP_Depend code analysis -->
   <target name="pdepend">
-    <exec command="pdepend --jdepend-xml=${builddir}/reports/jdepend.xml --jdepend-chart=${builddir}/reports/dependencies.svg --overview-pyramid=${builddir}/reports/pdepend-pyramid.svg ${srcdir}/module" />
+    <exec command="${srcdir}/vendor/bin/pdepend --jdepend-xml=${builddir}/reports/jdepend.xml --jdepend-chart=${builddir}/reports/dependencies.svg --overview-pyramid=${builddir}/reports/pdepend-pyramid.svg ${srcdir}/module" />
   </target>
 
   <!-- PHP copy-and-paste detection -->
   <target name="phpcpd">
-    <exec command="phpcpd --log-pmd ${builddir}/reports/pmd-cpd.xml --exclude tests ${srcdir}/module" />
+    <exec command="${srcdir}/vendor/bin/phpcpd --log-pmd ${builddir}/reports/pmd-cpd.xml --exclude tests ${srcdir}/module" />
   </target>
 
   <!-- PHP CodeSniffer -->
   <target name="phpcs">
-    <exec command="phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php --report=checkstyle ${srcdir}/module &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
+    <exec command="${srcdir}/vendor/bin/phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php --report=checkstyle ${srcdir}/module &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
+  </target>
+  <target name="phpcs-console">
+    <exec command="${srcdir}/vendor/bin/phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php ${srcdir}/module" escape="false" passthru="true" checkreturn="true" />
   </target>
 
   <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
   <target name="php-cs-fixer">
-    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --verbose" passthru="true" escape="false" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --verbose" passthru="true" escape="false" />
   </target>
   <target name="php-cs-fixer-dryrun">
-    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run --verbose --diff" passthru="true" escape="false" checkreturn="true" />
+    <exec command="${srcdir}/vendor/bin/php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run --verbose --diff" passthru="true" escape="false" checkreturn="true" />
   </target>
 
   <!-- PHP API Documentation -->
@@ -112,18 +116,18 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <target name="composer" description="Install dependencies with Composer">
     <httpget url="https://getcomposer.org/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
     <echo message="Installing dependencies..." />
-    <exec command="php ${srcdir}/composer.phar install" />
+    <exec command="php ${srcdir}/composer.phar install ${composer_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- Install and Activate VuFind -->
@@ -170,7 +174,7 @@
         <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
+        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
       </then>
       <else>
         <!-- build database -->
@@ -181,17 +185,20 @@
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
         <!-- configure VuFind -->
-        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
+        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini.tmp" />
       </else>
     </if>
 
-    <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid JETTY_CONSOLE=/dev/null ${srcdir}/vufind.sh restart" outputProperty="LASTOUTPUT" />
-    <echo message="${LASTOUTPUT}" />
+    <!-- Turn on exception logging -->
+    <exec command="sed -e &quot;s!;file           = /var/log/vufind.log:alert,error,notice,debug!file = ${srcdir}/vufind-exception.log:alert-5,error-5!&quot; ${srcdir}/local/config/vufind/config.ini.tmp &gt; ${srcdir}/local/config/vufind/config.ini" />
+    <delete file="${srcdir}/local/config/vufind/config.ini.tmp" />
+    <exec command="touch ${srcdir}/vufind-exception.log" />
+    <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
-    <!-- wait for Solr to finish spinning up -->
-    <echo message="Waiting for Solr to start up..." />
-    <exec command="sleep 30" />
+    <!-- start Solr (use restart in case of old PID files) -->
+    <exec command="touch ${srcdir}/local/vufindtest.pid" />
+    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" outputProperty="LASTOUTPUT" />
+    <echo message="${LASTOUTPUT}" />
 
     <!-- import marc test records into vufind index (note: the marc test records have prefix "testsample#") -->
     <exec escape="false" command="find ${srcdir}/tests/data -name '*.mrc' -printf '%p,'" outputProperty="buglist" />
@@ -229,7 +236,7 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid ${srcdir}/vufind.sh stop" outputProperty="LASTOUTPUT" />
+    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
     <!-- run extra cleanup action, if any -->
@@ -250,19 +257,11 @@
     </if>
 
     <!-- delete the configuration, sample index, logs and cache data -->
-    <delete dir="${srcdir}/solr/logs" includeemptydirs="true" failonerror="false" />
-    <delete dir="${srcdir}/solr/alphabetical_browse" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/authority/conf" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/authority/index" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/authority/tlog" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/conf" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/tlog" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/spellchecker" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />
     <delete file="${srcdir}/import/solrmarc.log" failonerror="true" />
+    <delete dir="${srcdir}/solr" includeemptydirs="true" failonerror="true" />
     <delete file="${srcdir}/composer.lock" failonerror="false" />
     <delete file="${srcdir}/composer.phar" failonerror="false" />
+    <delete file="${srcdir}/vufind-exception.log" failonerror="false" />
     <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
     <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
     <exec command="git reset --hard" />
@@ -274,18 +273,20 @@
     <delete dir="${builddir}/packages" includeemptydirs="true" failonerror="false" />
     <mkdir dir="${builddir}/packages" />
     <delete dir="${builddir}/export" includeemptydirs="true" failonerror="false" />
-    <mkdir dir="${builddir}/export/vufind/usr/local/vufind2" />
+    <mkdir dir="${builddir}/export/vufind/usr/local/vufind" />
 
     <!-- load the relevant files into the work area -->
-    <phingcall target="composer" />
-    <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind2" />
-    <copy todir = "${builddir}/export/vufind/usr/local/vufind2/vendor">
+    <phingcall target="composer">
+      <property name="composer_extra_params" value="--no-dev" />
+    </phingcall>
+    <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind" />
+    <copy todir = "${builddir}/export/vufind/usr/local/vufind/vendor">
       <fileset dir="${srcdir}/vendor" defaultexcludes="false" />
     </copy>
 
     <!-- create a version-specific symlink so that tar/zip packages will have
          appropriate directory structures. -->
-    <exec command="ln -s ${builddir}/export/vufind/usr/local/vufind2 ${builddir}/export/vufind-${version}" />
+    <exec command="ln -s ${builddir}/export/vufind/usr/local/vufind ${builddir}/export/vufind-${version}" />
 
     <!-- build the standard tar.gz archive -->
     <echo message="Building .tar.gz...." />
@@ -297,7 +298,7 @@
 
     <!-- build the DEB package -->
     <echo message="Building .deb...." />
-    <move file="${builddir}/export/vufind/usr/local/vufind2/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
+    <move file="${builddir}/export/vufind/usr/local/vufind/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
     <exec command="chmod 0775 ${builddir}/export/vufind/DEBIAN/postinst" />
     <exec command="dpkg-deb -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" checkreturn="true" />
 

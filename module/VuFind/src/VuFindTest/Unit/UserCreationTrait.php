@@ -21,11 +21,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
 use Behat\Mink\Element\Element;
@@ -34,11 +34,11 @@ use Behat\Mink\Element\Element;
  * Trait with utility methods for user creation/management. Assumes that it
  * will be applied to a subclass of DbTestCase.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 trait UserCreationTrait
 {
@@ -75,7 +75,10 @@ trait UserCreationTrait
      */
     protected function assertLightboxWarning(Element $page, $message)
     {
-        $warning = $this->findCss($page, '.modal-body .alert-danger .message');
+        $warning = $page->find('css', '.modal-body .alert-danger .message');
+        if (!$warning || strlen(trim($warning->getText())) == 0) {
+            $warning = $this->findCss($page, '.modal-body .alert-danger');
+        }
         $this->assertEquals($message, $warning->getText());
     }
 
@@ -112,17 +115,21 @@ trait UserCreationTrait
      * @param Element $page     Page element.
      * @param string  $username Username to set (null to skip)
      * @param string  $password Password to set (null to skip)
+     * @param bool    $inModal  Should we assume the login box is in a lightbox?
+     * @param string  $prefix   Extra selector prefix
      *
      * @return void
      */
-    protected function fillInLoginForm(Element $page, $username, $password)
-    {
+    protected function fillInLoginForm(Element $page, $username, $password,
+        $inModal = true, $prefix = ''
+    ) {
+        $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         if (null !== $username) {
-            $usernameField = $this->findCss($page, '.modal-body [name="username"]');
+            $usernameField = $this->findCss($page, $prefix . '[name="username"]');
             $usernameField->setValue($username);
         }
         if (null !== $password) {
-            $passwordField = $this->findCss($page, '.modal-body [name="password"]');
+            $passwordField = $this->findCss($page, $prefix . '[name="password"]');
             $passwordField->setValue($password);
         }
     }
@@ -130,13 +137,16 @@ trait UserCreationTrait
     /**
      * Submit the login form (assuming it's open).
      *
-     * @param Element $page Page element.
+     * @param Element $page    Page element.
+     * @param bool    $inModal Should we assume the login box is in a lightbox?
+     * @param string  $prefix  Extra selector prefix
      *
      * @return void
      */
-    protected function submitLoginForm(Element $page)
+    protected function submitLoginForm(Element $page, $inModal = true, $prefix = '')
     {
-        $button = $this->findCss($page, '.modal-body .btn.btn-primary');
+        $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
+        $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');
         $button->click();
         $this->snooze();
     }

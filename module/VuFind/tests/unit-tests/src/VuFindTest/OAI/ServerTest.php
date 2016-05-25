@@ -24,7 +24,7 @@
  * @package  Service
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/dmj/vf2-proxy
+ * @link     https://vufind.org/wiki/development
  */
 namespace VuFindTest\OAI;
 
@@ -54,7 +54,7 @@ use VuFind\OAI\Server;
  * @package  Service
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/dmj/vf2-proxy
+ * @link     https://vufind.org/wiki/development
  */
 class ServerTest extends \VuFindTest\Unit\TestCase
 {

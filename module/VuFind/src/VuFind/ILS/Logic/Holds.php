@@ -19,25 +19,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\ILS\Connection as ILSConnection;
+use VuFind\ILS\Connection as ILSConnection,
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * Hold Logic Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Holds
 {
@@ -179,12 +180,18 @@ class Holds
             // Retrieve stored patron credentials; it is the responsibility of the
             // controller and view to inform the user that these credentials are
             // needed for hold data.
-            $patron = $this->ilsAuth->storedCatalogLogin();
+            try {
+                $patron = $this->ilsAuth->storedCatalogLogin();
 
-            // Does this ILS Driver handle consortial holdings?
-            $config = $this->catalog->checkFunction(
-                'Holds', compact('id', 'patron')
-            );
+                // Does this ILS Driver handle consortial holdings?
+                $config = $this->catalog->checkFunction(
+                    'Holds', compact('id', 'patron')
+                );
+            } catch (ILSException $e) {
+                $patron = false;
+                $config = [];
+            }
+
             if (isset($config['consortium']) && $config['consortium'] == true) {
                 $result = $this->catalog->getConsortialHoldings(
                     $id, $patron ? $patron : null, $ids

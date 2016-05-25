@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Error_Logging
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Log;
 use Zend\Log\Logger as BaseLogger,
@@ -33,11 +33,11 @@ use Zend\Log\Logger as BaseLogger,
 /**
  * This class wraps the BaseLogger class to allow for log verbosity
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Error_Logging
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Logger extends BaseLogger implements ServiceLocatorAwareInterface
 {
@@ -288,6 +288,8 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             . 'Referer = ' . $referer . ', '
             . 'User Agent = '
             . $server->get('HTTP_USER_AGENT') . ', '
+            . 'Host = '
+            . $server->get('HTTP_HOST') . ', '
             . 'Request URI = '
             . $server->get('REQUEST_URI') . ')';
         $detailedServer = "\nServer Context:\n"
@@ -329,7 +331,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
 
         $this->log(BaseLogger::CRIT, $errorDetails);
     }
-    
+
     /**
      * Convert function argument to a loggable string
      *
@@ -339,7 +341,6 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
      */
     protected function argumentToString($arg)
     {
-        
         if (is_object($arg)) {
             return get_class($arg) . ' Object';
         }

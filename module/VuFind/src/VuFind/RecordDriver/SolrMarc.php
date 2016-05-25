@@ -20,12 +20,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
 use VuFind\Exception\ILS as ILSException,
@@ -35,12 +35,12 @@ use VuFind\Exception\ILS as ILSException,
 /**
  * Model for MARC records in Solr.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 class SolrMarc extends SolrDefault
 {
@@ -182,21 +182,6 @@ class SolrMarc extends SolrDefault
     public function getBibliographyNotes()
     {
         return $this->getFieldArray('504');
-    }
-
-    /**
-     * Get the main corporate author (if any) for the record.
-     *
-     * @return string
-     */
-    public function getCorporateAuthor()
-    {
-        // Try 110 first -- if none found, try 710 next.
-        $main = $this->getFirstFieldValue('110', ['a', 'b']);
-        if (!empty($main)) {
-            return $main;
-        }
-        return $this->getFirstFieldValue('710', ['a', 'b']);
     }
 
     /**
@@ -1070,7 +1055,7 @@ class SolrMarc extends SolrDefault
     {
         if ($this->hasILS()) {
             $biblioLevel = strtolower($this->getBibliographicLevel());
-            if ("monograph" == $biblioLevel || strstr("part", $biblioLevel)) {
+            if ("monograph" == $biblioLevel || strstr($biblioLevel, "part")) {
                 if ($this->ils->getTitleHoldsMode() != "disabled") {
                     return $this->titleHoldLogic->getHold($this->getUniqueID());
                 }
@@ -1087,7 +1072,9 @@ class SolrMarc extends SolrDefault
      */
     public function supportsAjaxStatus()
     {
-        return true;
+        // as AJAX status lookups are done via the ILS AJAX status lookup support is
+        // only given if the ILS is available for this record
+        return $this->hasILS();
     }
 
     /**

@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\EDS;
 
 /**
  * EDS API Options
  *
- * @category VuFind2
+ * @category VuFind
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class Options extends \VuFind\Search\Base\Options
 {
@@ -47,42 +47,49 @@ class Options extends \VuFind\Search\Base\Options
 
     /**
      * Default search mode options
+     *
      * @var string
      */
     protected $defaultMode = 'all';
 
     /**
      * The set search mode
+     *
      * @var string
      */
     protected $searchMode;
 
     /**
      * Default expanders to apply
+     *
      * @var array
      */
     protected $defaultExpanders = [];
 
     /**
      * Available expander options
+     *
      * @var unknown
      */
     protected $expanderOptions = [];
 
     /**
      * Available limiter options
+     *
      * @var unknown
     */
     protected $limiterOptions = [];
 
     /**
-     * Wheither or not to return available facets with the search response
+     * Whether or not to return available facets with the search response
+     *
      * @var unknown
      */
     protected $includeFacets = 'y';
 
     /**
      * Available Search Options from the API
+     *
      * @var array
      */
     protected $apiInfo;

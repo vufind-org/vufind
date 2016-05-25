@@ -1,9 +1,9 @@
 <?
   // Set up Javascript for use below:
-  $loadJs = 'var url = VuFind.getPath() + "/AJAX/Recommend?' . $this->recommend->getUrlParams() . '";'
+  $loadJs = 'var url = VuFind.path + "/AJAX/Recommend?' . $this->recommend->getUrlParams() . '";'
     . "\$('#SummonDeferredDatabases').load(url);";
 ?>
 <div id="SummonDeferredDatabases">
-  <p><?=$this->transEsc("Loading")?>... <i class="fa fa-spinner"></i></p>
+  <p><?=$this->transEsc("Loading")?>... <i class="fa fa-spinner" aria-hidden="true"></i></p>
   <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 </div>

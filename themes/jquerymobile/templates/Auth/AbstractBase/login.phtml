@@ -5,6 +5,7 @@
 <? if (!$sessionInitiator): // display default login form if no login URL provided ?>
   <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" data-ajax="false">
     <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>" />
+    <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash(true))?>" />
     <div data-role="fieldcontain">
       <?=$this->auth()->getLoginFields()?>
     </div>

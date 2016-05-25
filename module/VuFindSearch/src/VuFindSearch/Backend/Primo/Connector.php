@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Spencer Lamm <slamm1@swarthmore.edu>
  * @author   Anna Headley <aheadle1@swarthmore.edu>
@@ -29,7 +29,7 @@
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\Primo;
 use Zend\Http\Client as HttpClient;
@@ -37,7 +37,7 @@ use Zend\Http\Client as HttpClient;
 /**
  * Primo Central connector.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search
  * @author   Spencer Lamm <slamm1@swarthmore.edu>
  * @author   Anna Headley <aheadle1@swarthmore.edu>
@@ -46,7 +46,7 @@ use Zend\Http\Client as HttpClient;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class Connector implements \Zend\Log\LoggerAwareInterface
 {
@@ -303,10 +303,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             }
 
             // QUERYSTRING: indx (start record)
-            $recordStart = $args["pageNumber"];
-            if ($recordStart != 1) {
-                $recordStart = ($recordStart * 10) + 1;
-            }
+            $recordStart = ($args["pageNumber"] - 1) * $args['limit'] + 1;
             $qs[] = "indx=$recordStart";
 
             // TODO: put bulksize in conf file?  set a reasonable cap...
@@ -615,8 +612,10 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             // doaj_xmloai:doaj.org/article:94935655971c4917aab4fcaeafeb67b9).
             // According to Ex Libris support we must use contains search without
             // quotes for the time being.
+            // Escaping the - character causes problems getting records like
+            // wj10.1111/j.1475-679X.2011.00421.x
             $qs[] = 'query=rid,contains,'
-                . urlencode(addcslashes($recordId, '":-()'));
+                . urlencode(addcslashes($recordId, '":()'));
             $qs[] = "institution=$inst_code";
             $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
             $qs[] = "indx=1";
@@ -652,7 +651,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     {
         // Callback function for formatting IDs:
         $formatIds = function ($id) {
-            return addcslashes($id, '":-()');
+            return addcslashes($id, '":()');
         };
 
         // Query String Parameters

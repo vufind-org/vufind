@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_SolrAuthorFacets
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Search\SolrAuthorFacets;
 
 /**
  * AuthorFacets Search Results
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Search_SolrAuthorFacets
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Results extends \VuFind\Search\Solr\Results
 {
@@ -55,14 +55,14 @@ class Results extends \VuFind\Search\Solr\Results
         $this->responseFacets = $collection->getFacets();
 
         // Get the facets from which we will build our results:
-        $facets = $this->getFacetList(['authorStr' => null]);
-        if (isset($facets['authorStr'])) {
+        $facets = $this->getFacetList(['author_facet' => null]);
+        if (isset($facets['author_facet'])) {
             $params = $this->getParams();
             $this->resultTotal
                 = (($params->getPage() - 1) * $params->getLimit())
-                + count($facets['authorStr']['list']);
+                + count($facets['author_facet']['list']);
             $this->results = array_slice(
-                $facets['authorStr']['list'], 0, $params->getLimit()
+                $facets['author_facet']['list'], 0, $params->getLimit()
             );
         }
     }

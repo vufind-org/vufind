@@ -4,10 +4,11 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
-    . '<li class="active">' . $this->transEsc('Book Bag') . '</li>';
 ?>
+<h2><?=$this->transEsc('Book Bag') ?></h2>
 <?=$this->flashmessages()?>
-<form class="form-inline" action="<?=$this->url('cart-home')?>" method="post"  name="cartForm">
+<form class="form-inline" action="<?=$this->url('cart-processor')?>" method="post"  name="cartForm" data-lightbox-onsubmit="cartFormHandler">
+  <input type="hidden" id="dropdown_value"/>
   <? if (!$this->cart()->isEmpty()): ?>
     <div class="cart-controls clearfix">
       <div class="checkbox pull-left flip">
@@ -18,41 +19,41 @@
       </div>
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <button type="submit" class="btn btn-default" name="saveCart" title="<?=$this->transEsc('bookbag_save')?>" value="1">
-          <i class="fa fa-save"></i>
+          <i class="fa fa-save" aria-hidden="true"></i>
           <?=$this->transEsc('Save')?>
         </button>
       <? endif; ?>
       <button type="submit" class="btn btn-default" name="email" title="<?=$this->transEsc('bookbag_email')?>" value="1">
-        <i class="fa fa-envelope-o"></i>
+        <i class="fa fa-envelope-o" aria-hidden="true"></i>
         <?=$this->transEsc('Email')?>
       </button>
       <? $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
         <button type="submit" class="btn btn-default" name="export" title="<?=$this->transEsc('bookbag_export')?>" value="1">
-          <i class="fa fa-list-alt"></i>
+          <i class="fa fa-list-alt" aria-hidden="true"></i>
           <?=$this->transEsc('Export')?>
         </button>
       <? endif; ?>
       <button type="submit" class="btn btn-default dropdown-toggle" name="print" title="<?=$this->transEsc('print_selected')?>" value="1">
-        <i class="fa fa-print"></i>
+        <i class="fa fa-print" aria-hidden="true"></i>
         <?=$this->transEsc('Print')?>
       </button>
       <div class="btn-group" id="cartDelete">
         <button type="submit" name="delete" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-delete-label" value="1">
-          <i class="fa fa-trash"></i>
+          <i class="fa fa-trash" aria-hidden="true"></i>
           <?=$this->transEsc('Delete')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
-          <li><a id="cart-confirm-delete" onClick="submitFormWithIds(this, {'delete':'delete'})" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a id="cart-confirm-delete" onClick="submitFormWithButton(this, 'delete')" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
           <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
         </ul>
       </div>
       <div class="btn-group">
         <button type="submit" class="btn btn-default dropdown-toggle" name="empty" data-toggle="dropdown" id="cart-empty-label" value="1">
-          <i class="fa fa-close"></i>
+          <i class="fa fa-close" aria-hidden="true"></i>
           <?=$this->transEsc('Empty Book Bag')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
-          <li><a id="cart-confirm-empty" onClick="submitCartForm(this, {'empty':'empty'})" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a id="cart-confirm-empty" onClick="submitFormWithButton(this, 'empty')" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
           <li><a onClick="$('.fa.fa-spinner').remove()"><?=$this->transEsc('confirm_dialog_no')?></a></li>
         </ul>
       </div>
@@ -60,52 +61,13 @@
   <? endif; ?>
   <?=$this->render('cart/contents.phtml')?>
 </form>
+
 <?
   $script = <<<JS
-  function determineCallback(elem) {
-    var modal = $(elem).parents('.modal');
-    if(modal.length > 0) {
-      return Lightbox.changeContent;
-    } else {
-      console.log('!');
-      return function() {location.reload()}
-    }
+  function submitFormWithButton(link, name) {
+    $('#dropdown_value').attr('name', name).val(1);
+    $(link).closest('form').submit();
   }
-  function submitCartForm(elem, data) {
-    var url = VuFind.getPath() + '/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Home';
-    $.post(url, data, determineCallback(elem));
-  }
-  function submitFormWithIds(elem, data) {
-    data['ids[]'] = [];
-    var form = $(elem).closest('form')[0];
-    var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
-    for(var i=0;i<checkboxes.length;i++) {
-      data['ids[]'].push(checkboxes[i].value);
-    }
-    submitCartForm(elem, data);
-  }
-  $('[name=cartForm] [type=submit]').click(function() {
-    // Remove other clicks
-    $('[name=cartForm] [clicked=true]').attr('clicked', false);
-    // Add useful information
-    $(this).attr("clicked", "true");
-  });
-  $('[name=cartForm]').submit(function() {
-    var submit = $(this).find('[clicked=true]').attr('name');
-    if(submit == 'delete' || submit == 'empty') {
-      return false;
-    } else {
-      return true;
-    }
-  });
-  $('#cartDelete').on('show.bs.dropdown', function () {
-    var form = $(this).closest('form')[0];
-    var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
-    if(checkboxes.length == 0) {
-      Lightbox.displayError(VuFind.translate('bulk_noitems_advice'));
-      return false;
-    }
-  });
 JS;
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

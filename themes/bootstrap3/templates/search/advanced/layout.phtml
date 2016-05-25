@@ -87,7 +87,7 @@
         </div>
         <? /* An empty div. This is the target for the javascript that builds this screen */ ?>
         <span id="groupPlaceHolder" class="hidden">
-          <i class="fa fa-plus-circle"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('add_search_group') ?></a>
+          <i class="fa fa-plus-circle" aria-hidden="true"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('add_search_group') ?></a>
         </span>
         <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
         <div class="no-js">
@@ -129,7 +129,7 @@
                         </div>
                         <? if($group == 0 && $search == 0): ?>
                             </div>
-                          <i class="fa fa-plus-circle search_place_holder hidden"></i> <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
+                          <i class="fa fa-plus-circle search_place_holder hidden" aria-hidden="true"></i> <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
                         <? endif; ?>
                       <? endfor; ?>
                     </div>
@@ -187,8 +187,8 @@
         <div class="sidegroup">
           <h4><?=$this->transEsc("Search Tips")?></h4>
           <div class="list-group">
-            <a class="list-group-item help-link" href="<?=$this->url('help-home')?>?topic=advsearch" title="<?=$this->transEsc('Help with Advanced Search')?>"><?=$this->transEsc("Help with Advanced Search")?></a>
-            <a class="list-group-item help-link" href="<?=$this->url('help-home')?>?topic=search" title="<?=$this->transEsc('Help with Search Operators')?>"><?=$this->transEsc("Help with Search Operators")?></a>
+            <a class="list-group-item help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=advsearch"><?=$this->transEsc("Help with Advanced Search")?></a>
+            <a class="list-group-item help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=search"><?=$this->transEsc("Help with Search Operators")?></a>
           </div>
         </div>
       </div>

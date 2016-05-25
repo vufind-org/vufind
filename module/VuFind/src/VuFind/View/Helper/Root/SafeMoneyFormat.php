@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 use NumberFormatter, Zend\View\Helper\AbstractHelper;
@@ -31,11 +31,11 @@ use NumberFormatter, Zend\View\Helper\AbstractHelper;
 /**
  * Safe money format view helper
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class SafeMoneyFormat extends AbstractHelper
 {
@@ -92,7 +92,11 @@ class SafeMoneyFormat extends AbstractHelper
         // fail if locale has comma as a decimal separator.
         // (see https://bugs.php.net/bug.php?id=54538)
         $locale = setlocale(LC_NUMERIC, 0);
-        setlocale(LC_NUMERIC, ['en_us.UTF-8', 'en_us.UTF8', 'en_us']);
+        $codes = [
+            'en_us.UTF-8', 'en_us.UTF8', 'en_us', 'en_US.UTF-8', 'en_US.UTF8',
+            'en_US'
+        ];
+        setlocale(LC_NUMERIC, $codes);
         $result = $escaper(
             $this->formatter->formatCurrency((float)$number, $currency)
         );

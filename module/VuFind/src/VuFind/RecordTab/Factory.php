@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 namespace VuFind\RecordTab;
 use Zend\ServiceManager\ServiceManager;
@@ -31,11 +31,11 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Record Tab Factory Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  *
  * @codeCoverageIgnore
  */
@@ -195,19 +195,14 @@ class Factory
         // and googleoptions[tab] is not empty.
         $active = false;
         if (isset($cfg->Content->previews)) {
-            $content_previews = explode(
-                ',', strtolower(str_replace(' ', '', $cfg->Content->previews))
+            $previews = array_map(
+                'trim', explode(',', strtolower($cfg->Content->previews))
             );
-            if (in_array('google', $content_previews)
-                && isset($cfg->Content->GoogleOptions)
+            if (in_array('google', $previews)
+                && isset($cfg->Content->GoogleOptions['tab'])
+                && strlen(trim($cfg->Content->GoogleOptions['tab'])) > 0
             ) {
-                $g_options = $cfg->Content->GoogleOptions;
-                if (isset($g_options->tab)) {
-                    $tabs = explode(',', $g_options->tab);
-                    if (count($tabs) > 0) {
-                        $active = true;
-                    }
-                }
+                $active = true;
             }
         }
         return new Preview($active);

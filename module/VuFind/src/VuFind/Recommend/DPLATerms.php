@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
 use Zend\Http\Client as HttpClient,
@@ -34,11 +34,11 @@ use Zend\Http\Client as HttpClient,
  *
  * This class uses current search terms to query the DPLA API.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 class DPLATerms implements RecommendInterface
 {
@@ -76,7 +76,7 @@ class DPLATerms implements RecommendInterface
      * @var array
      */
     protected $formatMap = [
-        'authorStr'           => 'sourceResource.creator',
+        'author_facet'        => 'sourceResource.creator',
         'building'            => 'provider.name',
         'format'              => 'sourceResource.format',
         'geographic_facet'    => 'sourceResource.spatial.region',

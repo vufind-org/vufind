@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Connection
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Connection;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -31,12 +31,11 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 /**
  * Wikipedia connection class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Connection
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
- * @view     AuthorInfoFacets.phtml
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Wikipedia implements TranslatorAwareInterface
 {
@@ -362,11 +361,16 @@ class Wikipedia implements TranslatorAwareInterface
             $page = array_shift($page['revisions']);
             // Check for redirection
             $as_lines = explode("\n", $page['*']);
-            if (stristr($as_lines[0], '#REDIRECT')) {
-                preg_match('/\[\[(.*)\]\]/', $as_lines[0], $matches);
-                $redirectTo = $matches[1];
-            } else {
-                $redirectTo = false;
+            $redirectTo = false;
+            $redirectTokens = ['#REDIRECT', '#WEITERLEITUNG', '#OMDIRIGERING'];
+            foreach ($redirectTokens as $redirectToken) {
+                if (stristr($as_lines[0], $redirectToken)) {
+                    preg_match('/\[\[(.*)\]\]/', $as_lines[0], $matches);
+                    $redirectTo = $matches[1];
+                    break;
+                }
+            }
+            if (!$redirectTo) {
                 break;
             }
         }

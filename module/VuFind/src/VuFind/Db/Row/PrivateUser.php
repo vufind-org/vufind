@@ -19,25 +19,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Row;
 
 /**
  * Fake database row to represent a user in privacy mode.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class PrivateUser extends User
 {
+    /**
+     * Session container for account information.
+     *
+     * @var \Zend\Session\Container
+     */
+    protected $session = null;
+
     /**
      * __get
      *
@@ -70,8 +77,22 @@ class PrivateUser extends User
     {
         $this->initialize();
         $this->id = -1; // fake ID
-        $session = new \Zend\Session\Container('Account');
-        $session->userDetails = $this->toArray();
+        if (null === $this->session) {
+            throw new \Exception('Expected session container missing.');
+        }
+        $this->session->userDetails = $this->toArray();
         return 1;
+    }
+
+    /**
+     * Set session container
+     *
+     * @param \Zend\Session\Container $session Session container
+     *
+     * @return void
+     */
+    public function setSession(\Zend\Session\Container $session)
+    {
+        $this->session = $session;
     }
 }

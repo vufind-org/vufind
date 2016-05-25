@@ -23,7 +23,7 @@
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\EDS;
 
@@ -39,7 +39,7 @@ use Zend\Http\Client\Adapter\Curl as CurlAdapter;
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
 {
@@ -47,6 +47,7 @@ class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
 
      /**
      * The HTTP Request object to execute EDS API transactions
+      *
      * @var Zend2HttpClient
      */
     protected $client;

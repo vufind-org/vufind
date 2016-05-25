@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
 use Zend\Db\TableGateway\AbstractTableGateway,
@@ -34,11 +34,11 @@ use Zend\Db\TableGateway\AbstractTableGateway,
 /**
  * Generic VuFind table gateway.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterface
 {
@@ -93,7 +93,9 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
             $maps = isset($cfg['vufind']['pgsql_seq_mapping'])
                 ? $cfg['vufind']['pgsql_seq_mapping'] : null;
             if (isset($maps[$this->table])) {
-                $this->featureSet = new Feature\FeatureSet();
+                if (!is_object($this->featureSet)) {
+                    $this->featureSet = new Feature\FeatureSet();
+                }
                 $this->featureSet->addFeature(
                     new Feature\SequenceFeature(
                         $maps[$this->table][0], $maps[$this->table][1]

@@ -19,14 +19,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Mailer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Mailer;
 use VuFind\Exception\Mail as MailException,
+    Zend\Mail\Address,
     Zend\Mail\AddressList,
     Zend\Mail\Message,
     Zend\Mail\Header\ContentType;
@@ -34,11 +35,11 @@ use VuFind\Exception\Mail as MailException,
 /**
  * VuFind Mailer Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Mailer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
@@ -131,18 +132,26 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Send an email message.
      *
-     * @param string $to      Recipient email address (or delimited list)
-     * @param string $from    Sender email address
-     * @param string $subject Subject line for message
-     * @param string $body    Message body
-     * @param string $cc      CC recipient (null for none)
+     * @param string|Address|AddressList $to      Recipient email address (or
+     * delimited list)
+     * @param string|Address             $from    Sender name and email address
+     * @param string                     $subject Subject line for message
+     * @param string                     $body    Message body
+     * @param string                     $cc      CC recipient (null for none)
      *
      * @throws MailException
      * @return void
      */
     public function send($to, $from, $subject, $body, $cc = null)
     {
-        $recipients = $this->stringToAddressList($to);
+        if ($to instanceof AddressList) {
+            $recipients = $to;
+        } else if ($to instanceof Address) {
+            $recipients = new AddressList();
+            $recipients->add($to);
+        } else {
+            $recipients = $this->stringToAddressList($to);
+        }
 
         // Validate email addresses:
         if ($this->maxRecipients > 0
@@ -159,10 +168,11 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 throw new MailException('Invalid Recipient Email Address');
             }
         }
-        if (!$validator->isValid($from)) {
+        $fromEmail = ($from instanceof Address)
+            ? $from->getEmail() : $from;
+        if (!$validator->isValid($fromEmail)) {
             throw new MailException('Invalid Sender Email Address');
         }
-
         // Convert all exceptions thrown by mailer into MailException objects:
         try {
             // Send message
@@ -170,7 +180,8 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 ->addFrom($from)
                 ->addTo($recipients)
                 ->setBody($body)
-                ->setSubject($subject);
+                ->setSubject($subject)
+                ->setReplyTo($from);
             if ($cc !== null) {
                 $message->addCc($cc);
             }
@@ -184,7 +195,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * Send an email message representing a link.
      *
      * @param string                          $to      Recipient email address
-     * @param string                          $from    Sender email address
+     * @param string|\Zend\Mail\Address       $from    Sender name and email address
      * @param string                          $msg     User notes to include in
      * message
      * @param string                          $url     URL to share
@@ -225,7 +236,8 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * Send an email message representing a record.
      *
      * @param string                            $to      Recipient email address
-     * @param string                            $from    Sender email address
+     * @param string|\Zend\Mail\Address         $from    Sender name and email
+     * address
      * @param string                            $msg     User notes to include in
      * message
      * @param \VuFind\RecordDriver\AbstractBase $record  Record being emailed

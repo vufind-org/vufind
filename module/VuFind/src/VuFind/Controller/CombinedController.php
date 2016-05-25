@@ -19,22 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 class CombinedController extends AbstractSearch
 {
@@ -64,7 +64,7 @@ class CombinedController extends AbstractSearch
      */
     public function resultAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
 
         // Turn off search memory -- not relevant in this context:
         $this->getSearchMemory()->disable();
@@ -166,7 +166,7 @@ class CombinedController extends AbstractSearch
             // Calculate a unique DOM id for this section of the search results;
             // $searchClassId may contain colons, which must be converted.
             $combinedResults[$current]['domId']
-                = 'combined_' . str_replace(':', '____', $searchClassId);
+                = 'combined_' . str_replace(':', '____', $current);
 
             $combinedResults[$current]['view']
                 = (!isset($settings['ajax']) || !$settings['ajax'])

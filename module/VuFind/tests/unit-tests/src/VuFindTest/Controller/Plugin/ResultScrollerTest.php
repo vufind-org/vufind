@@ -20,25 +20,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Controller\Plugin;
 
 use VuFind\Controller\Plugin\ResultScroller;
 use VuFindTest\Unit\TestCase as TestCase;
+use Zend\Session\Container;
 
 /**
  * ResultScroller controller plugin tests.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class ResultScrollerTest extends TestCase
 {
@@ -49,7 +50,7 @@ class ResultScrollerTest extends TestCase
      */
     public function testDisabled()
     {
-        $plugin = new ResultScroller(false);
+        $plugin = new ResultScroller(new Container('test'), false);
         $results = $this->getMockResults();
         $this->assertFalse($plugin->init($results));
         $expected = [
@@ -191,7 +192,9 @@ class ResultScrollerTest extends TestCase
      */
     protected function getMockResultScroller($results = null, $methods = ['restoreLastSearch', 'rememberSearch'])
     {
-        $mock = $this->getMock('VuFind\Controller\Plugin\ResultScroller', $methods);
+        $mock = $this->getMock(
+            'VuFind\Controller\Plugin\ResultScroller', $methods, [new Container('test')]
+        );
         if (in_array('restoreLastSearch', $methods) && null !== $results) {
             $mock->expects($this->any())->method('restoreLastSearch')->will($this->returnValue($results));
         }

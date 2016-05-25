@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller;
 use VuFind\Search\RecommendListener, VuFind\Solr\Utils as SolrUtils;
@@ -32,11 +32,11 @@ use Zend\Stdlib\Parameters;
 /**
  * VuFind Search Controller
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     https://vufind.org Main Page
  */
 class AbstractSearch extends AbstractBase
 {
@@ -344,8 +344,17 @@ class AbstractSearch extends AbstractBase
      */
     protected function processJumpTo($results)
     {
+        // Jump to only result, if configured
+        $default = null;
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (isset($config->Record->jump_to_single_search_result)
+            && $config->Record->jump_to_single_search_result
+            && $results->getResultTotal() == 1
+        ) {
+            $default = 1;
+        }
         // Missing/invalid parameter?  Ignore it:
-        $jumpto = $this->params()->fromQuery('jumpto');
+        $jumpto = $this->params()->fromQuery('jumpto', $default);
         if (empty($jumpto) || !is_numeric($jumpto)) {
             return false;
         }
@@ -394,7 +403,7 @@ class AbstractSearch extends AbstractBase
         $history = $this->getTable('Search');
         $history->saveSearch(
             $this->getResultsManager(), $results, $sessId,
-            $history->getSearches($sessId, isset($user->id) ? $user->id : null)
+            isset($user->id) ? $user->id : null
         );
     }
 

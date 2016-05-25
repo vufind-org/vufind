@@ -5,6 +5,7 @@ ChangeLog
 .\#*
 TAGS
 *~
-vendor
+/vendor
 composer.lock
+composer.phar
 import/solrmarc.log

@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Config;
 use VuFind\Config\Upgrade;
@@ -31,12 +31,12 @@ use VuFind\Config\Upgrade;
 /**
  * Config Upgrade Test Class
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class UpgradeTest extends \VuFindTest\Unit\TestCase
 {
@@ -152,6 +152,31 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             [],
             $results['Summon.ini']['TopRecommendations']
+        );
+
+        // Confirm that author facets have been upgraded appropriately.
+        $this->assertFalse(isset($results['facets.ini']['Results']['authorStr']));
+        $this->assertFalse(isset($results['Collection.ini']['Facets']['authorStr']));
+        $this->assertEquals(
+            'Author', $results['facets.ini']['Results']['author_facet']
+        );
+        $this->assertEquals(
+            'author_facet', $results['facets.ini']['LegacyFields']['authorStr']
+        );
+        // Collection.ini only exists after release 1.3:
+        if ((float)$version > 1.3) {
+            $this->assertEquals(
+                'Author', $results['Collection.ini']['Facets']['author_facet']
+            );
+        }
+        // verify expected order of facet fields
+        $this->assertEquals(
+            [
+                'institution', 'building', 'format', 'callnumber-first',
+                'author_facet', 'language', 'genre_facet', 'era_facet',
+                'geographic_facet', 'publishDate'
+            ],
+            array_keys($results['facets.ini']['Results'])
         );
 
         return ['configs' => $results, 'warnings' => $warnings];

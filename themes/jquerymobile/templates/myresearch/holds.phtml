@@ -44,8 +44,8 @@
           ?>
           <div class="result">
             <h3><?=$title?></h3>
-            <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
-              <p><?=$this->transEsc('by')?> <?=$this->escapeHtml($listAuthor)?></p>
+            <? $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
+              <p><?=$this->transEsc('by')?> <?=$this->escapeHtml($listAuthors[0])?><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?></p>
             <? endif; ?>
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=$this->record($resource)->getFormatList()?>
@@ -99,6 +99,8 @@
 
             <? if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
               <div class="userMsg" style="margin-bottom: 10px;"><?=$this->transEsc("hold_available") ?></div>
+            <? elseif (isset($ilsDetails['in_transit']) && $ilsDetails['in_transit']): ?>
+              <div class="userMsg" style="margin-bottom: 10px;"><?=$this->transEsc('request_in_transit') . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], array(), $ilsDetails['in_transit']) : '') ?></div>
             <? elseif (isset($ilsDetails['position'])): ?>
               <p><strong><?=$this->transEsc("hold_queue_position") ?>:</strong> <?=$this->escapeHtml($ilsDetails['position']) ?></p>
             <? endif; ?>

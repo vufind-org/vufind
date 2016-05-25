@@ -19,26 +19,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 namespace VuFind\Auth;
 
-use VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Auth as AuthException,
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS authentication module.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 class ILS extends AbstractBase
 {
@@ -136,10 +137,14 @@ class ILS extends AbstractBase
      */
     public function supportsPasswordChange()
     {
-        return false !== $this->getCatalog()->checkFunction(
-            'changePassword',
-            ['patron' => $this->getLoggedInPatron()]
-        );
+        try {
+            return false !== $this->getCatalog()->checkFunction(
+                'changePassword',
+                ['patron' => $this->getLoggedInPatron()]
+            );
+        } catch (ILSException $e) {
+            return false;
+        }
     }
 
     /**

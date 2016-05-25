@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 namespace VuFind\Session;
 use Zend\Session\SaveHandler\SaveHandlerInterface;
@@ -31,11 +31,11 @@ use Zend\Session\SaveHandler\SaveHandlerInterface;
 /**
  * Base class for session handling
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 abstract class AbstractBase implements SaveHandlerInterface,
     \VuFind\Db\Table\DbTableAwareInterface
@@ -81,7 +81,7 @@ abstract class AbstractBase implements SaveHandlerInterface,
      * @param string $sess_path Session save path
      * @param string $sess_name Session name
      *
-     * @return void
+     * @return bool
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -94,7 +94,7 @@ abstract class AbstractBase implements SaveHandlerInterface,
      * Close function, this works like a destructor in classes and is executed
      * when the session operation is done.
      *
-     * @return void
+     * @return bool
      */
     public function close()
     {
@@ -111,12 +111,13 @@ abstract class AbstractBase implements SaveHandlerInterface,
      *
      * @param string $sess_id The session ID to destroy
      *
-     * @return void
+     * @return bool
      */
     public function destroy($sess_id)
     {
         $table = $this->getTable('Search');
         $table->destroySession($sess_id);
+        return true;
     }
 
     /**
@@ -125,7 +126,7 @@ abstract class AbstractBase implements SaveHandlerInterface,
      *
      * @param int $sess_maxlifetime Maximum session lifetime.
      *
-     * @return void
+     * @return bool
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -142,5 +143,6 @@ abstract class AbstractBase implements SaveHandlerInterface,
         // Anecdotal testing Today and Yesterday seems to indicate destroy()
         //   is called by the garbage collector and everything is good.
         // Something to keep in mind though.
+        return true;
     }
 }

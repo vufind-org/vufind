@@ -4,7 +4,7 @@
 
 CREATE TABLE `record` (
   id serial NOT NULL,
-  record_id varchar(120),
+  record_id varchar(255),
   source varchar(50),
   version varchar(20) NOT NULL,
   data text,

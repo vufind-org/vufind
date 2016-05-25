@@ -90,18 +90,18 @@ input[type="radio"], input[type="checkbox"] {
     padding:6px 4px;
     margin:0 -4px;
   }
-  &.result {
-    &:nth-child(even) {
-      background:@gray-lighter;
-    }
-    &:last-child {
-      margin-bottom:1em;
-    }
-  }
   & > p {padding:0 1em;}
 }
-.search .row {
-  padding:2px 0;
+.result {
+  margin-left: -1rem;
+  padding: .5rem;
+  padding-left: 1rem;
+  padding-right: 0;
+  &:nth-child(even) {
+    background:@gray-lighter;
+  }
+  .media { margin-bottom: 0; }
+  .row { padding: 0; }
 }
 .sub-breadcrumb {
   padding:0 5px;
@@ -254,9 +254,6 @@ body.offcanvas.active .offcanvas-toggle {box-shadow: none;}
 
 /* --- PubDateVis --- */
 #dateVisColorSettings {
-  background-color: #fff; // background of box
-  fill: rgb(234,234,234); // fillColor
-  outline-color: #e8cfac; // selection color
   stroke: @brand-primary; // color
 }
 
@@ -269,6 +266,14 @@ body.offcanvas.active .offcanvas-toggle {box-shadow: none;}
   }
 }
 #hierarchyRecord {background:#FFF}
+.tagList button {
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 4px;
+  font-size: 95%;
+  vertical-align: initial;
+}
+.tagList button .fa-close { margin-top: 3px; }
 
 /* --- Search --- */
 .alert {padding:8px}
@@ -405,7 +410,3 @@ ul.random {
 
 /* --- Browse --- */
 [id^=list].list-group .col-sm-9 {margin:0}
-
-/* --- VuDL --- */
-.container > .row > .col-xs-12 { padding:0 }
-.vudl.row { padding:4px 0 }

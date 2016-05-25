@@ -19,11 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Controller\Plugin;
 use Zend\ServiceManager\ServiceManager;
@@ -31,16 +31,47 @@ use Zend\ServiceManager\ServiceManager;
 /**
  * Factory for controller plugins.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  *
  * @codeCoverageIgnore
  */
 class Factory
 {
+    /**
+     * Construct the FlashMessenger plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Zend\Mvc\Controller\Plugin\FlashMessenger
+     */
+    public static function getFlashMessenger(ServiceManager $sm)
+    {
+        $plugin = new \Zend\Mvc\Controller\Plugin\FlashMessenger();
+        $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+        $plugin->setSessionManager($sessionManager);
+        return $plugin;
+    }
+
+    /**
+     * Construct the Followup plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Followup
+     */
+    public static function getFollowup(ServiceManager $sm)
+    {
+        return new Followup(
+            new \Zend\Session\Container(
+                'Followup', $sm->getServiceLocator()->get('VuFind\SessionManager')
+            )
+        );
+    }
+
     /**
      * Construct the Holds plugin.
      *
@@ -50,7 +81,10 @@ class Factory
      */
     public static function getHolds(ServiceManager $sm)
     {
-        return new Holds($sm->getServiceLocator()->get('VuFind\HMAC'));
+        return new Holds(
+            $sm->getServiceLocator()->get('VuFind\HMAC'),
+            $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
     }
 
     /**
@@ -78,7 +112,8 @@ class Factory
     public static function getILLRequests(ServiceManager $sm)
     {
         return new ILLRequests(
-            $sm->getServiceLocator()->get('VuFind\HMAC')
+            $sm->getServiceLocator()->get('VuFind\HMAC'),
+            $sm->getServiceLocator()->get('VuFind\SessionManager')
         );
     }
 
@@ -114,6 +149,23 @@ class Factory
     }
 
     /**
+     * Construct the ResultScroller plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ResultScroller
+     */
+    public static function getResultScroller(ServiceManager $sm)
+    {
+        return new ResultScroller(
+            new \Zend\Session\Container(
+                'ResultScroller',
+                $sm->getServiceLocator()->get('VuFind\SessionManager')
+            )
+        );
+    }
+
+    /**
      * Construct the StorageRetrievalRequests plugin.
      *
      * @param ServiceManager $sm Service manager.
@@ -123,7 +175,8 @@ class Factory
     public static function getStorageRetrievalRequests(ServiceManager $sm)
     {
         return new StorageRetrievalRequests(
-            $sm->getServiceLocator()->get('VuFind\HMAC')
+            $sm->getServiceLocator()->get('VuFind\HMAC'),
+            $sm->getServiceLocator()->get('VuFind\SessionManager')
         );
     }
 }
