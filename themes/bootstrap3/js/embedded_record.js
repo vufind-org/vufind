@@ -18,10 +18,12 @@ function saveEmbeddedStatusToCookie() {
   localStorage.setItem(_EMBEDDED_COOKIE, $.unique(storage).join(_EMBEDDED_DELIM));
 }
 function addToEmbeddedCookie(id, tab) {
+  console.log('add', id);
   _EMBEDDED_STATUS[id] = tab;
   saveEmbeddedStatusToCookie();
 }
 function removeFromEmbeddedCookie(id) {
+  console.log('remove', id);
   if (delete _EMBEDDED_STATUS[id]) {
     saveEmbeddedStatusToCookie();
   }
@@ -52,7 +54,7 @@ function loadEmbeddedCookies() {
       continue;
     }
     var $link = result.find('.getFull');
-    $link.addClass('auto expanded');
+    $link.addClass('expanded');
     toggleDataView($link, parts[1]);
   }
   for (i = 0; i < doomed.length; i++) {
@@ -104,11 +106,6 @@ function ajaxFLLoadTab(tabid, _reload) {
           registerTabEvents();
         } else {
           $('#' + tabid + '-tab').html(VuFind.translate('collection_empty'));
-        }
-        // Auto click last tab
-        if ($record.find('.getFull').hasClass('auto') && _EMBEDDED_STATUS[id]) {
-          $('#' + _EMBEDDED_STATUS[id]).click();
-          $record.find('.getFull').removeClass('auto');
         }
         if (typeof syn_get_widget === 'function') {
           syn_get_widget();
@@ -211,9 +208,7 @@ function toggleDataView(_link, tabid) {
     }
     $link.addClass('expanded');
     shortNode.collapse('hide');
-    if (!$link.hasClass('auto')) {
-      addToEmbeddedCookie(divID, $(longNode).find('.recordTabs li.active a').attr('id'));
-    }
+    addToEmbeddedCookie(divID, $(longNode).find('.recordTabs li.active a').attr('id'));
   } else {
     shortNode.collapse('show');
     longNode.collapse('hide');
