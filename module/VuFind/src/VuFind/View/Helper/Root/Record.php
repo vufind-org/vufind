@@ -475,6 +475,27 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Get the configured thumbnail alignment
+     *
+     * @param string $context telling the context asking, prepends the config key
+     *
+     * @return string
+     */
+    public function getThumbnailAlignment($context = 'result')
+    {
+        $view = $this->getView();
+        $configField = $context . 'ThumbnailsOnLeft';
+        $left = !isset($this->config->Site->$configField)
+            ? true : $this->config->Site->$configField;
+        $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
+            ? true : $this->config->Site->mirrorThumbnailsRTL;
+        if ($view->layout()->rtl && !$mirror) {
+            $left = !$left;
+        }
+        return $left ? 'left' : 'right';
+    }
+
+    /**
      * Generate a qrcode URL (return false if unsupported).
      *
      * @param string $context Context of code being generated (core or results)
