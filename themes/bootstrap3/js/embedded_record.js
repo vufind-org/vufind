@@ -52,7 +52,7 @@ function loadEmbeddedCookies() {
       continue;
     }
     var $link = result.find('.getFull');
-    $link.addClass('expanded');
+    $link.addClass('auto expanded');
     toggleDataView($link, parts[1]);
   }
   for (i = 0; i < doomed.length; i++) {
@@ -60,39 +60,31 @@ function loadEmbeddedCookies() {
   }
 }
 
-function showhideTabs(tabid) {
-  $('#' + tabid).parents('.search_tabs').find('.tab-pane.active').removeClass('active');
-  $('#' + tabid + '-tab').addClass('active');
-  $('#' + tabid).tab('show');
-}
-function ajaxFLLoadTab(tabid, _reload) {
-  var reload = _reload || false;
-  var $record = $('#' + tabid).closest('.result');
-  var tab = tabid.split('_');
-  var id = $record.find('.hiddenId')[0].value;
-  var source = $record.find('.hiddenSource')[0].value;
+function ajaxFLLoadTab(tabid, _click) {
+  var click = _click || false;
+  var $tab = $('#' + tabid);
+  var $result = $tab.closest('.result');
+  if ($result.length === 0) {
+    return true;
+  }
+  var id = $result.find('.hiddenId')[0].value;
+  var source = $result.find('.hiddenSource')[0].value;
+  if ($tab.parent().hasClass('noajax')) {
+    window.location.href = $tab.attr('href');
+    return true;
+  }
   var urlroot;
-  if ($('#' + tabid).parent().hasClass('noajax')) {
-    window.location.href = $('#' + tabid).attr('href');
-    return true;
-  }
-  if ($record.length === 0) {
-    $record = $('#' + tabid).closest('.record');
-  }
-  if ($record.length === 0) {
-    return true;
-  }
   if (source === VuFind.defaultSearchBackend) {
     urlroot = 'Record';
   } else {
     urlroot = source + 'record';
   }
-  tab = tab[0];
-  if (reload || $('#' + tabid + '-tab').is(':empty')) {
-    showhideTabs(tabid);
-    $('#' + tabid + '-tab').html(
+  if (!$tab.hasClass('loaded')) {
+    $('#' + tabid + '-content').html(
       '<i class="fa fa-spinner fa-spin"></i> ' + VuFind.translate('loading') + '...'
     );
+    var tab = tabid.split('_');
+    tab = tab[0];
     $.ajax({
       url: VuFind.path + '/' + urlroot + '/' + encodeURIComponent(id) + '/AjaxTab',
       type: 'POST',
@@ -100,20 +92,22 @@ function ajaxFLLoadTab(tabid, _reload) {
       success: function ajaxTabSuccess(data) {
         var html = data.trim();
         if (html.length > 0) {
-          $('#' + tabid + '-tab').html(html);
+          $('#' + tabid + '-content').html(html);
           registerTabEvents();
         } else {
-          $('#' + tabid + '-tab').html(VuFind.translate('collection_empty'));
+          $('#' + tabid + '-content').html(VuFind.translate('collection_empty'));
         }
         if (typeof syn_get_widget === 'function') {
           syn_get_widget();
         }
+        $('#' + tabid).addClass('loaded');
       }
     });
-  } else {
-    showhideTabs(tabid);
   }
-  return false;
+  if (click) {
+    $tab.click();
+  }
+  return true;
 }
 
 function toggleDataView(_link, tabid) {
@@ -133,7 +127,7 @@ function toggleDataView(_link, tabid) {
   mediaBody = result.find('.media-body');
   shortNode = mediaBody.find('.short-view');
   // Insert new elements
-  if (!$link.hasClass('setup')) {
+  if (!$link.hasClass('js-setup')) {
     $link.prependTo(mediaBody);
     result.addClass('embedded');
     mediaBody.find('.short-view').addClass('collapse');
@@ -143,7 +137,7 @@ function toggleDataView(_link, tabid) {
       .before('<div class="loading hidden"><i class="fa fa-spin fa-spinner"></i> '
               + VuFind.translate('loading') + '...</div>')
       .before('<div class="long-view collapse"></div>');
-    $link.addClass('setup');
+    $link.addClass('js-setup');
   }
   // Gather information
   divID = result.find('.hiddenId')[0].value;
@@ -163,7 +157,6 @@ function toggleDataView(_link, tabid) {
           source: result.find('.hiddenSource')[0].value
         }),
         success: function getRecordDetailsSuccess(response) {
-          var $firstTab;
           if (response.status === 'OK') {
             // Insert tabs html
             longNode.html(response.data);
@@ -171,21 +164,21 @@ function toggleDataView(_link, tabid) {
             loadingNode.addClass('hidden');
             longNode.collapse('show');
             // Load first tab
-            $firstTab = $(longNode).find('#'+tabid);
-            if ($firstTab.length === 0) {
-              $firstTab = $(longNode).find('.recordTabs li.active a');
+            if (tabid) {
+              ajaxFLLoadTab(tabid, true);
+            } else {
+              var $firstTab = $(longNode).find('.list-tab-toggle.active');
+              if ($firstTab.length === 0) {
+                $firstTab = $(longNode).find('.list-tab-toggle:eq(0)');
+              }
+              ajaxFLLoadTab($firstTab.attr('id'), true);
             }
-            if ($firstTab.length === 0) {
-              $firstTab = $($(longNode).find('.recordTabs li a')[0]);
-            }
-            ajaxFLLoadTab($firstTab.attr('id'));
             // Bind tab clicks
-            longNode.find('.search_tabs .recordTabs a').click(function embeddedTabLoad() {
+            longNode.find('.list-tab-toggle').click(function embeddedTabLoad() {
               addToEmbeddedCookie(divID, this.id);
               return ajaxFLLoadTab(this.id);
             });
-            longNode.find('.panel.noajax .accordion-toggle').click(function accordionNoAjax() {
-              addToEmbeddedCookie(divID, this.id);
+            longNode.find('.noajax .list-tab-toggle').click(function accordionNoAjax() {
               window.location.href = $(this).attr('data-href');
             });
             longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(
@@ -197,7 +190,7 @@ function toggleDataView(_link, tabid) {
             );
             // Add events to record toolbar
             VuFind.lightbox.bind(longNode);
-            checkSaveStatuses(shortNode.closest('.result,.record'));
+            checkSaveStatuses(shortNode.closest('.result'));
           }
         }
       });
@@ -206,7 +199,11 @@ function toggleDataView(_link, tabid) {
     }
     $link.addClass('expanded');
     shortNode.collapse('hide');
-    addToEmbeddedCookie(divID, $(longNode).find('.recordTabs li.active a').attr('id'));
+    if (!$link.hasClass('auto')) {
+      addToEmbeddedCookie(divID, $(longNode).find('.list-tab-toggle.active').attr('id'));
+    } else {
+      $link.removeClass('auto');
+    }
   } else {
     shortNode.collapse('show');
     longNode.collapse('hide');

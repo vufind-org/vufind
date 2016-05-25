@@ -3,107 +3,99 @@
   $idSuffix = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
 ?>
 
-<div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record_<?=$idSuffix?>">
-  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffix?>" />
+<? if ($this->userlist()->getMode() !== 'disabled'): ?>
+  <? /* Display the lists that this record is saved to */ ?>
+  <div class="savedLists hidden alert alert-info">
+    <strong><?=$this->transEsc("Saved in")?>:</strong>
+  </div>
+<? endif; ?>
 
-  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
-  <?=$this->flashmessages()?>
-
-    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-      <? /* Display the lists that this record is saved to */ ?>
-      <div class="savedLists hidden alert alert-info">
-        <strong><?=$this->transEsc("Saved in")?>:</strong>
+<div class="list-tabs panel-group" id="accordion_<?=$idSuffix?>">
+  <? if (empty($this->confenabled) || in_array('Information', $this->confenabled)): ?>
+    <? $coreMetadata = $this->record($this->driver)->getCoreMetadata(); ?>
+    <? if (!empty($coreMetadata)): ?>
+      <div class="panel panel-default">
+        <div id="information_<?=$idSuffix?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#information_<?=$idSuffix?>-content">
+          <h4 class="panel-title">
+            <a class="accordion-toggle">
+              <?=$this->translate('ajaxview_label_information') ?>
+            </a>
+          </h4>
+        </div>
+        <div id="information_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($this->defaultTab === 'information'): ?> in<? endif; ?>">
+          <div class="panel-body">
+            <?=$coreMetadata ?>
+          </div>
+        </div>
       </div>
     <? endif; ?>
+  <? endif; ?>
 
-  <div class="panel-group" id="accordion_<?=$idSuffix?>">
-    <? if (empty($this->confenabled) || in_array('Information', $this->confenabled)): ?>
-      <? $coreMetadata = $this->record($this->driver)->getCoreMetadata(); ?>
-      <? if (!empty($coreMetadata)): ?>
-        <div class="panel panel-default">
-          <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#title-collapse_<?=$idSuffix?>" style="cursor: pointer">
-            <h4 class="panel-title">
-              <a class="accordion-toggle">
-                <?=$this->translate('ajaxview_label_information') ?>
-              </a>
-            </h4>
-          </div>
-          <div id="title-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'information'): ?> in<? endif; ?>">
-            <div class="panel-body">
-              <?=$coreMetadata ?>
-            </div>
+  <? if (empty($this->confenabled) || in_array('Tools', $this->confenabled)): ?>
+    <? $toolbar = $this->record($this->driver)->getToolbar(); ?>
+    <? if (!empty($toolbar)): ?>
+      <div class="panel panel-default">
+        <div id="tools_<?=$idSuffix?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#tools_<?=$idSuffix?>-content">
+          <h4 class="panel-title">
+            <a class="accordion-toggle">
+        <?=$this->translate('ajaxview_label_tools') ?>
+            </a>
+          </h4>
+        </div>
+        <div id="tools_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($this->defaultTab === 'tools'): ?> in<? endif; ?>">
+          <div class="panel-body">
+            <?=$toolbar ?>
           </div>
         </div>
-      <? endif; ?>
+      </div>
     <? endif; ?>
+  <? endif; ?>
 
-    <? if (empty($this->confenabled) || in_array('Tools', $this->confenabled)): ?>
-      <? $toolbar = $this->record($this->driver)->getToolbar(); ?>
-      <? if (!empty($toolbar)): ?>
-        <div class="panel panel-default">
-          <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#tools-collapse_<?=$idSuffix?>" style="cursor: pointer">
-            <h4 class="panel-title">
-              <a class="accordion-toggle">
-          <?=$this->translate('ajaxview_label_tools') ?>
-              </a>
-            </h4>
-          </div>
-          <div id="tools-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'tools'): ?> in<? endif; ?>">
-            <div class="panel-body">
-              <?=$toolbar ?>
-            </div>
+  <? if (empty($this->confenabled) || in_array('Related', $this->confenabled)): ?>
+    <? $relatedList = $this->related()->getList($this->driver); ?>
+    <? if ($relatedList != null ): ?>
+      <div class="panel panel-default">
+        <div id="related_<?=$idSuffix?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#related_<?=$idSuffix?>-content">
+          <h4 class="panel-title">
+            <a class="accordion-toggle">
+              <?=$this->transEsc("Related Items")?>
+            </a>
+          </h4>
+        </div>
+        <div id="related_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($this->defaultTab === 'related'): ?> in<? endif; ?>">
+          <div class="panel-body">
+            <? foreach ($relatedList as $current): ?>
+              <?=$this->related()->render($current)?>
+            <? endforeach; ?>
           </div>
         </div>
-      <? endif; ?>
+      </div>
     <? endif; ?>
+  <? endif; ?>
 
-    <? if (empty($this->confenabled) || in_array('Related', $this->confenabled)): ?>
-      <? $relatedList = $this->related()->getList($this->driver); ?>
-      <? if ($relatedList != null ): ?>
-        <div class="panel panel-default">
-          <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#related-collapse_<?=$idSuffix?>" style="cursor: pointer">
-            <h4 class="panel-title">
-              <a class="accordion-toggle">
-                <?=$this->transEsc("Related Items")?>
-              </a>
-            </h4>
-          </div>
-          <div id="related-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($this->defaultTab === 'related'): ?> in<? endif; ?>">
-            <div class="panel-body">
-              <? foreach ($relatedList as $current): ?>
-                <?=$this->related()->render($current)?>
-              <? endforeach; ?>
-            </div>
+  <? if (count($this->tabs) > 0): ?>
+    <? foreach ($this->tabs as $tab => $obj): ?>
+      <? // add current tab to breadcrumbs if applicable:
+        $desc = $obj->getDescription();
+        $tab_classes = array();
+        $active = false;
+        if ($this->defaultTab === strtolower($tab)) {
+          $active = !$this->ajaxTabs || !$obj->supportsAjax();
+        }
+        if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
+        if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+      ?>
+      <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
+        <div id="<?=strtolower($tab)?>_<?=$idSuffix?>" class="list-tab-toggle panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-content">
+          <h4 class="panel-title">
+            <a class="accordion-toggle" data-href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$desc ?></a>
+          </h4>
+        </div>
+        <div id="<?=strtolower($tab)?>_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($active): ?> in<? endif; ?>">
+          <div class="panel-body">
           </div>
         </div>
-      <? endif; ?>
-    <? endif; ?>
-
-    <? if (count($this->tabs) > 0): ?>
-      <? foreach ($this->tabs as $tab => $obj): ?>
-        <? // add current tab to breadcrumbs if applicable:
-          $desc = $obj->getDescription();
-          $tab_classes = array();
-          $active = false;
-          if ($this->defaultTab === strtolower($tab)) {
-            $active = !$this->ajaxTabs || !$obj->supportsAjax();
-          }
-          if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
-          if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
-        ?>
-        <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
-          <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#<?=(strtolower($tab))?>-collapse_<?=$idSuffix?>" style="cursor: pointer">
-            <h4 class="panel-title">
-              <a class="accordion-toggle" data-href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$desc ?></a>
-            </h4>
-          </div>
-          <div id="<?=(strtolower($tab))?>-collapse_<?=$idSuffix?>" class="panel-collapse collapse<? if($active): ?> in<? endif; ?>">
-            <div class="panel-body">
-              <?=$this->record($this->driver)->getTab($obj) ?>
-            </div>
-          </div>
-        </div>
-      <? endforeach; ?>
-    <? endif; ?>
-  </div>
- </div>
+      </div>
+    <? endforeach; ?>
+  <? endif; ?>
+</div>
