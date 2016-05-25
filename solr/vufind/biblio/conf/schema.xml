@@ -248,9 +248,9 @@
  <copyField source="allfields" dest="allfields_unstemmed"/>
  <copyField source="fulltext" dest="fulltext_unstemmed"/>
  <!-- CopyFields for Alphabetic Browse -->
- <copyField source="topic"    dest="topic_browse"/>
- <copyField source="author"    dest="author_browse"/>
- <copyField source="author2"    dest="author_browse"/>
+ <copyField source="topic" dest="topic_browse"/>
+ <copyField source="author" dest="author_browse"/>
+ <copyField source="author2" dest="author_browse"/>
  <copyField source="author_corporate" dest="author_browse"/>
  <!-- CopyFields for All Fields -->
  <copyField source="format"    dest="allfields"/>
