@@ -1951,7 +1951,8 @@ class Demo extends AbstractBase
         if ($function == 'changePassword') {
             return [
                 'minLength' => 4,
-                'maxLength' => 20
+                'maxLength' => 20,
+                'acceptedChars' => 'alphanumeric'
             ];
         }
         return [];

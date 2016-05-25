@@ -325,5 +325,14 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                 )
             );
         }
+        if (isset($policy['acceptedChars'])) {
+            if (($policy['acceptedChars'] == 'numeric'
+                && !ctype_digit($password))
+                || ($policy['acceptedChars'] == 'alphanumeric'
+                && preg_match('/[^\da-zA-Z/', $password))
+            ) {
+                throw new AuthException($this->translate('password_error_invalid'));
+            }
+        }
     }
 }
