@@ -124,7 +124,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#modal .close')->click();
         $this->snooze();
         // Check saved items status
-        $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-tab .savedLists ul');
+        $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
 
     /**
@@ -161,7 +161,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         // Check saved items status
         // Not visible, but still exists
-        $this->findCss($page, '#title_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
+        $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
 
     /**
