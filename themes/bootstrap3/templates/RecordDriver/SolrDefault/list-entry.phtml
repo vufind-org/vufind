@@ -24,6 +24,7 @@
 <? endif; ?>
 <div class="result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
   <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
+  <input type="hidden" value="<?=$source ?>" class="hiddenSource"/>
   <div class="checkbox hidden-print">
     <label><?=$this->record($this->driver)->getCheckbox()?></label>
   </div>
@@ -32,7 +33,7 @@
       <?=$thumbnail ?>
     <? endif; ?>
     <div class="media-body">
-      <div class="row">
+      <div class="row short-view">
         <div class="col-sm-8">
           <div class="resultItemLine1">
             <? $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
