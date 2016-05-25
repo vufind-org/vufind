@@ -859,7 +859,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $sql = "SELECT distinct biblionumber as id
                 FROM items
                 WHERE itemlost = 0
-                   and stocknumber > 1
                    and dateaccessioned > DATE_ADD(CURRENT_TIMESTAMP,
                       INTERVAL -$daysOld day)
                 ORDER BY dateaccessioned DESC";
