@@ -18,12 +18,10 @@ function saveEmbeddedStatusToCookie() {
   localStorage.setItem(_EMBEDDED_COOKIE, $.unique(storage).join(_EMBEDDED_DELIM));
 }
 function addToEmbeddedCookie(id, tab) {
-  console.log('add', id);
   _EMBEDDED_STATUS[id] = tab;
   saveEmbeddedStatusToCookie();
 }
 function removeFromEmbeddedCookie(id) {
-  console.log('remove', id);
   if (delete _EMBEDDED_STATUS[id]) {
     saveEmbeddedStatusToCookie();
   }
