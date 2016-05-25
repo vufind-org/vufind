@@ -2,7 +2,7 @@
   $this->defaultTab = strtolower($this->defaultTab);
   $idSuffix = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
 ?>
-<ul class="list_tabs nav nav-tabs">
+<ul class="list-tabs nav nav-tabs">
   <? if (empty($this->confenabled) || in_array('Information', $this->confenabled)): ?>
     <? $coreMetadata = trim($this->record($this->driver)->getCoreMetadata()); ?>
     <? if (!empty($coreMetadata)): ?>
@@ -55,20 +55,20 @@
 </ul>
 <div class="tab-content">
   <? if (!empty($coreMetadata)): ?>
-    <div class="tab-pane<? if($this->defaultTab === 'information'): ?> active<? endif; ?>" id="information_<?=$idSuffix?>-content">
+    <div class="list-tab-content tab-pane<? if($this->defaultTab === 'information'): ?> active<? endif; ?>" id="information_<?=$idSuffix?>-content">
       <?=$coreMetadata ?>
     </div>
   <? endif; ?>
   <? foreach ($this->tabs as $tab => $obj): ?>
-    <div class="tab-pane<? if($this->defaultTab === strtolower($tab)): ?> active<? endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffix?>-content"></div>
+    <div class="list-tab-content tab-pane<? if($this->defaultTab === strtolower($tab)): ?> active<? endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffix?>-content"></div>
   <? endforeach; ?>
   <? if (!empty($toolbar)): ?>
-    <div class="tab-pane<? if($this->defaultTab === 'tools'): ?> active<? endif; ?>" id="tools_<?=$idSuffix?>-content">
+    <div class="list-tab-content tab-pane<? if($this->defaultTab === 'tools'): ?> active<? endif; ?>" id="tools_<?=$idSuffix?>-content">
       <?=$toolbar ?>
     </div>
   <? endif; ?>
   <? if (!empty($list)): ?>
-    <div class="tab-pane<? if($this->defaultTab === 'related'): ?> active<? endif; ?>" id="related_<?=$idSuffix?>-content">
+    <div class="list-tab-content tab-pane<? if($this->defaultTab === 'related'): ?> active<? endif; ?>" id="related_<?=$idSuffix?>-content">
       <? foreach ($list as $current): ?>
         <?=$this->related()->render($current)?>
       <? endforeach; ?>

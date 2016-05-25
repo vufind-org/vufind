@@ -23,7 +23,7 @@
           </h4>
         </div>
         <div id="information_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($this->defaultTab === 'information'): ?> in<? endif; ?>">
-          <div class="panel-body">
+          <div class="list-tab-content panel-body">
             <?=$coreMetadata ?>
           </div>
         </div>
@@ -43,7 +43,7 @@
           </h4>
         </div>
         <div id="tools_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($this->defaultTab === 'tools'): ?> in<? endif; ?>">
-          <div class="panel-body">
+          <div class="list-tab-content panel-body">
             <?=$toolbar ?>
           </div>
         </div>
@@ -63,7 +63,7 @@
           </h4>
         </div>
         <div id="related_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($this->defaultTab === 'related'): ?> in<? endif; ?>">
-          <div class="panel-body">
+          <div class="list-tab-content panel-body">
             <? foreach ($relatedList as $current): ?>
               <?=$this->related()->render($current)?>
             <? endforeach; ?>
@@ -91,10 +91,7 @@
             <a class="accordion-toggle" data-href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$desc ?></a>
           </h4>
         </div>
-        <div id="<?=strtolower($tab)?>_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($active): ?> in<? endif; ?>">
-          <div class="panel-body">
-          </div>
-        </div>
+        <div id="<?=strtolower($tab)?>_<?=$idSuffix?>-content" class="list-tab-content panel-collapse collapse<? if($active): ?> in<? endif; ?>"></div>
       </div>
     <? endforeach; ?>
   <? endif; ?>

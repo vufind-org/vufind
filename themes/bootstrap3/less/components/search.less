@@ -77,6 +77,7 @@
   .loading {
     &:extend(.list-group-item);
     margin-left: .75rem;
+    padding: 1rem;
     background: #fff;
   }
   .long-view {
@@ -87,6 +88,10 @@
     border-bottom-left-radius: @border-radius-base;
     border-bottom-right-radius: @border-radius-base;
   }
+  .long-view .tab-content { padding: 0; }
+  .list-tabs { margin-bottom: 0; }
+  .list-tab-toggle { cursor: pointer; }
+  .list-tab-content { padding: 1rem; }
 }
 
 .search-controls .alert {margin-bottom: 0;}
