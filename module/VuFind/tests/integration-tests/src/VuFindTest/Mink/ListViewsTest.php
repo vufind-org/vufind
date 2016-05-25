@@ -177,13 +177,13 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         // Reload the page to close all results
         $session->reload();
         // Did our saved one open automatically?
-        $this->findCss($page, '.result.expanded');
+        $this->findCss($page, '.result.embedded');
 
         // Close it
         $this->findCss($page, '.result a.title')->click();
         // Did our result stay closed?
         $session->reload();
-        $result = $page->find('css', '.result.expanded');
+        $result = $page->find('css', '.result.embedded');
         $this->assertFalse(is_object($result));
 
         // Open it
@@ -198,7 +198,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         // Come back
         $page = $this->gotoSearch();
         // Did our result close after not being being in the last search?
-        $result = $page->find('css', '.result.expanded');
+        $result = $page->find('css', '.result.embedded');
         $this->assertFalse(is_object($result));
     }
 
