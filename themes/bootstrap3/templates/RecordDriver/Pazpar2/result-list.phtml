@@ -1,9 +1,11 @@
 <?
-  $cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+  $cover = $coverDetails['html'];
   $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   if ($cover):
     ob_start(); ?>
-    <div class="media-<?=$this->record($this->driver)->getThumbnailAlignment() ?> <?=$this->record($this->driver)->getCoverSize($this->params) ?>">
+    <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
       <?=$cover ?>
     </div>
     <? $thumbnail = ob_get_contents(); ?>
@@ -11,8 +13,7 @@
 <? endif; ?>
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
-<div class="media<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
-  <? if ($thumbnail && $this->record($this->driver)->getThumbnailAlignment() == 'left') ?>
+  <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
   <? endif; ?>
   <div class="media-body">
@@ -104,7 +105,7 @@
       <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
     </div>
   </div>
-  <? if ($thumbnail && $this->record($this->driver)->getThumbnailAlignment() == 'right') ?>
+  <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
     <?=$thumbnail ?>
   <? endif; ?>
 </div>

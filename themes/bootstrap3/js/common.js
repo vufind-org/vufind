@@ -148,7 +148,7 @@ function setupOffcanvas() {
       var active = $('body.offcanvas').hasClass('active');
       var right = $('body.offcanvas').hasClass('offcanvas-right');
       if((active && !right) || (!active && right)) {
-        $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left')
+        $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
       } else {
         $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
       }
@@ -166,10 +166,11 @@ function setupAutocomplete() {
     $(op).autocomplete({
       maxResults: 10,
       loadingString: VuFind.translate('loading')+'...',
-      handler: function(query, cb) {
-        var searcher = extractClassParams(op);
+      handler: function(input, cb) {
+        var query = input.val();
+        var searcher = extractClassParams(input);
         var hiddenFilters = [];
-        $(op).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function() {
+        $(input).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function() {
           hiddenFilters.push($(this).val());
         });
         $.fn.autocomplete.ajax({
@@ -178,7 +179,7 @@ function setupAutocomplete() {
             q:query,
             method:'getACSuggestions',
             searcher:searcher['searcher'],
-            type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val(),
+            type:searcher['type'] ? searcher['type'] : $(input).closest('.searchForm').find('.searchForm_type').val(),
             hiddenFilters:hiddenFilters
           },
           dataType:'json',
@@ -201,7 +202,6 @@ function setupAutocomplete() {
   $('.searchForm_type').change(function() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
     $lookfor.autocomplete('clear cache');
-    $lookfor.focus();
   });
 }
 

@@ -91,13 +91,18 @@ input[type="radio"], input[type="checkbox"] {
   &:nth-child(even) {
     background:@gray-lighter;
   }
-  &:last-child {
-    margin-bottom:1em;
-  }
   & > p {padding:0 1em;}
 }
-.search .row {
-  padding:2px 0;
+.result {
+  margin-left: -1rem;
+  padding: .5rem;
+  padding-left: 1rem;
+  padding-right: 0;
+  &:nth-child(even) {
+    background:@gray-lighter;
+  }
+  .media { margin-bottom: 0; }
+  .row { padding: 0; }
 }
 .sub-breadcrumb {
   padding:0 5px;
@@ -250,9 +255,6 @@ body.offcanvas.active .offcanvas-toggle {box-shadow: none;}
 
 /* --- PubDateVis --- */
 #dateVisColorSettings {
-  background-color: #fff; // background of box
-  fill: rgb(234,234,234); // fillColor
-  outline-color: #e8cfac; // selection color
   stroke: @brand-primary; // color
 }
 

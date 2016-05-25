@@ -1,6 +1,6 @@
 /*global jQuery, window, document, console, setTimeout, clearTimeout */
 /**
- * crhallberg/autocomplete.js 0.14
+ * crhallberg/autocomplete.js 0.15
  * ~ @crhallberg
  */
 (function ( $ ) {
@@ -104,7 +104,7 @@
           createList(cache[cid][term], input);
         }
       } else {
-        options.handler(input.val(), function(data) {
+        options.handler(input, function(data) {
           cache[cid][term] = data;
           if (data.length === 0) {
             hide();
@@ -240,12 +240,6 @@
 
   $.fn.autocomplete = function(settings) {
 
-    if ('undefined' == typeof settings.handler) {
-      console.error('handler function not provided for autocomplete');
-      return this;
-    }
-
-    options = $.extend( {}, options, settings );
 
     return this.each(function() {
 
@@ -257,12 +251,16 @@
           align(input);
         } else if (settings === "hide") {
           hide();
-        } else if (settings === "clear cache" && options.cache) {
+        } else if (options.cache && settings === "clear cache") {
           var cid = parseInt(input.data('cache-id'), 10);
           cache[cid] = {};
         }
         return input;
+      } else if ('undefined' == typeof settings.handler) {
+        console.error('handler function not provided for autocomplete');
+        return this;
       } else {
+        options = $.extend( {}, options, settings );
         element = $('.autocomplete-results');
         if (element.length == 0) {
           element = setup(input);

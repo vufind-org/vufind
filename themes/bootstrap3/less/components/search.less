@@ -2,12 +2,14 @@
 @thumbnail-width-medium: 100px;
 @thumbnail-width-large: 160px;
 
-.bulkActionButtons label { display: inline-block; }
-.bulkActionButtons label input { margin-top: 2px; }
-.grid { @media (max-width: 767px) { min-height: 250px; } }
+.bulkActionButtons label {display: inline-block;}
+.bulkActionButtons label input {margin-top: 2px;}
+.grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
-  margin-top: 11px;
-  .checkbox { float: left; }
+  .checkbox {
+    float: left;
+    padding-right: .5rem;
+  }
   .media,
   .media-body { overflow: visible; }
   .media-body .row {
@@ -15,16 +17,19 @@
     margin-right: 0;
   }
   .media {
-    margin-top: 0;
+    margin-top: 1.5rem;
     margin-bottom: 1rem;
     .clearfix();
   }
   .media-left,
   .media-right {
+    padding: 0;
+    text-align: center;
     a {
       display: inline-block;
       text-align: center;
     }
+    img { max-height: 300px; }
     &.small a {
       width: @thumbnail-width-small;
       img { max-width: @thumbnail-width-small; }
@@ -38,7 +43,9 @@
       img { max-width: @thumbnail-width-large; }
     }
   }
-  .title { font-weight: bold; }
+  .media-left { padding-left: 10px; }
+  .media-right { padding-right: 10px; }
+  .title {font-weight: bold;}
   @media (max-width: 767px) {
     a { text-decoration: underline; }
   }
@@ -88,3 +95,5 @@
   font-size: inherit;
   font-style: italic;
 }
+
+.wikipedia img { margin-right: 1rem; }

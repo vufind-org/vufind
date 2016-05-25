@@ -1794,6 +1794,18 @@ class Voyager extends AbstractBase
             'BIB_TEXT.BIB_ID = CALL_SLIP.BIB_ID'
         ];
 
+        if (!empty($this->config['StorageRetrievalRequests']['display_statuses'])) {
+            $statuses = preg_replace(
+                '/[^:\d]*/',
+                '',
+                $this->config['StorageRetrievalRequests']['display_statuses']
+            );
+            if ($statuses) {
+                $sqlWhere[] = 'CALL_SLIP.STATUS IN ('
+                    . str_replace(':', ',', $statuses) . ')';
+            }
+        }
+
         // Order by
         $sqlOrderBy = [
             "to_char(CALL_SLIP.DATE_REQUESTED, 'YYYY-MM-DD HH24:MI:SS')"

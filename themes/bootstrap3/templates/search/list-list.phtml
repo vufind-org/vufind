@@ -3,14 +3,16 @@
   || (isset($this->showBulkOptions) && $this->showBulkOptions); ?>
 <? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
   $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
-  <div id="result<?=$i++ ?>" class="result">
+  <div id="result<?=$i++ ?>" class="result<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
     <div class="checkbox hidden-print">
-      <label>
-        <? if ($showCheckboxes): ?>
+      <? if ($showCheckboxes): ?>
+        <label>
           <?=$this->record($current)->getCheckbox()?>
-        <? endif; ?>
-        <?=$recordNumber?>
-      </label>
+          <?=$recordNumber ?>
+        </label>
+      <? else: ?>
+        <?=$recordNumber ?>
+      <? endif; ?>
     </div>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>
