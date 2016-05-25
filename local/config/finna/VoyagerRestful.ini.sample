@@ -6,6 +6,7 @@ user        = myusername
 password    = mypassword
 database    = MYDB
 pwebrecon   = http://catalog.library.myuniversity.edu/cgi-bin/Pwebrecon.cgi
+http_timeout = 90
 
 ; If this is set to false, VuFind will connect to Voyager's Oracle database with
 ; SERVICE_NAME in the connection string.  If set to true, it will use SID.  If
