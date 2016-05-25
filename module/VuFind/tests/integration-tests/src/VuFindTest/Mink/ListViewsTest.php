@@ -111,7 +111,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
 
         // Click save inside the tools tab
         $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a')->click();
-        $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-tab .save-record')->click();
+        $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record')->click();
         // Make an account
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         $this->fillInAccountForm($page);
@@ -142,8 +142,8 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->gotoRecord();
 
         // Click save inside the tools tab
-        $this->findCss($page, '[data-target="#tools-collapse_cd588d8723d65ca0ce9439e79755fa0a"]')->click();
-        $this->findCss($page, '#tools-collapse_cd588d8723d65ca0ce9439e79755fa0a .save-record')->click();
+        $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a')->click();
+        $this->findCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record')->click();
         // Login
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
@@ -161,7 +161,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         // Check saved items status
         // Not visible, but still exists
-        $this->findCss($page, '#title-collapse_cd588d8723d65ca0ce9439e79755fa0a .savedLists ul');
+        $this->findCss($page, '#title_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
 
     /**
