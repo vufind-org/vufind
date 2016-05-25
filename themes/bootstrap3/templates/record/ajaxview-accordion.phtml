@@ -3,13 +3,6 @@
   $idSuffix = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
 ?>
 
-<? if ($this->userlist()->getMode() !== 'disabled'): ?>
-  <? /* Display the lists that this record is saved to */ ?>
-  <div class="savedLists hidden alert alert-info">
-    <strong><?=$this->transEsc("Saved in")?>:</strong>
-  </div>
-<? endif; ?>
-
 <div class="list-tabs panel-group" id="accordion_<?=$idSuffix?>">
   <? if (empty($this->confenabled) || in_array('Information', $this->confenabled)): ?>
     <? $coreMetadata = $this->record($this->driver)->getCoreMetadata(); ?>
@@ -23,7 +16,9 @@
           </h4>
         </div>
         <div id="information_<?=$idSuffix?>-content" class="panel-collapse collapse<? if($this->defaultTab === 'information'): ?> in<? endif; ?>">
-          <div class="list-tab-content panel-body">
+          <div class="list-tab-content record panel-body">
+            <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffix?>" />
+            <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
             <?=$coreMetadata ?>
           </div>
         </div>

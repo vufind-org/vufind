@@ -131,12 +131,12 @@ function toggleDataView(_link, tabid) {
     $link.prependTo(mediaBody);
     result.addClass('embedded');
     mediaBody.find('.short-view').addClass('collapse');
-    longNode = $();
+    longNode = $('<div class="long-view collapse"></div>');
     // Add loading status
     shortNode
       .before('<div class="loading hidden"><i class="fa fa-spin fa-spinner"></i> '
               + VuFind.translate('loading') + '...</div>')
-      .before('<div class="long-view collapse"></div>');
+      .before(longNode);
     $link.addClass('js-setup');
   }
   // Gather information
@@ -190,7 +190,7 @@ function toggleDataView(_link, tabid) {
             );
             // Add events to record toolbar
             VuFind.lightbox.bind(longNode);
-            checkSaveStatuses(shortNode.closest('.result'));
+            checkSaveStatuses(longNode);
           }
         }
       });
