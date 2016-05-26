@@ -78,7 +78,7 @@ VuFind.register('embedded', function() {
     if (source === VuFind.defaultSearchBackend) {
       urlroot = 'Record';
     } else {
-      urlroot = source + 'record';
+      urlroot = source + 'Record';
     }
     if (!$tab.hasClass('loaded')) {
       $('#' + tabid + '-content').html(
