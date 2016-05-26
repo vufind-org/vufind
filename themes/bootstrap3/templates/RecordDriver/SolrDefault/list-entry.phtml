@@ -23,7 +23,7 @@
   <? ob_end_clean(); ?>
 <? endif; ?>
 <div class="result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
-  <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId"/>
   <div class="checkbox hidden-print">
     <label><?=$this->record($this->driver)->getCheckbox()?></label>
   </div>
