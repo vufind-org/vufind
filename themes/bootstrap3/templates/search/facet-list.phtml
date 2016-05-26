@@ -70,6 +70,6 @@
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
 <?
   $url = str_replace('&amp;', '&', $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet=' . urlencode($this->facet));
-  $script = "LightboxFacets.setup('{$url}');";
+  $script = "VuFind.lightbox_facets.setup('{$url}');";
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
