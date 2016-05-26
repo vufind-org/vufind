@@ -170,10 +170,11 @@ function setupAutocomplete() {
     $(op).autocomplete({
       maxResults: 10,
       loadingString: VuFind.translate('loading')+'...',
-      handler: function(query, cb) {
-        var searcher = extractClassParams(op);
+      handler: function(input, cb) {
+        var query = input.val();
+        var searcher = extractClassParams(input);
         var hiddenFilters = [];
-        $(op).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function() {
+        $(input).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function() {
           hiddenFilters.push($(this).val());
         });
         $.fn.autocomplete.ajax({
@@ -182,7 +183,7 @@ function setupAutocomplete() {
             q:query,
             method:'getACSuggestions',
             searcher:searcher['searcher'],
-            type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val(),
+            type:searcher['type'] ? searcher['type'] : $(input).closest('.searchForm').find('.searchForm_type').val(),
             hiddenFilters:hiddenFilters
           },
           dataType:'json',
