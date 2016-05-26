@@ -64,6 +64,7 @@ VuFind.register('embedded', function() {
   var ajaxLoadTab = function ajaxLoadTab(tabid, _click) {
     var click = _click || false;
     var $tab = $('#' + tabid);
+    console.log($tab);
     var $result = $tab.closest('.result');
     if ($result.length === 0) {
       return true;
@@ -78,7 +79,7 @@ VuFind.register('embedded', function() {
     if (source === VuFind.defaultSearchBackend) {
       urlroot = 'Record';
     } else {
-      urlroot = source + 'Record';
+      urlroot = source.charAt(0).toUpperCase() + source.slice(1).toLowerCase() + 'Record';
     }
     if (!$tab.hasClass('loaded')) {
       $('#' + tabid + '-content').html(
