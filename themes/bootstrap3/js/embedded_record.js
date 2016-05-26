@@ -1,4 +1,4 @@
-/* global checkSaveStatuses, localStorage, registerAjaxCommentRecord, registerTabEvents, setupRecordToolbar, syn_get_widget, VuFind */
+/* global checkSaveStatuses, sessionStorage, registerAjaxCommentRecord, registerTabEvents, setupRecordToolbar, syn_get_widget, VuFind */
 VuFind.register('embedded', function() {
   var _COOKIE = 'vufind_search_open';
   var _SEPERATOR = ':::';
@@ -16,7 +16,7 @@ VuFind.register('embedded', function() {
         storage.push(str);
       }
     }
-    localStorage.setItem(_COOKIE, $.unique(storage).join(_DELIM));
+    sessionStorage.setItem(_COOKIE, $.unique(storage).join(_DELIM));
   };
   var addToStorage = function addToStorage(id, tab) {
     _STATUS[id] = tab;
@@ -28,7 +28,7 @@ VuFind.register('embedded', function() {
     }
   };
   var loadStorage = function loadStorage() {
-    var cookies = localStorage.getItem(_COOKIE);
+    var cookies = sessionStorage.getItem(_COOKIE);
     var items = cookies.split(_DELIM);
     var doomed = [];
     var hiddenIds;
