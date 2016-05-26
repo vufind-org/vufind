@@ -158,6 +158,10 @@ class Options extends \VuFind\Search\Base\Options
         } else {
             $this->viewOptions = ['list' => 'List'];
         }
+        // Load list view for result (controls AJAX embedding vs. linking)
+        if (isset($searchSettings->List->view)) {
+            $this->listviewOption = $searchSettings->List->view;
+        }
     }
 
     /**
