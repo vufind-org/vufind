@@ -14,23 +14,6 @@
     <? endif; ?>
   <? endif; ?>
 
-  <? foreach ($this->tabs as $tab => $obj): ?>
-    <? // add current tab to breadcrumbs if applicable:
-      $desc = $obj->getDescription();
-      $tab_classes = array();
-      if ($this->defaultTab === strtolower($tab)) {
-        if (!$this->ajaxTabs || !$obj->supportsAjax()) {
-          $tab_classes[] = 'active';
-        }
-      }
-      if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
-      if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
-    ?>
-    <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-      <a id="<?=strtolower($tab)?>_<?=$idSuffix?>" class="list-tab-toggle" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-content"><?=$this->transEsc($desc)?></a>
-    </li>
-  <? endforeach; ?>
-
   <? if (empty($this->confenabled) || in_array('Tools', $this->confenabled)): ?>
     <? $toolbar = trim($this->record($this->driver)->getToolbar()); ?>
     <? if (!empty($toolbar)): ?>
@@ -52,6 +35,23 @@
       </li>
     <? endif; ?>
   <? endif; ?>
+
+  <? foreach ($this->tabs as $tab => $obj): ?>
+    <? // add current tab to breadcrumbs if applicable:
+      $desc = $obj->getDescription();
+      $tab_classes = array();
+      if ($this->defaultTab === strtolower($tab)) {
+        if (!$this->ajaxTabs || !$obj->supportsAjax()) {
+          $tab_classes[] = 'active';
+        }
+      }
+      if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
+      if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+    ?>
+    <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+      <a id="<?=strtolower($tab)?>_<?=$idSuffix?>" class="list-tab-toggle" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-content"><?=$this->transEsc($desc)?></a>
+    </li>
+  <? endforeach; ?>
 </ul>
 <div class="tab-content">
   <? if (!empty($coreMetadata)): ?>
@@ -61,9 +61,6 @@
       <?=$coreMetadata ?>
     </div>
   <? endif; ?>
-  <? foreach ($this->tabs as $tab => $obj): ?>
-    <div class="list-tab-content tab-pane<? if($this->defaultTab === strtolower($tab)): ?> active<? endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffix?>-content"></div>
-  <? endforeach; ?>
   <? if (!empty($toolbar)): ?>
     <div class="list-tab-content tab-pane<? if($this->defaultTab === 'tools'): ?> active<? endif; ?>" id="tools_<?=$idSuffix?>-content">
       <?=$toolbar ?>
@@ -75,5 +72,8 @@
         <?=$this->related()->render($current)?>
       <? endforeach; ?>
     </div>
-   <? endif; ?>
+  <? endif; ?>
+  <? foreach ($this->tabs as $tab => $obj): ?>
+    <div class="list-tab-content tab-pane<? if($this->defaultTab === strtolower($tab)): ?> active<? endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffix?>-content"></div>
+  <? endforeach; ?>
 </div>
