@@ -325,12 +325,30 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                 )
             );
         }
-        if (isset($policy['acceptedChars'])) {
-            if (($policy['acceptedChars'] == 'numeric'
-                && !ctype_digit($password))
-                || ($policy['acceptedChars'] == 'alphanumeric'
-                && preg_match('/[^\da-zA-Z/', $password))
-            ) {
+        if (!empty($policy['pattern'])) {
+            $valid = true;
+            if ($policy['pattern'] == 'numeric') {
+                if (!ctype_digit($password)) {
+                    $valid = false;
+                }
+            } elseif ($policy['pattern'] == 'alphanumeric') {
+                if (preg_match('/[^\da-zA-Z]/', $password)) {
+                    $valid = false;
+                }
+            } else {
+                $result = preg_match(
+                    "/({$policy['pattern']})/", $password, $matches
+                );
+                if ($result === false) {
+                    throw new \Exception(
+                        'Invalid regexp in password pattern: ' . $policy['pattern']
+                    );
+                }
+                if (!$result || $matches[1] != $password) {
+                    $valid = false;
+                }
+            }
+            if (!$valid) {
                 throw new AuthException($this->translate('password_error_invalid'));
             }
         }

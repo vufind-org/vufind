@@ -1952,7 +1952,7 @@ class Demo extends AbstractBase
             return [
                 'minLength' => 4,
                 'maxLength' => 20,
-                'acceptedChars' => 'alphanumeric'
+                'pattern' => 'alphanumeric'
             ];
         }
         return [];
