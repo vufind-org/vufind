@@ -59,10 +59,8 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($config->Social->lists_limit_options)) {
             $this->limitOptions = explode(',', $config->Social->lists_limit_options);
         }
-        $searchSettings = $configLoader->get($this->searchIni);
-        // Load list view for result (full or tabs,accordion or something else)
-        if (isset($searchSettings->List->view)) {
-            $this->listviewOption = $searchSettings->List->view;
+        if (isset($config->Social->lists_view)) {
+            $this->listviewOption = $config->Social->lists_view;
         }
     }
 
