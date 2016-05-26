@@ -18,7 +18,7 @@
   <div class="col-xs-1 left">
   <? endif ?>
     <label class="pull-left flip"><?=$this->record($this->driver)->getCheckbox() ?></label>
-    <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId"/>
   <? if ($cover): ?>
     <?=$cover ?>
   </div>
