@@ -242,7 +242,7 @@
       <? $altTitles = $this->driver->tryMethod('getAlternativeTitles'); if (!empty($altTitles)): ?>
         <tr class="recordAltTitles">
           <th><?=$this->transEsc('Other Titles')?>: </th>
-          <td><?=$this->escapeHtml(implode('; ', $altTitles)); ?></td>
+          <td><? foreach ($altTitles as $altTitle): ?><?=$this->escapeHtml($altTitle); ?><br /><? endforeach; ?></td>
         </tr>
       <? endif; ?>
 
