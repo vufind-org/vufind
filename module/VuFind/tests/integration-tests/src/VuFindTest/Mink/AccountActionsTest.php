@@ -26,7 +26,6 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
-use Behat\Mink\Element\Element;
 
 /**
  * Mink account actions test class.
@@ -102,7 +101,7 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#newpassword .btn.btn-primary')->click();
         $this->snooze();
         $this->assertEquals(
-            'Invalid login -- please try again.',    
+            'Invalid login -- please try again.',
             $this->findCss($page, '.alert-danger')->getText()
         );
 
@@ -111,7 +110,7 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#newpassword .btn.btn-primary')->click();
         $this->snooze();
         $this->assertEquals(
-            'Your password has successfully been changed',    
+            'Your password has successfully been changed',
             $this->findCss($page, '.alert-success')->getText()
         );
 
