@@ -204,11 +204,11 @@
         if (element.hasClass(options.hidingClass)) {
           search(input, element);
         } else if (position < input.data('length') - 1) {
-            position++;
-            element.find('.item.selected').removeClass('selected');
-            element.find('.item:eq(' + position + ')').addClass('selected');
-            $(this).data('selected', position);
-          }
+          position++;
+          element.find('.item.selected').removeClass('selected');
+          element.find('.item:eq(' + position + ')').addClass('selected');
+          $(this).data('selected', position);
+        }
         break;
         // enter to nav or populate
       case 9:
@@ -217,12 +217,12 @@
         if (selected.length > 0) {
           event.preventDefault();
           if (event.which === 13 && selected.attr('href')) {
-              window.location.assign(selected.attr('href'));
-            } else {
-              populate(selected.data(), $(this), {key: true});
-              element.find('.item.selected').removeClass('selected');
-              $(this).data('selected', -1);
-            }
+            window.location.assign(selected.attr('href'));
+          } else {
+            populate(selected.data(), $(this), {key: true});
+            element.find('.item.selected').removeClass('selected');
+            $(this).data('selected', -1);
+          }
         }
         break;
         // hide on escape
