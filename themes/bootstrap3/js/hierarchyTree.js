@@ -87,8 +87,8 @@ function doTreeSearch() {
           var id = htmlEncodeId(data.results[i]);
           tree._open_to(id);
         }
-        for (i = data.results.length; i--;) {
-          var tid = htmlEncodeId(data.results[i]);
+        for (var j = data.results.length; j--;) {
+          var tid = htmlEncodeId(data.results[j]);
           $('#hierarchyTree').find('#' + tid).addClass('jstree-search');
         }
         changeNoResultLabel(false);
