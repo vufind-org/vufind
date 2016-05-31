@@ -25,6 +25,7 @@
     "no-unneeded-ternary": "warn",
     "no-unused-expressions": "error",
     "no-unused-vars": "error",
+    "semi-spacing": ["warn", { "before": false, "after": true }],
     "space-infix-ops": "warn"
   }
 }
