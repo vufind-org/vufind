@@ -1,6 +1,6 @@
 /*global VuFind */
 function setUpHoldRequestForm(recordId) {
-  $('#requestGroupId').change(function() {
+  $('#requestGroupId').change(function requestGroupChange() {
     var $emptyOption = $("#pickUpLocation option[value='']");
     $("#pickUpLocation option[value!='']").remove();
     if ($('#requestGroupId').val() === '') {
@@ -19,9 +19,9 @@ function setUpHoldRequestForm(recordId) {
       cache: false,
       url: VuFind.path + '/AJAX/JSON'
     })
-    .done(function(response) {
+    .done(function holdPickupLocationsDone(response) {
       var defaultValue = $('#pickUpLocation').data('default');
-      $.each(response.data.locations, function() {
+      $.each(response.data.locations, function holdPickupLocationEach() {
         var option = $('<option></option>').attr('value', this.locationID).text(this.locationDisplay);
         if (this.locationID == defaultValue || (defaultValue == '' && this.isDefault && $emptyOption.length == 0)) {
           option.attr('selected', 'selected');
@@ -32,7 +32,7 @@ function setUpHoldRequestForm(recordId) {
       $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
       $('#pickUpLocation').removeAttr('disabled');
     })
-    .fail(function(response) {
+    .fail(function holdPickupLocationsFail(response) {
       $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
       $('#pickUpLocation').removeAttr('disabled');
     });

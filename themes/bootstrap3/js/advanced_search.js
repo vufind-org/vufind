@@ -119,8 +119,8 @@ function deleteGroup(group) {
   }
 }
 
-$(document).ready(function() {
-  $('.clear-btn').click(function() {
+$(document).ready(function advSearchReady() {
+  $('.clear-btn').click(function clearBtnClick() {
     $('input[type="text"]').val('');
     $("option:selected").removeAttr("selected");
     $("#illustrated_-1").click();

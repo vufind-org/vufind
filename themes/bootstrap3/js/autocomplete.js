@@ -3,7 +3,7 @@
  * crhallberg/autocomplete.js 0.15
  * ~ @crhallberg
  */
-(function ( $ ) {
+(function autocomplete( $ ) {
   var cache = {},
     element = false,
     input = false,
@@ -79,9 +79,9 @@
       shell.append(item);
     }
     element.html(shell);
-    element.find('.item').mousedown(function() {
+    element.find('.item').mousedown(function acItemClick() {
       populate($(this).data(), input, {mouse: true});
-      setTimeout(function() {
+      setTimeout(function acClickDelay() {
         input.focus();
         hide();
       }, 10);
@@ -104,7 +104,7 @@
           createList(cache[cid][term], input);
         }
       } else {
-        options.handler(input, function(data) {
+        options.handler(input, function achandlerCallback(data) {
           cache[cid][term] = data;
           if (data.length === 0) {
             hide();
@@ -137,20 +137,20 @@
       cache[cid] = {};
     }
 
-    input.blur(function(e) {
+    input.blur(function acinputBlur(e) {
       if (e.target.acitem) {
         setTimeout(hide, 10);
       } else {
         hide();
       }
     });
-    input.click(function() {
+    input.click(function acinputClick() {
       search(input, element);
     });
-    input.focus(function() {
+    input.focus(function acinputFocus() {
       search(input, element);
     });
-    input.keyup(function(event) {
+    input.keyup(function acinputKeyup(event) {
       // Ignore navigation keys
       // - Ignore control functions
       if (event.ctrlKey || event.which === 17) {
@@ -183,7 +183,7 @@
         search(input, element);
       }
     });
-    input.keydown(function(event) {
+    input.keydown(function acinputKeydown(event) {
       // - Ignore control functions
       if (event.ctrlKey || event.which === 17) {
         return;
@@ -238,10 +238,9 @@
     return element;
   }
 
-  $.fn.autocomplete = function(settings) {
+  $.fn.autocomplete = function acJQuery(settings) {
 
-
-    return this.each(function() {
+    return this.each(function acJQueryEach() {
 
       input = $(this);
 
@@ -275,11 +274,11 @@
   };
 
   var timer = false;
-  $.fn.autocomplete.ajax = function(ops) {
+  $.fn.autocomplete.ajax = function acAjax(ops) {
     if (timer) { clearTimeout(timer); }
     if (xhr) { xhr.abort(); }
     timer = setTimeout(
-      function() { xhr = $.ajax(ops); },
+      function acajaxDelay() { xhr = $.ajax(ops); },
       options.ajaxDelay
     );
   };

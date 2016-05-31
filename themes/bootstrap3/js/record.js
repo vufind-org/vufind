@@ -14,7 +14,7 @@ function checkRequestIsValid(element, requestType) {
     cache: false,
     url: url
   })
-  .done(function(response) {
+  .done(function checkValidDone(response) {
     if (response.data.status) {
       $(element).removeClass('disabled')
         .attr('title', response.data.msg)
@@ -23,19 +23,19 @@ function checkRequestIsValid(element, requestType) {
       $(element).remove();
     }
   })
-  .fail(function(response) {
+  .fail(function checkValidFail(response) {
     $(element).remove();
   });
 }
 
 function setUpCheckRequest() {
-  $('.checkRequest').each(function(i) {
+  $('.checkRequest').each(function checkRequest(i) {
     checkRequestIsValid(this, 'Hold');
   });
-  $('.checkStorageRetrievalRequest').each(function(i) {
+  $('.checkStorageRetrievalRequest').each(function checkStorageRetrievalRequest(i) {
     checkRequestIsValid(this, 'StorageRetrievalRequest');
   });
-  $('.checkILLRequest').each(function(i) {
+  $('.checkILLRequest').each(function checkILLRequest(i) {
     checkRequestIsValid(this, 'ILLRequest');
   });
 }
@@ -46,7 +46,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
     dataType: 'json',
     url: url
   })
-  .done(function(response) {
+  .done(function deleteCommentDone(response) {
     $($(element).closest('.comment')[0]).remove();
   });
 }
@@ -57,12 +57,12 @@ function refreshCommentList($target, recordId, recordSource) {
     dataType: 'json',
     url: url
   })
-  .done(function(response) {
+  .done(function refreshCommentListDone(response) {
     // Update HTML
     var $commentList = $target.find('.comment-list');
     $commentList.empty();
     $commentList.append(response.data);
-    $commentList.find('.delete').unbind('click').click(function() {
+    $commentList.find('.delete').unbind('click').click(function commentRefreshDeleteClick() {
       var commentId = $(this).attr('id').substr('recordComment'.length);
       deleteRecordComment(this, recordId, recordSource, commentId);
       return false;
@@ -73,7 +73,7 @@ function refreshCommentList($target, recordId, recordSource) {
 
 function registerAjaxCommentRecord() {
   // Form submission
-  $('form.comment-form').unbind('submit').submit(function() {
+  $('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
@@ -89,20 +89,20 @@ function registerAjaxCommentRecord() {
       data: data,
       dataType: 'json'
     })
-    .done(function(response) {
+    .done(function addCommentDone(response) {
       var $tab = $(form).closest('.tab-pane');
       refreshCommentList($tab, id, recordSource);
       $(form).find('textarea[name="comment"]').val('');
       $(form).find('input[type="submit"]').button('loading');
     })
-    .fail(function(response, textStatus) {
+    .fail(function addCommentFail(response, textStatus) {
       if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
       VuFind.lightbox.update(response.responseJSON.data);
     });
     return false;
   });
   // Delete links
-  $('.delete').click(function() {
+  $('.delete').click(function commentDeleteClick() {
     var commentId = this.id.substr('recordComment'.length);
     deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), commentId);
     return false;
@@ -115,7 +115,10 @@ function registerTabEvents() {
   // Logged in AJAX
   registerAjaxCommentRecord();
   // Delete links
-  $('.delete').click(function(){ deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13)); return false; });
+  $('.delete').click(function commentTabDeleteClick() {
+    deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));
+    return false;
+  });
 
   setUpCheckRequest();
 
@@ -145,7 +148,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     type: 'POST',
     data: {tab: tabid}
   })
-  .done(function(data) {
+  .done(function ajaxLoadTabDone(data) {
     $newTab.html(data);
     registerTabEvents();
     if (typeof syn_get_widget === "function") {
@@ -172,7 +175,7 @@ function refreshTagList(target, loggedin) {
       dataType: 'html',
       url: url
     })
-    .done(function(response) {
+    .done(function getRecordTagsDone(response) {
       $tagList.empty();
       $tagList.replaceWith(response);
       if (loggedin) {
@@ -204,7 +207,7 @@ function ajaxTagUpdate(link, tag, remove) {
       remove:remove
     }
   })
-  .always(function() {
+  .always(function tagRecordAlways() {
     refreshTagList($target, false);
   });
 }
@@ -226,7 +229,7 @@ function applyRecordTabHash() {
 $(window).on('hashchange', applyRecordTabHash);
 
 function recordDocReady() {
-  $('.record-tabs .nav-tabs a').click(function (e) {
+  $('.record-tabs .nav-tabs a').click(function recordTabsClick(e) {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
     if ($li.hasClass('active')) {

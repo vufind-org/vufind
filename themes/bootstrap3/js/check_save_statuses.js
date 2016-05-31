@@ -9,7 +9,7 @@ function checkSaveStatuses(container) {
   }
 
   var elements = {};
-  var data = $.map(container.find('.result,.record'), function(record) {
+  var data = $.map(container.find('.result,.record'), function checkSaveRecordMap(record) {
     if ($(record).find('.hiddenId').length == 0 || $(record).find('.hiddenSource').length == 0) {
       return null;
     }
@@ -34,7 +34,7 @@ function checkSaveStatuses(container) {
       url: VuFind.path + '/AJAX/JSON?method=getSaveStatuses',
       data: {'id':ids, 'source':srcs}
     })
-    .done(function(response) {
+    .done(function checkSaveStatusDone(response) {
       for (var sel in response.data) {
         var list = elements[sel];
         if (!list) {
@@ -52,6 +52,6 @@ function checkSaveStatuses(container) {
   }
 }
 
-$(document).ready(function() {
+$(document).ready(function checkSaveStatusFail() {
   checkSaveStatuses();
 });

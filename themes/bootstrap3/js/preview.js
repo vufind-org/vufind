@@ -100,7 +100,7 @@ function processHTBookInfo(booksInfo) {
  * developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/indexOf
  */
 function setIndexOf() {
-  Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+  Array.prototype.indexOf = function indexOfPolyfill(searchElement /*, fromIndex */ ) {
     "use strict";
     if (this == null) {
       throw new TypeError();
@@ -136,7 +136,7 @@ function setIndexOf() {
 
 function getBibKeyString() {
   var skeys = '';
-  $('.previewBibkeys').each(function(){
+  $('.previewBibkeys').each(function previewBibkeysEach(){
     skeys += $(this).attr('class');
   });
   return skeys.replace(/previewBibkeys/g, '').replace(/^\s+|\s+$/g, '');
@@ -185,7 +185,7 @@ function getBookPreviews() {
   }
 }
 
-$(document).ready(function() {
+$(document).ready(function previewDocReady() {
   if (!Array.prototype.indexOf) {
     setIndexOf();
   }

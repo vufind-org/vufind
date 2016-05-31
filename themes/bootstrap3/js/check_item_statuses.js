@@ -6,7 +6,7 @@ function checkItemStatuses(container) {
   }
 
   var elements = {};
-  var data = $.map(container.find('.ajaxItem'), function(record) {
+  var data = $.map(container.find('.ajaxItem'), function ajaxItemMap(record) {
     if ($(record).find('.hiddenId').length == 0) {
       return null;
     }
@@ -28,8 +28,8 @@ function checkItemStatuses(container) {
     url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
     data: {'id':data}
   })
-  .done(function(response) {
-    $.each(response.data, function(i, result) {
+  .done(function checkItemStatusDone(response) {
+    $.each(response.data, function checkItemDoneEach(i, result) {
       var item = elements[result.id];
       if (!item) {
         return;
@@ -95,7 +95,7 @@ function checkItemStatuses(container) {
 
     $(".ajax-availability").removeClass('ajax-availability');
   })
-  .fail(function(response, textStatus) {
+  .fail(function checkItemStatusFail(response, textStatus) {
     $('.ajax-availability').empty();
     if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
     // display the error message on each of the ajax status place holder
@@ -103,6 +103,6 @@ function checkItemStatuses(container) {
   });
 }
 
-$(document).ready(function() {
+$(document).ready(function checkItemStatusReady() {
   checkItemStatuses();
 });

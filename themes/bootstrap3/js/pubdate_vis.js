@@ -53,8 +53,8 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
 
   // AJAX call
   var url = baseURL + '/AJAX/json?method=getVisData&facetFields=' + encodeURIComponent(facetFields) + '&' + searchParams;
-  $.getJSON(url, function (data) {
-    $.each(data['data'], function(key, val) {
+  $.getJSON(url, function getVisDataJSON(data) {
+    $.each(data['data'], function getVisDataEach(key, val) {
       //check if there is data to display, if there isn't hide the box
       if (val['data'] == undefined || val['data'].length == 0) {
         return;
@@ -113,7 +113,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
         plot.setSelection({ x1: val['min'] , x2: val['max']});
       }
       // selection handler
-      placeholder.bind("plotselected", function (event, ranges) {
+      placeholder.bind("plotselected", function plotselected(event, ranges) {
         var from = Math.floor(ranges.xaxis.from);
         var to = Math.ceil(ranges.xaxis.to);
         location.href = val['removalURL'] + '&daterange[]=' + key + '&' + key + 'to=' + PadDigits(to,4) + '&' + key + 'from=' + PadDigits(from,4);
