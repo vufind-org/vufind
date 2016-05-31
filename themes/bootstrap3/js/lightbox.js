@@ -31,7 +31,7 @@ VuFind.register('lightbox', function() {
     // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
     var event;
     try {
-       event = new CustomEvent(msg, {
+      event = new CustomEvent(msg, {
         detail: details,
         bubbles: true,
         cancelable: true
@@ -63,14 +63,14 @@ VuFind.register('lightbox', function() {
     if ('undefined' == typeof type) {
       type = 'info';
     }
-    _html('<div class="flash-message alert alert-'+type+'">'+message+'</div>'
+    _html('<div class="flash-message alert alert-' + type + '">' + message + '</div>'
         + '<button class="btn btn-default" data-dismiss="modal">' + VuFind.translate('close') + '</button>');
     _modal.modal('show');
   };
   var flashMessage = function(message, type) {
     _modalBody.find('.flash-message,.fa.fa-spinner').remove();
     _modalBody.find('h2:first-of-type')
-      .after('<div class="flash-message alert alert-'+type+'">'+message+'</div>');
+      .after('<div class="flash-message alert alert-' + type + '">' + message + '</div>');
   };
 
   /**
@@ -106,7 +106,7 @@ VuFind.register('lightbox', function() {
     _modalBody.find('[type=submit]').click(_storeClickedStatus);
 
     var forms = _modalBody.find('form:not([data-lightbox-ignore])');
-    for (var i=0;i<forms.length;i++) {
+    for (var i = 0; i < forms.length; i++) {
       $(forms[i]).on('submit', _formSubmit);
     }
     // Select all checkboxes
@@ -131,10 +131,10 @@ VuFind.register('lightbox', function() {
     if (!obj.url.match(/layout=lightbox/)) {
       var parts = obj.url.split('#');
       obj.url = parts[0].indexOf('?') < 0
-        ? parts[0]+'?'
-        : parts[0]+'&';
-      obj.url += 'layout=lightbox&lbreferer='+encodeURIComponent(_currentUrl);
-      obj.url += parts.length < 2 ? '' : '#'+parts[1];
+        ? parts[0] + '?'
+        : parts[0] + '&';
+      obj.url += 'layout=lightbox&lbreferer=' + encodeURIComponent(_currentUrl);
+      obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
     _xhr = $.ajax(obj);
     _xhr.always(function() { _xhr = false; })
@@ -209,7 +209,7 @@ VuFind.register('lightbox', function() {
     if (this.href.length > 1) {
       event.preventDefault();
       var obj = {url: $(this).data('lightboxHref') || this.href};
-      if("string" === typeof $(this).data('lightboxPost')) {
+      if ("string" === typeof $(this).data('lightboxPost')) {
         obj.type = 'POST';
         obj.data = $(this).data('lightboxPost');
       }
@@ -268,7 +268,7 @@ VuFind.register('lightbox', function() {
       }, false);
     }
     // Loading
-    _modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right" title="'+VuFind.translate('loading')+'"></i>');
+    _modalBody.prepend('<i class="fa fa-spinner fa-spin pull-right" title="' + VuFind.translate('loading') + '"></i>');
     // Prevent multiple submission of submit button in lightbox
     if (submit.closest(_modal).length > 0) {
       submit.attr('disabled', 'disabled');

@@ -4,8 +4,8 @@ function setUpHoldRequestForm(recordId) {
     var $emptyOption = $("#pickUpLocation option[value='']");
     $("#pickUpLocation option[value!='']").remove();
     if ($('#requestGroupId').val() === '') {
-        $('#pickUpLocation').attr('disabled', 'disabled');
-        return;
+      $('#pickUpLocation').attr('disabled', 'disabled');
+      return;
     }
     $('#pickUpLocationLabel i').addClass("fa fa-spinner icon-spin");
     var params = {

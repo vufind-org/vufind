@@ -11,7 +11,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
         var excludeURL = currentPath + this.exclude;
         excludeURL.replace("'", "\\'");
         // Just to be safe
-        html += ' <a href="' + excludeURL + '" onclick="document.location.href=\'' + excludeURL + '\'; return false;" title="' + htmlEncode(excludeTitle) + '"><i class="fa fa-times" title="'+VuFind.translate('Selected')+'"></i></a>';
+        html += ' <a href="' + excludeURL + '" onclick="document.location.href=\'' + excludeURL + '\'; return false;" title="' + htmlEncode(excludeTitle) + '"><i class="fa fa-times" title="' + VuFind.translate('Selected') + '"></i></a>';
       }
       html += '</span>';
     }
@@ -23,12 +23,12 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
       + ' onclick="document.location.href=\'' + url + '\'; return false;">';
     if (this.operator == 'OR') {
       if (this.isApplied) {
-        html += '<i class="fa fa-check-square-o" title="'+VuFind.translate('Selected')+'"></i>';
+        html += '<i class="fa fa-check-square-o" title="' + VuFind.translate('Selected') + '"></i>';
       } else {
         html += '<i class="fa fa-square-o" aria-hidden="true"></i>';
       }
     } else if (this.isApplied) {
-      html += '<i class="fa fa-check pull-right" title="'+VuFind.translate('Selected')+'"></i>';
+      html += '<i class="fa fa-check pull-right" title="' + VuFind.translate('Selected') + '"></i>';
     }
     html += ' ' + this.displayText;
     html += '</span>';

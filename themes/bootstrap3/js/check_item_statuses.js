@@ -12,7 +12,7 @@ function checkItemStatuses(container) {
     }
     var datum = $(record).find('.hiddenId').val();
     if (typeof elements[datum] === 'undefined') {
-        elements[datum] = $();
+      elements[datum] = $();
     }
     elements[datum] = elements[datum].add($(record));
     return datum;
@@ -58,7 +58,7 @@ function checkItemStatuses(container) {
         item.find('.hideIfDetailed').addClass('hidden');
         item.find('.location').addClass('hidden');
         var locationListHTML = "";
-        for (var x=0; x<result.locationList.length; x++) {
+        for (var x = 0; x < result.locationList.length; x++) {
           locationListHTML += '<div class="groupLocation">';
           if (result.locationList[x].availability) {
             locationListHTML += '<i class="fa fa-ok text-success" aria-hidden="true"></i> <span class="text-success">'
@@ -77,14 +77,14 @@ function checkItemStatuses(container) {
           locationListHTML += '</div>';
           locationListHTML += '<div class="groupCallnumber">';
           locationListHTML += (result.locationList[x].callnumbers)
-               ?  result.locationList[x].callnumbers : '';
+               ? result.locationList[x].callnumbers : '';
           locationListHTML += '</div>';
         }
         item.find('.locationDetails').removeClass('hidden');
         item.find('.locationDetails').empty().append(locationListHTML);
       } else {
         // Default case -- load call number and location into appropriate containers:
-        item.find('.callnumber').empty().append(result.callnumber+'<br/>');
+        item.find('.callnumber').empty().append(result.callnumber + '<br/>');
         item.find('.location').empty().append(
           result.reserve == 'true'
           ? result.reserve_message
