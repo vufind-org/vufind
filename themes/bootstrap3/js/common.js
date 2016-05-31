@@ -214,35 +214,35 @@ function keyboardShortcuts() {
   if ($('.pager').length > 0) {
     $(window).keydown(function(e) {
       if (!$searchform.is(':focus')) {
-          var $target = null;
-          switch (e.keyCode) {
-            case 37: // left arrow key
-              $target = $('.pager').find('a.previous');
-              if ($target.length > 0) {
-                $target[0].click();
-                return;
-              }
-              break;
-            case 38: // up arrow key
-              if (e.ctrlKey) {
-                $target = $('.pager').find('a.backtosearch');
-                if ($target.length > 0) {
-                  $target[0].click();
-                  return;
-                }
-              }
-              break;
-            case 39: //right arrow key
-              $target = $('.pager').find('a.next');
-              if ($target.length > 0) {
-                $target[0].click();
-                return;
-              }
-              break;
-            case 40: // down arrow key
-              break;
+        var $target = null;
+        switch (e.keyCode) {
+        case 37: // left arrow key
+          $target = $('.pager').find('a.previous');
+          if ($target.length > 0) {
+            $target[0].click();
+            return;
+          }
+          break;
+        case 38: // up arrow key
+          if (e.ctrlKey) {
+            $target = $('.pager').find('a.backtosearch');
+            if ($target.length > 0) {
+              $target[0].click();
+              return;
             }
+          }
+          break;
+        case 39: //right arrow key
+          $target = $('.pager').find('a.next');
+          if ($target.length > 0) {
+            $target[0].click();
+            return;
+          }
+          break;
+        case 40: // down arrow key
+          break;
         }
+      }
     });
   }
 }

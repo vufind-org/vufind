@@ -47,10 +47,10 @@ function processBookInfo(booksInfo, previewClass, viewOptions) {
     var bookInfo = booksInfo[bibkey];
     if (bookInfo) {
       if (viewOptions.indexOf(bookInfo.preview) >= 0) {
-          applyPreviewUrl(
+        applyPreviewUrl(
                     $('.' + previewClass + '.' + bibkey), bookInfo.preview_url
                 );
-        }
+      }
     }
   }
 }
@@ -65,12 +65,12 @@ function processGBSBookInfo(booksInfo) {
     for (var bibkey in booksInfo) {
       var bookInfo = booksInfo[bibkey];
       if (bookInfo) {
-          if (viewOptions['tab'].indexOf(bookInfo.preview) >= 0
+        if (viewOptions['tab'].indexOf(bookInfo.preview) >= 0
                 && (bookInfo.embeddable)) {
                     // make tab visible
-              $('ul.nav-tabs li.hidden a.preview').parent().removeClass('hidden');
-            }
+          $('ul.nav-tabs li.hidden a.preview').parent().removeClass('hidden');
         }
+      }
     }
   }
 }
@@ -87,8 +87,8 @@ function processHTBookInfo(booksInfo) {
     for (var i = 0; i < items.length; i++) {
             // check if items possess an eligible rights code
       if (getHathiOptions().indexOf(items[i].rightsCode) >= 0) {
-          applyPreviewUrl($link, items[i].itemURL);
-        }
+        applyPreviewUrl($link, items[i].itemURL);
+      }
     }
   }
 }
@@ -116,10 +116,10 @@ function setIndexOf() {
     if (arguments.length > 1) {
       n = Number(arguments[1]);
       if (n != n) { // shortcut for verifying if it's NaN
-          n = 0;
-        } else if (n != 0 && n != Infinity && n != -Infinity) {
-            n = (n > 0 || -1) * Math.floor(Math.abs(n));
-          }
+        n = 0;
+      } else if (n != 0 && n != Infinity && n != -Infinity) {
+        n = (n > 0 || -1) * Math.floor(Math.abs(n));
+      }
     }
     if (n >= len) {
       return -1;
@@ -127,8 +127,8 @@ function setIndexOf() {
     var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
     for (; k < len; k++) {
       if (k in t && t[k] === searchElement) {
-          return k;
-        }
+        return k;
+      }
     }
     return -1;
   };
@@ -159,16 +159,16 @@ function getBookPreviews() {
       var keyString = '';
             // loop through array
       for (var i = 0; i < bibkeys.length; i++){
-          keyString += bibkeys[i] + ',';
+        keyString += bibkeys[i] + ',';
                 // send request when there are 100 requests ready or when there are no
                 // more elements to be sent
-          if ((i > 0 && i % 100 == 0) || i == bibkeys.length - 1) {
-              script = 'https://encrypted.google.com/books?jscmd=viewapi&bibkeys='
+        if ((i > 0 && i % 100 == 0) || i == bibkeys.length - 1) {
+          script = 'https://encrypted.google.com/books?jscmd=viewapi&bibkeys='
                         + keyString + '&callback=processGBSBookInfo';
-              $.getScript(script);
-              keyString = '';
-            }
+          $.getScript(script);
+          keyString = '';
         }
+      }
     }
   }
 
