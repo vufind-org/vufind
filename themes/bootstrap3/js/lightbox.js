@@ -263,8 +263,8 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // onclose behavior
     if ('string' === typeof $(form).data('lightboxOnclose')) {
-      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(event) {
-        _evalCallback($(form).data('lightboxOnclose'), event);
+      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(ev) {
+        _evalCallback($(form).data('lightboxOnclose'), ev);
       }, false);
     }
     // Loading
