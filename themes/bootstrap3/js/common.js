@@ -81,10 +81,10 @@ function deparam(url) {
   for (var i = 0; i < pairs.length; i++) {
     var pair = pairs[i].split('=');
     var name = decodeURIComponent(pair[0].replace(/\+/g, ' '));
-    if (name.length == 0) {
+    if (name.length === 0) {
       continue;
     }
-    if (name.substring(name.length - 2) == '[]') {
+    if (name.substring(name.length - 2) === '[]') {
       name = name.substring(0,name.length - 2);
       if (!request[name]) {
         request[name] = [];
@@ -112,7 +112,7 @@ function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
   var valid = isPhoneNumberValid(number, regionCode);
-  if (valid != true) {
+  if (valid !== true) {
     if (typeof valid === 'string') {
       valid = VuFind.translate(valid);
     } else {
@@ -128,13 +128,13 @@ function phoneNumberFormHandler(numID, regionCode) {
 }
 
 function bulkFormHandler(event, data) {
-  if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length == 0) {
+  if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
   var keys = [];
   for (var i in data) {
-    if ('print' == data[i].name) {
+    if ('print' === data[i].name) {
       return true;
     }
   }
@@ -277,7 +277,7 @@ $(document).ready(function commonDocReady() {
     }
 
     var holder = $(this).next('.qrcode');
-    if (holder.find('img').length == 0) {
+    if (holder.find('img').length === 0) {
       // We need to insert the QRCode image
       var template = holder.find('.qrCodeImgTag').html();
       holder.html(template);
@@ -288,7 +288,7 @@ $(document).ready(function commonDocReady() {
 
   // Print
   var url = window.location.href;
-  if (url.indexOf('?' + 'print' + '=') != -1 || url.indexOf('&' + 'print' + '=') != -1) {
+  if (url.indexOf('?' + 'print' + '=') !== -1 || url.indexOf('&' + 'print' + '=') !== -1) {
     $("link[media='print']").attr("media", "all");
     $(document).ajaxStop(function triggerPrint() {
       window.print();

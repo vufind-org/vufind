@@ -14,9 +14,9 @@ VuFind.register('lightbox', function Lightbox() {
   var _html = function _html(html) {
     _modalBody.html(html);
     // Set or update title if we have one
-    if (_lightboxTitle != '') {
+    if (_lightboxTitle !== '') {
       var h2 = _modalBody.find('h2:first-child');
-      if (h2.length == 0) {
+      if (h2.length === 0) {
         h2 = $('<h2/>').prependTo(_modalBody);
       }
       h2.text(_lightboxTitle);
@@ -53,7 +53,7 @@ VuFind.register('lightbox', function Lightbox() {
     } else {
       var href = parts[0];
       // Force reload with a timestamp
-      href += href.indexOf('?') == -1 ? '?_=' : '&_=';
+      href += href.indexOf('?') === -1 ? '?_=' : '&_=';
       href += new Date().getTime() + '#' + parts[1];
       window.location.href = href;
     }
@@ -139,7 +139,7 @@ VuFind.register('lightbox', function Lightbox() {
     _xhr = $.ajax(obj);
     _xhr.always(function lbAjaxAlways() { _xhr = false; })
       .done(function lbAjaxDone(html, status, jq_xhr) {
-        if (jq_xhr.status == 205) {
+        if (jq_xhr.status === 205) {
           _refreshPage();
           return;
         }
@@ -153,10 +153,10 @@ VuFind.register('lightbox', function Lightbox() {
           }
         }
         if ( // Close the lightbox after deliberate login
-          obj.method                                                                // is a form
-          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/))               // that matches login/create account
-            || obj.url.match(/catalogLogin/))                                       // or catalog login for holds
-          && $('<div/>').html(html).find('.flash-message.alert-danger').length == 0 // skip failed logins
+          obj.method                                                                 // is a form
+          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/))                // that matches login/create account
+            || obj.url.match(/catalogLogin/))                                        // or catalog login for holds
+          && $('<div/>').html(html).find('.flash-message.alert-danger').length === 0 // skip failed logins
         ) {
           var eventResult = _emit('VuFind.lightbox.login', {
             originalUrl: _originalUrl,

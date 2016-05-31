@@ -119,7 +119,7 @@
   }
 
   function setup(input) {
-    if ($('.autocomplete-results').length == 0) {
+    if ($('.autocomplete-results').length === 0) {
       element = $('<div/>')
         .addClass('autocomplete-results hidden')
         .html('<i class="item loading">' + options.loadingString + '</i>');

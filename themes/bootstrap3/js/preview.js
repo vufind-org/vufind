@@ -24,7 +24,7 @@ function getHTPreviews(skeys) {
   var batch = [];
   for (var i = 0; i < bibkeys.length; i++) {
     batch.push(bibkeys[i]);
-    if ((i > 0 && i % 20 == 0) || i == bibkeys.length - 1) {
+    if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
       var script = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
                 + batch.join('|') + '&callback=processHTBookInfo';
       $.getScript(script);
@@ -115,9 +115,9 @@ function setIndexOf() {
     var n = 0;
     if (arguments.length > 1) {
       n = Number(arguments[1]);
-      if (n != n) { // shortcut for verifying if it's NaN
+      if (n !== n) { // shortcut for verifying if it's NaN
         n = 0;
-      } else if (n != 0 && n != Infinity && n != -Infinity) {
+      } else if (n !== 0 && n !== Infinity && n !== -Infinity) {
         n = (n > 0 || -1) * Math.floor(Math.abs(n));
       }
     }
@@ -162,7 +162,7 @@ function getBookPreviews() {
         keyString += bibkeys[i] + ',';
                 // send request when there are 100 requests ready or when there are no
                 // more elements to be sent
-        if ((i > 0 && i % 100 == 0) || i == bibkeys.length - 1) {
+        if ((i > 0 && i % 100 === 0) || i === bibkeys.length - 1) {
           script = 'https://encrypted.google.com/books?jscmd=viewapi&bibkeys='
                         + keyString + '&callback=processGBSBookInfo';
           $.getScript(script);

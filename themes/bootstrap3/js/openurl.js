@@ -12,7 +12,7 @@ VuFind.register('openurl', function OpenUrl() {
     })
     .fail(function getResolverLinksFail(response, textStatus) {
       $target.removeClass('ajax_availability').addClass('text-danger').empty();
-      if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
+      if (textStatus === 'abort' || typeof response.responseJSON == 'undefined') { return; }
       $target.append(response.responseJSON.data);
     });
   };
