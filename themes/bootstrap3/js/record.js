@@ -96,7 +96,7 @@ function registerAjaxCommentRecord() {
       $(form).find('input[type="submit"]').button('loading');
     })
     .fail(function addCommentFail(response, textStatus) {
-      if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
+      if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
       VuFind.lightbox.update(response.responseJSON.data);
     });
     return false;
@@ -219,9 +219,9 @@ function applyRecordTabHash() {
     ? window.location.hash.toLowerCase() : '';
 
   // Open tag in url hash
-  if (newTab.length == 0 || newTab == '#tabnav') {
+  if (newTab.length === 0 || newTab === '#tabnav') {
     $initiallyActiveTab.click();
-  } else if (newTab.length > 0 && '#' + activeTab != newTab) {
+  } else if (newTab.length > 0 && '#' + activeTab !== newTab) {
     $('.' + newTab.substr(1)).click();
   }
 }

@@ -56,7 +56,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
   $.getJSON(url, function getVisDataJSON(data) {
     $.each(data['data'], function getVisDataEach(key, val) {
       //check if there is data to display, if there isn't hide the box
-      if (val['data'] == undefined || val['data'].length == 0) {
+      if (val['data'] === undefined || val['data'].length === 0) {
         return;
       }
       $("#datevis" + key + "xWrapper").removeClass('hidden');
@@ -68,25 +68,25 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
       var hasFilter = true;
 
       //set the has filter
-      if (val['min'] == 0 && val['max'] == 0) {
+      if (val['min'] === 0 && val['max'] === 0) {
         hasFilter = false;
       }
 
       //check if the min and max value have been set otherwise set them to the ends of the graph
-      if (val['min'] == 0) {
+      if (val['min'] === 0) {
         val['min'] = val['data'][0][0] - 5;
       }
-      if (val['max'] == 0) {
+      if (val['max'] === 0) {
         val['max'] = parseInt(val['data'][val['data'].length - 1][0], 10) + 5;
       }
 
       if (zooming) {
         //check the first and last elements of the data array against min and max value (+padding)
         //if the element exists leave it, otherwise create a new marker with a minus one value
-        if (val['data'][val['data'].length - 1][0] != parseInt(val['max'], 10) + 5) {
+        if (val['data'][val['data'].length - 1][0] !== parseInt(val['max'], 10) + 5) {
           val['data'].push([parseInt(val['max'], 10) + 5, -1]);
         }
-        if (val['data'][0][0] != val['min'] - 5) {
+        if (val['data'][0][0] !== val['min'] - 5) {
           val['data'].push([val['min'] - 5, -1]);
         }
         //check for values outside the selected range and remove them by setting them to null

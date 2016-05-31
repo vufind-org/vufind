@@ -10,7 +10,7 @@ function checkSaveStatuses(container) {
 
   var elements = {};
   var data = $.map(container.find('.result,.record'), function checkSaveRecordMap(record) {
-    if ($(record).find('.hiddenId').length == 0 || $(record).find('.hiddenSource').length == 0) {
+    if ($(record).find('.hiddenId').length === 0 || $(record).find('.hiddenSource').length === 0) {
       return null;
     }
     var datum = {'id':$(record).find('.hiddenId').val(), 'source':$(record).find('.hiddenSource')[0].value};

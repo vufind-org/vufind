@@ -21,7 +21,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     url.replace("'", "\\'");
     html += '<span class="main' + (this.isApplied ? ' applied' : '') + '" title="' + htmlEncode(this.displayText) + '"'
       + ' onclick="document.location.href=\'' + url + '\'; return false;">';
-    if (this.operator == 'OR') {
+    if (this.operator === 'OR') {
       if (this.isApplied) {
         html += '<i class="fa fa-check-square-o" title="' + VuFind.translate('Selected') + '"></i>';
       } else {
@@ -80,7 +80,7 @@ function initFacetTree(treeNode, inSidebar)
       facetOperator: operator
     },
     function getFacetData(response, textStatus) {
-      if (response.status == "OK") {
+      if (response.status === "OK") {
         var results = buildFacetNodes(response.data, currentPath, allowExclude, excludeTitle, inSidebar);
         treeNode.find('.fa-spinner').parent().remove();
         if (inSidebar) {

@@ -33,7 +33,7 @@ function addSearch(group, fieldValues) {
   // Insert it
   $("#group" + group + "Holder").before($newSearch);
   // Individual search ops (for searches like EDS)
-  if (groupLength[group] == 0) {
+  if (groupLength[group] === 0) {
     $newSearch.find('.first-op')
       .attr('name', 'op' + group + '[]')
       .removeClass('hidden');
@@ -63,16 +63,16 @@ function deleteSearch(group, sindex) {
   if (groupLength[group] > 1) {
     groupLength[group]--;
     $('#search' + group + '_' + groupLength[group]).remove();
-    if (groupLength[group] == 1) {
+    if (groupLength[group] === 1) {
       $('#group' + group + ' .search .close').addClass('hidden'); // Hide x
     }
   }
 }
 
 function addGroup(firstTerm, firstField, join) {
-  if (firstTerm == undefined) { firstTerm = ''; }
-  if (firstField == undefined) { firstField = ''; }
-  if (join == undefined) { join = ''; }
+  if (firstTerm === undefined) { firstTerm = ''; }
+  if (firstField === undefined) { firstField = ''; }
+  if (join === undefined) { join = ''; }
 
   var $newGroup = $($('#new_group_template').html());
   $newGroup.attr('id', 'group' + nextGroup);
@@ -111,9 +111,9 @@ function deleteGroup(group) {
   // Find the group and remove it
   $("#group" + group).remove();
   // If the last group was removed, add an empty group
-  if ($('.group').length == 0) {
+  if ($('.group').length === 0) {
     addGroup();
-  } else if ($('#advSearchForm .group').length == 1) {
+  } else if ($('#advSearchForm .group').length === 1) {
     $('#groupJoin').addClass('hidden'); // Hide join menu
     $('.group .group-close').addClass('hidden'); // Hide x
   }

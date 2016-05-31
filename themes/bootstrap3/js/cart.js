@@ -38,7 +38,7 @@ VuFind.register('cart', function Cart() {
     var items = _getItems();
     var sources = _getSources();
     var full = [];
-    if (items.length == 0) {
+    if (items.length === 0) {
       return [];
     }
     for (var i = items.length; i--;) {
@@ -81,11 +81,11 @@ VuFind.register('cart', function Cart() {
       var cartItem = cartItems[cartIndex];
       var saveSource = false;
       for (var i = cartItems.length; i--;) {
-        if (i == cartIndex) {
+        if (i === cartIndex) {
           continue;
         }
         // If this source is shared by another, keep it
-        if (cartItems[i].charCodeAt(0) - 65 == sourceIndex) {
+        if (cartItems[i].charCodeAt(0) - 65 === sourceIndex) {
           saveSource = true;
           break;
         }
@@ -131,7 +131,7 @@ VuFind.register('cart', function Cart() {
           var orig = getFullItems();
           $(selected).each(function cartCheckedItemsAdd(i) {
             for (var x in orig) {
-              if (this == orig[x]) {
+              if (this === orig[x]) {
                 inCart++;
                 return;
               }

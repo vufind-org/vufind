@@ -7,7 +7,7 @@ function checkItemStatuses(container) {
 
   var elements = {};
   var data = $.map(container.find('.ajaxItem'), function ajaxItemMap(record) {
-    if ($(record).find('.hiddenId').length == 0) {
+    if ($(record).find('.hiddenId').length === 0) {
       return null;
     }
     var datum = $(record).find('.hiddenId').val();
@@ -86,7 +86,7 @@ function checkItemStatuses(container) {
         // Default case -- load call number and location into appropriate containers:
         item.find('.callnumber').empty().append(result.callnumber + '<br/>');
         item.find('.location').empty().append(
-          result.reserve == 'true'
+          result.reserve === 'true'
           ? result.reserve_message
           : result.location
         );
@@ -97,7 +97,7 @@ function checkItemStatuses(container) {
   })
   .fail(function checkItemStatusFail(response, textStatus) {
     $('.ajax-availability').empty();
-    if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
+    if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
     // display the error message on each of the ajax status place holder
     $('.ajax-availability').append(response.responseJSON.data).addClass('text-danger');
   });

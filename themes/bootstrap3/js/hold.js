@@ -23,7 +23,7 @@ function setUpHoldRequestForm(recordId) {
       var defaultValue = $('#pickUpLocation').data('default');
       $.each(response.data.locations, function holdPickupLocationEach() {
         var option = $('<option></option>').attr('value', this.locationID).text(this.locationDisplay);
-        if (this.locationID == defaultValue || (defaultValue == '' && this.isDefault && $emptyOption.length == 0)) {
+        if (this.locationID === defaultValue || (defaultValue === '' && this.isDefault && $emptyOption.length === 0)) {
           option.attr('selected', 'selected');
         }
         $('#pickUpLocation').append(option);
