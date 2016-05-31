@@ -7,9 +7,9 @@
     "window": false
   },
   "rules": {
-    "block-spacing" : ["error", "always"],
+    "block-spacing" : ["warn", "always"],
     "block-scoped-var": "error",
-    "dot-notation": "error",
+    "dot-notation": "warn",
     "eqeqeq": ["warn", "smart"],
     "func-names": "error",
     "guard-for-in": "warn",
@@ -25,6 +25,6 @@
     "no-unneeded-ternary": "warn",
     "no-unused-expressions": "error",
     "no-unused-vars": "error",
-    "space-infix-ops": "error"
+    "space-infix-ops": "warn"
   }
 }
