@@ -190,8 +190,8 @@ function setupAutocomplete() {
           success: function autocompleteJSON(json) {
             if (json.data.length > 0) {
               var datums = [];
-              for (var i = 0; i < json.data.length; i++) {
-                datums.push(json.data[i]);
+              for (var j = 0; j < json.data.length; j++) {
+                datums.push(json.data[j]);
               }
               cb(datums);
             } else {

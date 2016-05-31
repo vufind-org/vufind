@@ -24,9 +24,9 @@ function html_entity_decode(string, quote_style) {
   return tmp_str;
 }
 
-function getRecord(recordID) {
+function getRecord(id) {
   $.ajax({
-    url: VuFind.path + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
+    url: VuFind.path + '/Hierarchy/GetRecord?' + $.param({id: id}),
     dataType: 'html'
   })
   .done(function getRecordDone(response) {
@@ -34,7 +34,7 @@ function getRecord(recordID) {
     // Remove the old path highlighting
     $('#hierarchyTree a').removeClass("jstree-highlight");
     // Add Current path highlighting
-    var jsTreeNode = $(":input[value='" + recordID + "']").parent();
+    var jsTreeNode = $(":input[value='" + id + "']").parent();
     jsTreeNode.children("a").addClass("jstree-highlight");
     jsTreeNode.parents("li").children("a").addClass("jstree-highlight");
   });
@@ -81,11 +81,11 @@ function doTreeSearch() {
     .done(function searchTreeAjaxDone(data) {
       if (data.results.length > 0) {
         $('#hierarchyTree').find('.jstree-search').removeClass('jstree-search');
-        var tree = $('#hierarchyTree').jstree(true);
-        tree.close_all();
+        var jstree = $('#hierarchyTree').jstree(true);
+        jstree.close_all();
         for (var i = data.results.length; i--;) {
           var id = htmlEncodeId(data.results[i]);
-          tree._open_to(id);
+          jstree._open_to(id);
         }
         for (var j = data.results.length; j--;) {
           var tid = htmlEncodeId(data.results[j]);
@@ -160,11 +160,11 @@ $(document).ready(function hierarchyTreeReady() {
         getRecord(recordID);
       }
 
-      $("#hierarchyTree").bind('select_node.jstree', function jsTreeSelect(e, data) {
+      $("#hierarchyTree").bind('select_node.jstree', function jsTreeSelect(e, resp) {
         if (hierarchyContext == "Record") {
-          window.location.href = data.node.a_attr.href;
+          window.location.href = resp.node.a_attr.href;
         } else {
-          getRecord(data.node.li_attr.recordid);
+          getRecord(resp.node.li_attr.recordid);
         }
       });
 

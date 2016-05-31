@@ -24,9 +24,9 @@ function checkSaveStatuses(container) {
   if (data.length) {
     var ids = [];
     var srcs = [];
-    for (var i = 0; i < data.length; i++) {
-      ids.push(data[i].id);
-      srcs.push(data[i].source);
+    for (var d = 0; d < data.length; d++) {
+      ids.push(data[d].id);
+      srcs.push(data[d].source);
     }
     $.ajax({
       dataType: 'json',

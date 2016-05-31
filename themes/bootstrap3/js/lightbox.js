@@ -11,8 +11,8 @@ VuFind.register('lightbox', function Lightbox() {
   function storeClickedStatus() {
     _clickedButton = this;
   }
-  function html(html) {
-    _modalBody.html(html);
+  function html(content) {
+    _modalBody.html(content);
     // Set or update title if we have one
     if (_lightboxTitle != '') {
       var h2 = _modalBody.find('h2:first-child');
@@ -80,23 +80,24 @@ VuFind.register('lightbox', function Lightbox() {
    *
    * data-lightbox-ignore = do not submit this form in lightbox
    */
-  function update(html) {
-    if (!html.match) {
+  function update(content) {
+    if (!content.match) {
       return;
     }
     // Isolate successes
-    var htmlDiv = $('<div/>').html(html);
+    var htmlDiv = $('<div/>').html(content);
     var alerts = htmlDiv.find('.flash-message.alert-success');
     if (alerts.length > 0) {
       showAlert(alerts[0].innerHTML, 'success');
       return;
     }
     // Deframe HTML
-    if (html.match('<!DOCTYPE html>')) {
-      html = htmlDiv.find('.main > .container').html();
+    var finalHTML = content;
+    if (content.match('<!DOCTYPE html>')) {
+      finalHTML = htmlDiv.find('.main > .container').html();
     }
     // Fill HTML
-    _html(html);
+    _html(finalHTML);
     _modal.modal('show');
     // Attach capturing events
     _modalBody.find('a').click(_constrainLink);
@@ -138,14 +139,14 @@ VuFind.register('lightbox', function Lightbox() {
     }
     _xhr = $.ajax(obj);
     _xhr.always(function lbAjaxAlways() { _xhr = false; })
-      .done(function lbAjaxDone(html, status, jq_xhr) {
+      .done(function lbAjaxDone(content, status, jq_xhr) {
         if (jq_xhr.status == 205) {
           _refreshPage();
           return;
         }
         // Place Hold error isolation
         if (obj.url.match(/\/Record/) && (obj.url.match(/Hold\?/) || obj.url.match(/Request\?/))) {
-          var testDiv = $('<div/>').html(html);
+          var testDiv = $('<div/>').html(content);
           var error = testDiv.find('.flash-message.alert-danger');
           if (error.length && testDiv.find('.record').length) {
             showAlert(error[0].innerHTML, 'danger');
@@ -156,7 +157,7 @@ VuFind.register('lightbox', function Lightbox() {
           obj.method                                                                // is a form
           && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/))               // that matches login/create account
             || obj.url.match(/catalogLogin/))                                       // or catalog login for holds
-          && $('<div/>').html(html).find('.flash-message.alert-danger').length == 0 // skip failed logins
+          && $('<div/>').html(content).find('.flash-message.alert-danger').length == 0 // skip failed logins
         ) {
           var eventResult = _emit('VuFind.lightbox.login', {
             originalUrl: _originalUrl,
@@ -172,7 +173,7 @@ VuFind.register('lightbox', function Lightbox() {
           }
           _currentUrl = _originalUrl; // Now that we're logged in, where were we?
         }
-        _update(html);
+        _update(content);
       })
       .fail(function lbAjaxFail() {
         showAlert(VuFind.translate('error_occurred'), 'danger');
@@ -263,8 +264,8 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // onclose behavior
     if ('string' === typeof $(form).data('lightboxOnclose')) {
-      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(event) {
-        _evalCallback($(form).data('lightboxOnclose'), event);
+      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(ev) {
+        _evalCallback($(form).data('lightboxOnclose'), ev);
       }, false);
     }
     // Loading
