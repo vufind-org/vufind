@@ -7,24 +7,28 @@
     "window": false
   },
   "rules": {
-    "block-spacing" : ["warn", "always"],
+    // errors
     "block-scoped-var": "error",
-    "dot-notation": "warn",
-    "eqeqeq": ["warn", "smart"],
     "func-names": "error",
-    "guard-for-in": "warn",
-    "indent": ["error", 2],
-    "key-spacing": ["warn", { "beforeColon": false, "afterColon": true }],
-    "keyword-spacing": ["warn", { "before": true, "after": true }],
-    "linebreak-style": ["error", "unix"],
-    "no-lonely-if": "warn",
     "no-loop-func": "error",
-    "no-multi-spaces": "warn",
     "no-param-reassign": "error",
     "no-shadow": "error",
-    "no-unneeded-ternary": "warn",
     "no-unused-expressions": "error",
-    "no-unused-vars": "error",
+
+    // warnings
+    "dot-notation": "warn",
+    "eqeqeq": ["warn", "smart"],
+    "guard-for-in": "warn",
+    "key-spacing": ["warn", { "beforeColon": false, "afterColon": true }],
+    "no-lonely-if": "warn",
+    "no-unneeded-ternary": "warn",
+
+    // auto-fixed
+    "block-spacing" : ["warn", "always"],
+    "indent": ["error", 2],
+    "keyword-spacing": ["warn", { "before": true, "after": true }],
+    "linebreak-style": ["error", "unix"],
+    "no-multi-spaces": "warn",
     "semi-spacing": ["warn", { "before": false, "after": true }],
     "space-infix-ops": "warn"
   }
