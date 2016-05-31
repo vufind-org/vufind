@@ -9,12 +9,12 @@ function showMoreInfoToggle() {
   }
   toggleCollectionInfo();
   $("#moreInfoToggle").removeClass('hidden');
-  $("#moreInfoToggle").click(function(e) {
+  $("#moreInfoToggle").click(function moreInfoToggleClick(e) {
     e.preventDefault();
     toggleCollectionInfo();
   });
 }
 
-$(document).ready(function() {
+$(document).ready(function collectionRecordReady() {
   showMoreInfoToggle();
 });

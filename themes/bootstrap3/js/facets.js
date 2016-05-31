@@ -3,7 +3,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];
 
-  $(data).each(function() {
+  $(data).each(function facetNodesEach() {
     var html = '';
     if (!this.isApplied && counts) {
       html = '<span class="badge" style="float: right">' + this.count.toString().replace(/\B(?=(\d{3})+\b)/g, VuFind.translate('number_thousands_separator'));
@@ -79,12 +79,12 @@ function initFacetTree(treeNode, inSidebar)
       facetSort: sort,
       facetOperator: operator
     },
-    function(response, textStatus) {
+    function getFacetData(response, textStatus) {
       if (response.status == "OK") {
         var results = buildFacetNodes(response.data, currentPath, allowExclude, excludeTitle, inSidebar);
         treeNode.find('.fa-spinner').parent().remove();
         if (inSidebar) {
-          treeNode.on('loaded.jstree open_node.jstree', function (e, data) {
+          treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(e, data) {
             treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
           });
         }
