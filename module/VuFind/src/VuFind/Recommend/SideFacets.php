@@ -89,7 +89,7 @@ class SideFacets extends AbstractFacets
      *
      * @var bool|string
      */
-    protected $showInLightboxSettings = 'more';
+    protected $showInLightboxSettings = [];
 
     /**
      * Settings controlling how many values to display before "show more."
@@ -397,7 +397,7 @@ class SideFacets extends AbstractFacets
         }
 
         // Validate the return value
-        return isset($val) ? $val : false;
+        return isset($val) ? $val : 'more';
     }
 
     /**
