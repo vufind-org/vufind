@@ -11,7 +11,10 @@ function checkSaveStatuses(container) {
     if ($(record).find('.hiddenId').length === 0 || $(record).find('.hiddenSource').length === 0) {
       return null;
     }
-    var datum = {'id':$(record).find('.hiddenId').val(), 'source':$(record).find('.hiddenSource')[0].value};
+    var datum = {
+      id: $(record).find('.hiddenId').val(),
+      source: $(record).find('.hiddenSource')[0].value
+    };
     var key = datum.source + '|' + datum.id;
     if (typeof elements[key] === 'undefined') {
       elements[key] = $();
@@ -30,7 +33,7 @@ function checkSaveStatuses(container) {
       dataType: 'json',
       method: 'POST',
       url: VuFind.path + '/AJAX/JSON?method=getSaveStatuses',
-      data: {'id':ids, 'source':srcs}
+      data: {id: ids, source: srcs}
     })
     .done(function checkSaveStatusDone(response) {
       for (var sel in response.data) {

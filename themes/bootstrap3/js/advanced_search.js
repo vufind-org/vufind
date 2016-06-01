@@ -96,7 +96,7 @@ function addGroup(_firstTerm, _firstField, _join) {
   $('#groupPlaceHolder').before($newGroup);
   // Populate
   groupLength[nextGroup] = 0;
-  addSearch(nextGroup, {term:firstTerm, field:firstField});
+  addSearch(nextGroup, {term: firstTerm, field: firstField});
   // Show join menu
   if (nextGroup > 0) {
     $('#groupJoin').removeClass('hidden');

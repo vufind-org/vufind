@@ -179,7 +179,7 @@ VuFind.register('lightbox', function Lightbox() {
     return _xhr;
   };
   var reload = function reload() {
-    ajax({url:_currentUrl || _originalUrl});
+    ajax({ url: _currentUrl || _originalUrl });
   };
 
   /**
@@ -237,11 +237,11 @@ VuFind.register('lightbox', function Lightbox() {
     // Gather data
     var form = event.target;
     var data = $(form).serializeArray();
-    data.push({'name':'layout', 'value':'lightbox'}); // Return in lightbox, please
+    data.push({ name: 'layout', value: 'lightbox' }); // Return in lightbox, please
     // Add submit button information
     var submit = $(_clickedButton);
     _clickedButton = null;
-    var buttonData = {'name':name, 'value':1};
+    var buttonData = { name: name, value: 1 };
     if (submit.length > 0) {
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
         return true;

@@ -70,10 +70,10 @@ function doTreeSearch() {
       searchAjax.abort();
     }
     searchAjax = $.ajax({
-      "url" : VuFind.path + '/Hierarchy/SearchTree?' + $.param({
-        'lookfor': keyword,
-        'hierarchyID': hierarchyID,
-        'type': $("#treeSearchType").val()
+      url: VuFind.path + '/Hierarchy/SearchTree?' + $.param({
+        lookfor: keyword,
+        hierarchyID: hierarchyID,
+        type: $("#treeSearchType").val()
       }) + "&format=true"
     })
     .done(function searchTreeAjaxDone(data) {
@@ -106,16 +106,14 @@ function buildJSONNodes(xml) {
     var id = content.children("name[class='JSTreeID']");
     var name = content.children('name[href]');
     jsonNode.push({
-      'id': htmlEncodeId(id.text()),
-      'text': name.text(),
-      'li_attr': {
-        'recordid': id.text()
+      id: htmlEncodeId(id.text()),
+      text: name.text(),
+      li_attr: { recordid: id.text() },
+      a_attr: {
+        href: name.attr('href'),
+        title: name.text()
       },
-      'a_attr': {
-        'href': name.attr('href'),
-        'title': name.text()
-      },
-      'type': name.attr('href').match(/\/Collection\//) ? 'collection' : 'record',
+      type: name.attr('href').match(/\/Collection\//) ? 'collection' : 'record',
       children: buildJSONNodes(this)
     });
   });
@@ -124,12 +122,12 @@ function buildJSONNodes(xml) {
 
 function buildTreeWithXml(cb) {
   $.ajax({
-    'url': VuFind.path + '/Hierarchy/GetTree',
-    'data': {
-      'hierarchyID': hierarchyID,
-      'id': recordID,
-      'context': hierarchyContext,
-      'mode': 'Tree'
+    url: VuFind.path + '/Hierarchy/GetTree',
+    data: {
+      hierarchyID: hierarchyID,
+      id: recordID,
+      context: hierarchyContext,
+      mode: 'Tree'
     }
   })
   .done(function getTreeDone(xml) {
@@ -182,16 +180,16 @@ $(document).ready(function hierarchyTreeReady() {
       }
     })
     .jstree({
-      'plugins': ['search','types'],
-      'core' : {
-        'data' : function jsTreeCoreData(obj, cb) {
+      plugins: ['search','types'],
+      core: {
+        data: function jsTreeCoreData(obj, cb) {
           $.ajax({
-            'url': VuFind.path + '/Hierarchy/GetTreeJSON',
-            'data': {
-              'hierarchyID': hierarchyID,
-              'id': recordID
+            url: VuFind.path + '/Hierarchy/GetTreeJSON',
+            data: {
+              hierarchyID: hierarchyID,
+              id: recordID
             },
-            'statusCode': {
+            statusCode: {
               200: function jsTree200Status(json /*, status, request*/) {
                 cb.call(this, json);
               },
@@ -205,12 +203,12 @@ $(document).ready(function hierarchyTreeReady() {
           });
         }
       },
-      'types' : {
-        'record': {
-          'icon':'fa fa-file-o'
+      types: {
+        record: {
+          icon: 'fa fa-file-o'
         },
-        'collection': {
-          'icon':'fa fa-folder'
+        collection: {
+          icon: 'fa fa-folder'
         }
       }
     });
