@@ -15,8 +15,8 @@ function getOLOptions() {
   return $('[class*="olPreviewSpan"]').attr("class").split('__')[1].split(',');
 }
 
-function getHTPreviews(skeys) {
-  skeys = skeys.replace(/(ISBN|LCCN|OCLC)/gi, '$1:').toLowerCase();
+function getHTPreviews(keys) {
+  var skeys = keys.replace(/(ISBN|LCCN|OCLC)/gi, '$1:').toLowerCase();
   var bibkeys = skeys.split(/\s+/);
     // fetch 20 books at time if there are more than 20
     // since hathitrust only allows 20 at a time

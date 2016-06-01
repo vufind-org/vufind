@@ -4,9 +4,7 @@ function checkSaveStatuses(container) {
   if (!userIsLoggedIn) {
     return;
   }
-  if (typeof(container) == 'undefined') {
-    container = $('body');
-  }
+  var container = _container || $('body');
 
   var elements = {};
   var data = $.map(container.find('.result,.record'), function checkSaveRecordMap(record) {

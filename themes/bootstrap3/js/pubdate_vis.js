@@ -1,9 +1,7 @@
 /*global htmlEncode*/
 
-function PadDigits(n, totalDigits) {
-  if (n <= 0){
-    n = 1;
-  }
+function PadDigits(number, totalDigits) {
+  var n = number <= 0 ? 1 : number;
   n = n.toString();
   var pd = '';
   if (totalDigits > n.length)

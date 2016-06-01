@@ -23,11 +23,9 @@ VuFind.register('lightbox', function Lightbox() {
       _lightboxTitle = '';
     }
     _modal.modal('handleUpdate');
-  }
-  function emit(msg, details) {
-    if ('undefined' == typeof details) {
-      details = {};
-    }
+  };
+  function _emit(msg, _details) {
+    var details = _details || {};
     // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
     var event;
     try {
@@ -59,15 +57,14 @@ VuFind.register('lightbox', function Lightbox() {
     }
   }
   // Public: Present an alert
-  function showAlert(message, type) {
-    if ('undefined' == typeof type) {
-      type = 'info';
-    }
+  function showAlert(message, _type) {
+    var type = _type || 'info';
     _html('<div class="flash-message alert alert-' + type + '">' + message + '</div>'
         + '<button class="btn btn-default" data-dismiss="modal">' + VuFind.translate('close') + '</button>');
     _modal.modal('show');
-  }
-  function flashMessage(message, type) {
+  };
+  function flashMessage(message, _type) {
+    var type = _type || 'info';
     _modalBody.find('.flash-message,.fa.fa-spinner').remove();
     _modalBody.find('h2:first-of-type')
       .after('<div class="flash-message alert alert-' + type + '">' + message + '</div>');
@@ -80,7 +77,7 @@ VuFind.register('lightbox', function Lightbox() {
    *
    * data-lightbox-ignore = do not submit this form in lightbox
    */
-  function update(content) {
+  function _update(content) {
     if (!content.match) {
       return;
     }
@@ -288,10 +285,8 @@ VuFind.register('lightbox', function Lightbox() {
   }
 
   // Public: Attach listeners to the page
-  function bind(target) {
-    if ('undefined' === typeof target) {
-      target = document;
-    }
+  function bind(el) {
+    var target = el || document;
     $(target).find('a[data-lightbox]')
       .unbind('click', _constrainLink)
       .on('click', _constrainLink);

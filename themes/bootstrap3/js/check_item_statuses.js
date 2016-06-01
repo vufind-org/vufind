@@ -1,9 +1,7 @@
 /*global VuFind */
 
-function checkItemStatuses(container) {
-  if (typeof(container) == 'undefined') {
-    container = $('body');
-  }
+function checkItemStatuses(_container) {
+  var container = _container || $('body');
 
   var elements = {};
   var data = $.map(container.find('.ajaxItem'), function ajaxItemMap(record) {

@@ -1,10 +1,8 @@
 var nextGroup = 0;
 var groupLength = [];
 
-function addSearch(group, fieldValues) {
-  if (typeof fieldValues === "undefined") {
-    fieldValues = {};
-  }
+function addSearch(group, _fieldValues) {
+  var fieldValues = _fieldValues || {};
   // Build the new search
   var inputID = group + '_' + groupLength[group];
   var $newSearch = $($('#new_search_template').html());
@@ -69,10 +67,10 @@ function deleteSearch(group, sindex) {
   }
 }
 
-function addGroup(firstTerm, firstField, join) {
-  if (firstTerm === undefined) { firstTerm = ''; }
-  if (firstField === undefined) { firstField = ''; }
-  if (join === undefined) { join = ''; }
+function addGroup(_firstTerm, _firstField, _join) {
+  var firstTerm = _firstTerm || '';
+  var firstField = _firstField || '';
+  var join = _join || '';
 
   var $newGroup = $($('#new_group_template').html());
   $newGroup.attr('id', 'group' + nextGroup);
