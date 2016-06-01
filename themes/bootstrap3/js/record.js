@@ -9,7 +9,12 @@ function checkRequestIsValid(element, requestType) {
   var vars = deparam(element.href);
   vars.id = recordId;
 
-  var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
+  var url = VuFind.path + '/AJAX/JSON?' + $.param({
+    method: 'checkRequestIsValid',
+    id: recordId,
+    requestType: requestType,
+    data: vars
+  });
   $.ajax({
     dataType: 'json',
     cache: false,
@@ -42,7 +47,7 @@ function setUpCheckRequest() {
 }
 
 function deleteRecordComment(element, recordId, recordSource, commentId) {
-  var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
+  var url = VuFind.path + '/AJAX/JSON?' + $.param({ method: 'deleteRecordComment', id: commentId });
   $.ajax({
     dataType: 'json',
     url: url
@@ -53,7 +58,11 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
 }
 
 function refreshCommentList($target, recordId, recordSource) {
-  var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
+  var url = VuFind.path + '/AJAX/JSON?' + $.param({
+    method: 'getRecordCommentsAsHTML',
+    id: recordId,
+    source: recordSource
+  });
   $.ajax({
     dataType: 'json',
     url: url
@@ -78,15 +87,15 @@ function registerAjaxCommentRecord() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
-    var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+    var url = VuFind.path + '/AJAX/JSON?' + $.param({ method: 'commentRecord' });
     var data = {
-      comment:form.comment.value,
-      id:id,
-      source:recordSource
+      comment: form.comment.value,
+      id: id,
+      source: recordSource
     };
     $.ajax({
       type: 'POST',
-      url:  url,
+      url: url,
       data: data,
       dataType: 'json'
     })
@@ -169,7 +178,11 @@ function refreshTagList(_target, _loggedin) {
   var recordSource = $(target).find('.hiddenSource').val();
   var $tagList = $(target).find('.tagList');
   if ($tagList.length > 0) {
-    var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    var url = VuFind.path + '/AJAX/JSON?' + $.param({
+      method: 'getRecordTags',
+      id: recordId,
+      source: recordSource
+    });
     $.ajax({
       dataType: 'html',
       url: url
@@ -193,13 +206,13 @@ function ajaxTagUpdate(_link, tag, _remove) {
   var recordId = $target.find('.hiddenId').val();
   var recordSource = $target.find('.hiddenSource').val();
   $.ajax({
-    url:VuFind.path + '/AJAX/JSON?method=tagRecord',
-    method:'POST',
-    data:{
-      tag:'"' + tag.replace(/\+/g, ' ') + '"',
-      id:recordId,
-      source:recordSource,
-      remove:remove
+    url: VuFind.path + '/AJAX/JSON?method=tagRecord',
+    method: 'POST',
+    data: {
+      tag: '"' + tag.replace(/\+/g, ' ') + '"',
+      id: recordId,
+      source: recordSource,
+      remove: remove
     }
   })
   .always(function tagRecordAlways() {

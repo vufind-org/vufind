@@ -180,13 +180,13 @@ function setupAutocomplete() {
         $.fn.autocomplete.ajax({
           url: VuFind.path + '/AJAX/JSON',
           data: {
-            q:query,
-            method:'getACSuggestions',
-            searcher:searcher.searcher,
-            type:searcher.type ? searcher.type : $(input).closest('.searchForm').find('.searchForm_type').val(),
-            hiddenFilters:hiddenFilters
+            q: query,
+            method: 'getACSuggestions',
+            searcher: searcher.searcher,
+            type: searcher.type ? searcher.type : $(input).closest('.searchForm').find('.searchForm_type').val(),
+            hiddenFilters: hiddenFilters
           },
-          dataType:'json',
+          dataType: 'json',
           success: function autocompleteJSON(json) {
             if (json.data.length > 0) {
               var datums = [];

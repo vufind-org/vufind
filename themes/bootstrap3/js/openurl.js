@@ -2,7 +2,11 @@
 VuFind.register('openurl', function OpenUrl() {
   function _loadResolverLinks($target, openUrl, searchClassId) {
     $target.addClass('ajax_availability');
-    var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl,searchClassId:searchClassId});
+    var url = VuFind.path + '/AJAX/JSON?' + $.param({
+      method: 'getResolverLinks',
+      openurl: openUrl,
+      searchClassId: searchClassId
+    });
     $.ajax({
       dataType: 'json',
       url: url

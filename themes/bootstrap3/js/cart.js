@@ -187,8 +187,8 @@ VuFind.register('cart', function Cart() {
       var $form = $('form[name="bulkActionForm"]');
       _registerUpdate($form);
     }
-    $("#updateCart, #bottom_updateCart").popover({content:'', html:true, trigger:'manual'});
-  }
+    $("#updateCart, #bottom_updateCart").popover({content: '', html: true, trigger: 'manual'});
+  };
 
   // Reveal
   return {

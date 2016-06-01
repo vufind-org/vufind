@@ -24,7 +24,7 @@ function checkItemStatuses(_container) {
     dataType: 'json',
     method: 'POST',
     url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
-    data: {'id':data}
+    data: {'id': data}
   })
   .done(function checkItemStatusDone(response) {
     $.each(response.data, function checkItemDoneEach(i, result) {
