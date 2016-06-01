@@ -56,8 +56,8 @@ function htmlEncode(value) {
     return '';
   }
 }
-function extractClassParams(str) {
-  str = $(str).attr('class');
+function extractClassParams(selector) {
+  var str = $(selector).attr('class');
   if (typeof str === "undefined") {
     return [];
   }

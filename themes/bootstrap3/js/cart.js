@@ -52,10 +52,8 @@ VuFind.register('cart', function Cart() {
     $('#cartItems strong').html(items.length);
   };
 
-  var addItem = function addItem(id,source) {
-    if (!source) {
-      source = VuFind.defaultSearchBackend;
-    }
+  var addItem = function addItem(id, _source) {
+    var source = _source || VuFind.defaultSearchBackend;
     var cartItems = _getItems();
     var cartSources = _getSources();
     var sIndex = cartSources.indexOf(source);

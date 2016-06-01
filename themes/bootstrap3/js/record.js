@@ -161,11 +161,9 @@ function ajaxLoadTab($newTab, tabid, setHash) {
   return false;
 }
 
-function refreshTagList(target, loggedin) {
-  loggedin = !!loggedin || userIsLoggedIn;
-  if (typeof target === 'undefined') {
-    target = document;
-  }
+function refreshTagList(_target, _loggedin) {
+  var loggedin = !!_loggedin || userIsLoggedIn;
+  var target = _target || document;
   var recordId = $(target).find('.hiddenId').val();
   var recordSource = $(target).find('.hiddenSource').val();
   var $tagList = $(target).find('.tagList');
@@ -187,13 +185,9 @@ function refreshTagList(target, loggedin) {
   }
 }
 
-function ajaxTagUpdate(link, tag, remove) {
-  if (typeof link === "undefined") {
-    link = document;
-  }
-  if (typeof remove === "undefined") {
-    remove = false;
-  }
+function ajaxTagUpdate(_link, tag, _remove) {
+  var link = _link || document;
+  var remove = _remove || false;
   var $target = $(link).closest('.record');
   var recordId = $target.find('.hiddenId').val();
   var recordSource = $target.find('.hiddenSource').val();

@@ -24,10 +24,9 @@ VuFind.register('lightbox', function Lightbox() {
     }
     _modal.modal('handleUpdate');
   };
-  var _emit = function _emit(msg, details) {
-    if ('undefined' == typeof details) {
-      details = {};
-    }
+  var _emit = function _emit(msg, _details) {
+    var details = _details || {};
+
     // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
     var event;
     try {
@@ -59,15 +58,14 @@ VuFind.register('lightbox', function Lightbox() {
     }
   };
   // Public: Present an alert
-  var showAlert = function showAlert(message, type) {
-    if ('undefined' == typeof type) {
-      type = 'info';
-    }
+  var showAlert = function showAlert(message, _type) {
+    var type = _type || 'info';
     _html('<div class="flash-message alert alert-' + type + '">' + message + '</div>'
         + '<button class="btn btn-default" data-dismiss="modal">' + VuFind.translate('close') + '</button>');
     _modal.modal('show');
   };
-  var flashMessage = function flashMessage(message, type) {
+  var flashMessage = function flashMessage(message, _type) {
+    var type = _type || 'info';
     _modalBody.find('.flash-message,.fa.fa-spinner').remove();
     _modalBody.find('h2:first-of-type')
       .after('<div class="flash-message alert alert-' + type + '">' + message + '</div>');
@@ -80,18 +78,19 @@ VuFind.register('lightbox', function Lightbox() {
    *
    * data-lightbox-ignore = do not submit this form in lightbox
    */
-  var _update = function _update(html) {
-    if (!html.match) {
+  var _update = function _update(content) {
+    if (!content.match) {
       return;
     }
     // Isolate successes
-    var htmlDiv = $('<div/>').html(html);
+    var htmlDiv = $('<div/>').html(content);
     var alerts = htmlDiv.find('.flash-message.alert-success');
     if (alerts.length > 0) {
       showAlert(alerts[0].innerHTML, 'success');
       return;
     }
     // Deframe HTML
+    var html = content;
     if (html.match('<!DOCTYPE html>')) {
       html = htmlDiv.find('.main > .container').html();
     }
@@ -287,10 +286,8 @@ VuFind.register('lightbox', function Lightbox() {
   };
 
   // Public: Attach listeners to the page
-  var bind = function bind(target) {
-    if ('undefined' === typeof target) {
-      target = document;
-    }
+  var bind = function bind(el) {
+    var target = el || document;
     $(target).find('a[data-lightbox]')
       .unbind('click', _constrainLink)
       .on('click', _constrainLink);
