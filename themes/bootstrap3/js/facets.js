@@ -112,7 +112,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
         $.ajax(ajaxUrl + '&layout=lightbox&facetsort='+sort)
           .done(function facetSortTitleDone(data) {
             list.prepend($('<span>'+data+'</span>').find('.js-facet-item'));
-            list.find('.js-facet-next-page').text(VuFind.translate('more'));
+            list.find('.js-facet-next-page').text(VuFind.translate('more') + ' ...');
           });
       }
       $('.full-facet-list').addClass('hidden');
@@ -144,7 +144,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
           button.before(list);
           if (list.length && htmlDiv.find('.js-facet-next-page').length) {
             button.attr('data-page', page + 1);
-            button.text(VuFind.translate('more'));
+            button.text(VuFind.translate('more') + ' ...');
             button.removeAttr('disabled');
           } else {
             button.remove();
