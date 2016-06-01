@@ -178,8 +178,8 @@ function setupAutocomplete() {
           data: {
             q:query,
             method:'getACSuggestions',
-            searcher:searcher['searcher'],
-            type:searcher['type'] ? searcher['type'] : $(input).closest('.searchForm').find('.searchForm_type').val(),
+            searcher:searcher.searcher,
+            type:searcher.type ? searcher.type : $(input).closest('.searchForm').find('.searchForm_type').val(),
             hiddenFilters:hiddenFilters
           },
           dataType:'json',

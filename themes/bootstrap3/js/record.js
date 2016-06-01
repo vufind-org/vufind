@@ -6,7 +6,7 @@
 function checkRequestIsValid(element, requestType) {
   var recordId = element.href.match(/\/Record\/([^\/]+)\//)[1];
   var vars = deparam(element.href);
-  vars['id'] = recordId;
+  vars.id = recordId;
 
   var url = VuFind.path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
   $.ajax({
