@@ -39,15 +39,17 @@
       <label for="format" class="col-sm-3 control-label"><?=$this->transEsc('Format')?>:</label>
       <div class="col-sm-9">
         <select name="format" id="format" class="form-control">
+          <? $firstOption = null; ?>
           <? foreach ($this->exportOptions as $exportOption): ?>
-            <option value="<?=$this->escapeHtmlAttr($exportOption)?>"><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
+            <? if ($firstOption == null) $firstOption = $exportOption; ?>
+            <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<? if($this->export()->needsRedirect($exportOption)): ?> data-redirect<? endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
           <? endforeach; ?>
         </select>
       </div>
     </div>
     <div class="form-group">
       <div class="col-sm-9 col-sm-offset-3">
-        <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Export')?>"/>
+        <input class="export btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Export')?>"<? if($this->export()->needsRedirect($firstOption)): ?> data-lightbox-ignore<? endif; ?>/>
       </div>
     </div>
   </form>
@@ -56,6 +58,13 @@
   $script = <<<JS
   $('button.btn.hidden').removeClass('hidden');
   $('#itemhide').removeClass('in');
+  $('#format').change(function exportFormatChange(e) {
+    if (this.selectedOptions[0].getAttribute('data-redirect') === null) {
+      $('.export.btn').removeAttr('data-lightbox-ignore');
+    } else {
+      $('.export.btn').attr('data-lightbox-ignore', '1');
+    }
+  });
 JS;
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
