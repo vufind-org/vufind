@@ -152,6 +152,13 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
         });
       return false;
     });
+    var margin = 180;
+    $('#modal').on('show.bs.modal', function facetListHeight() {
+      $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
+    });
+    $(window).resize(function facetListResize() {
+      $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
+    });
   };
 
   return { setup: setup };
