@@ -1,4 +1,5 @@
 /*global deparam, syn_get_widget, userIsLoggedIn, VuFind */
+/* exported ajaxTagUpdate, recordDocReady */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -23,19 +24,19 @@ function checkRequestIsValid(element, requestType) {
       $(element).remove();
     }
   })
-  .fail(function checkValidFail(response) {
+  .fail(function checkValidFail(/*response*/) {
     $(element).remove();
   });
 }
 
 function setUpCheckRequest() {
-  $('.checkRequest').each(function checkRequest(i) {
+  $('.checkRequest').each(function checkRequest() {
     checkRequestIsValid(this, 'Hold');
   });
-  $('.checkStorageRetrievalRequest').each(function checkStorageRetrievalRequest(i) {
+  $('.checkStorageRetrievalRequest').each(function checkStorageRetrievalRequest() {
     checkRequestIsValid(this, 'StorageRetrievalRequest');
   });
-  $('.checkILLRequest').each(function checkILLRequest(i) {
+  $('.checkILLRequest').each(function checkILLRequest() {
     checkRequestIsValid(this, 'ILLRequest');
   });
 }
@@ -46,7 +47,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
     dataType: 'json',
     url: url
   })
-  .done(function deleteCommentDone(response) {
+  .done(function deleteCommentDone(/*response*/) {
     $($(element).closest('.comment')[0]).remove();
   });
 }
@@ -89,7 +90,7 @@ function registerAjaxCommentRecord() {
       data: data,
       dataType: 'json'
     })
-    .done(function addCommentDone(response) {
+    .done(function addCommentDone(/*response, textStatus*/) {
       var $tab = $(form).closest('.tab-pane');
       refreshCommentList($tab, id, recordSource);
       $(form).find('textarea[name="comment"]').val('');
@@ -223,7 +224,7 @@ function applyRecordTabHash() {
 $(window).on('hashchange', applyRecordTabHash);
 
 function recordDocReady() {
-  $('.record-tabs .nav-tabs a').click(function recordTabsClick(e) {
+  $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
     if ($li.hasClass('active')) {

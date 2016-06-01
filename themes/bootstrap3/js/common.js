@@ -1,4 +1,5 @@
-/*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape */
+/*global isPhoneNumberValid, unescape */
+/* exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, bulkFormHandler */
 
 // IE 9< console polyfill
 window.console = window.console || {log: function polyfillLog() {}};
@@ -132,7 +133,6 @@ function bulkFormHandler(event, data) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
-  var keys = [];
   for (var i in data) {
     if ('print' === data[i].name) {
       return true;
