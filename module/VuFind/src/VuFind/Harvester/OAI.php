@@ -640,7 +640,7 @@ class OAI
         $xml = preg_replace('/(^<metadata[^\>]*>)|(<\/metadata>$)/m', '', $xml);
         // remove all attributes from extractedNs that appear deeper in xml:
         $attributes = [];
-        preg_match_all('/(^| )[^"]*"?[^"]*"/', $extractedNs[1], $attributes);
+        preg_match_all('/(^| )([^"]*"?[^"]*")|([^\']*\'?[^\']*\')/', $extractedNs[1], $attributes);
         $extractedAttributes = '';
         foreach ($attributes[0] as $attribute) {
             $attribute = trim($attribute);
@@ -736,7 +736,7 @@ class OAI
                 $attr .= ' xmlns:' . $key . '="' . $val . '"';
             }
         }
-        if (!empty($attr) && !strpos($xml, $attr)) {
+        if (!empty($attr)) {
             $xml = preg_replace('/>/', $attr . '>', $xml, 1);
         }
         return $xml;
