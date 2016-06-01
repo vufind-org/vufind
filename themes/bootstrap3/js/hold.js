@@ -1,4 +1,5 @@
 /*global VuFind */
+/* exported setUpHoldRequestForm */
 function setUpHoldRequestForm(recordId) {
   $('#requestGroupId').change(function requestGroupChange() {
     var $emptyOption = $("#pickUpLocation option[value='']");
@@ -32,7 +33,7 @@ function setUpHoldRequestForm(recordId) {
       $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
       $('#pickUpLocation').removeAttr('disabled');
     })
-    .fail(function holdPickupLocationsFail(response) {
+    .fail(function holdPickupLocationsFail(/*response*/) {
       $('#pickUpLocationLabel i').removeClass("fa fa-spinner icon-spin");
       $('#pickUpLocation').removeAttr('disabled');
     });

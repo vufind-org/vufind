@@ -1,3 +1,5 @@
+/* exported processGBSBookInfo, processOLBookInfo, processHTBookInfo */
+
 // functions to get rights codes for previews
 function getHathiOptions() {
   return $('[class*="hathiPreviewSpan"]').attr("class").split('__')[1].split(',');

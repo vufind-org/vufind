@@ -1,13 +1,12 @@
-/*global hierarchySettings, VuFind */
+/*global VuFind */
 
 var hierarchyID, recordID, htmlID, hierarchyContext;
-var baseTreeSearchFullURL;
 
 /* Utility functions */
 function htmlEncodeId(id) {
   return id.replace(/\W/g, "-"); // Also change Hierarchy/TreeRenderer/JSTree.php
 }
-function html_entity_decode(string, quote_style) {
+function html_entity_decode(string) {
   var hash_map = {
     '&': '&amp;',
     '>': '&gt;',
@@ -60,7 +59,6 @@ var searchAjax = false;
 function doTreeSearch() {
   $('#treeSearchLoadingImg').removeClass('hidden');
   var keyword = $("#treeSearchText").val();
-  var type = $("#treeSearchType").val();
   if (keyword.length === 0) {
     $('#hierarchyTree').find('.jstree-search').removeClass('jstree-search');
     var tree = $('#hierarchyTree').jstree(true);
@@ -150,7 +148,7 @@ $(document).ready(function hierarchyTreeReady() {
   $("#hierarchyLoading").removeClass('hide');
 
   $("#hierarchyTree")
-    .bind("ready.jstree", function jsTreeReady(event, data) {
+    .bind("ready.jstree", function jsTreeReady(/*event, data*/) {
       $("#hierarchyLoading").addClass('hide');
       var tree = $("#hierarchyTree").jstree(true);
       tree.select_node(htmlID);
@@ -194,13 +192,13 @@ $(document).ready(function hierarchyTreeReady() {
               'id': recordID
             },
             'statusCode': {
-              200: function jsTree200Status(json, status, request) {
+              200: function jsTree200Status(json /*, status, request*/) {
                 cb.call(this, json);
               },
-              204: function jsTree204Status(json, status, request) { // No Content
+              204: function jsTree204Status(/*json, status, request*/) { // No Content
                 buildTreeWithXml(cb);
               },
-              503: function jsTree503Status(json, status, request) { // Service Unavailable
+              503: function jsTree503Status(/*json, status, request*/) { // Service Unavailable
                 buildTreeWithXml(cb);
               }
             }

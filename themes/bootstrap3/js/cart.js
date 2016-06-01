@@ -1,4 +1,5 @@
 /*global Cookies, VuFind */
+/* exported cartFormHandler */
 
 VuFind.register('cart', function Cart() {
   var _COOKIE = 'vufind_cart';
@@ -76,7 +77,6 @@ VuFind.register('cart', function Cart() {
     var cartIndex = cartItems.indexOf(String.fromCharCode(65 + cartSources.indexOf(source)) + id);
     if (cartIndex > -1) {
       var sourceIndex = cartItems[cartIndex].charCodeAt(0) - 65;
-      var cartItem = cartItems[cartIndex];
       var saveSource = false;
       for (var i = cartItems.length; i--;) {
         if (i === cartIndex) {
@@ -127,7 +127,7 @@ VuFind.register('cart', function Cart() {
           var inCart = 0;
           var msg = "";
           var orig = getFullItems();
-          $(selected).each(function cartCheckedItemsAdd(i) {
+          $(selected).each(function cartCheckedItemsAdd() {
             for (var x in orig) {
               if (this === orig[x]) {
                 inCart++;

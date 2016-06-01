@@ -1,4 +1,5 @@
 /*global htmlEncode, VuFind */
+/* exported initFacetTree */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];
@@ -79,12 +80,12 @@ function initFacetTree(treeNode, inSidebar)
       facetSort: sort,
       facetOperator: operator
     },
-    function getFacetData(response, textStatus) {
+    function getFacetData(response/*, textStatus*/) {
       if (response.status === "OK") {
         var results = buildFacetNodes(response.data, currentPath, allowExclude, excludeTitle, inSidebar);
         treeNode.find('.fa-spinner').parent().remove();
         if (inSidebar) {
-          treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(e, data) {
+          treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
             treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
           });
         }
@@ -104,7 +105,6 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 
   function lightboxFacetSorting() {
     var sortButtons = $('.js-facet-sort');
-    var lastsort, lastlimit;
     function sortAjax(sort) {
       var list = $('#facet-list-' + sort);
       if (list.find('.js-facet-item').length === 0) {

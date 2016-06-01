@@ -8,10 +8,10 @@ VuFind.register('lightbox', function Lightbox() {
   // Elements
   var _modal, _modalBody, _clickedButton = null;
   // Utilities
-  function storeClickedStatus() {
+  function _storeClickedStatus() {
     _clickedButton = this;
   }
-  function html(content) {
+  function _html(content) {
     _modalBody.html(content);
     // Set or update title if we have one
     if (_lightboxTitle !== '') {
@@ -44,7 +44,7 @@ VuFind.register('lightbox', function Lightbox() {
   /**
    * Reload the page without causing trouble with POST parameters while keeping hash
    */
-  function refreshPage() {
+  function _refreshPage() {
     var parts = window.location.href.split('#');
     if (typeof parts[1] === 'undefined') {
       window.location.href = window.location.href;
@@ -184,7 +184,7 @@ VuFind.register('lightbox', function Lightbox() {
   /**
    * Evaluate a callback
    */
-  function evalCallback(callback, event, data) {
+  function _evalCallback(callback, event, data) {
     if ('function' === typeof window[callback]) {
       return window[callback](event, data);
     } else {
@@ -200,7 +200,7 @@ VuFind.register('lightbox', function Lightbox() {
    * data-lightbox-post = post data
    * data-lightbox-title = Lightbox title (overrides any title the page provides)
    */
-  function constrainLink(event) {
+  function _constrainLink(event) {
     if (typeof $(this).data('lightboxIgnore') != 'undefined' || this.attributes.href.value.charAt(0) === '#') {
       return true;
     }
@@ -232,7 +232,7 @@ VuFind.register('lightbox', function Lightbox() {
    *
    * data-lightbox-ignore = do not handle clicking this button in lightbox
    */
-  function formSubmit(event) {
+  function _formSubmit(event) {
     // Gather data
     var form = event.target;
     var data = $(form).serializeArray();
