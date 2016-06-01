@@ -57,15 +57,15 @@ function processBookInfo(booksInfo, previewClass, viewOptions) {
 
 function processGBSBookInfo(booksInfo) {
   var viewOptions = getGoogleOptions();
-  if (viewOptions['link'] && viewOptions['link'].length > 0) {
-    processBookInfo(booksInfo, 'previewGBS', viewOptions['link']);
+  if (viewOptions.link && viewOptions.link.length > 0) {
+    processBookInfo(booksInfo, 'previewGBS', viewOptions.link);
   }
-  if (viewOptions['tab'] && viewOptions['tab'].length > 0) {
+  if (viewOptions.tab && viewOptions.tab.length > 0) {
         // check for "embeddable: true" in bookinfo
     for (var bibkey in booksInfo) {
       var bookInfo = booksInfo[bibkey];
       if (bookInfo) {
-        if (viewOptions['tab'].indexOf(bookInfo.preview) >= 0
+        if (viewOptions.tab.indexOf(bookInfo.preview) >= 0
                 && (bookInfo.embeddable)) {
                     // make tab visible
           $('ul.nav-tabs li.hidden a.preview').parent().removeClass('hidden');
