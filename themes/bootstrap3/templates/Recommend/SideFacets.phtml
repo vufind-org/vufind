@@ -1,5 +1,5 @@
 <?
-  $this->headScript()->appendFile('facet-list.js');
+  $this->headScript()->appendFile('facets.js');
 
   $results = $this->recommend->getResults();
   $options = $this->searchOptions($this->searchClassId);
@@ -130,7 +130,6 @@ JS;
         <? else: ?>
           <? if (in_array($title, $hierarchicalFacets)): ?>
             <? $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
-            <? $this->headScript()->appendFile('facets.js'); ?>
             <? $sort = isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''; ?>
             <? if (!in_array($title, $collapsedFacets)): ?>
               <?
