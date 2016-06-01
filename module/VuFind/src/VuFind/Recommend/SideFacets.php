@@ -389,15 +389,15 @@ class SideFacets extends AbstractFacets
     public function getShowInLightboxSetting($facetName)
     {
         // Look for either facet-specific configuration or else a configured
-        // default. If neither is found, initialize return value to false.
+        // default.
         if (isset($this->showInLightboxSettings[$facetName])) {
-            $val = $this->showInLightboxSettings[$facetName];
+            return $this->showInLightboxSettings[$facetName];
         } elseif (isset($this->showInLightboxSettings['*'])) {
-            $val = $this->showInLightboxSettings['*'];
+            return $this->showInLightboxSettings['*'];
         }
 
-        // Validate the return value
-        return isset($val) ? $val : 'more';
+        // No config found; use default behavior:
+        return 'more';
     }
 
     /**
