@@ -196,6 +196,8 @@ class SideFacets extends AbstractFacets
         if (isset($config->Results_Settings->showMoreInLightbox)) {
             $this->showInLightboxSettings
                 = $config->Results_Settings->showMoreInLightbox->toArray();
+        } else {
+            $this->showInLightboxSettings = 'more';
         }
 
         // Collapsed facets:
