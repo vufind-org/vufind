@@ -85,6 +85,13 @@ class SideFacets extends AbstractFacets
     protected $checkboxFacets = [];
 
     /**
+     * Settings controlling how lightbox is used for facet display.
+     *
+     * @var bool|string
+     */
+    protected $showInLightboxSettings = 'more';
+
+    /**
      * Settings controlling how many values to display before "show more."
      *
      * @var array
@@ -196,8 +203,6 @@ class SideFacets extends AbstractFacets
         if (isset($config->Results_Settings->showMoreInLightbox)) {
             $this->showInLightboxSettings
                 = $config->Results_Settings->showMoreInLightbox->toArray();
-        } else {
-            $this->showInLightboxSettings = 'more';
         }
 
         // Collapsed facets:
