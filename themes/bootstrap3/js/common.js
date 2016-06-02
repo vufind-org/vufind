@@ -1,4 +1,4 @@
-/*global isPhoneNumberValid, unescape */
+/* global isPhoneNumberValid, unescape */
 /* exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, bulkFormHandler */
 
 // IE 9< console polyfill
@@ -54,7 +54,7 @@ var VuFind = (function VuFind() {
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value) {
   if (value) {
-    return jQuery('<div />').text(value).html();
+    return $('<div />').text(value).html();
   } else {
     return '';
   }

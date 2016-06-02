@@ -1,4 +1,4 @@
-/*global VuFind */
+/* global VuFind */
 
 var hierarchyID, recordID, htmlID, hierarchyContext;
 

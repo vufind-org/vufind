@@ -1,4 +1,4 @@
-/*global htmlEncode*/
+/* global htmlEncode */
 /* exported loadVis */
 
 function PadDigits(number, totalDigits) {
@@ -115,7 +115,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
       placeholder.bind("plotselected", function plotselected(event, ranges) {
         var from = Math.floor(ranges.xaxis.from);
         var to = Math.ceil(ranges.xaxis.to);
-        location.href = val.removalURL + '&daterange[]=' + key + '&' + key + 'to=' + PadDigits(to,4) + '&' + key + 'from=' + PadDigits(from,4);
+        window.location.href = val.removalURL + '&daterange[]=' + key + '&' + key + 'to=' + PadDigits(to,4) + '&' + key + 'from=' + PadDigits(from,4);
       });
 
       if (hasFilter) {

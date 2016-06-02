@@ -1,4 +1,4 @@
-/*global $, document, CustomEvent, VuFind, window */
+/* global $, document, CustomEvent, VuFind, window */
 VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
@@ -240,7 +240,7 @@ VuFind.register('lightbox', function Lightbox() {
     // Add submit button information
     var submit = $(_clickedButton);
     _clickedButton = null;
-    var buttonData = { name: name, value: 1 };
+    var buttonData = { name: 'submit', value: 1 };
     if (submit.length > 0) {
       if (typeof submit.data('lightbox-ignore') !== 'undefined') {
         return true;
