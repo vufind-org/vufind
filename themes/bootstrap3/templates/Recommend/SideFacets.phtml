@@ -169,12 +169,12 @@ JS;
               <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
             <? if ($i == $facets_before_more): ?>
               <? $idAndClass = 'id="more-narrowGroupHidden-'.$this->escapeHtmlAttr($title).'" class="list-group-item narrow-toggle"'; ?>
+              <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$title.'&facetop='.$thisFacet['operator'].'&facetexclude='.($allowExclude ? 1 : 0); ?>
               <? if (($showMoreInLightbox && $showMoreInLightbox !== 'more') && $facetLightbox = $options->getFacetListAction()): ?>
-                <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$title.'&facetop='.$thisFacet['operator'].'&facetexclude='.($allowExclude ? 1 : 0); ?>
                 <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>"><?=$this->transEsc('more')?> ...</a>
                 <? break; ?>
               <? else: ?>
-                <a <?=$idAndClass ?> href="#" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('more')?> ...</a>
+                <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('more')?> ...</a>
               <? endif; ?>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
