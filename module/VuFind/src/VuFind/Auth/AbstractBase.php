@@ -280,6 +280,14 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             $policy['maxLength']
                 = $config->Authentication->maximum_password_length;
         }
+        if (isset($config->Authentication->password_pattern)) {
+            $policy['pattern']
+                = $config->Authentication->password_pattern;
+        }
+        if (isset($config->Authentication->password_hint)) {
+            $policy['hint']
+                = $config->Authentication->password_hint;
+        }
         return $policy;
     }
 
