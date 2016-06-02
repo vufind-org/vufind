@@ -37,7 +37,7 @@ use VuFind\PermissionManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
+class PermissionManagerTest extends \VuFindTest\Unit\TestCase
 {
     /**
      * Sample configuration with varios config options.
