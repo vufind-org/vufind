@@ -280,6 +280,14 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             $policy['maxLength']
                 = $config->Authentication->maximum_password_length;
         }
+        if (isset($config->Authentication->password_pattern)) {
+            $policy['pattern']
+                = $config->Authentication->password_pattern;
+        }
+        if (isset($config->Authentication->password_hint)) {
+            $policy['hint']
+                = $config->Authentication->password_hint;
+        }
         return $policy;
     }
 
@@ -324,6 +332,33 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                     ['%%maxlength%%' => $policy['maxLength']]
                 )
             );
+        }
+        if (!empty($policy['pattern'])) {
+            $valid = true;
+            if ($policy['pattern'] == 'numeric') {
+                if (!ctype_digit($password)) {
+                    $valid = false;
+                }
+            } elseif ($policy['pattern'] == 'alphanumeric') {
+                if (preg_match('/[^\da-zA-Z]/', $password)) {
+                    $valid = false;
+                }
+            } else {
+                $result = preg_match(
+                    "/({$policy['pattern']})/", $password, $matches
+                );
+                if ($result === false) {
+                    throw new \Exception(
+                        'Invalid regexp in password pattern: ' . $policy['pattern']
+                    );
+                }
+                if (!$result || $matches[1] != $password) {
+                    $valid = false;
+                }
+            }
+            if (!$valid) {
+                throw new AuthException($this->translate('password_error_invalid'));
+            }
         }
     }
 }

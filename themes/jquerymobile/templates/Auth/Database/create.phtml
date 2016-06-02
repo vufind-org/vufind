@@ -1,3 +1,16 @@
+<?
+  $hint = '';
+  if (isset($this->passwordPolicy['pattern'])) {
+    if ($this->passwordPolicy['pattern'] == 'numeric') {
+      $hint = 'password_only_numeric';
+    } elseif ($this->passwordPolicy['pattern'] == 'alphanumeric') {
+      $hint = 'password_only_alphanumeric';
+    }
+  }
+  if (isset($this->passwordPolicy['hint'])) {
+    $hint = $this->passwordPolicy['hint'];
+  }
+?>
 <label for="account_firstname"><?=$this->transEsc('First Name')?>:</label>
 <input id="account_firstname" type="text" name="firstname" value="<?=$this->escapeHtmlAttr($this->request->get('firstname'))?>" />
 <label for="account_lastname"><?=$this->transEsc('Last Name')?>:</label>
@@ -8,5 +21,8 @@
 <input id="account_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" />
 <label for="account_password"><?=$this->transEsc('Password')?>:</label>
 <input id="account_password" type="password" name="password" />
+<? if ($hint): ?>
+  <p><?=$this->transEsc($hint) ?></p>
+<? endif; ?>
 <label for="account_password2"><?=$this->transEsc('Password Again')?>:</label>
 <input id="account_password2" type="password" name="password2" />
