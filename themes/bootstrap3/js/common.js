@@ -30,7 +30,9 @@ var VuFind = (function VuFind() {
 
   var addTranslations = function addTranslations(s) {
     for (var i in s) {
-      _translations[i] = s[i];
+      if ({}.hasOwnProperty.call(s, i)) {
+        _translations[i] = s[i];
+      }
     }
   };
   var translate = function translate(op) {
