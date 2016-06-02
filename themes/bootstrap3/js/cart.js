@@ -1,4 +1,4 @@
-/*global Cookies, VuFind */
+/* global Cookies, VuFind, setTimeout, clearTimeout */
 /* exported cartFormHandler */
 
 VuFind.register('cart', function Cart() {

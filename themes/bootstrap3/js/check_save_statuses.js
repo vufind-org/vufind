@@ -1,6 +1,6 @@
-/*global htmlEncode, VuFind, userIsLoggedIn */
+/* global htmlEncode, VuFind, userIsLoggedIn */
 
-function checkSaveStatuses(container) {
+function checkSaveStatuses(_container) {
   if (!userIsLoggedIn) {
     return;
   }

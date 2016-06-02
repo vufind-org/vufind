@@ -1,4 +1,4 @@
-/*global VuFind */
+/* global VuFind */
 /* exported setUpHoldRequestForm */
 function setUpHoldRequestForm(recordId) {
   $('#requestGroupId').change(function requestGroupChange() {

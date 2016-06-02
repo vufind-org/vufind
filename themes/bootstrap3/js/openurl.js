@@ -1,4 +1,4 @@
-/*global extractClassParams, VuFind */
+/* global extractClassParams, VuFind */
 VuFind.register('openurl', function OpenUrl() {
   var _loadResolverLinks = function _loadResolverLinks($target, openUrl, searchClassId) {
     $target.addClass('ajax_availability');

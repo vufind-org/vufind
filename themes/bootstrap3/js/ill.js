@@ -1,4 +1,4 @@
-/*global VuFind */
+/* global VuFind */
 /* exported setUpILLRequestForm */
 function setUpILLRequestForm(recordId) {
   $("#ILLRequestForm #pickupLibrary").change(function illPickupChange() {
