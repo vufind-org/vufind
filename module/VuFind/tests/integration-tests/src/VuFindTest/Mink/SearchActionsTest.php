@@ -201,27 +201,14 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test expanding facets into the lightbox
+     * Helper function for facets lists
+     *
+     * @param \Behat\Mink\Element\Element $page  Mink page object
+     * @param integer                     $limit Configured lightbox length
      *
      * @return void
      */
-    public function testFacetLightbox()
-    {
-        $limit = 4;
-        $this->changeConfigs(
-            [
-                'facets' => [
-                    'Results_Settings' => [
-                        'showMoreInLightbox[*]' => true,
-                        'lightboxLimit' => $limit
-                    ]
-                ]
-            ]
-        );
-        $page = $this->performSearch('building:weird_ids.mrc');
-        // Open the geographic facet
-        $geoMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
-        $geoMore->click();
+    private function facetListProcedure($page, $limit) {
         $this->snooze();
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit, count($items));
@@ -253,7 +240,64 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         // apply US facet
         $weirdIDs->click();
         $this->snooze();
-        $geoMore->click();
+    }
+
+    /**
+     * Test expanding facets into the lightbox
+     *
+     * @return void
+     */
+    public function testFacetLightbox()
+    {
+        $limit = 4;
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => true,
+                        'lightboxLimit' => $limit
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the geographic facet
+        $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
+        $genreMore->click();
+        $this->facetListProcedure($page, $limit);
+        $genreMore->click();
+        $this->findCss($page, '#modal .js-facet-item.active')->click();
+        // remove facet
+        $this->snooze();
+        $this->assertNull($page->find('css', '.list-group.filters'));
+    }
+
+    /**
+     * Test expanding facets into the lightbox
+     *
+     * @return void
+     */
+    public function testFacetLightboxMoreSetting()
+    {
+        $limit = 4;
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => 'more',
+                        'lightboxLimit' => $limit
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the geographic facet
+        $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
+        $genreMore->click();
+        $this->findCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]')->click();
+        $this->facetListProcedure($page, $limit);
+        $genreMore->click();
+        $this->findCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]')->click();
         $this->findCss($page, '#modal .js-facet-item.active')->click();
         // remove facet
         $this->snooze();
