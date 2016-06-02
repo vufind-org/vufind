@@ -169,8 +169,12 @@ JS;
               <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
             <? if ($i == $facets_before_more): ?>
               <? $idAndClass = 'id="more-narrowGroupHidden-'.$this->escapeHtmlAttr($title).'" class="list-group-item narrow-toggle"'; ?>
-              <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$title.'&facetop='.$thisFacet['operator'].'&facetexclude='.($allowExclude ? 1 : 0); ?>
-              <? if (($showMoreInLightbox && $showMoreInLightbox !== 'more') && $facetLightbox = $options->getFacetListAction()): ?>
+              <? if ($facetLightbox = $options->getFacetListAction()): ?>
+                <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$title.'&facetop='.$thisFacet['operator'].'&facetexclude='.($allowExclude ? 1 : 0); ?>
+              <? else: ?>
+                <? $moreUrl = '#'; ?>
+              <? endif; ?>
+              <? if (($showMoreInLightbox && $showMoreInLightbox !== 'more') && $facetLightbox): ?>
                 <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>"><?=$this->transEsc('more')?> ...</a>
                 <? break; ?>
               <? else: ?>
