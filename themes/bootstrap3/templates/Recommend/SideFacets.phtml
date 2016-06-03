@@ -175,10 +175,10 @@ JS;
                 <? $moreUrl = '#'; ?>
               <? endif; ?>
               <? if (($showMoreInLightbox && $showMoreInLightbox !== 'more') && $facetLightbox): ?>
-                <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>"><?=$this->transEsc('more')?> ...</a>
+                <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('more')?> ...</a>
                 <? break; ?>
               <? else: ?>
-                <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('more')?> ...</a>
+                <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')" rel="nofollow"><?=$this->transEsc('more')?> ...</a>
               <? endif; ?>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
@@ -220,7 +220,7 @@ JS;
           <? endforeach; ?>
           <? if ($showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
             <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$title.'&facetop='.$thisFacet['operator'].'&facetexclude='.($allowExclude ? 1 : 0); ?>
-            <a class="list-group-item narrow-toggle <?=$moreClass ?>" data-lightbox href="<?=$moreUrl ?>"><?=$this->transEsc('see all')?> ...</a>
+            <a class="list-group-item narrow-toggle <?=$moreClass ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('see all')?> ...</a>
           <? endif; ?>
           <? if ($i >= $facets_before_more): ?><a class="list-group-item narrow-toggle <?=$moreClass ?>" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('less')?> ...</a><? endif; ?>
         <? endif; ?>
