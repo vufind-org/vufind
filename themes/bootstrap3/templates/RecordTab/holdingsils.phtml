@@ -7,11 +7,14 @@
     // Account for replace_other_urls setting
     $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     $offlineMode = $this->ils()->getOfflineMode();
-    try {
+    $holdings = [];
+    // If we already know the ILS is offline we do not need to query realTimeHoldings
+    if (!$offlineMode) {
+      try {
         $holdings = $this->driver->getRealTimeHoldings();
-    } catch (\VuFind\Exception\ILS $e) {
-        $holdings = [];
+      } catch (\VuFind\Exception\ILS $e) {
         $offlineMode = 'ils-offline';
+      }
     }
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());

@@ -171,11 +171,16 @@ class AjaxController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         $catalog = $this->getILS();
         $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
-        $results = $catalog->getStatuses($ids);
 
-        if (!is_array($results)) {
-            // If getStatuses returned garbage, let's turn it into an empty array
-            // to avoid triggering a notice in the foreach loop below.
+        // Call getStatuses only if the ILS is not in offline mode
+        if ($catalog->getOfflineMode() === false) {
+            $results = $catalog->getStatuses($ids);
+            if (!is_array($results)) {
+                // If getStatuses returned garbage, let's turn it into an empty array
+                // to avoid triggering a notice in the foreach loop below.
+                $results = [];
+            }
+        } else {
             $results = [];
         }
 

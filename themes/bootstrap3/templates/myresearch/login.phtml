@@ -12,20 +12,15 @@
 ?>
 
 <? if ($offlineMode == "ils-offline"): ?>
-  <div class="alert alert-warning">
-    <h2><?=$this->transEsc('ils_offline_title')?></h2>
-    <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
-    <p><?=$this->transEsc('ils_offline_login_message')?></p>
-    <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-    <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
-  </div>
-<? endif; ?>
-
-<h2 class="lightbox-header"><?=$this->transEsc('Login')?></h2>
-<?=$this->flashmessages()?>
-
-<? if ($hideLogin): ?>
-  <div class="alert alert-danger"><?=$this->transEsc('login_disabled')?></div>
+  <?=$this->render('Helpers/ils-offline.phtml')?>
 <? else: ?>
-  <?=$this->auth()->getLogin()?>
+  <h2 class="lightbox-header"><?=$this->transEsc('Login')?></h2>
+  <?=$this->flashmessages()?>
+
+  <? if ($hideLogin): ?>
+    <div class="alert alert-danger"><?=$this->transEsc('login_disabled')?></div>
+  <? else: ?>
+    <?=$this->auth()->getLogin()?>
+  <? endif; ?>
+
 <? endif; ?>
