@@ -134,6 +134,12 @@ VuFind.register('embedded', function() {
                 + VuFind.translate('loading') + '...</div>')
         .before(longNode);
       $link.addClass('js-setup');
+      longNode.on('show.bs.collapse', function() {
+        $link.addClass('expanded');
+      });
+      longNode.on('hidden.bs.collapse', function() {
+        $link.removeClass('expanded');
+      });
     }
     // Gather information
     var divID = result.find('.hiddenId')[0].value;
@@ -144,6 +150,7 @@ VuFind.register('embedded', function() {
       if (longNode.is(':empty')) {
         var loadingNode = mediaBody.find('.loading');
         loadingNode.removeClass('hidden');
+        $link.addClass('expanded');
         $.ajax({
           dataType: 'json',
           url: VuFind.path + '/AJAX/JSON?' + $.param({
@@ -195,7 +202,6 @@ VuFind.register('embedded', function() {
       } else {
         longNode.collapse('show');
       }
-      $link.addClass('expanded');
       shortNode.collapse('hide');
       if (!$link.hasClass('auto')) {
         addToStorage(divID, $(longNode).find('.list-tab-toggle.active').attr('id'));
@@ -205,7 +211,6 @@ VuFind.register('embedded', function() {
     } else {
       shortNode.collapse('show');
       longNode.collapse('hide');
-      $link.removeClass('expanded');
       removeFromStorage(divID);
     }
     return false;
