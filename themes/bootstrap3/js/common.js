@@ -16,13 +16,15 @@ var VuFind = (function() {
       this[name] = typeof module == 'function' ? module() : module;
     }
     // If the object has already initialized, we should auto-init on register:
-    if (_initialized) {
+    if (_initialized && this[name].init) {
       this[name].init();
     }
   };
   var init = function() {
     for (var i=0; i<_submodules.length; i++) {
-      this[_submodules[i]].init();
+      if (this[_submodules[i]].init) {
+        this[_submodules[i]].init();
+      }
     }
     _initialized = true;
   };
