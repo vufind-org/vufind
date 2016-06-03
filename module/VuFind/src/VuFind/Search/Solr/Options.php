@@ -39,6 +39,16 @@ namespace VuFind\Search\Solr;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
+     * Available sort options for facets
+     *
+     * @var array
+     */
+    protected $facetSortOptions = [
+        'count' => 'sort_count',
+        'index' => 'sort_title'
+    ];
+
+    /**
      * Hierarchical facets
      *
      * @var array
@@ -252,6 +262,16 @@ class Options extends \VuFind\Search\Base\Options
     public function getAdvancedSearchAction()
     {
         return 'search-advanced';
+    }
+
+    /**
+     * Return the route name for the search results action.
+     *
+     * @return string
+     */
+    public function getFacetListAction()
+    {
+        return 'search-facetlist';
     }
 
     /**

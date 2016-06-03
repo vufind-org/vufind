@@ -51,6 +51,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $sortOptions = [];
 
     /**
+     * Available sort options for facets
+     *
+     * @var array
+     */
+    protected $facetSortOptions = [];
+
+    /**
      * Overall default sort option
      *
      * @var string
@@ -432,6 +439,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get an array of sort options for facets.
+     *
+     * @return array
+     */
+    public function getFacetSortOptions()
+    {
+        return $this->facetSortOptions;
+    }
+
+    /**
      * Get the default sort option for the specified search handler.
      *
      * @param string $handler Search handler being used
@@ -705,6 +722,17 @@ abstract class Options implements TranslatorAwareInterface
     public function getAdvancedSearchAction()
     {
         // Assume unsupported by default:
+        return false;
+    }
+
+    /**
+     * Return the route name for the search results action.
+     * false to cover unimplemented drivers
+     *
+     * @return false
+     */
+    public function getFacetListAction()
+    {
         return false;
     }
 

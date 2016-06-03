@@ -186,6 +186,16 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
+     * Return the route name for the search results action.
+     *
+     * @return string
+     */
+    public function getFacetListAction()
+    {
+        return 'summon-facetlist';
+    }
+
+    /**
      * Get the relevance sort override for empty searches.
      *
      * @return string Sort field or null if not set
