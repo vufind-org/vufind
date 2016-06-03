@@ -29,16 +29,22 @@
       display: inline-block;
       text-align: center;
     }
-    img { max-height: 300px; }
-    &.small a {
+    img {
+      max-width: none;
+      max-height: 300px;
+    }
+    &.small a,
+    &.small > img {
       width: @thumbnail-width-small;
       img { max-width: @thumbnail-width-small; }
     }
-    &.medium a {
+    &.medium a,
+    &.medium > img {
       width: @thumbnail-width-medium;
       img { max-width: @thumbnail-width-medium; }
     }
-    &.large a {
+    &.large a,
+    &.large > img {
       width: @thumbnail-width-large;
       img { max-width: @thumbnail-width-large; }
     }
