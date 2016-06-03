@@ -201,6 +201,13 @@ checkLoans = true
 ;helpText = "Help text for all languages."
 ;helpText[en-gb] = "Help text for English language."
 
+; Colon-separated list of call slip statuses (see CALL_SLIP_STATUS_TYPE table in
+; Voyager's database) that control whether a call slip is displayed. Only slips
+; matching statuses in this list will be displayed. Current Voyager versions (as of
+; May 2016) don't immediately delete a call slip from the database when it has been
+; processed and converted to a hold, which may confuse users.
+display_statuses = 1:2:3:5:8:9
+
 ; This section controls UB (Universal Borrowing, ILL in VuFind) behavior. To enable, 
 ; uncomment (at minimum) the HMACKeys and extraFields settings below. See also
 ; section ILLRequestSources for mapping between patron ID's and UB libraries.
