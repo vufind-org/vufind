@@ -128,17 +128,14 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return Element
      */
-    protected function setUpGenericCartTest()
+    protected function setUpGenericCartTest($extraConfigs = [])
     {
         // Activate the cart:
-        $this->changeConfigs(
-            ['config' =>
-                [
-                    'Site' => ['showBookBag' => true, 'theme' => 'bootprint3'],
-                    'Mail' => ['testOnly' => 1],
-                ],
-            ]
-        );
+        $extraConfigs['config']['Site']
+            = ['showBookBag' => true, 'theme' => 'bootprint3'];
+        $extraConfigs['config']['Mail']
+            = ['testOnly' => 1];
+        $this->changeConfigs($extraConfigs);
 
         $page = $this->getSearchResultsPage();
 
@@ -383,8 +380,51 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
+        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
+    }
+
+    /**
+     * Test that the export control works when redirecting to a third-party site.
+     *
+     * @return void
+     */
+    public function testCartExportToThirdParty()
+    {
+        $page = $this->setUpGenericCartTest(
+            [
+                'config' => [
+                    'Export' => [
+                        'Google' => 'record,bulk',
+                    ],
+                ],
+                'export' => [
+                    'Google' => [
+                        'requiredMethods[]' => 'getTitle',
+                        'redirectUrl' => 'https://www.google.com',
+                        'headers[]' => 'Content-type: text/plain; charset=utf-8',
+                    ],
+                ],
+            ]
+        );
+        $button = $this->findCss($page, '.cart-controls button[name=export]');
+
+        // Go to export option list:
+        $this->selectAllItemsInCart($page);
+        $button->click();
+
+        // Select EndNote option
+        $select = $this->findCss($page, '#format');
+        $select->selectOption('Google');
+
+        // Do the export:
+        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit->click();
+        $this->snooze();
+        $this->assertEquals(
+            'https://www.google.com/', $this->getMinkSession()->getCurrentUrl()
+        );
     }
 
     /**
