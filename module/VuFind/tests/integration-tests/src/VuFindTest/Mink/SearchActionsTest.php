@@ -208,7 +208,8 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    private function facetListProcedure($page, $limit) {
+    protected function facetListProcedure($page, $limit)
+    {
         $this->snooze();
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit, count($items));
