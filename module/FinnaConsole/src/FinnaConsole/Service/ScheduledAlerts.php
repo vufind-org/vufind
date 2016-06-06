@@ -136,7 +136,7 @@ class ScheduledAlerts extends AbstractService
      *
      * @var ServiceManager
      */
-    protected $searviceManager = null;
+    protected $serviceManager = null;
 
     /**
      * Constructor
