@@ -377,7 +377,7 @@ class ScheduledAlerts extends AbstractService
 
             $this->serviceManager->get('VuFind\Translator')
                 ->addTranslationFile(
-                    'ExtendedIni', null, $this->defaultPath, $language
+                    'ExtendedIni', null, $this::DEFAULT_PATH, $language
                 )
                 ->setLocale($language);
 
