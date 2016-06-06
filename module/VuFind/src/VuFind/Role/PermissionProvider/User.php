@@ -71,7 +71,7 @@ class User implements PermissionProviderInterface
         // whitelist, we can't grant the permission to any roles.
         $user = $this->auth->getIdentity();
         if (!$user) {
-        	return [];
+            return [];
         }
 
         $options = is_array($options) ? $options : [$options];
@@ -79,21 +79,21 @@ class User implements PermissionProviderInterface
         // which user attribute has to match which pattern to get permissions?
         $criteria = [];
         foreach ($options as $option) {
-        	$attributeValuePair = explode(' ', $option);
-        	if (count($attributeValuePair) == 2) {
-        		$criteria[$attributeValuePair[0]] = $attributeValuePair[1];
-        	} else {
-        	    $this->logError("configuration option '{$option}' invalid");
-        	    return false;
+            $attributeValuePair = explode(' ', $option);
+            if (count($attributeValuePair) == 2) {
+                $criteria[$attributeValuePair[0]] = $attributeValuePair[1];
+            } else {
+                $this->logError("configuration option '{$option}' invalid");
+                return false;
             }
         }
         
         // check user attribute values against the pattern 
         foreach ($criteria as $attribute=>$pattern) {
-        	$subject = $user[$attribute];
-        	if (preg_match('/' . $pattern . '/' , $subject)) {
-        		return ['loggedin'];
-        	}
+            $subject = $user[$attribute];
+            if (preg_match('/' . $pattern . '/' , $subject)) {
+                return ['loggedin'];
+            }
         }
         
         //no matches found, so the user don't get any permissions      
