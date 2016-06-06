@@ -16,7 +16,7 @@
     <!-- Wrapper for slides -->
     <? foreach ($channel['contents'] as $item): ?>
       <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
-        <div class="img" style="background-image:url(http://placehold.it/<?=rand(100, 150) ?>x<?=rand(150, 200) ?>)"></div>
+        <div class="img" style="background-image:url(<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>)"></div>
         <?=$this->escapeHtml($item['title'])?>
       </a>
     <? endforeach; ?>

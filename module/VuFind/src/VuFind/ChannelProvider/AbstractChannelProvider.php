@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
+use VuFind\Cover\Router as CoverRouter;
 
 /**
  * Facet-driven channel provider.
@@ -38,6 +39,25 @@ namespace VuFind\ChannelProvider;
  */
 abstract class AbstractChannelProvider implements ChannelProviderInterface
 {
+    /**
+     * Cover router
+     *
+     * @var CoverRouter
+     */
+    protected $coverRouter = null;
+
+    /**
+     * Inject cover router
+     *
+     * @param CoverRouter $coverRouter Cover router.
+     *
+     * @return void
+     */
+    public function setCoverRouter(CoverRouter $coverRouter)
+    {
+        $this->coverRouter = $coverRouter;
+    }
+
     /**
      * Convert a search results object into channel contents.
      *
@@ -52,7 +72,9 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
             $summary[] = [
                 'title' => $current->getTitle(),
                 'source' => $current->getSourceIdentifier(),
-                'thumbnail' => $current->getThumbnail('medium'),
+                'thumbnail' => $this->coverRouter
+                    ? $this->coverRouter->getUrl($current, 'medium')
+                    : false,
                 'id' => $current->getUniqueId(),
             ];
         }

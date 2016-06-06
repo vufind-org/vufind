@@ -50,10 +50,14 @@ class Factory
      */
     public static function getFacets(ServiceManager $sm)
     {
-        return new Facets(
+        $helper = new Facets(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
             $sm->getServiceLocator()->get('ControllerPluginManager')->get('url')
         );
+        $helper->setCoverRouter(
+            $sm->getServiceLocator()->get('VuFind\Cover\Router')
+        );
+        return $helper;
     }
 
     /**
@@ -65,6 +69,10 @@ class Factory
      */
     public static function getSimilarItems(ServiceManager $sm)
     {
-        return new SimilarItems($sm->getServiceLocator()->get('VuFind\Search'));
+        $helper = new SimilarItems($sm->getServiceLocator()->get('VuFind\Search'));
+        $helper->setCoverRouter(
+            $sm->getServiceLocator()->get('VuFind\Cover\Router')
+        );
+        return $helper;
     }
 }
