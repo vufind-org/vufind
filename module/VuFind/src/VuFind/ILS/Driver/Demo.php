@@ -1949,10 +1949,9 @@ class Demo extends AbstractBase
             ];
         }
         if ($function == 'changePassword') {
-            return [
-                'minLength' => 4,
-                'maxLength' => 20
-            ];
+            return isset($this->config['changePassword'])
+                ? $this->config['changePassword']
+                : ['minLength' => 4, 'maxLength' => 20];
         }
         return [];
     }

@@ -6,26 +6,28 @@
   $seeAlso = $this->driver->getSeeAlso();
   $useFor = $this->driver->getUseFor();
 ?>
-<div class="listentry col-xs-10">
-  <div class="resultItemLine1">
-    <a href="<?=$this->url('authority-record')?>?id=<?=urlencode($this->driver->getUniqueId())?>" class="title"><?=$this->escapeHtml($heading)?></a>
-  </div>
+<div class="media">
+  <div class="media-body">
+    <div class="resultItemLine1">
+      <a href="<?=$this->url('authority-record')?>?id=<?=urlencode($this->driver->getUniqueId())?>" class="title"><?=$this->escapeHtml($heading)?></a>
+    </div>
 
-  <div class="resultItemLine2">
-    <? if (!empty($seeAlso)): ?>
-      <?=$this->transEsc("See also")?>:<br/>
-      <? foreach ($seeAlso as $current): ?>
-        <a href="<?=$this->url('authority-search')?>?lookfor=%22<?=urlencode($current)?>%22&amp;type=MainHeading"><?=$this->escapeHtml($current)?></a><br/>
-      <? endforeach; ?>
-    <? endif; ?>
-  </div>
+    <div class="resultItemLine2">
+      <? if (!empty($seeAlso)): ?>
+        <?=$this->transEsc("See also")?>:<br/>
+        <? foreach ($seeAlso as $current): ?>
+          <a href="<?=$this->url('authority-search')?>?lookfor=%22<?=urlencode($current)?>%22&amp;type=MainHeading"><?=$this->escapeHtml($current)?></a><br/>
+        <? endforeach; ?>
+      <? endif; ?>
+    </div>
 
-  <div class="resultItemLine3">
-    <? if (!empty($useFor)): ?>
-      <?=$this->transEsc("Use for")?>:<br/>
-      <? foreach ($useFor as $current): ?>
-        <?=$this->escapeHtml($current)?><br/>
-      <? endforeach; ?>
-    <? endif; ?>
+    <div class="resultItemLine3">
+      <? if (!empty($useFor)): ?>
+        <?=$this->transEsc("Use for")?>:<br/>
+        <? foreach ($useFor as $current): ?>
+          <?=$this->escapeHtml($current)?><br/>
+        <? endforeach; ?>
+      <? endif; ?>
+    </div>
   </div>
 </div>

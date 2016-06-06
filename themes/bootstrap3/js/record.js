@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, deparam, extractClassParams, getListUrlFromHTML, htmlEncode, Lightbox, syn_get_widget, userIsLoggedIn, VuFind */
+/*global deparam, syn_get_widget, userIsLoggedIn, VuFind */
 
 /**
  * Functions and event handlers specific to record pages.
