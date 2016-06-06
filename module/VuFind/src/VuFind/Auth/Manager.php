@@ -226,9 +226,10 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function supportsPasswordChange($authMethod = null)
     {
-        if ($this->getAuth($authMethod)->supportsPasswordChange()) {
-            return isset($this->config->Authentication->change_password)
-                && $this->config->Authentication->change_password;
+        if (isset($this->config->Authentication->change_password)
+            && $this->config->Authentication->change_password
+        ) {
+            return $this->getAuth($authMethod)->supportsPasswordChange();
         }
         return false;
     }
@@ -549,6 +550,10 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function login($request)
     {
+        // Allow the auth module to inspect the request (used by ChoiceAuth,
+        // for example):
+        $this->getAuth()->preLoginCheck($request);
+
         // Validate CSRF for form-based authentication methods:
         if (!$this->getAuth()->getSessionInitiator(null)
             && !$this->csrf->isValid($request->getPost()->get('csrf'))

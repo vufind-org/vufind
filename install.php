@@ -372,7 +372,7 @@ function validateModule($module)
 {
     $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
     $illegalModules = array(
-        'VuDL', 'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
+        'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
         'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest', 'VuFindTheme',
     );
     if (in_array($module, $illegalModules)) {
@@ -564,10 +564,9 @@ function buildWindowsConfig($baseDir, $overrideDir, $module)
 {
     $batch = "@set VUFIND_HOME={$baseDir}\n" .
         "@set VUFIND_LOCAL_DIR={$overrideDir}\n" .
-        (empty($module) ? '' : "@set VUFIND_LOCAL_MODULES={$module}\n") .
-        "@call run_vufind.bat %1 %2 %3 %4 %5 %6 %7 %8 %9";
-    if (!@file_put_contents($baseDir . '/vufind.bat', $batch)) {
-        die("Problem writing {$baseDir}/vufind.bat.\n\n");
+        (empty($module) ? '' : "@set VUFIND_LOCAL_MODULES={$module}\n");
+    if (!@file_put_contents($baseDir . '/env.bat', $batch)) {
+        die("Problem writing {$baseDir}/env.bat.\n\n");
     }
 }
 

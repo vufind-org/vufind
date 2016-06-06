@@ -10,18 +10,21 @@ else
   JAVA="java"
 fi
 
-if [ "$SOLR_HOME" ]
+if [ -z "$VUFIND_HOME" ]
 then
-  SOLR_HOME="$SOLR_HOME"
-else
-  SOLR_HOME="`dirname $0`/solr"
+  VUFIND_HOME=`dirname $0`
+fi
+
+if [ -z "$SOLR_HOME" ]
+then
+  SOLR_HOME="$VUFIND_HOME/solr/vufind"
 fi
 
 set -e
 set -x
 
 cd "`dirname $0`/import"
-CLASSPATH="browse-indexing.jar:${SOLR_HOME}/lib/*"
+CLASSPATH="browse-indexing.jar:${SOLR_HOME}/jars/*:${SOLR_HOME}/../vendor/contrib/analysis-extras/lib/*:${SOLR_HOME}/../vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
 
 # make index work with replicated index
 # current index is stored in the last line of index.properties

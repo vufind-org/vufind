@@ -208,23 +208,6 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test getController.
-     *
-     * @return void
-     */
-    public function testGetController()
-    {
-        // Default (Solr) case:
-        $driver = new \VuFindTest\RecordDriver\TestHarness();
-        $record = $this->getRecord($driver);
-        $this->assertEquals('Record', $record->getController());
-
-        // Custom source case:
-        $driver->setSourceIdentifier('Foo');
-        $this->assertEquals('Foorecord', $record->getController());
-    }
-
-    /**
      * Test getPreviews.
      *
      * @return void
@@ -522,13 +505,15 @@ class RecordTest extends \PHPUnit_Framework_TestCase
                 return $serverurl;
             case 'url':
                 return $url;
+            case 'searchTabs':
+                return $this->getMockSearchTabs();
             default:
                 return null;
             }
         };
         $view->expects($this->any())->method('plugin')
             ->will($this->returnCallback($pluginCallback));
-        
+
         $view->expects($this->any())->method('resolver')
             ->will($this->returnValue($this->getMockResolver()));
         $config = is_array($config) ? new \Zend\Config\Config($config) : $config;
@@ -589,6 +574,20 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         $url->expects($this->once())->method('__invoke')
             ->will($this->returnValue('http://server-foo/baz'));
         return $url;
+    }
+
+    /**
+     * Get a mock search tabs view helper
+     *
+     * @return \VuFind\View\Helper\Root\SearchTabs
+     */
+    protected function getMockSearchTabs()
+    {
+        $searchTabs = $this->getMockBuilder('VuFind\View\Helper\Root\SearchTabs')
+            ->disableOriginalConstructor()->getMock();
+        $searchTabs->expects($this->any())->method('getCurrentHiddenFilterParams')
+            ->will($this->returnValue(''));
+        return $searchTabs;
     }
 
     /**

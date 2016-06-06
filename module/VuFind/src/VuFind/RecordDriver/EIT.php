@@ -155,31 +155,6 @@ class EIT extends SolrDefault
     }
 
     /**
-     * Deduplicate author information into associative array with main/corporate/
-     * secondary keys.
-     *
-     * @return array
-     */
-    public function getDeduplicatedAuthors()
-    {
-        $authors = [
-            'main' => $this->getPrimaryAuthor(),
-            'secondary' => $this->getSecondaryAuthors()
-        ];
-
-        // The secondary author array may contain a corporate or primary author;
-        // let's be sure we filter out duplicate values.
-        $duplicates = [];
-        if (!empty($authors['main'])) {
-            $duplicates[] = $authors['main'];
-        }
-        if (!empty($duplicates)) {
-            $authors['secondary'] = array_diff($authors['secondary'], $duplicates);
-        }
-        return $authors;
-    }
-
-    /**
      * Get the edition of the current record.
      *
      * @return string
@@ -210,15 +185,15 @@ class EIT extends SolrDefault
      *
      * @return string
      */
-    public function getPrimaryAuthor()
+    public function getPrimaryAuthors()
     {
         if (isset($this->controlInfo['artinfo']['aug']['au'])
             && is_array($this->controlInfo['artinfo']['aug']['au'])
         ) {
-            return $this->controlInfo['artinfo']['aug']['au']['0'];
+            return $this->controlInfo['artinfo']['aug']['au'];
         } else {
             return isset($this->controlInfo['artinfo']['aug']['au'])
-                ? $this->controlInfo['artinfo']['aug']['au'] : '';
+                ? [$this->controlInfo['artinfo']['aug']['au']] : [];
         }
 
     }
@@ -250,17 +225,6 @@ class EIT extends SolrDefault
     {
         return isset($this->controlInfo['pubinfo']['pub'])
             ? [$this->controlInfo['pubinfo']['pub']] : [];
-    }
-
-    /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthor()).
-     *
-     * @return array
-     */
-    public function getSecondaryAuthors()
-    {
-        return is_array($this->controlInfo['artinfo']['aug']['au'])
-            ? $this->controlInfo['artinfo']['aug']['au'] : [];
     }
 
     /**

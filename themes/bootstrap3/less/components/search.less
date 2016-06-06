@@ -1,22 +1,63 @@
+@thumbnail-width-small: 60px;
+@thumbnail-width-medium: 100px;
+@thumbnail-width-large: 160px;
+
 .bulkActionButtons label {display: inline-block;}
 .bulkActionButtons label input {margin-top: 2px;}
 .grid { @media (max-width: 767px) {min-height: 250px;} }
 .result {
-  a.title {font-weight: bold;}
-  .left {
-    text-align: center;
-    img {max-width: 100%;}
+  .checkbox {
+    float: left;
+    padding-right: .5rem;
   }
+  .media,
+  .media-body { overflow: visible; }
+  .media-body .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .media {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    .clearfix();
+  }
+  .media-left,
+  .media-right {
+    padding: 0;
+    text-align: center;
+    a {
+      display: inline-block;
+      text-align: center;
+    }
+    img {
+      max-width: none;
+      max-height: 300px;
+    }
+    &.small a,
+    &.small > img {
+      width: @thumbnail-width-small;
+      img { max-width: @thumbnail-width-small; }
+    }
+    &.medium a,
+    &.medium > img {
+      width: @thumbnail-width-medium;
+      img { max-width: @thumbnail-width-medium; }
+    }
+    &.large a,
+    &.large > img {
+      width: @thumbnail-width-large;
+      img { max-width: @thumbnail-width-large; }
+    }
+  }
+  .media-left { padding-left: 10px; }
+  .media-right { padding-right: 10px; }
+  .title {font-weight: bold;}
   @media (max-width: 767px) {
-    a {text-decoration: underline;}
-    .middle,
-    .right {padding: 0;}
+    a { text-decoration: underline; }
   }
   @media (max-width: 530px) {
-    .checkbox {display: none !important;}
-    .left {width: 40%;}
-    .middle {width: 60%;}
-    .right {display: none;}
+    .checkbox { padding: 0; }
+    .media-left { padding-right: 0; }
   }
 }
 .search-controls .alert {margin-bottom: 0;}

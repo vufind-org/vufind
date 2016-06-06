@@ -28,10 +28,10 @@
       <div class="pull-right flip">
         <? if (isset($list)): ?>
           <? if ($list->editAllowed($account->isLoggedIn())): ?>
-            <a href="<?=$this->url('editList', array('id' => $list->id)) ?>" class="btn btn-link" title="<?=$this->transEsc("edit_list")?>"><i class="fa fa-edit"></i> <?=$this->transEsc("edit_list")?></a>
+            <a href="<?=$this->url('editList', array('id' => $list->id)) ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc("edit_list")?></a>
             <div class="btn-group">
               <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
-                <i class="fa fa-trash-o"></i> <?=$this->transEsc("delete_list")?>
+                <i class="fa fa-trash-o" aria-hidden="true"></i> <?=$this->transEsc("delete_list")?>
               </a>
               <ul class="dropdown-menu">
                 <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
@@ -52,6 +52,7 @@
     <? if ($recordTotal > 0): ?>
       <div class="resulthead">
         <div class="pull-right flip">
+          <?=$this->render('search/controls/limit.phtml')?>
           <?=$this->render('search/controls/sort.phtml')?>
         </div>
       </div>

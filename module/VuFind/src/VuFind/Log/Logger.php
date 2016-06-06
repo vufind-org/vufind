@@ -288,6 +288,8 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             . 'Referer = ' . $referer . ', '
             . 'User Agent = '
             . $server->get('HTTP_USER_AGENT') . ', '
+            . 'Host = '
+            . $server->get('HTTP_HOST') . ', '
             . 'Request URI = '
             . $server->get('REQUEST_URI') . ')';
         $detailedServer = "\nServer Context:\n"
@@ -329,7 +331,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
 
         $this->log(BaseLogger::CRIT, $errorDetails);
     }
-    
+
     /**
      * Convert function argument to a loggable string
      *
@@ -339,7 +341,6 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
      */
     protected function argumentToString($arg)
     {
-        
         if (is_object($arg)) {
             return get_class($arg) . ' Object';
         }

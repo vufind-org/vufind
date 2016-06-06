@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -37,6 +39,7 @@ use ArrayObject, VuFind\Config\Locator as ConfigLocator,
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -98,7 +101,7 @@ class UpgradeController extends AbstractBase
      *
      * @return void
      */
-    public function preDispatch(MvcEvent $e)
+    public function validateAutoConfigureConfig(MvcEvent $e)
     {
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
@@ -120,7 +123,9 @@ class UpgradeController extends AbstractBase
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
+        $events->attach(
+            MvcEvent::EVENT_DISPATCH, [$this, 'validateAutoConfigureConfig'], 1000
+        );
     }
 
     /**
@@ -293,6 +298,32 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Support method for fixdatabaseAction() -- add checksums to search table rows.
+     *
+     * @return void
+     */
+    protected function fixSearchChecksumsInDatabase()
+    {
+        $manager = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager');
+        $search = $this->getTable('search');
+        $searchWhere = ['checksum' => null, 'saved' => 1];
+        $searchRows = $search->select($searchWhere);
+        if (count($searchRows) > 0) {
+            foreach ($searchRows as $searchRow) {
+                $searchObj = $searchRow->getSearchObject()->deminify($manager);
+                $url = $searchObj->getUrlQuery()->getParams();
+                $checksum = crc32($url) & 0xFFFFFFF;
+                $searchRow->checksum = $checksum;
+                $searchRow->save();
+            }
+            $this->session->warnings->append(
+                'Added checksum to ' . count($searchRows) . ' rows in search table'
+            );
+        }
+    }
+
+    /**
      * Upgrade the database.
      *
      * @return mixed
@@ -410,6 +441,18 @@ class UpgradeController extends AbstractBase
 
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
+
+            // Add checksums to all saved searches but catch exceptions (e.g. in case
+            // column checksum does not exist yet because of sqllog).
+            try {
+                $this->fixSearchChecksumsInDatabase();
+            } catch (\Exception $e) {
+                $this->session->warnings->append(
+                    'Could not fix checksums in table search - maybe column ' .
+                    'checksum is missing? Exception thrown with ' .
+                    'message: ' . $e->getMessage()
+                );
+            }
         } catch (\Exception $e) {
             $this->flashMessenger()->addMessage(
                 'Database upgrade failed: ' . $e->getMessage(), 'error'
@@ -653,7 +696,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Prompt the user for a source version (to upgrade from 2.x).
+     * Prompt the user for a source version (to upgrade from 2.x+).
      *
      * @return mixed
      */
@@ -663,7 +706,7 @@ class UpgradeController extends AbstractBase
         $version = $this->params()->fromPost('sourceversion');
         if (!empty($version)) {
             $this->cookie->newVersion = \VuFind\Config\Version::getBuildVersion();
-            if (floor($version) != 2) {
+            if (floor($version) < 2) {
                 $this->flashMessenger()
                     ->addMessage('Illegal version number.', 'error');
             } else if ($version >= $this->cookie->newVersion) {

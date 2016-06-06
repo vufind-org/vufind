@@ -227,7 +227,7 @@ class Tags extends Gateway
             if (is_callable($extra_where)) {
                 $extra_where($select);
             }
-            $select->group('tags.tag');
+            $select->group(['tags.id', 'tags.tag']);
             switch ($sort) {
             case 'alphabetical':
                 $select->order(['tags.tag', 'cnt DESC']);

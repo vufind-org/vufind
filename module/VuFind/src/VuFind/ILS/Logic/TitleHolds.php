@@ -27,7 +27,8 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\ILS\Connection as ILSConnection;
+use VuFind\ILS\Connection as ILSConnection,
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * Title Hold Logic Class
@@ -106,6 +107,8 @@ class TitleHolds
      * @param string $id A Bib ID
      *
      * @return string|bool URL to place hold, or false if hold option unavailable
+     *
+     * @todo Indicate login failure or ILS connection failure somehow?
      */
     public function getHold($id)
     {
@@ -115,13 +118,21 @@ class TitleHolds
             if ($mode == 'disabled') {
                  return false;
             } else if ($mode == 'driver') {
-                $patron = $this->ilsAuth->storedCatalogLogin();
+                try {
+                    $patron = $this->ilsAuth->storedCatalogLogin();
+                } catch (ILSException $e) {
+                    return false;
+                }
                 if (!$patron) {
                     return false;
                 }
                 return $this->driverHold($id, $patron);
             } else {
-                $patron = $this->ilsAuth->storedCatalogLogin();
+                try {
+                    $patron = $this->ilsAuth->storedCatalogLogin();
+                } catch (ILSException $e) {
+                    $patron = false;
+                }
                 $mode = $this->checkOverrideMode($id, $mode);
                 return $this->generateHold($id, $mode, $patron);
             }

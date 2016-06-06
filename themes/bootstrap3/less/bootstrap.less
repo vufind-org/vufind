@@ -1,4 +1,6 @@
 @import "vendor/bootstrap/bootstrap";
+@import "vendor/font-awesome/font-awesome";
+@fa-font-path: "../../../fonts";
 @import "vendor/bootstrap-accessibility/bootstrap-accessibility";
 @import "vendor/a11y";
 
@@ -21,8 +23,7 @@
   &:focus,
   &:hover {color: #000;}
 }
-[data-toggle~="dropdown"] {cursor: pointer;}
-.fa {cursor: default;}
+header .dropdown form { display: none; }
 .list-unstyled {margin: 0;}
 .highlight,mark {
   background: lighten(#FF0, 20%);
@@ -99,7 +100,7 @@ img {max-width: 100%;}
 #dateVisColorSettings {
   background-color: #fff; // background of box
   fill: rgb(234,234,234); // fillColor
-  outline-color: #e8cfac; // selection color
+  outline-color: #c38835; // selection color
   stroke: @brand-primary; // color
 }
 

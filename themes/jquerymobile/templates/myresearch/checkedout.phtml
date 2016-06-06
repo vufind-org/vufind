@@ -69,8 +69,8 @@
           ?>
           <div class="result">
             <h3><?=$title?></h3>
-            <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
-              <p><?=$this->transEsc('by')?> <?=$this->escapeHtml($listAuthor)?></p>
+            <? $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
+              <p><?=$this->transEsc('by')?> <?=$this->escapeHtml($listAuthors[0])?><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?></p>
             <? endif; ?>
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=$this->record($resource)->getFormatList()?>

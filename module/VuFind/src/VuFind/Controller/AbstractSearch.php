@@ -344,8 +344,17 @@ class AbstractSearch extends AbstractBase
      */
     protected function processJumpTo($results)
     {
+        // Jump to only result, if configured
+        $default = null;
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (isset($config->Record->jump_to_single_search_result)
+            && $config->Record->jump_to_single_search_result
+            && $results->getResultTotal() == 1
+        ) {
+            $default = 1;
+        }
         // Missing/invalid parameter?  Ignore it:
-        $jumpto = $this->params()->fromQuery('jumpto');
+        $jumpto = $this->params()->fromQuery('jumpto', $default);
         if (empty($jumpto) || !is_numeric($jumpto)) {
             return false;
         }
@@ -394,7 +403,7 @@ class AbstractSearch extends AbstractBase
         $history = $this->getTable('Search');
         $history->saveSearch(
             $this->getResultsManager(), $results, $sessId,
-            $history->getSearches($sessId, isset($user->id) ? $user->id : null)
+            isset($user->id) ? $user->id : null
         );
     }
 
@@ -686,5 +695,60 @@ class AbstractSearch extends AbstractBase
         }
 
         return $formatted;
+    }
+
+    /**
+     * Returns a list of all items associated with one facet for the lightbox
+     *
+     * Parameters:
+     * facet        The facet to retrieve
+     * searchParams Facet search params from $results->getUrlQuery()->getParams()
+     *
+     * @return mixed
+     */
+    public function facetListAction()
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+        // Get results
+        $results = $this->getResultsManager()->get($this->searchClassId);
+        $params = $results->getParams();
+        $params->initFromRequest($this->getRequest()->getQuery());
+        // Get parameters
+        $facet = $this->params()->fromQuery('facet');
+        $page = (int) $this->params()->fromQuery('facetpage', 1);
+        $options = $results->getOptions();
+        $facetSortOptions = $options->getFacetSortOptions();
+        $sort = $this->params()->fromQuery('facetsort', null);
+        if ($sort === null || !in_array($sort, array_keys($facetSortOptions))) {
+            $sort = empty($facetSortOptions)
+                ? 'count'
+                : current(array_keys($facetSortOptions));
+        }
+        $config = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($options->getFacetsIni());
+        $limit = isset($config->Results_Settings->lightboxLimit)
+            ? $config->Results_Settings->lightboxLimit
+            : 50;
+        $limit = $this->params()->fromQuery('facetlimit', $limit);
+        $facets = $results->getPartialFieldFacets(
+            [$facet], false, $limit, $sort, $page,
+            $this->params()->fromQuery('facetop', 'AND') == 'OR'
+        );
+        $list = $facets[$facet]['data']['list'];
+
+        $view = $this->createViewModel(
+            [
+                'data' => $list,
+                'exclude' => $this->params()->fromQuery('facetexclude', 0),
+                'facet' => $facet,
+                'page' => $page,
+                'results' => $results,
+                'anotherPage' => $facets[$facet]['more'],
+                'sort' => $sort,
+                'sortOptions' => $facetSortOptions
+            ]
+        );
+        $view->setTemplate('search/facet-list');
+        return $view;
     }
 }

@@ -517,12 +517,20 @@ class AjaxController extends AbstractBase
                 400
             );
         }
-        $result = [];
+        $result = $checked = [];
         foreach ($ids as $i => $id) {
             $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
+            $selector = $source . '|' . $id;
+
+            // We don't want to bother checking the same ID more than once, so
+            // use the $checked flag array to avoid duplicates:
+            if (isset($checked[$selector])) {
+                continue;
+            }
+            $checked[$selector] = true;
+
             $data = $user->getSavedData($id, null, $source);
             if ($data && count($data) > 0) {
-                $selector = $source . '|' . $id;
                 $result[$selector] = [];
                 // if this item was saved, add it to the list of saved items.
                 foreach ($data as $list) {
@@ -1170,6 +1178,8 @@ class AjaxController extends AbstractBase
      */
     protected function keepAliveAjax()
     {
+        // Request ID from session to mark it active
+        $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
         return $this->output(true, self::STATUS_OK);
     }
 

@@ -329,25 +329,6 @@ class Record extends AbstractHelper
     }
 
     /**
-     * Get the name of the controller used by the record route.
-     *
-     * @return string
-     */
-    public function getController()
-    {
-        // Figure out controller using naming convention based on resource
-        // source:
-        $source = $this->driver->getSourceIdentifier();
-        if ($source == DEFAULT_SEARCH_BACKEND) {
-            // Default source is special case -- it uses the basic record
-            // controller.
-            return 'Record';
-        }
-        // All other controllers will correspond with the record source:
-        return ucwords(strtolower($source)) . 'record';
-    }
-
-    /**
      * Render the link of the specified type.
      *
      * @param string $type    Link type
@@ -357,9 +338,12 @@ class Record extends AbstractHelper
      */
     public function getLink($type, $lookfor)
     {
-        return $this->renderTemplate(
+        $link = $this->renderTemplate(
             'link-' . $type . '.phtml', ['lookfor' => $lookfor]
         );
+        $link .= $this->getView()->plugin('searchTabs')
+            ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
+        return $link;
     }
 
     /**
@@ -432,32 +416,83 @@ class Record extends AbstractHelper
      */
     public function getCover($context, $default, $link = false)
     {
+        $details = $this->getCoverDetails($context, $default, $link);
+        return $details['html'];
+    }
+
+    /**
+     * Get the rendered cover plus some useful parameters.
+     *
+     * @param string $context Context of code being genarated
+     * @param string $default The default size of the cover
+     * @param string $link    The link for the anchor
+     *
+     * @return array
+     */
+    public function getCoverDetails($context, $default, $link = false)
+    {
+        $details = compact('link', 'context') + [
+            'driver' => $this->driver, 'cover' => false, 'size' => false
+        ];
+        $preferredSize = $this->getCoverSize($context, $default);
+        if (empty($preferredSize)) {    // covers disabled entirely
+            $details['html'] = '';
+        } else {
+            // Find best option if more than one size is defined (e.g. small:medium)
+            foreach (explode(':', $preferredSize) as $size) {
+                if ($details['cover'] = $this->getThumbnail($size)) {
+                    $details['size'] = $size;
+                    break;
+                }
+            }
+
+            $details['html'] = $this->contextHelper->renderInContext(
+                'record/cover.phtml', $details
+            );
+        }
+        return $details;
+    }
+
+    /**
+     * Get the configured thumbnail size for record lists
+     *
+     * @param string $context Context of code being genarated
+     * @param string $default The default size of the cover
+     *
+     * @return string
+     */
+    protected function getCoverSize($context, $default = 'medium')
+    {
         if (isset($this->config->Content->coversize)
             && !$this->config->Content->coversize
         ) {
             // covers disabled entirely
-            $preferredSize = false;
-        } else {
-            // check for context-specific overrides
-            $preferredSize = isset($this->config->Content->coversize[$context])
-                ? $this->config->Content->coversize[$context] : $default;
+            return false;
         }
-        if (empty($preferredSize)) {
-            return '';
-        }
+        // check for context-specific overrides
+        return isset($this->config->Content->coversize[$context])
+            ? $this->config->Content->coversize[$context] : $default;
+    }
 
-        // Find best option if more than one size is defined (e.g. small:medium)
-        $cover = false;  // assume invalid until good size found below
-        foreach (explode(':', $preferredSize) as $size) {
-            if ($cover = $this->getThumbnail($size)) {
-                break;
-            }
+    /**
+     * Get the configured thumbnail alignment
+     *
+     * @param string $context telling the context asking, prepends the config key
+     *
+     * @return string
+     */
+    public function getThumbnailAlignment($context = 'result')
+    {
+        $view = $this->getView();
+        $configField = $context . 'ThumbnailsOnLeft';
+        $left = !isset($this->config->Site->$configField)
+            ? true : $this->config->Site->$configField;
+        $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
+            ? true : $this->config->Site->mirrorThumbnailsRTL;
+        if ($view->layout()->rtl && !$mirror) {
+            $left = !$left;
         }
-
-        $driver = $this->driver;    // for convenient use in compact()
-        return $this->contextHelper->renderInContext(
-            'record/cover.phtml', compact('cover', 'link', 'context', 'driver')
-        );
+        return $left ? 'left' : 'right';
     }
 
     /**

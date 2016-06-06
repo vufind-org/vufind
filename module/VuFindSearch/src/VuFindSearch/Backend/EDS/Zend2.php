@@ -47,6 +47,7 @@ class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
 
      /**
      * The HTTP Request object to execute EDS API transactions
+      *
      * @var Zend2HttpClient
      */
     protected $client;

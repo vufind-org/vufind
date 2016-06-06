@@ -292,6 +292,16 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Are renewals blocked?
+     *
+     * @return bool
+     */
+    protected function checkRenewBlock()
+    {
+        return $this->isFailing(__METHOD__, 25);
+    }
+
+    /**
      * Are holds/recalls blocked?
      *
      * @return bool
@@ -823,6 +833,103 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Construct a transaction list for getMyTransactions; may be random or
+     * pre-set depending on Demo.ini settings.
+     *
+     * @return array
+     */
+    protected function getTransactionList()
+    {
+        // If Demo.ini includes a fixed set of transactions, load those; otherwise
+        // build some random ones.
+        return isset($this->config['Records']['transactions'])
+            ? json_decode($this->config['Records']['transactions'], true)
+            : $this->getRandomTransactionList();
+    }
+
+    /**
+     * Construct a random set of transactions for getMyTransactions().
+     *
+     * @return array
+     */
+    protected function getRandomTransactionList()
+    {
+        // How many items are there?  %10 - 1 = 10% chance of none,
+        // 90% of 1-9 (give or take some odd maths)
+        $trans = rand() % 10 - 1;
+
+        $transList = [];
+        for ($i = 0; $i < $trans; $i++) {
+            // When is it due? +/- up to 15 days
+            $due_relative = rand() % 30 - 15;
+            // Due date
+            $dueStatus = false;
+            if ($due_relative >= 0) {
+                $rawDueDate = strtotime("now +$due_relative days");
+                if ($due_relative == 0) {
+                    $dueStatus = 'due';
+                }
+            } else {
+                $rawDueDate = strtotime("now $due_relative days");
+                $dueStatus = 'overdue';
+            }
+
+            // Times renewed    : 0,0,0,0,0,1,2,3,4,5
+            $renew = rand() % 10 - 5;
+            if ($renew < 0) {
+                $renew = 0;
+            }
+
+            // Renewal limit
+            $renewLimit = $renew + rand() % 3;
+
+            // Pending requests : 0,0,0,0,0,1,2,3,4,5
+            $req = rand() % 10 - 5;
+            if ($req < 0) {
+                $req = 0;
+            }
+
+            // Create a generic transaction:
+            $transList[] = $this->getRandomItemIdentifier() + [
+                // maintain separate display vs. raw due dates (the raw
+                // one is used for renewals, in case the user display
+                // format is incompatible with date math).
+                'duedate' => $this->dateConverter->convertToDisplayDate(
+                    'U', $rawDueDate
+                ),
+                'rawduedate' => $rawDueDate,
+                'dueStatus' => $dueStatus,
+                'barcode' => sprintf("%08d", rand() % 50000),
+                'renew'   => $renew,
+                'renewLimit' => $renewLimit,
+                'request' => $req,
+                'item_id' => $i,
+                'renewable' => $renew < $renewLimit,
+            ];
+            if ($i == 2 || rand() % 5 == 1) {
+                // Mimic an ILL loan
+                $transList[$i] += [
+                    'id'      => "ill_institution_$i",
+                    'title'   => "ILL Loan Title $i",
+                    'institution_id' => 'ill_institution',
+                    'institution_name' => 'ILL Library',
+                    'institution_dbkey' => 'ill_institution',
+                    'borrowingLocation' => 'ILL Service Desk'
+                ];
+            } else {
+                $transList[$i]['borrowingLocation'] = $this->getFakeLoc();
+                if ($this->idsInMyResearch) {
+                    $transList[$i]['id'] = $this->getRandomBibId();
+                    $transList[$i]['source'] = $this->getRecordSource();
+                } else {
+                    $transList[$i]['title'] = 'Demo Title ' . $i;
+                }
+            }
+            return $transList;
+        }
+    }
+
+    /**
      * Get Patron Transactions
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
@@ -838,79 +945,7 @@ class Demo extends AbstractBase
     {
         $session = $this->getSession();
         if (!isset($session->transactions)) {
-            // How many items are there?  %10 - 1 = 10% chance of none,
-            // 90% of 1-9 (give or take some odd maths)
-            $trans = rand() % 10 - 1;
-
-            $transList = [];
-            for ($i = 0; $i < $trans; $i++) {
-                // When is it due? +/- up to 15 days
-                $due_relative = rand() % 30 - 15;
-                // Due date
-                $dueStatus = false;
-                if ($due_relative >= 0) {
-                    $rawDueDate = strtotime("now +$due_relative days");
-                    if ($due_relative == 0) {
-                        $dueStatus = 'due';
-                    }
-                } else {
-                    $rawDueDate = strtotime("now $due_relative days");
-                    $dueStatus = 'overdue';
-                }
-
-                // Times renewed    : 0,0,0,0,0,1,2,3,4,5
-                $renew = rand() % 10 - 5;
-                if ($renew < 0) {
-                    $renew = 0;
-                }
-
-                // Renewal limit
-                $renewLimit = $renew + rand() % 3;
-
-                // Pending requests : 0,0,0,0,0,1,2,3,4,5
-                $req = rand() % 10 - 5;
-                if ($req < 0) {
-                    $req = 0;
-                }
-
-                // Create a generic transaction:
-                $transList[] = $this->getRandomItemIdentifier() + [
-                    // maintain separate display vs. raw due dates (the raw
-                    // one is used for renewals, in case the user display
-                    // format is incompatible with date math).
-                    'duedate' => $this->dateConverter->convertToDisplayDate(
-                        'U', $rawDueDate
-                    ),
-                    'rawduedate' => $rawDueDate,
-                    'dueStatus' => $dueStatus,
-                    'barcode' => sprintf("%08d", rand() % 50000),
-                    'renew'   => $renew,
-                    'renewLimit' => $renewLimit,
-                    'request' => $req,
-                    'item_id' => $i,
-                    'renewable' => $renew < $renewLimit,
-                ];
-                if ($i == 2 || rand() % 5 == 1) {
-                    // Mimic an ILL loan
-                    $transList[$i] += [
-                        'id'      => "ill_institution_$i",
-                        'title'   => "ILL Loan Title $i",
-                        'institution_id' => 'ill_institution',
-                        'institution_name' => 'ILL Library',
-                        'institution_dbkey' => 'ill_institution',
-                        'borrowingLocation' => 'ILL Service Desk'
-                    ];
-                } else {
-                    $transList[$i]['borrowingLocation'] = $this->getFakeLoc();
-                    if ($this->idsInMyResearch) {
-                        $transList[$i]['id'] = $this->getRandomBibId();
-                        $transList[$i]['source'] = $this->getRecordSource();
-                    } else {
-                        $transList[$i]['title'] = 'Demo Title ' . $i;
-                    }
-                }
-            }
-            $session->transactions = $transList;
+            $session->transactions = $this->getTransactionList();
         }
         return $session->transactions;
     }
@@ -1304,7 +1339,7 @@ class Demo extends AbstractBase
     public function renewMyItems($renewDetails)
     {
         // Simulate an account block at random.
-        if (rand() % 4 == 1) {
+        if ($this->checkRenewBlock()) {
             return [
                 'blocks' => [
                     'Simulated account block; try again and it will work eventually.'
@@ -1914,10 +1949,9 @@ class Demo extends AbstractBase
             ];
         }
         if ($function == 'changePassword') {
-            return [
-                'minLength' => 4,
-                'maxLength' => 20
-            ];
+            return isset($this->config['changePassword'])
+                ? $this->config['changePassword']
+                : ['minLength' => 4, 'maxLength' => 20];
         }
         return [];
     }

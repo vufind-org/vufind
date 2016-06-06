@@ -2,7 +2,7 @@
 .narrow-toggle { text-align: center; }
 .sidebar {
   label:not(.list-group-item) {margin-left: 20px;}
-  .list-group:not(.filters) .title {
+  .list-group.facet .list-group-item.title {
     cursor: pointer;
     &.collapsed {
       border-radius: @border-radius-base;
@@ -35,11 +35,6 @@ label.list-group-item {
   border-radius: 0;
 }
 .list-group-item.title {font-weight: bold;}
-.list-group-item, .badge {
-  i.fa {
-    cursor: inherit;
-  }
-}
 .sidebar .facet a {text-decoration: none;}
 .top-row .applied {
   font-weight: bold;
@@ -50,3 +45,5 @@ label.list-group-item {
     }
   }
 }
+
+.full-facet-list { margin-top: 1rem; }

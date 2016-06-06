@@ -79,4 +79,49 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
             $this->findCss($page, '.location')->getText()
         );
     }
+
+    /**
+     * Test language switching by checking a link in the footer
+     *
+     * @return void
+     */
+    public function testLanguage()
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        // Check footer help-link
+        $this->assertEquals(
+            'Search Tips',
+            $this->findCss($page, 'footer .help-link')->getHTML()
+        );
+        // Change the language:
+        $this->findCss($page, '.language.dropdown')->click();
+        $this->findCss($page, '.language.dropdown li:not(.active) a')->click();
+        $this->snooze();
+        // Check footer help-link
+        $this->assertNotEquals(
+            'Search Tips',
+            $this->findCss($page, 'footer .help-link')->getHTML()
+        );
+    }
+
+    /**
+     * Test lightbox jump links
+     *
+     * @return void
+     */
+    public function testLightboxJumps()
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        // Open Search tips lightbox
+        $this->findCss($page, 'footer .help-link')->click();
+        // Click a jump link
+        $this->findCss($page, '.modal-body .HelpMenu a')->click();
+        // Make sure we're still in the Search Tips
+        $this->snooze();
+        $this->findCss($page, '.modal-body .HelpMenu');
+    }
 }

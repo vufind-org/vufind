@@ -167,7 +167,7 @@ class Voyager extends AbstractBase
             $this->error(
                 "PDO Connection failed ($this->dbName): " . $e->getMessage()
             );
-            throw $e;
+            throw new ILSException($e->getMessage());
         }
 
         $this->useHoldingsSortGroups
@@ -1793,6 +1793,18 @@ class Voyager extends AbstractBase
             'CALL_SLIP.ITEM_ID = MFHD_ITEM.ITEM_ID(+)',
             'BIB_TEXT.BIB_ID = CALL_SLIP.BIB_ID'
         ];
+
+        if (!empty($this->config['StorageRetrievalRequests']['display_statuses'])) {
+            $statuses = preg_replace(
+                '/[^:\d]*/',
+                '',
+                $this->config['StorageRetrievalRequests']['display_statuses']
+            );
+            if ($statuses) {
+                $sqlWhere[] = 'CALL_SLIP.STATUS IN ('
+                    . str_replace(':', ',', $statuses) . ')';
+            }
+        }
 
         // Order by
         $sqlOrderBy = [

@@ -359,7 +359,7 @@ class EDS extends SolrDefault
      *
      * @return array
      */
-    public function getAuthors()
+    public function getPrimaryAuthors()
     {
         $authors = [];
         if (isset($this->fields['RecordInfo']['BibRecord']['BibRelationships'])) {
@@ -376,17 +376,6 @@ class EDS extends SolrDefault
             }
         }
         return $authors;
-    }
-
-    /**
-     * Obtain the primary author of the record
-     *
-     * @return string
-     */
-    public function getPrimaryAuthor()
-    {
-        $authors = $this->getAuthors();
-        return empty($authors) ? '' : $authors[0];
     }
 
     /**

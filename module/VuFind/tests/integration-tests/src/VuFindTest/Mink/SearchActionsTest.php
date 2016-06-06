@@ -201,6 +201,111 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Helper function for facets lists
+     *
+     * @param \Behat\Mink\Element\Element $page  Mink page object
+     * @param integer                     $limit Configured lightbox length
+     *
+     * @return void
+     */
+    protected function facetListProcedure($page, $limit)
+    {
+        $this->snooze();
+        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $this->assertEquals($limit, count($items));
+        // more
+        $this->findCss($page, '#modal .js-facet-next-page')->click();
+        $this->snooze();
+        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $this->assertEquals($limit * 2, count($items));
+        // sort by title
+        $this->findCss($page, '[data-sort="index"]')->click();
+        $this->snooze();
+        $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
+        $this->assertEquals($limit, count($items)); // reset number of items
+        $this->assertEquals(
+            'Fiction 7 '
+            . 'The Study Of P|pes 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 '
+            . 'The Study of "Important" Things 1 '
+            . 'more ...',
+            $this->findCss($page, '#modal #facet-list-index')->getText()
+        );
+        // sort by index again
+        $this->findCss($page, '[data-sort="count"]')->click();
+        $this->snooze();
+        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $this->assertEquals($limit * 2, count($items)); // maintain number of items
+        $weirdIDs = $this->findAndAssertLink($page, 'Weird IDs 9');
+        $this->assertEquals('Weird IDs 9', $weirdIDs->getText());
+        // apply US facet
+        $weirdIDs->click();
+        $this->snooze();
+    }
+
+    /**
+     * Test expanding facets into the lightbox
+     *
+     * @return void
+     */
+    public function testFacetLightbox()
+    {
+        $limit = 4;
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => true,
+                        'lightboxLimit' => $limit
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the geographic facet
+        $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
+        $genreMore->click();
+        $this->facetListProcedure($page, $limit);
+        $genreMore->click();
+        $this->findCss($page, '#modal .js-facet-item.active')->click();
+        // remove facet
+        $this->snooze();
+        $this->assertNull($page->find('css', '.list-group.filters'));
+    }
+
+    /**
+     * Test expanding facets into the lightbox
+     *
+     * @return void
+     */
+    public function testFacetLightboxMoreSetting()
+    {
+        $limit = 4;
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => 'more',
+                        'lightboxLimit' => $limit
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the geographic facet
+        $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
+        $genreMore->click();
+        $this->findCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]')->click();
+        $this->facetListProcedure($page, $limit);
+        $genreMore->click();
+        $this->findCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]')->click();
+        $this->findCss($page, '#modal .js-facet-item.active')->click();
+        // remove facet
+        $this->snooze();
+        $this->assertNull($page->find('css', '.list-group.filters'));
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void

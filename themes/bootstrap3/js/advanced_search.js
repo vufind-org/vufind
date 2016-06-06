@@ -1,8 +1,7 @@
 var nextGroup = 0;
 var groupLength = [];
 
-function addSearch(group, fieldValues)
-{
+function addSearch(group, fieldValues) {
   if(typeof fieldValues === "undefined") {
     fieldValues = {};
   }
@@ -52,8 +51,7 @@ function addSearch(group, fieldValues)
   groupLength[group]++;
 }
 
-function deleteSearch(group, sindex)
-{
+function deleteSearch(group, sindex) {
   for(var i=sindex;i<groupLength[group]-1;i++) {
     var $search0 = $('#search'+group+'_'+i);
     var $search1 = $('#search'+group+'_'+(i+1));
@@ -71,8 +69,7 @@ function deleteSearch(group, sindex)
   }
 }
 
-function addGroup(firstTerm, firstField, join)
-{
+function addGroup(firstTerm, firstField, join) {
   if (firstTerm  == undefined) {firstTerm  = '';}
   if (firstField == undefined) {firstField = '';}
   if (join       == undefined) {join       = '';}
@@ -110,8 +107,7 @@ function addGroup(firstTerm, firstField, join)
   return nextGroup++;
 }
 
-function deleteGroup(group)
-{
+function deleteGroup(group) {
   // Find the group and remove it
   $("#group" + group).remove();
   // If the last group was removed, add an empty group
@@ -121,22 +117,6 @@ function deleteGroup(group)
     $('#groupJoin').addClass('hidden'); // Hide join menu
     $('.group .group-close').addClass('hidden'); // Hide x
   }
-}
-
-// Fired by onclick event
-function deleteGroupJS(group)
-{
-  var groupNum = group.id.replace("delete_link_", "");
-  deleteGroup(groupNum);
-  return false;
-}
-
-// Fired by onclick event
-function addSearchJS(group)
-{
-  var groupNum = group.id.replace("add_search_link_", "");
-  addSearch(groupNum);
-  return false;
 }
 
 $(document).ready(function() {
