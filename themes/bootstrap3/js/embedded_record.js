@@ -29,6 +29,9 @@ VuFind.register('embedded', function() {
   };
   var loadStorage = function loadStorage() {
     var cookies = sessionStorage.getItem(_COOKIE);
+    if (!cookies) {
+      return;
+    }
     var items = cookies.split(_DELIM);
     var doomed = [];
     var hiddenIds;
