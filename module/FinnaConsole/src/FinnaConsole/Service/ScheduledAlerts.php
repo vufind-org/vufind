@@ -467,7 +467,7 @@ class ScheduledAlerts extends AbstractService
                 'info' => [
                     'baseUrl' => $viewBaseUrl,
                     'description' => $params->getDisplayQuery(),
-                    'recordCount' => count($records),
+                    'recordCount' => count($newRecords),
                     'url' => $searchUrl,
                     'unsubscribeUrl' => $unsubscribeUrl,
                     'filters' => $filters
