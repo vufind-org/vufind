@@ -71,7 +71,6 @@ class Factory
 
         $catalog = \Finna\Service\Factory::getILSConnection($sm);
         $configReader = $sm->get('VuFind\Config');
-        $mailer = $sm->get('VuFind\Mailer');
         $renderer = $sm->get('viewmanager')->getRenderer();
         $loader = $sm->get('VuFind\RecordLoader');
         $hmac = $sm->get('VuFind\HMAC');
@@ -79,7 +78,7 @@ class Factory
 
         return new DueDateReminders(
             $userTable, $dueDateReminderTable, $catalog,
-            $configReader, $mailer, $renderer, $loader, $hmac, $translator
+            $configReader, $renderer, $loader, $hmac, $translator, $sm
         );
     }
 

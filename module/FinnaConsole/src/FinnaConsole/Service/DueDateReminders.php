@@ -105,13 +105,6 @@ class DueDateReminders extends AbstractService
     protected $userTable = null;
 
     /**
-     * Mailer
-     *
-     * @var \VuFind\Mailer
-     */
-    protected $mailer = null;
-
-    /**
      * Translator
      *
      * @var \VuFind\Translator
@@ -168,6 +161,16 @@ class DueDateReminders extends AbstractService
     protected $currentViewPath = null;
 
     /**
+     * ServiceManager
+     *
+     * ServiceManager is used for creating VuFind\Mailer objects as needed
+     * (mailer is not shared as its connection might time out otherwise).
+     *
+     * @var ServiceManager
+     */
+    protected $serviceManager = null;
+
+    /**
      * Constructor
      *
      * @param Finna\Db\Table\User            $userTable            User table.
@@ -175,15 +178,15 @@ class DueDateReminders extends AbstractService
      *                                                             reminder table.
      * @param VuFind\ILS\Connection          $catalog              ILS connection.
      * @param VuFind\Config                  $configReader         Config reader.
-     * @param VuFind\Mailer                  $mailer               Mailer.
      * @param Zend\View\Renderer\PhpRenderer $renderer             View renderer.
      * @param VuFind\RecordLoader            $recordLoader         Record loader.
      * @param VuFind\HMAC                    $hmac                 HMAC.
      * @param VuFind\Translator              $translator           Translator.
+     * @param ServiceManager                 $serviceManager       Service manager.
      */
     public function __construct(
         $userTable, $dueDateReminderTable, $catalog, $configReader,
-        $mailer, $renderer, $recordLoader, $hmac, $translator
+        $renderer, $recordLoader, $hmac, $translator, $serviceManager
     ) {
         $this->userTable = $userTable;
         $this->dueDateReminderTable = $dueDateReminderTable;
@@ -191,12 +194,12 @@ class DueDateReminders extends AbstractService
         $this->mainConfig = $configReader->get('config');
         $this->datasourceConfig = $configReader->get('datasources');
         $this->configReader = $configReader;
-        $this->mailer = $mailer;
         $this->renderer = $renderer;
         $this->translator = $translator;
         $this->urlHelper = $renderer->plugin('url');
         $this->recordLoader = $recordLoader;
         $this->hmac = $hmac;
+        $this->serviceManager = $serviceManager;
     }
 
     /**
@@ -375,7 +378,8 @@ class DueDateReminders extends AbstractService
             $this->currentSiteConfig = parse_ini_file($siteConfig, true);
         }
 
-        $language = $this->currentSiteConfig['Site']['language'];
+        $language = isset($this->currentSiteConfig['Site']['language'])
+            ? $this->currentSiteConfig['Site']['language'] : 'fi';
         $validLanguages = array_keys($this->currentSiteConfig['Languages']);
         if (!empty($user->finna_language)
             && in_array($user->finna_language, $validLanguages)
@@ -417,7 +421,7 @@ class DueDateReminders extends AbstractService
         try {
             $to = $user->email;
             $from = $this->currentSiteConfig['Site']['email'];
-            $this->mailer->send(
+            $this->serviceManager->get('VuFind\Mailer')->send(
                 $to, $from, $subject, $message
             );
         } catch (\Exception $e) {
