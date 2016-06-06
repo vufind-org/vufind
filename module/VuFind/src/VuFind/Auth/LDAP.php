@@ -278,7 +278,7 @@ class LDAP extends AbstractBase
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
                         $value = $data[$i][$configValue];
-						// check if $configValue is a multi-valued field in LDAP
+                        // check if $configValue is a multi-valued field in LDAP
                         if (is_array($value)) {
                         	$value = serialize($value);
                         	$this->debug("found multi-valued field: $field = serialized value = $value");
