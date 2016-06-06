@@ -64,6 +64,18 @@ trait ILSFinna
     }
 
     /**
+     * Make sure passwords match and fulfill ILS policy
+     *
+     * @param array $params request parameters
+     *
+     * @return void
+     */
+    public function validatePasswordInUpdate($params)
+    {
+        $this->validatePasswordUpdate($params);
+    }
+
+    /**
      * Update the database using details from the ILS, then return the User object.
      *
      * @param array $info User details returned by ILS driver.
@@ -116,5 +128,4 @@ trait ILSFinna
 
         return $user;
     }
-
 }

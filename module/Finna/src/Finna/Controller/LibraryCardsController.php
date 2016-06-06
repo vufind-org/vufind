@@ -28,6 +28,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Controller;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * Controller for the library card functionality.
@@ -123,6 +124,11 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         // It's not exactly correct to send a card to getPasswordPolicy, but it has
         // the required fields..
         $policy = $catalog->getPasswordPolicy($card->toArray());
+        if (isset($policy['pattern']) && empty($policy['hint'])) {
+            $pattern = $policy['pattern'];
+            $policy['hint'] = in_array($pattern, ['numeric', 'alphanumeric'])
+                ? 'password_only_' . $pattern : null;
+        }
 
         $user->updateHash();
 
@@ -207,9 +213,15 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         $password = $this->params()->fromPost('password', '');
         $password2 = $this->params()->fromPost('password2', '');
 
-        if ($password === '' || $password2 === '') {
-            $this->flashMessenger()
-                ->addMessage('authentication_error_blank', 'error');
+        // Validate new password
+        try {
+            $ilsAuth = $this->getServiceLocator()->get('VuFind\AuthPluginManager')
+                ->get('ILS');
+            $ilsAuth->validatePasswordInUpdate(
+                ['password' => $password, 'password2' => $password2]
+            );
+        } catch (AuthException $e) {
+            $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             return false;
         }
 
@@ -229,10 +241,6 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         if (!$patron) {
             $this->flashMessenger()
                 ->addMessage('authentication_error_invalid', 'error');
-            return false;
-        }
-        if ($password !== $password2) {
-            $this->flashMessenger()->addMessage('Passwords do not match', 'error');
             return false;
         }
 
