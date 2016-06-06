@@ -123,8 +123,10 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
-        $pickupByCallSlipGroup =
-            isset($this->config['StorageRetrievalRequests']['pickupByCallSlipGroup'])
+        $pickupByCallSlipGroup
+            = isset(
+                $this->config['StorageRetrievalRequests']['pickupByCallSlipGroup']
+            )
             && $this->config['StorageRetrievalRequests']['pickupByCallSlipGroup'];
         if (isset($holdDetails['requestType'])
             && $holdDetails['requestType'] == 'StorageRetrievalRequest'
