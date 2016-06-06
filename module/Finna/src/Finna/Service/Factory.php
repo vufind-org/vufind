@@ -120,6 +120,21 @@ class Factory extends \VuFind\Service\Factory
     }
 
     /**
+     * Construct the ILS hold logic.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\ILS\Logic\Holds
+     */
+    public static function getILSHoldLogic(ServiceManager $sm)
+    {
+        return new \Finna\ILS\Logic\Holds(
+            $sm->get('VuFind\ILSAuthenticator'), $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\HMAC'), $sm->get('VuFind\Config')->get('config')
+        );
+    }
+
+    /**
      * Generic plugin manager factory (support method).
      *
      * @param ServiceManager $sm Service manager.

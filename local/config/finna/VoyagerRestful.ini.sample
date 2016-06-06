@@ -208,6 +208,13 @@ checkLoans = true
 ; processed and converted to a hold, which may confuse users.
 display_statuses = 1:2:3:5:8:9
 
+; Usually pickup location does not need to be set as Voyager sets it when the call
+; slip is processed, but if processing is not done and the pickup location needs to
+; be set, this setting can be enabled to limit pickup locations by the call slip 
+; print group. 
+; N.B. If you enable this setting, also include "requestType" in HMACKeys above. 
+;pickupByCallSlipGroup = true
+
 ; This section controls UB (Universal Borrowing, ILL in VuFind) behavior. To enable, 
 ; uncomment (at minimum) the HMACKeys and extraFields settings below. See also
 ; section ILLRequestSources for mapping between patron ID's and UB libraries.

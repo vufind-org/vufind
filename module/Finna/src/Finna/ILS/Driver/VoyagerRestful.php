@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace Finna\ILS\Driver;
+use PDO, PDOException;
 
 /**
  * Voyager Restful ILS Driver
@@ -98,6 +99,75 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
             $result = $this->filterAllowedUBPickupLocations($result, $patron);
         }
         return $result;
+    }
+
+    /**
+     * Get Pick Up Locations
+     *
+     * This is responsible for gettting a list of valid library locations for
+     * holds / recall retrieval
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * or may be ignored.  The driver must not add new options to the return array
+     * based on this data or other areas of VuFind may behave incorrectly.
+     *
+     * @throws ILSException
+     * @return array        An array of associative arrays with locationID and
+     * locationDisplay keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getPickUpLocations($patron = false, $holdDetails = null)
+    {
+        if (isset($holdDetails['requestType'])
+            && $holdDetails['requestType'] == 'StorageRetrievalRequest'
+            && isset(
+                $this->config['StorageRetrievalRequests']['pickupByCallSlipGroup']
+            )
+            && $this->config['StorageRetrievalRequests']['pickupByCallSlipGroup']
+        ) {
+            $savePickupLocations = $this->ws_pickUpLocations;
+            try {
+                $this->ws_pickUpLocations = [];
+                $sql = "SELECT CALL_SLIP_PRINT_GROUP.LOCATION_ID as location_id, " .
+                    "NVL(LOCATION.LOCATION_DISPLAY_NAME, LOCATION.LOCATION_NAME) " .
+                    "as location_name from " .
+                    "$this->dbName.CALL_SLIP_PRINT_GROUP, $this->dbName.LOCATION, " .
+                    "$this->dbName.CALL_SLIP_GROUP_LOCATION, $this->dbName.ITEM " .
+                    "where CALL_SLIP_PRINT_GROUP.GROUP_ID = " .
+                    "CALL_SLIP_GROUP_LOCATION.GROUP_ID " .
+                    "and CALL_SLIP_PRINT_GROUP.LOCATION_ID = LOCATION.LOCATION_ID " .
+                    "and CALL_SLIP_GROUP_LOCATION.LOCATION_ID = " .
+                    "case when ITEM.TEMP_LOCATION = 0 " .
+                    "then ITEM.PERM_LOCATION else ITEM.TEMP_LOCATION end " .
+                    "and ITEM.ITEM_ID = :item_id";
+                $params = ['item_id' => $holdDetails['item_id']];
+                try {
+                    $this->debugSQL(__FUNCTION__, $sql, $params);
+                    $sqlStmt = $this->db->prepare($sql);
+                    $sqlStmt->execute($params);
+
+                    while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+                        $this->ws_pickUpLocations[$row['LOCATION_ID']]
+                            = utf8_encode($row['LOCATION_NAME']);
+                    }
+                } catch (PDOException $e) {
+                    throw new ILSException($e->getMessage());
+                }
+
+                $result = parent::getPickupLocations($patron, $holdDetails);
+            } catch (\Exception $e) {
+                $this->ws_pickUpLocations = $savePickupLocations;
+                throw $e;
+            }
+            $this->ws_pickUpLocations = $savePickupLocations;
+            return $result;
+        }
+        return parent::getPickupLocations($patron, $holdDetails);
     }
 
     /**
