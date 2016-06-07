@@ -43,6 +43,30 @@ url = "http://"
 ; Uncomment and modify the following line to use another hashing algorithm with the
 ; EZproxy authentication if necessary. SHA512 is the default.
 ;secret_hash_method=SHA512
+;
+; Uncomment the following setting to disable proxy for users coming from known IP
+; addresses. 
+;proxy_known_ip_addresses = false
+;
+; The following settings allow you to proxy only url's that contain strings listed
+; (include_url) or to exclude them from being proxied (exclude_url)
+;include_url[] = 'ebscohost'
+;include_url[] = 'springer' 
+;exclude_url[] = 'doaj'
+;
+; The following settings ar as above, but allow you to specify regexp patterns
+;include_url_re[] = '/https?:\/\/ebscohost/'
+;exclude_url_re[] = '/\.pdf$/'
+;
+; The following settings allow you to enable proxying per source service (Solr, 
+; Primo or MetaLib) or data source in the Solr index (e.g. helka, jykdok). 
+;include_source[] = 'Solr'
+;include_source[] = 'MetaLib'
+;include_datasource[] = 'helka'
+; There's also the possibility to exclude selected sources from being proxied:
+;exclude_datasource[] = 'helka'
+;exclude_datasource[] = 'jykdok'
+;exclude_datasource[] = 'MEDLINE/PubMed (U.S. National Library of Medicine)'
 
 [Languages]
 en-gb = "English"

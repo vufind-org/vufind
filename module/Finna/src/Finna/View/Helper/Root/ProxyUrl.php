@@ -138,6 +138,38 @@ class ProxyUrl extends \VuFind\View\Helper\Root\ProxyUrl
                 }
             }
         }
+
+        // Check for source specific filters
+        if (!empty($config->include_source)
+            || !empty($config->include_datasource)
+            || !empty($config->exclude_datasource)
+        ) {
+            $driver = $this->getView()->driver;
+            if (null !== $driver) {
+                if (!empty($config->include_source)) {
+                    $source = $driver->getSourceIdentifier();
+                    if (!in_array($source, $config->include_source->toArray())) {
+                        return $url;
+                    }
+                }
+                $datasource = $driver->tryMethod('getSource');
+                if (null !== $datasource) {
+                    if (!empty($config->include_datasource)) {
+                        $sources = $config->include_datasource->toArray();
+                        if (!in_array($datasource, $sources)) {
+                            return $url;
+                        }
+                    }
+                    if (!empty($config->exclude_datasource)) {
+                        $sources = $config->exclude_datasource->toArray();
+                        if (in_array($datasource, $sources)) {
+                            return $url;
+                        }
+                    }
+                }
+            }
+        }
+
         return parent::__invoke($url);
     }
 
