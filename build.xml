@@ -7,7 +7,6 @@
   <property name="apacheconfdir" value="/etc/apache2/conf.d" />
   <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
   <property name="seleniumjar" value="false" /><!-- set to Selenium jar path to spin up Selenium instance -->
-  <property name="nodepath" value="" /><!-- set to node.js modules path to use Zombie.js testing -->
   <!-- command for extra cleanup during shutdown; e.g. to change cache ownership after testing w/ Apache so deletion won't fail: -->
   <property name="extra_shutdown_cleanup" value="false" />
   <property name="vufindurl" value="http://localhost/vufind" />
@@ -22,7 +21,7 @@
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
   <property name="composer_extra_params" value="" />
-  <property name="mink_driver" value="zombiejs" /><!-- may also be set to selenium -->
+  <property name="mink_driver" value="selenium" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use,eof_ending" />
 
@@ -116,12 +115,12 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <target name="composer" description="Install dependencies with Composer">
