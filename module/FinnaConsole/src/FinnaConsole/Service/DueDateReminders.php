@@ -28,8 +28,9 @@
  */
 namespace FinnaConsole\Service;
 
-use Zend\View\Resolver\AggregateResolver,
-    Zend\View\Resolver\TemplatePathStack;
+use Zend\ServiceManager\ServiceManager;
+use Zend\View\Resolver\AggregateResolver;
+use Zend\View\Resolver\TemplatePathStack;
 
 /**
  * Console service for sending due date reminders.
