@@ -478,8 +478,10 @@ class SearchController extends \VuFind\Controller\SearchController
     /**
      * Try a search and return results if found
      *
-     * @param \VuFind\Search\SearchRunner $runner Search runner
-     * @param array                       $params Search params
+     * @param \VuFind\Search\SearchRunner $runner             Search runner
+     * @param array                       $params             Search params
+     * @param bool                        $returnEmptyResults Whether to return empty
+     * results object instead of boolean false
      *
      * @return bool|\VuFind\Search\Base\Results
      */
