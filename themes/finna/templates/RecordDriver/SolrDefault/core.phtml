@@ -230,7 +230,7 @@
           <? endif; ?>
           <? if (!empty($results['details'])): ?>
             <br/>
-            <? foreach($results['details'] as $detail): ?>
+            <? foreach($results['details'] as $index => $detail): ?>
               <?=($index > 0 || !empty($results['presenters']) ? '' : '')?><?=$this->escapeHtml($detail)?>
             <? endforeach; ?>
           <? endif; ?>
