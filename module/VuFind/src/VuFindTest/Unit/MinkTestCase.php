@@ -136,7 +136,7 @@ abstract class MinkTestCase extends DbTestCase
     {
         // This assertion is not supported by Selenium.
         if ($this->isZombieDriver()) {
-            $this->assertEquals(200, $this->getMinkSession()->getStatusCode());
+            $this->assertEquals($code, $this->getMinkSession()->getStatusCode());
         }
     }
 
