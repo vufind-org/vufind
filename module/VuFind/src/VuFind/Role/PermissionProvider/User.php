@@ -91,12 +91,12 @@ class User implements PermissionProviderInterface
         // check user attribute values against the pattern 
         foreach ($criteria as $attribute=>$pattern) {
             $subject = $user[$attribute];
-            if (preg_match('/' . $pattern . '/' , $subject)) {
+            if (preg_match('/' . $pattern . '/', $subject)) {
                 return ['loggedin'];
             }
         }
         
-        //no matches found, so the user don't get any permissions      
+        //no matches found, so the user don't get any permissions
         return [];
     }
 }
