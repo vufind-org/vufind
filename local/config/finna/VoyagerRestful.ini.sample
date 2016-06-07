@@ -306,8 +306,8 @@ maxLength = 12
 ; config.ini defaults when Voyager is used for authentication.
 ;pattern = "alphanumeric"
 ;hint = "Your optional custom hint can go here."
-; These settings control authorization.
 
+; These settings control authorization.
 [Authorization]
 ; Whether authorization based on login is enabled. Default is false.
 ;enabled = true
