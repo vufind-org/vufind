@@ -25,6 +25,10 @@ fallback_login_field = LAST_NAME
 ; account.
 ;secondary_login_field = "LAST_NAME:Last Name"
 
+; Optional list of blacklisted passwords that cannot be used to log in.
+;login_password_blacklist[] = "0000"
+;login_password_blacklist[] = "1234"
+
 ; These settings affect the Fund list used as a limiter in the "new items" module:
 [Funds]
 ; Uncomment this line to turn off the fund list entirely.

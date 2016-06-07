@@ -27,7 +27,12 @@ fallback_login_field = LAST_NAME
 ;secondary_login_field = "LAST_NAME:Last Name"
 
 ; This is the timeout value for making HTTP requests to the Voyager API.
-http_timeout = 30
+http_timeout = 60
+
+; Optional list of blacklisted passwords that cannot be used to log in. The user is
+; also prevented from changing password to any of the listed values.
+;login_password_blacklist[] = "0000"
+;login_password_blacklist[] = "1234"
 
 ; These settings affect the Fund list used as a limiter in the "new items" module:
 [Funds]

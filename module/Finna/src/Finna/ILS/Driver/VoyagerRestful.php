@@ -61,6 +61,35 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
     }
 
     /**
+     * Change Password
+     *
+     * Attempts to change patron password (PIN code)
+     *
+     * @param array $details An array of patron id and old and new password:
+     *
+     * 'patron'      The patron array from patronLogin
+     * 'oldPassword' Old password
+     * 'newPassword' New password
+     *
+     * @return array An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function changePassword($details)
+    {
+        // First check that the new password is not blacklisted
+        if (!empty($this->config['Catalog']['login_password_blacklist'])) {
+            $newPIN = trim($this->sanitizePIN($details['newPassword']));
+            $blacklist = $this->config['Catalog']['login_password_blacklist'];
+            if (in_array($newPIN, $blacklist)) {
+                return [
+                    'success' => false, 'status' => 'password_error_invalid'
+                ];
+            }
+        }
+        return parent::changePassword($details);
+    }
+
+    /**
      * Get Patron Profile
      *
      * This is responsible for retrieving the profile for a specific patron.

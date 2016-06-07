@@ -605,6 +605,13 @@ trait VoyagerFinna
      */
     public function patronLogin($barcode, $login, $secondary = null)
     {
+        // First check that the login is not blacklisted
+        if (!empty($this->config['Catalog']['login_password_blacklist'])
+            && in_array($login, $this->config['Catalog']['login_password_blacklist'])
+        ) {
+            return null;
+        }
+
         // Load the field used for verifying the login from the config file, and
         // make sure there's nothing crazy in there:
         $login_field = isset($this->config['Catalog']['login_field'])
