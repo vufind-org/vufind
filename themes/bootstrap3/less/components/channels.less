@@ -7,24 +7,28 @@
   text-align: center;
   text-overflow: ellipsis;
 }
-.channel .channel-record.is-selected { font-weight: bold; }
+.channel .channel-record.is-selected { &:extend(a:hover); }
 .channel .channel-record .img {
   max-width: 100%;
   height: 200px;
   background-position: center center;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: contain;
 }
 .channel .popover {
   width: 500px;
   max-width: none;
 }
 
-.channel-title { margin-left: -50px; }
+.channel-title {
+  margin-left: -50px;
+  margin-top: 10px;
+}
 .channel-title h2 { margin-top: 0; }
 .channel-title i.fa-fw {
   width: 25px;
   text-align: left;
 }
+.channel-title .placeholder { width: 25px; }
 
 .flickity-prev-next-button { top: 35%; }
