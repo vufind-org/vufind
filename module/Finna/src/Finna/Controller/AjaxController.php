@@ -1121,6 +1121,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $results = $runner->run($request, 'Solr', $setupCallback);
 
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
+            $this->setLogger($this->getServiceLocator()->get('VuFind\Logger'));
+            $this->logError('Solr faceting request failed');
             return $this->output('', self::STATUS_ERROR, 500);
         }
 
