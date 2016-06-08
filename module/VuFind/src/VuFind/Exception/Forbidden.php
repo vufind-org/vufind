@@ -36,6 +36,15 @@ namespace VuFind\Exception;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Forbidden extends \Exception
+class Forbidden extends \Exception implements HttpStatusInterface
 {
+    /**
+     * Get HTTP status associated with this exception.
+     *
+     * @return int
+     */
+    public function getHttpStatus()
+    {
+        return 403;
+    }
 }
