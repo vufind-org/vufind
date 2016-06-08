@@ -985,6 +985,15 @@ class AjaxController extends AbstractBase
      */
     protected function commentRecordAjax()
     {
+        // Make sure comments are enabled:
+        if (!$this->commentsEnabled()) {
+            return $this->output(
+                $this->translate('Comments disabled'),
+                self::STATUS_ERROR,
+                403
+            );
+        }
+
         $user = $this->getUser();
         if ($user === false) {
             return $this->output(
@@ -1020,6 +1029,15 @@ class AjaxController extends AbstractBase
      */
     protected function deleteRecordCommentAjax()
     {
+        // Make sure comments are enabled:
+        if (!$this->commentsEnabled()) {
+            return $this->output(
+                $this->translate('Comments disabled'),
+                self::STATUS_ERROR,
+                403
+            );
+        }
+
         $user = $this->getUser();
         if ($user === false) {
             return $this->output(

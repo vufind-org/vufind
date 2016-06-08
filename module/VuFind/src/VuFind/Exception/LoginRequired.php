@@ -36,6 +36,6 @@ namespace VuFind\Exception;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class LoginRequired extends \Exception
+class LoginRequired extends Forbidden
 {
 }
