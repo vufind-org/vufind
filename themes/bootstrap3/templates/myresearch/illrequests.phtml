@@ -84,7 +84,7 @@
               <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?><br/>
             <? endif; ?>
 
-            <? $if (count($resource->getFormats()) > 0): ?>
+            <? if (count($resource->getFormats()) > 0): ?>
               <?=$this->record($resource)->getFormatList() ?>
               <br/>
             <? endif; ?>
