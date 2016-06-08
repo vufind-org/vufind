@@ -26,7 +26,8 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Mail as MailException,
+use VuFind\Exception\Forbidden as ForbiddenException,
+    VuFind\Exception\Mail as MailException,
     VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 
 /**
@@ -104,6 +105,11 @@ class AbstractRecord extends AbstractBase
      */
     public function addcommentAction()
     {
+        // Make sure comments are enabled:
+        if (!$this->commentsEnabled()) {
+            throw new ForbiddenException('Comments disabled');
+        }
+
         // Force login:
         if (!($user = $this->getUser())) {
             // Remember comment since POST data will be lost:
@@ -145,6 +151,11 @@ class AbstractRecord extends AbstractBase
      */
     public function deletecommentAction()
     {
+        // Make sure comments are enabled:
+        if (!$this->commentsEnabled()) {
+            throw new ForbiddenException('Comments disabled');
+        }
+
         // Force login:
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
@@ -168,7 +179,7 @@ class AbstractRecord extends AbstractBase
     {
         // Make sure tags are enabled:
         if (!$this->tagsEnabled()) {
-            throw new \Exception('Tags disabled');
+            throw new ForbiddenException('Tags disabled');
         }
 
         // Force login:
@@ -203,7 +214,7 @@ class AbstractRecord extends AbstractBase
     {
         // Make sure tags are enabled:
         if (!$this->tagsEnabled()) {
-            throw new \Exception('Tags disabled');
+            throw new ForbiddenException('Tags disabled');
         }
 
         // Force login:
@@ -311,7 +322,7 @@ class AbstractRecord extends AbstractBase
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            throw new \Exception('Lists disabled');
+            throw new ForbiddenException('Lists disabled');
         }
 
         // Process form submission:
