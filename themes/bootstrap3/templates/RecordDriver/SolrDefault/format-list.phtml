@@ -1,3 +1,4 @@
-<? foreach ($this->driver->getFormats() as $format): ?>
-  <span class="iconlabel <?=$this->record($this->driver)->getFormatClass($format)?>"><?=$this->transEsc($format)?></span>
+<? $formats = $this->driver->getFormats(); ?>
+<? foreach ($formats as $format): ?>
+  <a href="<?=$this->url('search-results') ?>?filter[]=format:%22<?=urlencode($format) ?>%22" class="format <?=preg_replace('/\s/', '', strtolower($format)) ?>"><?=$this->transEsc($format) ?></a>
 <? endforeach; ?>

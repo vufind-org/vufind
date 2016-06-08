@@ -5,7 +5,7 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Storage Retrieval Requests') . '</li>';
 ?>
-<div class="row">
+<div class="row result">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h2><?=$this->transEsc('Storage Retrieval Requests') ?></h2>
 
@@ -81,8 +81,8 @@
               <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?><br/>
             <? endif; ?>
 
-            <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
-              <?=str_replace('class="', 'class="label label-info ', $this->record($resource)->getFormatList())?>
+            <? if (count($resource->getFormats()) > 0): ?>
+              <?=$this->record($resource)->getFormatList() ?>
               <br/>
             <? endif; ?>
             <? if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
