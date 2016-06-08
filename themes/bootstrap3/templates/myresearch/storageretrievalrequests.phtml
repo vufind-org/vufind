@@ -5,7 +5,7 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Storage Retrieval Requests') . '</li>';
 ?>
-<div class="row result">
+<div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h2><?=$this->transEsc('Storage Retrieval Requests') ?></h2>
 
@@ -41,7 +41,7 @@
         <hr/>
         <? $iteration++; ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row">
+        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row result">
           <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
             <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
             <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />

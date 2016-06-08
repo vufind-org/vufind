@@ -7,7 +7,7 @@
         . '<li class="active">' . $this->transEsc('Interlibrary Loan Requests') . '</li>';
 ?>
 
-<div class="row result">
+<div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h2><?=$this->transEsc('Interlibrary Loan Requests') ?></h2>
 
@@ -43,7 +43,7 @@
         <hr/>
         <? $iteration++; ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row">
+        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row result">
           <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
             <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
             <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
