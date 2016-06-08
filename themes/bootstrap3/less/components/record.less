@@ -38,6 +38,9 @@
   text-decoration: none;
 }
 
+.record .format::after { content: ", "; }
+.record .format:last-child::after { content: ""; }
+
 .marc-row-LEADER,
 .marc-row-006,
 .marc-row-007,
