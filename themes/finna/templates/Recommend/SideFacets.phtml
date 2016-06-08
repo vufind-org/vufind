@@ -210,8 +210,6 @@ echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
               'formAction' => $formParams,
               'searchParams' => $searchParams,
               'baseParams' => $formParams,
-              'facetField' => 'search_sdaterange_mv',
-              'filterField' => 'main_date_str',
               'type' => $type,
               'backend' => (null === $module || $module == 'search') ? 'solr' : $module,
               'daterangeFacet' => $daterangeFacetField,
