@@ -26,7 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use VuFind\Harvester\OAI, Zend\Console\Console;
+use VuFindHarvest\OaiHarvester, Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -39,6 +39,31 @@ use VuFind\Harvester\OAI, Zend\Console\Console;
  */
 class HarvestController extends AbstractBase
 {
+    /**
+     * Get the base directory for harvesting OAI-PMH data.
+     *
+     * @return string
+     */
+    protected function getHarvestRoot()
+    {
+        // Get the base VuFind path:
+        if (strlen(LOCAL_OVERRIDE_DIR) > 0) {
+            $home = LOCAL_OVERRIDE_DIR;
+        } else {
+            $home = realpath(APPLICATION_PATH . '/..');
+        }
+
+        // Build the full harvest path:
+        $dir = $home . '/harvest/';
+
+        // Create the directory if it does not already exist:
+        if (!is_dir($dir) && !mkdir($dir)) {
+            throw new \Exception("Problem creating directory {$dir}.");
+        }
+
+        return $dir;
+    }
+
     /**
      * Harvest OAI-PMH records.
      *
@@ -83,7 +108,10 @@ class HarvestController extends AbstractBase
                 try {
                     $client = $this->getServiceLocator()->get('VuFind\Http')
                         ->createClient();
-                    $harvest = new OAI($target, $settings, $client, $from, $until);
+                    $harvest = new OaiHarvester(
+                        $target, $this->getHarvestRoot(), $settings, $client,
+                        $from, $until, false
+                    );
                     $harvest->launch();
                 } catch (\Exception $e) {
                     Console::writeLine($e->getMessage());
