@@ -65,6 +65,7 @@
     <phingcall target="phpmd"/>
     <phingcall target="pdepend"/>
     <phingcall target="phploc"/>
+    <phingcall target="eslint-report"/>
   </target>
 
   <!-- Report rule violations with PHPMD (mess detector) -->
@@ -101,6 +102,17 @@
   </target>
   <target name="php-cs-fixer-dryrun">
     <exec command="${srcdir}/vendor/bin/php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run --verbose --diff" passthru="true" escape="false" checkreturn="true" />
+  </target>
+
+  <!-- ESLint -->
+  <target name="eslint">
+    <exec command="eslint -c ${srcdir}/.eslintrc.json ${srcdir}/themes/bootstrap3/js/*.js" escape="false" checkreturn="true" />
+  </target>
+  <target name="eslint-fix">
+    <exec command="eslint --fix -c ${srcdir}/.eslintrc.json ${srcdir}/themes/bootstrap3/js/*.js" escape="false" checkreturn="true" />
+  </target>
+  <target name="eslint-report">
+    <exec command="eslint -c ${srcdir}/.eslintrc.json ${srcdir}/themes/bootstrap3/js/*.js -f checkstyle -o ${builddir}/reports/eslint.xml" escape="false" />
   </target>
 
   <!-- PHP API Documentation -->

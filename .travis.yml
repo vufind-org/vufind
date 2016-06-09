@@ -19,4 +19,4 @@ before_script:
 
 script:
   - phing composer phpunitfast phpcs-console php-cs-fixer-dryrun
-  - eslint -c .eslintrc.json themes/bootstrap3/js/*.js
+  - phing eslint
