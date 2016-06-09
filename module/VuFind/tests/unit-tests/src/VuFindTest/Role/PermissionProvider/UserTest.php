@@ -87,15 +87,15 @@ class UserTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    protected function check($testuser, $options, $roles) 
+    protected function check($testuser, $options, $roles)
     {
-        $this->testuser 
+        $this->testuser
             = (isset($this->userValueMap[$testuser]))
             ? $testuser
             : 'testuser1';
         
         $auth = $this->getMockAuthorizationService();
-        $this->permissionProvider 
+        $this->permissionProvider
             = new \VuFind\Role\PermissionProvider\User($auth);
         
         $this->assertEquals(
@@ -109,9 +109,9 @@ class UserTest extends \VuFindTest\Unit\TestCase
      *
      * @return AuthorizationService
      */
-    protected function getMockAuthorizationService() 
+    protected function getMockAuthorizationService()
     {
-        $authorizationService 
+        $authorizationService
             = $this->getMockBuilder('ZfcRbac\Service\AuthorizationService')
                 ->disableOriginalConstructor()
                 ->getMock();
