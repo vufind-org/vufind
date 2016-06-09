@@ -17,13 +17,15 @@ var VuFind = (function VuFind() {
       this[name] = typeof module == 'function' ? module() : module;
     }
     // If the object has already initialized, we should auto-init on register:
-    if (_initialized) {
+    if (_initialized && this[name].init) {
       this[name].init();
     }
   };
-  var init = function init() {
+  var init = function() {
     for (var i = 0; i < _submodules.length; i++) {
-      this[_submodules[i]].init();
+      if (this[_submodules[i]].init) {
+        this[_submodules[i]].init();
+      }
     }
     _initialized = true;
   };
@@ -104,10 +106,12 @@ function deparam(url) {
 function moreFacets(id) {
   $('.' + id).removeClass('hidden');
   $('#more-' + id).addClass('hidden');
+  return false;
 }
 function lessFacets(id) {
   $('.' + id).addClass('hidden');
   $('#more-' + id).removeClass('hidden');
+  return false;
 }
 
 // Phone number validation

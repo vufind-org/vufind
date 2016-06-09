@@ -226,9 +226,10 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function supportsPasswordChange($authMethod = null)
     {
-        if ($this->getAuth($authMethod)->supportsPasswordChange()) {
-            return isset($this->config->Authentication->change_password)
-                && $this->config->Authentication->change_password;
+        if (isset($this->config->Authentication->change_password)
+            && $this->config->Authentication->change_password
+        ) {
+            return $this->getAuth($authMethod)->supportsPasswordChange();
         }
         return false;
     }

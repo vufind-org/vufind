@@ -155,7 +155,13 @@ class ILS extends AbstractBase
     public function getPasswordPolicy()
     {
         $policy = $this->getCatalog()->getPasswordPolicy($this->getLoggedInPatron());
-        return $policy !== false ? $policy : parent::getPasswordPolicy();
+        if ($policy === false) {
+            return parent::getPasswordPolicy();
+        }
+        if (isset($policy['pattern']) && empty($policy['hint'])) {
+            $policy['hint'] = $this->getCannedPasswordPolicyHint($policy['pattern']);
+        }
+        return $policy;
     }
 
     /**
