@@ -117,6 +117,7 @@ class BasicTest extends \VuFindTest\Unit\MinkTestCase
         $page = $session->getPage();
         // Open Search tips lightbox
         $this->findCss($page, 'footer .help-link')->click();
+        $this->snooze();
         // Click a jump link
         $this->findCss($page, '.modal-body .HelpMenu a')->click();
         // Make sure we're still in the Search Tips
