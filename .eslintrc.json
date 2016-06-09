@@ -1,4 +1,3 @@
-// npm i -g eslint
 {
   "extends": "eslint:recommended",
   "globals": {
@@ -7,7 +6,6 @@
     "window": false
   },
   "rules": {
-    // errors
     "block-scoped-var": "error",
     "func-names": "error",
     "no-loop-func": "error",
@@ -15,7 +13,6 @@
     "no-shadow": "error",
     "no-unused-expressions": "error",
 
-    // warnings
     "dot-notation": "warn",
     "eqeqeq": ["warn", "smart"],
     "guard-for-in": "warn",
@@ -24,7 +21,6 @@
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "no-unneeded-ternary": "warn",
 
-    // auto-fixed
     "block-spacing" : ["warn", "always"],
     "indent": ["error", 2],
     "keyword-spacing": ["warn", { "before": true, "after": true }],
