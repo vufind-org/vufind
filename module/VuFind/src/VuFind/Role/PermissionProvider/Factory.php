@@ -108,4 +108,18 @@ class Factory
             $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
         );
     }
+    
+    /**
+     * Factory for User
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return User
+     */
+    public static function getUser(ServiceManager $sm)
+    {
+        return new User(
+                $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
+                );
+    }
 }
