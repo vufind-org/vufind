@@ -119,7 +119,7 @@ class Factory
     public static function getUser(ServiceManager $sm)
     {
         return new User(
-                $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
-                );
+            $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
+        );
     }
 }
