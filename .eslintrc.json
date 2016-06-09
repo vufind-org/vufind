@@ -21,6 +21,7 @@
     "guard-for-in": "warn",
     "key-spacing": ["warn", { "beforeColon": false, "afterColon": true }],
     "no-lonely-if": "warn",
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
     "no-unneeded-ternary": "warn",
 
     // auto-fixed
