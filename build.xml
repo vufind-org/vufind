@@ -106,7 +106,7 @@
 
   <!-- ESLint -->
   <target name="eslint">
-    <exec command="eslint -c ${srcdir}/.eslintrc.json ${srcdir}/themes/bootstrap3/js/*.js" escape="false" checkreturn="true" />
+    <exec command="eslint -c ${srcdir}/.eslintrc.json ${srcdir}/themes/bootstrap3/js/*.js" escape="false" checkreturn="true" passthru="true" />
   </target>
   <target name="eslint-fix">
     <exec command="eslint --fix -c ${srcdir}/.eslintrc.json ${srcdir}/themes/bootstrap3/js/*.js" escape="false" checkreturn="true" />

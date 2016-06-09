@@ -18,5 +18,4 @@ before_script:
   - npm install -g eslint
 
 script:
-  - phing composer phpunitfast phpcs-console php-cs-fixer-dryrun
-  - phing eslint
+  - phing composer phpunitfast phpcs-console php-cs-fixer-dryrun eslint
