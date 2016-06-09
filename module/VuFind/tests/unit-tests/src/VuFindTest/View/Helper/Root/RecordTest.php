@@ -384,7 +384,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         // Hard-coded thumbnail:
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(['Thumbnail' => ['bar' => 'baz']]);
-        $record = $this->getRecord($driver, [], null, 'cover-show');
+        $record = $this->getRecord($driver);
         $this->assertEquals('http://foo/bar?bar=baz', $record->getThumbnail());
     }
 
@@ -518,6 +518,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->getMockResolver()));
         $config = is_array($config) ? new \Zend\Config\Config($config) : $config;
         $record = new Record($config);
+        $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar'));
         $record->setView($view);
         return $record->__invoke($driver);
     }

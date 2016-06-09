@@ -140,6 +140,7 @@ $config = [
             'VuFind\ContentExcerptsPluginManager' => 'VuFind\Service\Factory::getContentExcerptsPluginManager',
             'VuFind\ContentReviewsPluginManager' => 'VuFind\Service\Factory::getContentReviewsPluginManager',
             'VuFind\CookieManager' => 'VuFind\Service\Factory::getCookieManager',
+            'VuFind\Cover\Router' => 'VuFind\Service\Factory::getCoverRouter',
             'VuFind\DateConverter' => 'VuFind\Service\Factory::getDateConverter',
             'VuFind\DbAdapter' => 'VuFind\Service\Factory::getDbAdapter',
             'VuFind\DbAdapterFactory' => 'VuFind\Service\Factory::getDbAdapterFactory',
