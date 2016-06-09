@@ -1,6 +1,6 @@
 /* global checkSaveStatuses, sessionStorage, registerAjaxCommentRecord, registerTabEvents, setupRecordToolbar, syn_get_widget, VuFind */
 VuFind.register('embedded', function() {
-  var _COOKIE = 'vufind_search_open';
+  var _STORAGEKEY = 'vufind_search_open';
   var _SEPERATOR = ':::';
   var _DELIM = ',';
   var _STATUS = {};
@@ -16,7 +16,7 @@ VuFind.register('embedded', function() {
         storage.push(str);
       }
     }
-    sessionStorage.setItem(_COOKIE, $.unique(storage).join(_DELIM));
+    sessionStorage.setItem(_STORAGEKEY, $.unique(storage).join(_DELIM));
   };
   var addToStorage = function addToStorage(id, tab) {
     _STATUS[id] = tab;
@@ -28,18 +28,18 @@ VuFind.register('embedded', function() {
     }
   };
   var loadStorage = function loadStorage() {
-    var cookies = sessionStorage.getItem(_COOKIE);
-    if (!cookies) {
+    var storage = sessionStorage.getItem(_STORAGEKEY);
+    if (!storage) {
       return;
     }
-    var items = cookies.split(_DELIM);
+    var items = storage.split(_DELIM);
     var doomed = [];
     var hiddenIds;
     var parts;
     var result;
     var i;
     var j;
-    if (!cookies) return;
+    if (!storage) return;
     hiddenIds = $('.hiddenId');
     for (i = 0; i < items.length; i++) {
       parts = items[i].split(_SEPERATOR);
