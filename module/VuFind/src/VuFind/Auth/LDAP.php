@@ -277,7 +277,6 @@ class LDAP extends AbstractBase
                 foreach ($fields as $field) {
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
-                        
                         $value = $data[$i][$configValue];
                         $separator = $this->config->LDAP->separator;
                         // if no separator is given map only the first value
