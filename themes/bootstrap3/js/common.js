@@ -21,7 +21,7 @@ var VuFind = (function VuFind() {
       this[name].init();
     }
   };
-  var init = function() {
+  var init = function init() {
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
         this[_submodules[i]].init();

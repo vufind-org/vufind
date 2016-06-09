@@ -105,14 +105,13 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 
   var lightboxFacetSorting = function lightboxFacetSorting() {
     var sortButtons = $('.js-facet-sort');
-    var lastsort, lastlimit;
     function sortAjax(sort) {
-      var list = $('#facet-list-'+sort);
+      var list = $('#facet-list-' + sort);
       if (list.find('.js-facet-item').length === 0) {
-        list.find('.js-facet-next-page').text(VuFind.translate('loading')+'...');
-        $.ajax(ajaxUrl + '&layout=lightbox&facetsort='+sort)
+        list.find('.js-facet-next-page').text(VuFind.translate('loading') + '...');
+        $.ajax(ajaxUrl + '&layout=lightbox&facetsort=' + sort)
           .done(function facetSortTitleDone(data) {
-            list.prepend($('<span>'+data+'</span>').find('.js-facet-item'));
+            list.prepend($('<span>' + data + '</span>').find('.js-facet-item'));
             list.find('.js-facet-next-page').text(VuFind.translate('more') + ' ...');
           });
       }
@@ -137,10 +136,10 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
         return false;
       }
       button.attr('disabled', 1);
-      button.text(VuFind.translate('loading')+'...');
-      $.ajax(ajaxUrl + '&layout=lightbox&facetpage='+page+'&facetsort='+this.dataset.sort)
+      button.text(VuFind.translate('loading') + '...');
+      $.ajax(ajaxUrl + '&layout=lightbox&facetpage=' + page + '&facetsort=' + this.dataset.sort)
         .done(function facetLightboxMoreDone(data) {
-          var htmlDiv = $('<div>'+data+'</div>');
+          var htmlDiv = $('<div>' + data + '</div>');
           var list = htmlDiv.find('.js-facet-item');
           button.before(list);
           if (list.length && htmlDiv.find('.js-facet-next-page').length) {
