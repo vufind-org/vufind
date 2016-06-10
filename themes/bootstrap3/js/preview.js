@@ -8,8 +8,10 @@ function getGoogleOptions() {
   var opts_temp = $('[class*="googlePreviewSpan"]').attr("class").split('__')[1].split(';');
   var options = {};
   for (var key in opts_temp) {
-    var arr = opts_temp[key].split(':');
-    options[arr[0]] = arr[1].split(',');
+    if (opts_temp.hasOwnProperty(key)) {
+      var arr = opts_temp[key].split(':');
+      options[arr[0]] = arr[1].split(',');
+    }
   }
   return options;
 }
@@ -46,12 +48,11 @@ function applyPreviewUrl($link, url) {
 
 function processBookInfo(booksInfo, previewClass, viewOptions) {
   for (var bibkey in booksInfo) {
-    var bookInfo = booksInfo[bibkey];
-    if (bookInfo) {
-      if (viewOptions.indexOf(bookInfo.preview) >= 0) {
+    if (bookInfo[bibkey]) {
+      if (viewOptions.indexOf(bookInfo[bibkey].preview) >= 0) {
         applyPreviewUrl(
-                    $('.' + previewClass + '.' + bibkey), bookInfo.preview_url
-                );
+          $('.' + previewClass + '.' + bibkey), bookInfo[bibkey].preview_url
+        );
       }
     }
   }
@@ -65,11 +66,10 @@ function processGBSBookInfo(booksInfo) {
   if (viewOptions.tab && viewOptions.tab.length > 0) {
         // check for "embeddable: true" in bookinfo
     for (var bibkey in booksInfo) {
-      var bookInfo = booksInfo[bibkey];
-      if (bookInfo) {
-        if (viewOptions.tab.indexOf(bookInfo.preview) >= 0
-                && (bookInfo.embeddable)) {
-                    // make tab visible
+      if (bookInfo[bibkey]) {
+        if (viewOptions.tab.indexOf(bookInfo[bibkey].preview) >= 0
+        && (bookInfo[bibkey].embeddable)) {
+          // make tab visible
           $('ul.nav-tabs li.hidden a.preview').parent().removeClass('hidden');
         }
       }
@@ -83,13 +83,15 @@ function processOLBookInfo(booksInfo) {
 
 function processHTBookInfo(booksInfo) {
   for (var b in booksInfo) {
-    var bibkey = b.replace(/:/, '').toUpperCase();
-    var $link = $('.previewHT.' + bibkey);
-    var items = booksInfo[b].items;
-    for (var i = 0; i < items.length; i++) {
-            // check if items possess an eligible rights code
-      if (getHathiOptions().indexOf(items[i].rightsCode) >= 0) {
-        applyPreviewUrl($link, items[i].itemURL);
+    if (booksInfo.hasOwnProperty(b)) {
+      var bibkey = b.replace(/:/, '').toUpperCase();
+      var $link = $('.previewHT.' + bibkey);
+      var items = booksInfo[b].items;
+      for (var i = 0; i < items.length; i++) {
+        // check if items possess an eligible rights code
+        if (getHathiOptions().indexOf(items[i].rightsCode) >= 0) {
+          applyPreviewUrl($link, items[i].itemURL);
+        }
       }
     }
   }

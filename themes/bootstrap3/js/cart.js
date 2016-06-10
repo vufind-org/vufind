@@ -208,7 +208,9 @@ VuFind.register('cart', function Cart() {
 function cartFormHandler(event, data) {
   var keys = [];
   for (var i in data) {
-    keys.push(data[i].name);
+    if (data.hasOwnProperty(i)) {
+      keys.push(data[i].name);
+    }
   }
   if (keys.indexOf('ids[]') === -1) {
     return null;

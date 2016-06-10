@@ -37,17 +37,19 @@ function checkSaveStatuses(_container) {
     })
     .done(function checkSaveStatusDone(response) {
       for (var sel in response.data) {
-        var list = elements[sel];
-        if (!list) {
-          list = $('.savedLists');
+        if (response.data.hasOwnProperty(sel)) {
+          var list = elements[sel];
+          if (!list) {
+            list = $('.savedLists');
+          }
+          var html = list.find('strong')[0].outerHTML + '<ul>';
+          for (var i = 0; i < response.data[sel].length; i++) {
+            html += '<li><a href="' + response.data[sel][i].list_url + '">'
+              + htmlEncode(response.data[sel][i].list_title) + '</a></li>';
+          }
+          html += '</ul>';
+          list.html(html).removeClass('hidden');
         }
-        var html = list.find('strong')[0].outerHTML + '<ul>';
-        for (var i = 0; i < response.data[sel].length; i++) {
-          html += '<li><a href="' + response.data[sel][i].list_url + '">'
-            + htmlEncode(response.data[sel][i].list_title) + '</a></li>';
-        }
-        html += '</ul>';
-        list.html(html).removeClass('hidden');
       }
     });
   }

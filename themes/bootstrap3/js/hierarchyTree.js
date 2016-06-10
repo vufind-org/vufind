@@ -15,8 +15,10 @@ function html_entity_decode(string) {
   var tmp_str = string.toString();
 
   for (var symbol in hash_map) {
-    var entity = hash_map[symbol];
-    tmp_str = tmp_str.split(entity).join(symbol);
+    if (hash_map.hasOwnProperty(symbol)) {
+      var entity = hash_map[symbol];
+      tmp_str = tmp_str.split(entity).join(symbol);
+    }
   }
   tmp_str = tmp_str.split('&#039;').join("'");
 
