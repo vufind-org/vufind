@@ -21,7 +21,8 @@
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "no-unneeded-ternary": "warn",
 
-    "block-spacing" : ["warn", "always"],
+    "block-spacing": ["warn", "always"],
+    "comma-spacing": ["warn", { "before": false, "after": true }],
     "indent": ["error", 2],
     "keyword-spacing": ["warn", { "before": true, "after": true }],
     "linebreak-style": ["error", "unix"],

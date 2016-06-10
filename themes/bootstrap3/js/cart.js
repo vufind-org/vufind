@@ -70,7 +70,7 @@ VuFind.register('cart', function Cart() {
     updateCount();
     return true;
   }
-  function removeItem(id,source) {
+  function removeItem(id, source) {
     var cartItems = _getItems();
     var cartSources = _getSources();
     // Find
@@ -88,11 +88,11 @@ VuFind.register('cart', function Cart() {
           break;
         }
       }
-      cartItems.splice(cartIndex,1);
+      cartItems.splice(cartIndex, 1);
       // Remove unused sources
       if (!saveSource) {
         var oldSources = cartSources.slice(0);
-        cartSources.splice(sourceIndex,1);
+        cartSources.splice(sourceIndex, 1);
         // Adjust source index characters
         for (var j = cartItems.length; j--;) {
           var si = cartItems[j].charCodeAt(0) - 65;
@@ -174,11 +174,11 @@ VuFind.register('cart', function Cart() {
         var $parent = $(this).parent();
         $parent.find('.cart-add.correct,.cart-remove.correct').removeClass('correct hidden');
         $parent.find('.cart-add').click(function cartAddClick() {
-          addItem(currentId,currentSource);
+          addItem(currentId, currentSource);
           $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
         });
         $parent.find('.cart-remove').click(function cartRemoveClick() {
-          removeItem(currentId,currentSource);
+          removeItem(currentId, currentSource);
           $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
         });
       });
@@ -188,7 +188,7 @@ VuFind.register('cart', function Cart() {
       _registerUpdate($form);
     }
     $("#updateCart, #bottom_updateCart").popover({content: '', html: true, trigger: 'manual'});
-  };
+  }
 
   // Reveal
   return {

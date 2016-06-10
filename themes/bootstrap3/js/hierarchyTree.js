@@ -182,7 +182,7 @@ $(document).ready(function hierarchyTreeReady() {
       }
     })
     .jstree({
-      plugins: ['search','types'],
+      plugins: ['search', 'types'],
       core: {
         data: function jsTreeCoreData(obj, cb) {
           $.ajax({

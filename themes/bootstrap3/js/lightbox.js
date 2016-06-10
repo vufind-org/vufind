@@ -23,7 +23,7 @@ VuFind.register('lightbox', function Lightbox() {
       _lightboxTitle = '';
     }
     _modal.modal('handleUpdate');
-  };
+  }
   function _emit(msg, _details) {
     var details = _details || {};
     // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
@@ -62,7 +62,7 @@ VuFind.register('lightbox', function Lightbox() {
     _html('<div class="flash-message alert alert-' + type + '">' + message + '</div>'
         + '<button class="btn btn-default" data-dismiss="modal">' + VuFind.translate('close') + '</button>');
     _modal.modal('show');
-  };
+  }
   function flashMessage(message, _type) {
     var type = _type || 'info';
     _modalBody.find('.flash-message,.fa.fa-spinner').remove();
@@ -176,10 +176,10 @@ VuFind.register('lightbox', function Lightbox() {
         showAlert(VuFind.translate('error_occurred'), 'danger');
       });
     return _xhr;
-  };
+  }
   function reload() {
     ajax({ url: _currentUrl || _originalUrl });
-  };
+  }
 
   /**
    * Evaluate a callback
