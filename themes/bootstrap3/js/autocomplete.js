@@ -5,17 +5,17 @@
  */
 (function ( $ ) {
   var cache = {},
-      element = false,
-      input = false,
-      options = {
-        ajaxDelay: 200,
-        cache: true,
-        hidingClass: 'hidden',
-        highlight: true,
-        loadingString: 'Loading...',
-        maxResults: 20,
-        minLength: 3
-      };
+    element = false,
+    input = false,
+    options = {
+      ajaxDelay: 200,
+      cache: true,
+      hidingClass: 'hidden',
+      highlight: true,
+      loadingString: 'Loading...',
+      maxResults: 20,
+      minLength: 3
+    };
 
   var xhr = false;
 
@@ -52,9 +52,9 @@
     // highlighting setup
     // escape term for regex - https://github.com/sindresorhus/escape-string-regexp/blob/master/index.js
     var escapedTerm = input.val().replace(/[|\\{}()\[\]\^$+*?.]/g, '\\$&');
-    var regex = new RegExp('('+escapedTerm+')', 'ig');
+    var regex = new RegExp('(' + escapedTerm + ')', 'ig');
     var shell = $('<div/>');
-    for (var i=0; i<data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
       if (typeof data[i] === 'string') {
         data[i] = {value: data[i]};
       }
@@ -92,7 +92,7 @@
   function search(input) {
     if (xhr) { xhr.abort(); }
     if (input.val().length >= options.minLength) {
-      element.html('<i class="item loading">'+options.loadingString+'</i>');
+      element.html('<i class="item loading">' + options.loadingString + '</i>');
       show();
       align(input);
       var term = input.val();
@@ -123,7 +123,7 @@
     if (typeof element === 'undefined') {
       element = $('<div/>')
         .addClass('autocomplete-results hidden')
-        .html('<i class="item loading">'+options.loadingString+'</i>');
+        .html('<i class="item loading">' + options.loadingString + '</i>');
       align(input);
       $(document.body).append(element);
     }
@@ -132,7 +132,7 @@
     input.data('length', 0);
 
     if (options.cache) {
-      var cid = Math.floor(Math.random()*1000);
+      var cid = Math.floor(Math.random() * 1000);
       input.data('cache-id', cid);
       cache[cid] = {};
     }
@@ -161,26 +161,26 @@
         return;
       }
       switch (event.which) {
-        case 9:    // tab
-        case 13:   // enter
-        case 16:   // shift
-        case 20:   // caps lock
-        case 27:   // esc
-        case 33:   // page up
-        case 34:   // page down
-        case 35:   // end
-        case 36:   // home
-        case 37:   // arrows
-        case 38:
-        case 39:
-        case 40:
-        case 45:   // insert
-        case 144:  // num lock
-        case 145:  // scroll lock
-        case 19:   // pause/break
-          return;
-        default:
-          search(input, element);
+      case 9:    // tab
+      case 13:   // enter
+      case 16:   // shift
+      case 20:   // caps lock
+      case 27:   // esc
+      case 33:   // page up
+      case 34:   // page down
+      case 35:   // end
+      case 36:   // home
+      case 37:   // arrows
+      case 38:
+      case 39:
+      case 40:
+      case 45:   // insert
+      case 144:  // num lock
+      case 145:  // scroll lock
+      case 19:   // pause/break
+        return;
+      default:
+        search(input, element);
       }
     });
     input.keydown(function(event) {
@@ -191,45 +191,45 @@
       var position = $(this).data('selected');
       switch (event.which) {
         // arrow keys through items
-        case 38: // up key
-          event.preventDefault();
+      case 38: // up key
+        event.preventDefault();
+        element.find('.item.selected').removeClass('selected');
+        if (position-- > 0) {
+          element.find('.item:eq(' + position + ')').addClass('selected');
+        }
+        $(this).data('selected', position);
+        break;
+      case 40: // down key
+        event.preventDefault();
+        if (element.hasClass(options.hidingClass)) {
+          search(input, element);
+        } else if (position < input.data('length') - 1) {
+          position++;
           element.find('.item.selected').removeClass('selected');
-          if (position-- > 0) {
-            element.find('.item:eq('+position+')').addClass('selected');
-          }
+          element.find('.item:eq(' + position + ')').addClass('selected');
           $(this).data('selected', position);
-          break;
-        case 40: // down key
-          event.preventDefault();
-          if (element.hasClass(options.hidingClass)) {
-            search(input, element);
-          } else if (position < input.data('length')-1) {
-            position++;
-            element.find('.item.selected').removeClass('selected');
-            element.find('.item:eq('+position+')').addClass('selected');
-            $(this).data('selected', position);
-          }
-          break;
+        }
+        break;
         // enter to nav or populate
-        case 9:
-        case 13:
-          var selected = element.find('.item.selected');
-          if (selected.length > 0) {
-            event.preventDefault();
-            if (event.which === 13 && selected.attr('href')) {
-              window.location.assign(selected.attr('href'));
-            } else {
-              populate(selected.data(), $(this), {key: true});
-              element.find('.item.selected').removeClass('selected');
-              $(this).data('selected', -1);
-            }
+      case 9:
+      case 13:
+        var selected = element.find('.item.selected');
+        if (selected.length > 0) {
+          event.preventDefault();
+          if (event.which === 13 && selected.attr('href')) {
+            window.location.assign(selected.attr('href'));
+          } else {
+            populate(selected.data(), $(this), {key: true});
+            element.find('.item.selected').removeClass('selected');
+            $(this).data('selected', -1);
           }
-          break;
+        }
+        break;
         // hide on escape
-        case 27:
-          hide();
-          $(this).data('selected', -1);
-          break;
+      case 27:
+        hide();
+        $(this).data('selected', -1);
+        break;
       }
     });
 

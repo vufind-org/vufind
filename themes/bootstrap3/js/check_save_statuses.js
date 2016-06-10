@@ -14,7 +14,7 @@ function checkSaveStatuses(container) {
       return null;
     }
     var datum = {'id':$(record).find('.hiddenId').val(), 'source':$(record).find('.hiddenSource')[0].value};
-    var key = datum.source+'|'+datum.id;
+    var key = datum.source + '|' + datum.id;
     if (typeof elements[key] === 'undefined') {
       elements[key] = $();
     }
@@ -40,8 +40,8 @@ function checkSaveStatuses(container) {
         if (!list) {
           list = $('.savedLists');
         }
-        var html = list.find('strong')[0].outerHTML+'<ul>';
-        for (var i=0; i<response.data[sel].length; i++) {
+        var html = list.find('strong')[0].outerHTML + '<ul>';
+        for (var i = 0; i < response.data[sel].length; i++) {
           html += '<li><a href="' + response.data[sel][i].list_url + '">'
             + htmlEncode(response.data[sel][i].list_title) + '</a></li>';
         }

@@ -2,13 +2,13 @@
 
 function PadDigits(n, totalDigits) {
   if (n <= 0){
-    n= 1;
+    n = 1;
   }
   n = n.toString();
   var pd = '';
   if (totalDigits > n.length)
   {
-    for (var i=0; i < (totalDigits-n.length); i++)
+    for (var i = 0; i < (totalDigits - n.length); i++)
     {
       pd += '0';
     }
@@ -25,10 +25,10 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
     'outline-color': '#c38835'  // selection color
   };
   var $dateVisColorSettings = $('#dateVisColorSettings');
-  for(var rule in cssColorSettings) {
-    if($dateVisColorSettings.css(rule)) {
+  for (var rule in cssColorSettings) {
+    if ($dateVisColorSettings.css(rule)) {
       var match = $dateVisColorSettings.css(rule).match(/rgb[a]?\([^\)]+\)|#[a-fA-F0-9]+/);
-      if(null != match) {
+      if (null != match) {
         cssColorSettings[rule] = match[0];
       }
     }
@@ -68,7 +68,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
       var hasFilter = true;
 
       //set the has filter
-      if (val['min'] == 0 && val['max']== 0) {
+      if (val['min'] == 0 && val['max'] == 0) {
         hasFilter = false;
       }
 
@@ -76,8 +76,8 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
       if (val['min'] == 0) {
         val['min'] = val['data'][0][0] - 5;
       }
-      if (val['max']== 0) {
-        val['max'] =  parseInt(val['data'][val['data'].length - 1][0], 10) + 5;
+      if (val['max'] == 0) {
+        val['max'] = parseInt(val['data'][val['data'].length - 1][0], 10) + 5;
       }
 
       if (zooming) {
@@ -90,8 +90,8 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
           val['data'].push([val['min'] - 5, -1]);
         }
         //check for values outside the selected range and remove them by setting them to null
-        for (var i=0; i<val['data'].length; i++) {
-          if (val['data'][i][0] < val['min'] -5 || val['data'][i][0] > parseInt(val['max'], 10) + 5) {
+        for (var i = 0; i < val['data'].length; i++) {
+          if (val['data'][i][0] < val['min'] - 5 || val['data'][i][0] > parseInt(val['max'], 10) + 5) {
             //remove this
             val['data'].splice(i,1);
             i--;

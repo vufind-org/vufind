@@ -34,7 +34,7 @@ function getRecord(recordID) {
     // Remove the old path highlighting
     $('#hierarchyTree a').removeClass("jstree-highlight");
     // Add Current path highlighting
-    var jsTreeNode = $(":input[value='"+recordID+"']").parent();
+    var jsTreeNode = $(":input[value='" + recordID + "']").parent();
     jsTreeNode.children("a").addClass("jstree-highlight");
     jsTreeNode.parents("li").children("a").addClass("jstree-highlight");
   });
@@ -61,14 +61,14 @@ function doTreeSearch() {
   $('#treeSearchLoadingImg').removeClass('hidden');
   var keyword = $("#treeSearchText").val();
   var type = $("#treeSearchType").val();
-  if(keyword.length == 0) {
+  if (keyword.length == 0) {
     $('#hierarchyTree').find('.jstree-search').removeClass('jstree-search');
     var tree = $('#hierarchyTree').jstree(true);
     tree.close_all();
     tree._open_to(htmlID);
     $('#treeSearchLoadingImg').addClass('hidden');
   } else {
-    if(searchAjax) {
+    if (searchAjax) {
       searchAjax.abort();
     }
     searchAjax = $.ajax({
@@ -79,17 +79,17 @@ function doTreeSearch() {
       }) + "&format=true"
     })
     .done(function(data) {
-      if(data.results.length > 0) {
+      if (data.results.length > 0) {
         $('#hierarchyTree').find('.jstree-search').removeClass('jstree-search');
         var tree = $('#hierarchyTree').jstree(true);
         tree.close_all();
-        for(var i=data.results.length;i--;) {
+        for (var i = data.results.length; i--;) {
           var id = htmlEncodeId(data.results[i]);
           tree._open_to(id);
         }
-        for(i=data.results.length;i--;) {
+        for (i = data.results.length; i--;) {
           var tid = htmlEncodeId(data.results[i]);
-          $('#hierarchyTree').find('#'+tid).addClass('jstree-search');
+          $('#hierarchyTree').find('#' + tid).addClass('jstree-search');
         }
         changeNoResultLabel(false);
         changeLimitReachedLabel(data.limitReached);
@@ -221,7 +221,7 @@ $(document).ready(function() {
   $('#treeSearch [type=submit]').click(doTreeSearch);
   $('#treeSearchText').keyup(function (e) {
     var code = (e.keyCode ? e.keyCode : e.which);
-    if(code == 13 || $(this).val().length == 0) {
+    if (code == 13 || $(this).val().length == 0) {
       doTreeSearch();
     }
   });

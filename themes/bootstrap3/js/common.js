@@ -21,7 +21,7 @@ var VuFind = (function() {
     }
   };
   var init = function() {
-    for (var i=0; i<_submodules.length; i++) {
+    for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
         this[_submodules[i]].init();
       }
@@ -65,7 +65,7 @@ function extractClassParams(str) {
   }
   var params = {};
   var classes = str.split(/\s+/);
-  for(var i = 0; i < classes.length; i++) {
+  for (var i = 0; i < classes.length; i++) {
     if (classes[i].indexOf(':') > 0) {
       var pair = classes[i].split(':');
       params[pair[0]] = pair[1];
@@ -75,7 +75,7 @@ function extractClassParams(str) {
 }
 // Turn GET string into array
 function deparam(url) {
-  if(!url.match(/\?|&/)) {
+  if (!url.match(/\?|&/)) {
     return [];
   }
   var request = {};
@@ -83,12 +83,12 @@ function deparam(url) {
   for (var i = 0; i < pairs.length; i++) {
     var pair = pairs[i].split('=');
     var name = decodeURIComponent(pair[0].replace(/\+/g, ' '));
-    if(name.length == 0) {
+    if (name.length == 0) {
       continue;
     }
-    if(name.substring(name.length-2) == '[]') {
-      name = name.substring(0,name.length-2);
-      if(!request[name]) {
+    if (name.substring(name.length - 2) == '[]') {
+      name = name.substring(0,name.length - 2);
+      if (!request[name]) {
         request[name] = [];
       }
       request[name].push(decodeURIComponent(pair[1].replace(/\+/g, ' ')));
@@ -101,13 +101,13 @@ function deparam(url) {
 
 // Sidebar
 function moreFacets(id) {
-  $('.'+id).removeClass('hidden');
-  $('#more-'+id).addClass('hidden');
+  $('.' + id).removeClass('hidden');
+  $('#more-' + id).addClass('hidden');
   return false;
 }
 function lessFacets(id) {
-  $('.'+id).addClass('hidden');
-  $('#more-'+id).removeClass('hidden');
+  $('.' + id).addClass('hidden');
+  $('#more-' + id).removeClass('hidden');
   return false;
 }
 
@@ -116,8 +116,8 @@ function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
   var valid = isPhoneNumberValid(number, regionCode);
-  if(valid != true) {
-    if(typeof valid === 'string') {
+  if (valid != true) {
+    if (typeof valid === 'string') {
       valid = VuFind.translate(valid);
     } else {
       valid = VuFind.translate('libphonenumber_invalid');
@@ -146,12 +146,12 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if($('.sidebar').length > 0) {
+  if ($('.sidebar').length > 0) {
     $('[data-toggle="offcanvas"]').click(function () {
       $('body.offcanvas').toggleClass('active');
       var active = $('body.offcanvas').hasClass('active');
       var right = $('body.offcanvas').hasClass('offcanvas-right');
-      if((active && !right) || (!active && right)) {
+      if ((active && !right) || (!active && right)) {
         $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
       } else {
         $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
@@ -169,7 +169,7 @@ function setupAutocomplete() {
   $('.autocomplete').each(function(i, op) {
     $(op).autocomplete({
       maxResults: 10,
-      loadingString: VuFind.translate('loading')+'...',
+      loadingString: VuFind.translate('loading') + '...',
       handler: function(input, cb) {
         var query = input.val();
         var searcher = extractClassParams(input);
@@ -190,7 +190,7 @@ function setupAutocomplete() {
           success: function(json) {
             if (json.data.length > 0) {
               var datums = [];
-              for (var i=0;i<json.data.length;i++) {
+              for (var i = 0; i < json.data.length; i++) {
                 datums.push(json.data[i]);
               }
               cb(datums);
@@ -214,41 +214,41 @@ function setupAutocomplete() {
  * @returns {undefined}
  */
 function keyboardShortcuts() {
-    var $searchform = $('.searchForm_lookfor');
-    if ($('.pager').length > 0) {
-        $(window).keydown(function(e) {
-          if (!$searchform.is(':focus')) {
-            var $target = null;
-            switch (e.keyCode) {
-              case 37: // left arrow key
-                $target = $('.pager').find('a.previous');
-                if ($target.length > 0) {
-                    $target[0].click();
-                    return;
-                }
-                break;
-              case 38: // up arrow key
-                if (e.ctrlKey) {
-                    $target = $('.pager').find('a.backtosearch');
-                    if ($target.length > 0) {
-                        $target[0].click();
-                        return;
-                    }
-                }
-                break;
-              case 39: //right arrow key
-                $target = $('.pager').find('a.next');
-                if ($target.length > 0) {
-                    $target[0].click();
-                    return;
-                }
-                break;
-              case 40: // down arrow key
-                break;
+  var $searchform = $('.searchForm_lookfor');
+  if ($('.pager').length > 0) {
+    $(window).keydown(function(e) {
+      if (!$searchform.is(':focus')) {
+        var $target = null;
+        switch (e.keyCode) {
+        case 37: // left arrow key
+          $target = $('.pager').find('a.previous');
+          if ($target.length > 0) {
+            $target[0].click();
+            return;
+          }
+          break;
+        case 38: // up arrow key
+          if (e.ctrlKey) {
+            $target = $('.pager').find('a.backtosearch');
+            if ($target.length > 0) {
+              $target[0].click();
+              return;
             }
           }
-        });
-    }
+          break;
+        case 39: //right arrow key
+          $target = $('.pager').find('a.next');
+          if ($target.length > 0) {
+            $target[0].click();
+            return;
+          }
+          break;
+        case 40: // down arrow key
+          break;
+        }
+      }
+    });
+  }
 }
 
 $(document).ready(function() {
@@ -292,7 +292,7 @@ $(document).ready(function() {
 
   // Print
   var url = window.location.href;
-  if(url.indexOf('?' + 'print' + '=') != -1  || url.indexOf('&' + 'print' + '=') != -1) {
+  if (url.indexOf('?' + 'print' + '=') != -1 || url.indexOf('&' + 'print' + '=') != -1) {
     $("link[media='print']").attr("media", "all");
     $(document).ajaxStop(function() {
       window.print();
@@ -303,7 +303,7 @@ $(document).ready(function() {
 
   // Advanced facets
   $('.facetOR').click(function() {
-    $(this).closest('.collapse').html('<div class="list-group-item">'+VuFind.translate('loading')+'...</div>');
+    $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
     window.location.assign($(this).attr('href'));
   });
 });

@@ -18,7 +18,7 @@ function checkRequestIsValid(element, requestType) {
     if (response.data.status) {
       $(element).removeClass('disabled')
         .attr('title', response.data.msg)
-        .html('<i class="fa fa-flag" aria-hidden="true"></i>&nbsp;'+response.data.msg);
+        .html('<i class="fa fa-flag" aria-hidden="true"></i>&nbsp;' + response.data.msg);
     } else {
       $(element).remove();
     }
@@ -115,7 +115,7 @@ function registerTabEvents() {
   // Logged in AJAX
   registerAjaxCommentRecord();
   // Delete links
-  $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false;});
+  $('.delete').click(function(){ deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13)); return false; });
 
   setUpCheckRequest();
 
@@ -148,7 +148,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
   .done(function(data) {
     $newTab.html(data);
     registerTabEvents();
-    if(typeof syn_get_widget === "function") {
+    if (typeof syn_get_widget === "function") {
       syn_get_widget();
     }
     if (typeof setHash == 'undefined' || setHash) {
@@ -175,7 +175,7 @@ function refreshTagList(target, loggedin) {
     .done(function(response) {
       $tagList.empty();
       $tagList.replaceWith(response);
-      if(loggedin) {
+      if (loggedin) {
         $tagList.addClass('loggedin');
       } else {
         $tagList.removeClass('loggedin');
@@ -185,10 +185,10 @@ function refreshTagList(target, loggedin) {
 }
 
 function ajaxTagUpdate(link, tag, remove) {
-  if(typeof link === "undefined") {
+  if (typeof link === "undefined") {
     link = document;
   }
-  if(typeof remove === "undefined") {
+  if (typeof remove === "undefined") {
     remove = false;
   }
   var $target = $(link).closest('.record');
@@ -198,7 +198,7 @@ function ajaxTagUpdate(link, tag, remove) {
     url:VuFind.path + '/AJAX/JSON?method=tagRecord',
     method:'POST',
     data:{
-      tag:'"'+tag.replace(/\+/g, ' ')+'"',
+      tag:'"' + tag.replace(/\+/g, ' ') + '"',
       id:recordId,
       source:recordSource,
       remove:remove
@@ -219,7 +219,7 @@ function applyRecordTabHash() {
   if (newTab.length == 0 || newTab == '#tabnav') {
     $initiallyActiveTab.click();
   } else if (newTab.length > 0 && '#' + activeTab != newTab) {
-    $('.'+newTab.substr(1)).click();
+    $('.' + newTab.substr(1)).click();
   }
 }
 
@@ -241,7 +241,7 @@ function recordDocReady() {
       if ($li.hasClass('initiallyActive')) {
         $(this).tab('show');
         $top.find('.tab-pane.active').removeClass('active');
-        $top.find('.'+tabid+'-tab').addClass('active');
+        $top.find('.' + tabid + '-tab').addClass('active');
         window.location.hash = 'tabnav';
         return false;
       }
@@ -250,12 +250,12 @@ function recordDocReady() {
     }
     $top.find('.tab-pane.active').removeClass('active');
     $(this).tab('show');
-    if ($top.find('.'+tabid+'-tab').length > 0) {
-      $top.find('.'+tabid+'-tab').addClass('active');
+    if ($top.find('.' + tabid + '-tab').length > 0) {
+      $top.find('.' + tabid + '-tab').addClass('active');
       window.location.hash = tabid;
       return false;
     } else {
-      var newTab = $('<div class="tab-pane active '+tabid+'-tab"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> '+VuFind.translate('loading')+'...</div>');
+      var newTab = $('<div class="tab-pane active ' + tabid + '-tab"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' + VuFind.translate('loading') + '...</div>');
       $top.find('.tab-content').append(newTab);
       return ajaxLoadTab(newTab, tabid, !$(this).parent().hasClass('initiallyActive'));
     }
