@@ -48,10 +48,10 @@ function applyPreviewUrl($link, url) {
 
 function processBookInfo(booksInfo, previewClass, viewOptions) {
   for (var bibkey in booksInfo) {
-    if (bookInfo[bibkey]) {
-      if (viewOptions.indexOf(bookInfo[bibkey].preview) >= 0) {
+    if (booksInfo[bibkey]) {
+      if (viewOptions.indexOf(booksInfo[bibkey].preview) >= 0) {
         applyPreviewUrl(
-          $('.' + previewClass + '.' + bibkey), bookInfo[bibkey].preview_url
+          $('.' + previewClass + '.' + bibkey), booksInfo[bibkey].preview_url
         );
       }
     }
@@ -66,9 +66,9 @@ function processGBSBookInfo(booksInfo) {
   if (viewOptions.tab && viewOptions.tab.length > 0) {
         // check for "embeddable: true" in bookinfo
     for (var bibkey in booksInfo) {
-      if (bookInfo[bibkey]) {
-        if (viewOptions.tab.indexOf(bookInfo[bibkey].preview) >= 0
-        && (bookInfo[bibkey].embeddable)) {
+      if (booksInfo[bibkey]) {
+        if (viewOptions.tab.indexOf(booksInfo[bibkey].preview) >= 0
+        && (booksInfo[bibkey].embeddable)) {
           // make tab visible
           $('ul.nav-tabs li.hidden a.preview').parent().removeClass('hidden');
         }

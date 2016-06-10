@@ -67,7 +67,6 @@ VuFind.register('embedded', function embedded() {
   function ajaxLoadTab(tabid, _click) {
     var click = _click || false;
     var $tab = $('#' + tabid);
-    console.log($tab);
     var $result = $tab.closest('.result');
     if ($result.length === 0) {
       return true;
