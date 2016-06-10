@@ -1,12 +1,11 @@
-/*global jQuery, window, document, console, setTimeout, clearTimeout */
+/* global jQuery, window, document, console, setTimeout, clearTimeout */
 /**
- * crhallberg/autocomplete.js 0.15
+ * crhallberg/autocomplete.js 0.15.1
  * ~ @crhallberg
  */
 (function autocomplete( $ ) {
   var cache = {},
     element = false,
-    input = false,
     options = {
       ajaxDelay: 200,
       cache: true,
@@ -119,8 +118,8 @@
     }
   }
 
-  function setup(input, element) {
-    if (typeof element === 'undefined') {
+  function setup(input) {
+    if ($('.autocomplete-results').length == 0) {
       element = $('<div/>')
         .addClass('autocomplete-results hidden')
         .html('<i class="item loading">' + options.loadingString + '</i>');
@@ -260,12 +259,7 @@
         return this;
       } else {
         options = $.extend( {}, options, settings );
-        element = $('.autocomplete-results');
-        if (element.length == 0) {
-          element = setup(input);
-        } else {
-          setup(input, element);
-        }
+        setup(input);
       }
 
       return input;
