@@ -38,8 +38,11 @@ use ZfcRbac\Service\AuthorizationService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class User implements PermissionProviderInterface
+class User implements PermissionProviderInterface,
+    \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+    
     /**
      * Authorization object
      *
@@ -79,20 +82,20 @@ class User implements PermissionProviderInterface
         // which user attribute has to match which pattern to get permissions?
         $criteria = [];
         foreach ($options as $option) {
-            $attributeValuePair = explode(' ', $option);
-            if (count($attributeValuePair) == 2) {
-                $criteria[$attributeValuePair[0]] = $attributeValuePair[1];
-            } else {
+            list($attribute, $pattern) = explode(' ', $option, 2);
+            
+            if (empty($pattern)) {
                 $this->logError("configuration option '{$option}' invalid");
                 return false;
-            }
-        }
-        
-        // check user attribute values against the pattern 
-        foreach ($criteria as $attribute => $pattern) {
-            $subject = $user[$attribute];
-            if (preg_match('/' . $pattern . '/', $subject)) {
-                return ['loggedin'];
+            } else {
+                // check user attribute values against the pattern
+                if (! preg_match('/^\/.*\/$/', $pattern)) {
+                    $pattern = '/' . $pattern . '/';
+                }
+                
+                if (preg_match($pattern, $user[$attribute])) {
+                    return ['loggedin'];
+                }
             }
         }
         
