@@ -1,0 +1,34 @@
+<?
+  $this->headScript()->appendFile('ol/ol.js');
+  $this->headScript()->appendFile('map_selection.js');
+  $this->headLink()->appendStylesheet('/vufind/themes/iodp/js/ol/ol.css');
+  
+  $geoField = $this->recommend->getGeoField();
+  $urlpath = $this->url('search-results');
+  $coordinates = $this->recommend->getSelectedCoordinates();
+  $showSelection = true;
+  if ($coordinates == null) {
+    $coordinates = $this->recommend->getDefaultCoordinates();
+    $showSelection = false;
+  }
+  $height = $this->recommend->getHeight();
+  $searchParams = $this->recommend->getSearchParams();
+  $params = array(json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
+    json_encode($searchParams), json_encode($showSelection));
+  $jsParams = implode(', ', $params);
+  $jsLoad = "loadMapSelection(" . $jsParams . ");";
+  $addSearchOption = <<<EOF
+    $('.search-query-options>.advanced').after('&nbsp;&nbsp;<a href="#" class="advanced" onclick=\\'{$jsLoad} $(this).remove(); return false;\\'>{$this->translate('Geographic Search')}</a>');
+EOF;
+?>
+<div class="authorbox">
+  <div id="geo_search" style="display: none;">
+    <button><?=$this->transEsc('Draw Search Box')?></button>
+    <div id="geo_search_map" style="height: <?=$height?>px;"></div>
+  </div>
+  <? if ($showSelection) :?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
+  <? else: ?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $addSearchOption, 'SET');?>
+  <? endif; ?>
+</div>
