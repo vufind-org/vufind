@@ -26,6 +26,8 @@
         }
     }
     $hiddenFilterParams = $this->searchtabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
+    $geoCoordData = $this->geocoords();
+    $GeoSearchStr = "?filter[]=" . $geoCoordData[1] . ":Intersects(ENVELOPE(" . $geoCoordData[0] . "))";
 ?>
 <? if ($this->searchType == 'advanced'): ?>
   <div class="searchForm navbar-form navbar-left flip">
@@ -55,7 +57,12 @@
     <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> <?=$this->transEsc("Find")?></button>
     <? if ($advSearch): ?>
       <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
-    <? endif; ?>
+      <a href="<?=$this->url('search-results') . $GeoSearchStr ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
+<? endif; ?>
+<? if ($this->layout()->frontpage == true):?>
+    &nbsp;&nbsp;
+    <a href="<?=$this->url('search-results') . $GeoSearchStr ?>"><?=$this->transEsc('Geographic Search')?></a>
+<? endif; ?>
 
     <? $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>
       <?
