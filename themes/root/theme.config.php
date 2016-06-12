@@ -15,6 +15,7 @@ return array(
             'export' => 'VuFind\View\Helper\Root\Factory::getExport',
             'feedback' => 'VuFind\View\Helper\Root\Factory::getFeedback',
             'flashmessages' => 'VuFind\View\Helper\Root\Factory::getFlashmessages',
+            'geocoords' => 'VuFind\View\Helper\Root\Factory::getGeoCoords',
             'googleanalytics' => 'VuFind\View\Helper\Root\Factory::getGoogleAnalytics',
             'helptext' => 'VuFind\View\Helper\Root\Factory::getHelpText',
             'historylabel' => 'VuFind\View\Helper\Root\Factory::getHistoryLabel',
