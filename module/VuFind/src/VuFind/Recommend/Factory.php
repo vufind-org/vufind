@@ -183,6 +183,20 @@ class Factory
     }
 
     /**
+     * Factory for MapSelection module.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MapSelection
+     */
+    public function getMapSelection(ServiceManager $sm)
+    {
+        return new MapSelection(
+            $sm->getServiceLocator()->get('VuFind\Config')
+        );
+    }
+
+    /**
      * Factory for Random Recommendations.
      *
      * @param ServiceManager $sm Service manager.
