@@ -177,8 +177,13 @@ class Factory
     public static function getMap(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $enabled = isset($config->Content->recordMap);
-        return new Map($enabled);
+        $options = [];
+        $enabled = $config->Content->recordMap;
+        $displayCoords = $config->Content->displayCoords;
+        $mapLabels = $config->Content->mapLabels;
+        $mapLabelsLoc = $config->Content->mapLabelsLoc;
+        array_push($options,$enabled,$displayCoords,$mapLabels,$mapLabelsLoc);
+        return new Map($options);
     }
 
     /**
