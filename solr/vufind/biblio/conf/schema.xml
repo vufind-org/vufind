@@ -98,6 +98,8 @@
     <fieldType name="date" class="solr.TrieDateField" sortMissingLast="true" omitNorms="true" precisionStep="6"/>
     <fieldType name="random" class="solr.RandomSortField" indexed="true" />
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
+    <!-- add geo field to handle geographic search and display capabilities -->
+    <fieldType name="geo" class="solr.SpatialRecursivePrefixTreeFieldType" distErrPct="0.025" maxDistErr="0.000009" distanceUnits="degrees" />
   </types>
  <fields>
    <!-- Required by Solr 4.x -->
@@ -210,6 +212,9 @@
    <!-- Tracking fields to keep track of oldest and most recent index times -->
    <field name="first_indexed" type="date" indexed="true" stored="true"/>
    <field name="last_indexed" type="date" indexed="true" stored="true"/>
+   <!-- Used for geographic map display -->
+   <field name="latlon_coordinate" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="latlon_label" type="string" indexed="true" stored="true" multiValued="true"/>
    <!-- Dynamic fields for customization without schema modification -->
    <dynamicField name="*_date" type="date" indexed="true" stored="true"/>
    <dynamicField name="*_date_mv" type="date" indexed="true" stored="true" multiValued="true"/>
@@ -225,6 +230,8 @@
    <dynamicField name="*_txtP_mv" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_random" type="random" />
    <dynamicField name="*_boolean" type="boolean" indexed="true" stored="true"/>
+   <!-- add geo field to handle geographic search and display capabilities -->
+   <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="true" />
  </fields>
  <uniqueKey>id</uniqueKey>
  <defaultSearchField>allfields</defaultSearchField>
