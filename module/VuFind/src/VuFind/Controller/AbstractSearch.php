@@ -741,6 +741,7 @@ class AbstractSearch extends AbstractBase
                 'data' => $list,
                 'exclude' => $this->params()->fromQuery('facetexclude', 0),
                 'facet' => $facet,
+                'operator' => $this->params()->fromQuery('facetop', 'AND'),
                 'page' => $page,
                 'results' => $results,
                 'anotherPage' => $facets[$facet]['more'],

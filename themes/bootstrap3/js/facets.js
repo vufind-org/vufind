@@ -101,15 +101,14 @@ function initFacetTree(treeNode, inSidebar)
 
 /* --- Lightbox Facets --- */
 VuFind.register('lightbox_facets', function LightboxFacets() {
-  var ajaxUrl;
-
   function lightboxFacetSorting() {
     var sortButtons = $('.js-facet-sort');
-    function sortAjax(sort) {
+    function sortAjax(button) {
+      var sort = button.dataset.sort;
       var list = $('#facet-list-' + sort);
       if (list.find('.js-facet-item').length === 0) {
         list.find('.js-facet-next-page').text(VuFind.translate('loading') + '...');
-        $.ajax(ajaxUrl + '&layout=lightbox&facetsort=' + sort)
+        $.ajax(button.href + '&layout=lightbox')
           .done(function facetSortTitleDone(data) {
             list.prepend($('<span>' + data + '</span>').find('.js-facet-item'));
             list.find('.js-facet-next-page').text(VuFind.translate('more') + ' ...');
@@ -120,14 +119,13 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       sortButtons.removeClass('active');
     }
     sortButtons.click(function facetSortButton() {
-      sortAjax(this.dataset.sort);
+      sortAjax(this);
       $(this).addClass('active');
       return false;
     });
   }
 
-  function setup(url) {
-    ajaxUrl = url;
+  function setup() {
     lightboxFacetSorting();
     $('.js-facet-next-page').click(function facetLightboxMore() {
       var button = $(this);
@@ -137,11 +135,12 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       }
       button.attr('disabled', 1);
       button.text(VuFind.translate('loading') + '...');
-      $.ajax(ajaxUrl + '&layout=lightbox&facetpage=' + page + '&facetsort=' + this.dataset.sort)
+      $.ajax(this.href + '&layout=lightbox')
         .done(function facetLightboxMoreDone(data) {
           var htmlDiv = $('<div>' + data + '</div>');
           var list = htmlDiv.find('.js-facet-item');
           button.before(list);
+          console.log(list);
           if (list.length && htmlDiv.find('.js-facet-next-page').length) {
             button.attr('data-page', page + 1);
             button.text(VuFind.translate('more') + ' ...');
@@ -152,7 +151,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
         });
       return false;
     });
-    var margin = 180;
+    var margin = 230;
     $('#modal').on('show.bs.modal', function facetListHeight() {
       $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
     });
