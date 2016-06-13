@@ -379,6 +379,11 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultView = 'list|' . $searchSettings->General->default_view;
         }
 
+        // Load list view for result (controls AJAX embedding vs. linking)
+        if (isset($searchSettings->List->view)) {
+            $this->listviewOption = $searchSettings->List->view;
+        }
+
         if (isset($searchSettings->Advanced_Facet_Settings->special_facets)) {
             $this->specialAdvancedFacets
                 = $searchSettings->Advanced_Facet_Settings->special_facets;

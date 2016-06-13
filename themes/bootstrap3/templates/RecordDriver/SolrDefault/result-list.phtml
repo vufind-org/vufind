@@ -18,10 +18,10 @@
     <?=$thumbnail ?>
   <? endif ?>
   <div class="media-body">
-    <div class="row">
+    <div class="row short-view">
       <div class="col-sm-8 middle">
         <div>
-          <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+          <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>">
             <?=$this->record($this->driver)->getTitleHtml()?>
           </a>
         </div>

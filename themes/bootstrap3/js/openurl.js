@@ -1,6 +1,6 @@
 /* global extractClassParams, VuFind */
 VuFind.register('openurl', function OpenUrl() {
-  var _loadResolverLinks = function _loadResolverLinks($target, openUrl, searchClassId) {
+  function _loadResolverLinks($target, openUrl, searchClassId) {
     $target.addClass('ajax_availability');
     var url = VuFind.path + '/AJAX/JSON?' + $.param({
       method: 'getResolverLinks',
@@ -19,9 +19,9 @@ VuFind.register('openurl', function OpenUrl() {
       if (textStatus === 'abort' || typeof response.responseJSON == 'undefined') { return; }
       $target.append(response.responseJSON.data);
     });
-  };
+  }
 
-  var embedOpenUrlLinks = function embedOpenUrlLinks(element) {
+  function embedOpenUrlLinks(element) {
     // Extract the OpenURL associated with the clicked element:
     var openUrl = element.children('span.openUrl:first').attr('title');
 
@@ -37,14 +37,12 @@ VuFind.register('openurl', function OpenUrl() {
     if (target.hasClass('hidden')) {
       _loadResolverLinks(target.removeClass('hidden'), openUrl, element.data('search-class-id'));
     }
-  };
+  }
 
   // Assign actions to the OpenURL links. This can be called with a container e.g. when
   // combined results fetched with AJAX are loaded.
-  var init = function init(_container)
-  {
+  function init(_container) {
     var container = _container || $('body');
-
      // assign action to the openUrlWindow link class
     container.find('a.openUrlWindow').unbind('click').click(function openUrlWindowClick() {
       var params = extractClassParams(this);
@@ -60,7 +58,7 @@ VuFind.register('openurl', function OpenUrl() {
     });
 
     container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
-  };
+  }
   return {
     init: init,
     embedOpenUrlLinks: embedOpenUrlLinks

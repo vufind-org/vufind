@@ -78,6 +78,7 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#loginOptions a')->click();
         $this->snooze();
         $this->findCss($page, '.modal-body .createAccountLink')->click();
+        $this->snooze();
         $this->fillInAccountForm($page);
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
         $this->snooze();
@@ -122,8 +123,8 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '#loginOptions a')->click();
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->findCss($page, '.modal-body .btn.btn-primary')->click();
-        $this->assertLightboxWarning($page, 'Invalid login -- please try again.');
         $this->snooze();
+        $this->assertLightboxWarning($page, 'Invalid login -- please try again.');
 
         // Now log in successfully:
         $this->fillInLoginForm($page, 'username1', 'good');

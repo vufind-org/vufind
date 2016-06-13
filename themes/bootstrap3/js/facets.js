@@ -103,7 +103,7 @@ function initFacetTree(treeNode, inSidebar)
 VuFind.register('lightbox_facets', function LightboxFacets() {
   var ajaxUrl;
 
-  var lightboxFacetSorting = function lightboxFacetSorting() {
+  function lightboxFacetSorting() {
     var sortButtons = $('.js-facet-sort');
     function sortAjax(sort) {
       var list = $('#facet-list-' + sort);
@@ -124,9 +124,9 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       $(this).addClass('active');
       return false;
     });
-  };
+  }
 
-  var setup = function setup(url) {
+  function setup(url) {
     ajaxUrl = url;
     lightboxFacetSorting();
     $('.js-facet-next-page').click(function facetLightboxMore() {
@@ -159,7 +159,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     $(window).resize(function facetListResize() {
       $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
     });
-  };
+  }
 
   return { setup: setup };
 });

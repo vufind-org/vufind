@@ -32,7 +32,7 @@ var VuFind = (function VuFind() {
 
   var addTranslations = function addTranslations(s) {
     for (var i in s) {
-      if ({}.hasOwnProperty.call(s, i)) {
+      if (s.hasOwnProperty(i)) {
         _translations[i] = s[i];
       }
     }

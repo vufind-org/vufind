@@ -37,7 +37,7 @@ function checkSaveStatuses(_container) {
     })
     .done(function checkSaveStatusDone(response) {
       for (var sel in response.data) {
-        if ({}.hasOwnProperty.call(response.data, sel)) {
+        if (response.data.hasOwnProperty(sel)) {
           var list = elements[sel];
           if (!list) {
             list = $('.savedLists');

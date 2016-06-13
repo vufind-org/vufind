@@ -8,7 +8,7 @@ function getGoogleOptions() {
   var opts_temp = $('[class*="googlePreviewSpan"]').attr("class").split('__')[1].split(';');
   var options = {};
   for (var key in opts_temp) {
-    if ({}.hasOwnProperty.call(opts_temp, key)) {
+    if (opts_temp.hasOwnProperty(key)) {
       var arr = opts_temp[key].split(':');
       options[arr[0]] = arr[1].split(',');
     }
@@ -50,7 +50,9 @@ function processBookInfo(booksInfo, previewClass, viewOptions) {
   for (var bibkey in booksInfo) {
     if (booksInfo[bibkey]) {
       if (viewOptions.indexOf(booksInfo[bibkey].preview) >= 0) {
-        applyPreviewUrl($('.' + previewClass + '.' + bibkey), booksInfo[bibkey].preview_url);
+        applyPreviewUrl(
+          $('.' + previewClass + '.' + bibkey), booksInfo[bibkey].preview_url
+        );
       }
     }
   }
@@ -66,8 +68,8 @@ function processGBSBookInfo(booksInfo) {
     for (var bibkey in booksInfo) {
       if (booksInfo[bibkey]) {
         if (viewOptions.tab.indexOf(booksInfo[bibkey].preview) >= 0
-                && (booksInfo[bibkey].embeddable)) {
-                    // make tab visible
+        && (booksInfo[bibkey].embeddable)) {
+          // make tab visible
           $('ul.nav-tabs li.hidden a.preview').parent().removeClass('hidden');
         }
       }
@@ -81,12 +83,12 @@ function processOLBookInfo(booksInfo) {
 
 function processHTBookInfo(booksInfo) {
   for (var b in booksInfo) {
-    if ({}.hasOwnProperty.call(booksInfo, b)) {
+    if (booksInfo.hasOwnProperty(b)) {
       var bibkey = b.replace(/:/, '').toUpperCase();
       var $link = $('.previewHT.' + bibkey);
       var items = booksInfo[b].items;
       for (var i = 0; i < items.length; i++) {
-              // check if items possess an eligible rights code
+        // check if items possess an eligible rights code
         if (getHathiOptions().indexOf(items[i].rightsCode) >= 0) {
           applyPreviewUrl($link, items[i].itemURL);
         }
