@@ -92,7 +92,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
         for (var i = 0; i < val.data.length; i++) {
           if (val.data[i][0] < val.min - 5 || val.data[i][0] > parseInt(val.max, 10) + 5) {
             //remove this
-            val.data.splice(i,1);
+            val.data.splice(i, 1);
             i--;
           }
         }
@@ -109,13 +109,13 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
       var plot = $.plot(placeholder, [val], options);
       if (hasFilter) {
         // mark pre-selected area
-        plot.setSelection({ x1: val.min , x2: val.max});
+        plot.setSelection({ x1: val.min, x2: val.max});
       }
       // selection handler
       placeholder.bind("plotselected", function plotselected(event, ranges) {
         var from = Math.floor(ranges.xaxis.from);
         var to = Math.ceil(ranges.xaxis.to);
-        window.location.href = val.removalURL + '&daterange[]=' + key + '&' + key + 'to=' + PadDigits(to,4) + '&' + key + 'from=' + PadDigits(from,4);
+        window.location.href = val.removalURL + '&daterange[]=' + key + '&' + key + 'to=' + PadDigits(to, 4) + '&' + key + 'from=' + PadDigits(from, 4);
       });
 
       if (hasFilter) {

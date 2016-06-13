@@ -90,7 +90,7 @@ function deparam(url) {
       continue;
     }
     if (name.substring(name.length - 2) === '[]') {
-      name = name.substring(0,name.length - 2);
+      name = name.substring(0, name.length - 2);
       if (!request[name]) {
         request[name] = [];
       }
