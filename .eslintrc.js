@@ -1,7 +1,10 @@
-module.export = {
+module.exports = {
   extends: "eslint:recommended",
   env: { "browser": true },
-  globals: { "$": false },
+  globals: {
+    "$": false,
+    "jQuery": false
+  },
   rules: {
     // errors
     "block-scoped-var": "error",
