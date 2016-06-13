@@ -1339,8 +1339,30 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getPurchaseHistory($id)
     {
-        // TODO
-        return [];
+        try {
+            if (!$this->db) {
+                $this->initDb();
+            }
+            $sql = "SELECT b.title, b.biblionumber,
+                       MAX(CONCAT(s.publisheddate, ' / ',s.serialseq))
+                         AS 'date and enumeration'
+                    FROM serial s
+                    LEFT JOIN biblio b USING (biblionumber)
+                    WHERE s.STATUS=2 and b.biblionumber = :id
+                    GROUP BY b.biblionumber
+                    ORDER BY s.publisheddate DESC";
+
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute(['id' => $id]);
+
+            $result = [];
+            foreach ($sqlStmt->fetchAll() as $rowItem) {
+                $result[] = ['issue' => $rowItem["date and enumeration"]];
+            }
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+        return $result;
     }
 
     /**
