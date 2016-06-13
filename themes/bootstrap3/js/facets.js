@@ -1,5 +1,5 @@
-/* global htmlEncode, VuFind */
-/* exported initFacetTree */
+/*global htmlEncode, VuFind */
+/*exported initFacetTree */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];

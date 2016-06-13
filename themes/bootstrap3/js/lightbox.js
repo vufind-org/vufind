@@ -1,4 +1,4 @@
-/* global $, document, CustomEvent, VuFind, window */
+/*global $, document, CustomEvent, VuFind, window */
 VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;

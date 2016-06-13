@@ -1,5 +1,5 @@
-/* global VuFind */
-/* exported setUpHoldRequestForm */
+/*global VuFind */
+/*exported setUpHoldRequestForm */
 function setUpHoldRequestForm(recordId) {
   $('#requestGroupId').change(function requestGroupChange() {
     var $emptyOption = $("#pickUpLocation option[value='']");

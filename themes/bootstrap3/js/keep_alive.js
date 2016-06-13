@@ -1,4 +1,4 @@
-/* global keepAliveInterval, VuFind */
+/*global keepAliveInterval, VuFind */
 
 $(document).ready(function keepAliveReady() {
   window.setInterval(function keepAliveInterval() {

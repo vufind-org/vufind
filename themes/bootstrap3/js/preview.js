@@ -1,4 +1,4 @@
-/* exported processGBSBookInfo, processOLBookInfo, processHTBookInfo */
+/*exported processGBSBookInfo, processOLBookInfo, processHTBookInfo */
 
 // functions to get rights codes for previews
 function getHathiOptions() {

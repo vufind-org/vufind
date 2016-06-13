@@ -1,5 +1,5 @@
-/* global htmlEncode */
-/* exported loadVis */
+/*global htmlEncode */
+/*exported loadVis */
 
 function PadDigits(number, totalDigits) {
   var n = number <= 0 ? 1 : number;

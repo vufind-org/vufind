@@ -1,4 +1,4 @@
-/* global jQuery, window, document, console, setTimeout, clearTimeout */
+/*global jQuery, window, document, console, setTimeout, clearTimeout */
 /**
  * crhallberg/autocomplete.js 0.15.1
  * ~ @crhallberg

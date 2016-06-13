@@ -1,4 +1,4 @@
-/* global VuFind */
+/*global VuFind */
 
 function checkItemStatuses(_container) {
   var container = _container || $('body');

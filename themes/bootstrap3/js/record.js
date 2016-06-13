@@ -1,5 +1,5 @@
-/* global deparam, syn_get_widget, userIsLoggedIn, VuFind */
-/* exported ajaxTagUpdate, recordDocReady */
+/*global deparam, syn_get_widget, userIsLoggedIn, VuFind */
+/*exported ajaxTagUpdate, recordDocReady */
 
 /**
  * Functions and event handlers specific to record pages.

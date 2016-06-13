@@ -1,4 +1,4 @@
-/* exported addGroup, addSearch, deleteGroup, deleteSearch */
+/*exported addGroup, addSearch, deleteGroup, deleteSearch */
 var nextGroup = 0;
 var groupLength = [];
 

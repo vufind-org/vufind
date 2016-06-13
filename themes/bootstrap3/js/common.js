@@ -1,5 +1,5 @@
-/* global isPhoneNumberValid, unescape */
-/* exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, bulkFormHandler */
+/*global isPhoneNumberValid, unescape */
+/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, bulkFormHandler */
 
 // IE 9< console polyfill
 window.console = window.console || {log: function polyfillLog() {}};
