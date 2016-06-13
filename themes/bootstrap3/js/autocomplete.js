@@ -46,7 +46,7 @@
 
   function createList(fulldata, input) {
     // Limit results
-    var data = fulldata.slice(0, Math.min(options.maxResults, data.length));
+    var data = fulldata.slice(0, Math.min(options.maxResults, fulldata.length));
     input.data('length', data.length);
     // highlighting setup
     // escape term for regex - https://github.com/sindresorhus/escape-string-regexp/blob/master/index.js
