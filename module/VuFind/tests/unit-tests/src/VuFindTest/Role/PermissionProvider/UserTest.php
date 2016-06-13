@@ -57,7 +57,6 @@ class UserTest extends \VuFindTest\Unit\TestCase
         ]
     ];
 
-
     /**
      * Test single option with matching string
      *
@@ -153,6 +152,5 @@ class UserTest extends \VuFindTest\Unit\TestCase
 
         return $user;
     }
-
 
 }
