@@ -1,11 +1,12 @@
-{
-  "extends": "eslint:recommended",
-  "globals": {
+module.export = {
+  extends: "eslint:recommended",
+  globals: {
     "$": false,
     "document": false,
     "window": false
   },
-  "rules": {
+  rules: {
+    // errors
     "block-scoped-var": "error",
     "func-names": "error",
     "no-loop-func": "error",
@@ -13,6 +14,7 @@
     "no-shadow": "error",
     "no-unused-expressions": "error",
 
+    // warnings
     "dot-notation": "warn",
     "eqeqeq": ["warn", "smart"],
     "guard-for-in": "warn",
@@ -21,6 +23,7 @@
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "no-unneeded-ternary": "warn",
 
+    // fixed automatically
     "block-spacing": ["warn", "always"],
     "comma-spacing": ["warn", { "before": false, "after": true }],
     "indent": ["error", 2],
@@ -30,4 +33,4 @@
     "semi-spacing": ["warn", { "before": false, "after": true }],
     "space-infix-ops": "warn"
   }
-}
+};
