@@ -140,7 +140,6 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
           var htmlDiv = $('<div>' + data + '</div>');
           var list = htmlDiv.find('.js-facet-item');
           button.before(list);
-          console.log(list);
           if (list.length && htmlDiv.find('.js-facet-next-page').length) {
             button.attr('data-page', page + 1);
             button.text(VuFind.translate('more') + ' ...');
