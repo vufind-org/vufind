@@ -202,7 +202,7 @@ JS;
       }
     ?>
     <header role="banner" class="hidden-print">
-      <? if(preg_match('/(?i)msie [5-8]/',$_SERVER['HTTP_USER_AGENT'])): ?>
+      <? if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/(?i)msie [5-8]/',$_SERVER['HTTP_USER_AGENT'])): ?>
       <div class="container-fluid system-messages">
         <div class="row">
           <div class="col-xs-12">
