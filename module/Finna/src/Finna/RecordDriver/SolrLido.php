@@ -293,9 +293,9 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 }
             }
 
+            $places = [];
             $place = isset($node->eventPlace->displayPlace)
                 ? (string)$node->eventPlace->displayPlace : '';
-            $places = [];
             if (!$place) {
                 if (isset($node->eventPlace->place->namePlaceSet)) {
                     $eventPlace = [];
@@ -306,7 +306,9 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                                 ? trim((string)$namePlaceSet->appellationValue) : '';
                         }
                     }
-                    $places[] = implode(', ', $eventPlace);
+                    if ($eventPlace) {
+                        $places[] = implode(', ', $eventPlace);
+                    }
                 }
                 if (isset($node->eventPlace->place->partOfPlace)) {
                     foreach ($node->eventPlace->place->partOfPlace as $partOfPlace) {
@@ -320,7 +322,9 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                             }
                             $partOfPlace = $partOfPlace->partOfPlace;
                         }
-                        $places[] = implode(', ', $partOfPlaceName);
+                        if ($partOfPlaceName) {
+                            $places[] = implode(', ', $partOfPlaceName);
+                        }
                     }
                 }
             } else {
@@ -329,9 +333,12 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             $actors = [];
             if (isset($node->eventActor)) {
                 foreach ($node->eventActor as $actor) {
-                    $appellationValue = $actor->actorInRole->actor->nameActorSet
-                        ->appellationValue;
-                    if (isset($appellationValue) && trim($appellationValue) != '') {
+                    $appellationValue = isset(
+                        $actor->actorInRole->actor->nameActorSet->appellationValue
+                    ) ? trim(
+                        $actor->actorInRole->actor->nameActorSet->appellationValue
+                    ) : '';
+                    if ($appellationValue !== '') {
                         $role = isset($actor->actorInRole->roleActor->term)
                             ? $actor->actorInRole->roleActor->term : '';
                         $actors[] = [
