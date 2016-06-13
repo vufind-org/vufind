@@ -72,7 +72,8 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
     public function itemToString($item, $indent, $escapeStart, $escapeEnd)
     {
         if (!empty($item->attributes['src'])) {
-            $agent = $this->request->getHeader('User-Agent')->toString();
+            $ua = $this->request->getHeader('User-Agent');
+            $agent = $ua !== false ? $ua->toString() : '';
             if (strstr($agent, 'MSIE 8.0') || strstr($agent, 'MSIE 7.0')) {
                 if ($item->attributes['src'] == 'vendor/jquery.min.js') {
                     $item->attributes['src'] = 'vendor/jquery-1.12.1.min.js';
