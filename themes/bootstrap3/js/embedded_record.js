@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, sessionStorage, registerAjaxCommentRecord, registerTabEvents, syn_get_widget, VuFind */
+/*global checkSaveStatuses, registerAjaxCommentRecord, registerTabEvents, syn_get_widget, VuFind */
 VuFind.register('embedded', function embedded() {
   var _STORAGEKEY = 'vufind_search_open';
   var _SEPERATOR = ':::';

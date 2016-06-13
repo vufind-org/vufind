@@ -1,4 +1,4 @@
-/*global isPhoneNumberValid, unescape */
+/*global isPhoneNumberValid */
 /*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, bulkFormHandler */
 
 // IE 9< console polyfill
