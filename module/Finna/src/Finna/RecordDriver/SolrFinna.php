@@ -186,6 +186,16 @@ trait SolrFinna
     }
 
     /**
+     * Get identifier
+     *
+     * @return array
+     */
+    public function getIdentifier()
+    {
+        return [];
+    }
+
+    /**
      * Return image rights.
      *
      * @param string $language Language
