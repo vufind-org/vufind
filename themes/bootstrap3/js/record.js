@@ -1,4 +1,4 @@
-/*global deparam, syn_get_widget, userIsLoggedIn, VuFind */
+/*global deparam, getUrlRoot, syn_get_widget, userIsLoggedIn, VuFind */
 /*exported ajaxTagUpdate, recordDocReady */
 
 /**

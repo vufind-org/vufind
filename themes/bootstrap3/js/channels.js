@@ -1,3 +1,4 @@
+/*global getUrlRoot, htmlEncode, VuFind */
 $(document).ready(function channelReady() {
   $('.channel').flickity({
     cellAlign: 'left',
@@ -9,9 +10,8 @@ $(document).ready(function channelReady() {
   $('.channel').on('dragStart', function channelDrag() {
     $('[aria-describedby]').popover('hide');
   });
-  $('.channel').on('staticClick', function channelPopover(event, pointer, cellElement, cellIndex) {
+  $('.channel').on('staticClick', function channelPopover(event, pointer, cellElement/*, cellIndex*/) {
     var record = $(cellElement);
-    console.log();
     if (record.data('popover')) {
       if (record.attr('aria-describedby')) {
         record.popover('hide');
@@ -22,11 +22,11 @@ $(document).ready(function channelReady() {
     } else {
       record.data('popover', true);
       record.popover({
-        content: VuFind.translate('loading')+'...',
+        content: VuFind.translate('loading') + '...',
         html: true,
         placement: 'bottom',
         trigger: 'focus',
-        container: '#'+record.closest('.channel').attr('id')
+        container: '#' + record.closest('.channel').attr('id')
       });
       $('[aria-describedby]').popover('hide');
       record.popover('show');
@@ -36,13 +36,13 @@ $(document).ready(function channelReady() {
         data: {tab: 'description'}
       })
       .done(function channelPopoverDone(data) {
-        record.data('bs.popover').options.content = '<h2>'+htmlEncode(record.text())+'</h2>'
+        record.data('bs.popover').options.content = '<h2>' + htmlEncode(record.text()) + '</h2>'
           + '<div class="btn-group btn-group-justified">'
-          + '<a href="'+VuFind.path+'/Channels/Record?'
+          + '<a href="' + VuFind.path + '/Channels/Record?'
             + 'id=' + encodeURIComponent(record.attr('data-record-id'))
             + '&source=' + encodeURIComponent(record.attr('data-record-source'))
-          +'" class="btn btn-default">More Like This</a>'
-          + '<a href="'+record.attr('href')+'" class="btn btn-default">Go To Record</a>'
+          + '" class="btn btn-default">More Like This</a>'
+          + '<a href="' + record.attr('href') + '" class="btn btn-default">Go To Record</a>'
           + '</div>'
           + data;
         record.popover('show');
