@@ -1,18 +1,16 @@
 /*global VuFind */
 
-function checkItemStatuses(container) {
-  if (typeof(container) == 'undefined') {
-    container = $('body');
-  }
+function checkItemStatuses(_container) {
+  var container = _container || $('body');
 
   var elements = {};
-  var data = $.map(container.find('.ajaxItem'), function(record) {
-    if ($(record).find('.hiddenId').length == 0) {
+  var data = $.map(container.find('.ajaxItem'), function ajaxItemMap(record) {
+    if ($(record).find('.hiddenId').length === 0) {
       return null;
     }
     var datum = $(record).find('.hiddenId').val();
     if (typeof elements[datum] === 'undefined') {
-        elements[datum] = $();
+      elements[datum] = $();
     }
     elements[datum] = elements[datum].add($(record));
     return datum;
@@ -26,10 +24,10 @@ function checkItemStatuses(container) {
     dataType: 'json',
     method: 'POST',
     url: VuFind.path + '/AJAX/JSON?method=getItemStatuses',
-    data: {'id':data}
+    data: {'id': data}
   })
-  .done(function(response) {
-    $.each(response.data, function(i, result) {
+  .done(function checkItemStatusDone(response) {
+    $.each(response.data, function checkItemDoneEach(i, result) {
       var item = elements[result.id];
       if (!item) {
         return;
@@ -58,7 +56,7 @@ function checkItemStatuses(container) {
         item.find('.hideIfDetailed').addClass('hidden');
         item.find('.location').addClass('hidden');
         var locationListHTML = "";
-        for (var x=0; x<result.locationList.length; x++) {
+        for (var x = 0; x < result.locationList.length; x++) {
           locationListHTML += '<div class="groupLocation">';
           if (result.locationList[x].availability) {
             locationListHTML += '<i class="fa fa-ok text-success" aria-hidden="true"></i> <span class="text-success">'
@@ -77,16 +75,16 @@ function checkItemStatuses(container) {
           locationListHTML += '</div>';
           locationListHTML += '<div class="groupCallnumber">';
           locationListHTML += (result.locationList[x].callnumbers)
-               ?  result.locationList[x].callnumbers : '';
+               ? result.locationList[x].callnumbers : '';
           locationListHTML += '</div>';
         }
         item.find('.locationDetails').removeClass('hidden');
         item.find('.locationDetails').empty().append(locationListHTML);
       } else {
         // Default case -- load call number and location into appropriate containers:
-        item.find('.callnumber').empty().append(result.callnumber+'<br/>');
+        item.find('.callnumber').empty().append(result.callnumber + '<br/>');
         item.find('.location').empty().append(
-          result.reserve == 'true'
+          result.reserve === 'true'
           ? result.reserve_message
           : result.location
         );
@@ -95,14 +93,14 @@ function checkItemStatuses(container) {
 
     $(".ajax-availability").removeClass('ajax-availability');
   })
-  .fail(function(response, textStatus) {
+  .fail(function checkItemStatusFail(response, textStatus) {
     $('.ajax-availability').empty();
-    if (textStatus == 'abort' || typeof response.responseJSON === 'undefined') { return; }
+    if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
     // display the error message on each of the ajax status place holder
     $('.ajax-availability').append(response.responseJSON.data).addClass('text-danger');
   });
 }
 
-$(document).ready(function() {
+$(document).ready(function checkItemStatusReady() {
   checkItemStatuses();
 });

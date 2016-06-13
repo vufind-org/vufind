@@ -1,21 +1,20 @@
 /*global jQuery, window, document, console, setTimeout, clearTimeout */
 /**
- * crhallberg/autocomplete.js 0.15
+ * crhallberg/autocomplete.js 0.15.1
  * ~ @crhallberg
  */
-(function ( $ ) {
+(function autocomplete( $ ) {
   var cache = {},
-      element = false,
-      input = false,
-      options = {
-        ajaxDelay: 200,
-        cache: true,
-        hidingClass: 'hidden',
-        highlight: true,
-        loadingString: 'Loading...',
-        maxResults: 20,
-        minLength: 3
-      };
+    element = false,
+    options = {
+      ajaxDelay: 200,
+      cache: true,
+      hidingClass: 'hidden',
+      highlight: true,
+      loadingString: 'Loading...',
+      maxResults: 20,
+      minLength: 3
+    };
 
   var xhr = false;
 
@@ -45,16 +44,16 @@
     hide();
   }
 
-  function createList(data, input) {
+  function createList(fulldata, input) {
     // Limit results
-    data = data.slice(0, Math.min(options.maxResults, data.length));
+    var data = fulldata.slice(0, Math.min(options.maxResults, fulldata.length));
     input.data('length', data.length);
     // highlighting setup
     // escape term for regex - https://github.com/sindresorhus/escape-string-regexp/blob/master/index.js
     var escapedTerm = input.val().replace(/[|\\{}()\[\]\^$+*?.]/g, '\\$&');
-    var regex = new RegExp('('+escapedTerm+')', 'ig');
+    var regex = new RegExp('(' + escapedTerm + ')', 'ig');
     var shell = $('<div/>');
-    for (var i=0; i<data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
       if (typeof data[i] === 'string') {
         data[i] = {value: data[i]};
       }
@@ -79,9 +78,9 @@
       shell.append(item);
     }
     element.html(shell);
-    element.find('.item').mousedown(function() {
+    element.find('.item').mousedown(function acItemClick() {
       populate($(this).data(), input, {mouse: true});
-      setTimeout(function() {
+      setTimeout(function acClickDelay() {
         input.focus();
         hide();
       }, 10);
@@ -92,7 +91,7 @@
   function search(input) {
     if (xhr) { xhr.abort(); }
     if (input.val().length >= options.minLength) {
-      element.html('<i class="item loading">'+options.loadingString+'</i>');
+      element.html('<i class="item loading">' + options.loadingString + '</i>');
       show();
       align(input);
       var term = input.val();
@@ -104,7 +103,7 @@
           createList(cache[cid][term], input);
         }
       } else {
-        options.handler(input, function(data) {
+        options.handler(input, function achandlerCallback(data) {
           cache[cid][term] = data;
           if (data.length === 0) {
             hide();
@@ -119,11 +118,11 @@
     }
   }
 
-  function setup(input, element) {
-    if (typeof element === 'undefined') {
+  function setup(input) {
+    if ($('.autocomplete-results').length === 0) {
       element = $('<div/>')
         .addClass('autocomplete-results hidden')
-        .html('<i class="item loading">'+options.loadingString+'</i>');
+        .html('<i class="item loading">' + options.loadingString + '</i>');
       align(input);
       $(document.body).append(element);
     }
@@ -132,25 +131,25 @@
     input.data('length', 0);
 
     if (options.cache) {
-      var cid = Math.floor(Math.random()*1000);
+      var cid = Math.floor(Math.random() * 1000);
       input.data('cache-id', cid);
       cache[cid] = {};
     }
 
-    input.blur(function(e) {
+    input.blur(function acinputBlur(e) {
       if (e.target.acitem) {
         setTimeout(hide, 10);
       } else {
         hide();
       }
     });
-    input.click(function() {
+    input.click(function acinputClick() {
       search(input, element);
     });
-    input.focus(function() {
+    input.focus(function acinputFocus() {
       search(input, element);
     });
-    input.keyup(function(event) {
+    input.keyup(function acinputKeyup(event) {
       // Ignore navigation keys
       // - Ignore control functions
       if (event.ctrlKey || event.which === 17) {
@@ -161,29 +160,29 @@
         return;
       }
       switch (event.which) {
-        case 9:    // tab
-        case 13:   // enter
-        case 16:   // shift
-        case 20:   // caps lock
-        case 27:   // esc
-        case 33:   // page up
-        case 34:   // page down
-        case 35:   // end
-        case 36:   // home
-        case 37:   // arrows
-        case 38:
-        case 39:
-        case 40:
-        case 45:   // insert
-        case 144:  // num lock
-        case 145:  // scroll lock
-        case 19:   // pause/break
-          return;
-        default:
-          search(input, element);
+      case 9:    // tab
+      case 13:   // enter
+      case 16:   // shift
+      case 20:   // caps lock
+      case 27:   // esc
+      case 33:   // page up
+      case 34:   // page down
+      case 35:   // end
+      case 36:   // home
+      case 37:   // arrows
+      case 38:
+      case 39:
+      case 40:
+      case 45:   // insert
+      case 144:  // num lock
+      case 145:  // scroll lock
+      case 19:   // pause/break
+        return;
+      default:
+        search(input, element);
       }
     });
-    input.keydown(function(event) {
+    input.keydown(function acinputKeydown(event) {
       // - Ignore control functions
       if (event.ctrlKey || event.which === 17) {
         return;
@@ -191,45 +190,45 @@
       var position = $(this).data('selected');
       switch (event.which) {
         // arrow keys through items
-        case 38: // up key
-          event.preventDefault();
+      case 38: // up key
+        event.preventDefault();
+        element.find('.item.selected').removeClass('selected');
+        if (position-- > 0) {
+          element.find('.item:eq(' + position + ')').addClass('selected');
+        }
+        $(this).data('selected', position);
+        break;
+      case 40: // down key
+        event.preventDefault();
+        if (element.hasClass(options.hidingClass)) {
+          search(input, element);
+        } else if (position < input.data('length') - 1) {
+          position++;
           element.find('.item.selected').removeClass('selected');
-          if (position-- > 0) {
-            element.find('.item:eq('+position+')').addClass('selected');
-          }
+          element.find('.item:eq(' + position + ')').addClass('selected');
           $(this).data('selected', position);
-          break;
-        case 40: // down key
-          event.preventDefault();
-          if (element.hasClass(options.hidingClass)) {
-            search(input, element);
-          } else if (position < input.data('length')-1) {
-            position++;
-            element.find('.item.selected').removeClass('selected');
-            element.find('.item:eq('+position+')').addClass('selected');
-            $(this).data('selected', position);
-          }
-          break;
+        }
+        break;
         // enter to nav or populate
-        case 9:
-        case 13:
-          var selected = element.find('.item.selected');
-          if (selected.length > 0) {
-            event.preventDefault();
-            if (event.which === 13 && selected.attr('href')) {
-              window.location.assign(selected.attr('href'));
-            } else {
-              populate(selected.data(), $(this), {key: true});
-              element.find('.item.selected').removeClass('selected');
-              $(this).data('selected', -1);
-            }
+      case 9:
+      case 13:
+        var selected = element.find('.item.selected');
+        if (selected.length > 0) {
+          event.preventDefault();
+          if (event.which === 13 && selected.attr('href')) {
+            window.location.assign(selected.attr('href'));
+          } else {
+            populate(selected.data(), $(this), {key: true});
+            element.find('.item.selected').removeClass('selected');
+            $(this).data('selected', -1);
           }
-          break;
+        }
+        break;
         // hide on escape
-        case 27:
-          hide();
-          $(this).data('selected', -1);
-          break;
+      case 27:
+        hide();
+        $(this).data('selected', -1);
+        break;
       }
     });
 
@@ -238,12 +237,11 @@
     return element;
   }
 
-  $.fn.autocomplete = function(settings) {
+  $.fn.autocomplete = function acJQuery(settings) {
 
+    return this.each(function acJQueryEach() {
 
-    return this.each(function() {
-
-      input = $(this);
+      var input = $(this);
 
       if (typeof settings === "string") {
         if (settings === "show") {
@@ -261,12 +259,7 @@
         return this;
       } else {
         options = $.extend( {}, options, settings );
-        element = $('.autocomplete-results');
-        if (element.length == 0) {
-          element = setup(input);
-        } else {
-          setup(input, element);
-        }
+        setup(input);
       }
 
       return input;
@@ -275,11 +268,11 @@
   };
 
   var timer = false;
-  $.fn.autocomplete.ajax = function(ops) {
+  $.fn.autocomplete.ajax = function acAjax(ops) {
     if (timer) { clearTimeout(timer); }
     if (xhr) { xhr.abort(); }
     timer = setTimeout(
-      function() { xhr = $.ajax(ops); },
+      function acajaxDelay() { xhr = $.ajax(ops); },
       options.ajaxDelay
     );
   };

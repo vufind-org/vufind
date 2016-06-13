@@ -232,13 +232,19 @@ ul.random.image li img { margin: 0 auto; }
   padding: 1rem;
   margin-left: -1.1rem;
   &:nth-child(even) { background-color: @gray-lighter; }
+  &.embedded .getFull.expanded {
+    margin-top: -6px;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+  }
 }
+.result > p {padding:0 1em;}
 .result .label {
   display: inline-block;
   margin-bottom: 4px;
 }
-.result .left { text-align: center; }
-.result .media { margin-bottom: 0; }
+.result .long-view .tab-content {background: #FFF;}
+.result .media { margin: 0; }
 .result .row { padding: 0; }
 .result .savedLists {
   margin: 0 0 4px;
