@@ -770,12 +770,12 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'language' => $this->getLanguage()
         ];
 
-        $result = $this->doSOAPRequest(
+        $response = $this->doSOAPRequest(
             $this->catalogue_wsdl, $function, $functionResult, $id,
             ['GetHoldingsRequest' => $conf]
         );
 
-        $statusAWS = $result->$functionResult->status;
+        $statusAWS = $response->$functionResult->status;
 
         if ($statusAWS->type != 'ok') {
             $message = $this->handleError($function, $statusAWS->message, $id);
@@ -785,12 +785,12 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             return [];
         }
 
-        if (!isset($result->$functionResult->catalogueRecord->compositeHolding)) {
+        if (!isset($response->$functionResult->catalogueRecord->compositeHolding)) {
             return [];
         }
 
         $holdings = $this->objectToArray(
-            $result->$functionResult->catalogueRecord->compositeHolding
+            $response->$functionResult->catalogueRecord->compositeHolding
         );
 
         if (isset($holdings[0]->type) && $holdings[0]->type == 'year') {
@@ -826,7 +826,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $result[] = $summary;
         }
 
-        return empty($result) ? false : $result;
+        return $result;
     }
 
     /**
