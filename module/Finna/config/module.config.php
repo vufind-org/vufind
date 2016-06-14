@@ -229,6 +229,7 @@ $config = [
                     'fee' => 'Finna\Db\Table\Fee',
                     'metalibSearch' => 'Finna\Db\Table\MetaLibSearch',
                     'search' => 'Finna\Db\Table\Search',
+                    'session' => 'Finna\Db\Table\Session',
                     'transaction' => 'Finna\Db\Table\Transaction',
                     'userresource' => 'Finna\Db\Table\UserResource',
                 ],
