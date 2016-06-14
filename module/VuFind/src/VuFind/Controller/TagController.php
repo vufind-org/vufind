@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
+use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
  * Tag Controller
@@ -55,7 +56,7 @@ class TagController extends AbstractSearch
     public function homeAction()
     {
         if (!$this->tagsEnabled()) {
-            throw new \Exception('Tags disabled');
+            throw new ForbiddenException('Tags disabled');
         }
         return $this->resultsAction();
     }

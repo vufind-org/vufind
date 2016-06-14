@@ -1,38 +1,43 @@
-/*global btoa, console, hexEncode, isPhoneNumberValid, Lightbox, rc4Encrypt, unescape */
+/*global isPhoneNumberValid */
+/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, bulkFormHandler */
 
 // IE 9< console polyfill
-window.console = window.console || {log: function () {}};
+window.console = window.console || {log: function polyfillLog() {}};
 
-var VuFind = (function() {
+var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
   var path = null;
   var _initialized = false;
   var _submodules = [];
   var _translations = {};
 
-  var register = function(name, module) {
+  var register = function register(name, module) {
     if (_submodules.indexOf(name) === -1) {
       _submodules.push(name);
       this[name] = typeof module == 'function' ? module() : module;
     }
     // If the object has already initialized, we should auto-init on register:
-    if (_initialized) {
+    if (_initialized && this[name].init) {
       this[name].init();
     }
   };
-  var init = function() {
-    for (var i=0; i<_submodules.length; i++) {
-      this[_submodules[i]].init();
+  var init = function init() {
+    for (var i = 0; i < _submodules.length; i++) {
+      if (this[_submodules[i]].init) {
+        this[_submodules[i]].init();
+      }
     }
     _initialized = true;
   };
 
-  var addTranslations = function(s) {
+  var addTranslations = function addTranslations(s) {
     for (var i in s) {
-      _translations[i] = s[i];
+      if (s.hasOwnProperty(i)) {
+        _translations[i] = s[i];
+      }
     }
   };
-  var translate = function(op) {
+  var translate = function translate(op) {
     return _translations[op] || op;
   };
 
@@ -51,19 +56,19 @@ var VuFind = (function() {
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value) {
   if (value) {
-    return jQuery('<div />').text(value).html();
+    return $('<div />').text(value).html();
   } else {
     return '';
   }
 }
-function extractClassParams(str) {
-  str = $(str).attr('class');
+function extractClassParams(selector) {
+  var str = $(selector).attr('class');
   if (typeof str === "undefined") {
     return [];
   }
   var params = {};
   var classes = str.split(/\s+/);
-  for(var i = 0; i < classes.length; i++) {
+  for (var i = 0; i < classes.length; i++) {
     if (classes[i].indexOf(':') > 0) {
       var pair = classes[i].split(':');
       params[pair[0]] = pair[1];
@@ -73,7 +78,7 @@ function extractClassParams(str) {
 }
 // Turn GET string into array
 function deparam(url) {
-  if(!url.match(/\?|&/)) {
+  if (!url.match(/\?|&/)) {
     return [];
   }
   var request = {};
@@ -81,12 +86,12 @@ function deparam(url) {
   for (var i = 0; i < pairs.length; i++) {
     var pair = pairs[i].split('=');
     var name = decodeURIComponent(pair[0].replace(/\+/g, ' '));
-    if(name.length == 0) {
+    if (name.length === 0) {
       continue;
     }
-    if(name.substring(name.length-2) == '[]') {
-      name = name.substring(0,name.length-2);
-      if(!request[name]) {
+    if (name.substring(name.length - 2) === '[]') {
+      name = name.substring(0, name.length - 2);
+      if (!request[name]) {
         request[name] = [];
       }
       request[name].push(decodeURIComponent(pair[1].replace(/\+/g, ' ')));
@@ -99,12 +104,14 @@ function deparam(url) {
 
 // Sidebar
 function moreFacets(id) {
-  $('.'+id).removeClass('hidden');
-  $('#more-'+id).addClass('hidden');
+  $('.' + id).removeClass('hidden');
+  $('#more-' + id).addClass('hidden');
+  return false;
 }
 function lessFacets(id) {
-  $('.'+id).addClass('hidden');
-  $('#more-'+id).removeClass('hidden');
+  $('.' + id).addClass('hidden');
+  $('#more-' + id).removeClass('hidden');
+  return false;
 }
 
 // Phone number validation
@@ -112,8 +119,8 @@ function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
   var number = phoneInput.value;
   var valid = isPhoneNumberValid(number, regionCode);
-  if(valid != true) {
-    if(typeof valid === 'string') {
+  if (valid !== true) {
+    if (typeof valid === 'string') {
       valid = VuFind.translate(valid);
     } else {
       valid = VuFind.translate('libphonenumber_invalid');
@@ -128,13 +135,12 @@ function phoneNumberFormHandler(numID, regionCode) {
 }
 
 function bulkFormHandler(event, data) {
-  if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length == 0) {
+  if ($('.checkbox-select-item:checked,checkbox-select-all:checked').length === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }
-  var keys = [];
   for (var i in data) {
-    if ('print' == data[i].name) {
+    if ('print' === data[i].name) {
       return true;
     }
   }
@@ -142,12 +148,12 @@ function bulkFormHandler(event, data) {
 
 // Ready functions
 function setupOffcanvas() {
-  if($('.sidebar').length > 0) {
-    $('[data-toggle="offcanvas"]').click(function () {
+  if ($('.sidebar').length > 0) {
+    $('[data-toggle="offcanvas"]').click(function offcanvasClick() {
       $('body.offcanvas').toggleClass('active');
       var active = $('body.offcanvas').hasClass('active');
       var right = $('body.offcanvas').hasClass('offcanvas-right');
-      if((active && !right) || (!active && right)) {
+      if ((active && !right) || (!active && right)) {
         $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
       } else {
         $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
@@ -162,32 +168,32 @@ function setupOffcanvas() {
 
 function setupAutocomplete() {
   // Search autocomplete
-  $('.autocomplete').each(function(i, op) {
+  $('.autocomplete').each(function autocompleteSetup(i, op) {
     $(op).autocomplete({
       maxResults: 10,
-      loadingString: VuFind.translate('loading')+'...',
-      handler: function(input, cb) {
+      loadingString: VuFind.translate('loading') + '...',
+      handler: function vufindACHandler(input, cb) {
         var query = input.val();
         var searcher = extractClassParams(input);
         var hiddenFilters = [];
-        $(input).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function() {
+        $(input).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
           hiddenFilters.push($(this).val());
         });
         $.fn.autocomplete.ajax({
           url: VuFind.path + '/AJAX/JSON',
           data: {
-            q:query,
-            method:'getACSuggestions',
-            searcher:searcher['searcher'],
-            type:searcher['type'] ? searcher['type'] : $(input).closest('.searchForm').find('.searchForm_type').val(),
-            hiddenFilters:hiddenFilters
+            q: query,
+            method: 'getACSuggestions',
+            searcher: searcher.searcher,
+            type: searcher.type ? searcher.type : $(input).closest('.searchForm').find('.searchForm_type').val(),
+            hiddenFilters: hiddenFilters
           },
-          dataType:'json',
-          success: function(json) {
+          dataType: 'json',
+          success: function autocompleteJSON(json) {
             if (json.data.length > 0) {
               var datums = [];
-              for (var i=0;i<json.data.length;i++) {
-                datums.push(json.data[i]);
+              for (var j = 0; j < json.data.length; j++) {
+                datums.push(json.data[j]);
               }
               cb(datums);
             } else {
@@ -199,7 +205,7 @@ function setupAutocomplete() {
     });
   });
   // Update autocomplete on type change
-  $('.searchForm_type').change(function() {
+  $('.searchForm_type').change(function searchTypeChange() {
     var $lookfor = $(this).closest('.searchForm').find('.searchForm_lookfor[name]');
     $lookfor.autocomplete('clear cache');
   });
@@ -210,44 +216,44 @@ function setupAutocomplete() {
  * @returns {undefined}
  */
 function keyboardShortcuts() {
-    var $searchform = $('.searchForm_lookfor');
-    if ($('.pager').length > 0) {
-        $(window).keydown(function(e) {
-          if (!$searchform.is(':focus')) {
-            var $target = null;
-            switch (e.keyCode) {
-              case 37: // left arrow key
-                $target = $('.pager').find('a.previous');
-                if ($target.length > 0) {
-                    $target[0].click();
-                    return;
-                }
-                break;
-              case 38: // up arrow key
-                if (e.ctrlKey) {
-                    $target = $('.pager').find('a.backtosearch');
-                    if ($target.length > 0) {
-                        $target[0].click();
-                        return;
-                    }
-                }
-                break;
-              case 39: //right arrow key
-                $target = $('.pager').find('a.next');
-                if ($target.length > 0) {
-                    $target[0].click();
-                    return;
-                }
-                break;
-              case 40: // down arrow key
-                break;
+  var $searchform = $('.searchForm_lookfor');
+  if ($('.pager').length > 0) {
+    $(window).keydown(function shortcutKeyDown(e) {
+      if (!$searchform.is(':focus')) {
+        var $target = null;
+        switch (e.keyCode) {
+        case 37: // left arrow key
+          $target = $('.pager').find('a.previous');
+          if ($target.length > 0) {
+            $target[0].click();
+            return;
+          }
+          break;
+        case 38: // up arrow key
+          if (e.ctrlKey) {
+            $target = $('.pager').find('a.backtosearch');
+            if ($target.length > 0) {
+              $target[0].click();
+              return;
             }
           }
-        });
-    }
+          break;
+        case 39: //right arrow key
+          $target = $('.pager').find('a.next');
+          if ($target.length > 0) {
+            $target[0].click();
+            return;
+          }
+          break;
+        case 40: // down arrow key
+          break;
+        }
+      }
+    });
+  }
 }
 
-$(document).ready(function() {
+$(document).ready(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
   // Setup search autocomplete
@@ -258,18 +264,18 @@ $(document).ready(function() {
   keyboardShortcuts();
 
   // support "jump menu" dropdown boxes
-  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
+  $('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
 
   // Checkbox select all
-  $('.checkbox-select-all').change(function() {
+  $('.checkbox-select-all').change(function selectAllCheckboxes() {
     $(this).closest('form').find('.checkbox-select-item').prop('checked', this.checked);
   });
-  $('.checkbox-select-item').change(function() {
+  $('.checkbox-select-item').change(function selectAllDisable() {
     $(this).closest('form').find('.checkbox-select-all').prop('checked', false);
   });
 
   // handle QR code links
-  $('a.qrcodeLink').click(function() {
+  $('a.qrcodeLink').click(function qrcodeToggle() {
     if ($(this).hasClass("active")) {
       $(this).html(VuFind.translate('qrcode_show')).removeClass("active");
     } else {
@@ -277,7 +283,7 @@ $(document).ready(function() {
     }
 
     var holder = $(this).next('.qrcode');
-    if (holder.find('img').length == 0) {
+    if (holder.find('img').length === 0) {
       // We need to insert the QRCode image
       var template = holder.find('.qrCodeImgTag').html();
       holder.html(template);
@@ -288,9 +294,9 @@ $(document).ready(function() {
 
   // Print
   var url = window.location.href;
-  if(url.indexOf('?' + 'print' + '=') != -1  || url.indexOf('&' + 'print' + '=') != -1) {
+  if (url.indexOf('?' + 'print' + '=') !== -1 || url.indexOf('&' + 'print' + '=') !== -1) {
     $("link[media='print']").attr("media", "all");
-    $(document).ajaxStop(function() {
+    $(document).ajaxStop(function triggerPrint() {
       window.print();
     });
     // Make an ajax call to ensure that ajaxStop is triggered
@@ -298,8 +304,8 @@ $(document).ready(function() {
   }
 
   // Advanced facets
-  $('.facetOR').click(function() {
-    $(this).closest('.collapse').html('<div class="list-group-item">'+VuFind.translate('loading')+'...</div>');
+  $('.facetOR').click(function facetBlocking() {
+    $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
     window.location.assign($(this).attr('href'));
   });
 });
