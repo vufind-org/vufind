@@ -1,5 +1,13 @@
 /*global getUrlRoot, htmlEncode, VuFind */
 $(document).ready(function channelReady() {
+  // truncate long titles and add hover
+  $('.channel-record').dotdotdot({
+    callback: function dddcallback(istrunc, orig) {
+      if (istrunc) {
+        $(this).attr('title', $(orig).text());
+      }
+    }
+  });
   $('.channel').flickity({
     cellAlign: 'left',
     contain: true,
