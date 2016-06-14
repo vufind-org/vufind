@@ -182,7 +182,7 @@ class Factory
         $displayCoords = $config->Content->displayCoords;
         $mapLabels = $config->Content->mapLabels;
         $mapLabelsLoc = $config->Content->mapLabelsLoc;
-        array_push($options,$enabled,$displayCoords,$mapLabels,$mapLabelsLoc);
+        array_push($options, $enabled, $displayCoords, $mapLabels, $mapLabelsLoc);
         return new Map($options);
     }
 
