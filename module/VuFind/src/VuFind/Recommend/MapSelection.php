@@ -102,7 +102,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     }
     
     /**
-     * setConfig
+     * SetConfig
      *
      * Store the configuration of the recommendation module.
      *
@@ -131,7 +131,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     }
     
     /**
-     * init
+     * Init
      *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
@@ -160,7 +160,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     }
     
     /**
-     * process
+     * Process
      *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
@@ -191,7 +191,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     }
     
     /**
-     * getSelectedCoordinates
+     * GetSelectedCoordinates
      * 
      * Return coordinates selected by user
      * 
@@ -203,7 +203,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     }
     
     /**
-     * getDefaultCoordinates
+     * GetDefaultCoordinates
      *
      * Return default coordinates from configuration
      *
@@ -215,7 +215,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     }
     
     /** 
-     * getHeight
+     * GetHeight
      * 
      * Return height of map in pixels
      * 
@@ -227,9 +227,10 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     }
     
     /**
-     * getSearchParams
+     * GetSearchParams
      * 
      * Return search params without filter for geographic search
+     * @return string
      */
     public function getSearchParams()
     {
@@ -237,10 +238,11 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     }
     
     /**
-     * getSearchParams no question mark at end
+     * GetSearchParams no question mark at end
      *
      * Return search params without leading question mark and colon.
      * Copied from ResultGoogleMapAjax.php and chngd name to add NoQ.LMG 
+     * @return string
      */
     public function getSearchParamsNoQ()
     {
@@ -249,7 +251,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     }
 
     /**
-     * getGeoField
+     * GetGeoField
      * 
      * Return Solr field to use for geographic search
      * 
