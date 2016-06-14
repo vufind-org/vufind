@@ -153,8 +153,8 @@ class SolrMarc extends SolrDefault
      */
     public function getBbox()
     {
-        return isset($this->fields['bbox_geo']) ?
-        $this->fields['bbox_geo'] : [];
+        return isset($this->fields['bbox_geo'])
+            ? $this->fields['bbox_geo'] : [];
     }
 
     /**
@@ -291,8 +291,8 @@ class SolrMarc extends SolrDefault
      */
     public function getLatLonCoords()
     {
-        return isset($this->fields['latlon_coordinate']) ?
-        $this->fields['latlon_coordinate'] : [];
+        return isset($this->fields['latlon_coordinate'])
+            ? $this->fields['latlon_coordinate'] : [];
     }
 
     /**
@@ -302,8 +302,8 @@ class SolrMarc extends SolrDefault
      */
     public function getLatLonLabels()
     {
-        return isset($this->fields['latlon_label']) ?
-        $this->fields['latlon_label'] : [];
+        return isset($this->fields['latlon_label'])
+            ? $this->fields['latlon_label'] : [];
     }
 
     /**
