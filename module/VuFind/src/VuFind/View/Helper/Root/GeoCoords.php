@@ -25,7 +25,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-namespace iodp\View\Helper\Root;
+namespace VuFind\View\Helper\Root;
+/**
+ * GeoCoords view helper
+ *
+ * @category VuFind
+ * @package  View_Helpers
+ * @author   Leila Gonzales <lmg@agiweb.org>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
 
 class GeoCoords extends \Zend\View\Helper\AbstractHelper
 {
@@ -37,7 +46,7 @@ class GeoCoords extends \Zend\View\Helper\AbstractHelper
     protected $coords;
 
     /**
-     * geoField variable name
+     * Get geoField variable name
      *
      * @var string
      */
