@@ -32,7 +32,6 @@ namespace VuFind\Recommend;
 
 class MapSelection implements \VuFind\Recommend\RecommendInterface
 {
-
     /**
      * Default coordinates. Order is WENS
      *
@@ -73,7 +72,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      *
      * @var string
      */
-    protected $searchObject;   
+    protected $searchObject;
  
     /**
      * Configuration loader
@@ -103,7 +102,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     public function setConfig($settings)
     {
         $settings = explode(':', $settings);
-        $mainSection = empty($settings[0]) ? 'MapSelection':$settings[0];
+        $mainSection = empty($settings[0]) ? 'MapSelection' : $settings[0];
         $iniName = isset($settings[1]) ? $settings[1] : 'searches';
         $config = $this->configLoader->get($iniName);
         if (isset($config->$mainSection)) {
@@ -136,11 +135,11 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      */
     public function init($params, $request)
     {
-        $coords =[];
+        $coords = [];
         $filters = $params->getFilters();
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
-                $match = array();
+                $match = [];
                 if (preg_match('/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', $value[0], $match)) {
                    // Need to reorder coords from WENS to WSEN
                    array_push($coords, (float)$match[1], (float)$match[4], (float)$match[2], (float)$match[3]);
@@ -166,7 +165,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $filters = $results->getParams()->getFilters();
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
-                $match = array();
+                $match = [];
                 if (preg_match('/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', $value[0], $match)) {
                    // Need to reorder coords from WENS to WSEN
                    array_push($reorder_coords, (float)$match[1], (float)$match[4], (float)$match[2], (float)$match[3]);
@@ -251,4 +250,4 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         return $this->geoField;
     }
 
-} 
+}
