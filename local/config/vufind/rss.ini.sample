@@ -107,7 +107,7 @@ itemsPerPage[mobile] = 1
 [carousel-small]
 type = "carousel"
 active = 1
-url[*] = "themes/finna/templates/rss/hanna.xml"
+url[*]= "https://musasto.wordpress.com/feed/"
 title = 'rss'
 height = 150
 titlePosition = "bottom"
@@ -125,7 +125,7 @@ scrolledItems[mobile] = 2
 [carousel-vertical]
 type = "carousel-vertical"
 active = 1
-url[*] = "http://blogs.helsinki.fi/scriptaselecta/feed/"
+url[*]= "https://musasto.wordpress.com/feed/"
 title = 'rss'
 height = 200
 content[text] = 0
@@ -142,7 +142,7 @@ scrolledItems[mobile] = 1
 
 [news]
 active = 1
-url[*] = "http://blogs.helsinki.fi/scriptaselecta/feed/"
+url[*]= "https://musasto.wordpress.com/feed/"
 type = list
 title = "rss"
 content[text] = 0
