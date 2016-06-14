@@ -82,7 +82,11 @@ function checkItemStatuses(_container) {
         item.find('.locationDetails').empty().append(locationListHTML);
       } else {
         // Default case -- load call number and location into appropriate containers:
-        item.find('.callnumber').empty().append(result.callnumber + '<br/>');
+        var callnumber = result.callnumber;
+        if (result.link) {
+          callnumber = '<a href="' + VuFind.path + '/Alphabrowse/Home?source='+encodeURI(result.link)+'&from='+encodeURI(callnumber)+'">' + callnumber + '</a>';
+        }
+        item.find('.callnumber').empty().append(callnumber + '<br/>');
         item.find('.location').empty().append(
           result.reserve === 'true'
           ? result.reserve_message

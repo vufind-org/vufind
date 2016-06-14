@@ -394,6 +394,8 @@ class AjaxController extends AbstractBase
                 : $messages[$available ? 'available' : 'unavailable'];
         }
 
+        $sconfig = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
+
         // Send back the collected details:
         return [
             'id' => $record[0]['id'],
@@ -406,7 +408,10 @@ class AjaxController extends AbstractBase
             'reserve_message' => $record[0]['reserve'] == 'Y'
                 ? $this->translate('on_reserve')
                 : $this->translate('Not On Reserve'),
-            'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8')
+            'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8'),
+            'link' => isset($sconfig['General']['callnumber_link'])
+                ? $sconfig['General']['callnumber_link']
+                : false
         ];
     }
 

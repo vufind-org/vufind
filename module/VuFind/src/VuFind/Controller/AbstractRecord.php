@@ -707,6 +707,11 @@ class AbstractRecord extends AbstractBase
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
+        $sconfig = $this->getConfig('searches');
+        $view->callnumberLink = isset($sconfig['General']['callnumber_link'])
+            ? $sconfig['General']['callnumber_link']
+            : false;
+
         $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');
         return $view;
     }
