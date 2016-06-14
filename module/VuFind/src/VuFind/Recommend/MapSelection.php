@@ -30,6 +30,16 @@
  */
 namespace VuFind\Recommend;
 
+/**
+ * MapSelection Recommendations Module
+ *
+ * @category VuFind2
+ * @package  Recommendations
+ * @author   Vaclav Rosecky <xrosecky@gmail.com>
+ * @author   Leila Gonzales <lmg@agiweb.org>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
+ */
 class MapSelection implements \VuFind\Recommend\RecommendInterface
 {
     /**
@@ -40,35 +50,35 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     protected $defaultCoordinates = [];
     
     /**
-     * geoField variable name
+     * The geoField variable name
      *
      * @var string
      */
     protected $geoField;
     
     /**
-     * height of search map pane
+     * Height of search map pane
      *
      * @var string
      */
     protected $height;
     
     /**
-     * set selectedCoordinates to null
+     * Selected coordinates
      *
      * @var string
      */
     protected $selectedCoordinates = null;
     
     /**
-     * set searchParams to null
+     * Search parameters
      *
      * @var string
      */
     protected $searchParams = null;
  
     /**
-     * searchObject
+     * Search object
      *
      * @var string
      */
@@ -86,7 +96,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader) {
+    public function __construct(\VuFind\Config\PluginManager $configLoader) 
+    {
         $this->configLoader = $configLoader;
     }
     
@@ -141,8 +152,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             if ($key == $this->geoField) {
                 $match = [];
                 if (preg_match('/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', $value[0], $match)) {
-                   // Need to reorder coords from WENS to WSEN
-                   array_push($coords, (float)$match[1], (float)$match[4], (float)$match[2], (float)$match[3]);
+                    // Need to reorder coords from WENS to WSEN
+                    array_push($coords, (float)$match[1], (float)$match[4], (float)$match[2], (float)$match[3]);
                 }
             }
         }
@@ -167,8 +178,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             if ($key == $this->geoField) {
                 $match = [];
                 if (preg_match('/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', $value[0], $match)) {
-                   // Need to reorder coords from WENS to WSEN
-                   array_push($reorder_coords, (float)$match[1], (float)$match[4], (float)$match[2], (float)$match[3]);
+                    // Need to reorder coords from WENS to WSEN
+                    array_push($reorder_coords, (float)$match[1], (float)$match[4], (float)$match[2], (float)$match[3]);
                     $this->selectedCoordinates = $reorder_coords;
                 }
                 $this->searchParams = $results->getUrlQuery()->removeFacet($this->geoField, $value[0], false);
@@ -210,7 +221,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      * 
      * @return number
      */
-    public function getHeight() {
+    public function getHeight() 
+    {
         return $this->height;
     }
     
@@ -218,7 +230,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      * getSearchParams
      * 
      * Return search params without filter for geographic search
-     * 
      */
     public function getSearchParams()
     {
@@ -230,12 +241,11 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      *
      * Return search params without leading question mark and colon.
      * Copied from ResultGoogleMapAjax.php and chngd name to add NoQ.LMG 
-     *
      */
     public function getSearchParamsNoQ()
     {
         // Get search parameters and return them minus the leading ?:
-           return substr($this->searchObject->getUrlQuery()->getParams(false),1);
+           return substr($this->searchObject->getUrlQuery()->getParams(false), 1);
     }
 
     /**

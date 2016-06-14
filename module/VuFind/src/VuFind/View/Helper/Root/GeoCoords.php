@@ -46,14 +46,14 @@ class GeoCoords extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param string $coords       Default coordinates
-     * @param string $geoField     geoField variable name
+     * @param string $coords   Default coordinates
+     * @param string $geoField geoField variable name
      */
     public function __construct($coords, $geoField)
     {
         $this->coords = $coords;
         $this->geoField = $geoField;
-   }
+    }
 
     /**
      * Invoke
