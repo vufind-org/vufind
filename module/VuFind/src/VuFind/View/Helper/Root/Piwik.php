@@ -113,7 +113,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     /**
      * Returns Piwik code (if active) or empty string if not.
      *
-     * @params array $params Parameters
+     * @param array $params Parameters
      *
      * @return string
      */
@@ -360,7 +360,8 @@ EOT;
      *
      * @return string URL
      */
-    protected function getCustomUrl() {
+    protected function getCustomUrl()
+    {
         $path = $this->request->getUri()->getPath();
         $routeMatch = $this->router->match($this->request);
         if ($routeMatch
