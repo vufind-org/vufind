@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, sessionStorage, registerAjaxCommentRecord, registerTabEvents, syn_get_widget, VuFind */
+/*global checkSaveStatuses, registerAjaxCommentRecord, registerTabEvents, syn_get_widget, VuFind */
 VuFind.register('embedded', function embedded() {
   var _STORAGEKEY = 'vufind_search_open';
   var _SEPERATOR = ':::';
@@ -25,42 +25,6 @@ VuFind.register('embedded', function embedded() {
   function removeFromStorage(id) {
     if (delete _STATUS[id]) {
       saveStatusToStorage();
-    }
-  }
-  function loadStorage() {
-    var storage = sessionStorage.getItem(_STORAGEKEY);
-    if (!storage) {
-      return;
-    }
-    var items = storage.split(_DELIM);
-    var doomed = [];
-    var hiddenIds;
-    var parts;
-    var result;
-    var i;
-    var j;
-    if (!storage) return;
-    hiddenIds = $('.hiddenId');
-    for (i = 0; i < items.length; i++) {
-      parts = items[i].split(_SEPERATOR);
-      _STATUS[parts[0]] = parts[1] || null;
-      result = null;
-      for (j = 0; j < hiddenIds.length; j++) {
-        if (hiddenIds[j].value === parts[0]) {
-          result = $(hiddenIds[j]).closest('.result');
-          break;
-        }
-      }
-      if (result === null) {
-        doomed.push(parts[0]);
-        continue;
-      }
-      var $link = result.find('.getFull');
-      $link.addClass('auto expanded');
-      toggleDataView($link, parts[1]);
-    }
-    for (i = 0; i < doomed.length; i++) {
-      removeFromStorage(doomed[i]);
     }
   }
 
@@ -124,6 +88,7 @@ VuFind.register('embedded', function embedded() {
     var result = $link.closest('.result');
     var mediaBody = result.find('.media-body');
     var shortNode = mediaBody.find('.short-view');
+    var longNode = mediaBody.find('.long-view');
     // Insert new elements
     if (!$link.hasClass('js-setup')) {
       $link.prependTo(mediaBody);
@@ -145,7 +110,6 @@ VuFind.register('embedded', function embedded() {
     }
     // Gather information
     var divID = result.find('.hiddenId')[0].value;
-    var longNode = mediaBody.find('.long-view');
     // Toggle visibility
     if (!longNode.is(':visible')) {
       // AJAX for information
@@ -216,6 +180,45 @@ VuFind.register('embedded', function embedded() {
       removeFromStorage(divID);
     }
     return false;
+  }
+
+  function loadStorage() {
+    var storage = sessionStorage.getItem(_STORAGEKEY);
+    if (!storage) {
+      return;
+    }
+    var items = storage.split(_DELIM);
+    var doomed = [];
+    var hiddenIds;
+    var parts;
+    var result;
+    var i;
+    var j;
+    if (!storage) {
+      return;
+    }
+    hiddenIds = $('.hiddenId');
+    for (i = 0; i < items.length; i++) {
+      parts = items[i].split(_SEPERATOR);
+      _STATUS[parts[0]] = parts[1] || null;
+      result = null;
+      for (j = 0; j < hiddenIds.length; j++) {
+        if (hiddenIds[j].value === parts[0]) {
+          result = $(hiddenIds[j]).closest('.result');
+          break;
+        }
+      }
+      if (result === null) {
+        doomed.push(parts[0]);
+        continue;
+      }
+      var $link = result.find('.getFull');
+      $link.addClass('auto expanded');
+      toggleDataView($link, parts[1]);
+    }
+    for (i = 0; i < doomed.length; i++) {
+      removeFromStorage(doomed[i]);
+    }
   }
 
   function init() {

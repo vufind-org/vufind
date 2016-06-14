@@ -1,4 +1,4 @@
-/*global $, document, CustomEvent, VuFind, window */
+/*global VuFind */
 VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
@@ -77,6 +77,8 @@ VuFind.register('lightbox', function Lightbox() {
    *
    * data-lightbox-ignore = do not submit this form in lightbox
    */
+  var _constrainLink; // function declarations to avoid style warnings
+  var _formSubmit;    // about circular references
   function _update(content) {
     if (!content.match) {
       return;
@@ -200,7 +202,7 @@ VuFind.register('lightbox', function Lightbox() {
    * data-lightbox-post = post data
    * data-lightbox-title = Lightbox title (overrides any title the page provides)
    */
-  function _constrainLink(event) {
+  _constrainLink = function constrainLink(event) {
     if (typeof $(this).data('lightboxIgnore') != 'undefined' || this.attributes.href.value.charAt(0) === '#') {
       return true;
     }
@@ -232,7 +234,7 @@ VuFind.register('lightbox', function Lightbox() {
    *
    * data-lightbox-ignore = do not handle clicking this button in lightbox
    */
-  function _formSubmit(event) {
+  _formSubmit = function formSubmit(event) {
     // Gather data
     var form = event.target;
     var data = $(form).serializeArray();

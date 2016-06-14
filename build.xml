@@ -107,13 +107,13 @@
 
   <!-- ESLint -->
   <target name="eslint">
-    <exec command="eslint -c ${srcdir}/.eslintrc.json ${srcdir}/themes/bootstrap3/js/*.js" escape="false" checkreturn="true" passthru="true" />
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js" escape="false" checkreturn="true" passthru="true" />
   </target>
   <target name="eslint-fix">
-    <exec command="eslint --fix -c ${srcdir}/.eslintrc.json ${srcdir}/themes/bootstrap3/js/*.js" escape="false" passthru="true" />
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --fix" escape="false" passthru="true" />
   </target>
   <target name="eslint-report">
-    <exec command="eslint -c ${srcdir}/.eslintrc.json ${srcdir}/themes/bootstrap3/js/*.js -f checkstyle -o ${builddir}/reports/eslint.xml" escape="false" />
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --format checkstyle -o ${builddir}/reports/eslint.xml" escape="false" />
   </target>
 
   <!-- PHP API Documentation -->

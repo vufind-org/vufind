@@ -715,6 +715,7 @@ $config = [
                 'ipRegEx' => 'VuFind\Role\PermissionProvider\Factory::getIpRegEx',
                 'serverParam' => 'VuFind\Role\PermissionProvider\Factory::getServerParam',
                 'shibboleth' => 'VuFind\Role\PermissionProvider\Factory::getShibboleth',
+                'user' => 'VuFind\Role\PermissionProvider\Factory::getUser',
                 'username' => 'VuFind\Role\PermissionProvider\Factory::getUsername',
             ],
             'invokables' => [
