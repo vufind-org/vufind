@@ -28,7 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
-namespace iodp\Recommend;
+namespace VuFind\Recommend;
 
 class MapSelection implements \VuFind\Recommend\RecommendInterface
 {
