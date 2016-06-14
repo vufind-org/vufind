@@ -165,8 +165,7 @@ class Map extends AbstractBase
             /* Create coordinate label for map display */
             if (($labelW == $labelE) && ($labelN == $labelS)) {
                 $labelcoord =$labelS.' '.$labelE;
-            }
-            else {
+            } else {
                 /* Coordinate order is min to max on lat and long axes */
                 $labelcoord =$labelS.' '.$labelN.' '.$labelW.' '.$labelE;
             }
