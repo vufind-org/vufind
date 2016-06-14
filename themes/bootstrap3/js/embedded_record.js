@@ -1,11 +1,11 @@
-/* global checkSaveStatuses, sessionStorage, registerAjaxCommentRecord, registerTabEvents, setupRecordToolbar, syn_get_widget, VuFind */
-VuFind.register('embedded', function() {
+/*global checkSaveStatuses, registerAjaxCommentRecord, registerTabEvents, syn_get_widget, VuFind */
+VuFind.register('embedded', function embedded() {
   var _STORAGEKEY = 'vufind_search_open';
   var _SEPERATOR = ':::';
   var _DELIM = ',';
   var _STATUS = {};
 
-  var saveStatusToStorage = function saveStatusToStorage() {
+  function saveStatusToStorage() {
     var storage = [];
     var str;
     for (str in _STATUS) {
@@ -17,57 +17,20 @@ VuFind.register('embedded', function() {
       }
     }
     sessionStorage.setItem(_STORAGEKEY, $.unique(storage).join(_DELIM));
-  };
-  var addToStorage = function addToStorage(id, tab) {
+  }
+  function addToStorage(id, tab) {
     _STATUS[id] = tab;
     saveStatusToStorage();
-  };
-  var removeFromStorage = function removeFromStorage(id) {
+  }
+  function removeFromStorage(id) {
     if (delete _STATUS[id]) {
       saveStatusToStorage();
     }
-  };
-  var loadStorage = function loadStorage() {
-    var storage = sessionStorage.getItem(_STORAGEKEY);
-    if (!storage) {
-      return;
-    }
-    var items = storage.split(_DELIM);
-    var doomed = [];
-    var hiddenIds;
-    var parts;
-    var result;
-    var i;
-    var j;
-    if (!storage) return;
-    hiddenIds = $('.hiddenId');
-    for (i = 0; i < items.length; i++) {
-      parts = items[i].split(_SEPERATOR);
-      _STATUS[parts[0]] = parts[1] || null;
-      result = null;
-      for (j = 0; j < hiddenIds.length; j++) {
-        if (hiddenIds[j].value === parts[0]) {
-          result = $(hiddenIds[j]).closest('.result');
-          break;
-        }
-      }
-      if (result === null) {
-        doomed.push(parts[0]);
-        continue;
-      }
-      var $link = result.find('.getFull');
-      $link.addClass('auto expanded');
-      toggleDataView($link, parts[1]);
-    }
-    for (i = 0; i < doomed.length; i++) {
-      removeFromStorage(doomed[i]);
-    }
-  };
+  }
 
-  var ajaxLoadTab = function ajaxLoadTab(tabid, _click) {
+  function ajaxLoadTab(tabid, _click) {
     var click = _click || false;
     var $tab = $('#' + tabid);
-    console.log($tab);
     var $result = $tab.closest('.result');
     if ($result.length === 0) {
       return true;
@@ -113,9 +76,9 @@ VuFind.register('embedded', function() {
       $tab.click();
     }
     return true;
-  };
+  }
 
-  var toggleDataView = function toggleDataView(_link, tabid) {
+  function toggleDataView(_link, tabid) {
     var $link = $(_link);
     var viewType = $link.attr('data-view');
     // If full, return true
@@ -125,6 +88,7 @@ VuFind.register('embedded', function() {
     var result = $link.closest('.result');
     var mediaBody = result.find('.media-body');
     var shortNode = mediaBody.find('.short-view');
+    var longNode = mediaBody.find('.long-view');
     // Insert new elements
     if (!$link.hasClass('js-setup')) {
       $link.prependTo(mediaBody);
@@ -137,16 +101,15 @@ VuFind.register('embedded', function() {
                 + VuFind.translate('loading') + '...</div>')
         .before(longNode);
       $link.addClass('js-setup');
-      longNode.on('show.bs.collapse', function() {
+      longNode.on('show.bs.collapse', function embeddedExpand() {
         $link.addClass('expanded');
       });
-      longNode.on('hidden.bs.collapse', function() {
+      longNode.on('hidden.bs.collapse', function embeddedCollapsed() {
         $link.removeClass('expanded');
       });
     }
     // Gather information
     var divID = result.find('.hiddenId')[0].value;
-    var longNode = mediaBody.find('.long-view');
     // Toggle visibility
     if (!longNode.is(':visible')) {
       // AJAX for information
@@ -219,10 +182,49 @@ VuFind.register('embedded', function() {
     return false;
   }
 
-  var init = function init() {
+  function loadStorage() {
+    var storage = sessionStorage.getItem(_STORAGEKEY);
+    if (!storage) {
+      return;
+    }
+    var items = storage.split(_DELIM);
+    var doomed = [];
+    var hiddenIds;
+    var parts;
+    var result;
+    var i;
+    var j;
+    if (!storage) {
+      return;
+    }
+    hiddenIds = $('.hiddenId');
+    for (i = 0; i < items.length; i++) {
+      parts = items[i].split(_SEPERATOR);
+      _STATUS[parts[0]] = parts[1] || null;
+      result = null;
+      for (j = 0; j < hiddenIds.length; j++) {
+        if (hiddenIds[j].value === parts[0]) {
+          result = $(hiddenIds[j]).closest('.result');
+          break;
+        }
+      }
+      if (result === null) {
+        doomed.push(parts[0]);
+        continue;
+      }
+      var $link = result.find('.getFull');
+      $link.addClass('auto expanded');
+      toggleDataView($link, parts[1]);
+    }
+    for (i = 0; i < doomed.length; i++) {
+      removeFromStorage(doomed[i]);
+    }
+  }
+
+  function init() {
     $('.getFull').click(function linkToggle() { return toggleDataView(this); });
     loadStorage();
-  };
+  }
 
   return { init: init };
 });

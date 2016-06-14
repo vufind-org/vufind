@@ -391,30 +391,26 @@ class Bootstrapper
     }
 
     /**
-     * Set up custom 404 status based on exception type.
+     * Set up custom HTTP status based on exception information.
      *
      * @return void
      */
-    protected function initExceptionBased404s()
+    protected function initExceptionBasedHttpStatuses()
     {
-        // 404s not needed in console mode:
+        // HTTP statuses not needed in console mode:
         if (Console::isConsole()) {
             return;
         }
 
         $callback = function ($e) {
             $exception = $e->getParam('exception');
-            if (is_object($exception)) {
-                if ($exception instanceof \VuFind\Exception\RecordMissing) {
-                    // TODO: it might be better to solve this problem by using a
-                    // custom RouteNotFoundStrategy.
-                    $response = $e->getResponse();
-                    if (!$response) {
-                        $response = new HttpResponse();
-                        $e->setResponse($response);
-                    }
-                    $response->setStatusCode(404);
+            if ($exception instanceof \VuFind\Exception\HttpStatusInterface) {
+                $response = $e->getResponse();
+                if (!$response) {
+                    $response = new HttpResponse();
+                    $e->setResponse($response);
                 }
+                $response->setStatusCode($exception->getHttpStatus());
             }
         };
         $this->events->attach('dispatch.error', $callback);

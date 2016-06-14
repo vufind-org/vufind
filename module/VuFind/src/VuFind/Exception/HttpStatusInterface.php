@@ -1,6 +1,7 @@
 <?php
 /**
- * List Permission Exception
+ * Interface for exceptions that should trigger specific HTTP status codes
+ * when unhandled.
  *
  * PHP version 5
  *
@@ -28,7 +29,8 @@
 namespace VuFind\Exception;
 
 /**
- * List Permission Exception
+ * Interface for exceptions that should trigger specific HTTP status codes
+ * when unhandled.
  *
  * @category VuFind
  * @package  Exceptions
@@ -36,6 +38,12 @@ namespace VuFind\Exception;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ListPermission extends Forbidden
+interface HttpStatusInterface
 {
+    /**
+     * Get HTTP status associated with this exception.
+     *
+     * @return int
+     */
+    public function getHttpStatus();
 }
