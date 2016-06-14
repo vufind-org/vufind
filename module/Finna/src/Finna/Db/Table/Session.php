@@ -67,7 +67,7 @@ class Session extends \VuFind\Db\Table\Session
                     error_log("getBySessionId succeeded on attempt $try");
                 }
                 return $result;
-            } catch (\Zend\Db\Adapter\Exception\RuntimeException $e) {
+            } catch (\Exception $e) {
                 if ($try <= 5 && in_array($e->getMessage(), $this->retryErrors)) {
                     usleep(250000);
                     ++$try;
@@ -96,7 +96,7 @@ class Session extends \VuFind\Db\Table\Session
                     error_log("writeSession succeeded on attempt $try");
                 }
                 return;
-            } catch (\Zend\Db\Adapter\Exception\RuntimeException $e) {
+            } catch (\Exception $e) {
                 if ($try <= 5 && in_array($e->getMessage(), $this->retryErrors)) {
                     usleep(250000);
                     ++$try;
