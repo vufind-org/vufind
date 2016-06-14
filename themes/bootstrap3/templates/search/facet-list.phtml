@@ -5,12 +5,13 @@
     $this->sort = 'default';
     $this->sortOptions = [ 'default' => 'default' ];
   }
+  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetexclude=' . $this->exclude . '&amp;facetop=' . $this->operator;
 ?>
 <? if (count($this->sortOptions) > 1): ?>
   <label><?=$this->translate('Sort') ?></label>
   <div class="btn-group">
     <? foreach ($this->sortOptions as $key=>$sort): ?>
-      <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetpage=1&amp;facetsort=' . urlencode($key) ?>" class="btn btn-default js-facet-sort<? if($this->sort == $key): ?> active<? endif; ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate($sort) ?></a>
+      <a href="<?=$urlBase . '&amp;facetpage=1&amp;facetsort=' . urlencode($key) ?>" class="btn btn-default js-facet-sort<? if($this->sort == $key): ?> active<? endif; ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate($sort) ?></a>
     <? endforeach; ?>
   </div>
 <? endif; ?>
@@ -20,7 +21,7 @@
     <div class="full-facet-list list-group<? if(!$active): ?> hidden<? endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
       <? if ($active): ?>
         <? if ($this->page > 1): ?>
-          <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetpage=' . ($this->page-1) . '&amp;facetsort=' . $this->sort ?>" class="list-group-item js-facet-prev-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev') ?> ...</a>
+          <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page-1) . '&amp;facetsort=' . $this->sort ?>" class="list-group-item js-facet-prev-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev') ?> ...</a>
         <? endif; ?>
         <? foreach ($this->data as $item): ?>
           <? $toggleUrl = $item['isApplied']
@@ -29,8 +30,8 @@
           ?>
           <? $subLinks = $this->exclude && !$item['isApplied']; ?>
           <? if ($subLinks): ?>
-            <li class="list-group-item">
-              <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="js-facet-item" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<? if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<? endif;?>>
+            <li class="list-group-item js-facet-item">
+              <a href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<? if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<? endif;?>>
           <? else: ?>
             <a href="<?=$toggleUrl ?>" data-lightbox-ignore class="js-facet-item list-group-item<? if($item['isApplied']): ?> active<?endif;?>" data-title="<?=$this->escapeHtmlAttr($item['displayText']) ?>" data-count="<?=$item['count'] ?>"<? if($item['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<? endif;?>>
           <? endif; ?>
@@ -54,7 +55,7 @@
               <span class="badge">
                 <?=$this->localizedNumber($item['count']) ?>
                 <? if ($this->exclude): ?>
-                  <a href="<?=$this->url($options->getSearchAction()) . $this->results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
+                  <a href="<?=$this->url($options->getSearchAction()) . $this->results->getUrlQuery()->addFacet($this->facet, $item['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>" data-lightbox-ignore><i class="fa fa-times" aria-hidden="true"></i></a>
                 <? endif; ?>
               </span>
             <? endif; ?>
@@ -62,14 +63,10 @@
         <? endforeach; ?>
       <? endif; ?>
       <? if ($this->anotherPage): ?>
-        <a href="<?=$this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetpage=' . ($this->page+1) . '&amp;facetsort=' . urlencode($key) ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->translate('more') ?> ...</a>
+        <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page+1) . '&amp;facetsort=' . urlencode($key) ?>" class="list-group-item js-facet-next-page" data-page="<?=($this->page+1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore><?=$this->translate('more') ?> ...</a>
       <? endif; ?>
     </div>
   <? endforeach; ?>
 </div>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
-<?
-  $url = str_replace('&amp;', '&', $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&facet=' . urlencode($this->facet));
-  $script = "VuFind.lightbox_facets.setup('{$url}');";
-?>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, 'VuFind.lightbox_facets.setup();', 'SET'); ?>
