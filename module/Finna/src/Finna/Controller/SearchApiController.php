@@ -917,10 +917,21 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             $translate = $this->getViewRenderer()->plugin('translate');
             foreach ($urls as &$url) {
                 if (isset($url['source'])) {
+                    if (is_array($url['source'])) {
+                        $translated = [];
+                        foreach ($url['source'] as $source) {
+                            $translated[] = $translate->translate(
+                                "source_$source", null, $source
+                            );
+                        }
+                    } else {
+                        $translated = $translate->translate(
+                            'source_' . $url['source']
+                        );
+                    }
                     $url['source'] = [
                         'value' => $url['source'],
-                        'translated'
-                           => $translate->translate('source_' . $url['source'])
+                        'translated' => $translated
                     ];
                 }
             }
