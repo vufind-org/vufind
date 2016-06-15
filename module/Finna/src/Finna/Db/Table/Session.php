@@ -69,10 +69,11 @@ class Session extends \VuFind\Db\Table\Session
                 return $result;
             } catch (\Exception $e) {
                 if ($try <= 5 && in_array($e->getMessage(), $this->retryErrors)) {
-                    usleep(250000);
+                    usleep(150000);
                     ++$try;
                     continue;
                 }
+                error_log("getBySessionId failed even after retries");
                 throw $e;
             }
         }
@@ -98,10 +99,11 @@ class Session extends \VuFind\Db\Table\Session
                 return;
             } catch (\Exception $e) {
                 if ($try <= 5 && in_array($e->getMessage(), $this->retryErrors)) {
-                    usleep(250000);
+                    usleep(150000);
                     ++$try;
                     continue;
                 }
+                error_log("writeSession failed even after retries");
                 throw $e;
             }
         }
