@@ -68,6 +68,8 @@ abstract class AbstractBase implements SaveHandlerInterface,
 
     /**
      * Disable session writing, i.e. make it read-only
+     *
+     * @return void
      */
     public function disableWrites()
     {
