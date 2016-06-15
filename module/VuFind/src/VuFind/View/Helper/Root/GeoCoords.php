@@ -39,6 +39,13 @@ namespace VuFind\View\Helper\Root;
 class GeoCoords extends \Zend\View\Helper\AbstractHelper
 {
     /**
+     * Is Map Search enabled?
+     *
+     * @var bool
+     */
+    protected $enabled;
+
+    /**
      * Default coordinates 
      *
      * @var string
@@ -55,11 +62,13 @@ class GeoCoords extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
+     * @param bool $enabled        MapSearch enabled flag
      * @param string $coords   Default coordinates
      * @param string $geoField geoField variable name
      */
-    public function __construct($coords, $geoField)
+    public function __construct($enabled, $coords, $geoField)
     {
+        $this->enabled = $enabled;
         $this->coords = $coords;
         $this->geoField = $geoField;
     }
@@ -71,7 +80,7 @@ class GeoCoords extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke()
     {
-        $data = [$this->coords, $this->geoField];
+        $data = [$this->enabled, $this->coords, $this->geoField];
         return $data;
     }
 }
