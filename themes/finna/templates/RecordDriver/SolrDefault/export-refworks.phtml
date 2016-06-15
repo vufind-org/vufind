@@ -166,6 +166,16 @@ if (is_array($issns)) {
 $subjects = $this->driver->tryMethod('getAllSubjectHeadings');
 if (is_array($subjects)) {
     foreach ($subjects as $subject) {
+        if (is_array($subject)) {
+            $subject = array_map(
+                function ($val) {
+                    return rtrim($val, '. ');
+                },
+                $subject
+            );
+        } else {
+            $subject = rtrim($subject, '. ');
+        }
         $subject = is_array($subject) ? implode(' : ', $subject) : $subject;
         echo "K1 $subject\n";
     }
