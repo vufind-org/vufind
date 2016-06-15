@@ -188,5 +188,5 @@ abstract class AbstractBase implements SaveHandlerInterface,
      *
      * @return bool
      */
-    protected abstract function saveSession($sess_id, $data);
+    abstract protected function saveSession($sess_id, $data);
 }
