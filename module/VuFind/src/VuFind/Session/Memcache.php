@@ -90,21 +90,6 @@ class Memcache extends AbstractBase
     }
 
     /**
-     * Write function that is called when session data is to be saved.
-     *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
-     *
-     * @return bool
-     */
-    public function write($sess_id, $data)
-    {
-        return $this->getConnection()->set(
-            "vufind_sessions/{$sess_id}", $data, 0, $this->lifetime
-        );
-    }
-
-    /**
      * The destroy handler, this is executed when a session is destroyed with
      * session_destroy() and takes the session id as its only parameter.
      *
@@ -119,5 +104,20 @@ class Memcache extends AbstractBase
 
         // Perform Memcache-specific cleanup:
         return $this->getConnection()->delete("vufind_sessions/{$sess_id}");
+    }
+
+    /**
+     * A function that is called internally when session data is to be saved.
+     *
+     * @param string $sess_id The current session ID
+     * @param string $data    The session data to write
+     *
+     * @return bool
+     */
+    protected function saveSession($sess_id, $data)
+    {
+        return $this->getConnection()->set(
+            "vufind_sessions/{$sess_id}", $data, 0, $this->lifetime
+        );
     }
 }
