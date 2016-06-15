@@ -109,9 +109,8 @@ class Map extends AbstractBase
         if (!$this->enabled) {
             return false;
         }
-        if ($this->enabled) {
-            return true;
-        }
+        $geocoords = $this->getRecordDriver()->tryMethod('getBbox');
+         return !empty($geocoords);
     }
     
     /**
