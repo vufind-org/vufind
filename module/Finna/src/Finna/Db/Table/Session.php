@@ -39,16 +39,6 @@ namespace Finna\Db\Table;
 class Session extends \VuFind\Db\Table\Session
 {
     /**
-     * Errors that are retried if encountered
-     *
-     * @var array
-     */
-    protected $retryErrors = [
-        "Commands out of sync; you can't run this command now",
-        'Deadlock found when trying to get lock; try restarting transaction'
-    ];
-
-    /**
      * Retrieve an object from the database based on session ID; create a new
      * row if no existing match is found.
      *
@@ -63,17 +53,19 @@ class Session extends \VuFind\Db\Table\Session
         while (true) {
             try {
                 $result = parent::getBySessionId($sid, $create);
-                if ($try > 1) {
-                    error_log("getBySessionId succeeded on attempt $try");
-                }
                 return $result;
             } catch (\Exception $e) {
-                if ($try <= 5 && in_array($e->getMessage(), $this->retryErrors)) {
-                    usleep(150000);
+                if ($try <= 5) {
+                    usleep($try * 100000);
                     ++$try;
+                    // Reset connection before retrying
+                    $this->getAdapter()->getDriver()->getConnection()->disconnect();
+                    $this->getAdapter()->getDriver()->getConnection()->connect();
                     continue;
                 }
-                error_log("getBySessionId failed even after retries");
+                error_log(
+                    'getBySessionId failed even after retries: ' . $e->getMessage()
+                );
                 throw $e;
             }
         }
@@ -93,17 +85,19 @@ class Session extends \VuFind\Db\Table\Session
         while (true) {
             try {
                 parent::writeSession($sid, $data);
-                if ($try > 1) {
-                    error_log("writeSession succeeded on attempt $try");
-                }
                 return;
             } catch (\Exception $e) {
-                if ($try <= 5 && in_array($e->getMessage(), $this->retryErrors)) {
-                    usleep(150000);
+                if ($try <= 5) {
+                    usleep($try * 100000);
                     ++$try;
+                    // Reset connection before retrying
+                    $this->getAdapter()->getDriver()->getConnection()->disconnect();
+                    $this->getAdapter()->getDriver()->getConnection()->connect();
                     continue;
                 }
-                error_log("writeSession failed even after retries");
+                error_log(
+                    'writeSession failed even after retries: ' . $e->getMessage()
+                );
                 throw $e;
             }
         }
