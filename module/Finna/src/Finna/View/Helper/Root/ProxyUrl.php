@@ -154,7 +154,7 @@ class ProxyUrl extends \VuFind\View\Helper\Root\ProxyUrl
                 }
                 $datasources = $driver->tryMethod('getSource');
                 if (!empty($datasources)) {
-                    foreach (is_array($datasources) ? $datasources : [$datasource]
+                    foreach (is_array($datasources) ? $datasources : [$datasources]
                         as $datasource
                     ) {
                         if (!empty($config->include_datasource)) {
