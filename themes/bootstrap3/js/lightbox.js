@@ -219,7 +219,7 @@ VuFind.register('lightbox', function Lightbox() {
       VuFind.modal('show');
       return false;
     }
-  }
+  };
 
   /**
    * Handle form submission.
@@ -284,7 +284,7 @@ VuFind.register('lightbox', function Lightbox() {
 
     VuFind.modal('show');
     return false;
-  }
+  };
 
   // Public: Attach listeners to the page
   function bind(el) {

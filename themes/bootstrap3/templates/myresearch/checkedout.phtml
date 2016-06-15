@@ -57,7 +57,7 @@
       <? $i = 0; foreach ($this->transactions as $resource): ?>
         <hr/>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row">
+        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row result">
           <? if ($this->renewForm): ?>
             <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
               <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
@@ -100,8 +100,8 @@
               <?=$this->transEsc('by')?>:
               <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><? if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?><br/>
             <? endif; ?>
-            <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
-              <?=str_replace('class="', 'class="label label-info ', $this->record($resource)->getFormatList())?>
+            <? if (count($resource->getFormats()) > 0): ?>
+              <?=$this->record($resource)->getFormatList() ?>
               <br/>
             <? endif; ?>
             <? if (!empty($ilsDetails['volume'])): ?>
