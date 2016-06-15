@@ -615,6 +615,15 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
      */
     public function getManufacturer()
     {
+        // First check for manufacturer in field 264
+        foreach ($this->getMarcRecord()->getFields('264') as $field) {
+            if ($field->getIndicator(2) != 3) {
+                continue;
+            }
+            $result = $this->getSubfieldArray($field, ['a', 'b', 'c']);
+            return $result ? $result[0] : '';
+        }
+        // Use 260 if 264 for manufacturer not found
         return $this->getFirstFieldValue('260', ['e', 'f', 'g']);
     }
 
