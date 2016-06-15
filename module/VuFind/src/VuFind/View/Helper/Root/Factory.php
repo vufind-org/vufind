@@ -212,6 +212,8 @@ class Factory
     public static function getGeoCoords(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
+        $enabled = isset($config->MapSelection->mapSearch)
+            ? $config->MapSelection->mapSearch : false;
         $coords = isset($config->MapSelection->default_coordinates)
             ? $config->MapSelection->default_coordinates : false;
         $geoField = isset($config->MapSelection->geo_field)
