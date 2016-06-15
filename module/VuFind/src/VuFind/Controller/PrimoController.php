@@ -38,12 +38,14 @@ namespace VuFind\Controller;
  */
 class PrimoController extends AbstractSearch
 {
+
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->searchClassId = 'Primo';
+        $this->accessPermission = 'access.Primo';
         parent::__construct();
     }
 
