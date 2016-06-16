@@ -989,7 +989,10 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                             // identifier if it's not used as the link description
                             if ($field == '856' && $subfield != '3') {
                                 $part = $url->getSubfield('3');
-                                $part = $part ? $part->getData() : '';
+                                $part = $part
+                                    ? $this->stripTrailingPunctuation(
+                                        $part->getData()
+                                    ) : '';
                             }
                             $desc = $desc->getData();
                         } else {
