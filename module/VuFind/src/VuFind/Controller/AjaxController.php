@@ -304,6 +304,25 @@ class AjaxController extends AbstractBase
     }
 
     /**
+     * Based on settings and the number of callnumbers, return callnumber handler
+     * Use callnumbers before pickValue is run.
+     *
+     * @param array  $callnumbers Array of callnumbers.
+     * @param string $mode        config.ini setting -- first, all or msg
+     *
+     * @return string
+     */
+    protected function getCallnumberHandler($callnumbers, $callnumberSetting) {
+        if ($callnumberSetting === 'msg' && count($callNumbers) > 1) {
+            return false;
+        }
+        $config = $this->getConfig();
+        return isset($config->Item_Status->callnumber_handler)
+            ? $config->Item_Status->callnumber_handler
+            : false;
+    }
+
+    /**
      * Reduce an array of service names to a human-readable string.
      *
      * @param array $services Names of available services.
@@ -376,13 +395,9 @@ class AjaxController extends AbstractBase
             }
         }
 
-        $config = $this->getConfig();
-        $callnumber_handler = isset($config->Item_Status->callnumber_handler)
-            ? $config->Item_Status->callnumber_handler
-            : false;
-        if ($callnumberSetting === 'msg' && count($callNumbers) > 1) {
-            $callnumber_handler = false;
-        }
+        $callnumberHandler = $this->getCallnumberHandler(
+            $callNumbers, $callnumberSetting
+        );
 
         // Determine call number string based on findings:
         $callNumber = $this->pickValue(
@@ -415,7 +430,7 @@ class AjaxController extends AbstractBase
                 ? $this->translate('on_reserve')
                 : $this->translate('Not On Reserve'),
             'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8'),
-            'callnumber_handler' => $callnumber_handler
+            'callnumber_handler' => $callnumberHandler
         ];
     }
 
@@ -458,6 +473,9 @@ class AjaxController extends AbstractBase
         foreach ($locations as $location => $details) {
             $locationCallnumbers = array_unique($details['callnumbers']);
             // Determine call number string based on findings:
+            $callnumberHandler = $this->getCallnumberHandler(
+                $callNumbers, $callnumberSetting
+            );
             $locationCallnumbers = $this->pickValue(
                 $locationCallnumbers, $callnumberSetting, 'Multiple Call Numbers'
             );
@@ -471,7 +489,8 @@ class AjaxController extends AbstractBase
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
                 'status_unknown' => isset($details['status_unknown'])
-                    ? $details['status_unknown'] : false
+                    ? $details['status_unknown'] : false,
+                'callnumber_handler' => $callnumberHandler
             ];
             $locationList[] = $locationInfo;
         }
