@@ -70,6 +70,13 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
     }   
    init();
    $('button').on('click', function () {
+    //Show Draw Search Box help if it's their first visit of the day
+    if (document.cookie.indexOf("visited")<0) {
+        // set a new cookie
+        expiry = (24*60*60*1000); // one day = 24hr * 60 min * 60 sec * 1000 milliseconds
+        document.cookie = "visited=yes; max-age=" + expiry;
+        window.alert("To draw the search box:\n1) Click and release on starting point\n2) Drag box\n3) Click on ending point");
+    }
      vectorSource.clear();
      map.removeInteraction(draw);
      addInteraction();
