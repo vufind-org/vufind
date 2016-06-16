@@ -334,6 +334,17 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             isset($config->Index->timeout) ? $config->Index->timeout : 30
         );
 
+        $search = $this->config->get($this->searchConfig);
+        if (isset($search->MoreLikeThis->useMoreLikeThisHandler)
+            && $search->MoreLikeThis->useMoreLikeThisHandler
+        ) {
+            $mlt = $search->MoreLikeThis;
+            $connector->enableMoreLikeThisHandler(
+                isset($mlt->params) ? $mlt->params : '',
+                isset($mlt->count) ? $mlt->count : null
+            );
+        }
+
         if ($this->logger) {
             $connector->setLogger($this->logger);
         }
