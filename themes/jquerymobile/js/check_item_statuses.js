@@ -1,4 +1,14 @@
 /*global path*/
+function linkCallnumbers(callnumber, callnumber_handler) {
+  if (callnumber_handler) {
+    var cns = callnumber.split(', ');
+    for (var i = 0; i < cns.length; i++) {
+      cns[i] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&from=' + encodeURI(cns[i]) + '">' + cns[i] + '</a>';
+    }
+    return cns.join(', ');
+  }
+  return callnumber;
+}
 
 function checkItemStatuses() {
     var id = $.map($('.ajaxItemId'), function(i) {
@@ -27,7 +37,7 @@ function checkItemStatuses() {
                             item.find('.status').hide();
                         } else {
                             // Default case -- load call number and location into appropriate containers:
-                            item.find('.callnumber').empty().append(result.callnumber);
+                            item.find('.callnumber').empty().append(linkCallnumbers(result.callnumber, result.callnumber_handler));
                             item.find('.location').empty().append(
                                 result.reserve == 'true'
                                 ? result.reserve_message
