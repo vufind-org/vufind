@@ -37,6 +37,10 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
 
        if (showSelection == true) {
           vectorSource.clear();
+          // Adjust bounding box (WSEN) display for queries crossing the dateline
+          if (boundingBox[0] > boundingBox[2]) {
+                boundingBox[2] = boundingBox[2] + 360;
+          }
           var newBbox = new ol.geom.Polygon([[
              ol.proj.transform([boundingBox[0],boundingBox[3]], srcProj, dstProj),
              ol.proj.transform([boundingBox[0],boundingBox[1]], srcProj, dstProj),
@@ -63,6 +67,13 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
         var coordinates = geometry.getCoordinates();
         var westnorth = ol.proj.transform(coordinates[0][0], dstProj, srcProj);
         var eastsouth = ol.proj.transform(coordinates[0][2], dstProj, srcProj);
+        // Make corrections for queries that cross the dateline 
+        if (westnorth[0] < -180) {
+         westnorth[0] = westnorth[0] + 360;
+        }
+        if (eastsouth[0] > 180) {
+          eastsouth[0] = eastsouth[0] - 360;
+        }
         var rawFilter = geoField + ':Intersects(ENVELOPE(' + westnorth[0] + ', ' + eastsouth[0] + ', ' + westnorth[1] + ', ' + eastsouth[1] + '))';
         location.href = baseURL + searchParams + "&filter[]=" + rawFilter;
       }, this);
