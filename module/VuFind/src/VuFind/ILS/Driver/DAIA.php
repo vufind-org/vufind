@@ -60,6 +60,13 @@ class DAIA extends AbstractBase implements
     protected $baseUrl;
 
     /**
+     * Flag to switch on/off caching for DAIA items
+     *
+     * @var bool
+     */
+    protected $daiaCacheEnabled = false;
+
+    /**
      * DAIA query identifier prefix
      *
      * @var string
@@ -159,6 +166,16 @@ class DAIA extends AbstractBase implements
         } else {
             $this->debug('No ContentTypes for response defined. Accepting any.');
         }
+        if (isset($this->config['DAIA']['daiaCache'])) {
+            $this->daiaCacheEnabled = $this->config['DAIA']['daiaCache'];
+        } else {
+            $this->debug('Caching not enabled, disabling it by default.');
+        }
+        if (isset($this->config['DAIA']['daiaCacheLifetime'])) {
+            $this->cacheLifetime = $this->config['DAIA']['daiaCacheLifetime'];
+        } else {
+            $this->debug('Cache lifetime not set, using VuFind\ILS\Driver\AbstractBase default value.');
+        }
     }
 
     /**
@@ -208,6 +225,13 @@ class DAIA extends AbstractBase implements
      */
     public function getStatus($id)
     {
+        // check ids for existing availability data in cache and skip these ids
+        if ($this->daiaCacheEnabled && $item = $this->getCachedData($this->generateURI($id))) {
+            if ($item != null) {
+                return $item;
+            }
+        }
+
         // let's retrieve the DAIA document by URI
         try {
             $rawResult = $this->doHTTPRequest($this->generateURI($id));
@@ -216,7 +240,10 @@ class DAIA extends AbstractBase implements
             $doc = $this->extractDaiaDoc($id, $rawResult);
             if (!is_null($doc)) {
                 // parse the extracted DAIA document and return the status info
-                return $this->parseDaiaDoc($id, $doc);
+                $data = $this->parseDaiaDoc($id, $doc);
+                // cache the status information
+                $this->putCachedData($this->generateURI($id), $data);
+                return $data;
             }
         } catch (ILSException $e) {
             $this->debug($e->getMessage());
@@ -247,41 +274,60 @@ class DAIA extends AbstractBase implements
     {
         $status = [];
 
-        try {
-            if ($this->multiQuery) {
-                // perform one DAIA query with multiple URIs
-                $rawResult = $this
-                    ->doHTTPRequest($this->generateMultiURIs($ids));
-                // the id used in VuFind can differ from the document-URI
-                // (depending on how the URI is generated)
-                foreach ($ids as $id) {
-                    // it is assumed that each DAIA document has a unique URI,
-                    // so get the document with the corresponding id
-                    $doc = $this->extractDaiaDoc($id, $rawResult);
-                    if (!is_null($doc)) {
-                        // a document with the corresponding id exists, which
-                        // means we got status information for that record
-                        $status[] = $this->parseDaiaDoc($id, $doc);
-                    }
-                    unset($doc);
-                }
-            } else {
-                // multiQuery is not supported, so retrieve DAIA documents one by
-                // one
-                foreach ($ids as $id) {
-                    $rawResult = $this->doHTTPRequest($this->generateURI($id));
-                    // extract the DAIA document for the current id from the
-                    // HTTPRequest's result
-                    $doc = $this->extractDaiaDoc($id, $rawResult);
-                    if (!is_null($doc)) {
-                        // parse the extracted DAIA document and save the status
-                        // info
-                        $status[] = $this->parseDaiaDoc($id, $doc);
-                    }
+        // check cache for given ids and skip these ids if availability data is found
+        foreach ($ids as $key=>$id) {
+            if ($this->daiaCacheEnabled && $item = $this->getCachedData($this->generateURI($id))) {
+                if ($item != null) {
+                    $status[] = $item;
+                    unset($ids[$key]);
                 }
             }
-        } catch (ILSException $e) {
-            $this->debug($e->getMessage());
+        }
+
+        // only query DAIA service if we have some ids left
+        if (count($ids) > 0) {
+            try {
+                if ($this->multiQuery) {
+                    // perform one DAIA query with multiple URIs
+                    $rawResult = $this
+                        ->doHTTPRequest($this->generateMultiURIs($ids));
+                    // the id used in VuFind can differ from the document-URI
+                    // (depending on how the URI is generated)
+                    foreach ($ids as $id) {
+                        // it is assumed that each DAIA document has a unique URI,
+                        // so get the document with the corresponding id
+                        $doc = $this->extractDaiaDoc($id, $rawResult);
+                        if (!is_null($doc)) {
+                            // a document with the corresponding id exists, which
+                            // means we got status information for that record
+                            $data = $this->parseDaiaDoc($id, $doc);
+                            // cache the status information
+                            $this->putCachedData($this->generateURI($id), $data);
+                            $status[] = $data;
+                        }
+                        unset($doc);
+                    }
+                } else {
+                    // multiQuery is not supported, so retrieve DAIA documents one by
+                    // one
+                    foreach ($ids as $id) {
+                        $rawResult = $this->doHTTPRequest($this->generateURI($id));
+                        // extract the DAIA document for the current id from the
+                        // HTTPRequest's result
+                        $doc = $this->extractDaiaDoc($id, $rawResult);
+                        if (!is_null($doc)) {
+                            // parse the extracted DAIA document and save the status
+                            // info
+                            $data = $this->parseDaiaDoc($id, $doc);
+                            // cache the status information
+                            $this->putCachedData($this->generateURI($id), $data);
+                            $status[] = $data;
+                        }
+                    }
+                }
+            } catch (ILSException $e) {
+                $this->debug($e->getMessage());
+            }
         }
         return $status;
     }
@@ -454,6 +500,21 @@ class DAIA extends AbstractBase implements
             $multiURI .= $this->generateURI($id) . '|';
         }
         return rtrim($multiURI, '|');
+    }
+
+    /**
+     * Add instance-specific context to a cache key suffix (to ensure that
+     * multiple drivers don't accidentally share values in the cache).
+     *
+     * @param string $key Cache key suffix
+     *
+     * @return string
+     */
+    protected function formatCacheKey($key)
+    {
+        // Override the base class formatting with DAIA-specific URI
+        // to ensure proper caching in a MultiBackend environment.
+        return 'DAIA-' . md5($this->generateURI(($key)));
     }
 
     /**
@@ -657,6 +718,8 @@ class DAIA extends AbstractBase implements
             foreach ($daiaArray['item'] as $item) {
                 $result_item = [];
                 $result_item['id'] = $id;
+                // custom DAIA field
+                $result_item['doc_id'] = $doc_id;
                 $result_item['item_id'] = $item['id'];
                 // custom DAIA field used in getHoldLink()
                 $result_item['ilslink']
@@ -671,9 +734,17 @@ class DAIA extends AbstractBase implements
                 // get callnumber
                 $result_item['callnumber'] = $this->getItemCallnumber($item);
                 // get location
-                $result_item['location'] = $this->getItemLocation($item);
+                $result_item['location'] = $this->getItemDepartment($item);
+                // custom DAIA field
+                $result_item['locationid'] = $this->getItemDepartmentId($item);
                 // get location link
-                $result_item['locationhref'] = $this->getItemLocationLink($item);
+                $result_item['location_href'] = $this->getItemDepartmentLink($item);
+                // custom DAIA field
+                $result_item['storage'] = $this->getItemStorage($item);
+                // custom DAIA field
+                $result_item['storageid'] = $this->getItemStorageId($item);
+                // custom DAIA field
+                $result_item['storage_href'] = $this->getItemStorageLink($item);
                 // status and availability will be calculated in own function
                 $result_item = $this->getItemStatus($item) + $result_item;
                 // add result_item to the result array
@@ -699,6 +770,7 @@ class DAIA extends AbstractBase implements
         $availableLink = '';
         $queue = '';
         $item_notes = [];
+        $item_limitation_types = [];
         $services = [];
 
         if (isset($item['available'])) {
@@ -732,7 +804,11 @@ class DAIA extends AbstractBase implements
                 if (isset($available['limitation'])) {
                     $item_notes = array_merge(
                         $item_notes,
-                        $this->getItemLimitation($available['limitation'])
+                        $this->getItemLimitationContent($available['limitation'])
+                    );
+                    $item_limitation_types = array_merge(
+                        $item_limitation_types,
+                        $this->getItemLimitationTypes($available['limitation'])
                     );
                 }
 
@@ -767,7 +843,11 @@ class DAIA extends AbstractBase implements
                     if (isset($unavailable['limitation'])) {
                         $item_notes = array_merge(
                             $item_notes,
-                            $this->getItemLimitation($unavailable['limitation'])
+                            $this->getItemLimitationContent($unavailable['limitation'])
+                        );
+                        $item_limitation_types = array_merge(
+                            $item_limitation_types,
+                            $this->getItemLimitationTypes($unavailable['limitation'])
                         );
                     }
                 }
@@ -796,25 +876,312 @@ class DAIA extends AbstractBase implements
             }
         }
 
-        /*'availability' => '0',
-        'status' => '',  // string - needs to be computed from availability info
-        'duedate' => '', // if checked_out else null
-        'returnDate' => '', // false if not recently returned(?)
-        'requests_placed' => '', // total number of placed holds
-        'is_holdable' => false, // place holding possible?*/
+        /*'returnDate' => '', // false if not recently returned(?)*/
 
         if (!empty($availableLink)) {
             $return['ilslink'] = $availableLink;
         }
 
         $return['item_notes']      = $item_notes;
-        $return['status']          = $status;
+        $return['status']          = $this->getStatusString($item);
         $return['availability']    = $availability;
         $return['duedate']         = $duedate;
         $return['requests_placed'] = $queue;
         $return['services']        = $this->getAvailableItemServices($services);
 
+        // In this DAIA driver implementation addLink and is_holdable are assumed
+        // Boolean as patron based availability requires either a patron-id or -type.
+        // This should be handled in a custom DAIA driver
+        $return['addLink'] = $return['is_holdable'] = $this->checkIsRecallable($item);
+        $return['holdtype']        = $this->getHoldType($item);
+
+        // Check if we the item is available for storage retrieval request if it is
+        // not holdable.
+        $return['addStorageRetrievalRequestLink'] = !$return['is_holdable']
+            ? $this->checkIsStorageRetrievalRequest($item) : false;
+
+        // add a custom Field to allow passing custom DAIA data to the frontend in
+        // order to use it for more precise display of availability
+        $return['customData']      = $this->getCustomData($item);
+
+        $return['limitation_types'] = $item_limitation_types;
+        
         return $return;
+    }
+
+    /**
+     * Helper function to allow custom data in status array.
+     *
+     * @param $item
+     * @return array
+     */
+    protected function getCustomData($item)
+    {
+        return [];
+    }
+
+    /**
+     * Helper function to return an appropriate status string for current item.
+     *
+     * @param $item
+     * @return string
+     */
+    protected function getStatusString($item)
+    {
+        // status cannot be null as this will crash the translator
+        return '';
+    }
+
+    /**
+     * Helper function to determine if item is recallable.
+     * DAIA does not genuinly allow distinguishing between holdable and recallable
+     * items. This could be achieved by usage of limitations but this would not be
+     * shared functionality between different DAIA implementations (thus should be
+     * implemented in custom drivers). Therefore this returns whether an item
+     * is recallable based on unavailable services and the existence of an href.
+     *
+     * @param $item
+     * @return bool
+     */
+    protected function checkIsRecallable($item)
+    {
+        // This basic implementation checks the item for being unavailable for loan
+        // and presentation but with an existing href (as a flag for further action).
+        $services = ['available'=>[], 'unavailable'=>[]];
+        $href = false;
+        if (isset($item['available'])) {
+            // check if item is loanable or presentation
+            foreach ($item['available'] as $available) {
+                if (isset($available['service'])
+                    && in_array($available['service'], ['loan', 'presentation'])
+                ) {
+                    $services['available'][] = $available['service'];
+                }
+            }
+        }
+
+        if (isset($item['unavailable'])) {
+            foreach ($item['unavailable'] as $unavailable) {
+                if (isset($unavailable['service'])
+                    && in_array($unavailable['service'], ['loan', 'presentation'])
+                ) {
+                    $services['unavailable'][] = $unavailable['service'];
+                    // attribute href is used to determine whether item is recallable
+                    // or not
+                    $href = isset($unavailable['href']) ? true : $href;
+                }
+            }
+        }
+
+        // Check if we have at least one service unavailable and a href field is set
+        // (either as flag or as actual value for the next action).
+        return ($href && count(
+                array_diff($services['unavailable'], $services['available'])
+        ));
+    }
+
+    /**
+     * Helper function to determine if the item is available as storage retrieval.
+     *
+     * @param $item
+     * @return bool
+     */
+    protected function checkIsStorageRetrievalRequest($item)
+    {
+        // This basic implementation checks the item for being available for loan
+        // and presentation but with an existing href (as a flag for further action).
+        $services = ['available'=>[], 'unavailable'=>[]];
+        $href = false;
+        if (isset($item['available'])) {
+            // check if item is loanable or presentation
+            foreach ($item['available'] as $available) {
+                if (isset($available['service'])
+                    && in_array($available['service'], ['loan', 'presentation'])
+                ) {
+                    $services['available'][] = $available['service'];
+                    // attribute href is used to determine whether item is
+                    // requestable or not
+                    $href = isset($available['href']) ? true : $href;
+                }
+            }
+        }
+
+        if (isset($item['unavailable'])) {
+            foreach ($item['unavailable'] as $unavailable) {
+                if (isset($unavailable['service'])
+                    && in_array($unavailable['service'], ['loan', 'presentation'])
+                ) {
+                    $services['unavailable'][] = $unavailable['service'];
+                }
+            }
+        }
+
+        // Check if we have at least one service unavailable and a href field is set
+        // (either as flag or as actual value for the next action).
+        return ($href && count(
+                array_diff($services['available'], $services['unavailable'])
+        ));
+    }
+
+    /**
+     * Helper function to determine the holdtype availble for current item.
+     * DAIA does not genuinly allow distinguishing between holdable and recallable
+     * items. This could be achieved by usage of limitations but this would not be
+     * shared functionality between different DAIA implementations (thus should be
+     * implemented in custom drivers). Therefore getHoldType always returns recall.
+     *
+     * @param $item
+     * @return string 'recall'|null
+     */
+    protected function getHoldType($item)
+    {
+        // return holdtype (hold, recall or block if patron is not allowed) for item
+        return $this->checkIsRecallable($item) ? 'recall' : null;
+    }
+
+    /**
+     * Returns the evaluated value of the provided limitation element
+     *
+     * @param array $limitations Array with DAIA limitation data
+     *
+     * @return array
+     */
+    protected function getItemLimitation($limitations)
+    {
+        $itemLimitation = [];
+        foreach ($limitations as $limitation) {
+            // return the first limitation with content set
+            if (isset($limitation['content'])) {
+                $itemLimitation[] = $limitation['content'];
+            }
+        }
+        return $itemLimitation;
+    }
+
+    /**
+     * Returns the value of item.department.content (e.g. to be used in VuFind
+     * getStatus/getHolding array as location)
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return string
+     */
+    protected function getItemDepartment($item)
+    {
+        return isset($item['department']) && isset($item['department']['content'])
+        && !empty($item['department']['content'])
+            ? $item['department']['content']
+            : 'Unknown';
+    }
+
+    /**
+     * Returns the value of item.department.id (e.g. to be used in VuFind
+     * getStatus/getHolding array as location)
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return string
+     */
+    protected function getItemDepartmentId($item)
+    {
+        return isset($item['department']) && isset($item['department']['id'])
+            ? $item['department']['id'] : '';
+    }
+
+    /**
+     * Returns the value of item.department.href (e.g. to be used in VuFind
+     * getStatus/getHolding array for linking the location)
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return string
+     */
+    protected function getItemDepartmentLink($item)
+    {
+        return isset($item['department']['href'])
+            ? $item['department']['href'] : false;
+    }
+
+    /**
+     * Returns the value of item.storage.content (e.g. to be used in VuFind
+     * getStatus/getHolding array as location)
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return string
+     */
+    protected function getItemStorage($item)
+    {
+        return isset($item['storage']) && isset($item['storage']['content'])
+        && !empty($item['storage']['content'])
+            ? $item['storage']['content']
+            : 'Unknown';
+    }
+
+    /**
+     * Returns the value of item.storage.id (e.g. to be used in VuFind
+     * getStatus/getHolding array as location)
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return string
+     */
+    protected function getItemStorageId($item)
+    {
+        return isset($item['storage']) && isset($item['storage']['id'])
+            ? $item['storage']['id'] : '';
+    }
+
+    /**
+     * Returns the value of item.storage.href (e.g. to be used in VuFind
+     * getStatus/getHolding array for linking the location)
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return string
+     */
+    protected function getItemStorageLink($item)
+    {
+        return isset($item['storage']) && isset($item['storage']['href'])
+            ? $item['storage']['href'] : '';
+    }
+
+    /**
+     * Returns the evaluated values of the provided limitations element
+     *
+     * @param array $limitations Array with DAIA limitation data
+     *
+     * @return array
+     */
+    protected function getItemLimitationContent($limitations)
+    {
+        $itemLimitationContent = [];
+        foreach ($limitations as $limitation) {
+            // return the first limitation with content set
+            if (isset($limitation['content'])) {
+                $itemLimitationContent[] = $limitation['content'];
+            }
+        }
+        return $itemLimitationContent;
+    }
+
+    /**
+     * Returns the evaluated values of the provided limitations element
+     *
+     * @param array $limitations Array with DAIA limitation data
+     *
+     * @return array
+     */
+    protected function getItemLimitationTypes($limitations)
+    {
+        $itemLimitationTypes = [];
+        foreach ($limitations as $limitation) {
+            // return the first limitation with content set
+            if (isset($limitation['id'])) {
+                $itemLimitationTypes[] = $limitation['id'];
+            }
+        }
+        return $itemLimitationTypes;
     }
 
     /**
@@ -831,7 +1198,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the value for "barcode" in VuFind getStatus/getHolding array
+     * Returns the value for "location" in VuFind getStatus/getHolding array
      *
      * @param array $item Array with DAIA item data
      *
@@ -869,68 +1236,6 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the value for "location" in VuFind getStatus/getHolding array
-     *
-     * @param array $item Array with DAIA item data
-     *
-     * @return string
-     */
-    protected function getItemLocation($item)
-    {
-        $location = '';
-
-        if (isset($item['department'])
-            && isset($item['department']['content'])
-        ) {
-            $location .= (empty($location)
-                ? $item['department']['content']
-                : ' - ' . $item['department']['content']);
-        }
-
-        if (isset($item['storage'])
-            && isset($item['storage']['content'])
-        ) {
-            $location .= (empty($location)
-                ? $item['storage']['content']
-                : ' - ' . $item['storage']['content']);
-        }
-
-        return (empty($location) ? 'Unknown' : $location);
-    }
-
-    /**
-     * Returns the value for "location" href in VuFind getStatus/getHolding array
-     *
-     * @param array $item Array with DAIA item data
-     *
-     * @return string
-     */
-    protected function getItemLocationLink($item)
-    {
-        return isset($item['storage']['href'])
-            ? $item['storage']['href'] : false;
-    }
-
-    /**
-     * Returns the evaluated values of the provided limitations element
-     *
-     * @param array $limitations Array with DAIA limitation data
-     *
-     * @return array
-     */
-    protected function getItemLimitation($limitations)
-    {
-        $itemLimitation = [];
-        foreach ($limitations as $limitation) {
-            // return the limitations with content set
-            if (isset($limitation['content'])) {
-                $itemLimitation[] = $limitation['content'];
-            }
-        }
-        return $itemLimitation;
-    }
-
-    /**
      * Returns the available services of the given set of available and unavailable
      * services
      *
@@ -952,7 +1257,7 @@ class DAIA extends AbstractBase implements
         }
         return array_intersect(['loan', 'presentation'], $availableServices);
     }
-    
+
     /**
      * Logs content of message elements in DAIA response for debugging
      *
@@ -971,5 +1276,23 @@ class DAIA extends AbstractBase implements
                 );
             }
         }
+    }
+
+    /**
+     * Helper function for storing cached data.
+     * Data is cached for up to $this->cacheLifetime seconds so that it would be
+     * faster to process e.g. requests where multiple calls to the backend are made.
+     *
+     * @param string $key   Cache entry key
+     *
+     * @return void
+     */
+    protected function removeCachedData($key)
+    {
+        // Don't write to cache if we don't have a cache!
+        if (null === $this->cache) {
+            return;
+        }
+        $this->cache->removeItem($this->formatCacheKey($key));
     }
 }

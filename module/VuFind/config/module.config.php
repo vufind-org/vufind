@@ -389,6 +389,7 @@ $config = [
                     'lbs4' => 'VuFind\ILS\Driver\Factory::getLBS4',
                     'multibackend' => 'VuFind\ILS\Driver\Factory::getMultiBackend',
                     'noils' => 'VuFind\ILS\Driver\Factory::getNoILS',
+                    'paia' => 'VuFind\ILS\Driver\Factory::getPAIA',
                     'kohailsdi' => 'VuFind\ILS\Driver\Factory::getKohaILSDI',
                     'unicorn' => 'VuFind\ILS\Driver\Factory::getUnicorn',
                     'voyager' => 'VuFind\ILS\Driver\Factory::getVoyager',
