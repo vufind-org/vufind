@@ -15,7 +15,13 @@
           <?=$locationText?>
         <? endif; ?>
       </td>
-      <td><?=$this->escapeHtml($item['callnumber'])?></td>
+      <td>
+        <? if ($this->callnumberHandler): ?>
+          <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&from=<?=$this->escapeHtmlAttr($item['callnumber']) ?>"><?=$this->escapeHtml($item['callnumber'])?></a>
+        <? else: ?>
+          <?=$this->escapeHtml($item['callnumber'])?>
+        <? endif; ?>
+      </td>
       <td>
         <? if (isset($item['use_unknown_message']) && $item['use_unknown_message']): ?>
           <span><?=$this->transEsc("status_unknown_message")?></span>

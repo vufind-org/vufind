@@ -224,7 +224,11 @@ class AjaxController extends AbstractBase
                 // If a full status display has been requested, append the HTML:
                 if ($showFullStatus) {
                     $current['full_status'] = $renderer->render(
-                        'ajax/status-full.phtml', ['statusItems' => $record]
+                        'ajax/status-full.phtml', [
+                            'statusItems' => $record,
+                            'callnumberHandler' =>
+                                $config->Item_Status->callnumber_handler
+                         ]
                     );
                 }
                 $current['record_number'] = array_search($current['id'], $ids);
