@@ -376,6 +376,14 @@ class AjaxController extends AbstractBase
             }
         }
 
+        $config = $this->getConfig();
+        $callnumber_handler = isset($config->Item_Status->callnumber_handler)
+            ? $config->Item_Status->callnumber_handler
+            : false;
+        if ($callnumberSetting === 'msg' && count($callNumbers) > 1) {
+            $callnumber_handler = false;
+        }
+
         // Determine call number string based on findings:
         $callNumber = $this->pickValue(
             $callNumbers, $callnumberSetting, 'Multiple Call Numbers'
@@ -394,8 +402,6 @@ class AjaxController extends AbstractBase
                 : $messages[$available ? 'available' : 'unavailable'];
         }
 
-        $config = $this->getConfig();
-
         // Send back the collected details:
         return [
             'id' => $record[0]['id'],
@@ -409,9 +415,7 @@ class AjaxController extends AbstractBase
                 ? $this->translate('on_reserve')
                 : $this->translate('Not On Reserve'),
             'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8'),
-            'callnumber_handler' => isset($config->Item_Status->callnumber_handler)
-                ? $config->Item_Status->callnumber_handler
-                : false
+            'callnumber_handler' => $callnumber_handler
         ];
     }
 
