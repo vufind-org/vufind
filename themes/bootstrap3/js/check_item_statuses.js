@@ -84,13 +84,17 @@ function checkItemStatuses(_container) {
         // Default case -- load call number and location into appropriate containers:
         var callnumber = result.callnumber;
         if (result.callnumber_handler) {
-          callnumber = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(result.callnumber_handler) + '&from=' + encodeURI(callnumber) + '">' + callnumber + '</a>';
+          var cns = callnumber.split(', ');
+          for (var j = 0; j < cns.length; j++) {
+            cns[j] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(result.callnumber_handler) + '&from=' + encodeURI(cns[j]) + '">' + cns[j] + '</a>';
+          }
+          callnumber = cns.join(', ');
         }
         item.find('.callnumber').empty().append(callnumber + '<br/>');
         item.find('.location').empty().append(
           result.reserve === 'true'
-          ? result.reserve_message
-          : result.location
+            ? result.reserve_message
+            : result.location
         );
       }
     });
