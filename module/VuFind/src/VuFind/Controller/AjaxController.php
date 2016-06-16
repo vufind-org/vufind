@@ -311,12 +311,13 @@ class AjaxController extends AbstractBase
      * Based on settings and the number of callnumbers, return callnumber handler
      * Use callnumbers before pickValue is run.
      *
-     * @param array  $callnumbers Array of callnumbers.
-     * @param string $mode        config.ini setting -- first, all or msg
+     * @param array  $callnumbers       Array of callnumbers.
+     * @param string $callnumberSetting config.ini setting -- first, all or msg
      *
      * @return string
      */
-    protected function getCallnumberHandler($callnumbers, $callnumberSetting) {
+    protected function getCallnumberHandler($callnumbers, $callnumberSetting)
+    {
         if ($callnumberSetting === 'msg' && count($callNumbers) > 1) {
             return false;
         }
