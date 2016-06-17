@@ -59,10 +59,21 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'barcode' => "1",
                 'reserve' => "N",
                 'callnumber' => "ABC 12",
-                'location' => "Example Library for DAIA Tests - Abteilung III",
-                'locationhref' => false,
+                'location' => 'Example Library for DAIA Tests',
+                'locationid' => 'http://uri.gbv.de/organization/isil/DE-000',
+                'location_href' => 'http://www.example-library.edu',
+                'storage' => 'Abteilung III',
+                'storageid' => '',
+                'storage_href' => '',
                 'item_notes' => [],
-                'services' => ['loan', 'presentation']
+                'services' => ['loan', 'presentation'],
+                'is_holdable' => false,
+                'addLink' => false,
+                'holdtype' => null,
+                'addStorageRetrievalRequestLink' => true,
+                'customData' => [],
+                'limitation_types' => [],
+                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
             ],
         1 =>
             [
@@ -77,10 +88,21 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'barcode' => "1",
                 'reserve' => "N",
                 'callnumber' => "DEF 34",
-                'location' => "Example Library for DAIA Tests - Abteilung III",
-                'locationhref' => false,
+                'location' => 'Example Library for DAIA Tests',
+                'locationid' => 'http://uri.gbv.de/organization/isil/DE-000',
+                'location_href' => 'http://www.example-library.edu',
+                'storage' => 'Abteilung III',
+                'storageid' => '',
+                'storage_href' => '',
                 'item_notes' => ['mit Zustimmung', 'nur Kopie'],
-                'services' => ['loan', 'presentation']
+                'services' => ['loan', 'presentation'],
+                'is_holdable' => false,
+                'addLink' => false,
+                'holdtype' => null,
+                'addStorageRetrievalRequestLink' => false,
+                'customData' => [],
+                'limitation_types' => [],
+                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
             ],
         2 =>
             [
@@ -95,10 +117,21 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'barcode' => "1",
                 'reserve' => "N",
                 'callnumber' => "GHI 56",
-                'location' => "Example Library for DAIA Tests - Abteilung III",
-                'locationhref' => false,
+                'location' => 'Example Library for DAIA Tests',
+                'locationid' => 'http://uri.gbv.de/organization/isil/DE-000',
+                'location_href' => 'http://www.example-library.edu',
+                'storage' => 'Abteilung III',
+                'storageid' => '',
+                'storage_href' => '',
                 'item_notes' => [],
-                'services' => []
+                'services' => [],
+                'is_holdable' => false,
+                'addLink' => false,
+                'holdtype' => null,
+                'addStorageRetrievalRequestLink' => false,
+                'customData' => [],
+                'limitation_types' => [],
+                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
             ],
     ];
 
