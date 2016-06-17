@@ -254,6 +254,36 @@
       </tr>
       <? endif; ?>
 
+      <? if ($keywords = $this->driver->getKeywords()): ?>
+      <tr class="record-keywords">
+        <th><?=$this->transEsc('Keywords')?>: </th>
+        <td>
+          <div class="truncate-field">
+          <? foreach ($keywords as $keyword): ?>
+          <div class="subjectLine" property="keywords">
+            <a class="backlink" title="<?=$this->escapeHtmlAttr($keyword)?>" href="<?=$this->record($this->driver)->getLink('keyword', $keyword)?>"><?=$this->escapeHtml($keyword) ?></a>
+          </div>
+          <? endforeach; ?>
+          </div>
+        </td>
+      </tr>
+      <? endif; ?>
+
+      <? if ($programs = $this->driver->getEducationPrograms()): ?>
+      <tr class="record-education-programs">
+        <th><?=$this->transEsc('Education Programs')?>: </th>
+        <td>
+          <div class="truncate-field">
+          <? foreach ($programs as $program): ?>
+          <div class="program-line">
+            <a class="backlink" title="<?=$this->escapeHtmlAttr($program)?>" href="<?=$this->record($this->driver)->getLink('program', $program)?>"><?=$this->escapeHtml($program) ?></a>
+          </div>
+          <? endforeach; ?>
+          </div>
+        </td>
+      </tr>
+      <? endif; ?>
+
       <? $childRecordCount = $this->driver->tryMethod('getChildRecordCount'); if ($childRecordCount): ?>
       <tr class="recordComponentParts">
         <th><?=$this->transEsc('child_records')?>: </th>

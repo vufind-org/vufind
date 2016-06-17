@@ -128,6 +128,20 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return education programs
+     *
+     * @return array
+     */
+    public function getEducationPrograms()
+    {
+        $result = [];
+        foreach ($this->getSimpleXML()->programme as $programme) {
+            $result[] = (string)$programme;
+        }
+        return $result;
+    }
+
+    /**
      * Return full record as filtered XML for public APIs.
      *
      * @return string
@@ -139,6 +153,20 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
             unset($record->abstract[0]);
         }
         return $record->asXML();
+    }
+
+    /**
+     * Return keywords
+     *
+     * @return array
+     */
+    public function getKeywords()
+    {
+        $result = [];
+        foreach ($this->getSimpleXML()->keyword as $keyword) {
+            $result[] = (string)$keyword;
+        }
+        return $result;
     }
 
     /**
