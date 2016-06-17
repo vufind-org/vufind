@@ -322,6 +322,7 @@ class ResultScroller extends AbstractPlugin
         // and we're done
         return $retVal;
     }
+
     /**
      * Return a modified results array for the case where we need to retrieve data
      * from the the last page of results
@@ -330,7 +331,8 @@ class ResultScroller extends AbstractPlugin
      * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
      * @param int                         $pos        Current position within
      * previous page
-     * @param int                         $page       Search results page
+     * @param int                         $page       Page of search results
+     *
      * @return array
      */
     protected function scrollToLastRecord($retVal, $lastSearch, $pos, $page)
@@ -459,15 +461,15 @@ class ResultScroller extends AbstractPlugin
                 }
                 if ($this->data->firstlast = true) {
                     if ((empty($this->data->nextIds) && empty($this->data->prevIds)) || $pos == false) {
-                          if ($id == $retVal['firstRecord']) {
+                        if ($id == $retVal['firstRecord']) {
                             $pos = 1;
                             return $this->scrollToFirstRecord($retVal, $lastSearch, $pos);
-                          }
-                          if ($id == $retVal['lastRecord']) {
+                        }
+                        if ($id == $retVal['lastRecord']) {
                             $pos = $lastRec;
                             $page = $lastPage;
-                           return $this->scrollToLastRecord($retVal, $lastSearch, $pos, $page);
-                         }
+                            return $this->scrollToLastRecord($retVal, $lastSearch, $pos, $page);
+                        }
                     }
                 }
             }
