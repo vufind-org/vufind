@@ -104,7 +104,7 @@
       <? $this->layout()->srmessage = $this->transEsc('primo_no_searchword'); ?>
       <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
     <? else: ?>
-      <? $this->layout()->srmessage = $this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix'); ?>
+      <? $this->layout()->srmessage = $this->transEsc('nohit_prefix') . ' - <strong>' . $this->escapeHtml($lookfor) . '</strong> - ' . $this->transEsc('nohit_suffix'); ?>
       <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
     <? endif; ?>
     <? if (isset($this->parseError)): ?>
