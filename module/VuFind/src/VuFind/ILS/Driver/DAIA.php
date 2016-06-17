@@ -174,7 +174,10 @@ class DAIA extends AbstractBase implements
         if (isset($this->config['DAIA']['daiaCacheLifetime'])) {
             $this->cacheLifetime = $this->config['DAIA']['daiaCacheLifetime'];
         } else {
-            $this->debug('Cache lifetime not set, using VuFind\ILS\Driver\AbstractBase default value.');
+            $this->debug(
+                'Cache lifetime not set, using VuFind\ILS\Driver\AbstractBase ' .
+                'default value.'
+            );
         }
     }
 
@@ -226,7 +229,9 @@ class DAIA extends AbstractBase implements
     public function getStatus($id)
     {
         // check ids for existing availability data in cache and skip these ids
-        if ($this->daiaCacheEnabled && $item = $this->getCachedData($this->generateURI($id))) {
+        if ($this->daiaCacheEnabled
+            && $item = $this->getCachedData($this->generateURI($id))
+        ) {
             if ($item != null) {
                 return $item;
             }
@@ -276,7 +281,9 @@ class DAIA extends AbstractBase implements
 
         // check cache for given ids and skip these ids if availability data is found
         foreach ($ids as $key=>$id) {
-            if ($this->daiaCacheEnabled && $item = $this->getCachedData($this->generateURI($id))) {
+            if ($this->daiaCacheEnabled
+                && $item = $this->getCachedData($this->generateURI($id))
+            ) {
                 if ($item != null) {
                     $status[] = $item;
                     unset($ids[$key]);
@@ -912,7 +919,8 @@ class DAIA extends AbstractBase implements
     /**
      * Helper function to allow custom data in status array.
      *
-     * @param $item
+     * @param array $item Array with DAIA item data
+     *
      * @return array
      */
     protected function getCustomData($item)
@@ -923,7 +931,8 @@ class DAIA extends AbstractBase implements
     /**
      * Helper function to return an appropriate status string for current item.
      *
-     * @param $item
+     * @param array $item Array with DAIA item data
+     *
      * @return string
      */
     protected function getStatusString($item)
@@ -940,7 +949,8 @@ class DAIA extends AbstractBase implements
      * implemented in custom drivers). Therefore this returns whether an item
      * is recallable based on unavailable services and the existence of an href.
      *
-     * @param $item
+     * @param array $item Array with DAIA item data
+     *
      * @return bool
      */
     protected function checkIsRecallable($item)
@@ -976,14 +986,15 @@ class DAIA extends AbstractBase implements
         // Check if we have at least one service unavailable and a href field is set
         // (either as flag or as actual value for the next action).
         return ($href && count(
-                array_diff($services['unavailable'], $services['available'])
+            array_diff($services['unavailable'], $services['available'])
         ));
     }
 
     /**
      * Helper function to determine if the item is available as storage retrieval.
      *
-     * @param $item
+     * @param array $item Array with DAIA item data
+     *
      * @return bool
      */
     protected function checkIsStorageRetrievalRequest($item)
@@ -1019,7 +1030,7 @@ class DAIA extends AbstractBase implements
         // Check if we have at least one service unavailable and a href field is set
         // (either as flag or as actual value for the next action).
         return ($href && count(
-                array_diff($services['available'], $services['unavailable'])
+            array_diff($services['available'], $services['unavailable'])
         ));
     }
 
@@ -1030,7 +1041,8 @@ class DAIA extends AbstractBase implements
      * shared functionality between different DAIA implementations (thus should be
      * implemented in custom drivers). Therefore getHoldType always returns recall.
      *
-     * @param $item
+     * @param array $item Array with DAIA item data
+     *
      * @return string 'recall'|null
      */
     protected function getHoldType($item)
@@ -1283,7 +1295,7 @@ class DAIA extends AbstractBase implements
      * Data is cached for up to $this->cacheLifetime seconds so that it would be
      * faster to process e.g. requests where multiple calls to the backend are made.
      *
-     * @param string $key   Cache entry key
+     * @param string $key Cache entry key
      *
      * @return void
      */
