@@ -856,4 +856,18 @@ abstract class Options implements TranslatorAwareInterface
         $vars = array_keys($vars);
         return $vars;
     }
+      /**
+     * Get the configuration settings for the first/last results scroller from the
+     * config.ini file.
+     *
+     * @return bool
+     */
+    public function getFirstLastScroller()
+    {
+        // Load the necessary settings to determine the appropriate recommendations
+        // module:
+        $config = $this->configLoader->get('config');
+        return (isset($config->Record->first_last_navigation)
+            && $config->Record->first_last_navigation);
+    }
 }
