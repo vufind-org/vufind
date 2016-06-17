@@ -358,7 +358,7 @@ class ResultScroller extends AbstractPlugin
         $retVal['nextRecord'] = '';
         if ($pos >0) {
             $retVal['previousRecord'] = $this->fetchPage(
-            $lastSearch, $this->data->page
+                $lastSearch, $this->data->page
             )[$pos - 1];
         } else {
             $retVal['previousRecord'] = $this->data->prevIds[
@@ -471,7 +471,7 @@ class ResultScroller extends AbstractPlugin
                     if ((empty($this->data->nextIds) 
                         && empty($this->data->prevIds)) 
                         || $pos == false
-                        ) {
+                    ) {
                         if ($id == $retVal['firstRecord']) {
                             $pos = 1;
                             return $this->scrollToFirstRecord(
