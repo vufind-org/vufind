@@ -1,0 +1,17 @@
+HTTP/1.1 200 OK
+Server: vzg-paia/2.2-RC3 (Wed Jun 01 17:38:24 CEST 2016)
+Date: Mon, 20 Jun 2016 11:21:15 GMT
+Cache-Control: no-cache
+Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: X-OAuth-Scopes, X-Accepted-OAuth-Scopes
+Access-Control-Allow-Headers: Content-Type, Authorization
+Pragma: no-cache
+X-OAuth-Scopes: change_password read_items read_fees read_patron
+X-Accepted-OAuth-Scopes: write_items
+Content-Type: application/json; charset=UTF-8
+
+{
+  "error": "insufficient_scope",
+  "code": 403,
+  "error_description": "The access token was accepted but it lacks permission for the request"
+}
