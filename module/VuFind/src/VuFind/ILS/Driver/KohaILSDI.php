@@ -639,7 +639,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     {
 
         $this->debug(
-            "Function getHolding($id, " . implode(",", $patron) . ") called"
+            "Function getHolding($id, "
+               . implode(",", (array)$patron)
+               . ") called"
         );
 
         $started = microtime(true);
