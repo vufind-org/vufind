@@ -69,17 +69,22 @@ class GoogleAnalytics extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function __invoke()
+    public function __invoke($customUrl = false)
     {
+        error_log($customUrl);
         if (!$this->key) {
             return '';
         }
         if (!$this->universal) {
             $code = 'var key = "' . $this->key . '";' . "\n"
                 . "var _gaq = _gaq || [];\n"
-                . "_gaq.push(['_setAccount', key]);\n"
-                . "_gaq.push(['_trackPageview']);\n"
-                . "(function() {\n"
+                . "_gaq.push(['_setAccount', key]);\n";
+            if ($customUrl) {
+                $code .= "_gaq.push(['_trackPageview', '" . $customUrl . "']);\n";
+            } else {
+                $code .= "_gaq.push(['_trackPageview']);\n";
+            }
+            $code .= "(function() {\n"
                 . "var ga = document.createElement('script'); "
                 . "ga.type = 'text/javascript'; ga.async = true;\n"
                 . "ga.src = ('https:' == document.location.protocol ? "
