@@ -70,11 +70,20 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $locations;
 
     /**
-     * Codes of locations avalaible for pickup
+     * Codes of locations available for pickup
      *
      * @var array
      */
     protected $pickupEnableBranchcodes;
+
+    /**
+     * Codes of locations always should be available
+     *   - For example reference material or material
+     *     not for loan
+     *
+     * @var array
+     */
+    protected $availableLocationsDefault;
 
     /**
      * Default location code
@@ -184,6 +193,11 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->pickupEnableBranchcodes
             = isset($this->config['Holds']['pickupLocations'])
             ? $this->config['Holds']['pickupLocations'] : [];
+
+        // Locations that should default to available, defined in 'KohaILSDI.ini'
+        $this->availableLocationsDefault
+            = isset($this->config['Other']['availableLocations'])
+            ? $this->config['Other']['availableLocations'] : [];
 
         // Create a dateConverter
         $this->dateConverter = new \VuFind\Date\Converter;
@@ -728,12 +742,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 break;
             }
             /*
-             * If the Item is in Location INTERNET or ONLINE,
+             * If the Item is in any of locations defined by
+             * availableLocations[] in the KohaILSDI.ini file
              * the item is considered available
              */
-            if ($rowItem['LOCATION'] == 'INTERNET'
-                || $rowItem['LOCATION'] == 'ONLINE'
-            ) {
+
+            if (in_array($rowItem['LOCATION'], $this->availableLocationsDefault)) {
                 $available = true;
                 $duedate = '';
                 $status = 'Available';
