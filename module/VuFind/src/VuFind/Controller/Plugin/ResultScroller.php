@@ -407,7 +407,7 @@ class ResultScroller extends AbstractPlugin
                 = isset($this->data->total) ? $this->data->total : 0;
 
             // Set first and last record IDs
-            if ($this->data->firstlast = true) {
+            if ($this->data->firstlast) {
                 $retVal['firstRecord'] = $this->fetchPage($lastSearch, 1)[0];
                 $lastCalc = $this->data->total / $this->data->limit;
                 $lastMultiplier = strlen($this->data->limit);
@@ -467,7 +467,7 @@ class ResultScroller extends AbstractPlugin
                         return $this->scrollToNextPage($retVal, $lastSearch, $pos);
                     }
                 }
-                if ($this->data->firstlast = true) {
+                if ($this->data->firstlast) {
                     if ((empty($this->data->nextIds)
                         && empty($this->data->prevIds))
                         || $pos == false
