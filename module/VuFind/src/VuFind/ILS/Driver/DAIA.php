@@ -850,7 +850,9 @@ class DAIA extends AbstractBase implements
                     if (isset($unavailable['limitation'])) {
                         $item_notes = array_merge(
                             $item_notes,
-                            $this->getItemLimitationContent($unavailable['limitation'])
+                            $this->getItemLimitationContent(
+                                $unavailable['limitation']
+                            )
                         );
                         $item_limitation_types = array_merge(
                             $item_limitation_types,
@@ -899,7 +901,8 @@ class DAIA extends AbstractBase implements
         // In this DAIA driver implementation addLink and is_holdable are assumed
         // Boolean as patron based availability requires either a patron-id or -type.
         // This should be handled in a custom DAIA driver
-        $return['addLink'] = $return['is_holdable'] = $this->checkIsRecallable($item);
+        $return['addLink'] = $this->checkIsRecallable($item);
+        $return['is_holdable'] = $this->checkIsRecallable($item);
         $return['holdtype']        = $this->getHoldType($item);
 
         // Check if we the item is available for storage retrieval request if it is

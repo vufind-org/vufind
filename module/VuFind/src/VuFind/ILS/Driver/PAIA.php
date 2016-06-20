@@ -1114,14 +1114,21 @@ class PAIA extends DAIA
             /*
              * meaning of starttime and endtime depends on status:
              *
-             * status | starttime                      | endtime
-             * -------+--------------------------------+-------------------------------------------------------
-             * 0      | -                              | -
-             * 1 	  | when the document was reserved | when the reserved document is expected to be available
-             * 2 	  | when the document was ordered  | when the ordered document is expected to be available
-             * 3 	  | when the document was lend 	   | when the loan period ends or ended (due)
-             * 4 	  | when the document is provided  | when the provision will expire
-             * 5 	  | when the request was rejected  | -
+             * status | starttime
+             *        | endtime
+             * -------+--------------------------------
+             * 0      | -
+             *        | -
+             * 1      | when the document was reserved
+             *        | when the reserved document is expected to be available
+             * 2      | when the document was ordered
+             *        | when the ordered document is expected to be available
+             * 3      | when the document was lend
+             *        | when the loan period ends or ended (due)
+             * 4      | when the document is provided
+             *        | when the provision will expire
+             * 5      | when the request was rejected
+             *        | -
              */
 
             $result['create'] = (isset($doc['starttime'])
@@ -1264,7 +1271,9 @@ class PAIA extends DAIA
             $result['renew'] = (isset($doc['renewals']) ? $doc['renewals'] : null);
 
             // reminder (0..1) number of times the patron has been reminded
-            $result['reminder'] = (isset($doc['reminder']) ? $doc['reminder'] : null);
+            $result['reminder'] = (
+                isset($doc['reminder']) ? $doc['reminder'] : null
+            );
 
             // custom PAIA field
             // starttime (0..1) date and time when the status began
