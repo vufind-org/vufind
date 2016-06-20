@@ -173,10 +173,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             throw new ILSException('Configuration needs to be set.');
         }
 
-        // Is debugging enabled?
-        $this->debug_enabled = isset($this->config['Catalog']['debug'])
-            ? $this->config['Catalog']['debug'] : false;
-
         // Base for API address
         $this->host = isset($this->config['Catalog']['host']) ?
             $this->config['Catalog']['host'] : "localhost";
@@ -202,14 +198,11 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         // Create a dateConverter
         $this->dateConverter = new \VuFind\Date\Converter;
 
-        if ($this->debug_enabled) {
-            $this->debug("Config Summary:");
-            $this->debug("Debug: " . $this->debug_enabled);
-            $this->debug("DB Host: " . $this->host);
-            $this->debug("ILS URL: " . $this->ilsBaseUrl);
-            $this->debug("Locations: " . $this->locations);
-            $this->debug("Default Location: " . $this->defaultLocation);
-        }
+        $this->debug("Config Summary:");
+        $this->debug("DB Host: " . $this->host);
+        $this->debug("ILS URL: " . $this->ilsBaseUrl);
+        $this->debug("Locations: " . $this->locations);
+        $this->debug("Default Location: " . $this->defaultLocation);
     }
 
     /**
@@ -288,9 +281,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         $url = $this->ilsBaseUrl . "?service=" . $api_query;
 
-        if ($this->debug_enabled) {
-            $this->debug("URL: '$url'");
-        }
+        $this->debug("URL: '$url'");
+
         $http_headers = [
             "Accept: text/xml",
             "Accept-encoding: plain",
@@ -315,9 +307,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         //$answer = str_replace('xmlns=', 'ns=', $answer);
         $result = simplexml_load_string($answer);
         if (!$result) {
-            if ($this->debug_enabled) {
-                $this->debug("XML is not valid, URL: $url");
-            }
+            $this->debug("XML is not valid, URL: $url");
+
             throw new ILSException(
                 "XML is not valid, URL: $url method: $method answer: $answer."
             );
@@ -356,9 +347,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $url .= "&$paramname=" . urlencode($paramvalue);
         }
 
-        if ($this->debug_enabled) {
-            $this->debug("URL: '$url'");
-        }
+        $this->debug("URL: '$url'");
+
         $http_headers = [
             "Accept: text/xml",
             "Accept-encoding: plain",
@@ -383,9 +373,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $start = microtime(true);
         $result = simplexml_load_string($result->getBody());
         if (!$result) {
-            if ($this->debug_enabled) {
-                $this->debug("XML is not valid, URL: $url");
-            }
+            $this->debug("XML is not valid, URL: $url");
+
             throw new ILSException(
                 "XML is not valid, URL: $url"
             );
@@ -567,16 +556,14 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
 
-        if ($this->debug_enabled) {
-            $this->debug("patron: " . $patron);
-            $this->debug("patron_id: " . $patron_id);
-            $this->debug("request_location: " . $request_location);
-            $this->debug("item_id: " . $item_id);
-            $this->debug("bib_id: " . $bib_id);
-            $this->debug("pickup loc: " . $pickup_location);
-            $this->debug("Needed before date: " . $needed_before_date);
-            $this->debug("Level: " . $level);
-        }
+        $this->debug("patron: " . $patron);
+        $this->debug("patron_id: " . $patron_id);
+        $this->debug("request_location: " . $request_location);
+        $this->debug("item_id: " . $item_id);
+        $this->debug("bib_id: " . $bib_id);
+        $this->debug("pickup loc: " . $pickup_location);
+        $this->debug("Needed before date: " . $needed_before_date);
+        $this->debug("Level: " . $level);
 
         if ($level == "title") {
             $rqString = "HoldTitle&patron_id=$patron_id&bib_id=$bib_id"
@@ -615,11 +602,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         			));
         }
         */
-        if ($this->debug_enabled) {
-            $this->debug("Title: " . $rsp->{'title'});
-            $this->debug("Pickup Location: " . $rsp->{'pickup_location'});
-            $this->debug("Code: " . $rsp->{'code'});
-        }
+        $this->debug("Title: " . $rsp->{'title'});
+        $this->debug("Pickup Location: " . $rsp->{'pickup_location'});
+        $this->debug("Code: " . $rsp->{'code'});
 
         if ($rsp->{'code'} != "") {
             return [
@@ -703,9 +688,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $this->debug('Connection failed: ' . $e->getMessage());
         }
 
-        if ($this->debug_enabled) {
-            $this->debug("Rows count: " . $itemSqlStmt->rowCount());
-        }
+        $this->debug("Rows count: " . $itemSqlStmt->rowCount());
+
         $notes = $sqlStmtHoldings->fetch();
         $reservesRow = $sqlStmtReserves->fetch();
         $reservesCount = $reservesRow["RESERVESCOUNT"];
@@ -1058,10 +1042,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "GetPatronInfo&patron_id=$id" . "&show_contact=0&show_fines=1"
         );
 
-        if ($this->debug_enabled) {
-            $this->debug("ID: " . $rsp->{'borrowernumber'});
-            $this->debug("Chrgs: " . $rsp->{'charges'});
-        }
+        $this->debug("ID: " . $rsp->{'borrowernumber'});
+        $this->debug("Chrgs: " . $rsp->{'charges'});
 
         foreach ($rsp->{'fines'}->{'fine'} as $fine) {
             $fineLst[] = [
@@ -1100,10 +1082,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "GetPatronInfo&patron_id=$id" . "&show_contact=0&show_holds=1"
         );
 
-        if ($this->debug_enabled) {
-            $this->debug("ID: " . $rsp->{'borrowernumber'});
-            //print_r($rsp); // Proof that no itemnumber is returned.
-        }
+        $this->debug("ID: " . $rsp->{'borrowernumber'});
+
         foreach ($rsp->{'holds'}->{'hold'} as $hold) {
             $holdLst[] = [
                 'id'       => $this->getField($hold->{'biblionumber'}),
@@ -1194,10 +1174,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "GetPatronInfo&patron_id=$id" . "&show_contact=1"
         );
 
-        if ($this->debug_enabled) {
-            $this->debug("Code: " . $rsp->{'code'});
-            $this->debug("Cardnumber: " . $rsp->{'cardnumber'});
-        }
+        $this->debug("Code: " . $rsp->{'code'});
+        $this->debug("Cardnumber: " . $rsp->{'cardnumber'});
 
         if ($rsp->{'code'} != 'PatronNotFound') {
             $profile = [
@@ -1239,9 +1217,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $end = microtime(true);
         $requestTimes[] = $end - $start;
 
-        if ($this->debug_enabled) {
-            $this->debug("ID: " . $rsp->{'borrowernumber'});
-        }
+        $this->debug("ID: " . $rsp->{'borrowernumber'});
 
         foreach ($rsp->{'loans'}->{'loan'} as $loan) {
             $start = microtime(true);
@@ -1628,11 +1604,11 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "LookupPatron" . "&id=" . $username
             . "&id_type=userid"
         );
-        if ($this->debug_enabled) {
-            $this->debug("username: " . $username);
-            $this->debug("Code: " . $idObj->{'code'});
-            $this->debug("ID: " . $idObj->{'id'});
-        }
+
+        $this->debug("username: " . $username);
+        $this->debug("Code: " . $idObj->{'code'});
+        $this->debug("ID: " . $idObj->{'id'});
+
         $id = $this->getField($idObj->{'id'}, 0);
         if ($id) {
             $rsp = $this->makeRequest(
