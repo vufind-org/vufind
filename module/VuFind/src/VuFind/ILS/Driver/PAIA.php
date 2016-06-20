@@ -29,7 +29,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
 
@@ -244,7 +243,7 @@ class PAIA extends DAIA
 
         try {
             $array_response = $this->paiaPostAsArray(
-                'core/'.$patron['cat_username'].'/cancel', $post_data
+                'core/' . $patron['cat_username'] . '/cancel', $post_data
             );
         } catch (ILSException $e) {
             $this->debug($e->getMessage());
@@ -422,7 +421,7 @@ class PAIA extends DAIA
     public function getMyFines($patron)
     {
         $fees = $this->paiaGetAsArray(
-            'core/'.$patron['cat_username'].'/fees'
+            'core/' . $patron['cat_username'] . '/fees'
         );
 
         // PAIA simple data type money: a monetary value with currency (format
@@ -431,7 +430,7 @@ class PAIA extends DAIA
             $paiaCurrencyPattern = "/^([0-9]+\.[0-9][0-9]) ([A-Z][A-Z][A-Z])$/";
             if (preg_match($paiaCurrencyPattern, $fee, $feeMatches)) {
                 // VuFind expects fees in PENNIES
-                return ($feeMatches[1]*100);
+                return ($feeMatches[1] * 100);
             }
             return $fee;
         };
@@ -766,7 +765,7 @@ class PAIA extends DAIA
 
         try {
             $array_response = $this->paiaPostAsArray(
-                'core/'.$patron['cat_username'].'/request', $post_data
+                'core/' . $patron['cat_username'] . '/request', $post_data
             );
         } catch (ILSException $e) {
             $this->debug($e->getMessage());
@@ -856,7 +855,7 @@ class PAIA extends DAIA
 
         try {
             $array_response = $this->paiaPostAsArray(
-                'core/'.$patron['cat_username'].'/renew', $post_data
+                'core/' . $patron['cat_username'] . '/renew', $post_data
             );
         } catch (ILSException $e) {
             $this->debug($e->getMessage());
@@ -951,7 +950,7 @@ class PAIA extends DAIA
 
         if (!isset($itemsResponse) || $itemsResponse == null) {
             $itemsResponse = $this->paiaGetAsArray(
-                'core/'.$patron['cat_username'].'/items'
+                'core/' . $patron['cat_username'] . '/items'
             );
             $this->putCachedData(
                 $patron['cat_username'] . '_items', $itemsResponse
@@ -1020,7 +1019,7 @@ class PAIA extends DAIA
             $lastname = '';
             array_shift($nameArr);
             foreach ($nameArr as $value) {
-                $lastname .= ' '.$value;
+                $lastname .= ' ' . $value;
             }
             $lastname = trim($lastname);
         }
@@ -1341,7 +1340,7 @@ class PAIA extends DAIA
 
         $http_headers = [];
         if (isset($access_token)) {
-            $http_headers['Authorization'] = 'Bearer ' .$access_token;
+            $http_headers['Authorization'] = 'Bearer ' . $access_token;
         }
 
         try {
@@ -1379,7 +1378,7 @@ class PAIA extends DAIA
     protected function paiaGetRequest($file, $access_token)
     {
         $http_headers = [
-            'Authorization' => 'Bearer ' .$access_token,
+            'Authorization' => 'Bearer ' . $access_token,
             'Content-type' => 'application/json; charset=UTF-8',
         ];
 

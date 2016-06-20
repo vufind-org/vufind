@@ -280,7 +280,7 @@ class DAIA extends AbstractBase implements
         $status = [];
 
         // check cache for given ids and skip these ids if availability data is found
-        foreach ($ids as $key=>$id) {
+        foreach ($ids as $key => $id) {
             if ($this->daiaCacheEnabled
                 && $item = $this->getCachedData($this->generateURI($id))
             ) {
@@ -960,7 +960,7 @@ class DAIA extends AbstractBase implements
     {
         // This basic implementation checks the item for being unavailable for loan
         // and presentation but with an existing href (as a flag for further action).
-        $services = ['available'=>[], 'unavailable'=>[]];
+        $services = ['available' => [], 'unavailable' => []];
         $href = false;
         if (isset($item['available'])) {
             // check if item is loanable or presentation
@@ -1004,7 +1004,7 @@ class DAIA extends AbstractBase implements
     {
         // This basic implementation checks the item for being available for loan
         // and presentation but with an existing href (as a flag for further action).
-        $services = ['available'=>[], 'unavailable'=>[]];
+        $services = ['available' => [], 'unavailable' => []];
         $href = false;
         if (isset($item['available'])) {
             // check if item is loanable or presentation
