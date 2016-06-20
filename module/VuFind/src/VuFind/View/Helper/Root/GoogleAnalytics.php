@@ -67,6 +67,8 @@ class GoogleAnalytics extends \Zend\View\Helper\AbstractHelper
     /**
      * Returns GA code (if active) or empty string if not.
      *
+     * @param string $customUrl override URL to send to Google Analytics
+     *
      * @return string
      */
     public function __invoke($customUrl = false)
