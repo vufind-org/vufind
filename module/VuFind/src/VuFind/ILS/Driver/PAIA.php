@@ -93,12 +93,14 @@ class PAIA extends DAIA
     ];
 
     /**
-     * Constructor
+     * PAIA constructor.
      *
-     * @param \VuFind\Date\Converter $converter Date converter
+     * @param \VuFind\Date\Converter       $converter      Date converter
+     * @param \Zend\Session\SessionManager $sessionManager Session Manager
      */
-    public function __construct(\VuFind\Date\Converter $converter, \Zend\Session\SessionManager $sessionManager)
-    {
+    public function __construct(\VuFind\Date\Converter $converter,
+        \Zend\Session\SessionManager $sessionManager
+    ) {
         parent::__construct($converter);
         $this->sessionManager = $sessionManager;
     }
@@ -112,7 +114,9 @@ class PAIA extends DAIA
     {
         // SessionContainer not defined yet? Build it now:
         if (null === $this->session) {
-            $this->session = new \Zend\Session\Container('PAIA', $this->sessionManager);
+            $this->session = new \Zend\Session\Container(
+                'PAIA', $this->sessionManager
+            );
         }
         return $this->session;
     }
@@ -462,7 +466,8 @@ class PAIA extends DAIA
      * Gets additional array fields for the item.
      * Override this method in your custom PAIA driver if necessary.
      *
-     * @param array $fee The fee array from PAIA
+     * @param array $fee    The fee array from PAIA
+     * @param array $patron The patron array from patronLogin
      *
      * @return array Additional fee data for the item
      */
@@ -697,8 +702,9 @@ class PAIA extends DAIA
     /**
      * PAIA helper function to map session data to return value of patronLogin()
      *
-     * @param $details  Patron details returned by patronLogin
-     * @param $password Patron cataloge password
+     * @param array  $details  Patron details returned by patronLogin
+     * @param string $password Patron cataloge password
+     *
      * @return mixed
      */
     protected function enrichUserDetails($details, $password)
@@ -719,10 +725,12 @@ class PAIA extends DAIA
      *  - http://purl.org/ontology/paia#FeeCondition to confirm or select a document
      *    service causing a fee -- not mapped yet
      *
-     * @param $details
+     * @param array $holdDetails An array of item and patron data
+     *
      * @return array
      */
-    protected function getConfirmations($holdDetails) {
+    protected function getConfirmations($holdDetails)
+    {
         $confirmations = [];
         if (isset($holdDetails['pickUpLocation'])) {
             $confirmations['http://purl.org/ontology/paia#StorageCondition']
@@ -824,7 +832,7 @@ class PAIA extends DAIA
      *      details - array of values returned by the getRenewDetails method
      *                identifying which items to renew
      *
-     * @return  array - An associative array with two keys:
+     * @return array - An associative array with two keys:
      *     blocks - An array of strings specifying why a user is blocked from
      *              renewing (false if no blocks)
      *     details - Not set when blocks exist; otherwise, an array of
@@ -936,14 +944,18 @@ class PAIA extends DAIA
     {
         // check for existing data in cache
         if ($this->paiaCacheEnabled) {
-            $itemsResponse = $this->getCachedData($patron['cat_username'] . '_items');
+            $itemsResponse = $this->getCachedData(
+                $patron['cat_username'] . '_items'
+            );
         }
 
         if (!isset($itemsResponse) || $itemsResponse == null) {
             $itemsResponse = $this->paiaGetAsArray(
                 'core/'.$patron['cat_username'].'/items'
             );
-            $this->putCachedData($patron['cat_username'] . '_items', $itemsResponse);
+            $this->putCachedData(
+                $patron['cat_username'] . '_items', $itemsResponse
+            );
         }
 
         if (isset($itemsResponse['doc'])) {
@@ -1024,7 +1036,8 @@ class PAIA extends DAIA
             ? $user_response['email'] : '');
         $user['major']     = null;
         $user['college']   = null;
-        // add other information from PAIA - we don't want anything to get lost while parsing
+        // add other information from PAIA - we don't want anything to get lost
+        // while parsing
         foreach ($user_response as $key => $value) {
             if (!isset($user[$key])) {
                 $user[$key] = $value;
@@ -1094,8 +1107,9 @@ class PAIA extends DAIA
             // about (0..1) textual description of the document
             $result['title'] = (isset($doc['about']) ? $doc['about'] : null);
 
+            // PAIA custom field
             // label (0..1) call number, shelf mark or similar item label
-            $result['callnumber'] = (isset($doc['label']) ? $doc['label'] : null); // PAIA custom field
+            $result['callnumber'] = (isset($doc['label']) ? $doc['label'] : null);
 
             /*
              * meaning of starttime and endtime depends on status:
@@ -1183,8 +1197,9 @@ class PAIA extends DAIA
             // about (0..1) textual description of the document
             $result['title'] = (isset($doc['about']) ? $doc['about'] : null);
 
+            // PAIA custom field
             // label (0..1) call number, shelf mark or similar item label
-            $result['callnumber'] = (isset($doc['label']) ? $doc['label'] : null); // PAIA custom field
+            $result['callnumber'] = (isset($doc['label']) ? $doc['label'] : null);
 
             $result['create'] = (isset($doc['starttime'])
                 ? $this->convertDatetime($doc['starttime']) : '');
@@ -1276,8 +1291,9 @@ class PAIA extends DAIA
 
             // storageid (0..1) location URI
 
+            // PAIA custom field
             // label (0..1) call number, shelf mark or similar item label
-            $result['callnumber'] = (isset($doc['label']) ? $doc['label'] : null); // PAIA custom field
+            $result['callnumber'] = (isset($doc['label']) ? $doc['label'] : null);
 
             // Optional VuFind fields
             /*
@@ -1575,8 +1591,7 @@ class PAIA extends DAIA
     public function checkRequestIsValid($id, $data, $patron)
     {
         // TODO: make this more configurable
-        if (
-            isset($patron['status']) && $patron['status']  == 0
+        if (isset($patron['status']) && $patron['status']  == 0
             && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
             && in_array('write_items', $this->getSession()->scope)
         ) {
