@@ -356,7 +356,7 @@ class ResultScroller extends AbstractPlugin
 
         // now we can set the previous/next record
         $retVal['nextRecord'] = '';
-        if ($pos >0) {
+        if ($pos > 0) {
             $retVal['previousRecord'] = $this->fetchPage(
                 $lastSearch, $this->data->page
             )[$pos - 1];
@@ -409,11 +409,11 @@ class ResultScroller extends AbstractPlugin
             // Set first and last record IDs
             if ($this->data->firstlast = true) {
                 $retVal['firstRecord'] = $this->fetchPage($lastSearch, 1)[0];
-                $lastCalc = $this->data->total/$this->data->limit;
+                $lastCalc = $this->data->total / $this->data->limit;
                 $lastMultiplier = strlen($this->data->limit);
                 $lastPage = intval(ceil($lastCalc));
                 $lastRec = ($this->data->total - (
-                    $this->data->limit*($lastPage-1))-1);
+                    $this->data->limit * ($lastPage - 1)) - 1);
                 $retVal['lastRecord'] = $this->fetchPage(
                     $lastSearch, $lastPage
                 )[$lastRec];
@@ -468,8 +468,8 @@ class ResultScroller extends AbstractPlugin
                     }
                 }
                 if ($this->data->firstlast = true) {
-                    if ((empty($this->data->nextIds) 
-                        && empty($this->data->prevIds)) 
+                    if ((empty($this->data->nextIds)
+                        && empty($this->data->prevIds))
                         || $pos == false
                     ) {
                         if ($id == $retVal['firstRecord']) {
