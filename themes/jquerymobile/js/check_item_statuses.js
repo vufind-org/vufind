@@ -3,7 +3,7 @@ function linkCallnumbers(callnumber, callnumber_handler) {
   if (callnumber_handler) {
     var cns = callnumber.split(', ');
     for (var i = 0; i < cns.length; i++) {
-      cns[i] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&from=' + encodeURI(cns[i]) + '">' + cns[i] + '</a>';
+      cns[i] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(cns[i]) + '">' + cns[i] + '</a>';
     }
     return cns.join(', ');
   }
