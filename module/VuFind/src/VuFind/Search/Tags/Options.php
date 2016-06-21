@@ -56,7 +56,7 @@ class Options extends \VuFind\Search\Base\Options
         }
         
         if (isset($searchSettings->General->default_sort)) {
-           $this->defaultSort = $searchSettings->General->default_sort;
+            $this->defaultSort = $searchSettings->General->default_sort;
         } else {
             $this->defaultSort = 'title';
         }
