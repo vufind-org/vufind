@@ -71,6 +71,10 @@ class Options extends \VuFind\Search\Base\Options
             'year DESC' => 'sort_year', 'year' => 'sort_year asc'
             ];
         }
+        // Load autocomplete preference:
+        if (isset($searchSettings->Autocomplete->enabled)) {
+            $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
+        }
     }
 
     /**
