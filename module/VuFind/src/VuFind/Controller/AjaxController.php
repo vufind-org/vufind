@@ -299,7 +299,7 @@ class AjaxController extends AbstractBase
                 $list = $transList;
             }
             // All values mode?  Return comma-separated values:
-            return implode(', ', $list);
+            return implode(",\t", $list);
         } else {
             // Message mode?  Return the specified message, translated to the
             // appropriate language.
