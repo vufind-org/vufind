@@ -938,19 +938,51 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         margin-top: 6px;
         width: 95%;
         margin-left: 10px;
+        display: inline-block;
+        vertical-align: middle;
+        position: relative;
       }
       & .slider {
-        .slider-tick-label-container {
-          text-align: center;
-          margin-top: 20px;
-        }
-        .slider-tick {
-          background: @gray-mid-light;
-          height: 8px;
-          margin-left: 0;
-          margin-top: 12px;
-          width: 1px;
-        }
+          & .slider-selection {
+              top: 0;
+              bottom: 0;
+              position: absolute;
+          }
+          & .slider-track {
+              height: 10px;
+              width: 100%;
+              margin-top: -5px;
+              top: 10px;
+              left: 0;
+              position: absolute;
+              cursor: pointer;
+              border-bottom-left-radius: 4px;
+              border-bottom-right-radius: 4px;
+              border-top-left-radius: 4px;
+              border-top-right-radius: 4px;
+          }
+          & .slider-handle {
+              position: absolute;
+              width: 20px;
+              height: 20px;
+              margin-left: -10px;
+              margin-top: -5px;
+          }
+          .slider-tick-label-container {
+              text-align: center;
+              margin-top: 20px;
+          }
+          .slider-tick {
+              background: @gray-mid-light;
+              height: 8px;
+              margin-left: 0;
+              margin-top: 12px;
+              width: 1px;
+              position: absolute;
+          }
+          & .tooltip.top {
+              margin-top: -36px;
+          }
       }
       & .primo-advanced-search-fields {
         margin-bottom: 10px; 
