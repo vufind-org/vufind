@@ -118,7 +118,6 @@ class AbstractBase extends AbstractActionController
             'layout', $this->params()->fromQuery('layout', false)
         )) {
             $this->layout()->setTemplate('layout/lightbox');
-            $this->layout()->lburl = $_SERVER["REQUEST_URI"];
         }
         return new ViewModel($params);
     }
