@@ -149,8 +149,9 @@ class Query extends AbstractQuery
      */
     public function containsTerm($needle)
     {
-        // Escape slashes in $needle to avoid regular expression errors:
-        $needle = str_replace('/', '\/', $needle);
+        // Escape characters with special meaning in regular expressions to avoid
+        // errors:
+        $needle = preg_quote($needle);
 
         return (bool)preg_match("/\b$needle\b/u", $this->getString());
     }
@@ -177,7 +178,7 @@ class Query extends AbstractQuery
     {
         // Escape $from so it is regular expression safe (just in case it
         // includes any weird punctuation -- unlikely but possible):
-        $from = addcslashes($from, '\^$.[]|()?*+{}/');
+        $from = preg_quote($from);
 
         // If our "from" pattern contains non-word characters, we can't use word
         // boundaries for matching.  We want to try to use word boundaries when
