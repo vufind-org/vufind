@@ -46,12 +46,42 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($configLoader);
-        $this->basicHandlers = ['tags' => 'Tag'];
-        $this->defaultSort = 'title';
-        $this->sortOptions = [
+        $searchSettings = $configLoader->get($this->searchIni);
+        if (isset($searchSettings->Basic_Searches)) {
+            foreach ($searchSettings->Basic_Searches as $key => $value) {
+                $this->basicHandlers[$key] = $value;
+            }
+        } else {
+            $this->basicHandlers = ['tags' => 'Tag'];
+        }
+        
+        if (isset($searchSettings->General->default_sort)) {
+           $this->defaultSort = $searchSettings->General->default_sort;
+        } else {
+            $this->defaultSort = 'title';
+        }
+        
+        if (isset($searchSettings->Sorting)) {
+            foreach ($searchSettings->Sorting as $key => $value) {
+                $this->sortOptions[$key] = $value;
+            }
+        } else {
+            $this->sortOptions = [
             'title' => 'sort_title', 'author' => 'sort_author',
             'year DESC' => 'sort_year', 'year' => 'sort_year asc'
-        ];
+            ];
+        }
+    }
+
+    /**
+     * Return the route name of the action used for performing advanced searches.
+     * Returns false if the feature is not supported.
+     *
+     * @return string|bool
+     */
+    public function getAdvancedSearchAction()
+    {
+        return 'search-advanced';
     }
 
     /**
