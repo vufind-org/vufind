@@ -28,6 +28,9 @@
         </div>
       <? endif; ?>
     <? else: ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/illrequests-pre-list")): ?>
+      <div class="illrequests-pre-list"><?=$this->render($template)?></div>
+    <? endif; ?>
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
       <form name="cancelForm" class="inline" method="post" id="cancelILLRequest">
@@ -179,6 +182,9 @@
         </div>
       <? endforeach; ?>
       <? if ($this->cancelForm): ?></form><? endif; ?>
+      <? if ($template = $this->content()->findTemplateForLng("content/Additions/illrequests-post-list")): ?>
+        <div class="illrequests-post-list"><?=$this->render($template)?></div>
+      <? endif; ?>
     <? else: ?>
       <h4><?=$this->transEsc('You do not have any interlibrary loan requests placed') ?>. </h4>
     <? endif; ?>

@@ -26,6 +26,9 @@
         </div>
       <? endif; ?>
     <? else: ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/storageretrievalrequests-pre-list")): ?>
+      <div class="storageretrievalrequests-pre-list"><?=$this->render($template)?></div>
+    <? endif; ?>
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
       <form name="cancelForm" class="inline" method="post" id="cancelStorageRetrievalRequest">
@@ -175,6 +178,9 @@
         </div>
       <? endforeach; ?>
       <? if ($this->cancelForm): ?></form><? endif; ?>
+      <? if ($template = $this->content()->findTemplateForLng("content/Additions/storageretrievalrequests-post-list")): ?>
+        <div class="storageretrievalrequests-post-list"><?=$this->render($template)?></div>
+      <? endif; ?>
     <? else: ?>
       <h4><?=$this->transEsc('You do not have any storage retrieval requests placed') ?>.</h4>
     <? endif; ?>

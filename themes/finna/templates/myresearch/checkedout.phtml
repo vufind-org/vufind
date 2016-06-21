@@ -27,6 +27,9 @@
         </div>
       <? endif; ?>
     <? else: ?>
+    <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkedout-pre-list")): ?>
+      <div class="checkedout-pre-list"><?=$this->render($template)?></div>
+    <? endif; ?>
     <? if (!empty($this->transactions)): ?>
       <? if ($this->renewForm): ?>
       <form name="renewals" method="post" id="renewals">
@@ -205,6 +208,9 @@
         </div>
         <? endif;?>
       </form>
+      <? endif; ?>
+      <? if ($template = $this->content()->findTemplateForLng("content/Additions/checkedout-post-list")): ?>
+        <div class="checkedout-post-list"><?=$this->render($template)?></div>
       <? endif; ?>
     <? else: ?>
       <h4><?=$this->transEsc('You do not have any items checked out')?>.</h4>
