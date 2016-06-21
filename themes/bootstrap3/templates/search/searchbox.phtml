@@ -57,15 +57,12 @@
     <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> <?=$this->transEsc("Find")?></button>
     <? if ($advSearch): ?>
       <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
-      <? if ($geoCoordData[0] == true) : ?>
-         <a href="<?=$this->url('search-results') . $GeoSearchStr ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
-      <? endif; ?>
-<? endif; ?>
+    <? endif; ?>
+    <? if ($geoCoordData[0] == true) : ?>
+        <a href="<?=$this->url('search-results') . $GeoSearchStr ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
+    <? endif; ?>
 <? if ($this->layout()->frontpage == true):?>
     &nbsp;&nbsp;
-    <? if ($geoCoordData[0] == true) : ?>
-       <a href="<?=$this->url('search-results') . $GeoSearchStr ?>"><?=$this->transEsc('Geographic Search')?></a>
-    <? endif; ?>
 <? endif; ?>
 
     <? $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>
