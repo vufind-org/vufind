@@ -241,7 +241,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
                 : 'qf=title,title_short,callnumber-label,topic,language,author,'
                     . 'publishDate mintf=1 mindf=1 boost=true';
             $params->set('q', sprintf('{!mlt %s}%s', $mltParams, $id));
-            $params->set('rows', $this->mltCount);
+            if (null === $params->get('rows')) {
+                $params->set('rows', $this->mltCount);
+            }
         } else {
             $params->set(
                 'q', sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"'))
