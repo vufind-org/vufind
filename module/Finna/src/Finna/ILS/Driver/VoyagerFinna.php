@@ -659,7 +659,7 @@ trait VoyagerFinna
             $compareLogin = mb_strtolower($login, 'UTF-8');
             $compareSecondaryLogin = mb_strtolower($secondary, 'UTF-8');
 
-            $sqlStmt = $this->executeSQL( $sql, [':barcode' => $bindBarcode]);
+            $sqlStmt = $this->executeSQL($sql, [':barcode' => $bindBarcode]);
             // For some reason barcode is not unique, so evaluate all resulting
             // rows just to be safe
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
