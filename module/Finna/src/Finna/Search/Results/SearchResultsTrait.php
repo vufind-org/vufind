@@ -46,7 +46,7 @@ trait SearchResultsTrait
      */
     public function getBackendId()
     {
-        return $this->backendId;
+        return isset($this->backendId) ? $this->backendId : 'Solr';
     }
 
     /**

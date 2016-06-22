@@ -137,9 +137,11 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
         } else {
             $format = $formats = $recordDriver->tryMethod('getFormats');
             if (is_array($formats)) {
-                $format = isset($formats[1]) ? $formats[1] : $formats[0];
+                $format = end($formats);
+                if (false === $format) {
+                    $format = '';
+                }
             }
-            $format = urldecode($format);
             $format = rtrim($format, '/');
             $format = preg_replace('/^\d\//', '', $format);
             $vars['RecordFormat'] = $format;

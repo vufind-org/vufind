@@ -331,7 +331,7 @@ class Params extends \VuFind\Search\Solr\Params
         $found = false;
 
         // Date range filter
-        if ($reqFilters = $request->get('filter')) {
+        if (($reqFilters = $request->get('filter')) && is_array($reqFilters)) {
             foreach ($reqFilters as $f) {
                 list($field, $value) = $this->parseFilter($f);
                 if ($field == $dateRangeField
