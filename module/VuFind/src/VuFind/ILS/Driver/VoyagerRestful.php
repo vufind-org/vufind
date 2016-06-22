@@ -2449,7 +2449,7 @@ EOT;
             ? $details['level'] : 'copy';
         $itemId = isset($details['item_id']) ? $details['item_id'] : false;
         $mfhdId = isset($details['holdings_id']) ? $details['holdings_id'] : false;
-        $comment = $details['comment'];
+        $comment = isset($details['comment']) ? $details['comment'] : '';
         $bibId = $details['id'];
 
         // Make Sure Pick Up Location is Valid
