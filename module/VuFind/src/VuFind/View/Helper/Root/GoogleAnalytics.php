@@ -73,7 +73,6 @@ class GoogleAnalytics extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($customUrl = false)
     {
-        error_log($customUrl);
         if (!$this->key) {
             return '';
         }
