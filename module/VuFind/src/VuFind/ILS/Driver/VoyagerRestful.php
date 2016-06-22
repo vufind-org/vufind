@@ -725,8 +725,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             }
 
             try {
-                $sqlStmt = $this->db->prepare($sql);
-                $sqlStmt->execute($params);
+                $sqlStmt = $this->executeSQL($sql, $params);
             } catch (PDOException $e) {
                 throw new ILSException($e->getMessage());
             }
@@ -1004,9 +1003,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $sql = $this->buildSqlFromArray($sqlArray);
 
         try {
-            $this->debugSQL(__FUNCTION__, $sql['string'], $sql['bind']);
-            $sqlStmt = $this->db->prepare($sql['string']);
-            $sqlStmt->execute($sql['bind']);
+            $sqlStmt = $this->executeSQL($sql);
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
@@ -1661,9 +1658,7 @@ EOT;
         $sql = $this->buildSqlFromArray($sqlArray);
 
         try {
-            $sqlStmt = $this->db->prepare($sql['string']);
-            $this->debugSQL(__FUNCTION__, $sql['string'], $sql['bind']);
-            $sqlStmt->execute($sql['bind']);
+            $sqlStmt = $this->executeSQL($sql);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
@@ -1724,9 +1719,7 @@ EOT;
 
         $sql = $this->buildSqlFromArray($sqlArray);
         try {
-            $sqlStmt = $this->db->prepare($sql['string']);
-            $this->debugSQL(__FUNCTION__, $sql['string'], $sql['bind']);
-            $sqlStmt->execute($sql['bind']);
+            $sqlStmt = $this->executeSQL($sql);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
@@ -1799,9 +1792,7 @@ EOT;
             ' where avail.STATUS=1'; // 1 = not charged
 
         try {
-            $sqlStmt = $this->db->prepare($outersql);
-            $this->debugSQL(__FUNCTION__, $outersql, $sql['bind']);
-            $sqlStmt->execute($sql['bind']);
+            $sqlStmt = $this->executeSQL($outersql, $sql['bind']);
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
