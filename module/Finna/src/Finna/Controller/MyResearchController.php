@@ -527,7 +527,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             }
             return $this->redirect()->toRoute('search-history');
         } else {
-            parent::savesearchAction();
+            return parent::savesearchAction();
         }
     }
 
