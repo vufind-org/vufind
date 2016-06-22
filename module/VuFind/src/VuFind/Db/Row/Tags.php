@@ -66,6 +66,8 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
     ) {
         // Set up base query:
         $tag = $this;
+        // Replace * with % to allow for wildcard searches
+        $tag->tag = str_replace('*', '%', $tag->tag);
         $callback = function ($select) use ($tag, $source, $sort, $offset, $limit) {
             $select->columns(
                 [
@@ -77,10 +79,15 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
             );
             $select->join(
                 ['rt' => 'resource_tags'],
-                'resource.id = rt.resource_id',
+                'rt.resource_id = resource.id',
                 []
             );
-            $select->where->equalTo('rt.tag_id', $tag->id);
+            $select->join(
+                ['t' => 'tags'],
+                't.id = rt.tag_id',
+                []
+            );
+            $select->where->like('t.tag', $tag->tag);
 
             if (!empty($source)) {
                 $select->where->equalTo('source', $source);
