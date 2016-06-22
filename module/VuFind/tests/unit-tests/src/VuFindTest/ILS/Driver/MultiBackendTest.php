@@ -2321,6 +2321,11 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
                 ->will(
                     $this->returnValue($this->getPatron('username', $userSource))
                 );
+            $mockAuth->expects($this->any())
+                ->method('getStoredCatalogCredentials')
+                ->will(
+                    $this->returnValue($this->getPatron('username', $userSource))
+                );
         }
         return $mockAuth;
     }
