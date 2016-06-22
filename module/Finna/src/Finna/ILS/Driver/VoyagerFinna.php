@@ -392,7 +392,7 @@ trait VoyagerFinna
             );
 
             try {
-                $sqlStmt = $this-->executeSQL($sql);
+                $sqlStmt = $this->executeSQL($sql);
                 $statCodes = $sqlStmt->fetchAll(PDO::FETCH_COLUMN, 0);
                 $common = array_intersect(
                     $statCodes,
