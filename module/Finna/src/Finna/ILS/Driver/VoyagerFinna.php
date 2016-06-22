@@ -392,9 +392,7 @@ trait VoyagerFinna
             );
 
             try {
-                $this->debugSQL(__FUNCTION__, $sql['string'], $sql['bind']);
-                $sqlStmt = $this->db->prepare($sql['string']);
-                $sqlStmt->execute($sql['bind']);
+                $sqlStmt = $this-->executeSQL($sql);
                 $statCodes = $sqlStmt->fetchAll(PDO::FETCH_COLUMN, 0);
                 $common = array_intersect(
                     $statCodes,
@@ -661,10 +659,7 @@ trait VoyagerFinna
             $compareLogin = mb_strtolower($login, 'UTF-8');
             $compareSecondaryLogin = mb_strtolower($secondary, 'UTF-8');
 
-            $this->debugSQL(__FUNCTION__, $sql, [':barcode' => $bindBarcode]);
-            $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->bindParam(':barcode', $bindBarcode, PDO::PARAM_STR);
-            $sqlStmt->execute();
+            $sqlStmt = $this->executeSQL( $sql, [':barcode' => $bindBarcode]);
             // For some reason barcode is not unique, so evaluate all resulting
             // rows just to be safe
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
