@@ -1178,7 +1178,7 @@ class MultiBackend extends AbstractBase
         }
         if (!$source) {
             try {
-                $patron = $this->ilsAuth->storedCatalogLogin();
+                $patron = $this->ilsAuth->getStoredCatalogCredentials();
                 if ($patron && isset($patron['cat_username'])) {
                     $source = $this->getSource($patron['cat_username']);
                 }
