@@ -91,10 +91,13 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
         $entry->setLink($url);
 
         if ($this->list) {
-            if ($saved = $record->getListSavedDate(
-                $this->list->id, $this->list->user_id
-            )) {
-                $entry->setDateModified(new \DateTime($saved));
+            if (method_exists($record, 'getListSavedDate')) {
+                $saved = $record->getListSavedDate(
+                    $this->list->id, $this->list->user_id
+                );
+                if ($saved) {
+                    $entry->setDateModified(new \DateTime($saved));
+                }
             }
         } else {
             $date = $this->getDateModified($record);

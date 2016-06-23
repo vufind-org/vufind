@@ -87,6 +87,9 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
         $cnt = $this->record->getNumOfRecordImages('large');
         $urlHelper = $this->getView()->plugin('url');
         $imageParams = $this->record->getRecordImage($cnt ? 'large' : 'small');
+        if (is_string($imageParams)) {
+            return $imageParams;
+        }
         unset($imageParams['url']);
 
         $imageParams['index'] = $index;
