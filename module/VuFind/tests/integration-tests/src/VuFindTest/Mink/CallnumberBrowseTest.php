@@ -36,7 +36,7 @@ namespace VuFindTest\Mink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
+class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
 {
     protected $id = 'testdeweybrowse';
 
