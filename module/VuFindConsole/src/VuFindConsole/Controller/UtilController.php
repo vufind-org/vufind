@@ -651,7 +651,7 @@ class UtilController extends AbstractBase
     /**
      * Abstract delete method.
      *
-     * @param string $table         Table to operate on.
+     * @param string $tableName     Table to operate on.
      * @param string $successString String for reporting success.
      * @param string $failString    String for reporting failure.
      * @param int    $minAge        Minimum age allowed for expiration (also used
@@ -659,7 +659,7 @@ class UtilController extends AbstractBase
      *
      * @return mixed
      */
-    protected function expire($table, $successString, $failString, $minAge = 2)
+    protected function expire($tableName, $successString, $failString, $minAge = 2)
     {
         // Get command-line arguments
         $argv = $this->consoleOpts->getRemainingArgs();
@@ -678,21 +678,44 @@ class UtilController extends AbstractBase
             return $this->getFailureResponse();
         }
 
-        // Delete the expired searches--this cleans up any junk left in the database
-        // from old search histories that were not
-        // caught by the session garbage collector.
-        $search = $this->getTable($table);
-        if (!method_exists($search, 'getExpiredQuery')) {
-            throw new \Exception($table . ' does not support getExpiredQuery()');
+        // Delete the expired rows--this cleans up any junk left in the database
+        // e.g. from old searches or sessions that were not caught by the session
+        // garbage collector.
+        $table = $this->getTable($tableName);
+        if (!method_exists($table, 'getExpiredIdRange')) {
+            throw new \Exception("$tableName does not support getExpiredIdRange()");
         }
-        $query = $search->getExpiredQuery($daysOld);
-        if (($count = count($search->select($query))) == 0) {
-            Console::writeLine($failString);
+        if (!method_exists($table, 'deleteExpired')) {
+            throw new \Exception("$tableName does not support deleteExpired()");
+        }
+
+        $idRange = $table->getExpiredIdRange($daysOld);
+        if (false === $idRange) {
+            $this->message($failString);
             return $this->getSuccessResponse();
         }
-        $search->delete($query);
-        Console::writeLine(str_replace('%%count%%', $count, $successString));
+
+        // Delete records in batches of up to 1000 records to avoid locking the
+        // database for too long
+        for ($batch = $idRange[0]; $batch <= $idRange[1]; $batch += 1000) {
+            $count = $table->deleteExpired($daysOld, $batch, $batch + 999);
+            $this->message(str_replace('%%count%%', $count, $successString));
+            // Be nice to others and wait 100ms between batches
+            usleep(100000);
+        }
         return $this->getSuccessResponse();
+    }
+
+    /**
+     * Print a message with a date stamp to the console
+     *
+     * @param string $msg Message
+     *
+     * @return void
+     */
+    protected function message($msg)
+    {
+        Console::writeLine('[' . date('Y-m-d H:i:s') . '] ' . $msg);
     }
 
     /**
