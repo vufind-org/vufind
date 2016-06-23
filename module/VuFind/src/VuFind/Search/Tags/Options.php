@@ -39,6 +39,14 @@ namespace VuFind\Search\Tags;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
+     * Should we load Solr search options for a more integrated search experience
+     * or omit them to prevent confusion in multi-backend environments?
+     *
+     * @var bool
+     */
+    protected $useSolrSearchOptions = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -46,13 +54,42 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($configLoader);
-        $this->basicHandlers = ['tag' => 'Tag'];
+        $config = $configLoader->get('config');
+        if (isset($config->Social->show_solr_options_in_tag_search)
+            && $config->Social->show_solr_options_in_tag_search
+        ) {
+            $this->useSolrSearchOptions = true;
+        }
+        $searchSettings = $this->useSolrSearchOptions
+            ? $configLoader->get($this->searchIni) : null;
+        if (isset($searchSettings->Basic_Searches)) {
+            foreach ($searchSettings->Basic_Searches as $key => $value) {
+                $this->basicHandlers[$key] = $value;
+            }
+        } else {
+            $this->basicHandlers = ['tag' => 'Tag'];
+        }
         $this->defaultHandler = 'tag';
         $this->defaultSort = 'title';
         $this->sortOptions = [
             'title' => 'sort_title', 'author' => 'sort_author',
             'year DESC' => 'sort_year', 'year' => 'sort_year asc'
         ];
+        // Load autocomplete preference:
+        if (isset($searchSettings->Autocomplete->enabled)) {
+            $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
+        }
+    }
+
+    /**
+     * Return the route name of the action used for performing advanced searches.
+     * Returns false if the feature is not supported.
+     *
+     * @return string|bool
+     */
+    public function getAdvancedSearchAction()
+    {
+        return $this->useSolrSearchOptions ? 'search-advanced' : null;
     }
 
     /**
