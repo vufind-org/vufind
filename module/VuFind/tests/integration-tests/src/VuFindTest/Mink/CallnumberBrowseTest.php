@@ -71,7 +71,6 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
         return $page;
     }
 
-
     /**
      * Set config for callnumber tests
      * Sets callnumber_handler to false
@@ -274,6 +273,4 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
     {
         $this->validateSetting('first', 'msg', true, true);
     }
-
-    // TODO: Status Full
 }
