@@ -311,8 +311,8 @@ class AjaxController extends AbstractBase
      * Based on settings and the number of callnumbers, return callnumber handler
      * Use callnumbers before pickValue is run.
      *
-     * @param array  $callnumbers       Array of callnumbers.
-     * @param string $callnumberSetting config.ini setting -- first, all or msg
+     * @param array  $list           Array of callnumbers.
+     * @param string $displaySetting config.ini setting -- first, all or msg
      *
      * @return string
      */
@@ -1285,7 +1285,7 @@ class AjaxController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $pickupLib = $this->params()->fromQuery('pickupLib');
-        if (null === $id || null === $pickupLib) {
+        if (empty($id) || empty($pickupLib)) {
             return $this->output(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,
@@ -1337,7 +1337,7 @@ class AjaxController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $requestGroupId = $this->params()->fromQuery('requestGroupId');
-        if (null === $id || null === $requestGroupId) {
+        if (empty($id) || empty($requestGroupId)) {
             return $this->output(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,
