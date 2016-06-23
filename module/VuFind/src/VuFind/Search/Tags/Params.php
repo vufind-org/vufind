@@ -48,7 +48,7 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Is this a fuzzy search?
      *
-     * @var bool
+     * @return bool
      */
     public function isFuzzyTagSearch()
     {
