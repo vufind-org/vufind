@@ -380,6 +380,7 @@ class SearchController extends \VuFind\Controller\SearchController
     protected function processOpenURL($params)
     {
         $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
+        $results = false;
 
         // Journal first..
         if (!$params['eissn']
