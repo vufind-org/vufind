@@ -46,7 +46,8 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($configLoader);
-        $this->basicHandlers = ['tags' => 'Tag'];
+        $this->basicHandlers = ['tag' => 'Tag'];
+        $this->defaultHandler = 'tag';
         $this->defaultSort = 'title';
         $this->sortOptions = [
             'title' => 'sort_title', 'author' => 'sort_author',
@@ -61,7 +62,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getSearchAction()
     {
-        return 'tag-home';
+        return 'search-results';
     }
 
     /**
