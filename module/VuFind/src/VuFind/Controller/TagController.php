@@ -58,6 +58,9 @@ class TagController extends AbstractSearch
         if (!$this->tagsEnabled()) {
             throw new ForbiddenException('Tags disabled');
         }
+        if ($this->params()->fromQuery('type') != 'tag') {
+            return $this->forwardTo('Search', 'Results');
+        }
         return $this->resultsAction();
     }
 }
