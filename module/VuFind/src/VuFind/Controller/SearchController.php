@@ -507,6 +507,11 @@ class SearchController extends AbstractSearch
             $query->set('type', 'tag');
         }
         if ($this->params()->fromQuery('type') == 'tag') {
+            // Because we're coming in from a search, we want to do a fuzzy
+            // tag search, not an exact search like we would when linking to a
+            // specific tag name.
+            $query = $this->getRequest()->getQuery()
+                ->set('hiddenFilters', ['fuzzy:true']);
             return $this->forwardTo('Tag', 'Home');
         }
 
