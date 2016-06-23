@@ -75,7 +75,6 @@ abstract class MinkTestCase extends DbTestCase
     {
         foreach ($configs as $file => $settings) {
             $this->changeConfigFile($file, $settings, in_array($file, $replace));
-            $this->modifiedConfigs[] = $file;
         }
     }
 
@@ -93,14 +92,17 @@ abstract class MinkTestCase extends DbTestCase
     {
         $file = $configName . '.ini';
         $local = ConfigLocator::getLocalConfigPath($file, null, true);
-        if (file_exists($local)) {
-            // File exists? Make a backup!
-            copy($local, $local . '.bak');
-        } else {
-            // File doesn't exist? Make a baseline version.
-            copy(ConfigLocator::getBaseConfigPath($file), $local);
-        }
+        if (!in_array($configName, $this->modifiedConfigs)) {
+            if (file_exists($local)) {
+                // File exists? Make a backup!
+                copy($local, $local . '.bak');
+            } else {
+                // File doesn't exist? Make a baseline version.
+                copy(ConfigLocator::getBaseConfigPath($file), $local);
+            }
 
+            $this->modifiedConfigs[] = $configName;
+        }
         // If we're replacing the existing file, wipe it out now:
         if ($replace) {
             file_put_contents($local, '');
@@ -218,6 +220,7 @@ abstract class MinkTestCase extends DbTestCase
                 rename($backup, $local);
             }
         }
+        $this->modifiedConfigs = [];
     }
 
     /**
