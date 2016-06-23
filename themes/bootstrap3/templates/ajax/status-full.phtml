@@ -7,7 +7,7 @@
   <? $i = 0; foreach ($this->statusItems as $item): ?>
     <? if (++$i == 5) break; // Show no more than 5 items ?>
     <tr>
-      <td>
+      <td class="fullLocation">
         <? $locationText = $this->transEsc('location_' . $item['location'], array(), $item['location']); ?>
         <? if (isset($item['locationhref']) && $item['locationhref']): ?>
           <a href="<?=$item['locationhref']?>" target="_blank"><?=$locationText?></a>
@@ -15,14 +15,14 @@
           <?=$locationText?>
         <? endif; ?>
       </td>
-      <td>
+      <td class="fullCallnumber">
         <? if ($this->callnumberHandler): ?>
           <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($item['callnumber']) ?>"><?=$this->escapeHtml($item['callnumber'])?></a>
         <? else: ?>
           <?=$this->escapeHtml($item['callnumber'])?>
         <? endif; ?>
       </td>
-      <td>
+      <td class="fullAvailability">
         <? if (isset($item['use_unknown_message']) && $item['use_unknown_message']): ?>
           <span><?=$this->transEsc("status_unknown_message")?></span>
         <? elseif ($item['availability']): ?>

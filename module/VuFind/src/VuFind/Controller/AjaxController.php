@@ -316,9 +316,9 @@ class AjaxController extends AbstractBase
      *
      * @return string
      */
-    protected function getCallnumberHandler($callnumbers, $callnumberSetting)
+    protected function getCallnumberHandler($list, $displaySetting)
     {
-        if ($callnumberSetting === 'msg' && count($callNumbers) > 1) {
+        if ($displaySetting == 'msg' && count($list) > 1) {
             return false;
         }
         $config = $this->getConfig();
@@ -479,7 +479,7 @@ class AjaxController extends AbstractBase
             $locationCallnumbers = array_unique($details['callnumbers']);
             // Determine call number string based on findings:
             $callnumberHandler = $this->getCallnumberHandler(
-                $callNumbers, $callnumberSetting
+                $locationCallnumbers, $callnumberSetting
             );
             $locationCallnumbers = $this->pickValue(
                 $locationCallnumbers, $callnumberSetting, 'Multiple Call Numbers'
