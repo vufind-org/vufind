@@ -123,8 +123,7 @@ class Results extends BaseResults
         // we are coming in from a search, in which case we want to do a fuzzy
         // search that supports wildcards, or else we are coming in from a tag
         // link, in which case we want to do an exact match.
-        $hf = $this->getParams()->getHiddenFilters();
-        $rawResults = (isset($hf['fuzzy']) && in_array('true', $hf['fuzzy']))
+        $rawResults = $this->getParams()->isFuzzyTagSearch()
             ? $this->performFuzzyTagSearch()
             : $this->performExactTagSearch();
 
