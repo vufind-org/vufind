@@ -3,7 +3,7 @@ function linkCallnumbers(callnumber, callnumber_handler) {
   if (callnumber_handler) {
     var cns = callnumber.split(',\t');
     for (var i = 0; i < cns.length; i++) {
-      cns[i] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(cns[i]) + '">' + cns[i] + '</a>';
+      cns[i] = '<a href="' + path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(cns[i]) + '">' + cns[i] + '</a>';
     }
     return cns.join(',\t');
   }
@@ -23,6 +23,7 @@ function checkItemStatuses() {
                 if (response.status == 'OK') {
                     $.each(response.data, function(i, result) {
                         var item = $($('.ajaxItemId')[result.record_number]);
+                        console.log(result);
 
                         item.find('.status').empty().append(result.availability_message);
                         if (typeof(result.missing_data) != 'undefined'
