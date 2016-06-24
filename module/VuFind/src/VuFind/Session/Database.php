@@ -60,26 +60,12 @@ class Database extends AbstractBase
     }
 
     /**
-     * Write function that is called when session data is to be saved.
-     *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
-     *
-     * @return bool
-     */
-    public function write($sess_id, $data)
-    {
-        $this->getTable('Session')->writeSession($sess_id, $data);
-        return true;
-    }
-
-    /**
      * The destroy handler, this is executed when a session is destroyed with
      * session_destroy() and takes the session id as its only parameter.
      *
      * @param string $sess_id The session ID to destroy
      *
-     * @return void
+     * @return bool
      */
     public function destroy($sess_id)
     {
@@ -88,6 +74,8 @@ class Database extends AbstractBase
 
         // Now do database-specific destruction:
         $this->getTable('Session')->destroySession($sess_id);
+
+        return true;
     }
 
     /**
@@ -96,10 +84,25 @@ class Database extends AbstractBase
      *
      * @param int $sess_maxlifetime Maximum session lifetime.
      *
-     * @return void
+     * @return bool
      */
     public function gc($sess_maxlifetime)
     {
         $this->getTable('Session')->garbageCollect($sess_maxlifetime);
+        return true;
+    }
+
+    /**
+     * A function that is called internally when session data is to be saved.
+     *
+     * @param string $sess_id The current session ID
+     * @param string $data    The session data to write
+     *
+     * @return bool
+     */
+    protected function saveSession($sess_id, $data)
+    {
+        $this->getTable('Session')->writeSession($sess_id, $data);
+        return true;
     }
 }

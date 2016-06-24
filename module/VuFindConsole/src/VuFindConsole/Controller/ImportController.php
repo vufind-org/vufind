@@ -88,8 +88,7 @@ class ImportController extends AbstractBase
             );
             Console::writeLine("");
             Console::writeLine(
-                "Note: See vudl.properties and ojs.properties "
-                . "for configuration examples."
+                "Note: See ojs.properties for configuration examples."
             );
             return $this->getFailureResponse();
         }

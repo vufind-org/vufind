@@ -52,6 +52,16 @@ class Options extends \VuFind\Search\Base\Options
             'title' => 'sort_title', 'author' => 'sort_author',
             'year DESC' => 'sort_year', 'year' => 'sort_year asc'
         ];
+        $config = $configLoader->get('config');
+        if (isset($config->Social->lists_default_limit)) {
+            $this->defaultLimit = $config->Social->lists_default_limit;
+        }
+        if (isset($config->Social->lists_limit_options)) {
+            $this->limitOptions = explode(',', $config->Social->lists_limit_options);
+        }
+        if (isset($config->Social->lists_view)) {
+            $this->listviewOption = $config->Social->lists_view;
+        }
     }
 
     /**

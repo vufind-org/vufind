@@ -135,6 +135,29 @@ trait UserCreationTrait
     }
 
     /**
+     * Mink support function: fill in the change password form.
+     *
+     * @param Element $page    Page element.
+     * @param string  $old     Old password
+     * @param string  $new     New password
+     * @param bool    $inModal Should we assume the login box is in a lightbox?
+     * @param string  $prefix  Extra selector prefix
+     *
+     * @return void
+     */
+    protected function fillInChangePasswordForm(Element $page, $old, $new,
+        $inModal = false, $prefix = '#newpassword '
+    ) {
+        $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
+        $usernameField = $this->findCss($page, $prefix . '[name="oldpwd"]');
+        $usernameField->setValue($old);
+        $passwordField = $this->findCss($page, $prefix . '[name="password"]');
+        $passwordField->setValue($new);
+        $password2Field = $this->findCss($page, $prefix . '[name="password2"]');
+        $password2Field->setValue($new);
+    }
+
+    /**
      * Submit the login form (assuming it's open).
      *
      * @param Element $page    Page element.

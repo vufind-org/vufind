@@ -15,6 +15,10 @@
 <div class="hold-form">
   <form class="form-horizontal" method="post" name="placeHold">
     <?=$this->flashmessages()?>
+    <label class="col-sm-3 control-label"><?=$this->transEsc('Title')?></label>
+    <div class="col-sm-9">
+      <p class="form-control-static"><?=$this->driver->getBreadcrumb() ?></p>
+    </div>
     <? if (in_array("comments", $this->extraHoldFields)): ?>
       <div class="form-group hold-comment">
         <label class="col-sm-3 control-label"><?=$this->transEsc("Comments")?>:</label>
