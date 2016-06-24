@@ -247,7 +247,9 @@ class DAIA extends AbstractBase implements
                 // parse the extracted DAIA document and return the status info
                 $data = $this->parseDaiaDoc($id, $doc);
                 // cache the status information
-                $this->putCachedData($this->generateURI($id), $data);
+                if ($this->daiaCacheEnabled) {
+                    $this->putCachedData($this->generateURI($id), $data);
+                }
                 return $data;
             }
         } catch (ILSException $e) {
@@ -309,7 +311,9 @@ class DAIA extends AbstractBase implements
                             // means we got status information for that record
                             $data = $this->parseDaiaDoc($id, $doc);
                             // cache the status information
-                            $this->putCachedData($this->generateURI($id), $data);
+                            if ($this->daiaCacheEnabled) {
+                                $this->putCachedData($this->generateURI($id), $data);
+                            }
                             $status[] = $data;
                         }
                         unset($doc);
@@ -327,7 +331,9 @@ class DAIA extends AbstractBase implements
                             // info
                             $data = $this->parseDaiaDoc($id, $doc);
                             // cache the status information
-                            $this->putCachedData($this->generateURI($id), $data);
+                            if ($this->daiaCacheEnabled) {
+                                $this->putCachedData($this->generateURI($id), $data);
+                            }
                             $status[] = $data;
                         }
                     }
