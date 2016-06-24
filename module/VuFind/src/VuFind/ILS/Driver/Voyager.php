@@ -1218,10 +1218,7 @@ class Voyager extends AbstractBase
             $bindBarcode = strtolower(utf8_decode($barcode));
             $compareLogin = mb_strtolower($login, 'UTF-8');
 
-            $this->debugSQL(__FUNCTION__, $sql, [':barcode' => $bindBarcode]);
-            $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->bindParam(':barcode', $bindBarcode, PDO::PARAM_STR);
-            $sqlStmt->execute();
+            $sqlStmt = $this->executeSQL($sql, [':barcode' => $bindBarcode]);
             // For some reason barcode is not unique, so evaluate all resulting
             // rows just to be safe
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
@@ -1899,9 +1896,7 @@ class Voyager extends AbstractBase
 
         $sql = $this->buildSqlFromArray($sqlArray);
         try {
-            $sqlStmt = $this->db->prepare($sql['string']);
-            $this->debugSQL(__FUNCTION__, $sql['string'], $sql['bind']);
-            $sqlStmt->execute($sql['bind']);
+            $sqlStmt = $this->executeSQL($sql);
             while ($sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $list[] = $this->processMyStorageRetrievalRequestsData($sqlRow);
             }
