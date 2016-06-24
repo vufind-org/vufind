@@ -223,12 +223,10 @@ class AjaxController extends AbstractBase
                 }
                 // If a full status display has been requested, append the HTML:
                 if ($showFullStatus) {
-                    $callnoHandler = isset($config->Item_Status->callnumber_handler)
-                        ? $config->Item_Status->callnumber_handler : false;
                     $current['full_status'] = $renderer->render(
                         'ajax/status-full.phtml', [
                             'statusItems' => $record,
-                            'callnumberHandler' => $callnoHandler,
+                            'callnumberHandler' => $this->getCallnumberHandler()
                          ]
                     );
                 }
@@ -317,7 +315,7 @@ class AjaxController extends AbstractBase
      *
      * @return string
      */
-    protected function getCallnumberHandler($list, $displaySetting)
+    protected function getCallnumberHandler($list = null, $displaySetting = null)
     {
         if ($displaySetting == 'msg' && count($list) > 1) {
             return false;
@@ -1286,7 +1284,7 @@ class AjaxController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $pickupLib = $this->params()->fromQuery('pickupLib');
-        if (empty($id) || empty($pickupLib)) {
+        if (null === $id || null === $pickupLib) {
             return $this->output(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,
@@ -1338,7 +1336,7 @@ class AjaxController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $requestGroupId = $this->params()->fromQuery('requestGroupId');
-        if (empty($id) || empty($requestGroupId)) {
+        if (null === $id || null === $requestGroupId) {
             return $this->output(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,
