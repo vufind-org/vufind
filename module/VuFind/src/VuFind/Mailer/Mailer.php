@@ -27,6 +27,7 @@
  */
 namespace VuFind\Mailer;
 use VuFind\Exception\Mail as MailException,
+    Zend\Mail\Address,
     Zend\Mail\AddressList,
     Zend\Mail\Message,
     Zend\Mail\Header\ContentType;
@@ -131,19 +132,26 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Send an email message.
      *
-     * @param string                    $to      Recipient email address (or
+     * @param string|Address|AddressList $to      Recipient email address (or
      * delimited list)
-     * @param string|\Zend\Mail\Address $from    Sender name and email address
-     * @param string                    $subject Subject line for message
-     * @param string                    $body    Message body
-     * @param string                    $cc      CC recipient (null for none)
+     * @param string|Address             $from    Sender name and email address
+     * @param string                     $subject Subject line for message
+     * @param string                     $body    Message body
+     * @param string                     $cc      CC recipient (null for none)
      *
      * @throws MailException
      * @return void
      */
     public function send($to, $from, $subject, $body, $cc = null)
     {
-        $recipients = $this->stringToAddressList($to);
+        if ($to instanceof AddressList) {
+            $recipients = $to;
+        } else if ($to instanceof Address) {
+            $recipients = new AddressList();
+            $recipients->add($to);
+        } else {
+            $recipients = $this->stringToAddressList($to);
+        }
 
         // Validate email addresses:
         if ($this->maxRecipients > 0
@@ -160,7 +168,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 throw new MailException('Invalid Recipient Email Address');
             }
         }
-        $fromEmail = ($from instanceof \Zend\Mail\Address)
+        $fromEmail = ($from instanceof Address)
             ? $from->getEmail() : $from;
         if (!$validator->isValid($fromEmail)) {
             throw new MailException('Invalid Sender Email Address');

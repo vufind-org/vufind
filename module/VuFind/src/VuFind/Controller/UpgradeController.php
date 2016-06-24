@@ -696,7 +696,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Prompt the user for a source version (to upgrade from 2.x).
+     * Prompt the user for a source version (to upgrade from 2.x+).
      *
      * @return mixed
      */
@@ -706,7 +706,7 @@ class UpgradeController extends AbstractBase
         $version = $this->params()->fromPost('sourceversion');
         if (!empty($version)) {
             $this->cookie->newVersion = \VuFind\Config\Version::getBuildVersion();
-            if (floor($version) != 2) {
+            if (floor($version) < 2) {
                 $this->flashMessenger()
                     ->addMessage('Illegal version number.', 'error');
             } else if ($version >= $this->cookie->newVersion) {

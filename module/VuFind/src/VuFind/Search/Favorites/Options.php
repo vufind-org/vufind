@@ -59,6 +59,9 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($config->Social->lists_limit_options)) {
             $this->limitOptions = explode(',', $config->Social->lists_limit_options);
         }
+        if (isset($config->Social->lists_view)) {
+            $this->listviewOption = $config->Social->lists_view;
+        }
     }
 
     /**

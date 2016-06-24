@@ -526,6 +526,17 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Are comments enabled?
+     *
+     * @return bool
+     */
+    protected function commentsEnabled()
+    {
+        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        return $check->getCommentSetting() !== 'disabled';
+    }
+
+    /**
      * Are lists enabled?
      *
      * @return bool

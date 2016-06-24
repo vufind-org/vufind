@@ -10,17 +10,12 @@ env:
   - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
 
 before_script:
-  - pear install pear/PHP_CodeSniffer
   - pear install pear/Http_Request2
   - pear channel-discover pear.phing.info
   - pear install phing/phing
-  - composer global require fabpot/php-cs-fixer
-  - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - phpenv config-rm xdebug.ini
   - phpenv rehash
+  - npm install -g eslint
 
 script:
-  - phing composer
-  - phpunit --stderr --configuration module/VuFind/tests/phpunit.xml
-  - phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php $PWD/module
-  - phing php-cs-fixer-dryrun
+  - phing composer phpunitfast phpcs-console php-cs-fixer-dryrun eslint
