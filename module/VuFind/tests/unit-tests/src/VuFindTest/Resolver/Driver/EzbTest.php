@@ -87,7 +87,7 @@ class EzbTest extends \VuFindTest\Unit\TestCase
             ],
             1 => [
                 'title' => 'Noûs (ältere Jahrgänge via JSTOR)',
-                'coverage' => 'ab Vol. 1, Iss. 1 (1967);für die Ausgaben der aktuellen 11 Jahrgänge nicht verfügbar',
+                'coverage' => 'ab Vol. 1, Iss. 1 (1967); für die Ausgaben der aktuellen 11 Jahrgänge nicht verfügbar',
                 'access' => 'limited',
                 'href' => 'http://www.jstor.org/action/showPublication?journalCode=nous',
                 'service_type' => 'getFullTxt'
@@ -115,14 +115,14 @@ class EzbTest extends \VuFindTest\Unit\TestCase
             ],
             5 => [
                 'title' => 'Print available',
-                'coverage' => 'Philosophical perspectives;Leipzig UB;Nachweis als Serie',
+                'coverage' => 'Philosophical perspectives; Leipzig UB; Nachweis als Serie',
                 'access' => 'open',
                 'href' => 'http://dispatch.opac.dnb.de/CHARSET=ISO-8859-1/DB=1.1/CMD?ACT=SRCHA&IKT=8509&SRT=LST_ty&TRM=IDN+011960027+or+IDN+01545794X&HLIB=009030085#009030085',
                 'service_type' => 'getHolding'
             ],
             6 => [
                 'title' => 'Print available',
-                'coverage' => 'Noûs;Leipzig UB // HB/FH/ Standortsignatur: 96-7-558;CA 5470 Magazin: 96-7-558;1.1967 - 27.1993; 30.1996 - 43.2009;Letzten 15 Jg. Freihand',
+                'coverage' => 'Noûs; Leipzig UB // HB/FH/ Standortsignatur: 96-7-558; CA 5470 Magazin: 96-7-558; 1.1967 - 27.1993; 30.1996 - 43.2009; Letzten 15 Jg. Freihand',
                 'access' => 'open',
                 'service_type' => 'getHolding'
             ]

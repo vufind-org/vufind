@@ -263,7 +263,7 @@ class Ezb implements DriverInterface
                 }
             }
             $record['coverage']
-                = !empty($additionals) ? implode(";", $additionals) : $coverage;
+                = !empty($additionals) ? implode("; ", $additionals) : $coverage;
 
             $record['access'] = $state_access_mapping[$state];
 
@@ -338,7 +338,7 @@ class Ezb implements DriverInterface
                 }
             }
             $record['coverage']
-                = !empty($elements) ? implode(";", $elements) : $coverage;
+                = !empty($elements) ? implode("; ", $elements) : $coverage;
 
             $record['access'] = $state_access_mapping[$state];
 
