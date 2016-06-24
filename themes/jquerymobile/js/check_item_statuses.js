@@ -23,7 +23,6 @@ function checkItemStatuses() {
                 if (response.status == 'OK') {
                     $.each(response.data, function(i, result) {
                         var item = $($('.ajaxItemId')[result.record_number]);
-                        console.log(result);
 
                         item.find('.status').empty().append(result.availability_message);
                         if (typeof(result.missing_data) != 'undefined'
