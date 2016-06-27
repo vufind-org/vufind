@@ -197,4 +197,22 @@ class Session extends Gateway
         }
         return [$result->minId, $result->maxId];
     }
+
+    /**
+     * Get a query representing expired sessions (this can be passed
+     * to select() or delete() for further processing).
+     *
+     * @param int $daysOld Age in days of an "expired" session.
+     *
+     * @return function
+     */
+    public function getExpiredQuery($daysOld = 2)
+    {
+        // Determine the expiration date:
+        $expireDate = time() - $daysOld * 24 * 60 * 60;
+        $callback = function ($select) use ($expireDate) {
+            $select->where->lessThan('last_used', $expireDate);
+        };
+        return $callback;
+    }
 }

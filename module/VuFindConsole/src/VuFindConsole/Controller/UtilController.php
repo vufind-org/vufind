@@ -454,6 +454,39 @@ class UtilController extends AbstractBase
     }
 
     /**
+     * Display help for the search or session expiration actions
+     *
+     * @param string $rows Plural name of records to delete
+     *
+     * @return \Zend\Console\Response
+     */
+    protected function expirationHelp($rows)
+    {
+        Console::writeLine("Expire old $rows in the database.");
+        Console::writeLine('');
+        Console::writeLine(
+            'Optional parameters: [--batch=size] [--sleep=time] [age]'
+        );
+        Console::writeLine('');
+        Console::writeLine(
+            '  batch: number of records to delete in a single batch'
+            . ' (default 1000)'
+        );
+        Console::writeLine(
+            '  sleep: milliseconds to sleep between batches (default 100)'
+        );
+
+        Console::writeLine(
+            "  age: the age (in days) of $rows to expire (default 2)"
+        );
+        Console::writeLine('');
+        Console::writeLine(
+            "By default, $rows more than 2 days old will be removed."
+        );
+        return $this->getFailureResponse();
+    }
+
+    /**
      * Command-line tool to clear unwanted entries
      * from search history database table.
      *
@@ -464,21 +497,13 @@ class UtilController extends AbstractBase
         $this->consoleOpts->addRules(
             [
                 'h|help' => 'Get help',
+                'batch=i' => 'Batch size',
+                'sleep=i' => 'Sleep interval between batches'
             ]
         );
 
-        if ($this->consoleOpts->getOption('h')
-            || $this->consoleOpts->getOption('help')
-        ) {
-            Console::writeLine('Expire old searches in the database.');
-            Console::writeLine('');
-            Console::writeLine(
-                'Optional parameter: the age (in days) of searches to expire;'
-            );
-            Console::writeLine(
-                'by default, searches more than 2 days old will be removed.'
-            );
-            return $this->getFailureResponse();
+        if ($this->consoleOpts->getOption('h')) {
+            return $this->expirationHelp('searches');
         }
 
         return $this->expire(
@@ -499,21 +524,13 @@ class UtilController extends AbstractBase
         $this->consoleOpts->addRules(
             [
                 'h|help' => 'Get help',
+                'batch=i' => 'Batch size',
+                'sleep=i' => 'Sleep interval between batches'
             ]
         );
 
-        if ($this->consoleOpts->getOption('h')
-            || $this->consoleOpts->getOption('help')
-        ) {
-            Console::writeLine('Expire old sessions in the database.');
-            Console::writeLine('');
-            Console::writeLine(
-                'Optional parameter: the age (in days) of sessions to expire;'
-            );
-            Console::writeLine(
-                'by default, sessions more than 2 days old will be removed.'
-            );
-            return $this->getFailureResponse();
+        if ($this->consoleOpts->getOption('h')) {
+            return $this->expirationHelp('sessions');
         }
 
         return $this->expire(
@@ -667,6 +684,11 @@ class UtilController extends AbstractBase
         // Use command line value as expiration age, or default to $minAge.
         $daysOld = isset($argv[0]) ? intval($argv[0]) : $minAge;
 
+        // Use command line values for batch size and sleep time if specified.
+        $options = $this->consoleOpts->getArguments();
+        $batchSize = isset($options['batch']) ? $options['batch'] : 1000;
+        $sleepTime = isset($options['sleep']) ? $options['sleep'] : 100;
+
         // Abort if we have an invalid expiration age.
         if ($daysOld < 2) {
             Console::writeLine(
@@ -691,29 +713,32 @@ class UtilController extends AbstractBase
 
         $idRange = $table->getExpiredIdRange($daysOld);
         if (false === $idRange) {
-            $this->message($failString);
+            $this->timestampedMessage($failString);
             return $this->getSuccessResponse();
         }
 
-        // Delete records in batches of up to 1000 records to avoid locking the
-        // database for too long
-        for ($batch = $idRange[0]; $batch <= $idRange[1]; $batch += 1000) {
-            $count = $table->deleteExpired($daysOld, $batch, $batch + 999);
-            $this->message(str_replace('%%count%%', $count, $successString));
-            // Be nice to others and wait 100ms between batches
-            usleep(100000);
+        // Delete records in batches
+        for ($batch = $idRange[0]; $batch <= $idRange[1]; $batch += $batchSize) {
+            $count = $table->deleteExpired(
+                $daysOld, $batch, $batch + $batchSize - 1
+            );
+            $this->timestampedMessage(
+                str_replace('%%count%%', $count, $successString)
+            );
+            // Be nice to others and wait between batches
+            usleep($sleepTime * 1000);
         }
         return $this->getSuccessResponse();
     }
 
     /**
-     * Print a message with a date stamp to the console
+     * Print a message with a time stamp to the console
      *
      * @param string $msg Message
      *
      * @return void
      */
-    protected function message($msg)
+    protected function timestampedMessage($msg)
     {
         Console::writeLine('[' . date('Y-m-d H:i:s') . '] ' . $msg);
     }
