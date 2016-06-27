@@ -80,13 +80,13 @@ class Record extends \VuFind\View\Helper\Root\Record
     }
 
     /**
-     * Are bX recommendations enabled.
+     * Deprecated method. Return false for legacy template code.
      *
      * @return boolean
      */
     public function bxRecommendationsEnabled()
     {
-        return !empty($this->config->bX->token);
+        return false;
     }
 
     /**

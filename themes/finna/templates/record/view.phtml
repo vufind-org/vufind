@@ -8,9 +8,6 @@
      $this->headScript()->appendFile('vendor/bootstrap-rating.min.js');
      $this->headLink()->appendStylesheet('vendor/bootstrap-rating.min.css');
   }
-  if ($this->record($this->driver)->bxRecommendationsEnabled() && in_array($this->driver->getSourceIdentifier(), ['MetaLib', 'Primo'])) {
-    $this->headScript()->appendFile("finna-bx.js");
-  }
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
     echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
@@ -139,10 +136,6 @@
     <? foreach ($this->related()->getList($this->driver) as $current): ?>
       <?=$this->related()->render($current)?>
     <? endforeach; ?>
-    <? if ($this->record($this->driver)->bxRecommendationsEnabled() && in_array($this->driver->getSourceIdentifier(), ['MetaLib', 'Primo'])): ?>
-      <div id="bx-recommendations-holder">
-      </div>
-    <? endif; ?>
     <? if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-recommendations")): ?>
       <div class="row">
         <div class="col-xs-12">

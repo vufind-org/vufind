@@ -1270,19 +1270,6 @@ url = https://piwik.finna.fi/
 ;token_auth = ...
 custom_variables = 1
 
-
-[bX]
-; Enter bX authentication token here to enable bX recommendations in the record view
-;token = ...
-; Source for recommendations, either global (default) or local
-;source = global
-; Maximum number of recommendations to retrieve
-;maxRecords = 5
-; Minimum score
-;threshold = 50
-; Recommender service base url
-;baseUrl = http://recommender.service.exlibrisgroup.com/service/recommender/openurl
-
 ; Normalization preview allows one to display an external record
 ; as it would be displayed in VuFind. This requires a backend,
 ; such as RecordManager, that provides the transformed record

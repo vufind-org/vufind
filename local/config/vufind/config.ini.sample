@@ -91,8 +91,5 @@ HMACkey = mySuperSecretValue
 site_id =
 token_auth =
 
-[bX]
-token =
-
 [Logging]
 ;file = /var/log/vufind2.log:alert-5,error-5,debug-5,notice

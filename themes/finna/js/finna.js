@@ -6,7 +6,6 @@ var finna = (function() {
             var modules = [
                 'advSearch',
                 'autocomplete',
-                'bx',
                 'contentFeed',
                 'common',
                 'changeHolds',
