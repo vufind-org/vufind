@@ -62,6 +62,82 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Parse record ids from a filter value and set as the ID list.
+     *
+     * @param string $filterValue Filter value
+     *
+     * @return void
+     */
+    protected function setRecordIdsFromFilter($filterValue)
+    {
+        $ids = explode(' OR ', $filterValue);
+        $ids = array_map(
+            function ($s) {
+                return trim($s, '()');
+            },
+            $ids
+        );
+        $this->recordsToRequest = $ids;
+        $this->setLimit(count($this->recordsToRequest));
+    }
+
+    /**
+     * Take a filter string and add it into the protected hidden filters
+     *   array checking for duplicates.
+     *
+     * Special case for 'id': populate the ID list and remove from hidden filters.
+     *
+     * @param string $newFilter A filter string from url : "field:value"
+     *
+     * @return void
+     */
+    public function addHiddenFilter($newFilter)
+    {
+        list($field, $value) = $this->parseFilter($newFilter);
+        if ($field == 'id') {
+            $this->setRecordIdsFromFilter($value);
+        } else {
+            parent::addHiddenFilter($newFilter);
+        }
+    }
+
+    /**
+     * Restore settings from a minified object found in the database.
+     *
+     * @param \VuFind\Search\Minified $minified Minified Search Object
+     *
+     * @return void
+     */
+    public function deminify($minified)
+    {
+        parent::deminify($minified);
+        if (isset($this->hiddenFilters['id'][0])) {
+            $this->setRecordIdsFromFilter($this->hiddenFilters['id'][0]);
+            unset($this->hiddenFilters['id']);
+        }
+    }
+
+    /**
+     * Return record ids as a hidden filter list so that it is properly stored when
+     * the search is represented as an URL or stored in the database.
+     *
+     * @return array
+     */
+    public function getHiddenFilters()
+    {
+        $filters = parent::getHiddenFilters();
+        unset($filters['id']);
+        $ids = array_map(
+            function ($s) {
+                return '(' . addcslashes($s, '"') . ')';
+            },
+            $this->recordsToRequest
+        );
+        $filters['id'][] = implode(' OR ', $ids);
+        return $filters;
+    }
+
+    /**
      * Get list of records to display.
      *
      * @return array
