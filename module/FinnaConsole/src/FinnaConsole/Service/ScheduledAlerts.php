@@ -219,9 +219,21 @@ class ScheduledAlerts extends AbstractService
         $this->msg('  ' . implode(', ', $baseDirs));
         foreach ($baseDirs as $url) {
             $parts = parse_url($url);
-            list($institution) = explode('.', $parts['host']);
-            if ($institution == 'www') {
-                // Special case for www.finna.fi
+            $host = explode('.', $parts['host']);
+            $hostCnt = count($host);
+
+            if ($hostCnt < 2 || $hostCnt > 4) {
+                $this->err("Invalid base URL $url");
+                continue;
+            }
+
+            $institution = $host[0];
+
+            if ($hostCnt == 4 && $institution == 'www') {
+                // www.[organisation].finna.fi
+                $institution = $host[1];
+            } elseif ($hostCnt == 2 || ($hostCnt == 3 && $institution == 'www')) {
+                // finna.fi and www.finna.fi
                 $institution = 'national';
             }
             $view = isset($parts['path']) ? substr($parts['path'], 1) : false;
