@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+use VuFind\Cover\Router as CoverRouter;
 use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
 
 /**
@@ -45,6 +46,13 @@ class Record extends AbstractHelper
      * @var \VuFind\View\Helper\Root\Context
      */
     protected $contextHelper;
+
+    /**
+     * Cover router
+     *
+     * @var CoverRouter
+     */
+    protected $coverRouter = null;
 
     /**
      * Record driver
@@ -70,6 +78,19 @@ class Record extends AbstractHelper
         $this->config = $config;
     }
 
+    /**
+     * Inject the cover router
+     *
+     * @param CoverRouter $router Cover router
+     *
+     * @return void
+     */
+    public function setCoverRouter($router)
+    {
+        $this->coverRouter = $router;
+    }
+
+    
     /**
      * Render a template within a record driver folder.
      *
@@ -552,22 +573,9 @@ class Record extends AbstractHelper
      */
     public function getThumbnail($size = 'small')
     {
-        // Try to build thumbnail:
-        $thumb = $this->driver->tryMethod('getThumbnail', [$size]);
-
-        // No thumbnail?  Return false:
-        if (empty($thumb)) {
-            return false;
-        }
-
-        // Array?  It's parameters to send to the cover generator:
-        if (is_array($thumb)) {
-            $urlHelper = $this->getView()->plugin('url');
-            return $urlHelper('cover-show') . '?' . http_build_query($thumb);
-        }
-
-        // Default case -- return fixed string:
-        return $thumb;
+        return $this->coverRouter
+            ? $this->coverRouter->getUrl($this->driver, $size)
+            : false;
     }
 
     /**

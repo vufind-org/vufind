@@ -277,8 +277,19 @@ class LDAP extends AbstractBase
                 foreach ($fields as $field) {
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
-                        $value = $data[$i][$configValue][0];
-                        $this->debug("found $field = $value");
+                        $value = $data[$i][$configValue];
+                        $separator = $this->config->LDAP->separator;
+                        // if no separator is given map only the first value
+                        if (isset($separator)) {
+                            $tmp = [];
+                            for ($k = 0; $k < $value["count"]; $k++) {
+                                $tmp[] = $value[$k];
+                            }
+                            $value = implode($separator, $tmp);
+                        } else {
+                            $value = $value[0];
+                        }
+                        
                         if ($field != "cat_password") {
                             $user->$field = $value;
                         } else {

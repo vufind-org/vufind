@@ -40,20 +40,61 @@ use VuFind\Search\Base\Results as BaseResults;
 class Results extends BaseResults
 {
     /**
-     * Support method for performAndProcessSearch -- perform a search based on the
-     * parameters passed to the object.
+     * Process a fuzzy tag query.
      *
-     * @return void
+     * @param string $q Raw query
+     *
+     * @return string
      */
-    protected function performSearch()
+    protected function formatTagQuery($q)
+    {
+        // Change unescaped asterisks to percent signs to translate more common
+        // wildcard character into format used by database.
+        return preg_replace('/(?<!\\\\)\\*/', '%', $q);
+    }
+
+    /**
+     * Return resources associated with the user tag query, using fuzzy matching.
+     *
+     * @return array
+     */
+    protected function performFuzzyTagSearch()
+    {
+        $table = $this->getTable('Tags');
+        $query = $this->formatTagQuery($this->getParams()->getDisplayQuery());
+        $rawResults = $table->fuzzyResourceSearch(
+            $query, null, $this->getParams()->getSort()
+        );
+
+        // How many results were there?
+        $this->resultTotal = count($rawResults);
+
+        // Apply offset and limit if necessary!
+        $limit = $this->getParams()->getLimit();
+        if ($this->resultTotal > $limit) {
+            $rawResults = $table->fuzzyResourceSearch(
+                $query, null, $this->getParams()->getSort(),
+                $this->getStartRecord() - 1, $limit
+            );
+        }
+
+        return $rawResults->toArray();
+    }
+
+    /**
+     * Return resources associated with the user tag query, using exact matching.
+     *
+     * @return array
+     */
+    protected function performExactTagSearch()
     {
         $table = $this->getTable('Tags');
         $tag = $table->getByText($this->getParams()->getDisplayQuery());
-        if (!empty($tag)) {
-            $rawResults = $tag->getResources(null, $this->getParams()->getSort());
-        } else {
-            $rawResults = [];
+        if (empty($tag)) {
+            $this->resultTotal = 0;
+            return [];
         }
+        $rawResults = $tag->getResources(null, $this->getParams()->getSort());
 
         // How many results were there?
         $this->resultTotal = count($rawResults);
@@ -67,14 +108,31 @@ class Results extends BaseResults
             );
         }
 
+        return $rawResults->toArray();
+    }
+
+    /**
+     * Support method for performAndProcessSearch -- perform a search based on the
+     * parameters passed to the object.
+     *
+     * @return void
+     */
+    protected function performSearch()
+    {
+        // There are two possibilities here: either we are in "fuzzy" mode because
+        // we are coming in from a search, in which case we want to do a fuzzy
+        // search that supports wildcards, or else we are coming in from a tag
+        // link, in which case we want to do an exact match.
+        $rawResults = $this->getParams()->isFuzzyTagSearch()
+            ? $this->performFuzzyTagSearch()
+            : $this->performExactTagSearch();
+
         // Retrieve record drivers for the selected items.
-        $recordsToRequest = [];
-        foreach ($rawResults as $row) {
-            $recordsToRequest[]
-                = ['id' => $row->record_id, 'source' => $row->source];
-        }
+        $callback = function ($row) {
+            return ['id' => $row['record_id'], 'source' => $row['source']];
+        };
         $this->results = $this->getServiceLocator()->get('VuFind\RecordLoader')
-            ->loadBatch($recordsToRequest);
+            ->loadBatch(array_map($callback, $rawResults));
     }
 
     /**

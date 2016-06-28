@@ -73,6 +73,28 @@ class ILSAuthenticator
     }
 
     /**
+     * Get stored catalog credentials for the current user.
+     *
+     * Returns associative array of cat_username and cat_password if they are
+     * available, false otherwise. This method does not verify that the credentials
+     * are valid.
+     *
+     * @return array|bool
+     */
+    public function getStoredCatalogCredentials()
+    {
+        // Fail if no username is found, but allow a missing password (not every ILS
+        // requires a password to connect).
+        if (($user = $this->auth->isLoggedIn()) && !empty($user->cat_username)) {
+            return [
+                'cat_username' => $user->cat_username,
+                'cat_password' => $user->cat_password
+            ];
+        }
+        return false;
+    }
+
+    /**
      * Log the current user into the catalog using stored credentials; if this
      * fails, clear the user's stored credentials so they can enter new, corrected
      * ones.
@@ -85,9 +107,7 @@ class ILSAuthenticator
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
-        if (($user = $this->auth->isLoggedIn())
-            && isset($user->cat_username) && !empty($user->cat_username)
-        ) {
+        if (($user = $this->auth->isLoggedIn()) && !empty($user->cat_username)) {
             // Do we have a previously cached ILS account?
             if (isset($this->ilsAccount[$user->cat_username])) {
                 return $this->ilsAccount[$user->cat_username];

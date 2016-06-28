@@ -8,12 +8,6 @@
         }
     ],
     "license": "GPL-2.0",
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packages.zendframework.com/"
-        }
-    ],
     "require": {
         "aferrandini/phpqrcode": "1.0.1",
         "jasig/phpcas": "1.3.3",
@@ -26,8 +20,8 @@
         "pear/validate_ispn": "dev-master",
         "serialssolutions/summon": "1.0.0",
         "symfony/yaml": "2.7.6",
-        "vufind-org/vufindcode": "1.0.2",
-        "vufind-org/vufindhttp": "2.0.0",
+        "vufind-org/vufindcode": "1.0.3",
+        "vufind-org/vufindhttp": "2.1.0",
         "zendframework/zendframework": "2.4.6",
         "zendframework/zendrest": "2.0.2",
         "zendframework/zendservice-amazon": "2.0.4",
@@ -37,12 +31,11 @@
     "require-dev": {
         "behat/mink": "1.7.0",
         "behat/mink-selenium2-driver": "1.3.0",
-        "behat/mink-zombie-driver": "1.3.0",
         "friendsofphp/php-cs-fixer": "1.11.3",
         "phploc/phploc": "2.0.6",
         "phpmd/phpmd": "1.5.0",
         "phpunit/phpunit": "4.8.4",
-        "sebastian/phpcpd": "1.4.3",
+        "sebastian/phpcpd": "2.0.0",
         "squizlabs/php_codesniffer": "2.6.0"
     }
 }
