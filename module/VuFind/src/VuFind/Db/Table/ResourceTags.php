@@ -299,6 +299,26 @@ class ResourceTags extends Gateway
         $userId = null, $resourceId = null, $tagId = null
     ) {
         $callback = function ($select) use ($userId, $resourceId, $tagId) {
+            $select->columns(
+                [
+                    'resource_id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'list_id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.list_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'user_id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.user_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    )
+                ]
+            );
             $select->join(
                 ['r' => 'resource'],
                 'resource_tags.resource_id = r.id',
@@ -332,6 +352,26 @@ class ResourceTags extends Gateway
     {
 
         $callback = function ($select) use ($userId, $resourceId, $tagId) {
+            $select->columns(
+                [
+                    'resource_id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'list_id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.list_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'user_id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.user_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    )
+                ]
+            );
             $select->join(
                 ['t' => 'tags'],
                 'resource_tags.tag_id = t.id',
@@ -364,6 +404,26 @@ class ResourceTags extends Gateway
     public function getUniqueUsers($userId = null, $resourceId = null, $tagId = null)
     {
         $callback = function ($select) use ($userId, $resourceId, $tagId) {
+            $select->columns(
+                [
+                    'resource_id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'list_id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.list_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'user_id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.user_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'id' => new Expression(
+                        'ANY_VALUE(?)', ['resource_tags.id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    )
+                ]
+            );
             $select->join(
                 ['u' => 'user'],
                 'resource_tags.user_id = u.id',
