@@ -45,7 +45,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     protected $facetSortOptions = [
         'count' => 'sort_count',
-        'index' => 'sort_title'
+        'index' => 'sort_alphabetic'
     ];
 
     /**
