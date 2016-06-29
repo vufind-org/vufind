@@ -804,7 +804,7 @@ class DAIA extends AbstractBase implements
                     // set item available if service is loan, presentation or
                     // openaccess
                     $availability = true;
-                    if ($available['service'] == 'loan' 
+                    if ($available['service'] == 'loan'
                         && isset($available['href'])
                     ) {
                         // save the link to the ils if we have a href for loan
