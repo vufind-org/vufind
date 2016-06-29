@@ -140,7 +140,7 @@ class ILS extends AbstractBase
         try {
             return false !== $this->getCatalog()->checkFunction(
                 'changePassword',
-                ['patron' => $this->getLoggedInPatron()]
+                ['patron' => $this->authenticator->getStoredCatalogCredentials()]
             );
         } catch (ILSException $e) {
             return false;
@@ -273,7 +273,7 @@ class ILS extends AbstractBase
      *
      * @throws AuthException
      *
-     * @return array Patron
+     * @return array|null Patron or null if no credentials exist
      */
     protected function getLoggedInPatron()
     {

@@ -142,6 +142,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
           button.before(list);
           if (list.length && htmlDiv.find('.js-facet-next-page').length) {
             button.attr('data-page', page + 1);
+            button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
             button.text(VuFind.translate('more') + ' ...');
             button.removeAttr('disabled');
           } else {
