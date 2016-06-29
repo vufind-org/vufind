@@ -45,7 +45,19 @@
     <field name="heading_keywords" type="text" indexed="true" stored="false"/>
     <field name="use_for_keywords" type="text" indexed="true" stored="false" multiValued="true"/>
     <field name="see_also_keywords" type="text" indexed="true" stored="false" multiValued="true"/>
-    
+
+    <!-- RDA fields -->
+    <field name="birthdate" type="string" indexed="true" stored="false"/>
+    <field name="deathdate" type="string" indexed="true" stored="false"/>
+    <field name="birthplace" type="string" indexed="true" stored="true"/>
+    <field name="deathplace" type="string" indexed="true" stored="true"/>
+    <field name="country" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="relatedplace" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="fieldofactivity" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="occupation" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="gender" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
+
     <!-- Tracking fields to keep track of oldest and most recent index times -->
     <field name="first_indexed" type="date" indexed="true" stored="true"/>
     <field name="last_indexed" type="date" indexed="true" stored="true"/>
