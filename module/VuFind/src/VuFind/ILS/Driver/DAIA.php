@@ -751,13 +751,13 @@ class DAIA extends AbstractBase implements
                 // custom DAIA field
                 $result_item['locationid'] = $this->getItemDepartmentId($item);
                 // get location link
-                $result_item['location_href'] = $this->getItemDepartmentLink($item);
+                $result_item['locationhref'] = $this->getItemDepartmentLink($item);
                 // custom DAIA field
                 $result_item['storage'] = $this->getItemStorage($item);
                 // custom DAIA field
                 $result_item['storageid'] = $this->getItemStorageId($item);
                 // custom DAIA field
-                $result_item['storage_href'] = $this->getItemStorageLink($item);
+                $result_item['storagehref'] = $this->getItemStorageLink($item);
                 // status and availability will be calculated in own function
                 $result_item = $this->getItemStatus($item) + $result_item;
                 // add result_item to the result array
