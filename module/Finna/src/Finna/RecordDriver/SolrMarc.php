@@ -1067,9 +1067,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $title = $title->getData();
         } else {
             $titleFields = [];
-            if ($relInfo = $field->getSubfield('i')) {
-                $titleFields[] = $relInfo->getData();
-            }
             if ($issn = $field->getSubfield('x')) {
                 $titleFields[] = $issn->getData();
             } else if ($isbn = $field->getSubfield('z')) {
@@ -1084,11 +1081,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             }
             $title .= $qualifyingInfo->getData();
         }
-
-        if (!$title) {
-            return false;
-        }
-
+        
         $linkTypeSetting = isset($this->mainConfig->Record->marc_links_link_types)
             ? $this->mainConfig->Record->marc_links_link_types
             : 'id,oclc,dlc,isbn,issn,title';
@@ -1147,9 +1140,10 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                 break;
             }
         }
+        $note = $this->stripTrailingPunctuation($this->getRecordLinkNote($field));
         // Make sure we have something to display:
         return !isset($link) ? false : [
-            'title' => $this->getRecordLinkNote($field),
+            'title' => $note,
             'value' => $title,
             'link'  => $link
         ];
