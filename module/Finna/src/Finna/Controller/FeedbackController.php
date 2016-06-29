@@ -82,7 +82,8 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             }
 
             // These settings are set in the feedback settion of your config.ini
-            $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+            $config = $this->getServiceLocator()->get('VuFind\Config')
+                ->get('config');
             $feedback = isset($config->Feedback) ? $config->Feedback : null;
             $recipient_email = !empty($feedback->recipient_email)
                 ? $feedback->recipient_email : $config->Site->email;
