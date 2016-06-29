@@ -101,38 +101,12 @@ class File extends AbstractBase
     }
 
     /**
-     * Write function that is called when session data is to be saved.
-     *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
-     *
-     * @return bool
-     */
-    public function write($sess_id, $data)
-    {
-        $sess_file = $this->getPath() . '/sess_' . $sess_id;
-        if ($fp = fopen($sess_file, "w")) {
-            $return = fwrite($fp, $data);
-            fclose($fp);
-            if ($return !== false) {
-                return true;
-            }
-        }
-        // If we got this far, something went wrong with the file output...
-        // It is tempting to throw an exception here, but this code is called
-        // outside of the context of exception handling, so all we can do is
-        // echo a message.
-        echo 'Cannot write session to ' . $sess_file . "\n";
-        return false;
-    }
-
-    /**
      * The destroy handler, this is executed when a session is destroyed with
      * session_destroy() and takes the session id as its only parameter.
      *
      * @param string $sess_id The session ID to destroy
      *
-     * @return void
+     * @return bool
      */
     public function destroy($sess_id)
     {
@@ -153,7 +127,7 @@ class File extends AbstractBase
      *
      * @param int $maxlifetime Maximum session lifetime.
      *
-     * @return void
+     * @return bool
      */
     public function gc($maxlifetime)
     {
@@ -163,5 +137,31 @@ class File extends AbstractBase
             }
         }
         return true;
+    }
+
+    /**
+     * A function that is called internally when session data is to be saved.
+     *
+     * @param string $sess_id The current session ID
+     * @param string $data    The session data to write
+     *
+     * @return bool
+     */
+    protected function saveSession($sess_id, $data)
+    {
+        $sess_file = $this->getPath() . '/sess_' . $sess_id;
+        if ($fp = fopen($sess_file, "w")) {
+            $return = fwrite($fp, $data);
+            fclose($fp);
+            if ($return !== false) {
+                return true;
+            }
+        }
+        // If we got this far, something went wrong with the file output...
+        // It is tempting to throw an exception here, but this code is called
+        // outside of the context of exception handling, so all we can do is
+        // echo a message.
+        echo 'Cannot write session to ' . $sess_file . "\n";
+        return false;
     }
 }

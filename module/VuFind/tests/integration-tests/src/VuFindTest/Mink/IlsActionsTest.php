@@ -563,6 +563,10 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test create account path when in holds_mode = "all"
      *
+     * IMPORTANT: this test uses an ID with a slash in it; if it fails, ensure
+     * that Apache is configured with "AllowEncodedSlashes on" inside the
+     * VirtualHost used for your VuFind test instance!
+     *
      * @return void
      */
     public function testHoldsAll()

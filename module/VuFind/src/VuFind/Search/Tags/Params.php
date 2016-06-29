@@ -38,4 +38,34 @@ namespace VuFind\Search\Tags;
  */
 class Params extends \VuFind\Search\Base\Params
 {
+    /**
+     * Is this a fuzzy search?
+     *
+     * @var bool
+     */
+    protected $fuzzy = false;
+
+    /**
+     * Is this a fuzzy search?
+     *
+     * @return bool
+     */
+    public function isFuzzyTagSearch()
+    {
+        return $this->fuzzy;
+    }
+
+    /**
+     * Pull the search parameters
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    public function initFromRequest($request)
+    {
+        parent::initFromRequest($request);
+        $this->fuzzy = ('true' == $request->get('fuzzy', 'false'));
+    }
 }

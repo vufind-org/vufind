@@ -34,6 +34,7 @@
             'bulk_noitems_advice' => 'bulk_noitems_advice',
             'bulk_save_success' => 'bulk_save_success',
             'close' => 'close',
+            'collection_empty' => 'collection_empty',
             'error_occurred' => 'An error has occurred',
             'go_to_list' => 'go_to_list',
             'libphonenumber_invalid' => 'libphonenumber_invalid',
@@ -44,8 +45,11 @@
             'libphonenumber_tooshort' => 'libphonenumber_tooshort',
             'libphonenumber_tooshortidd' => 'libphonenumber_tooshortidd',
             'loading' => 'Loading',
-            'sms_success' => 'sms_success',
-            'number_thousands_separator' => ['number_thousands_separator', null, ',']
+            'more' => 'more',
+            'number_thousands_separator' => [
+                'number_thousands_separator', null, ','
+            ],
+            'sms_success' => 'sms_success'
           )
         );
         // Add libphonenumber.js strings
@@ -124,6 +128,9 @@ JS;
     ?>
     <header class="hidden-print">
       <div class="container navbar">
+        <? if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+          <span class="sr-only"><?=$this->layout()->srmessage ?></span>
+        <? endif; ?>
         <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
         <?=$this->render('header.phtml')?>
       </div>
@@ -157,7 +164,7 @@ JS;
       </div>
     </header>
     <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
-      <div class="container">
+      <div id="content" class="container">
         <?=$this->layout()->content ?>
       </div>
     </div>
@@ -176,7 +183,7 @@ JS;
         </div>
       </div>
     </div>
-    <div class="offcanvas-toggle" data-toggle="offcanvas"><i class="fa"></i></div>
+    <div class="offcanvas-toggle" data-toggle="offcanvas"><i class="fa" title="<?=$this->transEsc('sidebar_expand') ?>"></i></div>
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>

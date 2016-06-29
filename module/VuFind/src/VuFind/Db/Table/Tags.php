@@ -68,7 +68,7 @@ class Tags extends Gateway
     }
 
     /**
-     * Get the tags the match a string
+     * Get the tags that match a string
      *
      * @param string $text  Tag to look up.
      * @param string $sort  Sort/search parameter
@@ -82,6 +82,60 @@ class Tags extends Gateway
             $select->where->literal('lower(tag) like lower(?)', [$text . '%']);
         };
         return $this->getTagList($sort, $limit, $callback);
+    }
+
+    /**
+     * Get all resources associated with the provided tag query.
+     *
+     * @param string $query  Search query
+     * @param string $source Record source (optional limiter)
+     * @param string $sort   Resource field to sort on (optional)
+     * @param int    $offset Offset for results
+     * @param int    $limit  Limit for results (null for none)
+     *
+     * @return array
+     */
+    public function fuzzyResourceSearch($query, $source = null, $sort = null,
+        $offset = 0, $limit = null
+    ) {
+        $cb = function ($select) use ($query, $source, $sort, $offset, $limit) {
+            $select->columns(
+                [
+                    new Expression(
+                        'DISTINCT(?)', ['resource.id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ), 'id'
+                ]
+            );
+            $select->join(
+                ['rt' => 'resource_tags'],
+                'tags.id = rt.tag_id',
+                []
+            );
+            $select->join(
+                ['resource' => 'resource'],
+                'rt.resource_id = resource.id',
+                '*'
+            );
+            $select->where->like('tags.tag', $query);
+
+            if (!empty($source)) {
+                $select->where->equalTo('source', $source);
+            }
+
+            if (!empty($sort)) {
+                Resource::applySort($select, $sort);
+            }
+
+            if ($offset > 0) {
+                $select->offset($offset);
+            }
+            if (null !== $limit) {
+                $select->limit($limit);
+            }
+        };
+
+        return $this->select($cb);
     }
 
     /**
@@ -227,7 +281,7 @@ class Tags extends Gateway
             if (is_callable($extra_where)) {
                 $extra_where($select);
             }
-            $select->group('tags.tag');
+            $select->group(['tags.id', 'tags.tag']);
             switch ($sort) {
             case 'alphabetical':
                 $select->order(['tags.tag', 'cnt DESC']);
