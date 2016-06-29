@@ -15,8 +15,8 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
     <div class="content">
       <h3 class="title"><?= $this->escapeHtml($this->driver->getTitle()) ?></h3>
       <div class="author-and-dates">
-        <p>
         <? if ($recordType != 'lido'): ?>
+          <p>
           <? if ($author = $this->driver->getPrimaryAuthor()): ?>
             <?= $this->escapeHtml($author) ?>
             <? endif; ?>
@@ -27,6 +27,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
             <?= $this->escapeHtml($date) ?>
             <? endforeach ?>
           <? endif; ?>
+          </p>
         <? else: ?>
             <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
               <div class="truncate-field">
@@ -42,7 +43,6 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
               </div>
             <? endif; ?>
         <? endif; ?>
-        </p>
       </div>
       <? $results = $this->driver->getInstitutions(); ?>
       <? if (count($results)): ?>
@@ -150,4 +150,14 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
     </div>
     <div style="clear: both;"></div>
   </div>
+  <?
+    // NOTE: Piwik js-script must be inserted inside an element (not at the template root).
+    // Otherwise Magnific popup close button gets appended to the script tag which causes a js-error...
+  ?>
+  <?=
+  $this->piwik([
+    'lightbox' => true, 'record' => $this->driver, 'action' => 'imagePopup',
+    'recordUrl' => $this->recordLink()->getUrl($this->driver)
+  ]);
+  ?>
 </div>
