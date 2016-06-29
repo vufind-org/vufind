@@ -123,6 +123,9 @@ class PAIA extends DAIA
     /**
      * Get the session container (constructing it on demand if not already present)
      *
+     * @param string $key   Key for session value
+     * @param mixed  $value Session value
+     *
      * @return SessionContainer
      */
     public function addToSession($key, $value)
@@ -674,7 +677,8 @@ class PAIA extends DAIA
      *
      * @return String
      */
-    protected function getCallNumber($doc) {
+    protected function getCallNumber($doc)
+    {
         return isset($doc['label']) ? $doc['label'] : null;
     }
 
