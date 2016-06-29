@@ -8,6 +8,17 @@
 ; menu_item_5[fi] = 'http://www.finna.fi?lng=fi,_blank'
 ; menu_item_6[sv] = 'http://www.finna.fi?lng=sv,_blank'
 ; menu_item_7[en-gb] = 'http://www.finna.fi?lng=en-gb,_blank'
+;
+; The order of top-level menus and their menu items can be overridden
+; using [key] = [new-position] entries within [__[menu]_sort__] sections.
+; Re-ordered item pushes its follower(s) forward.
+; The whole menu can be positioned using __MENU__ = [new-position]
+;
+; Example:
+;
+; [__menu_sort__]
+; __MENU__ = 1
+; menu_item_7 = 0
 
 [search]
 advanced_search = 'search-advanced'
