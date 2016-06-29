@@ -121,20 +121,13 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get the session container (constructing it on demand if not already present)
+     * Get the session scope
      *
-     * @param string $key   Key for session value
-     * @param mixed  $value Session value
-     *
-     * @return SessionContainer
+     * @return array Array of the Session scope
      */
-    public function addToSession($key, $value)
+    protected function getScope()
     {
-        // SessionContainer not defined yet? Build it now:
-        if (null === $this->session) {
-            $this->getSession();
-        }
-        $this->session->offsetSet($key, $value);
+        return $this->getSession()->scope;
     }
 
     /**
@@ -563,7 +556,7 @@ class PAIA extends DAIA
                 'expires'    => isset($patron['expires'])
                     ? $this->convertDate($patron['expires']) : null,
                 'statuscode' => isset($patron['status']) ? $patron['status'] : null,
-                'canWrite'   => in_array('write_items', $this->getSession()->scope),
+                'canWrite'   => in_array('write_items', $this->getScope()),
             ];
         }
         return [];
@@ -1632,7 +1625,7 @@ class PAIA extends DAIA
         // TODO: make this more configurable
         if (isset($patron['status']) && $patron['status']  == 0
             && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
-            && in_array('write_items', $this->getSession()->scope)
+            && in_array('write_items', $this->getScope())
         ) {
             return true;
         }

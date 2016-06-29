@@ -417,10 +417,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testProfile()
     {
-        $conn = $this->createConnector('patron.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
-        $conn->addToSession('scope', [ 'write_items' ]);
+        $conn = $this->createMockConnector('patron.json');
         $result = $conn->getMyProfile($this->patron);
 
         $this->assertEquals($this->profileTestResult, $result);
@@ -433,10 +430,8 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testValidRequest()
     {
-        $conn = $this->createConnector('patron.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
-        $conn->addToSession('scope', [ 'write_items' ]);
+        $conn = $this->createMockConnector('patron.json');
+
         $result = $conn->checkRequestIsValid(
             'http://paia.gbv.de/', [], $this->patron
         );
@@ -463,7 +458,6 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $this->assertEquals(false, $result_expired);
         $this->assertEquals(false, $resultStorage_expired);
     }
-
     /**
      * Test
      *
@@ -587,6 +581,48 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             new \Zend\Session\SessionManager()
         );
         $conn->setHttpService($service);
+        return $conn;
+    }
+
+    /**
+     * Create connector with fixture file.
+     *
+     * @param string $fixture Fixture file
+     *
+     * @return Connector
+     *
+     * @throws InvalidArgumentException Fixture file does not exist
+     */
+    protected function createMockConnector($fixture = null)
+    {
+        $adapter = new TestAdapter();
+        if ($fixture) {
+            $file = realpath(
+                __DIR__ .
+                '/../../../../../../tests/fixtures/paia/response/' . $fixture
+            );
+            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
+                throw new InvalidArgumentException(
+                    sprintf('Unable to load fixture file: %s ', $file)
+                );
+            }
+            $response = file_get_contents($file);
+            $responseObj = HttpResponse::fromString($response);
+            $adapter->setResponse($responseObj);
+        }
+        $service = new \VuFindHttp\HttpService();
+        $service->setDefaultAdapter($adapter);
+        $conn = $this->getMockBuilder('VuFind\ILS\Driver\PAIA')
+            ->setConstructorArgs([ new \VuFind\Date\Converter(),
+                new \Zend\Session\SessionManager()
+            ])
+            ->setMethods(['getScope'])
+            ->getMock();
+        $conn->expects($this->any())->method('getScope')
+            ->will($this->returnValue([ 'write_items' ]));
+        $conn->setHttpService($service);
+        $conn->setConfig($this->validConfig);
+        $conn->init();
         return $conn;
     }
 }
