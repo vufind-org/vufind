@@ -247,6 +247,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $resultLimit = -1;
 
     /**
+     * Is the first/last navigation scroller enabled?
+     *
+     * @var bool
+     */
+    protected $firstlastNavigation = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -862,12 +869,15 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function getFirstLastScroller()
+    public function supportsFirstLastNavigation()
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:
         $config = $this->configLoader->get('config');
-        return (isset($config->Record->first_last_navigation)
-            && $config->Record->first_last_navigation);
+        if (isset($config->Record->first_last_navigation) 
+            && $config->Record->first_last_navigation) {
+            $this->firstlastNavigation = $config->Record->first_last_navigation;
+        }
+        return $this->firstlastNavigation;
     }
 }
