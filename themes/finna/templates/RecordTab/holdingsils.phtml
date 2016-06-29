@@ -93,7 +93,7 @@
   <h3><?=$this->transEsc("Internet")?></h3>
   <? if (!empty($urls)): ?>
     <? foreach ($urls as $current): ?>
-      <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+      <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->transEsc('default::link_' . $current['desc'], null, $current['desc'])?></a><br/>
     <? endforeach; ?>
   <? endif; ?>
   <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
