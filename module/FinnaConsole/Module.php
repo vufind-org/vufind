@@ -78,7 +78,7 @@ class Module
     {
         return [
             'util clear_metalib_search' => 'Removes old metalib search entries',
-            'util due_data_reminders' => 'Send due date reminders',
+            'util due_date_reminders' => 'Send due date reminders',
             'util encrypt_catalog_passwords' => 'Encrypt ILS passwords in database',
             'util expire_users' => 'Anonymizes expired user accounts',
             'util online_payment_monitor' => 'Process unregistered online payments',
