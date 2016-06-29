@@ -254,7 +254,7 @@ class Map extends AbstractBase
                         $geoCoords[$key][4], 'cl', 
                         $mapDisplayCoords[$key],$mapDisplayLabels[$key]
                         ]
-                    );
+                );
             }
         }
         if (!empty($mapDisplayLabels) && empty($mapDisplayCoords)) {
@@ -266,7 +266,7 @@ class Map extends AbstractBase
                         $geoCoords[$key][2], $geoCoords[$key][3],
                         $geoCoords[$key][4], 'l', $mapDisplayLabels[$key]
                         ]
-                    );
+                );
             }
         }
         if (empty($mapDisplayLabels) && !empty($mapDisplayCoords)) {
@@ -278,7 +278,7 @@ class Map extends AbstractBase
                         $geoCoords[$key][2], $geoCoords[$key][3],
                         $geoCoords[$key][4], 'c', $mapDisplayCoords[$key]
                         ]
-                    );
+                );
             }
         }
         if (empty($mapDisplayLabels) && empty($mapDisplayCoords)) {
@@ -290,7 +290,7 @@ class Map extends AbstractBase
                         $geoCoords[$key][2], $geoCoords[$key][3],
                         $geoCoords[$key][4], 'n'
                         ]
-                    );
+                );
             }
         }
         return $mapTabData;
