@@ -1299,22 +1299,4 @@ class DAIA extends AbstractBase implements
             }
         }
     }
-
-    /**
-     * Helper function for storing cached data.
-     * Data is cached for up to $this->cacheLifetime seconds so that it would be
-     * faster to process e.g. requests where multiple calls to the backend are made.
-     *
-     * @param string $key Cache entry key
-     *
-     * @return void
-     */
-    protected function removeCachedData($key)
-    {
-        // Don't write to cache if we don't have a cache!
-        if (null === $this->cache) {
-            return;
-        }
-        $this->cache->removeItem($this->formatCacheKey($key));
-    }
 }
