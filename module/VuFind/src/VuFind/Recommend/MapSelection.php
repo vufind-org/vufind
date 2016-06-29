@@ -119,7 +119,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         if (isset($config->$mainSection)) {
             $entries = $config->$mainSection;
             if (isset($entries->default_coordinates)) {
-                $this->defaultCoordinates = explode(',', $entries->default_coordinates);
+                $this->defaultCoordinates = explode(
+                    ',', $entries->default_coordinates
+                );
             }
             if (isset($entries->geo_field)) {
                 $this->geoField = $entries->geo_field;
@@ -151,9 +153,17 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
                 $match = [];
-                if (preg_match('/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', $value[0], $match)) {
+                if (preg_match(
+                    '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
+                    $value[0], $match)
+                )
+                {
                     // Need to reorder coords from WENS to WSEN
-                    array_push($coords, (float)$match[1], (float)$match[4], (float)$match[2], (float)$match[3]);
+                    array_push(
+                        $coords, (float)$match[1], 
+                        (float)$match[4], (float)$match[2],
+                        (float)$match[3]
+                    );
                 }
             }
         }
@@ -177,9 +187,17 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
                 $match = [];
-                if (preg_match('/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', $value[0], $match)) {
+                if (preg_match(
+                        '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
+                        $value[0], $match)
+                        )
+                {
                     // Need to reorder coords from WENS to WSEN
-                    array_push($reorder_coords, (float)$match[1], (float)$match[4], (float)$match[2], (float)$match[3]);
+                    array_push(
+                        $reorder_coords, (float)$match[1], 
+                        (float)$match[4], (float)$match[2],
+                        (float)$match[3]
+                        );
                     $this->selectedCoordinates = $reorder_coords;
                 }
                 $this->searchParams = $results->getUrlQuery()->removeFacet($this->geoField, $value[0], false);
@@ -230,6 +248,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      * GetSearchParams
      * 
      * Return search params without filter for geographic search
+     * 
      * @return string
      */
     public function getSearchParams()
@@ -242,6 +261,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      *
      * Return search params without leading question mark and colon.
      * Copied from ResultGoogleMapAjax.php and chngd name to add NoQ.LMG 
+     * 
      * @return string
      */
     public function getSearchParamsNoQ()
