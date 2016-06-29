@@ -282,7 +282,17 @@ class DueDateReminders extends AbstractService
                 continue;
             }
             $todayTime = new \DateTime();
-            $loans = $this->catalog->getMyTransactions($patron);
+            try {
+                $loans = $this->catalog->getMyTransactions($patron);
+            } catch (\Exception $e) {
+                $this->err(
+                    "Exception trying to get loans for user {$user->username}"
+                    . " (id {$user->id}), card {$card->cat_username}"
+                    . " (id {$card->id}): "
+                    . $e->getMessage()
+                );
+                continue;
+            }
             foreach ($loans as $loan) {
                 $dueDate = new \DateTime($loan['duedate']);
                 $dayDiff = $dueDate->diff($todayTime)->days;
