@@ -7,7 +7,6 @@
   <property name="apacheconfdir" value="/etc/apache2/conf.d" />
   <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
   <property name="seleniumjar" value="false" /><!-- set to Selenium jar path to spin up Selenium instance -->
-  <property name="nodepath" value="" /><!-- set to node.js modules path to use Zombie.js testing -->
   <!-- command for extra cleanup during shutdown; e.g. to change cache ownership after testing w/ Apache so deletion won't fail: -->
   <property name="extra_shutdown_cleanup" value="false" />
   <property name="vufindurl" value="http://localhost/vufind" />
@@ -22,12 +21,14 @@
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
   <property name="composer_extra_params" value="" />
-  <property name="mink_driver" value="zombiejs" /><!-- may also be set to selenium -->
+  <property name="mink_driver" value="selenium" />
+  <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
+  <property name="solr_startup_sleep" value="0" />
   <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use,eof_ending" />
 
 
-  <property name="version" value="3.0.1" />
+  <property name="version" value="3.0.2" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -65,6 +66,7 @@
     <phingcall target="phpmd"/>
     <phingcall target="pdepend"/>
     <phingcall target="phploc"/>
+    <phingcall target="eslint-report"/>
   </target>
 
   <!-- Report rule violations with PHPMD (mess detector) -->
@@ -103,6 +105,17 @@
     <exec command="${srcdir}/vendor/bin/php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run --verbose --diff" passthru="true" escape="false" checkreturn="true" />
   </target>
 
+  <!-- ESLint -->
+  <target name="eslint">
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js" escape="false" checkreturn="true" passthru="true" />
+  </target>
+  <target name="eslint-fix">
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --fix" escape="false" passthru="true" />
+  </target>
+  <target name="eslint-report">
+    <exec command="eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --format checkstyle -o ${builddir}/reports/eslint.xml" escape="false" />
+  </target>
+
   <!-- PHP API Documentation -->
   <target name="phpdoc">
     <mkdir dir="${builddir}/apidocs"/>
@@ -116,12 +129,12 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <target name="composer" description="Install dependencies with Composer">
@@ -199,6 +212,17 @@
     <exec command="touch ${srcdir}/local/vufindtest.pid" />
     <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
+
+    <if>
+      <equals arg1="0" arg2="${solr_startup_sleep}" />
+      <then>
+        <!-- do nothing -->
+      </then>
+      <else>
+        <echo message="Waiting ${solr_startup_sleep} seconds for Solr to be ready..." />
+        <exec command="sleep ${solr_startup_sleep}" />
+      </else>
+    </if>
 
     <!-- import marc test records into vufind index (note: the marc test records have prefix "testsample#") -->
     <exec escape="false" command="find ${srcdir}/tests/data -name '*.mrc' -printf '%p,'" outputProperty="buglist" />

@@ -26,7 +26,8 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Mail as MailException;
+use VuFind\Exception\Forbidden as ForbiddenException,
+    VuFind\Exception\Mail as MailException;
 
 /**
  * Book Bag / Bulk Action Controller
@@ -403,7 +404,7 @@ class CartController extends AbstractBase
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            throw new \Exception('Lists disabled');
+            throw new ForbiddenException('Lists disabled');
         }
 
         // Load record information first (no need to prompt for login if we just

@@ -63,7 +63,12 @@
     <th><?=$this->transEsc("Call Number")?>: </th>
     <td width="50%">
       <? foreach ($callNos as $callNo): ?>
-        <?=$this->escapeHtml($callNo)?><br />
+        <? if ($this->callnumberHandler): ?>
+          <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($callNo) ?>"><?=$this->escapeHtml($callNo)?></a>
+        <? else: ?>
+          <?=$this->escapeHtml($callNo)?>
+        <? endif; ?>
+        <br />
       <? endforeach; ?>
     </td>
   </tr>
