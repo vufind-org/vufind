@@ -239,17 +239,14 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
             return $data;
         };
 
-        $this->menuItems = [];
-        foreach ($this->config as $menuKey => $items) {
-            if ($menuKey === 'Parent_Config') {
-                continue;
-            }
+        $result = [];
+        $menuConfig = $this->getMenuData($this->config);
+        $menuData = $menuConfig['menuData'];
+        $sortData = $menuConfig['sortData'];
 
-            if (!count($items)) {
-                continue;
-            }
+        foreach ($menuData as $menuKey => $items) {
             $item = [
-                'label' => "menu_$menuKey",
+                'id' => $menuKey, 'label' => "menu_$menuKey",
             ];
 
             $desc = 'menu_' . $menuKey . '_desc';
@@ -271,7 +268,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
                 }
 
                 $option = array_merge(
-                    ['label' => "menu_$itemKey"],
+                    ['id' => $itemKey, 'label' => "menu_$itemKey"],
                     $parseUrl($action)
                 );
 
@@ -308,8 +305,151 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
                 continue;
             } else {
                 $item['items'] = $options;
-                $this->menuItems[] = $item;
+                $result[] = $item;
             }
         }
+        $this->menuItems = $this->sortMenuItems($result, $sortData);
+    }
+
+    /**
+     * Separate menu data from menu order data (__[menu]_sort__ sections).
+     *
+     * Returns an associative array with keys:
+     *  'menuData' Menu items
+     *  'sortData' Order data
+     *
+     * @param array $config Menu configuration
+     *
+     * @return array
+     */
+    protected function getMenuData($config)
+    {
+        $menuData = $sortDataOrder = $sortData = [];
+
+        foreach ($config as $menuKey => $items) {
+            if ($menuKey === 'Parent_Config') {
+                continue;
+            }
+
+            if (!count($items)) {
+                continue;
+            }
+
+            if (preg_match('/^__(.*)_sort__$/', $menuKey, $matches)) {
+                // Sort section
+                $menuKey = $matches[1];
+                $items = $items->toArray();
+                // Re-order menu-level sort entries in descending order
+                asort($items);
+                $sortData[$menuKey] = $items;
+
+                if (isset($items['__MENU__'])) {
+                    // Top-level menu position
+                    $sortDataOrder[$items['__MENU__']] = $menuKey;
+                }
+                continue;
+            }
+            // Menu section
+            $menuData[$menuKey] = $items;
+        }
+
+        // Re-order top-level sort entries in descending order
+        $sortDataProcessed = [];
+        ksort($sortDataOrder);
+
+        foreach ($sortDataOrder as $index => $menuKey) {
+            $sortDataProcessed[$menuKey] = $sortData[$menuKey];
+        }
+        $sortData = $sortDataProcessed;
+
+        return ['menuData' => $menuData, 'sortData' => $sortData];
+    }
+
+    /**
+     * Sort menu items
+     *
+     * @param array $items Menu items
+     * @param array $order Ordering
+     *
+     * @return array Sorted items
+     */
+    protected function sortMenuItems($items, $order)
+    {
+        foreach ($order as $menuKey => $order) {
+            $menuPosition
+                = $this->getItemIndex($items, $menuKey);
+            if ($menuPosition === null) {
+                continue;
+            }
+            if (isset($order['__MENU__'])) {
+                // Re-position top-level menu
+                $position = $order['__MENU__'];
+                $items = $this->moveItem(
+                    $items, $menuPosition, $position
+                );
+                $menuPosition = $position;
+                unset($order['__MENU__']);
+            }
+            foreach ($order as $item => $position) {
+                // Re-position single menu item
+                if ($menuPosition === null) {
+                    continue;
+                }
+                if (!isset($items[$menuPosition])) {
+                    continue;
+                }
+                $currentPosition = $this->getItemIndex(
+                    $items[$menuPosition]['items'], $item
+                );
+                if ($currentPosition === null) {
+                    continue;
+                }
+                $items[$menuPosition]['items']
+                    = $this->moveItem(
+                        $items[$menuPosition]['items'],
+                        $currentPosition, $position
+                    );
+            }
+        }
+        return $items;
+    }
+
+    /**
+     * Get menu item index
+     *
+     * @param array  $items Menu items
+     * @param string $id    Menu item id
+     *
+     * @return mixed null|int
+     */
+    protected function getItemIndex($items, $id)
+    {
+        $cnt = 0;
+        foreach ($items as $item) {
+            if ($item['id'] === $id) {
+                return $cnt;
+            }
+            $cnt++;
+        }
+        return null;
+    }
+
+    /**
+     * Move menu item
+     *
+     * @param array $items Menu items
+     * @param int   $from  From (index)
+     * @param int   $to    To (index)
+     *
+     * @return array Items
+     */
+    protected function moveItem($items, $from, $to)
+    {
+        if ($from < 0 || $to < 0) {
+            return $items;
+        }
+        $move = array_splice($items, $from, 1);
+        array_splice($items, $to, 0, $move);
+        return $items;
     }
 }
