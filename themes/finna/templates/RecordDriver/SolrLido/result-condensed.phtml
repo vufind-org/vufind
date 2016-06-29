@@ -17,7 +17,7 @@
       ?>
       </a>
       <div class="dateyeartype">
-        <div class="resultItemFormat"><?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?></div>
+        <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
         <? if ($results = $this->driver->getInstitutions()): ?>
           <? foreach($results as $index => $institution): ?>
           <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", array(), $this->translate($institution))?>

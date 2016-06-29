@@ -13,7 +13,7 @@
             <?=$this->record($this->driver)->getTitleHtml()?>
           </a>
           <div class="resultOtherLinks">
-          <div class="resultItemFormat"><?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?></div>
+          <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
           <? if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
               <? $prevOtherLinkHeading = ''; ?>
               <? foreach ($results as $result): ?>

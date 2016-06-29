@@ -72,6 +72,12 @@
     $this->headScript()->appendFile("finna-metalib-links.js");
   }
 
+  // Load Javascript only if list view parameter is NOT full:
+  if ($this->params->getOptions()->getListViewOption() != "full") {
+    $this->headScript()->appendFile("record.js");
+    $this->headScript()->appendFile("embedded_record.js");
+  }
+
   $topRecommendations = $this->results->getRecommendations('top');
 ?>
 <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>

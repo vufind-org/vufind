@@ -102,7 +102,7 @@
             <div class="record-authors">
 
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
-              <?=str_replace('class="', 'class="label label-info ', $this->record($resource)->getFormatList())?>
+              <?=$this->record($this->driver)->getFormatList() ?>
               <br/>
             <? endif; ?>
 

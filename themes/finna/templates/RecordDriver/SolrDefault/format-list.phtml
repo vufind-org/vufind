@@ -1,5 +1,5 @@
 <!-- START of: finna - RecordDriver/SolrDefault/format-list.phtml -->
 <? $formats = $this->driver->tryMethod('getFormats'); if ($formats): ?>
-  <span class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"><?=$this->transEsc(end($formats))?></span>
+  <span class="label label-info iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"><?=$this->transEsc(end($formats))?></span>
 <? endif; ?>
 <!-- END of: finna - RecordDriver/SolrDefault/format-list.phtml -->

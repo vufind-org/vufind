@@ -134,7 +134,7 @@ if ($groupBranches) {
     <div class="available-total"><i class="fa fa-ok"></i><span><?=$availableTotal?> <?=$this->translate('axiell_available')?></span></div>
     <? endif; ?>
     <? $truncateLimit = $this->holdingsSettings()->getTruncateLimit(); ?>
-    <div class="holdings<?= !empty($truncateLimit) ? (' truncate-field" data-rows="' . $truncateLimit . '"') : '"'?>>
+    <div class="holdings<?=!empty($truncateLimit) ? (' truncate-field" data-rows="' . $truncateLimit) : ''?>">
 <? endif; ?>
 
 <?

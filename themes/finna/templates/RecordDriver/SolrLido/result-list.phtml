@@ -21,7 +21,7 @@
       </div>
 
       <div class="dateyeartype">
-        <div class="resultItemFormat"><?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?></div>
+        <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
         <? if ($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
         <? else: ?>

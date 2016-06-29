@@ -1,5 +1,10 @@
 <!-- START of: finna - Recommend/SideFacets.phtml -->
 <?
+  $this->headScript()->appendFile('facets.js');
+
+  $results = $this->recommend->getResults();
+  $options = $this->searchOptions($this->searchClassId);
+
   $this->headScript()->appendFile('vendor/bootstrap-datepicker.min.js');
   $datePickerLang = 'en';
   switch ($this->layout()->userLang) {
@@ -17,7 +22,6 @@
         break;
   }
 ?>
-<? $results = $this->recommend->getResults(); ?>
 <? if ($results->getResultTotal() > 0): ?>
   <h4><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?><? if (!isset($this->overrideSideFacetCaption) && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transesc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><? endif; ?></h4>
 <? endif; ?>
@@ -119,6 +123,8 @@
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
   <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
+    <? $facets_before_more = $this->recommend->getShowMoreSetting($title); ?>
+    <? $showMoreInLightbox = $this->recommend->getShowInLightboxSetting($title); ?>
     <? $daterangeFacet = $title == $daterangeFacetField; ?>
     <div class="list-group facet<?= $daterangeFacet ? ' daterange-facet' : '' ?>" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
       <div class="list-group-item title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
@@ -238,12 +244,14 @@ echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
           </div>
           <? if ($rangeFacets[$title]['type'] == 'date'): ?>
             <? $this->headScript()->appendFile('vendor/bootstrap-slider.js'); ?>
+            <? $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css'); ?>
             <?
               $min = !empty($rangeFacets[$title]['values'][0]) ? min($rangeFacets[$title]['values'][0], 1400) : 1400;
               $future = date('Y', time()+31536000);
               $max = !empty($rangeFacets[$title]['values'][1]) ? max($future, $rangeFacets[$title]['values'][1]) : $future;
               $low  = !empty($rangeFacets[$title]['values'][0]) ? $rangeFacets[$title]['values'][0] : $min;
               $high = !empty($rangeFacets[$title]['values'][1]) ? $rangeFacets[$title]['values'][1] : $max;
+              $reversed = $this->layout()->rtl ? 'true' : 'false';
               $script = <<<JS
 $(document).ready(function() {
   var fillTexts = function() {
@@ -253,11 +261,12 @@ $(document).ready(function() {
   };
   var {$this->escapeHtmlAttr($title)}dateSlider = $('#{$this->escapeHtmlAttr($title)}dateSlider')
   .slider({
-     'min':{$min},
-     'max':{$max},
-     'handle':"square",
-     'tooltip':"hide",
-     'value':[{$low},{$high}]
+    'min':{$min},
+    'max':{$max},
+    'handle':"square",
+    'tooltip':"hide",
+    'value':[{$low},{$high}],
+    'reversed': {$reversed}
   })
   .on('slide', fillTexts)
   .data('slider');
@@ -267,92 +276,106 @@ JS;
             <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
           <? endif; ?>
         <? else: ?>
-        <? if (in_array($title, $hierarchicalFacets)): ?>
-          <? $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
-          <? $this->headScript()->appendFile('facets.js'); ?>
-          <? $sort = isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''; ?>
-          <? if (!in_array($title, $collapsedFacets)): ?>
-            <?
-            $script = <<<JS
+          <? if (in_array($title, $hierarchicalFacets)): ?>
+            <? $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
+            <? $sort = isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''; ?>
+            <? if (!in_array($title, $collapsedFacets)): ?>
+              <?
+              $script = <<<JS
 $(document).ready(function() {
   finna.layout.initHierarchicalFacet($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
-            ?>
-            <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-          <? else: ?>
-            <?
-            $script = <<<JS
+              ?>
+              <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+            <? else: ?>
+              <?
+              $script = <<<JS
 $('#side-collapse-{$this->escapeHtmlAttr($title)}').on('show.bs.collapse', function() {
   finna.layout.initHierarchicalFacet($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
-            ?>
-            <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+              ?>
+              <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+            <? endif; ?>
+            <div id="facet_<?=$this->escapeHtml($title)?>" class="jstree-facet"
+                  data-facet="<?=$this->escapeHtmlAttr($title)?>"
+                  data-path=""
+                  data-exclude="<?=$allowExclude?>"
+                  data-operator="<?=$this->recommend->getFacetOperator($title)?>"
+                  data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
+                  data-sort="<?=isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''?>">
+            </div>
+            <noscript>
           <? endif; ?>
-          <div id="facet_<?=$this->escapeHtml($title)?>" class="jstree-facet"
-                data-facet="<?=$this->escapeHtmlAttr($title)?>"
-                data-path=""
-                data-exclude="<?=$allowExclude?>"
-                data-operator="<?=$this->recommend->getFacetOperator($title)?>"
-                data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
-                data-sort="<?=isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''?>">
-          </div>
-          <noscript>
-        <? endif; ?>
-        <? foreach ($cluster['list'] as $i=>$thisFacet): ?>
-            <?
+          <? foreach ($cluster['list'] as $i=>$thisFacet): ?>
+             <?
               if(strlen($thisFacet['displayText']) == 0) {
                 $thisFacet['displayText'] = "-";
               }
             ?>
             <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
-          <? if ($i == 6): ?>
-            <a id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>" class="list-group-item more-narrow-toggle" href="javascript:moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('more')?>...<i class="fa fa-handle-open"></i></a>
-          <? endif; ?>
-          <? if ($thisFacet['isApplied']): ?>
-            <a class="list-group-item active<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>">
-              <? if ($thisFacet['operator'] == 'OR'): ?>
-                <i class="fa fa-check-square-o"></i>
+            <? if ($i == $facets_before_more): ?>
+              <? $idAndClass = 'id="more-narrowGroupHidden-'.$this->escapeHtmlAttr($title).'" class="list-group-item less-narrow-toggle"'; ?>
+              <? if ($facetLightbox = $options->getFacetListAction()): ?>
+                <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$title.'&facetop='.$thisFacet['operator'].'&facetexclude='.($allowExclude ? 1 : 0); ?>
               <? else: ?>
-                <span class="pull-right"><i class="fa fa-check"></i></span>
+                <? $moreUrl = '#'; ?>
+              <? endif; ?>
+              <? if (($showMoreInLightbox && $showMoreInLightbox !== 'more') && $facetLightbox): ?>
+                <a <?=$idAndClass ?> data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('more')?>...</a>
+                <? break; ?>
+              <? else: ?>
+                <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')" rel="nofollow"><?=$this->transEsc('more')?>... <i class="fa fa-handle-open"></i></a>
+              <? endif; ?>
+            <? endif; ?>
+            <? if ($thisFacet['isApplied']): ?>
+              <a class="list-group-item active<? if ($i >= $facets_before_more): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>" title="<?=$this->transEsc('applied_filter') ?>">
+                <? if ($thisFacet['operator'] == 'OR'): ?>
+                  <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                <? else: ?>
+                  <span class="pull-right"><i class="fa fa-check" aria-hidden="true"></i></span>
+                <? endif; ?>
+                <?=$this->escapeHtml($thisFacet['displayText'])?>
+              </a>
+            <? else: ?>
+              <? $addURL = $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']); ?>
+              <? if ($allowExclude): ?>
+                <div class="list-group-item facet<?=$thisFacet['operator'] ?><? if ($i >= $facets_before_more): ?> <?=$moreClass ?><?endif ?>">
+              <? else: ?>
+                <a href="<?=$addURL ?>" class="list-group-item facet<?=$thisFacet['operator'] ?><? if ($i >= $facets_before_more): ?> <?=$moreClass ?><?endif ?>">
+              <? endif; ?>
+              <span class="badge">
+                <?=$this->localizedNumber($thisFacet['count'])?>
+                <? if ($allowExclude): ?>
+                  <a href="<?=$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times" aria-hidden="true"></i></a>
+                <? endif; ?>
+              </span>
+              <? if ($allowExclude): ?>
+                <a href="<?=$addURL ?>">
+              <? endif; ?>
+              <? if($thisFacet['operator'] == 'OR'): ?>
+                <i class="fa fa-square-o" aria-hidden="true"></i>
               <? endif; ?>
               <?=$this->escapeHtml($thisFacet['displayText'])?>
-            </a>
-          <? else: ?>
-            <? $addURL = $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']); ?>
-            <? if ($allowExclude): ?>
-              <div class="list-group-item facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">
-            <? else: ?>
-              <a href="<?=$addURL ?>" class="list-group-item facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">
-            <? endif; ?>
-            <span class="badge">
-              <?=$this->localizedNumber($thisFacet['count'])?>
               <? if ($allowExclude): ?>
-                <a href="<?=$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times"></i></a>
-              <? endif; ?>
-            </span>
-            <? if ($allowExclude): ?>
-              <a href="<?=$addURL ?>">
-            <? endif; ?>
-            <? if($thisFacet['operator'] == 'OR'): ?>
-              <i class="fa fa-square-o"></i>
-            <? endif; ?>
-            <?=$this->escapeHtml($thisFacet['displayText'])?>
-            <? if ($allowExclude): ?>
+                  </a>
+                </div>
+              <? else: ?>
                 </a>
-              </div>
-            <? else: ?>
-              </a>
+              <? endif; ?>
             <? endif; ?>
+          <? endforeach; ?>
+          <? if ($showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
+            <? $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&facet='.$title.'&facetop='.$thisFacet['operator'].'&facetexclude='.($allowExclude ? 1 : 0); ?>
+            <a class="list-group-item less-narrow-toggle <?=$moreClass ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow"><?=$this->transEsc('see all')?>... <i class="fa fa-list"></i></a>
           <? endif; ?>
-        <? endforeach; ?>
-          <? if ($i > 5): ?><a class="list-group-item <?=$moreClass ?> less-narrow-toggle" href="javascript:lessFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('less')?>...<i class="fa fa-handle-close"></i></a><? endif; ?>
-          <? if ($title == 'usage_rights_str_mv'): ?>
-            <div class="list-group-item usage-rights-info">
-              <i class="fa fa-info-big"></i><div class="info"><?=$this->translate('usage_rights_info')?></div><a class="more-info" href="<?=$this->url('content-page', ['page' => 'terms_conditions'])?>#terms"><?=$this->translate('usage_rights_info_more')?></a>
-            </div>
-          <? endif; ?>
+          <? if ($i >= $facets_before_more): ?><a class="list-group-item less-narrow-toggle <?=$moreClass ?>" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($title) ?>')"><?=$this->transEsc('less')?>... <i class="fa fa-handle-close"></i></a><? endif; ?>
+        <? endif; ?>
+        <? if ($title == 'usage_rights_str_mv'): ?>
+          <div class="list-group-item usage-rights-info">
+            <i class="fa fa-info-big"></i><div class="info"><?=$this->translate('usage_rights_info')?></div><a class="more-info" href="<?=$this->url('content-page', ['page' => 'terms_conditions'])?>#terms"><?=$this->translate('usage_rights_info_more')?></a>
+          </div>
         <? endif; ?>
         <? if (in_array($title, $hierarchicalFacets)): ?>
           </noscript>

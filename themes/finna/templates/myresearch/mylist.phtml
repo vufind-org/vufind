@@ -24,6 +24,12 @@
   $this->headScript()->appendFile("vendor/jquery.editable.min.js");
   $this->headScript()->appendFile("finna-item-status.js");
 
+  // Load Javascript only if list view parameter is NOT full:
+  if ($this->params->getOptions()->getListViewOption()!="full") {
+    $this->headScript()->appendFile("record.js");
+    $this->headScript()->appendFile("embedded_record.js");
+  }
+
   $this->jsTranslations()->addStrings(['add_note' => 'Add note', 'add_list_description' => 'Add list description', 'loading' => 'Loading']);
 
   $recordTotal = $this->results->getResultTotal();

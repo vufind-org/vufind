@@ -34,7 +34,7 @@
     </div>
 
     <div class="record-authors">
-      <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList());?><br/>
+      <?=$this->record($this->driver)->getFormatList() ?><br/>
       <? if($this->driver->isCollection()): ?>
         <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
       <? else: ?>

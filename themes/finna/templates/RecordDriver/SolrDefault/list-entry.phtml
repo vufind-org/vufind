@@ -21,6 +21,7 @@
       </div>
     </div>
     <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId"/>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($source) ?>" class="hiddenSource"/>
   </div>
   <div class="col-xs-2 col-sm-2 text-center">
     <? $img = $this->recordImage($this->record($this->driver))?>
@@ -35,7 +36,7 @@
     </div>
 
     <div class="record-authors">
-      <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList());?><br/>
+      <?=$this->record($this->driver)->getFormatList() ?><br/>
       <? if($this->driver->isCollection()): ?>
         <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
       <? else: ?>

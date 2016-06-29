@@ -538,6 +538,7 @@ finna.layout = (function() {
             finna.dateRangeVis.init();
             initToolTips($('.sidebar'));
             initMobileNarrowSearch();
+            VuFind.lightbox.bind($('.sidebar'));
         })
         .fail(function() {
             $container.find('.facet-load-indicator').addClass('hidden');
