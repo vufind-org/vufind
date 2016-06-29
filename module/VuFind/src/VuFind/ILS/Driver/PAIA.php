@@ -1236,7 +1236,7 @@ class PAIA extends DAIA
 
             // PAIA custom field
             // label (0..1) call number, shelf mark or similar item label
-            $result['callnumber'] = $this->getCallNumber($doc);;
+            $result['callnumber'] = $this->getCallNumber($doc);
 
             $result['create'] = (isset($doc['starttime'])
                 ? $this->convertDatetime($doc['starttime']) : '');
@@ -1332,7 +1332,7 @@ class PAIA extends DAIA
 
             // PAIA custom field
             // label (0..1) call number, shelf mark or similar item label
-            $result['callnumber'] = $this->getCallNumber($doc);;
+            $result['callnumber'] = $this->getCallNumber($doc);
 
             // Optional VuFind fields
             /*
