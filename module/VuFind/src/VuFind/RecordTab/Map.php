@@ -133,7 +133,8 @@ class Map extends AbstractBase
                 $lonE = (float)$match[2];
                 $latN = (float)$match[3];
                 $latS = (float)$match[4];
-                // Display as point or polygon? Use 0.4 as point threshold due to ol3 display oddities
+                // Display as point or polygon? 
+                // Use 0.4 as point threshold due to ol3 display oddities
                 if ((abs($lonE - $lonW)<0.4) && (abs($latN - $latS)<0.4)) {
                     $shape =2;
                 } else {
@@ -206,9 +207,11 @@ class Map extends AbstractBase
                 $labelE = $coord[1];
                 $labelN = $coord[2];
                 $labelS = $coord[3];
-                /* Make combined coordinate string to match against lookup table coordinate */
+                /* Make combined coordinate string to match 
+                    against lookup table coordinate */
                 $coordmatch = $labelS.$labelN.$labelE.$labelW;
-                /* See if coordinate string matches lookup table coordinates and if so return label */
+                /* See if coordinate string matches lookup 
+                    table coordinates and if so return label */
                 $labelname = [];
                 foreach ($label_lookup as $data) {
                     if ($data[0] == $coordmatch) {
@@ -244,25 +247,50 @@ class Map extends AbstractBase
         if (!empty($mapDisplayLabels) && !empty($mapDisplayCoords)) {
             // Pass coordinates, display coordinates, and labels
             foreach ($geoCoords as $key =>$value) {
-                array_push($mapTabData, [$geoCoords[$key][0],$geoCoords[$key][1],$geoCoords[$key][2],$geoCoords[$key][3],$geoCoords[$key][4],'cl',$mapDisplayCoords[$key],$mapDisplayLabels[$key]]);
+                array_push(
+                    $mapTabData, [
+                        $geoCoords[$key][0], $geoCoords[$key][1],
+                        $geoCoords[$key][2], $geoCoords[$key][3],
+                        $geoCoords[$key][4], 'cl', 
+                        $mapDisplayCoords[$key],$mapDisplayLabels[$key]
+                        ]
+                    );
             }
         }
         if (!empty($mapDisplayLabels) && empty($mapDisplayCoords)) {
             // Pass coordinates and labels
             foreach ($geoCoords as $key =>$value) {
-                array_push($mapTabData, [$geoCoords[$key][0],$geoCoords[$key][1],$geoCoords[$key][2],$geoCoords[$key][3],$geoCoords[$key][4],'l',$mapDisplayLabels[$key]]);
+                array_push(
+                    $mapTabData, [
+                        $geoCoords[$key][0], $geoCoords[$key][1],
+                        $geoCoords[$key][2], $geoCoords[$key][3],
+                        $geoCoords[$key][4], 'l', $mapDisplayLabels[$key]
+                        ]
+                    );
             }
         }
         if (empty($mapDisplayLabels) && !empty($mapDisplayCoords)) {
             // Pass coordinates and display coordinates
             foreach ($geoCoords as $key =>$value) {
-                array_push($mapTabData, [$geoCoords[$key][0],$geoCoords[$key][1],$geoCoords[$key][2],$geoCoords[$key][3],$geoCoords[$key][4],'c',$mapDisplayCoords[$key]]);
+                array_push(
+                    $mapTabData, [
+                        $geoCoords[$key][0], $geoCoords[$key][1],
+                        $geoCoords[$key][2], $geoCoords[$key][3],
+                        $geoCoords[$key][4], 'c', $mapDisplayCoords[$key]
+                        ]
+                    );
             }
         }
         if (empty($mapDisplayLabels) && empty($mapDisplayCoords)) {
             // Pass only coordinates
             foreach ($geoCoords as $key =>$value) {
-                array_push($mapTabData, [$geoCoords[$key][0],$geoCoords[$key][1],$geoCoords[$key][2],$geoCoords[$key][3],$geoCoords[$key][4],'n']);
+                array_push(
+                    $mapTabData, [
+                        $geoCoords[$key][0], $geoCoords[$key][1],
+                        $geoCoords[$key][2], $geoCoords[$key][3],
+                        $geoCoords[$key][4], 'n'
+                        ]
+                    );
             }
         }
         return $mapTabData;
