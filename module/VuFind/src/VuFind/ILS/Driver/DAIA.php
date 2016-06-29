@@ -780,7 +780,7 @@ class DAIA extends AbstractBase implements
         $availability = false;
         $status = ''; // status cannot be null as this will crash the translator
         $duedate = null;
-        $availableLink = '';
+        $serviceLink = '';
         $queue = '';
         $item_notes = [];
         $item_limitation_types = [];
@@ -804,12 +804,12 @@ class DAIA extends AbstractBase implements
                     // set item available if service is loan, presentation or
                     // openaccess
                     $availability = true;
-                    if ($available['service'] == 'loan'
-                        && isset($available['service']['href'])
+                    if ($available['service'] == 'loan' 
+                        && isset($available['href'])
                     ) {
                         // save the link to the ils if we have a href for loan
                         // service
-                        $availableLink = $available['service']['href'];
+                        $serviceLink = $available['href'];
                     }
                 }
 
@@ -847,9 +847,10 @@ class DAIA extends AbstractBase implements
                     )
                 ) {
                     if ($unavailable['service'] == 'loan'
-                        && isset($unavailable['service']['href'])
+                        && isset($unavailable['href'])
                     ) {
                         //save the link to the ils if we have a href for loan service
+                        $serviceLink = $unavailable['href'];
                     }
 
                     // use limitation element for status string
@@ -893,8 +894,8 @@ class DAIA extends AbstractBase implements
 
         /*'returnDate' => '', // false if not recently returned(?)*/
 
-        if (!empty($availableLink)) {
-            $return['ilslink'] = $availableLink;
+        if (!empty($serviceLink)) {
+            $return['ilslink'] = $serviceLink;
         }
 
         $return['item_notes']      = $item_notes;
@@ -907,9 +908,9 @@ class DAIA extends AbstractBase implements
         // In this DAIA driver implementation addLink and is_holdable are assumed
         // Boolean as patron based availability requires either a patron-id or -type.
         // This should be handled in a custom DAIA driver
-        $return['addLink'] = $this->checkIsRecallable($item);
+        $return['addLink']     = $this->checkIsRecallable($item);
         $return['is_holdable'] = $this->checkIsRecallable($item);
-        $return['holdtype']        = $this->getHoldType($item);
+        $return['holdtype']    = $this->getHoldType($item);
 
         // Check if we the item is available for storage retrieval request if it is
         // not holdable.

@@ -54,7 +54,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'requests_placed' => '',
                 'id' => "027586081",
                 'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:711134758",
-                'ilslink' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+                'ilslink' => "http://opac.example-library.edu/loan/REQ?EPN=711134758",
                 'number' => 1,
                 'barcode' => "1",
                 'reserve' => "N",
