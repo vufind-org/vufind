@@ -106,51 +106,51 @@ function loadMapTab(mapData) {
     map.getView().fit(extent, map.getSize());
 
   // Turn on popup tool tips if labels or coordinates are enabled.
-      if (labelon == true) {
-        var element = document.getElementById('popup');
-        var popup = new ol.Overlay({
-          element: element
-        });
-        map.addOverlay(popup);
+    if (labelon == true) {
+      var element = document.getElementById('popup');
+      var popup = new ol.Overlay({
+        element: element
+      });
+      map.addOverlay(popup);
 
-        // display popup on click
-        map.on('click', function(evt) {
-          var feature = map.forEachFeatureAtPixel(evt.pixel,
-            function(feature, layer) {
-              return feature;
+      // display popup on click
+      map.on('click', function(evt) {
+        var feature = map.forEachFeatureAtPixel(evt.pixel,
+          function(feature, layer) {
+            return feature;
+        });
+        if (feature) {
+          var element = popup.getElement();
+          var coordinate = evt.coordinate;
+          $(element).popover('destroy');
+          popup.setPosition(coordinate);
+          $(element).popover({
+            'placement': 'top',
+            'animation': false,
+            'html': true,
+            'content': feature.get('name')
           });
-          if (feature) {
-            var element = popup.getElement();
-            var coordinate = evt.coordinate;
-            $(element).popover('destroy');
-            popup.setPosition(coordinate);
-            $(element).popover({
-              'placement': 'top',
-              'animation': false,
-              'html': true,
-              'content': feature.get('name')
-            });
-            $(element).popover('show');
-          }
-        });
+          $(element).popover('show');
+        }
+      });
 
-        // change mouse cursor when over marker
-        map.on('pointermove', function(e) {
-          if (e.dragging) {
-            $(element).popover('destroy');
-            return;
-          }
-          var pixel = map.getEventPixel(e.originalEvent);
-          var hit = map.hasFeatureAtPixel(pixel);
-          var target = map.getTarget();
-          if (hit == true) {
-            document.getElementById(target).style.cursor = "pointer";
-          } else {
-            document.getElementById(target).style.cursor = "default";
-          }
-        });
-      }
+      // change mouse cursor when over marker
+      map.on('pointermove', function(e) {
+        if (e.dragging) {
+          $(element).popover('destroy');
+          return;
+        }
+        var pixel = map.getEventPixel(e.originalEvent);
+        var hit = map.hasFeatureAtPixel(pixel);
+        var target = map.getTarget();
+        if (hit == true) {
+          document.getElementById(target).style.cursor = "pointer";
+        } else {
+          document.getElementById(target).style.cursor = "default";
+        }
+      });
     }
+  }
   init();
   init = false;
 }
