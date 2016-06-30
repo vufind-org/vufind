@@ -13,14 +13,13 @@
 
 <? if ($offlineMode == "ils-offline"): ?>
   <?=$this->render('Helpers/ils-offline.phtml')?>
+<? endif; ?>
+
+<h2 class="lightbox-header"><?=$this->transEsc('Login')?></h2>
+<?=$this->flashmessages()?>
+
+<? if ($hideLogin): ?>
+  <div class="alert alert-danger"><?=$this->transEsc('login_disabled')?></div>
 <? else: ?>
-  <h2 class="lightbox-header"><?=$this->transEsc('Login')?></h2>
-  <?=$this->flashmessages()?>
-
-  <? if ($hideLogin): ?>
-    <div class="alert alert-danger"><?=$this->transEsc('login_disabled')?></div>
-  <? else: ?>
-    <?=$this->auth()->getLogin()?>
-  <? endif; ?>
-
+  <?=$this->auth()->getLogin()?>
 <? endif; ?>
