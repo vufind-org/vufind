@@ -43,8 +43,8 @@ trait KeyGeneratorTrait
     /**
      * Method to ensure uniform cache keys for cached VuFind objects.
      *
-     * @param string|null $suffix Optional suffix that will get appended to the object
-     *                            class name calling getCacheKey()
+     * @param string|null $suffix Optional suffix that will get appended to the
+     *                            object class name calling getCacheKey()
      *
      * @return string
      */
@@ -63,7 +63,8 @@ trait KeyGeneratorTrait
             // adapter (default key_pattern "/^[a-z0-9_\+\-]*$/Di").
             // Any other custom pattern is assumed as less restrictive, thus the
             // transformed key should match the custom pattern.
-            $key = preg_replace("/([^a-z0-9_\+\-])+/Di",
+            $key = preg_replace(
+                "/([^a-z0-9_\+\-])+/Di",
                 "", $key
             );
         }
