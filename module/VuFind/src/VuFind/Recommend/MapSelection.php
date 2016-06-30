@@ -153,10 +153,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
                 $match = [];
-                if (preg_match('/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
-                    $value[0], $match)
-                ) 
-                {
+                $pattern = '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/';
+                if (preg_match($pattern, $value[0], $match)) {
                     // Need to reorder coords from WENS to WSEN
                     array_push(
                         $coords, (float)$match[1], 
@@ -186,10 +184,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
                 $match = [];
-                if (preg_match('/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
-                    $value[0], $match)
-                ) 
-                {
+                $pattern = '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/';
+                if (preg_match($pattern, $value[0], $match)) {
                     // Need to reorder coords from WENS to WSEN
                     array_push(
                         $reorder_coords, (float)$match[1], 
