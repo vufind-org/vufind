@@ -26,8 +26,8 @@ function loadMapTab(mapData) {
 
   $('#map-canvas').show();
   var init = function() {
-  var featureCount = mapData.length;
-  for (i = 0; i < featureCount; i++){
+    var featureCount = mapData.length;
+    for (i = 0; i < featureCount; i++) {
       //Construct the coordinate labels
       if ((mapData[i][5] == 'cl') || (mapData[i][5] == 'c')) { 
         var label_coord1 = mapData[i][6].substring(0, 16); 
@@ -68,8 +68,8 @@ function loadMapTab(mapData) {
       //It's a point feature //
         var lonlat = ol.proj.transform([mapData[i][0], mapData[i][1]], srcProj, dstProj);
         var iconFeature = new ol.Feature({
-           geometry: new ol.geom.Point(lonlat),
-           name: label
+          geometry: new ol.geom.Point(lonlat),
+          name: label
         });
         iconFeature.setStyle(iconStyle);
         vectorSource.addFeature(iconFeature);
@@ -79,28 +79,28 @@ function loadMapTab(mapData) {
         var point3 = ol.proj.transform([mapData[i][2], mapData[i][1]], srcProj, dstProj);
         var point4 = ol.proj.transform([mapData[i][2], mapData[i][3]], srcProj, dstProj);
         var polyFeature = new ol.Feature({
-            geometry: new ol.geom.Polygon([
-                [point1, point2, point3, point4, point1]
-            ]),
-            name: label
+          geometry: new ol.geom.Polygon([
+            [point1, point2, point3, point4, point1]
+          ]),
+          name: label
         });
         polyFeature.setStyle(polyStyle);
         vectorSource.addFeature(polyFeature);
       }   
     }
     var vectorLayer = new ol.layer.Vector({ 
-        source: vectorSource,
-        renderBuffer: 500
+      source: vectorSource,
+      renderBuffer: 500
     });
     map = new ol.Map({
-        renderer: 'canvas',
-        projection: dstProj,
-        layers: [osm, vectorLayer],
-        target: 'map-canvas',
-        view: new ol.View({
-          center: [0, 0],
-          zoom: 1
-        })
+      renderer: 'canvas',
+      projection: dstProj,
+      layers: [osm, vectorLayer],
+      target: 'map-canvas',
+      view: new ol.View({
+        center: [0, 0],
+        zoom: 1
+      })
     });
     var extent = vectorLayer.getSource().getExtent();
     map.getView().fit(extent,map.getSize());
@@ -113,44 +113,44 @@ function loadMapTab(mapData) {
     });
     map.addOverlay(popup);
 
-  // display popup on click
-  map.on('click', function(evt) {
-    var feature = map.forEachFeatureAtPixel(evt.pixel,
-      function(feature, layer) {
-        return feature;
-    });
-    if (feature) {
-      var element = popup.getElement();
-      var coordinate = evt.coordinate;
-      $(element).popover('destroy');
-      popup.setPosition(coordinate);
-      $(element).popover({
-        'placement': 'top',
-        'animation': false,
-        'html': true,
-        'content': feature.get('name')
+    // display popup on click
+    map.on('click', function(evt) {
+      var feature = map.forEachFeatureAtPixel(evt.pixel,
+        function(feature, layer) {
+          return feature;
       });
-      $(element).popover('show');
-    }
-  });
+      if (feature) {
+        var element = popup.getElement();
+        var coordinate = evt.coordinate;
+        $(element).popover('destroy');
+        popup.setPosition(coordinate);
+        $(element).popover({
+          'placement': 'top',
+          'animation': false,
+          'html': true,
+          'content': feature.get('name')
+        });
+        $(element).popover('show');
+      }
+    });
 
-  // change mouse cursor when over marker
-  map.on('pointermove', function(e) {
-    if (e.dragging) {
-      $(element).popover('destroy');
-      return;
+    // change mouse cursor when over marker
+    map.on('pointermove', function(e) {
+      if (e.dragging) {
+        $(element).popover('destroy');
+        return;
+      }
+      var pixel = map.getEventPixel(e.originalEvent);
+      var hit = map.hasFeatureAtPixel(pixel);
+      var target = map.getTarget();
+      if (hit == true) {
+        document.getElementById(target).style.cursor = "pointer";
+      } else {
+        document.getElementById(target).style.cursor = "default";
+      }
+     });
     }
-    var pixel = map.getEventPixel(e.originalEvent);
-    var hit = map.hasFeatureAtPixel(pixel);
-    var target = map.getTarget();
-    if (hit == true) {
-      document.getElementById(target).style.cursor = "pointer";
-    } else {
-      document.getElementById(target).style.cursor = "default";
-    }
-   });
   }
- }
- init();
- init = false;
+  init();
+  init = false;
 }
