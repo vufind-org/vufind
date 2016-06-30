@@ -167,7 +167,8 @@ class Map extends AbstractBase
                 $labelcoord = $labelS . ' ' . $labelE;
             } else {
                 /* Coordinate order is min to max on lat and long axes */
-                $labelcoord = $labelS . ' ' . $labelN . ' ' . $labelW . ' ' . $labelE;
+                $labelcoord = $labelS . ' ' . $labelN . ' ' .
+                $labelW . ' ' . $labelE;
             }
             array_push($label_coords, $labelcoord);
         }
