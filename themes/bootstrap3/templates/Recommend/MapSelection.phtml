@@ -21,9 +21,16 @@
     $('.search-query-options>.advanced').after('&nbsp;&nbsp;<a href="#" class="advanced" onclick=\\'{$jsLoad} $(this).remove(); return false;\\'>{$this->translate('Geographic Search')}</a>');
 EOF;
 ?>
+<script type="text/javascript">
+function MapHelp() {
+  window.alert("To draw the search box:\n1) Click and release on starting point\n2) Drag box\n3) Click on ending point");
+}
+</script>
+
 <div class="authorbox">
   <div id="geo_search" style="display: none;">
     <button><?=$this->transEsc('Draw Search Box')?></button>
+    <span class="geo_maphelp">&nbsp;<a href="javascript:MapHelp();"><?=$this->transEsc('Need Help?')?></a></span>
     <div id="geo_search_map" style="height: <?=$height?>px;"></div>
   </div>
   <? if ($showSelection) :?>
