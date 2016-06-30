@@ -108,7 +108,7 @@ abstract class AbstractBase implements DriverInterface
             return null;
         }
 
-        $fullKey = $this->getCacheKey($key);        
+        $fullKey = $this->getCacheKey($key);
         $item = $this->cache->getItem($fullKey);
         if (null !== $item) {
             // Return value if still valid:
