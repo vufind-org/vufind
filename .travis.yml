@@ -15,6 +15,7 @@ before_script:
   - pear install phing/phing
   - phpenv config-rm xdebug.ini
   - phpenv rehash
+  - npm install -g eslint
 
 script:
-  - phing composer phpunitfast phpcs-console php-cs-fixer-dryrun
+  - phing composer phpunitfast phpcs-console php-cs-fixer-dryrun eslint

@@ -735,12 +735,16 @@ class AbstractSearch extends AbstractBase
             $this->params()->fromQuery('facetop', 'AND') == 'OR'
         );
         $list = $facets[$facet]['data']['list'];
+        $params->activateAllFacets();
+        $facetLabel = $params->getFacetLabel($facet);
 
         $view = $this->createViewModel(
             [
                 'data' => $list,
                 'exclude' => $this->params()->fromQuery('facetexclude', 0),
                 'facet' => $facet,
+                'facetLabel' => $facetLabel,
+                'operator' => $this->params()->fromQuery('facetop', 'AND'),
                 'page' => $page,
                 'results' => $results,
                 'anotherPage' => $facets[$facet]['more'],

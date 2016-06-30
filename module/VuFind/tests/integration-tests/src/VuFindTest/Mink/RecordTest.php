@@ -53,7 +53,6 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
         );
         $session = $this->getMinkSession();
         $session->visit($url);
-        $this->assertHttpStatus(200);
         $page = $session->getPage();
         $staffViewTab = $this->findCss($page, '.record-tabs .details');
         $this->assertEquals('Staff View', $staffViewTab->getText());

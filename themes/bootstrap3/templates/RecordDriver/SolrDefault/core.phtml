@@ -11,7 +11,7 @@
      $cover = $this->record($this->driver)->getCover('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
      $preview = $this->record($this->driver)->getPreviews(); ?>
   <? if ($QRCode || $cover || $preview): ?>
-  <div class="col-sm-3">
+  <div class="col-sm-3 img-col">
     <div class="text-center">
       <? /* Display thumbnail if appropriate: */ ?>
       <? if($cover): ?>
@@ -33,7 +33,7 @@
     <? if ($preview): ?><?=$preview?><? endif; ?>
   </div>
 
-  <div class="col-sm-9">
+  <div class="col-sm-9 info-col">
   <? else: ?>
   <div class="col-sm-12">
   <? endif; ?>
@@ -123,7 +123,7 @@
         </tr>
       <? endif; ?>
 
-      <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+      <? if (count($this->driver->getFormats()) > 0): ?>
         <tr>
           <th><?=$this->transEsc('Format')?>: </th>
           <td><?=$this->record($this->driver)->getFormatList()?></td>
