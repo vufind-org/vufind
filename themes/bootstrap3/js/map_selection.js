@@ -10,7 +10,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   var draw, map;
   var geometryFunction = function(coordinates, geometry) {
     if (!geometry) {
-        geometry = new ol.geom.Polygon(null);
+      geometry = new ol.geom.Polygon(null);
     }
     var start = coordinates[0];
     var end = coordinates[1];
@@ -24,7 +24,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   init = function(){
     map = new ol.Map({
       interactions: ol.interaction.defaults({
-          shiftDragZoom: false
+        shiftDragZoom: false
       }),
       target: 'geo_search_map',
       projection: dstProj,
@@ -57,34 +57,34 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   } 
   function addInteraction() {
     draw = new ol.interaction.Draw ({
-        source: vectorSource,
-        type: 'LineString',
-        maxPoints: 2,
-        geometryFunction: geometryFunction
+      source: vectorSource,
+      type: 'LineString',
+      maxPoints: 2,
+      geometryFunction: geometryFunction
     });
     draw.on('drawend', function(evt) {
-        var geometry = evt.feature.getGeometry();
-        var coordinates = geometry.getCoordinates();
-        var westnorth = ol.proj.transform(coordinates[0][0], dstProj, srcProj);
-        var eastsouth = ol.proj.transform(coordinates[0][2], dstProj, srcProj);
-        // Make corrections for queries that cross the dateline 
-        if (westnorth[0] < -180) {
-          westnorth[0] = westnorth[0] + 360;
-        }
-        if (eastsouth[0] > 180) {
-          eastsouth[0] = eastsouth[0] - 360;
-        }
-        var rawFilter = geoField + ':Intersects(ENVELOPE(' + westnorth[0] + ', ' + eastsouth[0] + ', ' + westnorth[1] + ', ' + eastsouth[1] + '))';
+      var geometry = evt.feature.getGeometry();
+      var coordinates = geometry.getCoordinates();
+      var westnorth = ol.proj.transform(coordinates[0][0], dstProj, srcProj);
+      var eastsouth = ol.proj.transform(coordinates[0][2], dstProj, srcProj);
+      // Make corrections for queries that cross the dateline 
+      if (westnorth[0] < -180) {
+        westnorth[0] = westnorth[0] + 360;
+      }
+      if (eastsouth[0] > 180) {
+        eastsouth[0] = eastsouth[0] - 360;
+      }
+      var rawFilter = geoField + ':Intersects(ENVELOPE(' + westnorth[0] + ', ' + eastsouth[0] + ', ' + westnorth[1] + ', ' + eastsouth[1] + '))';
         location.href = baseURL + searchParams + "&filter[]=" + rawFilter;
       }, this);
-      map.addInteraction(draw);
-    }   
+    map.addInteraction(draw);
+  }   
   init();
   $('button').on('click', function () {
     vectorSource.clear();
     map.removeInteraction(draw);
     addInteraction();
-    });
+  });
 
   init = false;
 }
