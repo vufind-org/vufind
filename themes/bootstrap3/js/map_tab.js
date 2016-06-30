@@ -118,7 +118,7 @@ function loadMapTab(mapData) {
         var feature = map.forEachFeatureAtPixel(evt.pixel,
           function(feature, layer) {
             return feature;
-        });
+          });
         if (feature) {
           var element = popup.getElement();
           var coordinate = evt.coordinate;
