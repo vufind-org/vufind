@@ -183,7 +183,7 @@ class Map extends AbstractBase
     public function getMapLabels()
     {
         $labels = [];
-        if ($this->mapLabels=='field') {
+        if ($this->mapLabels == 'field') {
             $labels = $this->getRecordDriver()->tryMethod('getLatLonLabels');
             return $labels;
         }
@@ -196,8 +196,8 @@ class Map extends AbstractBase
                  $fp = fopen($file, 'r');
                 while (($line = fgetcsv($fp, 0, "\t")) !== false) {
                     if ($line) {
-                        $label_lookup[] = $line; 
-                    } 
+                        $label_lookup[] = $line;
+                    }
                 }
                  fclose($fp);
             }
@@ -216,7 +216,7 @@ class Map extends AbstractBase
                 $labelname = [];
                 foreach ($label_lookup as $data) {
                     if ($data[0] == $coordmatch) {
-                        $labelname = $data[1]; 
+                        $labelname = $data[1];
                     }
                 }
                 array_push($labels, $labelname);
@@ -247,7 +247,7 @@ class Map extends AbstractBase
         }
         if (!empty($mapDisplayLabels) && !empty($mapDisplayCoords)) {
             // Pass coordinates, display coordinates, and labels
-            foreach ($geoCoords as $key =>$value) {
+            foreach ($geoCoords as $key => $value) {
                 array_push(
                     $mapTabData, [
                         $geoCoords[$key][0], $geoCoords[$key][1],
