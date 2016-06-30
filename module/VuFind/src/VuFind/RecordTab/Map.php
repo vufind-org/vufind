@@ -284,7 +284,7 @@ class Map extends AbstractBase
         }
         if (empty($mapDisplayLabels) && empty($mapDisplayCoords)) {
             // Pass only coordinates
-            foreach ($geoCoords as $key =>$value) {
+            foreach ($geoCoords as $key => $value) {
                 array_push(
                     $mapTabData, [
                         $geoCoords[$key][0], $geoCoords[$key][1],
