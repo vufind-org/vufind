@@ -1,42 +1,42 @@
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 function loadMapTab(mapData) {
-  var init=true;
+  var init = true;
   var srcProj = 'EPSG:4326';
   var dstProj = 'EPSG:900913';
   var osm = new ol.layer.Tile({source: new ol.source.OSM()});
   var vectorSource = new ol.source.Vector();
   var map;
   var iconStyle = new ol.style.Style({
-      image: new ol.style.Circle({
-            radius: 5,
-            fill: new ol.style.Fill({
-            color: 'red'
-            })
+    image: new ol.style.Circle({
+      radius: 5,
+      fill: new ol.style.Fill({
+        color: 'red'
       })
+    })
   });
   var polyStyle = new ol.style.Style({
-      fill: new ol.style.Fill({
-        color: [200,0,0,.1]
-      }),
-      stroke: new ol.style.Stroke({
-        color: 'red',
-        width: 2 
-      })
+    fill: new ol.style.Fill({
+      color: [200, 0, 0, .1]
+    }),
+    stroke: new ol.style.Stroke({
+      color: 'red',
+      width: 2 
+    })
   });
 
   $('#map-canvas').show();
   var init = function() {
   var featureCount = mapData.length;
-  for (i=0; i<featureCount; i++){
+  for (i = 0; i < featureCount; i++){
       //Construct the coordinate labels
       if ((mapData[i][5] == 'cl') || (mapData[i][5] == 'c')) { 
-          var label_coord1 = mapData[i][6].substring(0,16); 
-          var label_coord2 = mapData[i][6].substring(16); 
-          if (label_coord2) {
-              var label_coord = label_coord1+'<br/>'+label_coord2;
-          } else {
-              var label_coord = label_coord1;
-          }
+        var label_coord1 = mapData[i][6].substring(0, 16); 
+        var label_coord2 = mapData[i][6].substring(16); 
+        if (label_coord2) {
+          var label_coord = label_coord1 + '<br/>' + label_coord2;
+        } else {
+          var label_coord = label_coord1;
+        }
       }
       // Construct the label names
       if (mapData[i][5] == 'l') {
@@ -73,7 +73,7 @@ function loadMapTab(mapData) {
         });
         iconFeature.setStyle(iconStyle);
         vectorSource.addFeature(iconFeature);
-      } else if (mapData[i][4]==4) { // It's a polygon feature //
+      } else if (mapData[i][4] == 4) { // It's a polygon feature //
         var point1 = ol.proj.transform([mapData[i][0], mapData[i][3]], srcProj, dstProj);
         var point2 = ol.proj.transform([mapData[i][0], mapData[i][1]], srcProj, dstProj);
         var point3 = ol.proj.transform([mapData[i][2], mapData[i][1]], srcProj, dstProj);
@@ -98,7 +98,7 @@ function loadMapTab(mapData) {
         layers: [osm, vectorLayer],
         target: 'map-canvas',
         view: new ol.View({
-          center: [0,0],
+          center: [0, 0],
           zoom: 1
         })
     });
@@ -152,5 +152,5 @@ function loadMapTab(mapData) {
   }
  }
  init();
- init=false;
+ init = false;
 }
