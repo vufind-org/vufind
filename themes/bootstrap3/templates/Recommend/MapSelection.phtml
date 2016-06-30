@@ -1,7 +1,7 @@
 <?
-  $this->headScript()->appendFile('ol/ol.js');
+  $this->headScript()->appendFile('vendor/ol/ol.js');
   $this->headScript()->appendFile('map_selection.js');
-  $this->headLink()->appendStylesheet('/vufind/themes/bootstrap3/js/ol/ol.css');
+  $this->headLink()->appendStylesheet('/vufind/themes/bootstrap3/js/vendor/ol/ol.css');
   
   $geoField = $this->recommend->getGeoField();
   $urlpath = $this->url('search-results');
