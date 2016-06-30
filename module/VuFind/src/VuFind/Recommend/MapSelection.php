@@ -96,7 +96,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader) 
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         $this->configLoader = $configLoader;
     }
@@ -157,7 +157,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                 if (preg_match($pattern, $value[0], $match)) {
                     // Need to reorder coords from WENS to WSEN
                     array_push(
-                        $coords, (float)$match[1], 
+                        $coords, (float)$match[1],
                         (float)$match[4], (float)$match[2],
                         (float)$match[3]
                     );
@@ -188,7 +188,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                 if (preg_match($pattern, $value[0], $match)) {
                     // Need to reorder coords from WENS to WSEN
                     array_push(
-                        $reorder_coords, (float)$match[1], 
+                        $reorder_coords, (float)$match[1],
                         (float)$match[4], (float)$match[2],
                         (float)$match[3]
                     );
@@ -235,7 +235,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      * 
      * @return number
      */
-    public function getHeight() 
+    public function getHeight()
     {
         return $this->height;
     }
