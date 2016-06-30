@@ -135,10 +135,10 @@ class Map extends AbstractBase
                 $latS = (float)$match[4];
                 // Display as point or polygon? 
                 // Use 0.4 as point threshold due to ol3 display oddities
-                if ((abs($lonE - $lonW)<0.4) && (abs($latN - $latS)<0.4)) {
-                    $shape =2;
+                if ((abs($lonE - $lonW) < 0.4) && (abs($latN - $latS) < 0.4)) {
+                    $shape = 2;
                 } else {
-                    $shape =4;
+                    $shape = 4;
                 }
                 // Coordinates ordered for ol3 display as WSEN
                 array_push($coordarray, [$lonW, $latS, $lonE, $latN, $shape]);
@@ -154,7 +154,7 @@ class Map extends AbstractBase
      */
     public function getDisplayCoords()
     {
-        $label_coords=[];
+        $label_coords = [];
         $coords = $this->getRecordDriver()->tryMethod('getLatLonCoords');
         foreach ($coords as $val) {
             $coord = explode(' ', $val);
@@ -164,10 +164,10 @@ class Map extends AbstractBase
             $labelS = $coord[3];
             /* Create coordinate label for map display */
             if (($labelW == $labelE) && ($labelN == $labelS)) {
-                $labelcoord =$labelS.' '.$labelE;
+                $labelcoord = $labelS . ' ' . $labelE;
             } else {
                 /* Coordinate order is min to max on lat and long axes */
-                $labelcoord =$labelS.' '.$labelN.' '.$labelW.' '.$labelE;
+                $labelcoord = $labelS . ' ' . $labelN . ' ' . $labelW . ' ' . $labelE;
             }
             array_push($label_coords, $labelcoord);
         }
@@ -186,7 +186,7 @@ class Map extends AbstractBase
             $labels = $this->getRecordDriver()->tryMethod('getLatLonLabels');
             return $labels;
         }
-        if ($this->mapLabels=='file') {
+        if ($this->mapLabels == 'file') {
             $coords = $this->getRecordDriver()->tryMethod('getLatLonCoords');
             /* read lookup file into array */
             $label_lookup = [];
@@ -195,7 +195,7 @@ class Map extends AbstractBase
                  $fp = fopen($file, 'r');
                 while (($line = fgetcsv($fp, 0, "\t")) !== false) {
                     if ($line) {
-                        $label_lookup[]=$line; 
+                        $label_lookup[] = $line; 
                     } 
                 }
                  fclose($fp);
@@ -209,7 +209,7 @@ class Map extends AbstractBase
                 $labelS = $coord[3];
                 /* Make combined coordinate string to match 
                     against lookup table coordinate */
-                $coordmatch = $labelS.$labelN.$labelE.$labelW;
+                $coordmatch = $labelS . $labelN . $labelE . $labelW;
                 /* See if coordinate string matches lookup 
                     table coordinates and if so return label */
                 $labelname = [];
@@ -235,10 +235,10 @@ class Map extends AbstractBase
         if (empty($geoCoords)) {
             return [];
         }
-        $mapTabData =[];
-        $mapDisplayCoords=[];
-        $mapDisplayLabels=[];
-        if ($this->displayCoords== true) {
+        $mapTabData = [];
+        $mapDisplayCoords = [];
+        $mapDisplayLabels = [];
+        if ($this->displayCoords == true) {
              $mapDisplayCoords = $this->getDisplayCoords();
         }
         if (isset($this->mapLabels)) {
@@ -251,7 +251,7 @@ class Map extends AbstractBase
                     $mapTabData, [
                         $geoCoords[$key][0], $geoCoords[$key][1],
                         $geoCoords[$key][2], $geoCoords[$key][3],
-                        $geoCoords[$key][4], 'cl', 
+                        $geoCoords[$key][4], 'cl',
                         $mapDisplayCoords[$key],$mapDisplayLabels[$key]
                         ]
                 );
@@ -259,7 +259,7 @@ class Map extends AbstractBase
         }
         if (!empty($mapDisplayLabels) && empty($mapDisplayCoords)) {
             // Pass coordinates and labels
-            foreach ($geoCoords as $key =>$value) {
+            foreach ($geoCoords as $key => $value) {
                 array_push(
                     $mapTabData, [
                         $geoCoords[$key][0], $geoCoords[$key][1],
@@ -271,7 +271,7 @@ class Map extends AbstractBase
         }
         if (empty($mapDisplayLabels) && !empty($mapDisplayCoords)) {
             // Pass coordinates and display coordinates
-            foreach ($geoCoords as $key =>$value) {
+            foreach ($geoCoords as $key => $value) {
                 array_push(
                     $mapTabData, [
                         $geoCoords[$key][0], $geoCoords[$key][1],
