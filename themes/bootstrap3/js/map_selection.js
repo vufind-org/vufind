@@ -75,8 +75,8 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
         eastsouth[0] = eastsouth[0] - 360;
       }
       var rawFilter = geoField + ':Intersects(ENVELOPE(' + westnorth[0] + ', ' + eastsouth[0] + ', ' + westnorth[1] + ', ' + eastsouth[1] + '))';
-        location.href = baseURL + searchParams + "&filter[]=" + rawFilter;
-      }, this);
+      location.href = baseURL + searchParams + "&filter[]=" + rawFilter;
+    }, this);
     map.addInteraction(draw);
   }   
   init();
