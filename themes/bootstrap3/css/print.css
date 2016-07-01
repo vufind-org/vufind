@@ -1,6 +1,9 @@
-.hidden-print,.hidden-print *,.hidden-print[class*="span"] {display:none}
-.row-fluid .span9 {margin:auto;width:90%}
-a[href]:after{content:''}
-* {background-color:#FFF}
-.container {margin:0}
-#datevispublishDatexWrapper {width:90%}
+* {
+  background-color: #FFF;
+  color: #000;
+}
+a[href]:after{ content: ''; } /* hide following urls */
+.container { margin:0; } /* print margins */
+/* print utilities */
+.hidden-print,
+.hidden-print * { display:none !important; }

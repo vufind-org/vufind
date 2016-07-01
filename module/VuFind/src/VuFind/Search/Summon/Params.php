@@ -83,6 +83,18 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Reset the current facet configuration.
+     *
+     * @return void
+     */
+    public function resetFacetConfig()
+    {
+        parent::resetFacetConfig();
+        $this->dateFacetSettings = [];
+        $this->fullFacetSettings = [];
+    }
+
+    /**
      * Get the full facet settings stored by addFacet -- these may include extra
      * parameters needed by the search results class.
      *

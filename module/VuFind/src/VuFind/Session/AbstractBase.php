@@ -59,6 +59,24 @@ abstract class AbstractBase implements SaveHandlerInterface,
     protected $config = null;
 
     /**
+     * Whether writes are disabled, i.e. any changes to the session are not written
+     * to the storage
+     *
+     * @var bool
+     */
+    protected $writesDisabled = false;
+
+    /**
+     * Disable session writing, i.e. make it read-only
+     *
+     * @return void
+     */
+    public function disableWrites()
+    {
+        $this->writesDisabled = true;
+    }
+
+    /**
      * Set configuration.
      *
      * @param \Zend\Config\Config $config Session configuration ([Session] section of
@@ -145,4 +163,30 @@ abstract class AbstractBase implements SaveHandlerInterface,
         // Something to keep in mind though.
         return true;
     }
+
+    /**
+     * Write function that is called when session data is to be saved.
+     *
+     * @param string $sess_id The current session ID
+     * @param string $data    The session data to write
+     *
+     * @return bool
+     */
+    public function write($sess_id, $data)
+    {
+        if ($this->writesDisabled) {
+            return true;
+        }
+        return $this->saveSession($sess_id, $data);
+    }
+
+    /**
+     * A function that is called internally when session data is to be saved.
+     *
+     * @param string $sess_id The current session ID
+     * @param string $data    The session data to write
+     *
+     * @return bool
+     */
+    abstract protected function saveSession($sess_id, $data);
 }

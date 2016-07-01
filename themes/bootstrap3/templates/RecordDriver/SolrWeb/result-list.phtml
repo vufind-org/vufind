@@ -1,27 +1,29 @@
 <?
   $url = $this->driver->getUrl();
 ?>
-<div class="listentry col-xs-11">
-  <div class="resultItemLine1">
-    <a href="<?=$this->escapeHtmlAttr($url)?>" class="title">
-      <?=$this->record($this->driver)->getTitleHtml()?>
-    </a>
-  </div>
+<div class="media">
+  <div class="media-body">
+    <div class="resultItemLine1">
+      <a href="<?=$this->escapeHtmlAttr($url)?>" class="title">
+        <?=$this->record($this->driver)->getTitleHtml()?>
+      </a>
+    </div>
 
-  <div class="resultItemLine2">
-    <? $snippet = $this->driver->getHighlightedSnippet(); ?>
-    <? $summary = $this->driver->getSummary(); ?>
-    <? if (!empty($snippet)): ?>
-      <?=$this->highlight($snippet['snippet'])?>
-    <? elseif (!empty($summary)): ?>
-      <?=$this->escapeHtml($summary[0])?>
-    <? endif; ?>
-  </div>
+    <div class="resultItemLine2">
+      <? $snippet = $this->driver->getHighlightedSnippet(); ?>
+      <? $summary = $this->driver->getSummary(); ?>
+      <? if (!empty($snippet)): ?>
+        <?=$this->highlight($snippet['snippet'])?>
+      <? elseif (!empty($summary)): ?>
+        <?=$this->escapeHtml($summary[0])?>
+      <? endif; ?>
+    </div>
 
-  <div class="resultItemLine3">
-    <?=$this->escapeHtml($url)?>
-    <? $lastMod = $this->driver->getLastModified(); if (!empty($lastMod)): ?>
-      <br /><?=$this->transEsc('Last Modified')?>: <?=$this->escapeHtml(trim(str_replace(array('T', 'Z'), ' ', $lastMod)))?>
-    <? endif; ?>
+    <div class="resultItemLine3">
+      <?=$this->escapeHtml($url)?>
+      <? $lastMod = $this->driver->getLastModified(); if (!empty($lastMod)): ?>
+        <br /><?=$this->transEsc('Last Modified')?>: <?=$this->escapeHtml(trim(str_replace(array('T', 'Z'), ' ', $lastMod)))?>
+      <? endif; ?>
+    </div>
   </div>
 </div>

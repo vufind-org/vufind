@@ -8,5 +8,8 @@
 <input id="account_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" />
 <label for="account_password"><?=$this->transEsc('Password')?>:</label>
 <input id="account_password" type="password" name="password" />
+<? if ($this->passwordPolicy['hint']): ?>
+  <p><?=$this->transEsc($this->passwordPolicy['hint']) ?></p>
+<? endif; ?>
 <label for="account_password2"><?=$this->transEsc('Password Again')?>:</label>
 <input id="account_password2" type="password" name="password2" />
