@@ -512,14 +512,16 @@ class Params implements ServiceLocatorAwareInterface
     {
         // Check for a view parameter in the url.
         $view = $request->get('view');
-        $validViews = $this->getOptions()->getViewOptions();
+        $validViews = array_keys($this->getOptions()->getViewOptions());
         if ($view == 'rss') {
             // RSS is a special case that does not require config validation
             $this->setView('rss');
-        } else if (!empty($view) && in_array($view, array_keys($validViews))) {
+        } else if (!empty($view) && in_array($view, $validViews)) {
             // make sure the url parameter is a valid view
             $this->setView($view);
-        } else if (!empty($this->lastView)) {
+        } else if (!empty($this->lastView)
+            && in_array($this->lastView, $validViews)
+        ) {
             // if there is nothing in the URL, see if we had a previous value
             // injected based on session information.
             $this->setView($this->lastView);
