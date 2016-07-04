@@ -527,7 +527,7 @@ class DAIA extends AbstractBase implements
     {
         // Override the base class formatting with DAIA-specific URI
         // to ensure proper caching in a MultiBackend environment.
-        return 'DAIA-' . md5($this->generateURI(($key)));
+        return 'DAIA-' . md5($key);
     }
 
     /**
