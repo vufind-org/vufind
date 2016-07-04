@@ -12,7 +12,7 @@ var VuFind = (function() {
 
   var register = function(name, module) {
     if (_submodules.indexOf(name) === -1) {
-    _submodules.push(name);
+      _submodules.push(name);
       this[name] = typeof module == 'function' ? module() : module;
     }
     // If the object has already initialized, we should auto-init on register:
@@ -49,7 +49,7 @@ var VuFind = (function() {
 })();
 
 /* --- GLOBAL FUNCTIONS --- */
-function htmlEncode(value){
+function htmlEncode(value) {
   if (value) {
     return jQuery('<div />').text(value).html();
   } else {
@@ -165,10 +165,11 @@ function setupAutocomplete() {
     $(op).autocomplete({
       maxResults: 10,
       loadingString: VuFind.translate('loading')+'&nbsp;...',
-      handler: function(query, cb) {
-        var searcher = extractClassParams(op);
+      handler: function(input, cb) {
+        var query = input.val();
+        var searcher = extractClassParams(input);
         var hiddenFilters = [];
-        $(op).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function() {
+        $(input).closest('.searchForm').find('input[name="hiddenFilters[]"]').each(function() {
           hiddenFilters.push($(this).val());
         });
         $.fn.autocomplete.ajax({
@@ -177,7 +178,7 @@ function setupAutocomplete() {
             q:query,
             method:'getACSuggestions',
             searcher:searcher['searcher'],
-            type:searcher['type'] ? searcher['type'] : $(op).closest('.searchForm').find('.searchForm_type').val(),
+            type:searcher['type'] ? searcher['type'] : $(input).closest('.searchForm').find('.searchForm_type').val(),
             hiddenFilters:hiddenFilters
           },
           dataType:'json',
@@ -298,7 +299,7 @@ $(document).ready(function() {
 
   // Advanced facets
   $('.facetOR').click(function() {
-    $(this).closest('.collapse').html('<li class="title">'+VuFind.translate('loading')+'&nbsp;...</li>');
+    $(this).closest('.content.active').html('<ul class="side-nav"><li class="title"><span>'+VuFind.translate('loading')+'&nbsp;...</span></li></ul>');
     window.location.assign($(this).attr('href'));
   });
 });

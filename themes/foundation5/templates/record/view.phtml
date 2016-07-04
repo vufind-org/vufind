@@ -73,8 +73,8 @@ $this->layout()->title = $this->driver->getShortTitle();
             if (!$obj->isVisible()) { $tab_classes[] = 'hide'; }
             if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
             ?>
-              <? /* next line: moved everything inside class to avoid double class tag - CK */ ?>
-           <li class="tab-title <?=count($tab_classes) > 0 ? ' ' . implode(' ', $tab_classes) . ' ' : ' '?>">
+            <? /* next line: moved everything inside class to avoid double class tag - CK */ ?>
+            <li class="tab-title <?=count($tab_classes) > 0 ? ' ' . implode(' ', $tab_classes) . ' ' : ' '?>">
               <a class="<?=strtolower($tab)?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
             </li>
           <? endforeach; ?>

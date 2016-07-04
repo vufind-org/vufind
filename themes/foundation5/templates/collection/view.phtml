@@ -75,7 +75,7 @@ $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home')
           if (!$obj->isVisible()) { $tab_classes[] = 'hide'; }
           if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
           ?>
-          <li<?=count($tab_classes) > 0 ? ' class="tab-title ' . implode(' ', $tab_classes) . '"' : ''?>>
+          <li class="tab-title <?=count($tab_classes) > 0 ? ' ' . implode(' ', $tab_classes) . ' ' : ' '?>">
             <a class="<?=strtolower($tab)?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
           </li>
         <? endforeach; ?>
@@ -83,7 +83,7 @@ $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home')
       <?/* next line: we need the ID here - CK */?>
       <div class="tabs-content collectionDetails<?=$tree ? 'Tree' : ''?>" id="record-tabs">
         <? if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-	    <div class="content active" id="<?=$this->activeTab ?>-tab">
+	      <div class="content active <?=$this->activeTab?>-tab">
             <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : ''?>
           </div>
         <? endif; ?>

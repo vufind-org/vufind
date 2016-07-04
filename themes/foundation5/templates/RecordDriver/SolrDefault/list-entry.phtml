@@ -19,7 +19,7 @@
   <div class="small-1 columns left">
   <? endif ?>
     <label class="left"><?=$this->record($this->driver)->getCheckbox() ?></label>
-    <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId"/>
   <? if ($cover): ?>
     <?=$cover ?>
   </div>
@@ -174,10 +174,12 @@
       $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);
     ?>
     <div>
-      <i class="fa fa-trash-o"></i> <a class="delete tool" id="<?=$dLabel ?>" data-dropdown="dLabel-dd" aria-controls="dLabel-dd" aria-expanded="false" role="button" href="<?=$deleteUrlGet ?>">
+      <i class="fa fa-fw fa-trash-o"></i>
+      <?/* By all means keep the escapeJS($id) in the dropdown-target and target id ! - CK */?>
+      <a class="delete tool" id="<?=$dLabel ?>" data-dropdown="dLabel-dd-<?=$id?>" aria-controls="dLabel-dd-<?=$id?>" aria-expanded="false" role="button" href="<?=$deleteUrlGet ?>">
         <?=$this->transEsc('Delete') ?>
       </a>
-      <ul id="dLabel-dd" class="f-dropdown" role="menu" data-dropdown-content aria-hidden="true" aria-labelledby="<?=$dLabel ?>" tabindex="-1">
+      <ul id="dLabel-dd-<?=$id?>" class="f-dropdown" role="menu" data-dropdown-content aria-hidden="true" aria-labelledby="<?=$dLabel ?>" tabindex="-1">
         <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeJs($id) ?>','source':'<?=$this->escapeJs($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
         <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>

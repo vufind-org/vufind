@@ -7,7 +7,7 @@
     <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
     <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash(true))?>" />
     <div class="row">
-      <div class="medium-9 columns medium-offset-3">
+      <div class="small-7 large-9 columns small-offset-5 large-offset-3">
         <? if ($account->supportsCreation()): ?>
           <a class="button small secondary createAccountLink" role="button" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
         <? endif; ?>

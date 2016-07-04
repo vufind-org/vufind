@@ -60,7 +60,7 @@
     <? endif; ?>
 
     <? if (in_array("pickUpLocation", $this->extraFields)): ?>
-      <? if (count($this->pickup) > 1): ?>
+      <? if ($this->pickup): ?>
         <div class="row">
           <?
             if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
@@ -74,14 +74,14 @@
           <label class="medium-3 columns"><?=$this->transEsc("pick_up_location")?>:</label>
           <div class="medium-9 columns">
             <select name="gatheredDetails[pickUpLocation]" class="auto-width">
-            <? if ($selected === false): ?>
+              <? if ($selected === false && count($this->pickup) > 1): ?>
               <option value="" selected="selected">
                 <?=$this->transEsc('select_pickup_location')?>
               </option>
             <? endif; ?>
             <? foreach ($this->pickup as $lib): ?>
               <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
-                <?=$this->escapeHtml($lib['locationDisplay'])?>
+                <?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?>
               </option>
             <? endforeach; ?>
             </select>

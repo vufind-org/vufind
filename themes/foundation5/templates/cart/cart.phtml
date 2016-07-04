@@ -12,7 +12,7 @@ $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink
   <input type="hidden" id="dropdown_value"/>
   <? if (!$this->cart()->isEmpty()): ?>
     <div class="cart-controls clearfix hide-for-print">
-      <div class="checkbox left select-all">
+      <div class="checkbox select-all">
         <label>
           <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
           <?=$this->transEsc('select_page')?>

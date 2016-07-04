@@ -248,21 +248,21 @@ ul {
 .sidebar {
   // keep accordion or it will affect catalog-result class too
   .accordion {
-  a.title {
-    &:after {
-      content: '\25BC';
-      float: right;
-      color: $steel;
-    }
-  }
-  & .active {
     a.title {
       &:after {
-        content: '\25B2';
+        content: '\25BC';
+        float: right;
+        color: $steel;
+      }
+    }
+    & .active {
+      a.title {
+        &:after {
+          content: '\25B2';
+        }
       }
     }
   }
-}
 }
 
 // JS TREE FACET !      2 B CHECKED - fixme CK
@@ -538,21 +538,6 @@ ul.date-range-slider {
   select {
     margin-bottom: .5em;
   }
-
-  // Keep filter checkbox
-  .checkbox {
-    margin-bottom: 0;
-    margin-left: 1.4em;
-    margin-top: -.8em;
-    input[type="checkbox"] {
-      margin-top: 4px;
-    }
-    label {
-      color: $white;
-      padding-left: 0;
-    }
-  }
-  // Keep filter checkbox - END
 }
 
 // Searchbox BG and sizes, test for search box AND adv search terms display
@@ -609,28 +594,34 @@ ul.date-range-slider {
 
 // Keep Filters checkbox
 #keepfilters {
-  clear: left;
-  display: inline-block;
-  float: left;
-
   &:before {
     content: " ";
     display: block;
     clear: both;
   }
   &.checkbox {
+    clear: left;
+    display: inline-block;
+    float: left;
+    margin-bottom: 0;
+    margin-left: 1.4em;
     margin-top: 0;
   }
   input[type="checkbox"] {
-    margin-top: 0 !important;
-
+    height: auto;
+    margin-top: 0;
+    padding: 0;
+    top: 0 ;
     + label {
       color: $secondary-color;
-      margin-top: 1em;
+      padding-left: 0;
+      vertical-align: top;
     }
   }
 
 }
+// Keep filter checkbox - END
+
 
 // Shard selector checkboxes for developer machines + Keep Filters  - END
 
@@ -941,7 +932,76 @@ img.recordcover {
   .side-nav li:not(.accordion-navigation) {border-left-color: $primary-color; border-right-color: $primary-color;}
 }
 
+// Date range slider (List view)
+.slider-container {
+  padding:.25rem 1rem .25rem 0;
+  text-align:center;
+  .slider { display: inline-block; position: relative; vertical-align: middle;}
+  .slider.slider-horizontal {
+    height: 1.5rem;
+    width: 100%;
+    .slider-track {
+      height: .75rem;
+      left: 0;
+      margin: -.5rem 1rem .5rem 0;
+      top: 50%;
+      width: 100%;
+    }
+    .slider-selection {
+      height: 100%;
+      top: 0;
+      bottom: 0;
+    }
+  }
+  .slider-track {
+    background:$secondary-color;
+    background-repeat: repeat-x;
+    background-image: -webkit-linear-gradient(top, lightgrey 0, lightgrey 100%);
+    background-image: -o-linear-gradient(top, lightgrey 0, lightgrey 100%);
+    background-image: linear-gradient(to bottom, lightgrey 0, lightgrey 100%);
+    cursor: pointer;
+    position: absolute;
+    -webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0;
+    -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow:inset 0 1px 0 rgba(0, 0, 0, 0.4);
+  }
+  .slider-handle {
+    background:$primary-color;
+    background-image:none;
+    border:1px solid $primary-color;
+    box-shadow:none;
+    height: 1rem;
+    opacity:.9;
+    position: absolute;
+    top: -2px;
+    width: 1rem;
 
+    &:hover,&:active,&:focus {
+      opacity:1;
+      background:#FFF;
+      border-color:$secondary-color;
+    }
+    &:active,&:focus {
+      border-color:$primary-color;
+    }
+  }
+  .slider-selection {
+    background: $secondary-color;
+    background-image: -webkit-linear-gradient(top, $secondary-color 0, $secondary-color 100%);
+    background-image: -o-linear-gradient(top, $secondary-color 0, $secondary-color 100%);
+    background-image: linear-gradient(to bottom, $secondary-color 0, $secondary-color 100%);
+    background-repeat: repeat-x;
+    -webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0;
+    -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,0.15);
+    box-shadow:inset 0 -1px 0 rgba(0,0,0,0.3);
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+  }
+  input {display: none;}
+}
+// Date range slider - END
 
 // Select all checkboxes in bookbag, search results, account bulk actions ...
 .checkbox.select-all {
@@ -1173,45 +1233,45 @@ header .searchForm .tabs {
 // Create sufficient space for dropdown icon and folder icon
 .hierarchy-tree {padding-left:.5rem}
 
-      .jstree-icon {
+.jstree-icon{
   color: #333;
-      }
+}
 // jsTree arrows in hierarchy tree and facet!
 .jstree-ocl:before {
   cursor: pointer;
   float: left;
-    font-family: "FontAwesome", sans-serif;
-    font-style: normal;
-    font-weight: normal;
+  font-family: "FontAwesome", sans-serif;
+  font-style: normal;
+  font-weight: normal;
   margin-left: -2.5rem;
   padding: 0;
-    text-decoration: inherit;
+  text-decoration: inherit;
   width: .75rem;
-    /*speak: none; */
-  }
+  /*speak: none; */
+}
 .jstree-open > .jstree-ocl:before,
 .jstree-closed > .jstree-ocl:before,
 .jstree-leaf > .jstree-ocl:before {margin-top: -.142857em;} // Position of the arrow at same height as other icons
 
-  .jstree-open > .jstree-ocl:before {content: "\f0d7";}
-  .jstree-closed > .jstree-ocl:before {content: "\f0da";}
-  .jstree-leaf > .jstree-ocl:before {content: " ";}
+.jstree-open > .jstree-ocl:before {content: "\f0d7";}
+.jstree-closed > .jstree-ocl:before {content: "\f0da";}
+.jstree-leaf > .jstree-ocl:before {content: " ";}
 
-  .jstree-anchor {
+.jstree-anchor {
   padding: .25rem .25rem .25rem 0; // creates coloured space around linked item
-  }
-  .jstree-children {
+}
+.jstree-children {
   margin-left: .5rem; // redefines space to the left overruling fa-ul
-  }
-  .jstree-initial-node {display: none;}
-  .jstree-clicked {
-    color: $topbar-link-color-active;
-    background-color: $topbar-link-bg-active;
+}
+.jstree-initial-node {display: none;}
+.jstree-clicked {
+  color: $topbar-link-color-active;
+  background-color: $topbar-link-bg-active;
   &:hover,
   &:focus {
     color: darken($topbar-link-color-active,10);
-    }
   }
+}
 
 // Hierarchy tab - END
 

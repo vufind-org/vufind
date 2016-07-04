@@ -23,7 +23,6 @@
         <input type="text" id="<?= $escField ?><?= $this->escapeHtmlAttr($current['type']) ?>Slider">
       </div>
       <?
-      $this->headLink()->appendStylesheet('vendor/bootstrap-slider.css');
       $this->headScript()->appendFile('vendor/bootstrap-slider.js');
       $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
       $future = date('Y', time() + 31536000);

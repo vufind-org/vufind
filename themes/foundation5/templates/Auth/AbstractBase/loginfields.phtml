@@ -1,17 +1,17 @@
 <!-- auth - abstractbase - loginfields.phtml -->
 <div class="row">
-  <div class="small-3 columns">
+  <div class="small-5 large-2 columns">
     <label for="right-label" class="inline" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
   </div>
-  <div class="small-9 columns">
+  <div class="small-7 large-5 columns end">
     <input type="text" name="username" id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="auto-width"/>
   </div>
 </div>
 <div class="row">
-  <div class="small-3 columns">
+  <div class="small-5 large-2 columns">
     <label for="right-label" class="inline"  for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
   </div>
-  <div class="small-9 columns">
+  <div class="small-7 large-5 columns end">
     <input type="password" name="password" id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" class="auto-width"/>
   </div>
 </div>
