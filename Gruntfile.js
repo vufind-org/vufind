@@ -119,8 +119,7 @@ module.exports = function(grunt) {
             'themes/bootstrap3/js/vendor/jquery.min.js',       // these two need to go first
             'themes/bootstrap3/js/vendor/bootstrap.min.js',
             'themes/bootstrap3/js/vendor/*.js',
-            'themes/bootstrap3/js/autocomplete.js',
-            '!themes/bootstrap3/js/vendor/bootstrap-slider.js' // skip, not "use strict" compatible
+            'themes/bootstrap3/js/autocomplete.js'
           ]
         }
       }
