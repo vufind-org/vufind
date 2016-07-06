@@ -22,6 +22,8 @@ CREATE INDEX comments_resource_id_idx ON comments (resource_id);
 -- Table structure for table resource
 --
 
+DROP TABLE IF EXISTS "resource";
+
 CREATE TABLE resource (
 id SERIAL,
 record_id varchar(255) NOT NULL DEFAULT '',
@@ -39,6 +41,8 @@ CREATE INDEX resource_record_id_idx ON resource (record_id);
 --
 -- Table structure for table resource_tags
 --
+
+DROP TABLE IF EXISTS "resource_tags";
 
 CREATE TABLE resource_tags (
 id SERIAL,
@@ -60,6 +64,8 @@ CREATE INDEX resource_tags_list_id_idx ON resource_tags (list_id);
 --
 -- Table structure for table search. Than fixed created column default value. Old value is 0000-00-00.
 --
+
+DROP TABLE IF EXISTS "search";
 
 CREATE TABLE search (
 id SERIAL,
@@ -84,6 +90,8 @@ CREATE INDEX session_id_idx ON search (session_id);
 -- Table structure for table tags
 --
 
+DROP TABLE IF EXISTS "tags";
+
 CREATE TABLE tags (
 id SERIAL,
 tag varchar(64) NOT NULL DEFAULT '',
@@ -95,6 +103,8 @@ PRIMARY KEY (id)
 --
 -- Table structure for table user
 --
+
+DROP TABLE IF EXISTS "user";
 
 CREATE TABLE "user"(
 id SERIAL,
@@ -123,6 +133,8 @@ UNIQUE (username)
 -- Table structure for table user_list
 --
 
+DROP TABLE IF EXISTS "user_list";
+
 CREATE TABLE user_list (
 id SERIAL,
 user_id int NOT NULL,
@@ -140,6 +152,8 @@ CREATE INDEX user_list_user_id_idx ON user_list (user_id);
 --
 -- Table structure for table user_resource
 --
+
+DROP TABLE IF EXISTS "user_resource";
 
 CREATE TABLE user_resource (
 id SERIAL,
