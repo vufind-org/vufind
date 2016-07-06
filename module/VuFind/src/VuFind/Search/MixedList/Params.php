@@ -112,6 +112,18 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Build a string for onscreen display.
+     *
+     * @return string
+     */
+    public function getDisplayQuery()
+    {
+        return $this->translate(
+            'result_count', ['%%count%%' => count($this->recordsToRequest)]
+        );
+    }
+
+    /**
      * Return record ids as a hidden filter list so that it is properly stored when
      * the search is represented as an URL or stored in the database.
      *
