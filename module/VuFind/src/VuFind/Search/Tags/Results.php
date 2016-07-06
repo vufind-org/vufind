@@ -89,7 +89,7 @@ class Results extends BaseResults
     protected function performExactTagSearch()
     {
         $table = $this->getTable('Tags');
-        $tag = $table->getByText($this->getParams()->getDisplayQuery());
+        $tag = $table->getByText($this->getParams()->getDisplayQuery(), false);
         if (empty($tag)) {
             $this->resultTotal = 0;
             return [];
