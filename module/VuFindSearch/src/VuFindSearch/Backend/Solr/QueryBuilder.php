@@ -125,7 +125,7 @@ class QueryBuilder implements QueryBuilderInterface
         if ($this->createSpellingQuery) {
             $params->set(
                 'spellcheck.q',
-                $this->getLuceneHelper()->ExtractSearchTerms($query->getAllTerms())
+                $this->getLuceneHelper()->extractSearchTerms($query->getAllTerms())
             );
         }
 
