@@ -43,7 +43,7 @@
 <? endif; ?>
 <? foreach ($holdings as $holding): ?>
 <h4>
-  <? $locationText = $this->transEsc('location_' . $holding['location'], array(), $holding['location']); ?>
+  <? $locationText = $this->transEsc('Location::' . $holding['location'], array(), $holding['location']); ?>
   <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
     <a href="<?=$holding['locationhref']?>" rel="external"><?=$locationText?></a>
   <? else: ?>

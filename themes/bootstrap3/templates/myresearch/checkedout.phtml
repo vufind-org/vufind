@@ -115,12 +115,12 @@
             <? endif; ?>
 
             <? if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
-              <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], array(), $ilsDetails['institution_name'])?></strong>
+              <strong><?=$this->transEsc('Location::' . $ilsDetails['institution_name'], array(), $ilsDetails['institution_name'])?></strong>
               <br />
             <? endif; ?>
 
             <? if (!empty($ilsDetails['borrowingLocation'])): ?>
-              <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], array(), $ilsDetails['borrowingLocation'])?>
+              <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('Location::' . $ilsDetails['borrowingLocation'], array(), $ilsDetails['borrowingLocation'])?>
               <br />
             <? endif; ?>
 
