@@ -175,7 +175,7 @@ UNIQUE (session_id)
 CREATE INDEX last_used_idx on session(last_used);
 
 --
--- Table structure for table `change_tracker`
+-- Table structure for table change_tracker
 --
 
 DROP TABLE IF EXISTS "change_tracker";
@@ -192,7 +192,7 @@ PRIMARY KEY (core, id)
 CREATE INDEX change_tracker_deleted_idx on change_tracker(deleted);
 
 --
--- Table structure for table `oai_resumption`
+-- Table structure for table oai_resumption
 --
 
 DROP TABLE IF EXISTS "oai_resumption";
@@ -211,7 +211,7 @@ PRIMARY KEY (id)
 --
 
 --
--- Table structure for table `statistics`
+-- Table structure for table statistics
 --
 
 DROP TABLE IF EXISTS "user_stats_fields";
@@ -226,7 +226,7 @@ PRIMARY KEY (id, field)
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_stats`
+-- Table structure for table user_stats
 --
 
 DROP TABLE IF EXISTS "user_stats";
@@ -246,12 +246,12 @@ PRIMARY KEY (id)
 -- --------------------------------------------------------
 
 --
--- Table structure for table `record`
+-- Table structure for table record
 --
 
 DROP TABLE IF EXISTS "record";
 
-CREATE TABLE `record` (
+CREATE TABLE record (
   id serial NOT NULL,
   record_id varchar(255),
   source varchar(50),
@@ -265,12 +265,12 @@ CREATE TABLE `record` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `user_card`
+-- Table structure for table user_card
 --
 
 DROP TABLE IF EXISTS "user_card";
 
-CREATE TABLE `user_card` (
+CREATE TABLE user_card (
 id SERIAL,
 user_id int NOT NULL,
 card_name varchar(255) NOT NULL DEFAULT '',
