@@ -7,15 +7,18 @@
   }
   $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetexclude=' . $this->exclude . '&amp;facetop=' . $this->operator;
 ?>
+<h2><?=$this->transEsc($this->facetLabel) ?></h2>
 <? if (count($this->sortOptions) > 1): ?>
-  <label><?=$this->translate('Sort') ?></label>
-  <div class="btn-group">
-    <? foreach ($this->sortOptions as $key=>$sort): ?>
-      <a href="<?=$urlBase . '&amp;facetpage=1&amp;facetsort=' . urlencode($key) ?>" class="btn btn-default js-facet-sort<? if($this->sort == $key): ?> active<? endif; ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate($sort) ?></a>
-    <? endforeach; ?>
+  <div class="full-facet-sort-options">
+    <label><?=$this->translate('Sort') ?></label>
+    <div class="btn-group">
+      <? foreach ($this->sortOptions as $key=>$sort): ?>
+        <a href="<?=$urlBase . '&amp;facetpage=1&amp;facetsort=' . urlencode($key) ?>" class="btn btn-default js-facet-sort<? if($this->sort == $key): ?> active<? endif; ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate($sort) ?></a>
+      <? endforeach; ?>
+    </div>
   </div>
 <? endif; ?>
-<div class="lightbox-scroll">
+<div class="lightbox-scroll full-facets">
   <? foreach ($this->sortOptions as $key=>$sort): ?>
     <? $active = $this->sort == $key; ?>
     <div class="full-facet-list list-group<? if(!$active): ?> hidden<? endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
@@ -69,4 +72,4 @@
   <? endforeach; ?>
 </div>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, 'VuFind.lightbox_facets.setup();', 'SET'); ?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '(typeof VuFind.lightbox_facets !== "undefined") && VuFind.lightbox_facets.setup();', 'SET'); ?>
