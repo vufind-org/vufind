@@ -287,9 +287,8 @@ class LuceneSyntaxHelper
         $discardParens = 0;
         // Discard local parameters
         $query = preg_replace('/\{!.+?\}/', '', $query);
-        // Discard fuzziness indicators
-        $query = preg_replace('/\~[^\s]*/', '', $query);
         // Discard fuzziness and proximity indicators
+        $query = preg_replace('/\~[^\s]*/', '', $query);
         $query = preg_replace('/\^[^\s]*/', '', $query);
         foreach (str_split($query) as $ch) {
             // Handle quotes (everything in quotes is considered part of search
