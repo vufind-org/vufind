@@ -342,4 +342,37 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
             $expected, $lh->normalizeSearchString($input)
         );
     }
+
+    /**
+     * Test search term extraction
+     *
+     * @return void
+     */
+    public function testExtractSearchTerms()
+    {
+        $lh = new LuceneSyntaxHelper(false, false);
+        $tests = [
+            'keyword' => 'keyword',
+            'two keywords' => 'two keywords',
+            'index:keyword' => 'keyword',
+            'index:keyword anotherkeyword' => 'keyword anotherkeyword',
+            'index:keyword anotherindex:anotherkeyword' => 'keyword anotherkeyword',
+            '(index:keyword)' => 'keyword',
+            'index:(keyword1 keyword2)' => '(keyword1 keyword2)',
+            '{!local params}keyword' => 'keyword',
+            'keyword~' => 'keyword',
+            'keyword~0.8' => 'keyword',
+            'keyword keyword2^20' => 'keyword keyword2',
+            '"keyword keyword2 keyword3"~2' => '"keyword keyword2 keyword3"',
+            '"kw1 kw2 kw3"~2 kw4^200' => '"kw1 kw2 kw3" kw4',
+            '+keyword -keyword2^20' => 'keyword keyword2',
+            'index:+keyword index2:-keyword2^20' => 'keyword keyword2',
+            'index:[start TO end]' => '[start TO end]',
+            'index:{start TO end}' => '{start TO end}'
+        ];
+        foreach ($tests as $input => $expected)
+        $this->assertEquals(
+            $expected, $lh->extractSearchTerms($input)
+        );
+    }
 }
