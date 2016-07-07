@@ -66,7 +66,7 @@ class PAIA extends DAIA
     /**
      * Session containing PAIA login information
      *
-     * @var Zend\Session\Container
+     * @var \Zend\Session\Container
      */
     protected $session;
 
