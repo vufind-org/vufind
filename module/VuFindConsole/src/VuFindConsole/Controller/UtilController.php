@@ -726,7 +726,9 @@ class UtilController extends AbstractBase
                 str_replace('%%count%%', $count, $successString)
             );
             // Be nice to others and wait between batches
-            usleep($sleepTime * 1000);
+            if ($batch + $batchSize <= $idRange[1]) {
+                usleep($sleepTime * 1000);
+            }
         }
         return $this->getSuccessResponse();
     }
