@@ -92,6 +92,17 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
+     * Get the ID prefix from the configuration, if set.
+     *
+     * @return string
+     */
+    protected function getIdPrefix()
+    {
+        return isset($this->config['settings']['idPrefix'])
+            ? $this->config['settings']['idPrefix'] : null;
+    }
+
+    /**
      * Get a Solr record.
      *
      * @param string $id ID of record to retrieve
@@ -100,7 +111,9 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      */
     protected function getSolrRecord($id)
     {
-        return $this->recordLoader->load($id);
+        // Add idPrefix condition
+        $idPrefix = $this->getIdPrefix();
+        return $this->recordLoader->load(strlen($idPrefix) ? $idPrefix . $id : $id);
     }
 
     /**
@@ -246,6 +259,13 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             $result = $recordDriver->tryMethod(
                 'getFormattedMarcDetails', [$field, $marcStatus]
             );
+            // If the details coming back from the record driver include the
+            // ID prefix, strip it off!
+            $idPrefix = $this->getIdPrefix();
+            if (isset($result[0]['id']) && strlen($idPrefix)
+                && $idPrefix === substr($result[0]['id'], 0, strlen($idPrefix))) {
+                $result[0]['id'] = substr($result[0]['id'], strlen($idPrefix));
+            }
             return empty($result) ? [] : $result;
         }
         return [];
