@@ -139,6 +139,9 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                 ]
             ];
         } else if ($useStatus == "marc") {
+            // Add idPrefix condition
+            $idPrefix = isset($this->config['settings']['idPrefix']) ? $this->config['settings']['idPrefix'] : null;
+            $id = isset($idPrefix) ? $idPrefix . $id : $id;
             // Retrieve record from index:
             $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcStatus');
@@ -218,6 +221,9 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                 ]
             ];
         } elseif ($useHoldings == "marc") {
+            // Add idPrefix condition
+            $idPrefix = isset($this->config['settings']['idPrefix']) ? $this->config['settings']['idPrefix'] : null;
+            $id = isset($idPrefix) ? $idPrefix . $id : $id;
             // Retrieve record from index:
             $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcHoldings');
