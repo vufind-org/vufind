@@ -263,7 +263,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             // ID prefix, strip it off!
             $idPrefix = $this->getIdPrefix();
             if (isset($result[0]['id']) && strlen($idPrefix)
-                && $idPrefix === substr($result[0]['id'], 0, strlen($idPrefix))) {
+                && $idPrefix === substr($result[0]['id'], 0, strlen($idPrefix))
+            ) {
                 $result[0]['id'] = substr($result[0]['id'], strlen($idPrefix));
             }
             return empty($result) ? [] : $result;
