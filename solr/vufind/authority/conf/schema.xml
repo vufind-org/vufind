@@ -47,13 +47,13 @@
     <field name="see_also_keywords" type="text" indexed="true" stored="false" multiValued="true"/>
 
     <!-- RDA fields -->
-    <field name="birthdate" type="string" indexed="true" stored="false"/>
-    <field name="deathdate" type="string" indexed="true" stored="false"/>
-    <field name="birthplace" type="string" indexed="true" stored="true"/>
-    <field name="deathplace" type="string" indexed="true" stored="true"/>
+    <field name="birth_date" type="string" indexed="true" stored="false"/>
+    <field name="death_date" type="string" indexed="true" stored="false"/>
+    <field name="birth_place" type="string" indexed="true" stored="true"/>
+    <field name="death_place" type="string" indexed="true" stored="true"/>
     <field name="country" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="relatedplace" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="fieldofactivity" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="related_place" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="field_of_activity" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="occupation" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="gender" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
