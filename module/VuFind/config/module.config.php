@@ -421,6 +421,7 @@ $config = [
                     'europeanaresults' => 'VuFind\Recommend\Factory::getEuropeanaResults',
                     'expandfacets' => 'VuFind\Recommend\Factory::getExpandFacets',
                     'favoritefacets' => 'VuFind\Recommend\Factory::getFavoriteFacets',
+                    'mapselection' => 'VuFind\Recommend\Factory::getMapSelection',
                     'sidefacets' => 'VuFind\Recommend\Factory::getSideFacets',
                     'randomrecommend' => 'VuFind\Recommend\Factory::getRandomRecommend',
                     'summonbestbets' => 'VuFind\Recommend\Factory::getSummonBestBets',
