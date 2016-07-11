@@ -26,6 +26,10 @@
     <div class="col-md-11 col-lg-9">
         <h4><?=$this->transEsc('Museums')?></h4>
         <div class="row organisation-list-inner-row">
+            <div class="col-xs-6 col-sm-3"> <a href="https://ekm.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/ekm.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'ekm.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/ESPOO_KAUPMUS/')?></p>
+                <p class="organisation-list-url">ekm.finna.fi</p></a>
+            </div>
             <div class="col-xs-6 col-sm-3"> <a href="https://hkm.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/hkm.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'hkm.finna.fi'])); ?>" />
                 <p class="organisation-list-header"><?=$this->transEsc('0/HKM/')?></p>
                 <p class="organisation-list-url">hkm.finna.fi</p></a>
