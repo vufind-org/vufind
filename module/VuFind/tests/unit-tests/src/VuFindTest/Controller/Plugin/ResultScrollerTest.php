@@ -127,8 +127,8 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = [
-           'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
-           'previousRecord' => 'Solr|9', 'nextRecord' => null,
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
+            'previousRecord' => 'Solr|9', 'nextRecord' => null,
             'currentPosition' => 10, 'resultTotal' => 10
         ];
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(10)));
