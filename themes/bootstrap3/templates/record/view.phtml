@@ -22,7 +22,9 @@
   <ul class="pager hidden-print">
     <? if ($this->scrollData['previousRecord']): ?>
       <? if ($this->scrollData['firstRecord']): ?>
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['firstRecord'])?>" title="<?=$this->transEsc('First Search Result')?>" rel="nofollow">&laquo; <?=$this->transEsc('First')?></a>
+        <li>
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['firstRecord'])?>" title="<?=$this->transEsc('First Search Result')?>" rel="nofollow">&laquo; <?=$this->transEsc('First')?></a>
+        </li>
       <? endif; ?>
       <li>
         <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>" rel="nofollow">&laquo; <?=$this->transEsc('Prev')?></a>
@@ -35,17 +37,19 @@
     <? endif; ?>
     #<?=$this->localizedNumber($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->localizedNumber($this->scrollData['resultTotal']) . ' ' . $this->transEsc('results') ?>
     <? if ($this->scrollData['nextRecord']): ?>
-      <? if ($this->scrollData['lastRecord']): ?>
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" title="<?=$this->transEsc('Last Search Result')?>" rel="nofollow"><?=$this->transEsc('Last')?> &raquo;</a>
-      <? endif; ?>
       <li>
         <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>" rel="nofollow"><?=$this->transEsc('Next')?> &raquo;</a>
       </li>
       <? if ($this->scrollData['lastRecord']): ?>
-        <li class="disabled"><a href="#"><?=$this->transEsc('Last')?> &raquo;</a></li>
+        <li>
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" title="<?=$this->transEsc('Last Search Result')?>" rel="nofollow"><?=$this->transEsc('Last')?> &raquo;</a>
+        </li>
       <? endif; ?>
      <? else: ?>
       <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
+      <? if ($this->scrollData['lastRecord']): ?>
+        <li class="disabled"><a href="#"><?=$this->transEsc('Last')?> &raquo;</a></li>
+      <? endif; ?>
     <? endif; ?>
   </ul>
 <? endif; ?>
