@@ -199,7 +199,7 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Turn on first/last navigation if configured:
-        if (isset($config->Record->first_last_navigation) 
+        if (isset($config->Record->first_last_navigation)
             && $config->Record->first_last_navigation
         ) {
             $this->firstlastNavigation = true;
