@@ -385,9 +385,9 @@ class ResultScroller extends AbstractPlugin
     public function getScrollData($driver)
     {
         $retVal = [
-           'firstRecord' => null, 'lastRecord' => null,
-           'previousRecord' => null, 'nextRecord' => null,
-           'currentPosition' => null, 'resultTotal' => null
+            'firstRecord' => null, 'lastRecord' => null,
+            'previousRecord' => null, 'nextRecord' => null,
+            'currentPosition' => null, 'resultTotal' => null
         ];
 
         // Do nothing if disabled or data missing:
