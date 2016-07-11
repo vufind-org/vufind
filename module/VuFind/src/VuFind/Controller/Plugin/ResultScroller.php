@@ -100,6 +100,8 @@ class ResultScroller extends AbstractPlugin
         // clear the previous/next page
         unset($this->data->prevIds);
         unset($this->data->nextIds);
+        unset($this->data->firstId);
+        unset($this->data->lastId);
 
         return (bool)$this->data->currIds;
     }
@@ -294,15 +296,12 @@ class ResultScroller extends AbstractPlugin
      *
      * @param array                       $retVal     Return values (in progress)
      * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
-     * @param int                         $pos        Current position within
-     * previous page
      *
      * @return array
      */
-    protected function scrollToFirstRecord($retVal, $lastSearch, $pos)
+    protected function scrollToFirstRecord($retVal, $lastSearch)
     {
         // Set page in session to First Page
-        // (-- doesn't work on ArrayObjects)
         $this->data->page = 1;
         // update the search URL in the session
         $lastSearch->getParams()->setPage($this->data->page);
@@ -314,13 +313,16 @@ class ResultScroller extends AbstractPlugin
         $this->data->prevIds = null;
 
         // now we can set the previous/next record
-        $retVal['previousRecord'] = '';
-        $retVal['nextRecord'] = $this->fetchPage(
-            $lastSearch, $this->data->page
-        )[$pos];
+        $retVal['previousRecord'] = null;
+        $retVal['nextRecord'] = isset($this->data->currIds[1])
+            ? $this->data->currIds[1] : null;
+        // cover extremely unlikely edge case -- page size of 1:
+        if (null === $retVal['nextRecord'] && isset($this->data->nextIds[0])) {
+            $retVal['nextRecord'] = $this->data->nextIds[0];
+        }
 
         // recalculate the current position
-        $retVal['currentPosition'] = $pos;
+        $retVal['currentPosition'] = 1;
 
         // and we're done
         return $retVal;
@@ -332,17 +334,13 @@ class ResultScroller extends AbstractPlugin
      *
      * @param array                       $retVal     Return values (in progress)
      * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
-     * @param int                         $pos        Current position within
-     * previous page
-     * @param int                         $page       Page of search results
      *
      * @return array
      */
-    protected function scrollToLastRecord($retVal, $lastSearch, $pos, $page)
+    protected function scrollToLastRecord($retVal, $lastSearch)
     {
-        // Set page in session to First Page
-        // (-- doesn't work on ArrayObjects)
-        $this->data->page = $page;
+        // Set page in session to Last Page
+        $this->data->page = $this->getLastPageNumber();
         // update the search URL in the session
         $lastSearch->getParams()->setPage($this->data->page);
         $this->rememberSearch($lastSearch);
@@ -356,18 +354,59 @@ class ResultScroller extends AbstractPlugin
         $retVal['currentPosition'] = $this->data->total;
 
         // now we can set the previous/next record
-        $retVal['nextRecord'] = '';
-        if ($pos > 0) {
-            $retVal['previousRecord'] = $this->fetchPage(
-                $lastSearch, $this->data->page
-            )[$pos - 1];
-        } else {
-            $retVal['previousRecord'] = $this->data->prevIds[
-                count($this->data->prevIds) - 1];
+        $retVal['nextRecord'] = null;
+        if (count($this->data->currIds) > 1) {
+            $pos = count($this->data->currIds) - 2;
+            $retVal['previousRecord'] = $this->data->currIds[$pos];
+        } else if (count($this->data->prevIds) > 0) {
+            $prevPos = count($this->data->prevIds) - 1;
+            $retVal['previousRecord'] = $this->data->prevIds[$prevPos];
         }
 
         // and we're done
         return $retVal;
+    }
+
+    /**
+     * Get the ID of the first record in the result set.
+     *
+     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
+     *
+     * @return string
+     */
+    protected function getFirstRecordId($lastSearch)
+    {
+        if (!isset($this->data->firstId)) {
+            $firstPage = $this->fetchPage($lastSearch, 1);
+            $this->data->firstId = $firstPage[0];
+        }
+        return $this->data->firstId;
+    }
+
+    /**
+     * Calculate the last page number in the result set.
+     *
+     * @return int
+     */
+    protected function getLastPageNumber()
+    {
+        return ceil($this->data->total / $this->data->limit);
+    }
+
+    /**
+     * Get the ID of the last record in the result set.
+     *
+     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
+     *
+     * @return string
+     */
+    protected function getLastRecordId($lastSearch)
+    {
+        if (!isset($this->data->lastId)) {
+            $results = $this->fetchPage($lastSearch, $this->getLastPageNumber());
+            $this->data->lastId = array_pop($results);
+        }
+        return $this->data->lastId;
     }
 
     /**
@@ -409,15 +448,8 @@ class ResultScroller extends AbstractPlugin
 
             // Set first and last record IDs
             if ($this->data->firstlast) {
-                $retVal['firstRecord'] = $this->fetchPage($lastSearch, 1)[0];
-                $lastCalc = $this->data->total / $this->data->limit;
-                $lastMultiplier = strlen($this->data->limit);
-                $lastPage = intval(ceil($lastCalc));
-                $lastRec = ($this->data->total - (
-                    $this->data->limit * ($lastPage - 1)) - 1);
-                $retVal['lastRecord'] = $this->fetchPage(
-                    $lastSearch, $lastPage
-                )[$lastRec];
+                $retVal['firstRecord'] = $this->getFirstRecordId($lastSearch);
+                $retVal['lastRecord'] = $this->getLastRecordId($lastSearch);
             }
 
             // build a full ID string using the driver:
@@ -469,23 +501,11 @@ class ResultScroller extends AbstractPlugin
                     }
                 }
                 if ($this->data->firstlast) {
-                    if ((empty($this->data->nextIds)
-                        && empty($this->data->prevIds))
-                        || $pos == false
-                    ) {
-                        if ($id == $retVal['firstRecord']) {
-                            $pos = 1;
-                            return $this->scrollToFirstRecord(
-                                $retVal, $lastSearch, $pos
-                            );
-                        }
-                        if ($id == $retVal['lastRecord']) {
-                            $pos = $lastRec;
-                            $page = $lastPage;
-                            return $this->scrollToLastRecord(
-                                $retVal, $lastSearch, $pos, $page
-                            );
-                        }
+                    if ($id == $retVal['firstRecord']) {
+                        return $this->scrollToFirstRecord($retVal, $lastSearch);
+                    }
+                    if ($id == $retVal['lastRecord']) {
+                        return $this->scrollToLastRecord($retVal, $lastSearch);
                     }
                 }
             }

@@ -62,6 +62,24 @@ class ResultScrollerTest extends TestCase
     }
 
     /**
+     * Test scrolling on single-record set
+     *
+     * @return void
+     */
+    public function testScrollingOnSingleRecord()
+    {
+        $results = $this->getMockResults(1, 10, 1);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = [
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|1',
+            'previousRecord' => null, 'nextRecord' => null,
+            'currentPosition' => 1, 'resultTotal' => 1
+        ];
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(1)));
+    }
+
+    /**
      * Test scrolling for a record in the middle of the page
      *
      * @return void
@@ -77,6 +95,80 @@ class ResultScrollerTest extends TestCase
             'currentPosition' => 5, 'resultTotal' => 10
         ];
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(5)));
+    }
+
+    /**
+     * Test scrolling to the first record in a set.
+     *
+     * @return void
+     */
+    public function testScrollingToFirstRecord()
+    {
+        $results = $this->getMockResults(5, 2, 10);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = [
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
+            'previousRecord' => null, 'nextRecord' => 'Solr|2',
+            'currentPosition' => 1, 'resultTotal' => 10
+        ];
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(1)));
+    }
+
+    /**
+     * Test scrolling to the first record in a set (with page size set to 1).
+     *
+     * @return void
+     */
+    public function testScrollingToFirstRecordWithPageSize1()
+    {
+        $results = $this->getMockResults(10, 1, 10);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = [
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
+            'previousRecord' => null, 'nextRecord' => 'Solr|2',
+            'currentPosition' => 1, 'resultTotal' => 10
+        ];
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(1)));
+    }
+
+    /**
+     * Test scrolling to the last record in a set (with multiple records on the
+     * last page of results).
+     *
+     * @return void
+     */
+    public function testScrollingToLastRecord()
+    {
+        $results = $this->getMockResults(1, 2, 10);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = [
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
+            'previousRecord' => 'Solr|9', 'nextRecord' => null,
+            'currentPosition' => 10, 'resultTotal' => 10
+        ];
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(10)));
+    }
+
+    /**
+     * Test scrolling to the last record in a set (with only one record on the
+     * last page of results).
+     *
+     * @return void
+     */
+    public function testScrollingToLastRecordAcrossPageBoundaries()
+    {
+        $results = $this->getMockResults(1, 2, 9);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = [
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|9',
+            'previousRecord' => 'Solr|8', 'nextRecord' => null,
+            'currentPosition' => 9, 'resultTotal' => 9
+        ];
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(9)));
     }
 
     /**
