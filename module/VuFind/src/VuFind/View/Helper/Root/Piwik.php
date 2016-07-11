@@ -60,14 +60,45 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected $customVars;
 
     /**
+     * Request object
+     *
+     * @var Zend\Http\PhpEnvironment\Request
+     */
+    protected $request;
+
+    /**
+     * Router object
+     *
+     * @var Zend\Mvc\Router\Http\RouteMatch
+     */
+    protected $router;
+
+    /**
+     * Whether the tracker was initialized from lightbox.
+     *
+     * @var bool
+     */
+    protected $lightbox;
+
+    /**
+     * Additional parameters
+     *
+     * @var array
+     */
+    protected $params;
+
+    /**
      * Constructor
      *
-     * @param string|bool $url        Piwik address (false if disabled)
-     * @param int         $siteId     Piwik site ID
-     * @param bool        $customVars Whether to track additional information in
-     * custom variables
+     * @param string|bool                      $url        Piwik address
+     * (false if disabled)
+     * @param int                              $siteId     Piwik site ID
+     * @param bool                             $customVars Whether to track
+     * additional information in custom variables
+     * @param Zend\Mvc\Router\Http\RouteMatch  $router     Request
+     * @param Zend\Http\PhpEnvironment\Request $request    Request
      */
-    public function __construct($url, $siteId, $customVars)
+    public function __construct($url, $siteId, $customVars, $router, $request)
     {
         $this->url = $url;
         if ($url && substr($url, -1) != '/') {
@@ -75,17 +106,26 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         }
         $this->siteId = $siteId;
         $this->customVars = $customVars;
+        $this->router = $router;
+        $this->request = $request;
     }
 
     /**
      * Returns Piwik code (if active) or empty string if not.
      *
+     * @param array $params Parameters
+     *
      * @return string
      */
-    public function __invoke()
+    public function __invoke($params = null)
     {
         if (!$this->url) {
             return '';
+        }
+
+        $this->params = $params;
+        if (isset($this->params['lightbox'])) {
+            $this->lightbox = $this->params['lightbox'];
         }
 
         if ($results = $this->getSearchResults()) {
@@ -109,7 +149,9 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function trackSearch($results)
     {
-        $customVars = $this->getSearchCustomVars($results);
+        $customVars = $this->lightbox
+            ? $this->getLightboxCustomVars()
+            : $this->getSearchCustomVars($results);
 
         $code = $this->getOpeningTrackingCode();
         $code .= $this->getCustomVarsCode($customVars);
@@ -128,7 +170,9 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function trackRecordPage($recordDriver)
     {
-        $customVars = $this->getRecordPageCustomVars($recordDriver);
+        $customVars = $this->lightbox
+            ? $this->getLightboxCustomVars()
+            : $this->getRecordPageCustomVars($recordDriver);
 
         $code = $this->getOpeningTrackingCode();
         $code .= $this->getCustomVarsCode($customVars);
@@ -145,7 +189,9 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function trackPageView()
     {
-        $customVars = $this->getGenericCustomVars();
+        $customVars = $this->lightbox
+            ? $this->getLightboxCustomVars()
+            : $this->getGenericCustomVars();
 
         $code = $this->getOpeningTrackingCode();
         $code .= $this->getCustomVarsCode($customVars);
@@ -271,6 +317,16 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get Custom Variables for lightbox actions
+     *
+     * @return array Associative array of custom variables
+     */
+    protected function getLightboxCustomVars()
+    {
+        return [];
+    }
+
+    /**
      * Get Custom Variables for a Generic Page View
      *
      * @return array Associative array of custom variables
@@ -294,10 +350,31 @@ function initVuFindPiwikTracker(){
 
     VuFindPiwikTracker.setSiteId({$this->siteId});
     VuFindPiwikTracker.setTrackerUrl('{$this->url}piwik.php');
-    VuFindPiwikTracker.setCustomUrl(location.protocol + '//'
-        + location.host + location.pathname);
+    VuFindPiwikTracker.setCustomUrl('{$this->getCustomUrl()}');
 
 EOT;
+    }
+
+    /**
+     * Get the custom URL of the Tracking Code
+     *
+     * @return string URL
+     */
+    protected function getCustomUrl()
+    {
+        $path = $this->request->getUri()->getPath();
+        $routeMatch = $this->router->match($this->request);
+        if ($routeMatch
+            && $routeMatch->getMatchedRouteName() == 'vufindrecord-ajaxtab'
+        ) {
+            // Replace 'AjaxTab' with tab name in record page URLs
+            $replace = 'AjaxTab';
+            $tab = $this->request->getPost('tab');
+            if (null !== ($pos = strrpos($path, $replace))) {
+                $path = substr_replace($path, $tab, $pos, $pos + strlen($replace));
+            }
+        }
+        return $path;
     }
 
     /**

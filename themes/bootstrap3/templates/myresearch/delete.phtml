@@ -1,7 +1,7 @@
-<form action="<?=$this->url('myresearch-delete')?>" method="post" name="bulkDelete">
+<h2><?=$this->transEsc('delete_selected_favorites')?></h2>
+ <form action="<?=$this->url('myresearch-delete')?>" method="post" name="bulkDelete" data-lightbox-onclose="VuFind.refreshPage();">
   <div id="popupMessages"><?=$this->flashmessages()?></div>
   <div id="popupDetails">
-    <h2><?=$this->transEsc('delete_selected_favorites')?></h2>
     <? if (!$this->list): ?>
       <div class="alert alert-info"><?=$this->transEsc("fav_delete_warn") ?></div>
     <? else: ?>

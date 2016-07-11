@@ -134,8 +134,9 @@ class InjectSpellingListener
                     );
 
                     // Turn on spellcheck.q generation in query builder:
-                    $this->backend->getQueryBuilder()
-                        ->setCreateSpellingQuery(true);
+                    $this->backend->getQueryBuilder()->setCreateSpellingQuery(true);
+                } else {
+                    $this->backend->getQueryBuilder()->setCreateSpellingQuery(false);
                 }
             }
         }
