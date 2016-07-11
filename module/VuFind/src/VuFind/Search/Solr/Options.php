@@ -39,6 +39,16 @@ namespace VuFind\Search\Solr;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
+     * Available sort options for facets
+     *
+     * @var array
+     */
+    protected $facetSortOptions = [
+        'count' => 'sort_count',
+        'index' => 'sort_alphabetic'
+    ];
+
+    /**
      * Hierarchical facets
      *
      * @var array
@@ -141,6 +151,10 @@ class Options extends \VuFind\Search\Base\Options
             $this->viewOptions = [$this->defaultView => $this->defaultView];
         } else {
             $this->viewOptions = ['list' => 'List'];
+        }
+        // Load list view for result (controls AJAX embedding vs. linking)
+        if (isset($searchSettings->List->view)) {
+            $this->listviewOption = $searchSettings->List->view;
         }
 
         // Load facet preferences
@@ -248,6 +262,16 @@ class Options extends \VuFind\Search\Base\Options
     public function getAdvancedSearchAction()
     {
         return 'search-advanced';
+    }
+
+    /**
+     * Return the route name for the search results action.
+     *
+     * @return string
+     */
+    public function getFacetListAction()
+    {
+        return 'search-facetlist';
     }
 
     /**

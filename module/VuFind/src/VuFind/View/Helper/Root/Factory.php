@@ -234,7 +234,9 @@ class Factory
         $customVars = isset($config->Piwik->custom_variables)
             ? $config->Piwik->custom_variables
             : false;
-        return new Piwik($url, $siteId, $customVars);
+        $request = $sm->getServiceLocator()->get('Request');
+        $router = $sm->getServiceLocator()->get('Router');
+        return new Piwik($url, $siteId, $customVars, $router, $request);
     }
 
     /**
@@ -367,9 +369,13 @@ class Factory
      */
     public static function getRecord(ServiceManager $sm)
     {
-        return new Record(
+        $helper = new Record(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
+        $helper->setCoverRouter(
+            $sm->getServiceLocator()->get('VuFind\Cover\Router')
+        );
+        return $helper;
     }
 
     /**

@@ -140,7 +140,7 @@ class ILS extends AbstractBase
         try {
             return false !== $this->getCatalog()->checkFunction(
                 'changePassword',
-                ['patron' => $this->getLoggedInPatron()]
+                ['patron' => $this->authenticator->getStoredCatalogCredentials()]
             );
         } catch (ILSException $e) {
             return false;
@@ -155,7 +155,13 @@ class ILS extends AbstractBase
     public function getPasswordPolicy()
     {
         $policy = $this->getCatalog()->getPasswordPolicy($this->getLoggedInPatron());
-        return $policy !== false ? $policy : parent::getPasswordPolicy();
+        if ($policy === false) {
+            return parent::getPasswordPolicy();
+        }
+        if (isset($policy['pattern']) && empty($policy['hint'])) {
+            $policy['hint'] = $this->getCannedPasswordPolicyHint($policy['pattern']);
+        }
+        return $policy;
     }
 
     /**
@@ -267,7 +273,7 @@ class ILS extends AbstractBase
      *
      * @throws AuthException
      *
-     * @return array Patron
+     * @return array|null Patron or null if no credentials exist
      */
     protected function getLoggedInPatron()
     {

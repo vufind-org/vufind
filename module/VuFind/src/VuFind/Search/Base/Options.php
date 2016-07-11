@@ -51,6 +51,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $sortOptions = [];
 
     /**
+     * Available sort options for facets
+     *
+     * @var array
+     */
+    protected $facetSortOptions = [];
+
+    /**
      * Overall default sort option
      *
      * @var string
@@ -231,6 +238,13 @@ abstract class Options implements TranslatorAwareInterface
      * @var string
      */
     protected $facetsIni = 'facets';
+
+    /**
+     * Active list view option (see [List] in searches.ini).
+     *
+     * @var string
+     */
+    protected $listviewOption = "full";
 
     /**
      * Configuration loader
@@ -429,6 +443,16 @@ abstract class Options implements TranslatorAwareInterface
     public function getSortOptions()
     {
         return $this->sortOptions;
+    }
+
+    /**
+     * Get an array of sort options for facets.
+     *
+     * @return array
+     */
+    public function getFacetSortOptions()
+    {
+        return $this->facetSortOptions;
     }
 
     /**
@@ -667,6 +691,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get a string of the listviewOption (full or tab).
+     *
+     * @return string
+     */
+    public function getListViewOption()
+    {
+        return $this->listviewOption;
+    }
+
+    /**
      * Return the route name for the search results action.
      *
      * @return string
@@ -695,6 +729,17 @@ abstract class Options implements TranslatorAwareInterface
     public function getAdvancedSearchAction()
     {
         // Assume unsupported by default:
+        return false;
+    }
+
+    /**
+     * Return the route name for the search results action.
+     * false to cover unimplemented drivers
+     *
+     * @return false
+     */
+    public function getFacetListAction()
+    {
         return false;
     }
 
