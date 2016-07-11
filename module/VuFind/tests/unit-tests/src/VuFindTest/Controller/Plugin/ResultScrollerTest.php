@@ -80,6 +80,25 @@ class ResultScrollerTest extends TestCase
     }
 
     /**
+     * Test that first/last results can be disabled (this is the same as the
+     * testScrollingInMiddleOfPage() test, but with first/last setting off).
+     *
+     * @return void
+     */
+    public function testDisabledFirstLast()
+    {
+        $results = $this->getMockResults(1, 10, 10, false);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = [
+            'firstRecord' => null, 'lastRecord' => null,
+            'previousRecord' => 'Solr|4', 'nextRecord' => 'Solr|6',
+            'currentPosition' => 5, 'resultTotal' => 10
+        ];
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(5)));
+    }
+
+    /**
      * Test scrolling for a record at the start of the first page
      *
      * @return void
@@ -152,6 +171,16 @@ class ResultScrollerTest extends TestCase
     }
 
     /**
+     * Get a configuration array to turn on first/last setting.
+     *
+     * @return array
+     */
+    protected function getFirstLastConfig()
+    {
+        return ['Record' => ['first_last_navigation' => true]];
+    }
+
+    /**
      * Test scrolling at end of middle page.
      *
      * @return void
@@ -172,15 +201,21 @@ class ResultScrollerTest extends TestCase
     /**
      * Get mock search results
      *
-     * @param int $page  Current page number
-     * @param int $limit Page size
-     * @param int $total Total size of fake result set
+     * @param int  $page      Current page number
+     * @param int  $limit     Page size
+     * @param int  $total     Total size of fake result set
+     * @param bool $firstLast Turn on first/last config?
      *
      * @return \VuFind\Search\Base\Results
      */
-    protected function getMockResults($page = 1, $limit = 20, $total = 0)
-    {
+    protected function getMockResults($page = 1, $limit = 20, $total = 0,
+        $firstLast = true
+    ) {
         $pm = $this->getMockBuilder('VuFind\Config\PluginManager')->disableOriginalConstructor()->getMock();
+        $config = new \Zend\Config\Config(
+            $firstLast ? $this->getFirstLastConfig() : []
+        );
+        $pm->expects($this->any())->method('get')->will($this->returnValue($config));
         $options = new \VuFindTest\Search\TestHarness\Options($pm);
         $params = new \VuFindTest\Search\TestHarness\Params($options, $pm);
         $params->setPage($page);
@@ -192,13 +227,15 @@ class ResultScrollerTest extends TestCase
     /**
      * Get mock result scroller
      *
-     * @param \VuFind\Search\Base\Results restoreLastSearch results (null to ignore)
-     * @param array                                                                  $methods Methods to mock
+     * @param \VuFind\Search\Base\Results $results restoreLastSearch results
+     * (null to ignore)
+     * @param array                       $methods Methods to mock
      *
      * @return ResultScroller
      */
-    protected function getMockResultScroller($results = null, $methods = ['restoreLastSearch', 'rememberSearch'])
-    {
+    protected function getMockResultScroller($results = null,
+        $methods = ['restoreLastSearch', 'rememberSearch']
+    ) {
         $mock = $this->getMock(
             'VuFind\Controller\Plugin\ResultScroller', $methods, [new Container('test')]
         );
