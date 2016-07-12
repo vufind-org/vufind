@@ -103,19 +103,25 @@ class HeadScript extends \Zend\View\Helper\HeadScript
             $items = []; // files to be minified together
             $scripts = []; // all scripts tag srcs: conditional, concat, inline
             $concatkey = ''; // concat of combined file names and mod dates
-            $inlineScripts = [];
+            $otherScripts = [];
             $template = null; // template object for our concatinated file
-            foreach ($this as $item) {
-                if (empty($item->attributes['src'])) {
-                    $inlineScripts[] = $item;
-                    continue;
+            $templateKey = 0;
+
+            $this->getContainer()->ksort();
+
+            $keyLimit = 0;
+            foreach ($this as $key => $item) {
+                if ($key > $keyLimit) {
+                    $keyLimit = $key;
                 }
-                if (isset($item->attributes['conditional'])) {
-                    $scripts[] = $item;
+                if (empty($item->attributes['src'])
+                || isset($item->attributes['conditional'])) {
+                    $otherScripts[$key] = $item;
                     continue;
                 }
                 if ($template == null) {
                     $template = $item;
+                    $templateKey = $key;
                 }
 
                 $relPath = 'js/' . $item->attributes['src'];
@@ -126,8 +132,7 @@ class HeadScript extends \Zend\View\Helper\HeadScript
                 $items[] = $details['path'];
             }
 
-
-            if (empty($items) && empty($scripts)) {
+            if (empty($items)) {
                 return parent::toString($indent);
             }
 
@@ -137,8 +142,8 @@ class HeadScript extends \Zend\View\Helper\HeadScript
             $concatPath = $this->themeInfo->getBaseDir() . $relPath;
             if (!file_exists($concatPath)) {
                 $js = new \MatthiasMullie\Minify\JS();
-                for ($i = 0; $i < count($items); $i++) {
-                    $js->add($items[$i]);
+                foreach ($items as $script) {
+                    $js->add($script);
                 }
                 $js->minify($concatPath);
             }
@@ -146,7 +151,6 @@ class HeadScript extends \Zend\View\Helper\HeadScript
             // Transform template script object into concat script object
             $urlHelper = $this->getView()->plugin('url');
             $template->attributes['src'] = $urlHelper('home') . 'themes' . $relPath;
-            $scripts[] = $template;
 
             // Copied from parent
             $indent = (null !== $indent)
@@ -163,11 +167,17 @@ class HeadScript extends \Zend\View\Helper\HeadScript
             $escapeEnd   = ($useCdata) ? '//]]>' : '//-->';
 
             $output = [];
-            $scripts = array_merge($scripts, $inlineScripts);
-            foreach ($scripts as $script) {
-                $output[] = parent::itemToString(
-                    $script, $indent, $escapeStart, $escapeEnd
-                );
+            for ($i = 0; $i <= $keyLimit; $i++) {
+                if ($i == $templateKey) {
+                    $output[] = parent::itemToString(
+                        $template, $indent, $escapeStart, $escapeEnd
+                    );
+                }
+                if (isset($otherScripts[$i])) {
+                    $output[] = $this->itemToString(
+                        $otherScripts[$i], $indent, $escapeStart, $escapeEnd
+                    );
+                }
             }
 
             return implode($this->getSeparator(), $output);
