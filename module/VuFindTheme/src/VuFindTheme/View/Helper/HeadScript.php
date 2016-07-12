@@ -39,6 +39,8 @@ use VuFindTheme\ThemeInfo;
  */
 class HeadScript extends \Zend\View\Helper\HeadScript
 {
+    use ConcatTrait;
+
     /**
      * Theme information service
      *
@@ -91,7 +93,7 @@ class HeadScript extends \Zend\View\Helper\HeadScript
      * Retrieve string representation
      * Customized to minify and hash files
      *
-     * @param  string|int $indent Amount of whitespace or string to use for indention
+     * @param string|int $indent Amount of whitespace or string to use for indention
      *
      * @return string
      */
@@ -100,22 +102,22 @@ class HeadScript extends \Zend\View\Helper\HeadScript
         // toString must not throw exception
         try {
 
-            $items = []; // files to be minified together
-            $scripts = []; // all scripts tag srcs: conditional, concat, inline
-            $concatkey = ''; // concat of combined file names and mod dates
+            $concatkey = '';
+            $concatItems = [];
             $otherScripts = [];
             $template = null; // template object for our concatinated file
             $templateKey = 0;
+            $keyLimit = 0;
 
             $this->getContainer()->ksort();
 
-            $keyLimit = 0;
             foreach ($this as $key => $item) {
                 if ($key > $keyLimit) {
                     $keyLimit = $key;
                 }
                 if (empty($item->attributes['src'])
-                || isset($item->attributes['conditional'])) {
+                    || isset($item->attributes['conditional'])
+                ) {
                     $otherScripts[$key] = $item;
                     continue;
                 }
@@ -129,10 +131,10 @@ class HeadScript extends \Zend\View\Helper\HeadScript
                     ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
 
                 $concatkey .= $item->attributes['src'] . filemtime($details['path']);
-                $items[] = $details['path'];
+                $concatItems[] = $details['path'];
             }
 
-            if (empty($items)) {
+            if (empty($concatItems)) {
                 return parent::toString($indent);
             }
 
@@ -142,7 +144,7 @@ class HeadScript extends \Zend\View\Helper\HeadScript
             $concatPath = $this->themeInfo->getBaseDir() . $relPath;
             if (!file_exists($concatPath)) {
                 $js = new \MatthiasMullie\Minify\JS();
-                foreach ($items as $script) {
+                foreach ($concatItems as $script) {
                     $js->add($script);
                 }
                 $js->minify($concatPath);
@@ -152,35 +154,9 @@ class HeadScript extends \Zend\View\Helper\HeadScript
             $urlHelper = $this->getView()->plugin('url');
             $template->attributes['src'] = $urlHelper('home') . 'themes' . $relPath;
 
-            // Copied from parent
-            $indent = (null !== $indent)
-                ? $this->getWhitespace($indent)
-                : $this->getIndent();
-
-            if ($this->view) {
-                $useCdata = $this->view->plugin('doctype')->isXhtml();
-            } else {
-                $useCdata = $this->useCdata;
-            }
-
-            $escapeStart = ($useCdata) ? '//<![CDATA[' : '//<!--';
-            $escapeEnd   = ($useCdata) ? '//]]>' : '//-->';
-
-            $output = [];
-            for ($i = 0; $i <= $keyLimit; $i++) {
-                if ($i == $templateKey) {
-                    $output[] = parent::itemToString(
-                        $template, $indent, $escapeStart, $escapeEnd
-                    );
-                }
-                if (isset($otherScripts[$i])) {
-                    $output[] = $this->itemToString(
-                        $otherScripts[$i], $indent, $escapeStart, $escapeEnd
-                    );
-                }
-            }
-
-            return implode($this->getSeparator(), $output);
+            return $this->outputInOrder(
+                $template, $templateKey, $otherScripts, $keyLimit, $indent
+            );
 
         } catch (\Exception $e) {
             error_log($e->getMessage());

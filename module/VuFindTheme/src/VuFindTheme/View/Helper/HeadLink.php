@@ -39,6 +39,8 @@ use VuFindTheme\ThemeInfo;
  */
 class HeadLink extends \Zend\View\Helper\HeadLink
 {
+    use ConcatTrait;
+
     /**
      * Theme information service
      *
@@ -138,21 +140,22 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      * Render link elements as string
      * Customized to minify and concatinate
      *
-     * @param  string|int $indent
+     * @param string|int $indent Amount of whitespace or string to use for indention
+     *
      * @return string
      */
     public function toString($indent = null)
     {
         try {
-
-            $this->getContainer()->ksort();
-
-            $items = [];
-            $otherSheets = [];
             $concatkey = '';
+            $concatItems = [];
+            $otherSheets = [];
             $template = null; // template object for our concatinated file
             $templateKey = 0;
             $keyLimit = 0;
+
+            $this->getContainer()->ksort();
+
             foreach ($this as $key => $item) {
                 if ($key > $keyLimit) {
                     $keyLimit = $key;
@@ -170,10 +173,10 @@ class HeadLink extends \Zend\View\Helper\HeadLink
                     ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
 
                 $concatkey .= $item->href . filemtime($detail['path']);
-                $items[] = $detail['path'];
+                $concatItems[] = $detail['path'];
             }
 
-            if (empty($items)) {
+            if (empty($concatItems)) {
                 return parent::toString($indent);
             }
 
@@ -182,8 +185,8 @@ class HeadLink extends \Zend\View\Helper\HeadLink
             $concatPath = $this->themeInfo->getBaseDir() . $relPath;
             if (!file_exists($concatPath)) {
                 $css = new \MatthiasMullie\Minify\CSS();
-                for ($i = 0; $i < count($items); $i++) {
-                    $css->add($items[$i]);
+                for ($i = 0; $i < count($concatItems); $i++) {
+                    $css->add($concatItems[$i]);
                 }
                 $css->minify($concatPath);
             }
@@ -192,22 +195,8 @@ class HeadLink extends \Zend\View\Helper\HeadLink
             $urlHelper = $this->getView()->plugin('url');
             $template->href = $urlHelper('home') . 'themes' . $relPath;
 
-            $output = [];
-            for ($i = 0; $i <= $keyLimit; $i++) {
-                if ($i == $templateKey) {
-                    $output[] = parent::itemToString($template);
-                }
-                if (isset($otherSheets[$i])) {
-                    $output[] = $this->itemToString($otherSheets[$i]);
-                }
-            }
-
-            $indent = (null !== $indent)
-                    ? $this->getWhitespace($indent)
-                    : $this->getIndent();
-
-            return $indent . implode(
-                $this->escape($this->getSeparator()) . $indent, $output
+            return $this->outputInOrder(
+                $template, $templateKey, $otherSheets, $keyLimit, $indent
             );
 
         } catch (\Exception $e) {
