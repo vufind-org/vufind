@@ -91,7 +91,8 @@ class HeadScript extends \Zend\View\Helper\HeadScript
      * Retrieve string representation
      * Customized to minify and hash files
      *
-     * @param  string|int $indent Amount of whitespaces or string to use for indention
+     * @param  string|int $indent Amount of whitespace or string to use for indention
+     *
      * @return string
      */
     public function toString($indent = null)
