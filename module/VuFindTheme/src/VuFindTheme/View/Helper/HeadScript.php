@@ -86,4 +86,85 @@ class HeadScript extends \Zend\View\Helper\HeadScript
 
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
     }
+
+    /**
+     * Retrieve string representation
+     * Customized to minify and hash files
+     *
+     * @param  string|int $indent Amount of whitespaces or string to use for indention
+     * @return string
+     */
+    public function toString($indent = null)
+    {
+        $items = []; // files to be minified together
+        $scripts = []; // all scripts being outputted: conditional, concat, inline
+        $concatkey = ''; // concat of combined file names and mod dates, to be hashed
+        $inlineScripts = [];
+        $template = null; //
+        foreach ($this as $item) {
+            if (empty($item->attributes['src'])) {
+                $inlineScripts[] = $item;
+                continue;
+            }
+            if (isset($item->attributes['conditional'])) {
+                $scripts[] = $item;
+                continue;
+            }
+            if ($template == null) {
+                $template = $item;
+            }
+
+            $relPath = 'js/' . $item->attributes['src'];
+            $details = $this->themeInfo
+                ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
+
+            $concatkey .= $item->attributes['src'] . filemtime($details['path']);
+            $items[] = $details['path'];
+        }
+
+
+        if (empty($items) && empty($scripts)) {
+            return parent::toString($indent);
+        }
+
+        // Locate/create concatinated js file
+        $relPath = '/' . $this->themeInfo->getTheme() . '/js/concat/'
+            . md5($concatkey) . '.min.js';
+        $concatPath = $this->themeInfo->getBaseDir() . $relPath;
+        if (!file_exists($concatPath)) {
+            $js = new \MatthiasMullie\Minify\JS();
+            for ($i = 0; $i < count($items); $i++) {
+                $js->add($items[$i]);
+            }
+            $js->minify($concatPath);
+        }
+
+        // Transform template script object into concat script object
+        $urlHelper = $this->getView()->plugin('url');
+        $template->attributes['src'] = $urlHelper('home') . 'themes' . $relPath;
+        unset($template->attributes['conditional']);
+        $scripts[] = $template;
+
+        // Copied from parent
+        $indent = (null !== $indent)
+            ? $this->getWhitespace($indent)
+            : $this->getIndent();
+
+        if ($this->view) {
+            $useCdata = $this->view->plugin('doctype')->isXhtml();
+        } else {
+            $useCdata = $this->useCdata;
+        }
+
+        $escapeStart = ($useCdata) ? '//<![CDATA[' : '//<!--';
+        $escapeEnd   = ($useCdata) ? '//]]>' : '//-->';
+
+        $output = [];
+        $scripts = array_merge($scripts, $inlineScripts);
+        foreach ($scripts as $script) {
+            $output[] = parent::itemToString($script, $indent, $escapeStart, $escapeEnd);
+        }
+
+        return implode($this->getSeparator(), $output);
+    }
 }
