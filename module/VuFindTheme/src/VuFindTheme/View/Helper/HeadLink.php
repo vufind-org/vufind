@@ -133,4 +133,85 @@ class HeadLink extends \Zend\View\Helper\HeadLink
             );
         }
     }
+
+    /**
+     * Render link elements as string
+     * Customized to minify and concatinate
+     *
+     * @param  string|int $indent
+     * @return string
+     */
+    public function toString($indent = null)
+    {
+        try {
+
+            $this->getContainer()->ksort();
+
+            $items = [];
+            $otherSheets = [];
+            $concatkey = '';
+            $template = null; // template object for our concatinated file
+            $templateKey = 0;
+            $keyLimit = 0;
+            foreach ($this as $key => $item) {
+                if ($key > $keyLimit) {
+                    $keyLimit = $key;
+                }
+                if (isset($item->media) && $item->media != 'all') {
+                    $otherSheets[$key] = $item;
+                    continue;
+                }
+                if ($template == null) {
+                    $template = $item;
+                    $templateKey = $key;
+                }
+                $relPath = 'css/' . $item->href;
+                $detail = $this->themeInfo
+                    ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
+
+                $concatkey .= $item->href . filemtime($detail['path']);
+                $items[] = $detail['path'];
+            }
+
+            if (empty($items)) {
+                return parent::toString($indent);
+            }
+
+            $relPath = '/' . $this->themeInfo->getTheme() . '/css/concat/'
+                . md5($concatkey) . '.min.css';
+            $concatPath = $this->themeInfo->getBaseDir() . $relPath;
+            if (!file_exists($concatPath)) {
+                $css = new \MatthiasMullie\Minify\CSS();
+                for ($i = 0; $i < count($items); $i++) {
+                    $css->add($items[$i]);
+                }
+                $css->minify($concatPath);
+            }
+
+            // Transform template sheet object into concat sheet object
+            $urlHelper = $this->getView()->plugin('url');
+            $template->href = $urlHelper('home') . 'themes' . $relPath;
+
+            $output = [];
+            for ($i = 0; $i <= $keyLimit; $i++) {
+                if ($i == $templateKey) {
+                    $output[] = parent::itemToString($template);
+                }
+                if (isset($otherSheets[$i])) {
+                    $output[] = $this->itemToString($otherSheets[$i]);
+                }
+            }
+
+            $indent = (null !== $indent)
+                    ? $this->getWhitespace($indent)
+                    : $this->getIndent();
+
+            return $indent . implode(
+                $this->escape($this->getSeparator()) . $indent, $output
+            );
+
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+        }
+    }
 }
