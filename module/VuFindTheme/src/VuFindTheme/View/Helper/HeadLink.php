@@ -136,71 +136,17 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         }
     }
 
-    /**
-     * Render link elements as string
-     * Customized to minify and concatinate
-     *
-     * @param string|int $indent Amount of whitespace or string to use for indention
-     *
-     * @return string
-     */
-    public function toString($indent = null)
-    {
-        try {
-            $concatkey = '';
-            $concatItems = [];
-            $otherSheets = [];
-            $template = null; // template object for our concatinated file
-            $templateKey = 0;
-            $keyLimit = 0;
-
-            $this->getContainer()->ksort();
-
-            foreach ($this as $key => $item) {
-                if ($key > $keyLimit) {
-                    $keyLimit = $key;
-                }
-                if (isset($item->media) && $item->media != 'all') {
-                    $otherSheets[$key] = $item;
-                    continue;
-                }
-                if ($template == null) {
-                    $template = $item;
-                    $templateKey = $key;
-                }
-                $relPath = 'css/' . $item->href;
-                $detail = $this->themeInfo
-                    ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
-
-                $concatkey .= $item->href . filemtime($detail['path']);
-                $concatItems[] = $detail['path'];
-            }
-
-            if (empty($concatItems)) {
-                return parent::toString($indent);
-            }
-
-            $relPath = '/' . $this->themeInfo->getTheme() . '/css/concat/'
-                . md5($concatkey) . '.min.css';
-            $concatPath = $this->themeInfo->getBaseDir() . $relPath;
-            if (!file_exists($concatPath)) {
-                $css = new \MatthiasMullie\Minify\CSS();
-                for ($i = 0; $i < count($concatItems); $i++) {
-                    $css->add($concatItems[$i]);
-                }
-                $css->minify($concatPath);
-            }
-
-            // Transform template sheet object into concat sheet object
-            $urlHelper = $this->getView()->plugin('url');
-            $template->href = $urlHelper('home') . 'themes' . $relPath;
-
-            return $this->outputInOrder(
-                $template, $templateKey, $otherSheets, $keyLimit, $indent
-            );
-
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
-        }
+    protected $fileType = 'css';
+    protected function isOtherItem($item) {
+        return isset($item->media) && $item->media != 'all';
+    }
+    protected function getPath($item) {
+        return $item->href;
+    }
+    protected function setPath(&$item, $path) {
+        return $item->href = $path;
+    }
+    protected function getMinifier() {
+        return new \MatthiasMullie\Minify\CSS();
     }
 }

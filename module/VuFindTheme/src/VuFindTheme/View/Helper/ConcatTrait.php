@@ -28,6 +28,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTheme\View\Helper;
+use VuFindTheme\ThemeInfo;
 
 /**
  * Trait with utility methods for user creation/management. Assumes that it
@@ -41,6 +42,35 @@ namespace VuFindTheme\View\Helper;
  */
 trait ConcatTrait
 {
+    protected function filterItems(
+        &$concatkey, &$concatItems, &$otherScripts,
+        &$template, &$templateKey, &$keyLimit
+    ) {
+            $this->getContainer()->ksort();
+
+            foreach ($this as $key => $item) {
+                if ($key > $keyLimit) {
+                    $keyLimit = $key;
+                }
+                if ($this->isOtherItem($item)) {
+                    $otherScripts[$key] = $item;
+                    continue;
+                }
+                if ($template == null) {
+                    $template = $item;
+                    $templateKey = $key;
+                }
+
+                $details = $this->themeInfo->findContainingTheme(
+                    $this->fileType . '/' . $this->getPath($item),
+                    ThemeInfo::RETURN_ALL_DETAILS
+                );
+
+                $concatkey .= $details['path'] . filemtime($details['path']);
+                $concatItems[] = $details['path'];
+            }
+    }
+
     /**
      * Process and return items in index order
      *
@@ -85,5 +115,61 @@ trait ConcatTrait
         return $indent . implode(
             $this->escape($this->getSeparator()) . $indent, $output
         );
+    }
+
+    /**
+     * Render link elements as string
+     * Customized to minify and concatinate
+     *
+     * @param string|int $indent Amount of whitespace or string to use for indention
+     *
+     * @return string
+     */
+    public function toString($indent = null)
+    {
+        // toString must not throw exception
+        try {
+
+            $concatkey = '';
+            $concatItems = [];
+            $otherItems = [];
+            $template = null; // template object for our concatinated file
+            $templateKey = 0;
+            $keyLimit = 0;
+
+            // Returned by reference
+            $this->filterItems(
+                $concatkey, $concatItems, $otherItems,
+                $template, $templateKey, $keyLimit
+            );
+
+            if (empty($concatItems)) {
+                return parent::toString($indent);
+            }
+
+            // Locate/create concatinated css file
+            $relPath = '/' . $this->themeInfo->getTheme()
+                . '/' . $this->fileType . '/concat/'
+                . md5($concatkey) . '.min.' . $this->fileType;
+            $concatPath = $this->themeInfo->getBaseDir() . $relPath;
+            if (!file_exists($concatPath)) {
+                $minifier = $this->getMinifier();
+                for ($i = 0; $i < count($concatItems); $i++) {
+                    $minifier->add($concatItems[$i]);
+                }
+                $minifier->minify($concatPath);
+            }
+
+            // Transform template sheet object into concat sheet object
+            $urlHelper = $this->getView()->plugin('url');
+            $this->setPath($template, $urlHelper('home') . 'themes' . $relPath);
+
+            return $this->outputInOrder(
+                $template, $templateKey, $otherItems, $keyLimit, $indent
+            );
+
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+        }
     }
 }

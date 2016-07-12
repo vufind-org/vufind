@@ -89,77 +89,18 @@ class HeadScript extends \Zend\View\Helper\HeadScript
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
     }
 
-    /**
-     * Retrieve string representation
-     * Customized to minify and hash files
-     *
-     * @param string|int $indent Amount of whitespace or string to use for indention
-     *
-     * @return string
-     */
-    public function toString($indent = null)
-    {
-        // toString must not throw exception
-        try {
-
-            $concatkey = '';
-            $concatItems = [];
-            $otherScripts = [];
-            $template = null; // template object for our concatinated file
-            $templateKey = 0;
-            $keyLimit = 0;
-
-            $this->getContainer()->ksort();
-
-            foreach ($this as $key => $item) {
-                if ($key > $keyLimit) {
-                    $keyLimit = $key;
-                }
-                if (empty($item->attributes['src'])
-                    || isset($item->attributes['conditional'])
-                ) {
-                    $otherScripts[$key] = $item;
-                    continue;
-                }
-                if ($template == null) {
-                    $template = $item;
-                    $templateKey = $key;
-                }
-
-                $relPath = 'js/' . $item->attributes['src'];
-                $details = $this->themeInfo
-                    ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
-
-                $concatkey .= $item->attributes['src'] . filemtime($details['path']);
-                $concatItems[] = $details['path'];
-            }
-
-            if (empty($concatItems)) {
-                return parent::toString($indent);
-            }
-
-            // Locate/create concatinated js file
-            $relPath = '/' . $this->themeInfo->getTheme() . '/js/concat/'
-                . md5($concatkey) . '.min.js';
-            $concatPath = $this->themeInfo->getBaseDir() . $relPath;
-            if (!file_exists($concatPath)) {
-                $js = new \MatthiasMullie\Minify\JS();
-                foreach ($concatItems as $script) {
-                    $js->add($script);
-                }
-                $js->minify($concatPath);
-            }
-
-            // Transform template script object into concat script object
-            $urlHelper = $this->getView()->plugin('url');
-            $template->attributes['src'] = $urlHelper('home') . 'themes' . $relPath;
-
-            return $this->outputInOrder(
-                $template, $templateKey, $otherScripts, $keyLimit, $indent
-            );
-
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
-        }
+    protected $fileType = 'js';
+    protected function isOtherItem($item) {
+        return empty($item->attributes['src'])
+            || isset($item->attributes['conditional']);
+    }
+    protected function getPath($item) {
+        return $item->attributes['src'];
+    }
+    protected function setPath(&$item, $path) {
+        return $item->attributes['src'] = $path;
+    }
+    protected function getMinifier() {
+        return new \MatthiasMullie\Minify\JS();
     }
 }
