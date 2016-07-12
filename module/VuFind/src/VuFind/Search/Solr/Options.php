@@ -198,6 +198,13 @@ class Options extends \VuFind\Search\Base\Options
             $this->spellcheck = $config->Spelling->enabled;
         }
 
+        // Turn on first/last navigation if configured:
+        if (isset($config->Record->first_last_navigation)
+            && $config->Record->first_last_navigation
+        ) {
+            $this->firstlastNavigation = true;
+        }
+
         // Turn on highlighting if the user has requested highlighting or snippet
         // functionality:
         $highlight = !isset($searchSettings->General->highlighting)
