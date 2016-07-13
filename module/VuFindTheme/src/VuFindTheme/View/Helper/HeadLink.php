@@ -175,9 +175,9 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      *
      * @return void
      */
-    protected function setPath(&$item, $path)
+    protected function setPath($item, $path)
     {
-        return $item->href = $path;
+        $item->href = $path;
     }
 
     /**

@@ -129,9 +129,9 @@ class HeadScript extends \Zend\View\Helper\HeadScript
      *
      * @return void
      */
-    protected function setPath(&$item, $path)
+    protected function setPath($item, $path)
     {
-        return $item->attributes['src'] = $path;
+        $item->attributes['src'] = $path;
     }
 
     /**
