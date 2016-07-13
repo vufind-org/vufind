@@ -26,7 +26,7 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFindConsole\Controller;
-use VuFindHarvest\OaiHarvesterConsoleRunner, Zend\Console\Console;
+use VuFindHarvest\OaiPmh\HarvesterConsoleRunner, Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -74,7 +74,7 @@ class HarvestController extends AbstractBase
         $this->checkLocalSetting();
 
         // Get default options, add the default --ini setting if missing:
-        $opts = OaiHarvesterConsoleRunner::getDefaultOptions();
+        $opts = HarvesterConsoleRunner::getDefaultOptions();
         if (!$opts->getOption('ini')) {
             $ini = \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
             $opts->addArguments(['--ini=' . $ini]);
@@ -84,7 +84,7 @@ class HarvestController extends AbstractBase
         $client = $this->getServiceLocator()->get('VuFind\Http')->createClient();
 
         // Run the job!
-        $runner = new OaiHarvesterConsoleRunner(
+        $runner = new HarvesterConsoleRunner(
             $opts, $client, $this->getHarvestRoot()
         );
         return $runner->run()

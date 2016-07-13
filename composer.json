@@ -21,7 +21,7 @@
         "serialssolutions/summon": "1.0.0",
         "symfony/yaml": "2.7.6",
         "vufind-org/vufindcode": "1.0.3",
-        "vufind-org/vufindharvest": "1.1.0",
+        "vufind-org/vufindharvest": "2.0.0",
         "vufind-org/vufindhttp": "2.1.0",
         "zendframework/zendframework": "2.4.6",
         "zendframework/zendrest": "2.0.2",
