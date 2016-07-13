@@ -49,6 +49,13 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     protected $themeInfo;
 
     /**
+     * Folder name and file extension for trait
+     *
+     * @var string
+     */
+    protected $fileType = 'js';
+
+    /**
      * Constructor
      *
      * @param ThemeInfo $themeInfo Theme information service
@@ -89,18 +96,51 @@ class HeadScript extends \Zend\View\Helper\HeadScript
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
     }
 
-    protected $fileType = 'js';
-    protected function isOtherItem($item) {
+    /**
+     * Returns true if file should not be included in the compressed concat file
+     *
+     * @param stdClass $item Script element object
+     *
+     * @return bool
+     */
+    protected function isOtherItem($item)
+    {
         return empty($item->attributes['src'])
             || isset($item->attributes['conditional']);
     }
-    protected function getPath($item) {
+
+    /**
+     * Get the file path from the script object
+     *
+     * @param stdClass $item Script element object
+     *
+     * @return string
+     */
+    protected function getPath($item)
+    {
         return $item->attributes['src'];
     }
-    protected function setPath(&$item, $path) {
+
+    /**
+     * Set the file path of the script object
+     *
+     * @param stdClass $item Script element object
+     * @param string   $path New path string
+     *
+     * @return void
+     */
+    protected function setPath(&$item, $path)
+    {
         return $item->attributes['src'] = $path;
     }
-    protected function getMinifier() {
+
+    /**
+     * Get the minifier that can handle these file types
+     *
+     * @return \MatthiasMullie\Minify\JS
+     */
+    protected function getMinifier()
+    {
         return new \MatthiasMullie\Minify\JS();
     }
 }

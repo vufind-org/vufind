@@ -42,33 +42,46 @@ use VuFindTheme\ThemeInfo;
  */
 trait ConcatTrait
 {
+    /**
+     * Divide all of the elements into those to be concaninated ($concatItems) and
+     * those that need to remain on their own ($otherItems). Return by reference.
+     *
+     * @param string    $concatkey   String of all filenames and mod dates
+     * @param array     $concatItems Items to be concaninated
+     * @param array     $otherItems  Items to be rendered separately
+     * @param stdObject $template    Element object to be adapted later
+     * @param integer   $templateKey Future order of the concatinated file
+     * @param integer   $keyLimit    Number of files to be out in order
+     *
+     * @return void
+     */
     protected function filterItems(
-        &$concatkey, &$concatItems, &$otherScripts,
+        &$concatkey, &$concatItems, &$otherItems,
         &$template, &$templateKey, &$keyLimit
     ) {
-            $this->getContainer()->ksort();
+        $this->getContainer()->ksort();
 
-            foreach ($this as $key => $item) {
-                if ($key > $keyLimit) {
-                    $keyLimit = $key;
-                }
-                if ($this->isOtherItem($item)) {
-                    $otherScripts[$key] = $item;
-                    continue;
-                }
-                if ($template == null) {
-                    $template = $item;
-                    $templateKey = $key;
-                }
-
-                $details = $this->themeInfo->findContainingTheme(
-                    $this->fileType . '/' . $this->getPath($item),
-                    ThemeInfo::RETURN_ALL_DETAILS
-                );
-
-                $concatkey .= $details['path'] . filemtime($details['path']);
-                $concatItems[] = $details['path'];
+        foreach ($this as $key => $item) {
+            if ($key > $keyLimit) {
+                $keyLimit = $key;
             }
+            if ($this->isOtherItem($item)) {
+                $otherItems[$key] = $item;
+                continue;
+            }
+            if ($template == null) {
+                $template = $item;
+                $templateKey = $key;
+            }
+
+            $details = $this->themeInfo->findContainingTheme(
+                $this->fileType . '/' . $this->getPath($item),
+                ThemeInfo::RETURN_ALL_DETAILS
+            );
+
+            $concatkey .= $details['path'] . filemtime($details['path']);
+            $concatItems[] = $details['path'];
+        }
     }
 
     /**

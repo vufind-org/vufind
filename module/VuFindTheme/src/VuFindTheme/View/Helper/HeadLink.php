@@ -48,6 +48,14 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      */
     protected $themeInfo;
 
+
+    /**
+     * Folder name and file extension for trait
+     *
+     * @var string
+     */
+    protected $fileType = 'css';
+
     /**
      * Constructor
      *
@@ -136,17 +144,50 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         }
     }
 
-    protected $fileType = 'css';
-    protected function isOtherItem($item) {
+    /**
+     * Returns true if file should not be included in the compressed concat file
+     *
+     * @param stdClass $item Link element object
+     *
+     * @return bool
+     */
+    protected function isOtherItem($item)
+    {
         return isset($item->media) && $item->media != 'all';
     }
-    protected function getPath($item) {
+
+    /**
+     * Get the file path from the link object
+     *
+     * @param stdClass $item Link element object
+     *
+     * @return string
+     */
+    protected function getPath($item)
+    {
         return $item->href;
     }
-    protected function setPath(&$item, $path) {
+
+    /**
+     * Set the file path of the link object
+     *
+     * @param stdClass $item Link element object
+     * @param string   $path New path string
+     *
+     * @return void
+     */
+    protected function setPath(&$item, $path)
+    {
         return $item->href = $path;
     }
-    protected function getMinifier() {
+
+    /**
+     * Get the minifier that can handle these file types
+     *
+     * @return \MatthiasMullie\Minify\JS
+     */
+    protected function getMinifier()
+    {
         return new \MatthiasMullie\Minify\CSS();
     }
 }
