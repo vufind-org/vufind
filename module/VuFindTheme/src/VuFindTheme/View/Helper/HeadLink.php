@@ -48,7 +48,6 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      */
     protected $themeInfo;
 
-
     /**
      * Folder name and file extension for trait
      *
