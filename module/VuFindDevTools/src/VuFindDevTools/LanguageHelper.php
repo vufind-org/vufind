@@ -178,7 +178,7 @@ class LanguageHelper
     {
         static $domains = false;
         if (!$domains) {
-            $base = APPLICATION_PATH  . '/languages';
+            $base = APPLICATION_PATH . '/languages';
             $dir = opendir($base);
             $domains = [];
             while ($current = readdir($dir)) {

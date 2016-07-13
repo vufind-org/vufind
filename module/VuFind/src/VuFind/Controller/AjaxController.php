@@ -224,7 +224,10 @@ class AjaxController extends AbstractBase
                 // If a full status display has been requested, append the HTML:
                 if ($showFullStatus) {
                     $current['full_status'] = $renderer->render(
-                        'ajax/status-full.phtml', ['statusItems' => $record]
+                        'ajax/status-full.phtml', [
+                            'statusItems' => $record,
+                            'callnumberHandler' => $this->getCallnumberHandler()
+                         ]
                     );
                 }
                 $current['record_number'] = array_search($current['id'], $ids);
@@ -295,12 +298,32 @@ class AjaxController extends AbstractBase
                 $list = $transList;
             }
             // All values mode?  Return comma-separated values:
-            return implode(', ', $list);
+            return implode(",\t", $list);
         } else {
             // Message mode?  Return the specified message, translated to the
             // appropriate language.
             return $this->translate($msg);
         }
+    }
+
+    /**
+     * Based on settings and the number of callnumbers, return callnumber handler
+     * Use callnumbers before pickValue is run.
+     *
+     * @param array  $list           Array of callnumbers.
+     * @param string $displaySetting config.ini setting -- first, all or msg
+     *
+     * @return string
+     */
+    protected function getCallnumberHandler($list = null, $displaySetting = null)
+    {
+        if ($displaySetting == 'msg' && count($list) > 1) {
+            return false;
+        }
+        $config = $this->getConfig();
+        return isset($config->Item_Status->callnumber_handler)
+            ? $config->Item_Status->callnumber_handler
+            : false;
     }
 
     /**
@@ -376,6 +399,10 @@ class AjaxController extends AbstractBase
             }
         }
 
+        $callnumberHandler = $this->getCallnumberHandler(
+            $callNumbers, $callnumberSetting
+        );
+
         // Determine call number string based on findings:
         $callNumber = $this->pickValue(
             $callNumbers, $callnumberSetting, 'Multiple Call Numbers'
@@ -406,7 +433,8 @@ class AjaxController extends AbstractBase
             'reserve_message' => $record[0]['reserve'] == 'Y'
                 ? $this->translate('on_reserve')
                 : $this->translate('Not On Reserve'),
-            'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8')
+            'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8'),
+            'callnumber_handler' => $callnumberHandler
         ];
     }
 
@@ -449,6 +477,9 @@ class AjaxController extends AbstractBase
         foreach ($locations as $location => $details) {
             $locationCallnumbers = array_unique($details['callnumbers']);
             // Determine call number string based on findings:
+            $callnumberHandler = $this->getCallnumberHandler(
+                $locationCallnumbers, $callnumberSetting
+            );
             $locationCallnumbers = $this->pickValue(
                 $locationCallnumbers, $callnumberSetting, 'Multiple Call Numbers'
             );
@@ -462,7 +493,8 @@ class AjaxController extends AbstractBase
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
                 'status_unknown' => isset($details['status_unknown'])
-                    ? $details['status_unknown'] : false
+                    ? $details['status_unknown'] : false,
+                'callnumber_handler' => $callnumberHandler
             ];
             $locationList[] = $locationInfo;
         }
@@ -1252,7 +1284,7 @@ class AjaxController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $pickupLib = $this->params()->fromQuery('pickupLib');
-        if (empty($id) || empty($pickupLib)) {
+        if (null === $id || null === $pickupLib) {
             return $this->output(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,
@@ -1304,7 +1336,7 @@ class AjaxController extends AbstractBase
         $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $requestGroupId = $this->params()->fromQuery('requestGroupId');
-        if (empty($id) || empty($requestGroupId)) {
+        if (null === $id || null === $requestGroupId) {
             return $this->output(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,

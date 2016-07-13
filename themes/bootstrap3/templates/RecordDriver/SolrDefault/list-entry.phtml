@@ -158,7 +158,8 @@
                 <? endif; ?>
               <? endif; ?>
             <br/>
-            <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
+
+            <?=$this->record($this->driver)->getFormatList() ?>
 
             <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
               <span class="status ajax-availability hidden"><?=$this->transEsc('Loading')?>...</span>

@@ -1,4 +1,14 @@
 /*global VuFind */
+function linkCallnumbers(callnumber, callnumber_handler) {
+  if (callnumber_handler) {
+    var cns = callnumber.split(',\t');
+    for (var i = 0; i < cns.length; i++) {
+      cns[i] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(cns[i]) + '">' + cns[i] + '</a>';
+    }
+    return cns.join(',\t');
+  }
+  return callnumber;
+}
 
 function checkItemStatuses(_container) {
   var container = _container || $('body');
@@ -75,18 +85,18 @@ function checkItemStatuses(_container) {
           locationListHTML += '</div>';
           locationListHTML += '<div class="groupCallnumber">';
           locationListHTML += (result.locationList[x].callnumbers)
-               ? result.locationList[x].callnumbers : '';
+               ? linkCallnumbers(result.locationList[x].callnumbers, result.locationList[x].callnumber_handler) : '';
           locationListHTML += '</div>';
         }
         item.find('.locationDetails').removeClass('hidden');
         item.find('.locationDetails').empty().append(locationListHTML);
       } else {
         // Default case -- load call number and location into appropriate containers:
-        item.find('.callnumber').empty().append(result.callnumber + '<br/>');
+        item.find('.callnumber').empty().append(linkCallnumbers(result.callnumber, result.callnumber_handler) + '<br/>');
         item.find('.location').empty().append(
           result.reserve === 'true'
-          ? result.reserve_message
-          : result.location
+            ? result.reserve_message
+            : result.location
         );
       }
     });

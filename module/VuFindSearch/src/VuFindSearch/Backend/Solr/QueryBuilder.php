@@ -120,10 +120,13 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $params = new ParamBag();
 
-        // Add spelling query if applicable -- note that we mus set this up before
+        // Add spelling query if applicable -- note that we must set this up before
         // we process the main query in order to avoid unwanted extra syntax:
         if ($this->createSpellingQuery) {
-            $params->set('spellcheck.q', $query->getAllTerms());
+            $params->set(
+                'spellcheck.q',
+                $this->getLuceneHelper()->extractSearchTerms($query->getAllTerms())
+            );
         }
 
         if ($query instanceof QueryGroup) {

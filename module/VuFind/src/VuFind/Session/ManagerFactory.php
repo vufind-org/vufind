@@ -91,7 +91,7 @@ class ManagerFactory implements \Zend\ServiceManager\FactoryInterface
      * handler: http://us.php.net/manual/en/function.session-set-save-handler.php
      *
      * This method sets that up.
-     * 
+     *
      * @param SessionManager $sessionManager Session manager instance
      *
      * @return void
@@ -133,7 +133,7 @@ class ManagerFactory implements \Zend\ServiceManager\FactoryInterface
         // be written as part of the current process):
         $settings = $sm->get('VuFind\Session\Settings');
         if ($settings->setSessionManager($sessionManager)->isWriteDisabled()) {
-            $sessionManager->writeClose();
+            $sessionManager->getSaveHandler()->disableWrites();
         } else {
             // If the session is not disabled, we should set up the normal
             // shutdown function:

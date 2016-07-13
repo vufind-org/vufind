@@ -49,17 +49,30 @@ class QueryTest extends PHPUnit_Framework_TestCase
      */
     public function testContainsTerm()
     {
-        $q = new Query('test query');
+        $q = new Query('test query we<(ird');
 
-        // Should contain both actual terms:
+        // Should contain all actual terms (even those containing regex chars):
         $this->assertTrue($q->containsTerm('test'));
         $this->assertTrue($q->containsTerm('query'));
+        $this->assertTrue($q->containsTerm('we<(ird'));
 
         // Should not contain a non-present term:
         $this->assertFalse($q->containsTerm('garbage'));
 
         // Should not contain a partial term (matches on word boundaries):
         $this->assertFalse($q->containsTerm('tes'));
+    }
+
+    /**
+     * Test replaceTerm() method
+     *
+     * @return void
+     */
+    public function testReplaceTerm()
+    {
+        $q = new Query('test query we<(ird');
+        $q->replaceTerm('we<(ird', 'we>(ird');
+        $this->assertEquals('test query we>(ird', $q->getString());
     }
 
     /**
