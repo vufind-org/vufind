@@ -181,7 +181,7 @@ class LessCompiler
         list($fileName, ) = explode('.', $less);
         $finalFile = $finalOutDir . $fileName . '.css';
 
-        $this->logMessage("\tcompiling '" . $less .  "' into '" . $finalFile . "'");
+        $this->logMessage("\tcompiling '" . $less . "' into '" . $finalFile . "'");
         $start = microtime(true);
 
         $directories = [];

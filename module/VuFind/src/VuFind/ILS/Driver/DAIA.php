@@ -362,7 +362,7 @@ class DAIA extends AbstractBase implements
     {
         $http_headers = [
             'Content-type: ' . $this->contentTypesRequest[$this->daiaResponseFormat],
-            'Accept: ' .  $this->contentTypesRequest[$this->daiaResponseFormat],
+            'Accept: ' . $this->contentTypesRequest[$this->daiaResponseFormat],
         ];
 
         $params = [
