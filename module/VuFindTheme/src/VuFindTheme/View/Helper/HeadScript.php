@@ -98,12 +98,13 @@ class HeadScript extends \Zend\View\Helper\HeadScript
 
     /**
      * Returns true if file should not be included in the compressed concat file
+     * Required by ConcatTrait
      *
      * @param stdClass $item Script element object
      *
      * @return bool
      */
-    protected function isOtherItem($item)
+    protected function isResourceOtherItem($item)
     {
         return empty($item->attributes['src'])
             || isset($item->attributes['conditional']);
@@ -111,31 +112,34 @@ class HeadScript extends \Zend\View\Helper\HeadScript
 
     /**
      * Get the file path from the script object
+     * Required by ConcatTrait
      *
      * @param stdClass $item Script element object
      *
      * @return string
      */
-    protected function getPath($item)
+    protected function getResourceFilePath($item)
     {
         return $item->attributes['src'];
     }
 
     /**
      * Set the file path of the script object
+     * Required by ConcatTrait
      *
      * @param stdClass $item Script element object
      * @param string   $path New path string
      *
      * @return void
      */
-    protected function setPath($item, $path)
+    protected function setResourceFilePath($item, $path)
     {
         $item->attributes['src'] = $path;
     }
 
     /**
      * Get the minifier that can handle these file types
+     * Required by ConcatTrait
      *
      * @return \MatthiasMullie\Minify\JS
      */

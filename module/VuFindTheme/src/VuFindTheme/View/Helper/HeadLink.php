@@ -145,43 +145,47 @@ class HeadLink extends \Zend\View\Helper\HeadLink
 
     /**
      * Returns true if file should not be included in the compressed concat file
+     * Required by ConcatTrait
      *
      * @param stdClass $item Link element object
      *
      * @return bool
      */
-    protected function isOtherItem($item)
+    protected function isResourceOtherItem($item)
     {
         return isset($item->media) && $item->media != 'all';
     }
 
     /**
      * Get the file path from the link object
+     * Required by ConcatTrait
      *
      * @param stdClass $item Link element object
      *
      * @return string
      */
-    protected function getPath($item)
+    protected function getResourceFilePath($item)
     {
         return $item->href;
     }
 
     /**
      * Set the file path of the link object
+     * Required by ConcatTrait
      *
      * @param stdClass $item Link element object
      * @param string   $path New path string
      *
      * @return void
      */
-    protected function setPath($item, $path)
+    protected function setResourceFilePath($item, $path)
     {
         $item->href = $path;
     }
 
     /**
      * Get the minifier that can handle these file types
+     * Required by ConcatTrait
      *
      * @return \MatthiasMullie\Minify\JS
      */

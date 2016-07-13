@@ -65,7 +65,7 @@ trait ConcatTrait
             if ($key > $keyLimit) {
                 $keyLimit = $key;
             }
-            if ($this->isOtherItem($item)) {
+            if ($this->isResourceOtherItem($item)) {
                 $otherItems[$key] = $item;
                 continue;
             }
@@ -75,7 +75,7 @@ trait ConcatTrait
             }
 
             $details = $this->themeInfo->findContainingTheme(
-                $this->fileType . '/' . $this->getPath($item),
+                $this->fileType . '/' . $this->getResourceFilePath($item),
                 ThemeInfo::RETURN_ALL_DETAILS
             );
 
@@ -175,7 +175,9 @@ trait ConcatTrait
 
             // Transform template sheet object into concat sheet object
             $urlHelper = $this->getView()->plugin('url');
-            $this->setPath($template, $urlHelper('home') . 'themes' . $relPath);
+            $this->setResourceFilePath(
+                $template, $urlHelper('home') . 'themes' . $relPath
+            );
 
             return $this->outputInOrder(
                 $template, $templateKey, $otherItems, $keyLimit, $indent
