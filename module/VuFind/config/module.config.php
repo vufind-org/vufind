@@ -618,7 +618,7 @@ $config = [
                     'Preview' => 'preview',
                     'Details' => 'StaffViewArray',
                 ],
-                'defaultTab' => null,
+                'defaultTab' => null
             ],
             'VuFind\RecordDriver\Pazpar2' => [
                 'tabs' => [
@@ -653,6 +653,7 @@ $config = [
                     'Details' => 'StaffViewArray',
                 ],
                 'defaultTab' => null,
+                'backgroundLoadedTabs' => ['UserComments', 'Details']
             ],
             'VuFind\RecordDriver\SolrMarc' => [
                 'tabs' => [
@@ -665,6 +666,7 @@ $config = [
                     'Details' => 'StaffViewMARC',
                 ],
                 'defaultTab' => null,
+                'backgroundLoadedTabs' => ['UserComments', 'Details']
             ],
             'VuFind\RecordDriver\Summon' => [
                 'tabs' => [

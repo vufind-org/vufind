@@ -220,6 +220,16 @@ function ajaxTagUpdate(_link, tag, _remove) {
   });
 }
 
+function getNewRecordTab(tabid) {
+  return $('<div class="tab-pane ' + tabid + '-tab"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' + VuFind.translate('loading') + '...</div>');
+}
+
+function backgroundLoadTab(tabid) {
+  var newTab = getNewRecordTab(tabid);
+  $('.nav-tabs a.'+tabid).closest('.result,.record').find('.tab-content').append(newTab);
+  return ajaxLoadTab(newTab, tabid, false);
+}
+
 function applyRecordTabHash() {
   var activeTab = $('.record-tabs li.active a').attr('class');
   var $initiallyActiveTab = $('.record-tabs li.initiallyActive a');
@@ -266,10 +276,14 @@ function recordDocReady() {
       window.location.hash = tabid;
       return false;
     } else {
-      var newTab = $('<div class="tab-pane active ' + tabid + '-tab"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' + VuFind.translate('loading') + '...</div>');
+      var newTab = getNewRecordTab(tabid).addClass('active');
       $top.find('.tab-content').append(newTab);
       return ajaxLoadTab(newTab, tabid, !$(this).parent().hasClass('initiallyActive'));
     }
+  });
+
+  $('[data-background]').each(function (index, el) {
+    backgroundLoadTab(el.className);
   });
 
   registerTabEvents();
