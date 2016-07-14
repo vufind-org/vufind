@@ -285,7 +285,7 @@ function recordDocReady() {
     }
   });
 
-  $('[data-background]').each(function (index, el) {
+  $('[data-background]').each(function setupBackgroundTabs(index, el) {
     backgroundLoadTab(el.className);
   });
 
