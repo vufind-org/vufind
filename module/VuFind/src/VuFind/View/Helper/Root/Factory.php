@@ -218,7 +218,7 @@ class Factory
             ? $config->MapSelection->default_coordinates : false;
         $geoField = isset($config->MapSelection->geo_field)
             ? $config->MapSelection->geo_field : false;
-        return new GeoCoords($coords, $geoField);
+        return new GeoCoords($enabled, $coords, $geoField);
     }
 
     /**
