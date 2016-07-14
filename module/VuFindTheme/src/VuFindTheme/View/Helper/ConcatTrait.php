@@ -42,7 +42,7 @@ use VuFindTheme\ThemeInfo;
  */
 trait ConcatTrait
 {
-    protected $pipelineConfig = false;
+    protected $usePipeline = false;
 
     /**
      * Divide all of the elements into those to be concaninated ($concatItems) and
@@ -145,13 +145,8 @@ trait ConcatTrait
         // toString must not throw exception
         try {
 
-            if ($this->pipelineConfig === false) {
+            if (!$this->usePipeline) {
                 return parent::toString($indent);
-            } elseif ($this->pipelineConfig != '*') {
-                $settings = array_map('trim', explode(',', $this->pipelineConfig));
-                if (!in_array(APPLICATION_ENV, $settings)) {
-                    return parent::toString($indent);
-                }
             }
 
             $concatkey = '';

@@ -58,15 +58,14 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     /**
      * Constructor
      *
+     * @param boolean   $plconfig  Whether or not to concatinate
      * @param ThemeInfo $themeInfo Theme information service
      */
-    public function __construct($config, ThemeInfo $themeInfo)
+    public function __construct($plconfig, ThemeInfo $themeInfo)
     {
         parent::__construct();
         $this->themeInfo = $themeInfo;
-        $this->pipelineConfig = isset($config['Site']['asset_pipeline'])
-            ? $config['Site']['asset_pipeline']
-            : false;
+        $this->usePipeline = $plconfig;
     }
 
     /**

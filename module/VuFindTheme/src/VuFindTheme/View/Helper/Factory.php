@@ -48,10 +48,36 @@ class Factory
      *
      * @return HeadLink
      */
+    protected static function getPipelineConfig(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (!isset($config['Site']['asset_pipeline'])
+            || !$config['Site']['asset_pipeline']
+        ) {
+            return false;
+        }
+        $pipelineConfig = $config['Site']['asset_pipeline'];
+        if ($pipelineConfig === false) {
+            return false;
+        } elseif ($pipelineConfig != '*') {
+            $settings = array_map('trim', explode(',', $pipelineConfig));
+            if (!in_array(APPLICATION_ENV, $settings)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * Construct the HeadLink helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HeadLink
+     */
     public static function getHeadLink(ServiceManager $sm)
     {
         return new HeadLink(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            Factory::getPipelineConfig($sm),
             $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
         );
     }
@@ -66,7 +92,7 @@ class Factory
     public static function getHeadScript(ServiceManager $sm)
     {
         return new HeadScript(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            Factory::getPipelineConfig($sm),
             $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
         );
     }
@@ -109,7 +135,7 @@ class Factory
     public static function getInlineScript(ServiceManager $sm)
     {
         return new InlineScript(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            Factory::getPipelineConfig($sm),
             $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
         );
     }
