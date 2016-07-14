@@ -41,6 +41,11 @@ use VuFindTheme\ThemeInfo;
  */
 trait ConcatTrait
 {
+    /**
+     * Should we use the asset pipeline to join files together and minify them?
+     *
+     * @var bool
+     */
     protected $usePipeline = false;
 
     /**
