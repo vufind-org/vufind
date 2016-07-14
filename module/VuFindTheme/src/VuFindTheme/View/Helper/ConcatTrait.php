@@ -60,7 +60,7 @@ trait ConcatTrait
      * * - param string   $path New path string
      * * - return void
      *
-     * * protected function getMinifier()     *
+     * * protected function getMinifier()
      * * Get the minifier that can handle these file types
      * * - return minifying object like \MatthiasMullie\Minify\JS
      */
