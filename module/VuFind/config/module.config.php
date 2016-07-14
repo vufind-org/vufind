@@ -667,8 +667,7 @@ $config = [
                     'Similar' => 'SimilarItemsCarousel',
                     'Details' => 'StaffViewMARC',
                 ],
-                'defaultTab' => null,
-                'backgroundLoadedTabs' => ['UserComments', 'Details']
+                'defaultTab' => null
             ],
             'VuFind\RecordDriver\Summon' => [
                 'tabs' => [
