@@ -77,8 +77,8 @@ class Factory
     public static function getHeadLink(ServiceManager $sm)
     {
         return new HeadLink(
-            Factory::getPipelineConfig($sm),
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            Factory::getPipelineConfig($sm)
         );
     }
 
@@ -92,8 +92,8 @@ class Factory
     public static function getHeadScript(ServiceManager $sm)
     {
         return new HeadScript(
-            Factory::getPipelineConfig($sm),
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            Factory::getPipelineConfig($sm)
         );
     }
 
@@ -135,8 +135,8 @@ class Factory
     public static function getInlineScript(ServiceManager $sm)
     {
         return new InlineScript(
-            Factory::getPipelineConfig($sm),
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            Factory::getPipelineConfig($sm)
         );
     }
 
