@@ -42,6 +42,30 @@ use VuFindTheme\ThemeInfo;
 trait ConcatTrait
 {
     /**
+     * Required methods to use ConcatTrait
+     *
+     * * protected function isResourceOtherItem($item)
+     * * Returns true if file should not be included in the compressed concat file
+     * * - param stdClass $item Link element object
+     * * - return bool
+     *
+     * * protected function getResourceFilePath($item)
+     * * Get the file path from the link object
+     * * - param stdClass $item Link element object
+     * * - return string
+     *
+     * * protected function setResourceFilePath($item, $path)
+     * * Set the file path of the link object
+     * * - param stdClass $item Link element object
+     * * - param string   $path New path string
+     * * - return void
+     *
+     * * protected function getMinifier()     *
+     * * Get the minifier that can handle these file types
+     * * - return minifying object like \MatthiasMullie\Minify\JS
+     */
+
+    /**
      * Should we use the asset pipeline to join files together and minify them?
      *
      * @var bool
