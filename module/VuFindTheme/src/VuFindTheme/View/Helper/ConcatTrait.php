@@ -1,11 +1,11 @@
 <?php
 /**
- * Trait with utility methods for user creation/management. Assumes that it
- * will be applied to a subclass of DbTestCase.
+ * Trait to add asset pipeline functionality (concatenation / minification) to
+ * a HeadLink/HeadScript-style view helper.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind
- * @package  Tests
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
@@ -30,11 +30,11 @@ namespace VuFindTheme\View\Helper;
 use VuFindTheme\ThemeInfo;
 
 /**
- * Trait with utility methods for user creation/management. Assumes that it
- * will be applied to a subclass of DbTestCase.
+ * Trait to add asset pipeline functionality (concatenation / minification) to
+ * a HeadLink/HeadScript-style view helper.
  *
  * @category VuFind
- * @package  Tests
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
