@@ -73,35 +73,68 @@ trait ConcatTrait
     protected $usePipeline = false;
 
     /**
-     * Divide all of the elements into those to be concaninated ($concatItems) and
-     * those that need to remain on their own ($otherItems). Return by reference.
+     * String of all filenames and mod dates
      *
-     * @param string    $concatkey   String of all filenames and mod dates
-     * @param array     $concatItems Items to be concaninated
-     * @param array     $otherItems  Items to be rendered separately
-     * @param stdObject $template    Element object to be adapted later
-     * @param integer   $templateKey Future order of the concatinated file
-     * @param integer   $keyLimit    Number of files to be out in order
+     * @var string
+     */
+    protected $concatKey = '';
+
+    /**
+     * Items to be concatenated
+     *
+     * @var array
+     */
+    protected $concatItems = [];
+
+    /**
+     * Items to be rendered separately
+     *
+     * @var array
+     */
+    protected $otherItems = [];
+
+    /**
+     * Element object to be adapted later
+     *
+     * @var stdClass
+     */
+    protected $concatTemplate = null;
+
+    /**
+     * Future order of the concatenated file
+     *
+     * @var number
+     */
+    protected $concatIndex = 0;
+
+    /**
+     * Number of files to be out in order
+     *
+     * @var number
+     */
+    protected $keyLimit = 0;
+
+    /**
+     * Divide all of the elements into those to be concatenated ($this->concatItems) and
+     * those that need to remain on their own ($otherItems). Return by reference.
      *
      * @return void
      */
-    protected function filterItems(
-        &$concatkey, &$concatItems, &$otherItems,
-        &$template, &$templateKey, &$keyLimit
-    ) {
+    protected function filterItems()
+    {
         $this->getContainer()->ksort();
 
         foreach ($this as $key => $item) {
-            if ($key > $keyLimit) {
-                $keyLimit = $key;
+            if ($key > $this->keyLimit) {
+                $this->keyLimit = $key;
             }
             if ($this->isResourceOtherItem($item)) {
-                $otherItems[$key] = $item;
+                $this->otherItems[$key] = $item;
                 continue;
             }
-            if ($template == null) {
-                $template = $item;
-                $templateKey = $key;
+            if ($this->concatTemplate == null) {
+                $this->concatTemplate = $item;
+                $this->concatIndex = $key;
             }
 
             $details = $this->themeInfo->findContainingTheme(
@@ -109,23 +142,19 @@ trait ConcatTrait
                 ThemeInfo::RETURN_ALL_DETAILS
             );
 
-            $concatkey .= $details['path'] . filemtime($details['path']);
-            $concatItems[] = $details['path'];
+            $this->concatKey .= $details['path'] . filemtime($details['path']);
+            $this->concatItems[] = $details['path'];
         }
     }
 
     /**
      * Process and return items in index order
      *
-     * @param \stdClass  $concat    Concatinated data item
-     * @param string     $concatkey Index of the concaninated file
-     * @param array      $other     Concatination-excempt data items, keyed by index
-     * @param string|int $limit     Highest index present
-     * @param string|int $indent    Amount of whitespace/string to use for indention
+     * @param string|int $indent Amount of whitespace/string to use for indention
      *
      * @return string
      */
-    protected function outputInOrder($concat, $concatkey, $other, $limit, $indent)
+    protected function outputInOrder($indent)
     {
         // Copied from parent
         $indent = (null !== $indent)
@@ -142,15 +171,15 @@ trait ConcatTrait
         $escapeEnd   = ($useCdata) ? '//]]>' : '//-->';
 
         $output = [];
-        for ($i = 0; $i <= $limit; $i++) {
-            if ($i == $concatkey) {
+        for ($i = 0; $i <= $this->keyLimit; $i++) {
+            if ($i == $this->concatIndex) {
                 $output[] = parent::itemToString(
-                    $concat, $indent, $escapeStart, $escapeEnd
+                    $this->concatTemplate, $indent, $escapeStart, $escapeEnd
                 );
             }
-            if (isset($other[$i])) {
+            if (isset($this->otherItems[$i])) {
                 $output[] = $this->itemToString(
-                    $other[$i], $indent, $escapeStart, $escapeEnd
+                    $this->otherItems[$i], $indent, $escapeStart, $escapeEnd
                 );
             }
         }
@@ -162,7 +191,7 @@ trait ConcatTrait
 
     /**
      * Render link elements as string
-     * Customized to minify and concatinate
+     * Customized to minify and concatenate
      *
      * @param string|int $indent Amount of whitespace or string to use for indention
      *
@@ -177,32 +206,22 @@ trait ConcatTrait
                 return parent::toString($indent);
             }
 
-            $concatkey = '';
-            $concatItems = [];
-            $otherItems = [];
-            $template = null; // template object for our concatinated file
-            $templateKey = 0;
-            $keyLimit = 0;
-
             // Returned by reference
-            $this->filterItems(
-                $concatkey, $concatItems, $otherItems,
-                $template, $templateKey, $keyLimit
-            );
+            $this->filterItems();
 
-            if (empty($concatItems)) {
+            if (empty($this->concatItems)) {
                 return parent::toString($indent);
             }
 
-            // Locate/create concatinated css file
+            // Locate/create concatenated css file
             $relPath = '/' . $this->themeInfo->getTheme()
                 . '/' . $this->fileType . '/concat/'
-                . md5($concatkey) . '.min.' . $this->fileType;
+                . md5($this->concatKey) . '.min.' . $this->fileType;
             $concatPath = $this->themeInfo->getBaseDir() . $relPath;
             if (!file_exists($concatPath)) {
                 $minifier = $this->getMinifier();
-                for ($i = 0; $i < count($concatItems); $i++) {
-                    $minifier->add($concatItems[$i]);
+                for ($i = 0; $i < count($this->concatItems); $i++) {
+                    $minifier->add($this->concatItems[$i]);
                 }
                 $minifier->minify($concatPath);
             }
@@ -210,12 +229,10 @@ trait ConcatTrait
             // Transform template sheet object into concat sheet object
             $urlHelper = $this->getView()->plugin('url');
             $this->setResourceFilePath(
-                $template, $urlHelper('home') . 'themes' . $relPath
+                $this->concatTemplate, $urlHelper('home') . 'themes' . $relPath
             );
 
-            return $this->outputInOrder(
-                $template, $templateKey, $otherItems, $keyLimit, $indent
-            );
+            return $this->outputInOrder($indent);
 
         } catch (\Exception $e) {
             error_log($e->getMessage());
