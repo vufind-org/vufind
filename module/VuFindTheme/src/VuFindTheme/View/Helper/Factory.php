@@ -51,6 +51,7 @@ class Factory
     public static function getHeadLink(ServiceManager $sm)
     {
         return new HeadLink(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
         );
     }
@@ -65,6 +66,7 @@ class Factory
     public static function getHeadScript(ServiceManager $sm)
     {
         return new HeadScript(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
         );
     }
@@ -107,6 +109,7 @@ class Factory
     public static function getInlineScript(ServiceManager $sm)
     {
         return new InlineScript(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
         );
     }

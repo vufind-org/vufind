@@ -60,10 +60,13 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      *
      * @param ThemeInfo $themeInfo Theme information service
      */
-    public function __construct(ThemeInfo $themeInfo)
+    public function __construct($config, ThemeInfo $themeInfo)
     {
         parent::__construct();
         $this->themeInfo = $themeInfo;
+        $this->pipelineConfig = isset($config['Site']['asset_pipeline'])
+            ? $config['Site']['asset_pipeline']
+            : false;
     }
 
     /**
