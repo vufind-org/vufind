@@ -55,7 +55,7 @@ var VuFind = (function VuFind() {
       href += new Date().getTime() + '#' + parts[1];
       window.location.href = href;
     }
-  }
+  };
   
   //Reveal
   return {
