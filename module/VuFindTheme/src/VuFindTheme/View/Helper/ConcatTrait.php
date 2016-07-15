@@ -115,8 +115,8 @@ trait ConcatTrait
     protected $keyLimit = 0;
 
     /**
-     * Divide all of the elements into those to be concatenated ($this->concatItems) and
-     * those that need to remain on their own ($otherItems). Return by reference.
+     * Divide all of the elements into those to be concatenated ($this->concatItems)
+     * and those that need to remain on their own ($this->otherItems).
      *
      * @return void
      */
