@@ -7,7 +7,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   var osm = new ol.layer.Tile({source: new ol.source.OSM()});
   var vectorSource = new ol.source.Vector();
   var vectorLayer = new ol.layer.Vector({ source: vectorSource });
-  var draw, map;
+  var draw, map, geometry;
   var geometryFunction = function(coordinates, geometry) {
     if (!geometry) {
       geometry = new ol.geom.Polygon(null);
