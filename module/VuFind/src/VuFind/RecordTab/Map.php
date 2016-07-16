@@ -88,6 +88,17 @@ class Map extends AbstractBase
              $this->mapLabelsLoc = $options[3];
         }
     }
+    
+    /**
+     * Can this tab be loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function supportsAjax()
+    {
+        // No, magic required
+        return false;
+    }
 
     /**
      * Get the on-screen description for this tab.
