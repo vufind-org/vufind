@@ -1914,4 +1914,37 @@ class SolrDefault extends AbstractBase
             && !empty($this->fields['hierarchy_parent_id'])
             ? $this->fields['hierarchy_parent_id'][0] : '';
     }
+
+    /**
+     * Get the bbox-geo variable.
+     *
+     * @return array
+     */
+    public function getBbox()
+    {
+        return isset($this->fields['bbox_geo'])
+            ? $this->fields['bbox_geo'] : [];
+    }
+
+    /**
+     * Get the map display (lat/lon) coordinates
+     *
+     * @return array
+     */
+    public function getLatLonCoords()
+    {
+        return isset($this->fields['latlon_coordinate'])
+            ? $this->fields['latlon_coordinate'] : [];
+    }
+
+    /**
+     * Get the map display (lat/lon) labels
+     *
+     * @return array
+     */
+    public function getLatLonLabels()
+    {
+        return isset($this->fields['latlon_label'])
+            ? $this->fields['latlon_label'] : [];
+    }
 }
