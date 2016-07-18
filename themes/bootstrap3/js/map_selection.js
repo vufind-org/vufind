@@ -67,16 +67,29 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       var coordinates = geometry.getCoordinates();
       var westnorth = ol.proj.transform(coordinates[0][0], dstProj, srcProj);
       var eastsouth = ol.proj.transform(coordinates[0][2], dstProj, srcProj);
+       // Check to make sure the coordinates are in the correct order
+      var west = westnorth[0];
+      var east = eastsouth[0];
+      var north = westnorth[1];
+      var south = eastsouth[1];
+      if (west > east){
+        west = eastsouth[0];
+        east = westnorth[0];
+      }
+      if (south > north) {
+        north = eastsouth[1];
+        south = westnorth[1];
+      }
       // Make corrections for queries that cross the dateline 
-      if (westnorth[0] < -180) {
-        westnorth[0] = westnorth[0] + 360;
+      if (west < -180) {
+        west = west + 360;
       }
-      if (eastsouth[0] > 180) {
-        eastsouth[0] = eastsouth[0] - 360;
+      if (east > 180) {
+        east = east - 360;
       }
-      var rawFilter = geoField + ':Intersects(ENVELOPE(' + westnorth[0] + ', ' + eastsouth[0] + ', ' + westnorth[1] + ', ' + eastsouth[1] + '))';
+      var rawFilter = geoField + ':Intersects(ENVELOPE(' + west + ', ' + east + ', ' + north + ', ' + south + '))';
       location.href = baseURL + searchParams + "&filter[]=" + rawFilter;
-    }, this);
+      }, this);
     map.addInteraction(draw);
   }   
   init();
