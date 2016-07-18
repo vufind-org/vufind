@@ -76,10 +76,10 @@ fi
 ##################################################
 # Use SOLR_HOME if set
 ##################################################
-if [ ! -z "$SOLR_HOME" ]
-then
-  EXTRA_SOLRMARC_SETTINGS="$EXTRA_SOLRMARC_SETTINGS -Dsolr.path=$SOLR_HOME -Dsolr.solr.home=$SOLR_HOME -Dsolrmarc.solr.war.path=$SOLR_HOME/jetty/webapps/solr.war"
-fi
+#if [ ! -z "$SOLR_HOME" ]
+#then
+#  EXTRA_SOLRMARC_SETTINGS="$EXTRA_SOLRMARC_SETTINGS -Dsolr.path=$SOLR_HOME -Dsolr.solr.home=$SOLR_HOME
+#fi
 
 
 ##################################################
@@ -87,7 +87,7 @@ fi
 ##################################################
 if [ ! -z "$SOLRMARC_HOME" ]
 then
-  EXTRA_SOLRMARC_SETTINGS="$EXTRA_SOLRMARC_SETTINGS -Dsolrmarc.path=$VUFIND_HOME/import"
+  DIR="-dir $VUFIND_HOME/import"
 fi
 
 
@@ -117,7 +117,7 @@ fi
 ##################################################
 # Set Command Options
 ##################################################
-JAR_FILE="$VUFIND_HOME/import/SolrMarc.jar"
+JAR_FILE="$VUFIND_HOME/import/solrmarc_core.jar"
 
 #####################################################
 # Verify that JAR_FILE exists
@@ -139,7 +139,7 @@ MARC_FILE=`basename $1`
 # Execute Importer
 #####################################################
 
-RUN_CMD="$JAVA $INDEX_OPTIONS -Duser.timezone=UTC -Dsolr.core.name=$SOLRCORE $EXTRA_SOLRMARC_SETTINGS -jar $JAR_FILE $PROPERTIES_FILE $MARC_PATH/$MARC_FILE"
+RUN_CMD="$JAVA $INDEX_OPTIONS -Duser.timezone=UTC -jar $JAR_FILE $PROPERTIES_FILE $MARC_PATH/$MARC_FILE"
 echo "Now Importing $1 ..."
 # solrmarc writes log messages to stderr, write RUN_CMD to the same place
 echo "`date '+%h %d, %H:%M:%S'` $RUN_CMD" >&2
