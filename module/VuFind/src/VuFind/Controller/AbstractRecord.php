@@ -602,17 +602,6 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Get the tab configuration for this controller.
-     *
-     * @return array
-     */
-    protected function getTabConfiguration()
-    {
-        $cfg = $this->getServiceLocator()->get('Config');
-        return $cfg['vufind']['recorddriver_tabs'];
-    }
-
-    /**
      * Support method to load tab information from the RecordTabPluginManager.
      *
      * @return void
@@ -623,13 +612,13 @@ class AbstractRecord extends AbstractBase
         $request = $this->getRequest();
         $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
         $details = $rtpm->getTabDetailsForRecord(
-            $driver, $this->getTabConfiguration(), $request,
+            $driver, $this->getRecordTabConfig(), $request,
             $this->fallbackDefaultTab
         );
         $this->allTabs = $details['tabs'];
         $this->defaultTab = $details['default'] ? $details['default'] : false;
         $this->backgroundTabs = $rtpm->getBackgroundTabNames(
-            $driver, $this->getTabConfiguration()
+            $driver, $this->getRecordTabConfig()
         );
     }
 
