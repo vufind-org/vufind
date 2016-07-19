@@ -47,6 +47,13 @@ class Map extends AbstractBase
      */
     protected $enabled;
 
+    /**
+     * What type of map interface should be used?
+     *
+     * @var string
+     */
+    protected $mapType;
+
         /**
      * Map display coordinates setting from config.ini.
      *
@@ -75,17 +82,23 @@ class Map extends AbstractBase
      */
     public function __construct($options)
     {
-        if (isset($options[0]) == true) {
-             $this->enabled = $options[0];
+        if ($options[0] == 'openlayers' || $options[0] == 'google') {
+          $this->enabled = true;
+          $this->mapType = $options[0];
         }
-        if (isset($options[1])) {
-             $this->displayCoords = $options[1];
-        }
-        if (isset($options[2])) {
-             $this->mapLabels = $options[2];
-        }
-        if (isset($options[3])) {
-             $this->mapLabelsLoc = $options[3];
+        if ($this->mapType == 'openlayers') {
+          if (isset($options[0]) == true) {
+            $this->enabled = $options[0];
+          }
+          if (isset($options[1])) {
+            $this->displayCoords = $options[1];
+          }
+          if (isset($options[2])) {
+            $this->mapLabels = $options[2];
+          }
+          if (isset($options[3])) {
+            $this->mapLabelsLoc = $options[3];
+          }
         }
     }
     
@@ -120,10 +133,38 @@ class Map extends AbstractBase
         if (!$this->enabled) {
             return false;
         }
-        $geocoords = $this->getRecordDriver()->tryMethod('getBbox');
-         return !empty($geocoords);
+        if ($this->mapType == 'openlayers') {
+          $geocoords = $this->getRecordDriver()->tryMethod('getBbox');
+          return !empty($geocoords);
+        }
+        if ($this->mapType == 'google') {
+          $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
+          return !empty($longLat);
+        }
     }
-    
+
+    /**
+     * Get the JSON needed to display the record on a Google map.
+     *
+     * @return string
+     */
+    public function getGoogleMapMarker()
+    {
+        $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
+        if (empty($longLat)) {
+            return json_encode([]);
+        }
+        $longLat = explode(',', $longLat);
+        $markers = [
+            [
+                'title' => (string) $this->getRecordDriver()->getBreadcrumb(),
+                'lon' => $longLat[0],
+                'lat' => $longLat[1]
+            ]
+        ];
+        return json_encode($markers);
+    }
+
     /**
      * Get the bbox-geo coordinates.
      *
