@@ -97,18 +97,11 @@ trait ConcatTrait
     protected $otherItems = [];
 
     /**
-     * Element object to be adapted later
-     *
-     * @var stdClass
-     */
-    protected $concatTemplate = null;
-
-    /**
      * Future order of the concatenated file
      *
      * @var number
      */
-    protected $concatIndex = 0;
+    protected $concatIndex = null;
 
     /**
      * Initialize class properties related to concatenation of resources.
@@ -122,8 +115,7 @@ trait ConcatTrait
         $this->concatKey = '';
         $this->concatItems = [];
         $this->otherItems = [];
-        $this->concatTemplate = null;
-        $this->concatIndex = 0;
+        $this->concatIndex = null;
 
         $this->getContainer()->ksort();
 
@@ -132,8 +124,7 @@ trait ConcatTrait
                 $this->otherItems[$key] = $item;
                 continue;
             }
-            if ($this->concatTemplate == null) {
-                $this->concatTemplate = $item;
+            if ($this->concatIndex == null) {
                 $this->concatIndex = $key;
             }
 
@@ -147,6 +138,24 @@ trait ConcatTrait
         }
 
         return !empty($this->concatItems);
+    }
+
+    protected function getConcatinatedFilePath()
+    {
+        // Locate/create concatenated css file
+        $relPath = '/root/' . $this->fileType . '/concat/'
+            . md5($this->concatKey) . '.min.' . $this->fileType;
+        $concatPath = $this->themeInfo->getBaseDir() . $relPath;
+        if (!file_exists($concatPath)) {
+            $minifier = $this->getMinifier();
+            for ($i = 0; $i < count($this->concatItems); $i++) {
+                $minifier->add($this->concatItems[$i]);
+            }
+            $minifier->minify($concatPath);
+        }
+
+        $urlHelper = $this->getView()->plugin('url');
+        return $urlHelper('home') . 'themes' . $relPath;
     }
 
     /**
@@ -173,15 +182,16 @@ trait ConcatTrait
         $escapeEnd   = ($useCdata) ? '//]]>' : '//-->';
 
         $output = [];
-        for ($i = 0; $i < count($this->getContainer()); $i++) {
-            if ($i == $this->concatIndex) {
+        foreach ($this as $index => $item) {
+            if ($index == $this->concatIndex) {
+                $this->setResourceFilePath($item, $this->getConcatinatedFilePath());
                 $output[] = parent::itemToString(
-                    $this->concatTemplate, $indent, $escapeStart, $escapeEnd
+                    $item, $indent, $escapeStart, $escapeEnd
                 );
             }
-            if (isset($this->otherItems[$i])) {
+            if (isset($this->otherItems[$index])) {
                 $output[] = $this->itemToString(
-                    $this->otherItems[$i], $indent, $escapeStart, $escapeEnd
+                    $this->otherItems[$index], $indent, $escapeStart, $escapeEnd
                 );
             }
         }
@@ -207,24 +217,6 @@ trait ConcatTrait
             if (!$this->usePipeline || !$this->filterItems()) {
                 return parent::toString($indent);
             }
-
-            // Locate/create concatenated css file
-            $relPath = '/root/' . $this->fileType . '/concat/'
-                . md5($this->concatKey) . '.min.' . $this->fileType;
-            $concatPath = $this->themeInfo->getBaseDir() . $relPath;
-            if (!file_exists($concatPath)) {
-                $minifier = $this->getMinifier();
-                for ($i = 0; $i < count($this->concatItems); $i++) {
-                    $minifier->add($this->concatItems[$i]);
-                }
-                $minifier->minify($concatPath);
-            }
-
-            // Transform template element object into concat element object
-            $urlHelper = $this->getView()->plugin('url');
-            $this->setResourceFilePath(
-                $this->concatTemplate, $urlHelper('home') . 'themes' . $relPath
-            );
 
             return $this->outputInOrder($indent);
 
