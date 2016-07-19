@@ -1,14 +1,27 @@
 <?
+$mapType = $this->tab->getMapType();
+if (isset($mapType) && ($mapType == 'openlayers')) {
   $this->headScript()->appendFile('vendor/ol/ol.js');
-  $this->headScript()->appendFile('map_tab.js');
+  $this->headScript()->appendFile('map_tab_ol.js');
   $this->headLink()->appendStylesheet('vendor/ol/ol.css');
-
   $mapTabData = $this->tab->getMapTabData();
   $params = array(json_encode($mapTabData));
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapTab(" . $jsParams . ");";
+}
+if (isset($mapType) && ($mapType == 'google')) {
+  $this->headScript()->appendFile('map_tab_google.js');
+  $this->headScript()->appendFile('https://maps.googleapis.com/maps/api/js?v=3.5&sensor=false&language='.$this->layout()->userLang);
+}
 ?>
-<div id="wrap" style="width: 674px; height: 479px">
-  <div id="map-canvas" style="width: 100%; height: 100%"><div id="popup"></div></div>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
-</div>
+<? if (isset($mapType) && ($mapType == 'openlayers')) : ?>
+    <div id="wrap" style="width: 674px; height: 479px">
+    <div id="map-canvas" style="width: 100%; height: 100%"><div id="popup"></div></div>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
+    </div>
+<? endif; ?>
+<? if (isset($mapType) && ($mapType == 'google')) : ?>
+    <div id="wrap" onload="initialize()" style="width: 674px; height: 479px">
+    <div id="map_canvas" style="width: 100%; height: 100%"></div>
+    </div>
+<? endif; ?>
