@@ -124,6 +124,16 @@ class Map extends AbstractBase
     }
 
     /**
+     * Get the map type for determining template to use.
+     *
+     * @return string
+     */
+    public function getMapType()
+    {
+        return $this->mapType;
+    }
+
+    /**
      * Is this tab active?
      *
      * @return bool
