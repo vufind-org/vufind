@@ -19,17 +19,6 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   });
   var vectorLayer = new ol.layer.Vector({ source: vectorSource, style: vectorStyle });
   var draw, map;
-  function rectangleFunction(coordinates, geometry) {
-    if (typeof geometry === 'undefined') {
-      var geometry = new ol.geom.Polygon(null);
-    }
-    var start = coordinates[0];
-    var end = coordinates[1];
-    geometry.setCoordinates([
-      [start, [start[0], end[1]], end, [end[0], start[1]], start]
-    ]);
-    return geometry;
-  }
 
   $('#geo_search').show();
   init = function drawMap() {
@@ -71,7 +60,17 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       source: vectorSource,
       type: 'LineString',
       maxPoints: 2,
-      geometryFunction: rectangleFunction
+      geometryFunction: function(coords, geom) {
+        if (!geom) {
+          geom = new ol.geom.Polygon(null);
+        }
+        var start = coords[0];
+        var end = coords[1];
+        geom.setCoordinates([
+         [start, [start[0], end[1]], end, [end[0], start[1]], start]
+        ]);
+        return geom;
+      }
     });
     draw.on('drawend', function drawSearchBox(evt) {
       var geometry = evt.feature.getGeometry();
