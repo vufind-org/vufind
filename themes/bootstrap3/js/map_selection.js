@@ -8,7 +8,16 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   var dstProj = 'EPSG:900913';
   var osm = new ol.layer.Tile({source: new ol.source.OSM()});
   var vectorSource = new ol.source.Vector();
-  var vectorLayer = new ol.layer.Vector({ source: vectorSource });
+  var vectorStyle = new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: [255, 0, 0, .1]
+    }),
+    stroke: new ol.style.Stroke({
+      color: [255, 0, 0, 1],
+      width: 2
+    })
+  });
+  var vectorLayer = new ol.layer.Vector({ source: vectorSource, style: vectorStyle });
   var draw, map, geometry;
   function rectangleFunction(coordinates, geometry) {
     if (!geometry) {
