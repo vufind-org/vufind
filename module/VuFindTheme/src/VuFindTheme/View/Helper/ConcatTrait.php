@@ -222,8 +222,7 @@ trait ConcatTrait
             }
 
             // Locate/create concatenated css file
-            $relPath = '/' . $this->themeInfo->getTheme()
-                . '/' . $this->fileType . '/concat/'
+            $relPath = '/root/' . $this->fileType . '/concat/'
                 . md5($this->concatKey) . '.min.' . $this->fileType;
             $concatPath = $this->themeInfo->getBaseDir() . $relPath;
             if (!file_exists($concatPath)) {
