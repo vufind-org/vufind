@@ -20,7 +20,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   var vectorLayer = new ol.layer.Vector({ source: vectorSource, style: vectorStyle });
   var draw, map;
   function rectangleFunction(coordinates, geometry) {
-    if (!geometry) {
+    if (typeof geometry === 'undefined') {
       var geometry = new ol.geom.Polygon(null);
     }
     var start = coordinates[0];
