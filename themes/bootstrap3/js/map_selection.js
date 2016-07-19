@@ -21,7 +21,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   var draw, map;
   function rectangleFunction(coordinates, geometry) {
     if (!geometry) {
-      geometry = new ol.geom.Polygon(null);
+      var geometry = new ol.geom.Polygon(null);
     }
     var start = coordinates[0];
     var end = coordinates[1];
