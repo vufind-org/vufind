@@ -18,8 +18,9 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
     })
   });
   var vectorLayer = new ol.layer.Vector({ source: vectorSource, style: vectorStyle });
-  var draw, map, geometry;
+  var draw, map;
   function rectangleFunction(coordinates, geometry) {
+    var geometry;
     if (!geometry) {
       geometry = new ol.geom.Polygon(null);
     }
