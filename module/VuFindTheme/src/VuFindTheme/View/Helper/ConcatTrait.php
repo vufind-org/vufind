@@ -141,12 +141,12 @@ trait ConcatTrait
     }
 
     /**
-     * Using the concatKey, return the path of the concatinated file.
+     * Using the concatKey, return the path of the concatenated file.
      * Generate if it does not yet exist.
      *
      * @return string
      */
-    protected function getConcatinatedFilePath()
+    protected function getConcatenatedFilePath()
     {
         // Locate/create concatenated css file
         $relPath = '/root/' . $this->fileType . '/concat/'
@@ -190,7 +190,7 @@ trait ConcatTrait
         $output = [];
         foreach ($this as $index => $item) {
             if ($index == $this->concatIndex) {
-                $this->setResourceFilePath($item, $this->getConcatinatedFilePath());
+                $this->setResourceFilePath($item, $this->getConcatenatedFilePath());
                 $output[] = parent::itemToString(
                     $item, $indent, $escapeStart, $escapeEnd
                 );
