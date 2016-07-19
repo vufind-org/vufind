@@ -57,9 +57,7 @@ class Factory
             return false;
         }
         $pipelineConfig = $config['Site']['asset_pipeline'];
-        if ($pipelineConfig === false) {
-            return false;
-        } elseif ($pipelineConfig != '*') {
+        if ($pipelineConfig != '*') {
             $settings = array_map('trim', explode(',', $pipelineConfig));
             if (!in_array(APPLICATION_ENV, $settings)) {
                 return false;
