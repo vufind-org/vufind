@@ -18,10 +18,10 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
     })
   });
   var vectorLayer = new ol.layer.Vector({ source: vectorSource, style: vectorStyle });
-  var draw, map, geometry;
+  var draw, map;
   function rectangleFunction(coordinates, geometry) {
     if (!geometry) {
-      geometry = new ol.geom.Polygon(null);
+      var geometry = new ol.geom.Polygon(null);
     }
     var start = coordinates[0];
     var end = coordinates[1];
@@ -29,10 +29,10 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       [start, [start[0], end[1]], end, [end[0], start[1]], start]
     ]);
     return geometry;
-  };
+  }
 
   $('#geo_search').show();
-  var init = function drawMap() {
+  init = function drawMap() {
     map = new ol.Map({
       interactions: ol.interaction.defaults({
         shiftDragZoom: false
@@ -46,7 +46,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       })
     });
 
-    if (showSelection == true) {
+    if (showSelection === true) {
       vectorSource.clear();
       // Adjust bounding box (WSEN) display for queries crossing the dateline
       if (boundingBox[0] > boundingBox[2]) {
@@ -73,7 +73,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       maxPoints: 2,
       geometryFunction: rectangleFunction
     });
-    draw.on('drawend', function(evt) {
+    draw.on('drawend', function drawSearchBox(evt) {
       geometry = evt.feature.getGeometry();
       var coordinates = geometry.getCoordinates();
       var westnorth = ol.proj.transform(coordinates[0][0], dstProj, srcProj);
