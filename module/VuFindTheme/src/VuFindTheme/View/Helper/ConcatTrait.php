@@ -44,8 +44,6 @@ trait ConcatTrait
     /**
      * Required methods to use ConcatTrait
      *
-
-    /**
      * * Folder name and file extension for trait (js, css, etc)
      * * protected $fileType = string;
      *
