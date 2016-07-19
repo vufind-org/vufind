@@ -1,3 +1,5 @@
+/*global ol */
+/*exported loadMapSelection */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
 function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSelection) {
