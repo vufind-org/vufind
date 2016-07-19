@@ -51,6 +51,7 @@ fi
 ##################################################
 if [ -z "$INDEX_OPTIONS" ]
 then
+  #INDEX_OPTIONS='-Xms512m -Xmx512m -DentityExpansionLimit=0 -Dlog4j.debug'
   INDEX_OPTIONS='-Xms512m -Xmx512m -DentityExpansionLimit=0'
 fi
 
