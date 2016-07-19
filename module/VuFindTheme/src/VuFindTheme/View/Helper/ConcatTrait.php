@@ -44,7 +44,7 @@ trait ConcatTrait
     /**
      * Required methods to use ConcatTrait
      *
-     * * protected function isResourceOtherItem($item)
+     * * protected function isExcludedFromConcat($item)
      * * Returns true if file should not be included in the compressed concat file
      * * - param stdClass $item Link element object
      * * - return bool
@@ -128,7 +128,7 @@ trait ConcatTrait
             if ($key > $this->keyLimit) {
                 $this->keyLimit = $key;
             }
-            if ($this->isResourceOtherItem($item)) {
+            if ($this->isExcludedFromConcat($item)) {
                 $this->otherItems[$key] = $item;
                 continue;
             }

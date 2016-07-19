@@ -153,7 +153,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      *
      * @return bool
      */
-    protected function isResourceOtherItem($item)
+    protected function isExcludedFromConcat($item)
     {
         return isset($item->media) && $item->media != 'all';
     }

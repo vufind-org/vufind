@@ -106,7 +106,7 @@ class HeadScript extends \Zend\View\Helper\HeadScript
      *
      * @return bool
      */
-    protected function isResourceOtherItem($item)
+    protected function isExcludedFromConcat($item)
     {
         return empty($item->attributes['src'])
             || isset($item->attributes['conditional']);
