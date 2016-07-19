@@ -115,13 +115,21 @@ trait ConcatTrait
     protected $keyLimit = 0;
 
     /**
-     * Divide all of the elements into those to be concatenated ($this->concatItems)
+     * Initialize class properties related to concatenation of resources.
+     * All of the elements to be concatenated into ($this->concatItems)
      * and those that need to remain on their own ($this->otherItems).
      *
      * @return void
      */
     protected function filterItems()
     {
+        $this->concatKey = '';
+        $this->concatItems = [];
+        $this->otherItems = [];
+        $this->concatTemplate = null;
+        $this->concatIndex = 0;
+        $this->keyLimit = 0;
+
         $this->getContainer()->ksort();
 
         foreach ($this as $key => $item) {
@@ -145,6 +153,8 @@ trait ConcatTrait
             $this->concatKey .= $details['path'] . filemtime($details['path']);
             $this->concatItems[] = $details['path'];
         }
+
+        return !empty($this->concatItems);
     }
 
     /**
@@ -202,14 +212,7 @@ trait ConcatTrait
         // toString must not throw exception
         try {
 
-            if (!$this->usePipeline) {
-                return parent::toString($indent);
-            }
-
-            // Returned by reference
-            $this->filterItems();
-
-            if (empty($this->concatItems)) {
+            if (!$this->usePipeline || !$this->filterItems()) {
                 return parent::toString($indent);
             }
 
