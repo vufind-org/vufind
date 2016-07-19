@@ -10,7 +10,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   var vectorSource = new ol.source.Vector();
   var vectorLayer = new ol.layer.Vector({ source: vectorSource });
   var draw, map, geometry;
-  var geometryFunction = function(coordinates, geometry) {
+  function rectangleFunction(coordinates, geometry) {
     if (!geometry) {
       geometry = new ol.geom.Polygon(null);
     }
@@ -23,7 +23,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   };
 
   $('#geo_search').show();
-  init = function(){
+  var init = function drawMap() {
     map = new ol.Map({
       interactions: ol.interaction.defaults({
         shiftDragZoom: false
@@ -62,10 +62,10 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       source: vectorSource,
       type: 'LineString',
       maxPoints: 2,
-      geometryFunction: geometryFunction
+      geometryFunction: rectangleFunction
     });
     draw.on('drawend', function(evt) {
-      var geometry = evt.feature.getGeometry();
+      geometry = evt.feature.getGeometry();
       var coordinates = geometry.getCoordinates();
       var westnorth = ol.proj.transform(coordinates[0][0], dstProj, srcProj);
       var eastsouth = ol.proj.transform(coordinates[0][2], dstProj, srcProj);
@@ -91,11 +91,11 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       }
       var rawFilter = geoField + ':Intersects(ENVELOPE(' + west + ', ' + east + ', ' + north + ', ' + south + '))';
       location.href = baseURL + searchParams + "&filter[]=" + rawFilter;
-      }, this);
+    }, this);
     map.addInteraction(draw);
   }   
   init();
-  $('button').on('click', function () {
+  $('button').on('click', function clearAndDrawMap() {
     vectorSource.clear();
     map.removeInteraction(draw);
     addInteraction();
