@@ -12,16 +12,11 @@ if (isset($mapType) && ($mapType == 'openlayers')) {
 if (isset($mapType) && ($mapType == 'google')) {
   $this->headScript()->appendFile('map_tab_google.js');
   $this->headScript()->appendFile('https://maps.googleapis.com/maps/api/js?v=3.5&sensor=false&language='.$this->layout()->userLang);
+  $markers = $this->tab->getGoogleMapMarker();
+  $jsLoad = "initialize(". $markers . ");";
 }
 ?>
-<? if (isset($mapType) && ($mapType == 'openlayers')) : ?>
     <div id="wrap" style="width: 674px; height: 479px">
     <div id="map-canvas" style="width: 100%; height: 100%"><div id="popup"></div></div>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
     </div>
-<? endif; ?>
-<? if (isset($mapType) && ($mapType == 'google')) : ?>
-    <div id="wrap" onload="initialize()" style="width: 674px; height: 479px">
-    <div id="map_canvas" style="width: 100%; height: 100%"></div>
-    </div>
-<? endif; ?>
