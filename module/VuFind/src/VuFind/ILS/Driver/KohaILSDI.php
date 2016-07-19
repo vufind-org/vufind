@@ -651,7 +651,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $loc = $shelf = '';
         $reserves = "N";
 
-        $sql = "select i.itemnumber as ITEMNO, i.location, av.lib_opac AS LOCATION,
+        $sql = "select i.itemnumber as ITEMNO, i.location, 
+            COALESCE(av.lib_opac,av.lib, av.authorised_value) AS LOCATION,
             i.holdingbranch as HLDBRNCH, i.homebranch as HOMEBRANCH,
             i.reserves as RESERVES, i.itemcallnumber as CALLNO, i.barcode as BARCODE,
             i.copynumber as COPYNO, i.notforloan as NOTFORLOAN,
