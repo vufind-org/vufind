@@ -83,22 +83,22 @@ class Map extends AbstractBase
     public function __construct($options)
     {
         if ($options[0] == 'openlayers' || $options[0] == 'google') {
-          $this->enabled = true;
-          $this->mapType = $options[0];
+            $this->enabled = true;
+            $this->mapType = $options[0];
         }
         if ($this->mapType == 'openlayers') {
-          if (isset($options[0]) == true) {
-            $this->enabled = $options[0];
-          }
-          if (isset($options[1])) {
-            $this->displayCoords = $options[1];
-          }
-          if (isset($options[2])) {
-            $this->mapLabels = $options[2];
-          }
-          if (isset($options[3])) {
-            $this->mapLabelsLoc = $options[3];
-          }
+            if (isset($options[0]) == true) {
+                $this->enabled = $options[0];
+            }
+            if (isset($options[1])) {
+                $this->displayCoords = $options[1];
+            }
+            if (isset($options[2])) {
+                $this->mapLabels = $options[2];
+            }
+            if (isset($options[3])) {
+                $this->mapLabelsLoc = $options[3];
+            }
         }
     }
     
@@ -144,12 +144,12 @@ class Map extends AbstractBase
             return false;
         }
         if ($this->mapType == 'openlayers') {
-          $geocoords = $this->getRecordDriver()->tryMethod('getBbox');
-          return !empty($geocoords);
+            $geocoords = $this->getRecordDriver()->tryMethod('getBbox');
+            return !empty($geocoords);
         }
         if ($this->mapType == 'google') {
-          $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
-          return !empty($longLat);
+            $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
+            return !empty($longLat);
         }
     }
 
