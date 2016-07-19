@@ -4,8 +4,8 @@ var latlng;
 var myOptions;
 var map;
 var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
-  function initialize() {
-    markersData = <?=$this->tab->getGoogleMapMarker()?>;
+  function initialize(mapData) {
+    markersData = mapData;
     latlng = new google.maps.LatLng(0, 0);
     myOptions = {
       zoom: 1,
