@@ -111,13 +111,6 @@ trait ConcatTrait
     protected $concatIndex = 0;
 
     /**
-     * Number of files to be out in order
-     *
-     * @var number
-     */
-    protected $keyLimit = 0;
-
-    /**
      * Initialize class properties related to concatenation of resources.
      * All of the elements to be concatenated into ($this->concatItems)
      * and those that need to remain on their own ($this->otherItems).
@@ -131,14 +124,10 @@ trait ConcatTrait
         $this->otherItems = [];
         $this->concatTemplate = null;
         $this->concatIndex = 0;
-        $this->keyLimit = 0;
 
         $this->getContainer()->ksort();
 
         foreach ($this as $key => $item) {
-            if ($key > $this->keyLimit) {
-                $this->keyLimit = $key;
-            }
             if ($this->isExcludedFromConcat($item)) {
                 $this->otherItems[$key] = $item;
                 continue;
@@ -184,7 +173,7 @@ trait ConcatTrait
         $escapeEnd   = ($useCdata) ? '//]]>' : '//-->';
 
         $output = [];
-        for ($i = 0; $i <= $this->keyLimit; $i++) {
+        for ($i = 0; $i < count($this->getContainer()); $i++) {
             if ($i == $this->concatIndex) {
                 $output[] = parent::itemToString(
                     $this->concatTemplate, $indent, $escapeStart, $escapeEnd
