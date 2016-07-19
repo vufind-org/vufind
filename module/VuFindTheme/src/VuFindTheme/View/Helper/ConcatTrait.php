@@ -229,7 +229,7 @@ trait ConcatTrait
                 $minifier->minify($concatPath);
             }
 
-            // Transform template sheet object into concat sheet object
+            // Transform template element object into concat element object
             $urlHelper = $this->getView()->plugin('url');
             $this->setResourceFilePath(
                 $this->concatTemplate, $urlHelper('home') . 'themes' . $relPath
