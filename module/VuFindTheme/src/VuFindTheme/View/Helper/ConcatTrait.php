@@ -44,6 +44,11 @@ trait ConcatTrait
     /**
      * Required methods to use ConcatTrait
      *
+
+    /**
+     * * Folder name and file extension for trait (js, css, etc)
+     * * protected $fileType = string;
+     *
      * * protected function isExcludedFromConcat($item)
      * * Returns true if file should not be included in the compressed concat file
      * * - param stdClass $item Link element object
