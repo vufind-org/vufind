@@ -27,7 +27,7 @@ function loadMapTab(mapData) {
   });
 
   $('#map-canvas').show();
-  var init = function drawMap() {
+  init = function drawMap() {
     var featureCount = mapData.length;
     var label, label_on;
     var label_name;
@@ -35,7 +35,7 @@ function loadMapTab(mapData) {
     var i = 0;
     for (i; i < featureCount; i++) {
       //Construct the coordinate labels
-      if ((mapData[i][5] == 'cl') || (mapData[i][5] == 'c')) { 
+      if ((mapData[i][5] === 'cl') || (mapData[i][5] === 'c')) { 
         label_coord1 = mapData[i][6].substring(0, 16); 
         label_coord2 = mapData[i][6].substring(16); 
         if (label_coord2) {
@@ -45,32 +45,32 @@ function loadMapTab(mapData) {
         }
       }
       // Construct the label names
-      if (mapData[i][5] == 'l') {
+      if (mapData[i][5] === 'l') {
         label_name = mapData[i][6];
       }
-      if (mapData[i][5] == 'cl') {
+      if (mapData[i][5] === 'cl') {
         label_name = mapData[i][7];
       }
       // Construct the entire label string
-      if (mapData[i][5] == 'cl') {
+      if (mapData[i][5] === 'cl') {
         label = label_coord + '<br/>' + label_name;
         label_on = true;
       }
-      if (mapData[i][5] == 'c') {
+      if (mapData[i][5] === 'c') {
         label = label_coord;
         label_on = true;
       }
-      if (mapData[i][5] == 'l') {
+      if (mapData[i][5] === 'l') {
         label = label_name;
         label_on = true;
       }
-      if (mapData[i][5] == 'n') {
+      if (mapData[i][5] === 'n') {
         label = '';
         label_on = false;
       }
 
       // Determine if entry is point or polygon - Does W=E & N=S? //
-      if (mapData[i][4] == 2) {
+      if (mapData[i][4] === 2) {
       //It's a point feature //
         var lonlat = ol.proj.transform([mapData[i][0], mapData[i][1]], srcProj, dstProj);
         var iconFeature = new ol.Feature({
@@ -79,7 +79,7 @@ function loadMapTab(mapData) {
         });
         iconFeature.setStyle(iconStyle);
         vectorSource.addFeature(iconFeature);
-      } else if (mapData[i][4] == 4) { // It's a polygon feature //
+      } else if (mapData[i][4] === 4) { // It's a polygon feature //
         var point1 = ol.proj.transform([mapData[i][0], mapData[i][3]], srcProj, dstProj);
         var point2 = ol.proj.transform([mapData[i][0], mapData[i][1]], srcProj, dstProj);
         var point3 = ol.proj.transform([mapData[i][2], mapData[i][1]], srcProj, dstProj);
@@ -112,7 +112,7 @@ function loadMapTab(mapData) {
     map.getView().fit(extent, map.getSize());
 
   // Turn on popup tool tips if labels or coordinates are enabled.
-    if (label_on == true) {
+    if (label_on === true) {
       var element = document.getElementById('popup');
       var popup = new ol.Overlay({
         element: element
@@ -121,7 +121,7 @@ function loadMapTab(mapData) {
 
       // display popup on click
       map.on('click', function displayPopup(evt) {
-        feature = map.forEachFeatureAtPixel(evt.pixel,
+        var feature = map.forEachFeatureAtPixel(evt.pixel,
           function showFeature(feature) {
             return feature;
           });
@@ -149,7 +149,7 @@ function loadMapTab(mapData) {
         var pixel = map.getEventPixel(e.originalEvent);
         var hit = map.hasFeatureAtPixel(pixel);
         var target = map.getTarget();
-        if (hit == true) {
+        if (hit === true) {
           document.getElementById(target).style.cursor = "pointer";
         } else {
           document.getElementById(target).style.cursor = "default";
