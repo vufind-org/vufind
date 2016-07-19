@@ -237,5 +237,7 @@ trait ConcatTrait
         } catch (\Exception $e) {
             error_log($e->getMessage());
         }
+
+        return '';
     }
 }
