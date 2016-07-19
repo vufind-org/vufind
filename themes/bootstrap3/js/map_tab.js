@@ -27,42 +27,46 @@ function loadMapTab(mapData) {
   });
 
   $('#map-canvas').show();
-  var init = function() {
+  var init = function drawMap() {
     var featureCount = mapData.length;
-    for (i = 0; i < featureCount; i++) {
+    var label, label_on;
+    var label_name;
+    var label_coord, label_coord1, label_coord2;
+    var i = 0;
+    for (i; i < featureCount; i++) {
       //Construct the coordinate labels
       if ((mapData[i][5] == 'cl') || (mapData[i][5] == 'c')) { 
-        var label_coord1 = mapData[i][6].substring(0, 16); 
-        var label_coord2 = mapData[i][6].substring(16); 
+        label_coord1 = mapData[i][6].substring(0, 16); 
+        label_coord2 = mapData[i][6].substring(16); 
         if (label_coord2) {
-          var label_coord = label_coord1 + '<br/>' + label_coord2;
+          label_coord = label_coord1 + '<br/>' + label_coord2;
         } else {
-          var label_coord = label_coord1;
+          label_coord = label_coord1;
         }
       }
       // Construct the label names
       if (mapData[i][5] == 'l') {
-        var label_name = mapData[i][6];
+        label_name = mapData[i][6];
       }
       if (mapData[i][5] == 'cl') {
-        var label_name = mapData[i][7];
+        label_name = mapData[i][7];
       }
       // Construct the entire label string
       if (mapData[i][5] == 'cl') {
-        var label = label_coord + '<br/>' + label_name;
-        var labelon = true;
+        label = label_coord + '<br/>' + label_name;
+        label_on = true;
       }
       if (mapData[i][5] == 'c') {
-        var label = label_coord;
-        var labelon = true;
+        label = label_coord;
+        label_on = true;
       }
       if (mapData[i][5] == 'l') {
-        var label = label_name;
-        var labelon = true;
+        label = label_name;
+        label_on = true;
       }
       if (mapData[i][5] == 'n') {
-        var label = '';
-        var labelon = false;
+        label = '';
+        label_on = false;
       }
 
       // Determine if entry is point or polygon - Does W=E & N=S? //
@@ -108,7 +112,7 @@ function loadMapTab(mapData) {
     map.getView().fit(extent, map.getSize());
 
   // Turn on popup tool tips if labels or coordinates are enabled.
-    if (labelon == true) {
+    if (label_on == true) {
       var element = document.getElementById('popup');
       var popup = new ol.Overlay({
         element: element
@@ -116,13 +120,13 @@ function loadMapTab(mapData) {
       map.addOverlay(popup);
 
       // display popup on click
-      map.on('click', function(evt) {
-        var feature = map.forEachFeatureAtPixel(evt.pixel,
-          function(feature, layer) {
+      map.on('click', function displayPopup(evt) {
+        feature = map.forEachFeatureAtPixel(evt.pixel,
+          function showFeature(feature) {
             return feature;
           });
         if (feature) {
-          var element = popup.getElement();
+          element = popup.getElement();
           var coordinate = evt.coordinate;
           $(element).popover('destroy');
           popup.setPosition(coordinate);
@@ -137,7 +141,7 @@ function loadMapTab(mapData) {
       });
 
       // change mouse cursor when over marker
-      map.on('pointermove', function(e) {
+      map.on('pointermove', function changeMouseCursor(e) {
         if (e.dragging) {
           $(element).popover('destroy');
           return;
