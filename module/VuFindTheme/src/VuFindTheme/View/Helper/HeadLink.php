@@ -155,7 +155,8 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      */
     protected function isExcludedFromConcat($item)
     {
-        return isset($item->media) && $item->media != 'all';
+        return $item->rel != 'stylesheet'
+            || (isset($item->media) && $item->media != 'all');
     }
 
     /**

@@ -140,6 +140,12 @@ trait ConcatTrait
         return !empty($this->concatItems);
     }
 
+    /**
+     * Using the concatKey, return the path of the concatinated file.
+     * Generate if it does not yet exist.
+     *
+     * @return string
+     */
     protected function getConcatinatedFilePath()
     {
         // Locate/create concatenated css file
