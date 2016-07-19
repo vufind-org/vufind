@@ -1,3 +1,5 @@
+/*global google */
+/*exported initialize */
 var markers;
 var markersData;
 var latlng;
