@@ -238,8 +238,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             // set communication enoding to utf8
             $this->db->exec("SET NAMES utf8");
         } catch (PDOException $e) {
-            echo 'Connection failed: ' . $e->getMessage();
             $this->debug('Connection failed: ' . $e->getMessage());
+            throw new ILSException($e->getMessage);
         }
 
         $this->debug('Connected to DB');
@@ -686,6 +686,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmtHoldings->execute([':id' => $id]);
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
+            throw new ILSException($e->getMessage);
         }
 
         $this->debug("Rows count: " . $itemSqlStmt->rowCount());
