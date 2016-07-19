@@ -121,11 +121,11 @@ function loadMapTab(mapData) {
 
       // display popup on click
       map.on('click', function displayPopup(evt) {
-        var feature = map.forEachFeatureAtPixel(evt.pixel,
+        var popupfeature = map.forEachFeatureAtPixel(evt.pixel,
           function showFeature(feature) {
             return feature;
           });
-        if (feature) {
+        if (popupfeature) {
           element = popup.getElement();
           var coordinate = evt.coordinate;
           $(element).popover('destroy');
@@ -134,7 +134,7 @@ function loadMapTab(mapData) {
             'placement': 'top',
             'animation': false,
             'html': true,
-            'content': feature.get('name')
+            'content': popupfeature.get('name')
           });
           $(element).popover('show');
         }
