@@ -1,3 +1,5 @@
+/*global ol */
+/*exported loadMapTab */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 function loadMapTab(mapData) {
   var init = true;
