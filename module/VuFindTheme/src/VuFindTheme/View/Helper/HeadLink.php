@@ -96,11 +96,12 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     /**
      * Compile a less file to css and add to css folder
      *
-     * @param string $file                  Path to less file
+     * @param string $file Path to less file
      *
      * @return string
      */
-    public function addLessStylesheet($file) {
+    public function addLessStylesheet($file)
+    {
         $relPath = 'less/' . $file;
         $urlHelper = $this->getView()->plugin('url');
         $currentTheme = $this->themeInfo->findContainingTheme($relPath);
@@ -129,7 +130,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
                     'output' => str_replace('.less', '.css', $file)
                 ]
             );
-           return $cssDirectory . $css_file_name;
+            return $cssDirectory . $css_file_name;
         } catch (\Exception $e) {
             error_log($e->getMessage());
             list($fileName, ) = explode('.', $file);
