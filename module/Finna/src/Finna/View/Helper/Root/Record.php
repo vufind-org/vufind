@@ -133,6 +133,16 @@ class Record extends \VuFind\View\Helper\Root\Record
     }
 
     /**
+     * Render the record as text for email
+     *
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->renderTemplate('result-email.phtml');
+    }
+
+    /**
      * Render the link of the specified type.
      *
      * @param string $type    Link type

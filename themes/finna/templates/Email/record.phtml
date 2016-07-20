@@ -1,0 +1,14 @@
+<? // This is a text-only email template; do not include HTML! Note that the line feeds are important for nice text layout. ?>
+<?=$this->translate('This email was sent from')?>: <?=$this->from?>
+
+------------------------------------------------------------
+<?=$this->record($this->driver)->getEmail() ?>
+
+
+------------------------------------------------------------
+<? if (!empty($this->message)): ?>
+
+<?=$this->translate("Message From Sender")?>:
+
+<?=$this->message?>
+<? endif; ?>

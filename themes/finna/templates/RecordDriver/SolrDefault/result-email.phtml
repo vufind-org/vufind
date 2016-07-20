@@ -3,12 +3,14 @@
   $title = $this->driver->getTitle();
   $journalTitle = $this->driver->getContainerTitle();
   $publicationDate = $this->driver->getPublicationDates();
+  $isbn = $this->driver->tryMethod('getISBNs');
+  $issn = $this->driver->tryMethod('getISSNs');
   $collection = $this->driver->getContainingCollections();
   $containerTitle = $this->driver->getContainerTitle();
   $containerReference = $this->driver->getContainerReference();
   $formats = $this->driver->getFormats();
   $format = end($formats);
-  $url = $this->recordLink()->getUrl($this->driver);
+  $url = $this->serverUrl($this->recordLink()->getUrl($this->driver));
 ?>
 
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
@@ -21,11 +23,11 @@
 <? if (!empty($journalTitle)) : ?>
 <?= PHP_EOL . $this->translate('Published in') . ": $journalTitle"; ?>
 <? endif; ?>
-<? if (!empty($fields['isbn'])) : ?>
-<?= PHP_EOL . $this->translate('ISBN') . ': ' . $fields['isbn'][0]; ?>
+<? if (!empty($isbn)) : ?>
+<?= PHP_EOL . $this->translate('ISBN') . ': ' . implode(', ', $isbn); ?>
 <? endif; ?>
-<? if (!empty($fields['issn'])) : ?>
-<?= PHP_EOL . $this->translate('ISSN') . ': ' . $fields['issn'][0]; ?>
+<? if (!empty($issn)) : ?>
+<?= PHP_EOL . $this->translate('ISSN') . ': ' . implode(', ', $issn); ?>
 <? endif; ?>
 <? if (!empty($collection)) : ?>
 <? foreach ($collection as $collId => $collText): ?>
@@ -38,4 +40,4 @@
 <?= PHP_EOL  . $this->translate($format) ?>
 <? endif; ?>
 
-<?= $this->translate('View Full Record') . ": {$info['baseUrl']}$url"; ?>
+<?= $this->translate('View Full Record') . ": $url"; ?>

@@ -3,7 +3,7 @@
   $date = substr($title, strpos($title, '('), strpos($title, ')'));
   $formats = $this->driver->getFormats();
   $format = end($formats);
-  $url = $this->recordLink()->getUrl($this->driver);
+  $url = $this->serverUrl($this->recordLink()->getUrl($this->driver));
 ?>
 
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
@@ -30,4 +30,4 @@
 <?= PHP_EOL . $this->translate($format) ?>
 <? endif; ?>
 
-<?= $this->translate('View Full Record') . ": {$info['baseUrl']}$url"; ?>
+<?= $this->translate('View Full Record') . ": $url"; ?>

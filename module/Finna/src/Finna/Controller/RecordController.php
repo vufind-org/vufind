@@ -91,13 +91,9 @@ class RecordController extends \VuFind\Controller\RecordController
             $emailMessage .= ": " . $senderEmail . "\n";
             $emailMessage .=
                 "------------------------------------------------------------\n";
-            $emailMessage .= $this->getViewRenderer()->partial(
-                'RecordDriver/SolrDefault/result-email.phtml',
-                [
-                    'driver' => $driver,
-                    'info' => ['baseUrl' => $serverUrl],
-                ]
-            );
+            // Use the record plugin to render the template for the correct driver
+            $recordPlugin = $this->getViewRenderer()->plugin('record');
+            $emailMessage .= $recordPlugin($driver)->getEmail();
             $emailMessage .=
                 "\n\n------------------------------------------------------------\n";
             if (!empty($message)) {
@@ -129,7 +125,7 @@ class RecordController extends \VuFind\Controller\RecordController
             $this->getServiceLocator()->get('VuFind\Mailer')->getTransport()
                 ->send($mail);
 
-            $flashMsg->addSuccessMessage('Thank you for your feedback');
+            $flashMsg->addSuccessMessage('Thank you for your feedback.');
             if ($this->getRequest()->getQuery('layout', 'no') !== 'lightbox'
                 || 'layout/lightbox' != $this->layout()->getTemplate()
             ) {

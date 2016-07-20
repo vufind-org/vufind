@@ -81,7 +81,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
                 throw new \Exception('Email address is invalid');
             }
 
-            // These settings are set in the feedback settion of your config.ini
+            // These settings are set in the feedback section of your config.ini
             $config = $this->getServiceLocator()->get('VuFind\Config')
                 ->get('config');
             $feedback = isset($config->Feedback) ? $config->Feedback : null;
