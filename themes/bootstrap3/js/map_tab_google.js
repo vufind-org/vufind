@@ -21,7 +21,7 @@ function initialize(mapData) {
   map = new google.maps.Map(document.getElementById("map_canvas"),
     myOptions);
   showMarkers();
-  }
+}
 function showMarkers(){
   deleteOverlays();
   markers = [];
