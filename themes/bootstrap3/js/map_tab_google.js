@@ -1,5 +1,5 @@
 /*global google */
-/*exported initialize */
+/*exported initialize, infowindow, labelXoffset, refreshMap */
 var markers;
 var markersData;
 var latlng;
@@ -48,7 +48,9 @@ function deleteOverlays() {
   if (markers) {
     var i;
     for (i in markers) {
-      markers[i].setMap(null);
+      if (markers.hasOwnProperty(i)) {
+        markers[i].setMap(null);
+      }
     }
     markers.length = 0;
   }
