@@ -113,8 +113,8 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // theme resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getLessCss()) as $current) {
             $parts = explode(':', $current);
-            $headLink()->addLessStylesheet(
-                trim($parts[0]),
+            $headLink()->prependStylesheet(
+                $headLink()->addLessStylesheet(trim($parts[0])),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
                 isset($parts[2]) ? trim($parts[2]) : false
             );

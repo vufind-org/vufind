@@ -97,14 +97,10 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      * Compile a less file to css and add to css folder
      *
      * @param string $file                  Path to less file
-     * @param string $media                 Media type
-     * @param string $conditionalStylesheet Load condition for file
      *
-     * @return void
+     * @return string
      */
-    public function addLessStylesheet($file, $media = 'all',
-        $conditionalStylesheet = false
-    ) {
+    public function addLessStylesheet($file) {
         $relPath = 'less/' . $file;
         $urlHelper = $this->getView()->plugin('url');
         $currentTheme = $this->themeInfo->findContainingTheme($relPath);
@@ -133,15 +129,11 @@ class HeadLink extends \Zend\View\Helper\HeadLink
                     'output' => str_replace('.less', '.css', $file)
                 ]
             );
-            $this->prependStylesheet(
-                $cssDirectory . $css_file_name, $media, $conditionalStylesheet
-            );
+           return $cssDirectory . $css_file_name;
         } catch (\Exception $e) {
             error_log($e->getMessage());
             list($fileName, ) = explode('.', $file);
-            $this->prependStylesheet(
-                $urlHelper('home') . "themes/{$currentTheme}/css/{$fileName}.css"
-            );
+            return $urlHelper('home') . "themes/{$currentTheme}/css/{$fileName}.css";
         }
     }
 
