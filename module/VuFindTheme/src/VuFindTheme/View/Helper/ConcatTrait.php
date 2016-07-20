@@ -137,7 +137,7 @@ trait ConcatTrait
             $this->concatItems[] = $details['path'];
         }
 
-        return !empty($this->concatItems);
+        return $this->concatKey !== '';
     }
 
     /**
