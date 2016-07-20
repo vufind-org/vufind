@@ -98,34 +98,6 @@ module.exports = function(grunt) {
           ]
         }
       }
-    },
-    clean: {
-      uglify: ['themes/bootstrap3/js/vendor.min.js']
-    },
-    eslint: {
-      options: {
-        configFile: '.eslintrc.js'
-      },
-      bootstrap3: ['themes/bootstrap3/js/*.js']
-    },
-    // JS compression
-    uglify: {
-      options: {
-        mangle: false
-      },
-      vendor_min: { // after running uglify:vendor_min, change your theme.config.php
-        files: {    // to only load vendor.min.js instead of all the js/vendor files
-          'themes/bootstrap3/js/vendor.min.js': [
-            'themes/bootstrap3/js/vendor/jquery.min.js',       // these two need to go first
-            'themes/bootstrap3/js/vendor/bootstrap.min.js',
-            'themes/bootstrap3/js/vendor/*.js',
-            'themes/bootstrap3/js/autocomplete.js'
-          ]
-        }
-      }
     }
   });
-
-  grunt.registerTask('default', ['less', 'uglify']);
-  grunt.registerTask('js', ['clean:uglify', 'eslint', 'uglify']);
 };
