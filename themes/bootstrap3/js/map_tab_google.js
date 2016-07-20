@@ -33,7 +33,7 @@ function showMarkers(){
       iconTitle = disTitle.substring(0, 25) + "...";
     }
     var markerImg = "https://chart.googleapis.com/chart?chst=d_bubble_text_small&chld=edge_bc|" + iconTitle + "|EEEAE3|";
-    var labelXoffset = 1 + disTitle.length * 4;
+//    var labelXoffset = 1 + disTitle.length * 4;
     var latLng = new google.maps.LatLng(markersData[i].lat, markersData[i].lon)
     var marker = new google.maps.Marker({
       position: latLng,
