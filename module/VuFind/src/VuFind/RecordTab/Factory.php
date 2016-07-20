@@ -178,11 +178,13 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $options = [];
-        $enabled = $config->Content->recordMap;
-        $displayCoords = $config->Content->displayCoords;
-        $mapLabels = $config->Content->mapLabels;
-        $mapLabelsLoc = $config->Content->mapLabelsLoc;
-        array_push($options, $enabled, $displayCoords, $mapLabels, $mapLabelsLoc);
+        if (($config->Content->recordMap == 'openlayers') || ($config->Content->recordMap == 'google')) {
+          $enabled = $config->Content->recordMap;
+          $displayCoords = $config->Content->displayCoords;
+          $mapLabels = $config->Content->mapLabels;
+          $mapLabelsLoc = $config->Content->mapLabelsLoc;
+          array_push($options, $enabled, $displayCoords, $mapLabels, $mapLabelsLoc);
+        }
         return new Map($options);
     }
 
