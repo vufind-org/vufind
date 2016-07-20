@@ -60,10 +60,8 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       source: vectorSource,
       type: 'LineString',
       maxPoints: 2,
-      geometryFunction: function rectangleFunction(coordinates, geometry) {
-        if (!geometry) {
-          geometry = new ol.geom.Polygon(null);
-        }
+      geometryFunction: function rectangleFunction(coordinates, geometryParam) {
+        geometry = geometryParam ? geometryParam : new ol.geom.Polygon(null);
         var start = coordinates[0];
         var end = coordinates[1];
         geometry.setCoordinates([
