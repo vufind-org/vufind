@@ -2154,9 +2154,9 @@ public class VuFindIndexer extends SolrIndexer
             if (name.length() > 0) {
                 String initial = name.substring(0,1);
                 // if there is a hyphenated name, use both initials
-                if (name.indexOf('-') > 0) {
-                    int pos = name.indexOf('-');
-                    String extra = name.substring(pos+1,pos+2);
+                int pos = name.indexOf('-');
+                if (pos > 0 && pos < name.length() - 1) {
+                    String extra = name.substring(pos+1, pos+2);
                     initial = initial + " " + extra;
                 }
                 result += " " + initial; 
