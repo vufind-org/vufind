@@ -5,8 +5,6 @@
 #
 # VUFIND_HOME
 #   Path to the vufind installation
-# SOLRMARC_HOME
-#   Path to the solrmarc installation
 # JAVA_HOME
 #   Path to the java
 # INDEX_OPTIONS
@@ -51,7 +49,6 @@ fi
 ##################################################
 if [ -z "$INDEX_OPTIONS" ]
 then
-  #INDEX_OPTIONS='-Xms512m -Xmx512m -DentityExpansionLimit=0 -Dlog4j.debug'
   INDEX_OPTIONS='-Xms512m -Xmx512m -DentityExpansionLimit=0'
 fi
 
@@ -71,15 +68,6 @@ fi
 if [ -z "$VUFIND_HOME" ]
 then
   VUFIND_HOME="/usr/local/vufind"
-fi
-
-
-##################################################
-# Set SOLRMARC_HOME
-##################################################
-if [ ! -z "$SOLRMARC_HOME" ]
-then
-  DIR="-dir $VUFIND_HOME/import"
 fi
 
 
