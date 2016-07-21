@@ -2,7 +2,6 @@
 /**
  * MapSelection Recommendations Module
  *
- *
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
@@ -84,14 +83,14 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     protected $searchObject;
     
     /**
-     * search Results coordinates
+     * Search Results coordinates
      *
      * @var array
      */
     protected $searchResultCoords = [];
 
     /**
-     * bbox search box coordinates
+     * Bbox search box coordinates
      *
      * @var array
      */
@@ -109,41 +108,41 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      *
      * @var \VuFind\Search\BackendManager
      */
-     protected $solr;
+    protected $solr;
 
     /**
      * Query Builder object
      *
      * @var \VuFind\Search\BackendManager
      */
-     protected $queryBuilder;
+    protected $queryBuilder;
 
     /**
      * Solr connector Object
      *
      * @var \VuFind\Search\BackendManager
      */
-     protected $solrConnector;
+    protected $solrConnector;
 
     /**
      * Query Object
      *
      * @var \VuFind\Search\BackendManager
      */
-     protected $searchQuery;
+    protected $searchQuery;
 
     /**
      * Backend Parameters / Search Filters
      *
      * @var \VuFind\Search\BackendManager
      */
-     protected $searchFilters;
+    protected $searchFilters;
     
     /**
      * Constructor
      *
-     * @param array $options from searches.ini
-     * @param \VuFind\Search\BackendManager $solr Search interface
+     * @param   array   $options from searches.ini
+     * @param   \VuFind\Search\BackendManager   $solr Search interface
      */
     public function __construct($options, $solr)
     {
@@ -216,10 +215,11 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             if ($key == $this->geoField) {
                 $match = array();
                 if (preg_match('/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', $value[0], $match)) {
-                   array_push($this->bboxSearchCoords, (float)$match[1], (float)$match[2], (float)$match[3], (float)$match[4]);
+                   array_push($this->bboxSearchCoords, (float)$match[1], (float)$match[2], 
+                    (float)$match[3], (float)$match[4]);
                    // Need to reorder coords from WENS to WSEN
                    array_push($reorder_coords, (float)$match[1], (float)$match[4], (float)$match[2], (float)$match[3]);
-                    $this->selectedCoordinates = $reorder_coords;
+                   $this->selectedCoordinates = $reorder_coords;
                 }
                 $this->searchParams = $results->getUrlQuery()->removeFacet($this->geoField, $value[0], false);
             }
