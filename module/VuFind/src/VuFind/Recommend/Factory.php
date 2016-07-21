@@ -191,9 +191,17 @@ class Factory
      */
     public function getMapSelection(ServiceManager $sm)
     {
-        return new MapSelection(
-            $sm->getServiceLocator()->get('VuFind\Config')
-        );
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
+        $options = [];
+        if($config->MapSelection->mapSearch == true) {
+            $enabled = $config->MapSelection->mapSearch;
+            $defaultCoords = $config->MapSelection->default_coordinates;
+            $geoField = $config->MapSelection->geo_field;
+            $height = $config->MapSelection->height;
+            array_push($options,$enabled,$defaultCoords,$geoField,$height);
+        }
+        $solr = $sm->getServiceLocator()->get('VuFind\Search\BackendManager')->get('Solr');
+        return new MapSelection($options,$solr);
     }
 
     /**
