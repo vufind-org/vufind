@@ -215,8 +215,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             if ($key == $this->geoField) {
                 $match = array();
                 if (preg_match(
-                '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', 
-                $value[0], $match)
+                    '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', 
+                    $value[0], $match
+                )
                 ) {
                     array_push(
                         $this->bboxSearchCoords,
@@ -232,7 +233,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     $this->selectedCoordinates = $reorder_coords;
                 }
                 $this->searchParams = $results->getUrlQuery()->removeFacet(
-                    $this->geoField,$value[0], false
+                    $this->geoField, $value[0], false
                 );
             }
         }
@@ -371,47 +372,51 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     if ($coordE == (float)-0) { 
                         $coordE = (float)0; 
                     }
-            // If coordinates fall within bbox, calculate center point and add to return array
-            // Have to do this because some records have multiple coordinates that
-            // are geographically distributed
+                    // If coordinates fall within bbox, calculate center point and add to return array
+                    // Have to do this because some records have multiple coordinates that
+                    // are geographically distributed
                     if (($bboxW <= $coordE && $coordW <= $bboxE) || ($bboxS <= $coordN && $coordS <= $bboxN)) {
                         $centerWE = (($coordE - $coordW)/2) + $coordW;
                         $centerSN = (($coordN - $coordS)/2) + $coordS;
-            // Now check to see if center coordinate falls within the search box.
-                    if (($centerWE >= $bboxW && $centerWE <= $bboxE) && ($centerSN >= $bboxS && $centerSN <=$bboxN)) {
-                        $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
-                        $addCtr = true;
-                    } else {  //recalculate the center point
-                        if ($coordW < $bboxW) { 
-                            $coordW = $bboxW; 
-                        }
-                        if ($coordE > $bboxE) {
-                            $coordE = $bboxE;
-                        }
-                        if ($coordS < $bboxS) { 
-                            $coordS = $bboxS;
-                        }
-                        if ($coordN > $bboxN) {
-                            $coordN = $bboxN;
-                        }
-                        $centerWE = (($coordE - $coordW)/2) + $coordW;
-                        $centerSN = (($coordN - $coordS)/2) + $coordS;
-                        if (($centerWE >= $bboxW && $centerWE <= $bboxE) && ($centerSN >= $bboxS && $centerSN <=$bboxN)) {
+                    // Now check to see if center coordinate falls within the search box.
+                        if (($centerWE >= $bboxW && $centerWE <= $bboxE) 
+                            && ($centerSN >= $bboxS && $centerSN <=$bboxN)
+                        ) {
                             $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
-                            $addCtr=true;
-                        } else { // put the center in the middle of the searchbox
-                            $centerWE = (($bboxE - $bboxW) / 2) + $bboxW;
-                            $centerSN = (($bboxN - $bboxS) / 2) + $bboxS;
-                            $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
-                            $addCtr=true;
+                            $addCtr = true;
+                        } else {  //recalculate the center point
+                            if ($coordW < $bboxW) { 
+                                $coordW = $bboxW; 
+                            }
+                            if ($coordE > $bboxE) {
+                                $coordE = $bboxE;
+                            }
+                            if ($coordS < $bboxS) { 
+                                $coordS = $bboxS;
+                            }
+                            if ($coordN > $bboxN) {
+                                $coordN = $bboxN;
+                            }
+                            $centerWE = (($coordE - $coordW)/2) + $coordW;
+                            $centerSN = (($coordN - $coordS)/2) + $coordS;
+                            if (($centerWE >= $bboxW && $centerWE <= $bboxE) 
+                                && ($centerSN >= $bboxS && $centerSN <=$bboxN)
+                            ) {
+                                $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                                $addCtr=true;
+                            } else { // put the center in the middle of the searchbox
+                                $centerWE = (($bboxE - $bboxW) / 2) + $bboxW;
+                                $centerSN = (($bboxN - $bboxS) / 2) + $bboxS;
+                                $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                                $addCtr=true;
+                            }
                         }
-                    }
-                    if ($addCtr == true) {
-                        break;
+                        if ($addCtr == true) {
+                            break;
+                        }
                     }
                 }
             }
-          }
         }
      return $centerCoords;
     }
