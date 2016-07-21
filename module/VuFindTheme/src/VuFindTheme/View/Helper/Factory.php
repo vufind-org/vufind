@@ -56,6 +56,7 @@ class Factory
             : [];
         return in_array('*', $settings) || in_array(APPLICATION_ENV, $settings));
     }
+
     /**
      * Construct the HeadLink helper.
      *
