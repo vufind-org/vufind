@@ -202,7 +202,7 @@ class Factory
         }
         $backend = $sm->getServiceLocator()->get('VuFind\Search\BackendManager');
         $solr = $backend->get('Solr');
-        return new MapSelection($options,$solr);
+        return new MapSelection($options, $solr);
     }
 
     /**
