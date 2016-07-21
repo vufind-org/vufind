@@ -193,14 +193,15 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
         $options = [];
-        if($config->MapSelection->mapSearch == true) {
+        if ($config->MapSelection->mapSearch == true) {
             $enabled = $config->MapSelection->mapSearch;
             $defaultCoords = $config->MapSelection->default_coordinates;
             $geoField = $config->MapSelection->geo_field;
             $height = $config->MapSelection->height;
-            array_push($options,$enabled,$defaultCoords,$geoField,$height);
+            array_push($options, $enabled, $defaultCoords, $geoField, $height);
         }
-        $solr = $sm->getServiceLocator()->get('VuFind\Search\BackendManager')->get('Solr');
+        $backend = $sm->getServiceLocator()->get('VuFind\Search\BackendManager');
+        $solr = $backend->get('Solr');
         return new MapSelection($options,$solr);
     }
 
