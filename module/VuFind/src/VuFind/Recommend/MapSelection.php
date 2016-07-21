@@ -2,7 +2,6 @@
 /**
  * MapSelection Recommendations Module
  *
- * Adapted to fit GeoRef database needs - LMG. 
  *
  * PHP version 5
  *
@@ -83,22 +82,75 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      * @var string
      */
     protected $searchObject;
- 
+    
     /**
-     * Configuration loader
+     * search Results coordinates
      *
-     * @var \VuFind\Config\PluginManager
+     * @var array
      */
-    protected $configLoader;
+    protected $searchResultCoords = [];
+
+    /**
+     * bbox search box coordinates
+     *
+     * @var array
+     */
+    protected $bboxSearchCoords = [];
+
+    /**
+     * Config options
+     *
+     * @var array
+     */
+    protected $configOptions = [];
+
+    /**
+     * Solr search loader
+     *
+     * @var \VuFind\Search\BackendManager
+     */
+     protected $solr;
+
+    /**
+     * Query Builder object
+     *
+     * @var \VuFind\Search\BackendManager
+     */
+     protected $queryBuilder;
+
+    /**
+     * Solr connector Object
+     *
+     * @var \VuFind\Search\BackendManager
+     */
+     protected $solrConnector;
+
+    /**
+     * Query Object
+     *
+     * @var \VuFind\Search\BackendManager
+     */
+     protected $searchQuery;
+
+    /**
+     * Backend Parameters / Search Filters
+     *
+     * @var \VuFind\Search\BackendManager
+     */
+     protected $searchFilters;
     
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param array $options from searches.ini
+     * @param \VuFind\Search\BackendManager $solr Search interface
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct($options, $solr)
     {
-        $this->configLoader = $configLoader;
+        $this->configOptions = $options;
+        $this->solr = $solr;
+        $this->queryBuilder = $solr->getQueryBuilder();
+        $this->solrConnector = $solr->getConnector();
     }
     
     /**
@@ -112,23 +164,18 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      */
     public function setConfig($settings)
     {
-        $settings = explode(':', $settings);
-        $mainSection = empty($settings[0]) ? 'MapSelection' : $settings[0];
-        $iniName = isset($settings[1]) ? $settings[1] : 'searches';
-        $config = $this->configLoader->get($iniName);
-        if (isset($config->$mainSection)) {
-            $entries = $config->$mainSection;
-            if (isset($entries->default_coordinates)) {
-                $this->defaultCoordinates = explode(
-                    ',', $entries->default_coordinates
-                );
-            }
-            if (isset($entries->geo_field)) {
-                $this->geoField = $entries->geo_field;
-            }
-            if (isset($entries->height)) {
-                $this->height = $entries->height;
-            }
+        $settings = $this->configOptions;
+        if (isset($settings[0])) {
+            $enabled = $settings[0];
+        }
+        if (isset($settings[1])) {
+            $this->defaultCoordinates = explode(',', $settings[1]);
+        }
+        if (isset($settings[2])) {
+            $this->geoField = $settings[2];
+        }
+        if (isset($settings[3])) {
+            $this->height = $settings[3];
         }
     }
     
@@ -148,22 +195,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      */
     public function init($params, $request)
     {
-        $coords = [];
-        $filters = $params->getFilters();
-        foreach ($filters as $key => $value) {
-            if ($key == $this->geoField) {
-                $match = [];
-                $pattern = '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/';
-                if (preg_match($pattern, $value[0], $match)) {
-                    // Need to reorder coords from WENS to WSEN
-                    array_push(
-                        $coords, (float)$match[1],
-                        (float)$match[4], (float)$match[2],
-                        (float)$match[3]
-                    );
-                }
-            }
-        }
     }
     
     /**
@@ -183,25 +214,21 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $filters = $results->getParams()->getFilters();
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
-                $match = [];
-                $pattern = '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/';
-                if (preg_match($pattern, $value[0], $match)) {
-                    // Need to reorder coords from WENS to WSEN
-                    array_push(
-                        $reorder_coords, (float)$match[1],
-                        (float)$match[4], (float)$match[2],
-                        (float)$match[3]
-                    );
+                $match = array();
+                if (preg_match('/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', $value[0], $match)) {
+                   array_push($this->bboxSearchCoords, (float)$match[1], (float)$match[2], (float)$match[3], (float)$match[4]);
+                   // Need to reorder coords from WENS to WSEN
+                   array_push($reorder_coords, (float)$match[1], (float)$match[4], (float)$match[2], (float)$match[3]);
                     $this->selectedCoordinates = $reorder_coords;
                 }
-                $this->searchParams = $results->getUrlQuery()->removeFacet(
-                    $this->geoField, $value[0], false
-                );
+                $this->searchParams = $results->getUrlQuery()->removeFacet($this->geoField, $value[0], false);
             }
         }
         if ($this->searchParams == null) {
             $this->searchParams = $results->getUrlQuery()->getParams(false);
         }
+        $this->searchFilters = $results->getParams()->getBackendParameters();
+        $this->searchQuery = $results->getParams()->getQuery();
     }
     
     /**
@@ -277,5 +304,92 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     {
         return $this->geoField;
     }
+    /**
+     * Get bbox_geo field values for all search results
+     *
+     * @return array
+     */
 
+    public function getSearchResultCoordinates()
+    {
+        $result = [];
+        $params = $this->searchFilters;
+        $params->mergeWith($this->queryBuilder->build($this->searchQuery));
+        $params->set('fl', 'id, bbox_geo');
+        $params->set('wt', 'json');
+        $params->set('rows', '10000000'); // set to return all results
+        $response = json_decode($this->solrConnector->search($params));
+        foreach ($response->response->docs as $current) {
+            $result[] = [$current->id, $current->bbox_geo];
+        }
+        return $result;
+    }
+
+    /**
+     * Process search result record coordinate values
+     *
+     * Return search results record coordinates and process for
+     * display on search map.
+     *
+     * @return array
+     */
+    public function getMapResultCoordinates()
+    {
+        $centerCoords = [];
+        // Both coordinate variables are in WENS order //
+        $rawCoords =$this->getSearchResultCoordinates();
+        $bboxCoords = $this->bboxSearchCoords;
+
+        // Set up comparision variables //
+        $bboxW = $bboxCoords[0];
+        $bboxE = $bboxCoords[1];
+        $bboxN = $bboxCoords[2];
+        $bboxS = $bboxCoords[3];
+
+        foreach ($rawCoords as $idCoords) {
+          foreach ($idCoords[1] as $coord) {
+          $match = [];
+          $addCtr = false;
+          if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $coord, $match)) {
+            $coordW = (float)$match[1];
+            $coordE = (float)$match[2];
+            $coordN = (float)$match[3];
+            $coordS = (float)$match[4];
+            if ($coordE == (float)-0) { $coordE = (float)0; }
+            // If coordinates fall within bbox, calculate center point and add to return array
+            // Have to do this because some records have multiple coordinates that
+            // are geographically distributed
+            if (($bboxW <= $coordE && $coordW <= $bboxE) || ($bboxS <= $coordN && $coordS <= $bboxN)) {
+                $centerWE = (($coordE - $coordW)/2) + $coordW;
+                $centerSN = (($coordN - $coordS)/2) + $coordS;
+            // Now check to see if center coordinate falls within the search box.
+               if (($centerWE >= $bboxW && $centerWE <= $bboxE) && ($centerSN >= $bboxS && $centerSN <=$bboxN)) {
+                  $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                  $addCtr = true;
+               } else {  //recalculate the center point
+                  if ($coordW < $bboxW) { $coordW = $bboxW; }
+                  if ($coordE > $bboxE) { $coordE = $bboxE; }
+                  if ($coordS < $bboxS) { $coordS = $bboxS; }
+                  if ($coordN > $bboxN) { $coordN = $bboxN; }
+                  $centerWE = (($coordE - $coordW)/2) + $coordW;
+                  $centerSN = (($coordN - $coordS)/2) + $coordS;
+                  if (($centerWE >= $bboxW && $centerWE <= $bboxE) && ($centerSN >= $bboxS && $centerSN <=$bboxN)) {
+                    $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                    $addCtr=true;
+                  } else { // put the center in the middle of the searchbox
+                   $centerWE = (($bboxE - $bboxW)/2) + $bboxW;
+                   $centerSN = (($bboxN - $bboxS)/2) + $bboxS;
+                   $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                   $addCtr=true;
+                  }
+                }
+                if ($addCtr == true) {
+                break;
+                }
+            }
+           }
+          }
+        }
+     return $centerCoords;
+    }
 }
