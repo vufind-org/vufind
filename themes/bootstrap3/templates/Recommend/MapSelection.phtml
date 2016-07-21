@@ -2,7 +2,8 @@
   $this->headScript()->appendFile('vendor/ol/ol.js');
   $this->headScript()->appendFile('map_selection.js');
   $this->headLink()->appendStylesheet('vendor/ol/ol.css');
-  
+
+  $resultsCoords = $this->recommend->getMapResultCoordinates();
   $geoField = $this->recommend->getGeoField();
   $urlpath = $this->url('search-results');
   $coordinates = $this->recommend->getSelectedCoordinates();
@@ -14,7 +15,7 @@
   $height = $this->recommend->getHeight();
   $searchParams = $this->recommend->getSearchParams();
   $params = array(json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
-    json_encode($searchParams), json_encode($showSelection));
+    json_encode($searchParams), json_encode($showSelection), json_encode($resultsCoords));
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapSelection(" . $jsParams . ");";
   $addSearchOption = <<<EOF
