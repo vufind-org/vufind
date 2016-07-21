@@ -58,7 +58,7 @@ fi
 ##################################################
 if [ -z "$SOLRCORE" ]
 then
-  SOLRCORE="biblio"
+  EXTRA_SOLRMARC_SETTINGS="$EXTRA_SOLRMARC_SETTINGS -Dsolr.core.name=$SOLRCORE"
 fi
 
 
