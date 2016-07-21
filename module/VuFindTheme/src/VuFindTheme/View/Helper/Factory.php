@@ -51,19 +51,10 @@ class Factory
     protected static function getPipelineConfig(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        if (!isset($config['Site']['asset_pipeline'])
-            || !$config['Site']['asset_pipeline']
-        ) {
-            return false;
-        }
-        $pipelineConfig = $config['Site']['asset_pipeline'];
-        if ($pipelineConfig != '*') {
-            $settings = array_map('trim', explode(',', $pipelineConfig));
-            if (!in_array(APPLICATION_ENV, $settings)) {
-                return false;
-            }
-        }
-        return true;
+        $settings = isset($config['Site']['asset_pipeline'])
+            ? array_map('trim', explode(',', $config['Site']['asset_pipeline']))
+            : [];
+        return in_array('*', $settings) || in_array(APPLICATION_ENV, $settings));
     }
     /**
      * Construct the HeadLink helper.
