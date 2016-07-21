@@ -141,8 +141,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     /**
      * Constructor
      *
-     * @param array                            $options from searches.ini
-     * @param \VuFind\Search\BackendManager    $solr Search interface
+     * @param array                         $options from searches.ini
+     * @param \VuFind\Search\BackendManager $solr Search interface
      */
     public function __construct($options, $solr)
     {
@@ -214,16 +214,20 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
                 $match = array();
-                if (preg_match('/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', 
-                $value[0], $match)) {
-                    array_push($this->bboxSearchCoords,
-                    (float)$match[1], (float)$match[2], 
-                    (float)$match[3], (float)$match[4]
+                if (preg_match(
+                    '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', 
+                    $value[0], $match)
+                    ) {
+                    array_push(
+                        $this->bboxSearchCoords,
+                        (float)$match[1], (float)$match[2], 
+                        (float)$match[3], (float)$match[4]
                     );
                     // Need to reorder coords from WENS to WSEN
-                    array_push($reorder_coords,
-                    (float)$match[1], (float)$match[4],
-                    (float)$match[2], (float)$match[3]
+                    array_push(
+                        $reorder_coords,
+                        (float)$match[1], (float)$match[4],
+                        (float)$match[2], (float)$match[3]
                     );
                     $this->selectedCoordinates = $reorder_coords;
                 }
@@ -355,16 +359,16 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
 
         foreach ($rawCoords as $idCoords) {
             foreach ($idCoords[1] as $coord) {
-              $match = [];
-              $addCtr = false;
-              if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $coord, $match)) {
-                $coordW = (float)$match[1];
-                $coordE = (float)$match[2];
-                $coordN = (float)$match[3];
-                $coordS = (float)$match[4];
-                if ($coordE == (float)-0) { 
-                    $coordE = (float)0; 
-                }
+                $match = [];
+                $addCtr = false;
+                if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $coord, $match)) {
+                    $coordW = (float)$match[1];
+                    $coordE = (float)$match[2];
+                    $coordN = (float)$match[3];
+                    $coordS = (float)$match[4];
+                    if ($coordE == (float)-0) { 
+                        $coordE = (float)0; 
+                    }
             // If coordinates fall within bbox, calculate center point and add to return array
             // Have to do this because some records have multiple coordinates that
             // are geographically distributed
@@ -376,18 +380,26 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
                     $addCtr = true;
                 } else {  //recalculate the center point
-                    if ($coordW < $bboxW) { $coordW = $bboxW; }
-                    if ($coordE > $bboxE) { $coordE = $bboxE; }
-                    if ($coordS < $bboxS) { $coordS = $bboxS; }
-                    if ($coordN > $bboxN) { $coordN = $bboxN; }
+                    if ($coordW < $bboxW) { 
+                        $coordW = $bboxW; 
+                    }
+                    if ($coordE > $bboxE) {
+                        $coordE = $bboxE;
+                    }
+                    if ($coordS < $bboxS) { 
+                        $coordS = $bboxS;
+                    }
+                    if ($coordN > $bboxN) {
+                        $coordN = $bboxN;
+                    }
                         $centerWE = (($coordE - $coordW)/2) + $coordW;
                         $centerSN = (($coordN - $coordS)/2) + $coordS;
                     if (($centerWE >= $bboxW && $centerWE <= $bboxE) && ($centerSN >= $bboxS && $centerSN <=$bboxN)) {
                         $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
                         $addCtr=true;
                     } else { // put the center in the middle of the searchbox
-                        $centerWE = (($bboxE - $bboxW)/2) + $bboxW;
-                        $centerSN = (($bboxN - $bboxS)/2) + $bboxS;
+                        $centerWE = (($bboxE - $bboxW) / 2) + $bboxW;
+                        $centerSN = (($bboxN - $bboxS) / 2) + $bboxS;
                         $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
                         $addCtr=true;
                     }
