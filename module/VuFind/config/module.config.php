@@ -620,7 +620,7 @@ $config = [
                     'Preview' => 'preview',
                     'Details' => 'StaffViewArray',
                 ],
-                'defaultTab' => null
+                'defaultTab' => null,
             ],
             'VuFind\RecordDriver\Pazpar2' => [
                 'tabs' => [
@@ -667,7 +667,7 @@ $config = [
                     'Similar' => 'SimilarItemsCarousel',
                     'Details' => 'StaffViewMARC',
                 ],
-                'defaultTab' => null
+                'defaultTab' => null,
             ],
             'VuFind\RecordDriver\Summon' => [
                 'tabs' => [
