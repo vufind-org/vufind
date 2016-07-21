@@ -93,7 +93,7 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
             if ($offset > 0) {
                 $select->offset($offset);
             }
-            if (!is_null($limit)) {
+            if (null !== $limit) {
                 $select->limit($limit);
             }
         };

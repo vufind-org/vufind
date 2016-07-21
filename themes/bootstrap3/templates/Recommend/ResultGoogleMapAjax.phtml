@@ -2,7 +2,7 @@
   $searchParams = $this->recommend->getSearchParams();
 
   $this->headScript()->appendFile('https://maps.googleapis.com/maps/api/js?v=3.8&sensor=false&language='.$this->layout()->userLang);
-  $this->headScript()->appendFile('https://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.9/src/markerclusterer_packed.js');
+  $this->headScript()->appendFile('vendor/markerclusterer_packed.js');
 ?>
 <script type="text/javascript">
 /**
