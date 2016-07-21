@@ -42,7 +42,7 @@ use VuFindTheme\ThemeInfo;
 trait ConcatTrait
 {
     /**
-     * Required methods to use ConcatTrait
+     * Required property and methods to use ConcatTrait
      *
      * * Folder name and file extension for trait (js, css, etc)
      * * protected $fileType = string;
@@ -173,7 +173,8 @@ trait ConcatTrait
      */
     protected function outputInOrder($indent)
     {
-        // Copied from parent
+        // Some of this logic was copied from HeadScript; it does not all apply
+        // when incorporated into HeadLink, but it has no harmful side effects.
         $indent = (null !== $indent)
             ? $this->getWhitespace($indent)
             : $this->getIndent();
