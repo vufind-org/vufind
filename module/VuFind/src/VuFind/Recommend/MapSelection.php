@@ -372,13 +372,16 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     if ($coordE == (float)-0) { 
                         $coordE = (float)0; 
                     }
-                    // If coordinates fall within bbox, calculate center point and add to return array
-                    // Have to do this because some records have multiple coordinates that
-                    // are geographically distributed
-                    if (($bboxW <= $coordE && $coordW <= $bboxE) || ($bboxS <= $coordN && $coordS <= $bboxN)) {
+                    // If coordinates fall within bbox, 
+                    // calculate center point and add to return array.
+                    // Some records have multiple coordinates 
+                    // that are geographically distributed
+                    if (($bboxW <= $coordE && $coordW <= $bboxE) ||
+                        ($bboxS <= $coordN && $coordS <= $bboxN)
+                    ) {
                         $centerWE = (($coordE - $coordW)/2) + $coordW;
                         $centerSN = (($coordN - $coordS)/2) + $coordS;
-                    // Now check to see if center coordinate falls within the search box.
+                        // Now check to see if center coordinate falls within the search box.
                         if (($centerWE >= $bboxW && $centerWE <= $bboxE) 
                             && ($centerSN >= $bboxS && $centerSN <=$bboxN)
                         ) {
@@ -402,12 +405,16 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             if (($centerWE >= $bboxW && $centerWE <= $bboxE) 
                                 && ($centerSN >= $bboxS && $centerSN <=$bboxN)
                             ) {
-                                $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                                $centerCoords[] = [$idCoords[0], 
+                                    $centerWE, $centerSN
+                                ];
                                 $addCtr=true;
                             } else { // put the center in the middle of the searchbox
                                 $centerWE = (($bboxE - $bboxW) / 2) + $bboxW;
                                 $centerSN = (($bboxN - $bboxS) / 2) + $bboxS;
-                                $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                                $centerCoords[] = [$idCoords[0], 
+                                    $centerWE, $centerSN
+                                ];
                                 $addCtr=true;
                             }
                         }
@@ -418,6 +425,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                 }
             }
         }
-     return $centerCoords;
+        return $centerCoords;
     }
 }
