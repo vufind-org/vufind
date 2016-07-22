@@ -56,7 +56,7 @@ fi
 ##################################################
 # Set SOLRCORE
 ##################################################
-if [ -z "$SOLRCORE" ]
+if [ ! -z "$SOLRCORE" ]
 then
   EXTRA_SOLRMARC_SETTINGS="$EXTRA_SOLRMARC_SETTINGS -Dsolr.core.name=$SOLRCORE"
 fi
