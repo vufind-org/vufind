@@ -152,7 +152,6 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       location.href = baseURL + searchParams + "&filter[]=" + rawFilter;
     }, this);
     map.addInteraction(draw);
-    searchboxLayer.clear();
   }   
   init();
   $('button').on('click', function clearAndDrawMap() {
