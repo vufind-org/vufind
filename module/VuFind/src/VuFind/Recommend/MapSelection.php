@@ -213,15 +213,15 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $filters = $results->getParams()->getFilters();
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
-                $match = array();
+                $match = [];
                 if (preg_match(
-                    '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/', 
+                    '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
                     $value[0], $match
                 )
                 ) {
                     array_push(
                         $this->bboxSearchCoords,
-                        (float)$match[1], (float)$match[2], 
+                        (float)$match[1], (float)$match[2],
                         (float)$match[3], (float)$match[4]
                     );
                     // Need to reorder coords from WENS to WSEN
@@ -369,53 +369,53 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     $coordE = (float)$match[2];
                     $coordN = (float)$match[3];
                     $coordS = (float)$match[4];
-                    if ($coordE == (float)-0) { 
-                        $coordE = (float)0; 
+                    if ($coordE == (float)-0) {
+                        $coordE = (float)0;
                     }
                     // If coordinates fall within bbox, 
                     // calculate center point and add to return array.
                     // Some records have multiple coordinates 
                     // that are geographically distributed
-                    if (($bboxW <= $coordE && $coordW <= $bboxE) 
+                    if (($bboxW <= $coordE && $coordW <= $bboxE)
                         || ($bboxS <= $coordN && $coordS <= $bboxN)
                     ) {
-                        $centerWE = (($coordE - $coordW)/2) + $coordW;
-                        $centerSN = (($coordN - $coordS)/2) + $coordS;
+                        $centerWE = (($coordE - $coordW) / 2) + $coordW;
+                        $centerSN = (($coordN - $coordS) / 2) + $coordS;
                         // Does center coord falls within searchbox?
-                        if (($centerWE >= $bboxW && $centerWE <= $bboxE) 
+                        if (($centerWE >= $bboxW && $centerWE <= $bboxE)
                             && ($centerSN >= $bboxS && $centerSN <=$bboxN)
                         ) {
                             $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
                             $addCtr = true;
                         } else {  //recalculate the center point
-                            if ($coordW < $bboxW) { 
-                                $coordW = $bboxW; 
+                            if ($coordW < $bboxW) {
+                                $coordW = $bboxW;
                             }
                             if ($coordE > $bboxE) {
                                 $coordE = $bboxE;
                             }
-                            if ($coordS < $bboxS) { 
+                            if ($coordS < $bboxS) {
                                 $coordS = $bboxS;
                             }
                             if ($coordN > $bboxN) {
                                 $coordN = $bboxN;
                             }
-                            $centerWE = (($coordE - $coordW)/2) + $coordW;
-                            $centerSN = (($coordN - $coordS)/2) + $coordS;
-                            if (($centerWE >= $bboxW && $centerWE <= $bboxE) 
+                            $centerWE = (($coordE - $coordW) / 2) + $coordW;
+                            $centerSN = (($coordN - $coordS) / 2) + $coordS;
+                            if (($centerWE >= $bboxW && $centerWE <= $bboxE)
                                 && ($centerSN >= $bboxS && $centerSN <=$bboxN)
                             ) {
-                                $centerCoords[] = [$idCoords[0], 
+                                $centerCoords[] = [$idCoords[0],
                                     $centerWE, $centerSN
                                 ];
-                                $addCtr=true;
+                                $addCtr = true;
                             } else { // put the center in the middle of the searchbox
                                 $centerWE = (($bboxE - $bboxW) / 2) + $bboxW;
                                 $centerSN = (($bboxN - $bboxS) / 2) + $bboxS;
                                 $centerCoords[] = [$idCoords[0], 
                                     $centerWE, $centerSN
                                 ];
-                                $addCtr=true;
+                                $addCtr = true;
                             }
                         }
                         if ($addCtr == true) {
