@@ -8,7 +8,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   var dstProj = 'EPSG:900913';
   var osm = new ol.layer.Tile({source: new ol.source.OSM()});
   var searchboxSource = new ol.source.Vector();
-  var searchboxStyle = new ol.style.Style({
+/*  var searchboxStyle = new ol.style.Style({
     fill: new ol.style.Fill({
       color: [255, 0, 0, .1]
     }),
@@ -17,7 +17,8 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       width: 2
     })
   });
-//  var searchboxLayer = new ol.layer.Vector({ source: searchboxSource, style: searchboxStyle });
+  var searchboxLayer = new ol.layer.Vector({ source: searchboxSource, style: searchboxStyle });
+*/
   var draw, map;
   var count = resultsCoords.length;
   var searchResults = new Array(count);
@@ -39,7 +40,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   var styleCache = {};
   var clusterLayer = new ol.layer.Vector({
     source: clusterSource,
-    style: function(feature, resolution) {
+    style: function addClusterStyle(feature) {
       var size = feature.get('features').length;
       var style = styleCache[size];
       if (!style) {
@@ -66,10 +67,10 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
           })
         })];
         styleCache[size] = style;
-     }
-     map.removeInteraction(draw);
-     return style;
-   }
+      }
+      map.removeInteraction(draw);
+      return style;
+    }
   });
 
   $('#geo_search').show();
