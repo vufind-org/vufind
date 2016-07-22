@@ -17,51 +17,51 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       width: 2
     })
   });
-  var searchboxLayer = new ol.layer.Vector({ source: searchboxSource, style: searchboxStyle });
+//  var searchboxLayer = new ol.layer.Vector({ source: searchboxSource, style: searchboxStyle });
   var draw, map;
-    var count = resultsCoords.length;
-    var searchResults = new Array(count);
-    var searchIds = new Array(count);
-    for (var i = 0; i < count; ++i) {
-      var coordinates = ol.proj.transform([resultsCoords[i][1],resultsCoords[i][2]], srcProj, dstProj);
-      searchResults[i] = new ol.Feature(new ol.geom.Point(coordinates));
-      searchIds[i] = resultsCoords[i][0];
-    }
-    var resultSource = new ol.source.Vector({
-        features: searchResults
-    });
+  var count = resultsCoords.length;
+  var searchResults = new Array(count);
+  var searchIds = new Array(count);
+  for (var i = 0; i < count; ++i) {
+    var markerCoordinates = ol.proj.transform([resultsCoords[i][1], resultsCoords[i][2]], srcProj, dstProj);
+    searchResults[i] = new ol.Feature(new ol.geom.Point(markerCoordinates));
+    searchIds[i] = resultsCoords[i][0];
+  }
+  var resultSource = new ol.source.Vector({
+    features: searchResults
+  });
 
-    var clusterSource = new ol.source.Cluster({
-      distance: 40,
-      source: resultSource
-    });
+  var clusterSource = new ol.source.Cluster({
+    distance: 40,
+    source: resultSource
+  });
 
-    var styleCache = {};
-    var clusterLayer = new ol.layer.Vector({
-      source: clusterSource,
-      style: function(feature, resolution) {
-        var size = feature.get('features').length;
-        var style = styleCache[size];
-        if (!style) {
-          style = [new ol.style.Style({
-            image: new ol.style.Circle({
-              radius: 10,
-              stroke: new ol.style.Stroke({
-                color: '#ff0000'
-              }),
-              fill: new ol.style.Fill({
-                color: '#750000'
-              })
+  var styleCache = {};
+  var clusterLayer = new ol.layer.Vector({
+    source: clusterSource,
+    style: function(feature, resolution) {
+      var size = feature.get('features').length;
+      var style = styleCache[size];
+      if (!style) {
+        style = [new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 10,
+            stroke: new ol.style.Stroke({
+              color: '#ff0000'
             }),
+            fill: new ol.style.Fill({
+              color: '#750000'
+            })
+          }),
           text: new ol.style.Text({
             text: size.toString(),
             scale: 1,
             fill: new ol.style.Fill({
               color: '#fff'
             }),
-             stroke: new ol.style.Stroke({
-               color: '#fff',
-                width: .25
+            stroke: new ol.style.Stroke({
+              color: '#fff',
+              width: .25
             })
           })
         })];
@@ -109,7 +109,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   } 
   function addInteraction() {
     draw = new ol.interaction.Draw ({
-      source: vectorSource,
+      source: searchboxSource,
       type: 'LineString',
       maxPoints: 2,
       geometryFunction: function rectangleFunction(coordinates, geometryParam) {
