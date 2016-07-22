@@ -349,7 +349,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     {
         $centerCoords = [];
         // Both coordinate variables are in WENS order //
-        $rawCoords =$this->getSearchResultCoordinates();
+        $rawCoords = $this->getSearchResultCoordinates();
         $bboxCoords = $this->bboxSearchCoords;
 
         // Set up comparision variables //
@@ -383,7 +383,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                         $centerSN = (($coordN - $coordS) / 2) + $coordS;
                         // Does center coord falls within searchbox?
                         if (($centerWE >= $bboxW && $centerWE <= $bboxE)
-                            && ($centerSN >= $bboxS && $centerSN <=$bboxN)
+                            && ($centerSN >= $bboxS && $centerSN <= $bboxN)
                         ) {
                             $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
                             $addCtr = true;
@@ -403,7 +403,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             $centerWE = (($coordE - $coordW) / 2) + $coordW;
                             $centerSN = (($coordN - $coordS) / 2) + $coordS;
                             if (($centerWE >= $bboxW && $centerWE <= $bboxE)
-                                && ($centerSN >= $bboxS && $centerSN <=$bboxN)
+                                && ($centerSN >= $bboxS && $centerSN <= $bboxN)
                             ) {
                                 $centerCoords[] = [$idCoords[0],
                                     $centerWE, $centerSN
@@ -412,7 +412,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             } else { // put the center in the middle of the searchbox
                                 $centerWE = (($bboxE - $bboxW) / 2) + $bboxW;
                                 $centerSN = (($bboxN - $bboxS) / 2) + $bboxS;
-                                $centerCoords[] = [$idCoords[0], 
+                                $centerCoords[] = [$idCoords[0],
                                     $centerWE, $centerSN
                                 ];
                                 $addCtr = true;
