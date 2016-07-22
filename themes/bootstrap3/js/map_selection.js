@@ -2,13 +2,13 @@
 /*exported loadMapSelection */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
-function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSelection) {
+function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSelection, resultsCoords) {
   var init = true;
   var srcProj = 'EPSG:4326';
   var dstProj = 'EPSG:900913';
   var osm = new ol.layer.Tile({source: new ol.source.OSM()});
-  var vectorSource = new ol.source.Vector();
-  var vectorStyle = new ol.style.Style({
+  var searchboxSource = new ol.source.Vector();
+  var searchboxStyle = new ol.style.Style({
     fill: new ol.style.Fill({
       color: [255, 0, 0, .1]
     }),
@@ -17,8 +17,60 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       width: 2
     })
   });
-  var vectorLayer = new ol.layer.Vector({ source: vectorSource, style: vectorStyle });
+  var searchboxLayer = new ol.layer.Vector({ source: searchboxSource, style: searchboxStyle });
   var draw, map;
+    var count = resultsCoords.length;
+    var searchResults = new Array(count);
+    var searchIds = new Array(count);
+    for (var i = 0; i < count; ++i) {
+      var coordinates = ol.proj.transform([resultsCoords[i][1],resultsCoords[i][2]], srcProj, dstProj);
+      searchResults[i] = new ol.Feature(new ol.geom.Point(coordinates));
+      searchIds[i] = resultsCoords[i][0];
+    }
+    var resultSource = new ol.source.Vector({
+        features: searchResults
+    });
+
+    var clusterSource = new ol.source.Cluster({
+      distance: 40,
+      source: resultSource
+    });
+
+    var styleCache = {};
+    var clusterLayer = new ol.layer.Vector({
+      source: clusterSource,
+      style: function(feature, resolution) {
+        var size = feature.get('features').length;
+        var style = styleCache[size];
+        if (!style) {
+          style = [new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: 10,
+              stroke: new ol.style.Stroke({
+                color: '#ff0000'
+              }),
+              fill: new ol.style.Fill({
+                color: '#750000'
+              })
+            }),
+          text: new ol.style.Text({
+            text: size.toString(),
+            scale: 1,
+            fill: new ol.style.Fill({
+              color: '#fff'
+            }),
+             stroke: new ol.style.Stroke({
+               color: '#fff',
+                width: .25
+            })
+          })
+        })];
+        styleCache[size] = style;
+     }
+     map.removeInteraction(draw);
+     return style;
+   }
+  });
 
   $('#geo_search').show();
   init = function drawMap() {
@@ -28,7 +80,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       }),
       target: 'geo_search_map',
       projection: dstProj,
-      layers: [osm, vectorLayer],
+      layers: [osm, clusterLayer],
       view: new ol.View({
         center: [0, 0],
         zoom: 1
@@ -36,7 +88,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
     });
 
     if (showSelection === true) {
-      vectorSource.clear();
+      searchboxSource.clear();
       // Adjust bounding box (WSEN) display for queries crossing the dateline
       if (boundingBox[0] > boundingBox[2]) {
         boundingBox[2] = boundingBox[2] + 360;
@@ -51,8 +103,8 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
         name: "bbox",
         geometry: newBbox
       });
-      vectorSource.addFeature(featureBbox);
-      map.getView().fit(vectorSource.getExtent(), map.getSize());
+      searchboxSource.addFeature(featureBbox);
+      map.getView().fit(searchboxSource.getExtent(), map.getSize());
     }
   } 
   function addInteraction() {
@@ -102,7 +154,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   }   
   init();
   $('button').on('click', function clearAndDrawMap() {
-    vectorSource.clear();
+    searchboxSource.clear();
     map.removeInteraction(draw);
     addInteraction();
   });
