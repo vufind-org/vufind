@@ -146,7 +146,12 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
         west = west + 360;
       }
       if (east > 180) {
-        east = east - 360;
+        // Fix overlapping longitudinal query parameters
+        if (east > 360) {
+          east = east - (360 * Math.floor(east / 360));
+        } else {
+          east = east - 360;
+        }
       }
       var rawFilter = geoField + ':Intersects(ENVELOPE(' + west + ', ' + east + ', ' + north + ', ' + south + '))';
       location.href = baseURL + searchParams + "&filter[]=" + rawFilter;
