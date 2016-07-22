@@ -81,7 +81,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
       }),
       target: 'geo_search_map',
       projection: dstProj,
-      layers: [osm, searchbox, clusterLayer],
+      layers: [osm, searchboxLayer, clusterLayer],
       view: new ol.View({
         center: [0, 0],
         zoom: 1
