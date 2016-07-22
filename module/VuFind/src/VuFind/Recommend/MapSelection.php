@@ -376,12 +376,12 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     // calculate center point and add to return array.
                     // Some records have multiple coordinates 
                     // that are geographically distributed
-                    if (($bboxW <= $coordE && $coordW <= $bboxE) ||
-                        ($bboxS <= $coordN && $coordS <= $bboxN)
+                    if (($bboxW <= $coordE && $coordW <= $bboxE) 
+                        || ($bboxS <= $coordN && $coordS <= $bboxN)
                     ) {
                         $centerWE = (($coordE - $coordW)/2) + $coordW;
                         $centerSN = (($coordN - $coordS)/2) + $coordS;
-                        // Now check to see if center coordinate falls within the search box.
+                        // Does center coord falls within searchbox?
                         if (($centerWE >= $bboxW && $centerWE <= $bboxE) 
                             && ($centerSN >= $bboxS && $centerSN <=$bboxN)
                         ) {
