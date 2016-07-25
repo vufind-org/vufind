@@ -440,7 +440,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             if ($centerWE > 180) {
                                 $centerWE = $centerWE - 360;
                             }
-                                $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                                $centerCoords[] = [$idCoords[0], 
+                                $centerWE, $centerSN
+                                ];
                                 $addCtr = true;
                         } else {  // re-calculate the center point
                             if ($coordW < $bboxW) {
@@ -465,7 +467,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                                 if ($centerWE > 180) {
                                     $centerWE = $centerWE - 360;
                                 }
-                                $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                                $centerCoords[] = [$idCoords[0], 
+                                $centerWE, $centerSN
+                                ];
                                 $addCtr = true;
                             } else {  // make center point center of search box
                                 $centerWE = (($bboxE - $bboxW)/2) + $bboxW;
@@ -473,7 +477,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                                 if ($centerWE > 180) {
                                     $centerWE = $centerWE - 360;
                                 }
-                                $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                                $centerCoords[] = [$idCoords[0], 
+                                $centerWE, $centerSN
+                                ];
                                 $addCtr = true;
                             }
                         }
