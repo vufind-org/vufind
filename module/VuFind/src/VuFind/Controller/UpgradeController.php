@@ -423,6 +423,23 @@ class UpgradeController extends AbstractBase
                 }
             }
 
+            // Check for collation problems.
+            $colProblems = $this->dbUpgrade()->getCollationProblems();
+            if (!empty($colProblems)) {
+                if (!$this->logsql) {
+                    if (!$this->hasDatabaseRootCredentials()) {
+                        return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                    }
+                    $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                }
+                $sql .= $this->dbUpgrade()
+                    ->fixCollationProblems($colProblems, $this->logsql);
+                $this->session->warnings->append(
+                    "Modified collation(s) in table(s): "
+                    . implode(', ', array_keys($colProblems))
+                );
+            }
+
             // Don't keep DB credentials in session longer than necessary:
             unset($this->session->dbRootUser);
             unset($this->session->dbRootPass);
