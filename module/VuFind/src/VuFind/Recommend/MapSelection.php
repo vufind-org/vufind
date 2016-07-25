@@ -353,7 +353,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         // Both coordinate variables are in WENS order //
         $rawCoords =$this->getSearchResultCoordinates();
         $bboxCoords = $this->bboxSearchCoords;
-        // Set up comparision variables and adjust bbox to account for Solr distErrPct and maxDist //
+        // Set up comparision variables //
         $bboxW = $bboxCoords[0];
         $bboxE = $bboxCoords[1];
         $bboxN = $bboxCoords[2];
@@ -372,7 +372,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                 $rawCoordIds[] = $idCoords[0];
                 $match = [];
                 $addCtr = false;
-                if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $coord, $match)) {
+                if (preg_match(
+                    '/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $coord, $match
+                    )) {
                     $coordW = (float)$match[1];
                     $coordE = (float)$match[2];
                     $coordN = (float)$match[3];
@@ -397,31 +399,27 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     }
 
                     //Does coordinate fall within search box?
-                    if (
-                        (($coordW >= $bboxW && $coordW <= $bboxE)
+                    if ((($coordW >= $bboxW && $coordW <= $bboxE)
                         || ($coordE >= $bboxW && $coordE <= $bboxE))
                         && (($coordS >= $bboxS && $coordS <= $bboxN)
                         || ($coordN >= $bboxS && $coordN <= $bboxN))
                         ) {
                         $coordIntersect = true;
                         // Does searchbox fall within coordinate?
-                    } elseif (
-                        (($bboxW >= $coordW && $bboxW <= $coordE) 
+                    } elseif ((($bboxW >= $coordW && $bboxW <= $coordE) 
                         || ($bboxE >= $coordW && $bboxE <= $coordE))
                         && (($bboxS >= $coordS && $bboxS <= $coordN)
                         || ($bboxN >= $coordS && $bboxN <= $coordN))
                         ) {
                         $coordIntersect = true;
                         // Does searchbox span coordinate?
-                    } elseif (
-                        (($coordE >= $bboxW && $coordE <= $bboxE)
+                    } elseif ((($coordE >= $bboxW && $coordE <= $bboxE)
                         && ($coordW >= $bboxW && $coordW <= $bboxE))
                         && ($coordN > $bboxN && $coordS < $bboxS)
                         ) {
                         $coordIntersect = true;
                         // Does coordinate span searchbox?
-                    } elseif (
-                        ($coordW < $bboxW && $coordE > $bboxE)
+                    } elseif (($coordW < $bboxW && $coordE > $bboxE)
                         && (($coordS >= $bboxS && $coordS <= $bboxN)
                         && ($coordN >= $bboxS && $coordN <= $bboxN))
                         ) {
@@ -435,8 +433,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                         $centerSN = (($coordN - $coordS)/2) + $coordS;
 
                         //Does center point fall within search box?
-                        if (
-                            ($centerWE >= $bboxW && $centerWE <= $bboxE)
+                        if (($centerWE >= $bboxW && $centerWE <= $bboxE)
                             && ($centerSN >= $bboxS && $centerSN <=$bboxN)
                             ) {
                             // convert coordinate to 180 degree grid
@@ -461,8 +458,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                                 $centerWE = (($coordE - $coordW)/2) + $coordW;
                                 $centerSN = (($coordN - $coordS)/2) + $coordS;
                                 //Does center point fall within search box?
-                                if (
-                                    ($centerWE >= $bboxW && $centerWE <= $bboxE)
+                                if (($centerWE >= $bboxW && $centerWE <= $bboxE)
                                     && ($centerSN >= $bboxS && $centerSN <=$bboxN)
                                     ) {
                                     // convert coordinate to 180 degree grid
