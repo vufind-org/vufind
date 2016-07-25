@@ -142,6 +142,16 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
         south = westnorth[1];
       }
       // Make corrections for queries that cross the dateline 
+      if (west > 180) {
+        if (west > 360) {
+          west = west - (360 * Math.floor(west / -360));
+          if (west > 180) {
+            west = west - 360;
+          }
+        } else {
+          west = west - 360;
+        }
+      }
       if (west < -180) {
         if (west < -360) {
           west = west + (360 * Math.floor(west / -360));
@@ -151,7 +161,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
         } else {
           west = west + 360;
         }
-      }
+      }      
       if (east > 180) {
         // Fix overlapping longitudinal query parameters
         if (east > 360) {
