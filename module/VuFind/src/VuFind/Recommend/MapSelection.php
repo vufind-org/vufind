@@ -347,145 +347,161 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      */
     public function getMapResultCoordinates()
     {
-    $centerCoords = [];
-    $rawCoordIds = [];
-    $centerCoordIds = [];
-    // Both coordinate variables are in WENS order //
-    $rawCoords =$this->getSearchResultCoordinates();
-    $bboxCoords = $this->bboxSearchCoords;
-    // Set up comparision variables and adjust bbox to account for Solr distErrPct and maxDist //
-    $bboxW = $bboxCoords[0];
-    $bboxE = $bboxCoords[1];
-    $bboxN = $bboxCoords[2];
-    $bboxS = $bboxCoords[3];
+        $centerCoords = [];
+        $rawCoordIds = [];
+        $centerCoordIds = [];
+        // Both coordinate variables are in WENS order //
+        $rawCoords =$this->getSearchResultCoordinates();
+        $bboxCoords = $this->bboxSearchCoords;
+        // Set up comparision variables and adjust bbox to account for Solr distErrPct and maxDist //
+        $bboxW = $bboxCoords[0];
+        $bboxE = $bboxCoords[1];
+        $bboxN = $bboxCoords[2];
+        $bboxS = $bboxCoords[3];
 
-    // Convert bbox to 360 degree grid
-    if (($bboxE < $bboxW && $bboxE < 0) || ($bboxE < $bboxW && $bboxW < 180)) {
-      $bboxE = 360 + $bboxE;
-    }
-    if ($bboxW < 0 && $bboxW >= -180) {
-      $bboxW = 360 + $bboxW;
-      $bboxE = 360 + $bboxE;
-    }
-    foreach ($rawCoords as $idCoords) {
-      foreach ($idCoords[1] as $coord) {
-        $rawCoordIds[] = $idCoords[0];
-        $match = [];
-        $addCtr = false;
-        if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $coord, $match)) {
-          $coordW = (float)$match[1];
-          $coordE = (float)$match[2];
-          $coordN = (float)$match[3];
-          $coordS = (float)$match[4];
-          if ($coordE == (float)-0) {
-            $coordE = (float)0;
-          }
-          // Convert coordinates to 360 degree grid
-          if ($coordE < $coordW && $coordE < 0) {
-            $coordE = 360 + $coordE;
-          }
-          if ($coordW < 0 && $coordW >= -180) {
-            $coordW = 360 + $coordW;
-            $coordE = 360 + $coordE;
-          }
-          if ($bboxW > 180 && ($coordW > 0 && $coordW < 180)) {
-            $coordW = 360 + $coordW;
-            $coordE = 360 + $coordE;
-          }
-          if ($bboxE > 180 && ($coordE > 0 && $coordE < 180)) {
-            $coordE = 360 + $coordE;
-          }
+        // Convert bbox to 360 degree grid
+        if (($bboxE < $bboxW && $bboxE < 0) || ($bboxE < $bboxW && $bboxW < 180)) {
+            $bboxE = 360 + $bboxE;
+        }
+        if ($bboxW < 0 && $bboxW >= -180) {
+            $bboxW = 360 + $bboxW;
+            $bboxE = 360 + $bboxE;
+        }
+        foreach ($rawCoords as $idCoords) {
+            foreach ($idCoords[1] as $coord) {
+                $rawCoordIds[] = $idCoords[0];
+                $match = [];
+                $addCtr = false;
+                if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $coord, $match)) {
+                    $coordW = (float)$match[1];
+                    $coordE = (float)$match[2];
+                    $coordN = (float)$match[3];
+                    $coordS = (float)$match[4];
+                    if ($coordE == (float)-0) {
+                        $coordE = (float)0;
+                    }
+                    // Convert coordinates to 360 degree grid
+                    if ($coordE < $coordW && $coordE < 0) {
+                        $coordE = 360 + $coordE;
+                    }
+                    if ($coordW < 0 && $coordW >= -180) {
+                        $coordW = 360 + $coordW;
+                        $coordE = 360 + $coordE;
+                    }
+                    if ($bboxW > 180 && ($coordW > 0 && $coordW < 180)) {
+                        $coordW = 360 + $coordW;
+                        $coordE = 360 + $coordE;
+                    }
+                    if ($bboxE > 180 && ($coordE > 0 && $coordE < 180)) {
+                        $coordE = 360 + $coordE;
+                    }
 
-          //Does coordinate fall within search box?
-          if ((($coordW >= $bboxW && $coordW <= $bboxE) || ($coordE >= $bboxW && $coordE <= $bboxE))
-               && (($coordS >= $bboxS && $coordS <= $bboxN) || ($coordN >= $bboxS && $coordN <= $bboxN))) {
-            $coordIntersect = true;
-            // Does searchbox fall within coordinate?
-          } elseif ((($bboxW >= $coordW && $bboxW <= $coordE) || ($bboxE >= $coordW && $bboxE <= $coordE))
-               && (($bboxS >= $coordS && $bboxS <= $coordN) || ($bboxN >= $coordS && $bboxN <= $coordN))) {
-            $coordIntersect = true;
-            // Does searchbox span coordinate?
-          } elseif ((($coordE >= $bboxW && $coordE <= $bboxE) && ($coordW >= $bboxW && $coordW <= $bboxE))
-                  && ($coordN > $bboxN && $coordS < $bboxS)) {
-            $coordIntersect = true;
-            // Does coordinate span searchbox?
-          } elseif (($coordW < $bboxW && $coordE > $bboxE)
-               && (($coordS >= $bboxS && $coordS <= $bboxN) && ($coordN >= $bboxS && $coordN <= $bboxN))) {
-            $coordIntersect = true;
-          } else {
-            $coordIntersect = false;
-          }
-          if ($coordIntersect == true) {
-            // Calculate center point
-            $centerWE = (($coordW - $coordE)/2) + $coordE;
-            $centerSN = (($coordN - $coordS)/2) + $coordS;
+                    //Does coordinate fall within search box?
+                    if (
+                        (($coordW >= $bboxW && $coordW <= $bboxE)
+                        || ($coordE >= $bboxW && $coordE <= $bboxE))
+                        && (($coordS >= $bboxS && $coordS <= $bboxN)
+                        || ($coordN >= $bboxS && $coordN <= $bboxN))
+                        ) {
+                        $coordIntersect = true;
+                        // Does searchbox fall within coordinate?
+                    } elseif (
+                        (($bboxW >= $coordW && $bboxW <= $coordE) 
+                        || ($bboxE >= $coordW && $bboxE <= $coordE))
+                        && (($bboxS >= $coordS && $bboxS <= $coordN)
+                        || ($bboxN >= $coordS && $bboxN <= $coordN))
+                        ) {
+                        $coordIntersect = true;
+                        // Does searchbox span coordinate?
+                    } elseif (
+                        (($coordE >= $bboxW && $coordE <= $bboxE)
+                        && ($coordW >= $bboxW && $coordW <= $bboxE))
+                        && ($coordN > $bboxN && $coordS < $bboxS)
+                        ) {
+                        $coordIntersect = true;
+                        // Does coordinate span searchbox?
+                    } elseif (
+                        ($coordW < $bboxW && $coordE > $bboxE)
+                        && (($coordS >= $bboxS && $coordS <= $bboxN)
+                        && ($coordN >= $bboxS && $coordN <= $bboxN))
+                        ) {
+                        $coordIntersect = true;
+                    } else {
+                        $coordIntersect = false;
+                    }
+                    if ($coordIntersect == true) {
+                        // Calculate center point
+                        $centerWE = (($coordW - $coordE)/2) + $coordE;
+                        $centerSN = (($coordN - $coordS)/2) + $coordS;
 
-            //Does center point fall within search box?
-            if (($centerWE >= $bboxW && $centerWE <= $bboxE)
-              && ($centerSN >= $bboxS && $centerSN <=$bboxN))
-            {
-              // convert coordinate to 180 degree grid
-              if ($centerWE > 180) {
-                $centerWE = $centerWE - 360;
-              }
-              $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
-              $addCtr = true;
-            } else {  // re-calculate the center point
-              if ($coordW < $bboxW) {
-                $coordW = $bboxW;
-              }
-              if ($coordE > $bboxE) {
-                $coordE = $bboxE;
-              }
-              if ($coordS < $bboxS) {
-                $coordS = $bboxS;
-              }
-              if ($coordN > $bboxN) {
-                $coordN = $bboxN;
-              }
-              $centerWE = (($coordE - $coordW)/2) + $coordW;
-              $centerSN = (($coordN - $coordS)/2) + $coordS;
-              //Does center point fall within search box?
-              if (($centerWE >= $bboxW && $centerWE <= $bboxE)
-                && ($centerSN >= $bboxS && $centerSN <=$bboxN))
-              {
-                // convert coordinate to 180 degree grid
-                if ($centerWE > 180) {
-                  $centerWE = $centerWE - 360;
+                        //Does center point fall within search box?
+                        if (
+                            ($centerWE >= $bboxW && $centerWE <= $bboxE)
+                            && ($centerSN >= $bboxS && $centerSN <=$bboxN)
+                            ) {
+                            // convert coordinate to 180 degree grid
+                            if ($centerWE > 180) {
+                                $centerWE = $centerWE - 360;
+                            }
+                                $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                                $addCtr = true;
+                            } else {  // re-calculate the center point
+                                if ($coordW < $bboxW) {
+                                    $coordW = $bboxW;
+                                }
+                                if ($coordE > $bboxE) {
+                                    $coordE = $bboxE;
+                                }
+                                if ($coordS < $bboxS) {
+                                    $coordS = $bboxS;
+                                }
+                                if ($coordN > $bboxN) {
+                                    $coordN = $bboxN;
+                                }
+                                $centerWE = (($coordE - $coordW)/2) + $coordW;
+                                $centerSN = (($coordN - $coordS)/2) + $coordS;
+                                //Does center point fall within search box?
+                                if (
+                                    ($centerWE >= $bboxW && $centerWE <= $bboxE)
+                                    && ($centerSN >= $bboxS && $centerSN <=$bboxN)
+                                    ) {
+                                    // convert coordinate to 180 degree grid
+                                    if ($centerWE > 180) {
+                                        $centerWE = $centerWE - 360;
+                                    }
+                                    $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                                    $addCtr = true;
+                                } else {  // make center point center of search box
+                                    $centerWE = (($bboxE - $bboxW)/2) + $bboxW;
+                                    $centerSN = (($bboxN - $bboxS)/2) + $bboxS;
+                                    if ($centerWE > 180) {
+                                        $centerWE = $centerWE - 360;
+                                    }
+                                    $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
+                                    $addCtr = true;
+                                }
+                            }
+                            if ($addCtr == true) {
+                                $centerCoordIds[] = $idCoords[0];
+                                break;
+                            }
+                        }
+                    }
                 }
-                $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
-                $addCtr = true;
-              } else {  // make center point center of search box
+            }
+            $rawCoordIds = array_unique($rawCoordIds);
+            if (count($rawCoordsIds) != count($centerCoordIds)) {
+                $addIds = array_diff($rawCoordIds, $centerCoordIds);
                 $centerWE = (($bboxE - $bboxW)/2) + $bboxW;
                 $centerSN = (($bboxN - $bboxS)/2) + $bboxS;
                 if ($centerWE > 180) {
-                  $centerWE = $centerWE - 360;
+                    $centerWE = $centerWE - 360;
                 }
-                $centerCoords[] = [$idCoords[0], $centerWE, $centerSN];
-                $addCtr = true;
-              }
+                foreach ($addIds as $coordId) {
+                    $centerCoords[] = [$coordId, $centerWE, $centerSN];
+                }
             }
-            if ($addCtr == true) {
-              $centerCoordIds[] = $idCoords[0];
-              break;
-            }
-          }
+            return $centerCoords;
         }
-      }
-    }
-    $rawCoordIds = array_unique($rawCoordIds);
-    if (count($rawCoordsIds) != count($centerCoordIds)) {
-      $addIds = array_diff($rawCoordIds, $centerCoordIds);
-      $centerWE = (($bboxE - $bboxW)/2) + $bboxW;
-      $centerSN = (($bboxN - $bboxS)/2) + $bboxS;
-      if ($centerWE > 180) {
-        $centerWE = $centerWE - 360;
-      }
-      foreach ($addIds as $coordId) {
-        $centerCoords[] = [$coordId, $centerWE, $centerSN];
-      }
-    }
-    return $centerCoords;
-    }
     }
 }
