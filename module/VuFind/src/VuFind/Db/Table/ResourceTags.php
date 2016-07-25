@@ -395,7 +395,7 @@ class ResourceTags extends Gateway
                 $select->where->equalTo('resource_tags.tag_id', $tagId);
             }
             $select->group(['tag_id', 'tag']);
-            $select->order(['tag']);
+            $select->order([new Expression('lower(tag)')]);
         };
         return $this->select($callback);
     }
@@ -457,6 +457,27 @@ class ResourceTags extends Gateway
     }
 
     /**
+     * Given an array for sorting database results, make sure the tag field is
+     * sorted in a case-insensitive fashion.
+     *
+     * @param array $order Order settings
+     *
+     * @return array
+     */
+    protected function formatTagOrder($order)
+    {
+        if (empty($order)) {
+            return $order;
+        }
+        $newOrder = [];
+        foreach ((array)$order as $current) {
+            $newOrder[] = $current == 'tag'
+                ? new Expression('lower(tag)') : $current;
+        }
+        return $newOrder;
+    }
+
+    /**
      * Get Resource Tags
      *
      * @param string $userId     ID of user
@@ -502,7 +523,7 @@ class ResourceTags extends Gateway
         if (null !== $tagId) {
             $select->where->equalTo('resource_tags.tag_id', $tagId);
         }
-        $select->order($order);
+        $select->order($this->formatTagOrder($order));
 
         if (null !== $page) {
             $select->limit($limit);

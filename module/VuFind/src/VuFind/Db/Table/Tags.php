@@ -198,9 +198,9 @@ class Tags extends Gateway
                 $select->group(['tags.id', 'tag']);
 
                 if ($sort == 'count') {
-                    $select->order(['cnt DESC', 'tags.tag']);
+                    $select->order(['cnt DESC', new Expression('lower(tags.tag)')]);
                 } else if ($sort == 'tag') {
-                    $select->order(['tags.tag']);
+                    $select->order([new Expression('lower(tags.tag)')]);
                 }
 
                 if ($limit > 0) {
@@ -284,14 +284,14 @@ class Tags extends Gateway
             $select->group(['tags.id', 'tags.tag']);
             switch ($sort) {
             case 'alphabetical':
-                $select->order(['tags.tag', 'cnt DESC']);
+                $select->order([new Expression('lower(tags.tag)'), 'cnt DESC']);
                 break;
             case 'popularity':
-                $select->order(['cnt DESC', 'tags.tag']);
+                $select->order(['cnt DESC', new Expression('lower(tags.tag)')]);
                 break;
             case 'recent':
                 $select->order(
-                    ['posted DESC', 'cnt DESC', 'tags.tag']
+                    ['posted DESC', 'cnt DESC', new Expression('lower(tags.tag)')]
                 );
                 break;
             }
