@@ -64,12 +64,12 @@ class ResourceTags extends Gateway
         $callback = function ($select) use ($resource, $tag, $user, $list) {
             $select->where->equalTo('resource_id', $resource)
                 ->equalTo('tag_id', $tag);
-            if (!is_null($list)) {
+            if (null !== $list) {
                 $select->where->equalTo('list_id', $list);
             } else {
                 $select->where->isNull('list_id');
             }
-            if (!is_null($user)) {
+            if (null !== $user) {
                 $select->where->equalTo('user_id', $user);
             } else {
                 $select->where->isNull('user_id');
@@ -82,13 +82,13 @@ class ResourceTags extends Gateway
             $result = $this->createRow();
             $result->resource_id = $resource;
             $result->tag_id = $tag;
-            if (!is_null($list)) {
+            if (null !== $list) {
                 $result->list_id = $list;
             }
-            if (!is_null($user)) {
+            if (null !== $user) {
                 $result->user_id = $user;
             }
-            if (!is_null($posted)) {
+            if (null !== $posted) {
                 $result->posted = $posted;
             }
             $result->save();
@@ -155,7 +155,7 @@ class ResourceTags extends Gateway
             );
             $select->where->equalTo('t.tag', $tag)
                 ->where->equalTo('resource_tags.user_id', $userId);
-            if (!is_null($listId)) {
+            if (null !== $listId) {
                 $select->where->equalTo('resource_tags.list_id', $listId);
             }
         };
@@ -213,13 +213,13 @@ class ResourceTags extends Gateway
     {
         $callback = function ($select) use ($resource, $user, $list, $tag) {
             $select->where->equalTo('user_id', $user);
-            if (!is_null($resource)) {
+            if (null !== $resource) {
                 if (!is_array($resource)) {
                     $resource = [$resource];
                 }
                 $select->where->in('resource_id', $resource);
             }
-            if (!is_null($list)) {
+            if (null !== $list) {
                 if (true === $list) {
                     // special case -- if $list is set to boolean true, we
                     // want to only delete tags that are associated with lists.
@@ -232,7 +232,7 @@ class ResourceTags extends Gateway
                     $select->where->equalTo('list_id', $list);
                 }
             }
-            if (!is_null($tag)) {
+            if (null !== $tag) {
                 $select->where->equalTo('tag_id', $tag);
             }
         };
@@ -328,13 +328,13 @@ class ResourceTags extends Gateway
                 'resource_tags.resource_id = r.id',
                 ["title" => "title"]
             );
-            if (!is_null($userId)) {
+            if (null !== $userId) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
             }
-            if (!is_null($resourceId)) {
+            if (null !== $resourceId) {
                 $select->where->equalTo('resource_tags.resource_id', $resourceId);
             }
-            if (!is_null($tagId)) {
+            if (null !== $tagId) {
                 $select->where->equalTo('resource_tags.tag_id', $tagId);
             }
             $select->group(['resource_id', 'title']);
@@ -385,13 +385,13 @@ class ResourceTags extends Gateway
                 'resource_tags.tag_id = t.id',
                 ["tag" => "tag"]
             );
-            if (!is_null($userId)) {
+            if (null !== $userId) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
             }
-            if (!is_null($resourceId)) {
+            if (null !== $resourceId) {
                 $select->where->equalTo('resource_tags.resource_id', $resourceId);
             }
-            if (!is_null($tagId)) {
+            if (null !== $tagId) {
                 $select->where->equalTo('resource_tags.tag_id', $tagId);
             }
             $select->group(['tag_id', 'tag']);
@@ -441,13 +441,13 @@ class ResourceTags extends Gateway
                 'resource_tags.user_id = u.id',
                 ["username" => "username"]
             );
-            if (!is_null($userId)) {
+            if (null !== $userId) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
             }
-            if (!is_null($resourceId)) {
+            if (null !== $resourceId) {
                 $select->where->equalTo('resource_tags.resource_id', $resourceId);
             }
-            if (!is_null($tagId)) {
+            if (null !== $tagId) {
                 $select->where->equalTo('resource_tags.tag_id', $tagId);
             }
             $select->group(['user_id', 'username']);
