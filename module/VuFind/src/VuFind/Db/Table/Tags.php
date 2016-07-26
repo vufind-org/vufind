@@ -436,7 +436,9 @@ class Tags extends Gateway
         $callback = function ($select) {
             $select->columns(
                 [
-                    'tag',
+                    'tag' => new Expression(
+                        'MIN(?)', ['tag'], [Expression::TYPE_IDENTIFIER]
+                    ),
                     'cnt' => new Expression(
                         'COUNT(?)', ['tag'], [Expression::TYPE_IDENTIFIER]
                     ),
@@ -448,7 +450,7 @@ class Tags extends Gateway
             $select->group(
                 $this->caseSensitive ? 'tag' : new Expression('lower(tag)')
             );
-            $select->having->greaterThan('cnt', 1);
+            $select->having('COUNT(tag) > 1');
         };
         return $this->select($callback);
     }
