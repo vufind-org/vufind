@@ -54,7 +54,7 @@ class Factory
         $settings = isset($config['Site']['asset_pipeline'])
             ? array_map('trim', explode(',', $config['Site']['asset_pipeline']))
             : [];
-        return in_array('*', $settings) || in_array(APPLICATION_ENV, $settings));
+        return in_array('*', $settings) || in_array(APPLICATION_ENV, $settings);
     }
 
     /**
