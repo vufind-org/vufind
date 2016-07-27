@@ -176,7 +176,7 @@ trait ConcatTrait
 
         $urlHelper = $this->getView()->plugin('url');
         return $urlHelper('home') . 'themes'
-            . $this->getResourceCacheDir(false). $filename;
+            . $this->getResourceCacheDir(false) . $filename;
     }
 
     /**
