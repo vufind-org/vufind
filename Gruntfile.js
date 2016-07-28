@@ -13,10 +13,13 @@ module.exports = function(grunt) {
             'img-path': '"../images"',
           }
         },
-        files: {
-          "themes/bootstrap3/css/compiled.css": "themes/bootstrap3/less/bootstrap.less",
-          "themes/bootprint3/css/compiled.css": "themes/bootprint3/less/bootprint.less",
-        }
+        files: [{
+          expand: true,
+          src: "themes/*/less/compiled.less",
+          rename: function (dest, src) {
+            return src.replace('/less/', '/css/').replace('.less', '.css');
+          }
+        }]
       }
     },
     // SASS compilation
