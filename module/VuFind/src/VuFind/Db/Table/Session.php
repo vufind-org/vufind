@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,11 +23,13 @@
  * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Db\Table;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
+use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for session
@@ -34,6 +37,7 @@ use VuFind\Exception\SessionExpired as SessionExpiredException;
  * @category VuFind
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -137,6 +141,61 @@ class Session extends Gateway
                 ->lessThan('last_used', time() - intval($sess_maxlifetime));
         };
         $this->delete($callback);
+    }
+
+    /**
+     * Delete expired sessions. Allows setting of 'from' and 'to' ID's so that rows
+     * can be deleted in small batches.
+     *
+     * @param int $daysOld Age in days of an "expired" session.
+     * @param int $idFrom  Lowest id of rows to delete.
+     * @param int $idTo    Highest id of rows to delete.
+     *
+     * @return int Number of rows deleted
+     */
+    public function deleteExpired($daysOld = 2, $idFrom = null, $idTo = null)
+    {
+        $expireDate = time() - $daysOld * 24 * 60 * 60;
+        $callback = function ($select) use ($expireDate, $idFrom, $idTo) {
+            $where = $select->where->lessThan('last_used', $expireDate);
+            if (null !== $idFrom) {
+                $where->and->greaterThanOrEqualTo('id', $idFrom);
+            }
+            if (null !== $idTo) {
+                $where->and->lessThanOrEqualTo('id', $idTo);
+            }
+        };
+        return $this->delete($callback);
+    }
+
+    /**
+     * Get the lowest id and highest id for expired sessions.
+     *
+     * @param int $daysOld Age in days of an "expired" session.
+     *
+     * @return array|bool Array of lowest id and highest id or false if no expired
+     * records found
+     */
+    public function getExpiredIdRange($daysOld = 2)
+    {
+        $expireDate = time() - $daysOld * 24 * 60 * 60;
+        $callback = function ($select) use ($expireDate) {
+            $select->where->lessThan('last_used', $expireDate);
+        };
+        $select = $this->getSql()->select();
+        $select->columns(
+            [
+                'id' => new Expression('1'), // required for TableGateway
+                'minId' => new Expression('MIN(id)'),
+                'maxId' => new Expression('MAX(id)'),
+            ]
+        );
+        $select->where($callback);
+        $result = $this->selectWith($select)->current();
+        if (null === $result->minId) {
+            return false;
+        }
+        return [$result->minId, $result->maxId];
     }
 
     /**

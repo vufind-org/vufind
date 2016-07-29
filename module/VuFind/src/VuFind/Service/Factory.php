@@ -885,7 +885,7 @@ class Factory
         // Set up the ExtendedIni plugin:
         $config = $sm->get('VuFind\Config')->get('config');
         $pathStack = [
-            APPLICATION_PATH  . '/languages',
+            APPLICATION_PATH . '/languages',
             LOCAL_OVERRIDE_DIR . '/languages'
         ];
         $fallbackLocales = $config->Site->language == 'en'
