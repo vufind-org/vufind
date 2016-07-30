@@ -1799,12 +1799,12 @@ class SolrDefault extends AbstractBase
     /**
      * Get longitude/latitude text (or false if not available).
      *
-     * @return string|bool
+     * @return array
      */
     public function getLongLat()
     {
         return isset($this->fields['long_lat'])
-            ? $this->fields['long_lat'] : false;
+            ? $this->fields['long_lat'] : [];
     }
 
     /**
@@ -1931,10 +1931,10 @@ class SolrDefault extends AbstractBase
      *
      * @return array
      */
-    public function getLatLonCoords()
+    public function getDisplayCoordinates()
     {
-        return isset($this->fields['latlon_coordinate'])
-            ? $this->fields['latlon_coordinate'] : [];
+        return isset($this->fields['long_lat_display'])
+            ? $this->fields['long_lat_display'] : [];
     }
 
     /**
@@ -1942,9 +1942,9 @@ class SolrDefault extends AbstractBase
      *
      * @return array
      */
-    public function getLatLonLabels()
+    public function getCoordinateLabels()
     {
-        return isset($this->fields['latlon_label'])
-            ? $this->fields['latlon_label'] : [];
+        return isset($this->fields['long_lat_label'])
+            ? $this->fields['long_lat_label'] : [];
     }
 }
