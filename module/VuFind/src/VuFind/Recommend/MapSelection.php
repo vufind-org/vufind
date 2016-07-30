@@ -491,9 +491,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                 }
             }
         }
-        $rawCoordIds = array_unique($rawCoordIds);
-        if (count($rawCoordsIds) != count($centerCoordIds)) {
-            $addIds = array_diff($rawCoordIds, $centerCoordIds);
+        $addIds = array_merge(array_diff($rawCoordIds, $centerCoordIds), array_diff($centerCoordIds, $rawCoordIds));
+        if (count($addIds)>0) {
             $centerWE = (($bboxE - $bboxW)/2) + $bboxW;
             $centerSN = (($bboxN - $bboxS)/2) + $bboxS;
             if ($centerWE > 180) {
