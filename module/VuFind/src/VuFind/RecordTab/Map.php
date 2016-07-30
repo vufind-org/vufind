@@ -165,7 +165,7 @@ class Map extends AbstractBase
             return json_encode([]);
         }
         $markers = [];
-        foreach ($longLat as $key=>$value) {
+        foreach ($longLat as $key => $value) {
             $coordval = explode(',', $value);
             $label = $mapDisplayLabels[$key];
             $markers[] = [
