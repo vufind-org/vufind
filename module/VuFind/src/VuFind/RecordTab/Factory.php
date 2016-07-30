@@ -186,9 +186,9 @@ class Factory
                 ? $config->Content->displayCoords : null;
             $mapLabels = isset($config->Content->mapLabels)
                 ? $config->Content->mapLabels : null;
-            $mapLabelsLoc = isset($config->Content->mapLabelsLoc)
-                ? $config->Content->mapLabelsLoc : null;
-            $options = [$enabled, $displayCoords, $mapLabels, $mapLabelsLoc];
+            $mapLabelsLookup = isset($config->Content->mapLabelsLookup)
+                ? $config->Content->mapLabelsLookup : null;
+            $options = [$enabled, $displayCoords, $mapLabels, $mapLabelsLookup];
         }
         return new Map($options);
     }
