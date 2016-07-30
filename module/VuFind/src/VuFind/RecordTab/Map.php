@@ -73,7 +73,7 @@ class Map extends AbstractBase
      *
      * @var string
      */
-    protected $mapLabelsLoc;
+    protected $mapLabelsLookup;
 
     /**
      * Constructor
@@ -85,8 +85,7 @@ class Map extends AbstractBase
         if ($options[0] == 'openlayers' || $options[0] == 'google') {
             $this->enabled = true;
             $this->mapType = $options[0];
-        }
-        if ($this->mapType == 'openlayers') {
+
             if (isset($options[0]) == true) {
                 $this->enabled = $options[0];
             }
@@ -97,7 +96,7 @@ class Map extends AbstractBase
                 $this->mapLabels = $options[2];
             }
             if (isset($options[3])) {
-                $this->mapLabelsLoc = $options[3];
+                $this->mapLabelsLookup = $options[3];
             }
         }
     }
@@ -161,17 +160,22 @@ class Map extends AbstractBase
     public function getGoogleMapMarker()
     {
         $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
+        $mapDisplayLabels = $this->getMapLabels();
         if (empty($longLat)) {
             return json_encode([]);
         }
-        $longLat = explode(',', $longLat);
-        $markers = [
-            [
-                'title' => (string) $this->getRecordDriver()->getBreadcrumb(),
-                'lon' => $longLat[0],
-                'lat' => $longLat[1]
-            ]
-        ];
+        $markers = [];
+        foreach ($longLat as $key=>$value) {
+            $coordval = explode(',', $value);
+            $label = $mapDisplayLabels[$key];
+            $markers[] = [
+                [
+                    'title' => $label,
+                    'lon' => $longLat[0],
+                    'lat' => $longLat[1]
+                ]
+            ];
+        }
         return json_encode($markers);
     }
 
@@ -217,7 +221,7 @@ class Map extends AbstractBase
     public function getDisplayCoords()
     {
         $label_coords = [];
-        $coords = $this->getRecordDriver()->tryMethod('getLatLonCoords');
+        $coords = $this->getRecordDriver()->tryMethod('getDisplayCoordinates');
         foreach ($coords as $val) {
             $coord = explode(' ', $val);
             $labelW = $coord[0];
@@ -245,15 +249,15 @@ class Map extends AbstractBase
     public function getMapLabels()
     {
         $labels = [];
-        if ($this->mapLabels == 'field') {
-            $labels = $this->getRecordDriver()->tryMethod('getLatLonLabels');
+        if ($this->mapLabels == 'long_lat_label') {
+            $labels = $this->getRecordDriver()->tryMethod('getCoordinateLabels');
             return $labels;
         }
         if ($this->mapLabels == 'file') {
-            $coords = $this->getRecordDriver()->tryMethod('getLatLonCoords');
+            $coords = $this->getRecordDriver()->tryMethod('getDisplayCoords');
             /* read lookup file into array */
             $label_lookup = [];
-            $file = \VuFind\Config\Locator::getConfigPath($this->mapLabelsLoc);
+            $file = \VuFind\Config\Locator::getConfigPath($this->mapLabelsLookup);
             if (file_exists($file)) {
                  $fp = fopen($file, 'r');
                 while (($line = fgetcsv($fp, 0, "\t")) !== false) {
@@ -272,7 +276,7 @@ class Map extends AbstractBase
                 $labelS = $coord[3];
                 /* Make combined coordinate string to match 
                     against lookup table coordinate */
-                $coordmatch = $labelS . $labelN . $labelE . $labelW;
+                $coordmatch = $labelW . $labelE . $labelN . $labelS;
                 /* See if coordinate string matches lookup 
                     table coordinates and if so return label */
                 $labelname = [];
