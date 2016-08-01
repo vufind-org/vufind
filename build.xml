@@ -358,6 +358,15 @@
         <exec command="echo building=\&quot;${BASENAME}\&quot; &gt;&gt; ${srcdir}/local/import/marc-${BASENAME}.properties" />
         <exec command="sed -e &quot;s!marc_local.properties!marc-${BASENAME}.properties!&quot; ${srcdir}/local/import/import.properties &gt; ${srcdir}/local/import/import-${BASENAME}.properties" />
 
+        <!-- if there is a file-specific import configuration, load it now: -->
+        <if>
+          <available file="${filename}.properties" />
+          <then>
+            <echo message="Found custom import configs for ${filename}." />
+            <exec command="cat ${filename}.properties &gt;&gt; ${srcdir}/local/import/marc-${BASENAME}.properties" />
+          </then>
+        </if>
+
         <!-- perform the import -->
         <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc.sh -p ${srcdir}/local/import/import-${BASENAME}.properties ${filename}" outputProperty="LASTOUTPUT" />
         <echo message="${LASTOUTPUT}" />
