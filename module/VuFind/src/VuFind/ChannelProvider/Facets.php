@@ -109,12 +109,18 @@ class Facets extends AbstractChannelProvider
     /**
      * Return channel information derived from a record driver object.
      *
-     * @param RecordDriver $driver Record driver
+     * @param RecordDriver $driver       Record driver
+     * @param string       $channelToken Token identifying a single specific channel
+     * to load (if omitted, all channels will be loaded)
      *
      * @return array
      */
-    public function getFromRecord(RecordDriver $driver)
+    public function getFromRecord(RecordDriver $driver, $channelToken = null)
     {
+        $results = $this->resultsManager->get($driver->getSourceIdentifier());
+        if (null !== $channelToken) {
+            return [$this->buildChannelFromToken($results, $channelToken)];
+        }
         $channels = [];
         $fieldCount = 0;
         $data = $driver->getRawData();
@@ -124,8 +130,6 @@ class Facets extends AbstractChannelProvider
             }
             $currentValueCount = 0;
             foreach ($data[$field] as $value) {
-                $results = $this->resultsManager
-                    ->get($driver->getSourceIdentifier());
                 $current = [
                     'value' => $value,
                     'displayText' => $value,
@@ -153,12 +157,17 @@ class Facets extends AbstractChannelProvider
     /**
      * Return channel information derived from a search results object.
      *
-     * @param Results $results Search results
+     * @param Results $results      Search results
+     * @param string  $channelToken Token identifying a single specific channel
+     * to load (if omitted, all channels will be loaded)
      *
      * @return array
      */
-    public function getFromSearch(Results $results)
+    public function getFromSearch(Results $results, $channelToken = null)
     {
+        if (null !== $channelToken) {
+            return [$this->buildChannelFromToken($results, $channelToken)];
+        }
         $channels = [];
         $fieldCount = 0;
         $facetList = $results->getFacetList();
@@ -200,13 +209,12 @@ class Facets extends AbstractChannelProvider
      *
      * @return array
      */
-    protected function buildChannelFromFacet(Results $results, $field, $value)
+    protected function buildChannel(Results $results, $filter, $title)
     {
         $newResults = clone($results);
         $params = $newResults->getParams();
 
         // Determine the filter for the current channel, and add it:
-        $filter = "$field:{$value['value']}";
         $params->addFilter($filter);
 
         $query = $newResults->getUrlQuery()->addFilter($filter);
@@ -218,10 +226,45 @@ class Facets extends AbstractChannelProvider
         // Run the search and convert the results into a channel:
         $newResults->performAndProcessSearch();
         return [
-            'title' => "{$this->fields[$field]}: {$value['displayText']}",
+            'title' => $title,
             'searchUrl' => $searchUrl,
             'channelsUrl' => $channelsUrl,
             'contents' => $this->summarizeRecordDrivers($newResults->getResults())
         ];
+    }
+
+    /**
+     * Call buildChannel using data from a token.
+     *
+     * @param Results $results Results object
+     * @param string  $token   Token to parse
+     *
+     * @return array
+     */
+    protected function buildChannelFromToken(Results $results, $token)
+    {
+        $parts = explode('|', $token, 2);
+        if (count($parts) < 2) {
+            return [];
+        }
+        return $this->buildChannel($results, $parts[1], $parts[0]);
+    }
+
+    /**
+     * Call buildChannel using data from facet results.
+     *
+     * @param Results $results Results object
+     * @param string  $field   Field name (for filter)
+     * @param array   $value   Field value information (for filter)
+     *
+     * @return array
+     */
+    protected function buildChannelFromFacet(Results $results, $field, $value)
+    {
+        return $this->buildChannel(
+            $results,
+            "$field:{$value['value']}",
+            "{$this->fields[$field]}: {$value['displayText']}"
+        );
     }
 }

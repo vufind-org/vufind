@@ -92,12 +92,19 @@ class SimilarItems extends AbstractChannelProvider
     /**
      * Return channel information derived from a record driver object.
      *
-     * @param RecordDriver $driver Record driver
+     * @param RecordDriver $driver       Record driver
+     * @param string       $channelToken Token identifying a single specific channel
+     * to load (if omitted, all channels will be loaded)
      *
      * @return array
      */
-    public function getFromRecord(RecordDriver $driver)
+    public function getFromRecord(RecordDriver $driver, $channelToken = null)
     {
+        // If we have a token and it doesn't match the record driver, we can't
+        // fetch any results!
+        if ($channelToken !== null && $channelToken !== $driver->getUniqueId()) {
+            return [];
+        }
         $channel = $this->buildChannelFromRecord($driver);
         return (count($channel['contents']) > 0) ? [$channel] : [];
     }
@@ -105,14 +112,21 @@ class SimilarItems extends AbstractChannelProvider
     /**
      * Return channel information derived from a search results object.
      *
-     * @param Results $results Search results
+     * @param Results $results      Search results
+     * @param string  $channelToken Token identifying a single specific channel
+     * to load (if omitted, all channels will be loaded)
      *
      * @return array
      */
-    public function getFromSearch(Results $results)
+    public function getFromSearch(Results $results, $channelToken = null)
     {
         $channels = [];
         foreach ($results->getResults() as $driver) {
+            // If we have a token and it doesn't match the current driver, skip
+            // that driver.
+            if ($channelToken !== null && $channelToken !== $driver->getUniqueId()) {
+                continue;
+            }
             $channel = $this->buildChannelFromRecord($driver);
             if (count($channel['contents']) > 0) {
                 $channels[] = $channel;

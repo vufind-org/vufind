@@ -57,10 +57,10 @@ class ChannelsController extends AbstractBase
 
         $providerIds = ['similaritems', 'facets'];
         $view->channels = [];
-        foreach ($providerIds as $current) {
-            $provider = $this->getChannelProvider($current);
+        $token = $this->params()->fromQuery('channelToken');
+        foreach ($this->getChannelProviderArray($providerIds) as $provider) {
             $view->channels = array_merge(
-                $view->channels, $provider->getFromRecord($record)
+                $view->channels, $provider->getFromRecord($record, $token)
             );
         }
         $view->setTemplate('channels/search');
@@ -85,7 +85,7 @@ class ChannelsController extends AbstractBase
             ->fromQuery('source', DEFAULT_SEARCH_BACKEND);
 
         $providerIds = ['facets', 'similaritems'];
-        $providers = array_map([$this, 'getChannelProvider'], $providerIds);
+        $providers = $this->getChannelProviderArray($providerIds);
 
         $callback = function ($runner, $params, $searchClassId) use ($providers) {
             foreach ($providers as $provider) {
@@ -95,12 +95,29 @@ class ChannelsController extends AbstractBase
         $results = $runner->run($request, $searchClassId, $callback);
 
         $view->channels = [];
+        $token = $this->params()->fromQuery('channelToken');
         foreach ($providers as $provider) {
             $view->channels = array_merge(
-                $view->channels, $provider->getFromSearch($results)
+                $view->channels, $provider->getFromSearch($results, $token)
             );
         }
         return $view;
+    }
+
+    /**
+     * Get an array of channel providers matching the provided IDs (or just one,
+     * if the channelProvider GET parameter is set).
+     *
+     * @param array $ids Array of IDs to load
+     *
+     * @return array
+     */
+    protected function getChannelProviderArray($ids)
+    {
+        $id = $this->params()->fromQuery('channelProvider');
+        return (!empty($id) && in_array($id, $ids))
+            ? [$this->getChannelProvider($id)]
+            : array_map([$this, 'getChannelProvider'], $ids);
     }
 
     /**
