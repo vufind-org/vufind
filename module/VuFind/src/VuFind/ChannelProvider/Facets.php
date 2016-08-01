@@ -204,8 +204,8 @@ class Facets extends AbstractChannelProvider
      * channel.
      *
      * @param Results $results Results object
-     * @param string  $field   Field name (for filter)
-     * @param array   $value   Field value information (for filter)
+     * @param string  $filter  Filter to apply to Solr
+     * @param string  $title   Channel title
      *
      * @return array
      */
