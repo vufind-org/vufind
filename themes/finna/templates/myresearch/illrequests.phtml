@@ -107,7 +107,7 @@
             <? endif; ?>
 
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
-              <?=$this->record($this->driver)->getFormatList() ?>
+              <?=$this->record($resource)->getFormatList() ?>
               <br/>
             <? endif; ?>
             <? if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
