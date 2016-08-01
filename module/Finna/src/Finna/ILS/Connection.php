@@ -269,9 +269,11 @@ class Connection extends \VuFind\ILS\Connection
      */
     public function loginAvailable()
     {
+        if (!$this->supportsMethod('getLoginDrivers', [])) {
+            return true;
+        }
         $loginDrivers = $this->getLoginDrivers();
-        return !$this->supportsMethod('getLoginDrivers', [])
-            || !empty($loginDrivers);
+        return !empty($loginDrivers);
     }
 
     /**
