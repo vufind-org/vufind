@@ -366,7 +366,9 @@ class VuFind
     {
         static $articles = ['a', 'an', 'the'];
 
-        $text = strtolower(trim($in));
+        $text = is_callable('mb_strtolower')
+            ? mb_strtolower(trim($in), 'UTF-8')
+            : strtolower(trim($in));
 
         foreach ($articles as $a) {
             if (substr($text, 0, strlen($a) + 1) == ($a . ' ')) {

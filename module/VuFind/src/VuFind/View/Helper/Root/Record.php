@@ -429,7 +429,7 @@ class Record extends AbstractHelper
     /**
      * Render a cover for the current record.
      *
-     * @param string $context Context of code being genarated
+     * @param string $context Context of code being generated
      * @param string $default The default size of the cover
      * @param string $link    The link for the anchor
      *
@@ -444,7 +444,7 @@ class Record extends AbstractHelper
     /**
      * Get the rendered cover plus some useful parameters.
      *
-     * @param string $context Context of code being genarated
+     * @param string $context Context of code being generated
      * @param string $default The default size of the cover
      * @param string $link    The link for the anchor
      *
@@ -477,7 +477,7 @@ class Record extends AbstractHelper
     /**
      * Get the configured thumbnail size for record lists
      *
-     * @param string $context Context of code being genarated
+     * @param string $context Context of code being generated
      * @param string $default The default size of the cover
      *
      * @return string

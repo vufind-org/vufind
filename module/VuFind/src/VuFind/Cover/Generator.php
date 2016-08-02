@@ -712,9 +712,9 @@ class Generator
 
         $bc = str_split($bc);
         for ($k = 0;$k < 4;$k++) {
-            $x = $k % 2   ? $halfWidth : $halfWidth - $boxWidth;
+            $x = $k % 2 ? $halfWidth : $halfWidth - $boxWidth;
             $y = $k / 2 < 1 ? $halfHeight : $halfHeight - $boxHeight;
-            $u = $k % 2   ? $boxWidth : -$boxWidth;
+            $u = $k % 2 ? $boxWidth : -$boxWidth;
             $v = $k / 2 < 1 ? $boxHeight : -$boxHeight;
             for ($i = 0;$i < 16;$i++) {
                 if ($bc[$i] == "1") {

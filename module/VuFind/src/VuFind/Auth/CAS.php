@@ -142,7 +142,7 @@ class CAS extends AbstractBase
             if (isset($cas->$attribute)) {
                 $value = $casauth->getAttribute($cas->$attribute);
                 if ($attribute != 'cat_password') {
-                    $user->$attribute = $value;
+                    $user->$attribute = ($value === null) ? '' : $value;
                 } else {
                     $catPassword = $value;
                 }

@@ -45,7 +45,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     protected $facetSortOptions = [
         'count' => 'sort_count',
-        'index' => 'sort_title'
+        'index' => 'sort_alphabetic'
     ];
 
     /**
@@ -196,6 +196,13 @@ class Options extends \VuFind\Search\Base\Options
         $config = $configLoader->get('config');
         if (isset($config->Spelling->enabled)) {
             $this->spellcheck = $config->Spelling->enabled;
+        }
+
+        // Turn on first/last navigation if configured:
+        if (isset($config->Record->first_last_navigation)
+            && $config->Record->first_last_navigation
+        ) {
+            $this->firstlastNavigation = true;
         }
 
         // Turn on highlighting if the user has requested highlighting or snippet

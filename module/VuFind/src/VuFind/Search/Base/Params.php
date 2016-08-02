@@ -1687,15 +1687,20 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Translate a string if a translator is available.
+     * Translate a string (or string-castable object)
      *
-     * @param string $msg Message to translate
+     * @param string|object|array $target  String to translate or an array of text
+     * domain and string to translate
+     * @param array               $tokens  Tokens to inject into the translated
+     * string
+     * @param string              $default Default value to use if no translation is
+     * found (null for no default).
      *
      * @return string
      */
-    public function translate($msg)
+    public function translate($target, $tokens = [], $default = null)
     {
-        return $this->getOptions()->translate($msg);
+        return $this->getOptions()->translate($target, $tokens, $default);
     }
 
     /**

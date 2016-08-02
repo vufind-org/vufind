@@ -322,7 +322,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $cmp = create_function(
                 '$a,$b',
                 'if ($a["shelving_key"] == $b["shelving_key"]) '
-                .     'return $a["number"] - $b["number"];'
+                . 'return $a["number"] - $b["number"];'
                 . 'return $a["shelving_key"] < $b["shelving_key"] ? 1 : -1;'
             );
             usort($items, $cmp);

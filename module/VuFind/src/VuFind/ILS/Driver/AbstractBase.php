@@ -155,4 +155,20 @@ abstract class AbstractBase implements DriverInterface
         ];
         $this->cache->setItem($this->formatCacheKey($key), $item);
     }
+
+    /**
+     * Helper function for removing cached data.
+     *
+     * @param string $key Cache entry key
+     *
+     * @return void
+     */
+    protected function removeCachedData($key)
+    {
+        // Don't write to cache if we don't have a cache!
+        if (null === $this->cache) {
+            return;
+        }
+        $this->cache->removeItem($this->formatCacheKey($key));
+    }
 }
