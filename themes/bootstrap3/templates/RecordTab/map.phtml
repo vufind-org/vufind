@@ -13,7 +13,7 @@
   </div>
 <? endif; ?>
 <? if (isset($mapType) && ($mapType == 'google')) : ?>
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.5&sensor=false&language=<?=$this->layout()->userLang?>"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?&key=<?=$this->tab->getGoogleMapAPI()?>&language=<?=$this->layout()->userLang?>"></script>
   <script type="text/javascript">
   var markers;
   var markersData;
