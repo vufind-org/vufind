@@ -36,7 +36,7 @@ usage()
 # Set VUFIND_HOME
 if [ -z "$VUFIND_HOME" ]
 then
-  VUFIND_HOME=`dirname $0`
+  VUFIND_HOME=$(dirname "$0")
 fi
 
 if [ -z "$SOLR_HOME" ]
@@ -65,4 +65,4 @@ then
 fi
 
 export SOLR_LOGS_DIR=$SOLR_LOGS_DIR
-$SOLR_BIN/solr $1 -p $SOLR_PORT -s $SOLR_HOME -m $SOLR_HEAP -a "-Dsolr.log=$SOLR_LOGS_DIR"
+"$SOLR_BIN/solr" "$1" -p "$SOLR_PORT" -s "$SOLR_HOME" -m "$SOLR_HEAP" -a "-Dsolr.log=$SOLR_LOGS_DIR"
