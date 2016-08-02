@@ -98,7 +98,7 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
                             continue;
                         }
                     }
-                    $user->$attribute = $value;
+                    $user->$attribute = ($value === null) ? '' : $value;
                 } else {
                     $catPassword = $value;
                 }
