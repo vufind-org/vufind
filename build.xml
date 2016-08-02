@@ -25,6 +25,7 @@
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
+  <property name="solr_version" value="5.5.0" />
   <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces,short_array_syntax,phpdoc_no_access,remove_leading_slash_use,eof_ending" />
 
 
@@ -137,6 +138,39 @@
     <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
+  <target name="installsolr" description="Install Solr">
+    <!-- load previously installed version from marker file, if present -->
+    <if>
+      <available file="${srcdir}/solr/vendor/.installedVersion" />
+      <then>
+        <loadfile property="existing_solr_version" file="${srcdir}/solr/vendor/.installedVersion" />
+      </then>
+    </if>
+    <!-- only attempt to install Solr if the desired version is not already there -->
+    <if>
+      <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
+      <then>
+        <!-- download from Apache if not already present in the downloads cache -->
+        <if>
+          <not><available file="${srcdir}/downloads/solr-${solr_version}.tgz" /></not>
+           <then>
+            <mkdir dir="${srcdir}/downloads" />
+            <httpget url="http://archive.apache.org/dist/lucene/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
+          </then>
+        </if>
+        <!-- unpack the archive into solr/vendor -->
+        <exec command="tar xzf ${srcdir}/downloads/solr-${solr_version}.tgz -p -C ${srcdir}/solr" passthru="true" checkreturn="true" />
+        <delete dir="${srcdir}/solr/vendor" includeemptydirs="true" failonerror="false" />
+        <move file="${srcdir}/solr/solr-${solr_version}" tofile="${srcdir}/solr/vendor" />
+        <!-- make scripts executable -->
+        <exec command="chmod -R +x ${srcdir}/solr/vendor/bin/*" />
+        <exec command="chmod -x ${srcdir}/solr/vendor/bin/*.cmd" />
+        <!-- update the marker file with the installed version -->
+        <echo file="${srcdir}/solr/vendor/.installedVersion" message="${solr_version}" />
+      </then>
+    </if>
+  </target>
+
   <target name="composer" description="Install dependencies with Composer">
     <httpget url="https://getcomposer.org/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
     <echo message="Installing dependencies..." />
@@ -147,6 +181,7 @@
   <target name="startup" description="install and activate demo">
     <!-- get dependencies -->
     <phingcall target="composer" />
+    <phingcall target="installsolr" />
 
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${srcdir}/local/cache" />
@@ -303,9 +338,13 @@
     <phingcall target="composer">
       <property name="composer_extra_params" value="--no-dev" />
     </phingcall>
+    <phingcall target="installsolr" />
     <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind" />
-    <copy todir = "${builddir}/export/vufind/usr/local/vufind/vendor">
+    <copy todir="${builddir}/export/vufind/usr/local/vufind/vendor">
       <fileset dir="${srcdir}/vendor" defaultexcludes="false" />
+    </copy>
+    <copy todir="${builddir}/export/vufind/usr/local/vufind/solr/vendor">
+      <fileset dir="${srcdir}/solr/vendor" defaultexcludes="false" />
     </copy>
 
     <!-- create a version-specific symlink so that tar/zip packages will have

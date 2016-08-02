@@ -5,6 +5,8 @@ ChangeLog
 .\#*
 TAGS
 *~
+/downloads
+/solr/vendor
 /vendor
 composer.lock
 composer.phar
