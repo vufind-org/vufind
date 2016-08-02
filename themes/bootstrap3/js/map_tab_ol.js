@@ -112,11 +112,11 @@ function loadMapTab(mapData) {
   // Adjust zoom extent and center of map
     if (featureCount === 1 && mapData[0][4] === 2) {
       map.getView().setZoom(4);
+      var lonlat = ol.proj.transform([mapData[0][0], mapData[0][1]], srcProj, dstProj);
       map.getView().setCenter(lonlat);
-
     } else {
       var extent = vectorLayer.getSource().getExtent();
-      map.getView().fit(extent,map.getSize());
+      map.getView().fit(extent, map.getSize());
     }
 
   // Turn on popup tool tips if labels or coordinates are enabled.
