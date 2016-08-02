@@ -234,6 +234,15 @@ Subject:
     era:
       - [and, 100]
       - [or, ~]
+
+  Coordinate:
+  DismaxFields:
+    - long_lat_display
+  QueryFields:
+    long_lat_display:
+      - [and, 100]
+      - [or, ~]
+      
 #  ExactSettings:
 #    DismaxFields:
 #      - topic_unstemmed^150
@@ -376,6 +385,7 @@ AllFields:
     - description
     - isbn
     - issn
+    - long_lat_display
   QueryFields:
     0:
       0:
@@ -433,6 +443,8 @@ AllFields:
     isbn:
       - [onephrase, ~]
     issn:
+      - [onephrase, ~]
+    long_lat_display:
       - [onephrase, ~]
 #  ExactSettings:
 #    DismaxFields:
