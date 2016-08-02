@@ -495,7 +495,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             array_diff($rawCoordIds, $centerCoordIds),
             array_diff($centerCoordIds, $rawCoordIds)
         );
-        if (count($addIds)>0) {
+        if (count($addIds) > 0) {
             $centerWE = (($bboxE - $bboxW) / 2) + $bboxW;
             $centerSN = (($bboxN - $bboxS) / 2) + $bboxS;
             if ($centerWE > 180) {
