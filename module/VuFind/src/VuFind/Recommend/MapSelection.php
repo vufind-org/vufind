@@ -351,7 +351,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $rawCoordIds = [];
         $centerCoordIds = [];
         // Both coordinate variables are in WENS order //
-        $rawCoords =$this->getSearchResultCoordinates();
+        $rawCoords = $this->getSearchResultCoordinates();
         $bboxCoords = $this->bboxSearchCoords;
         // Set up comparision variables //
         $bboxW = $bboxCoords[0];
@@ -406,7 +406,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     ) {
                         $coordIntersect = true;
                         // Does searchbox fall within coordinate?
-                    } elseif ((($bboxW >= $coordW && $bboxW <= $coordE) 
+                    } elseif ((($bboxW >= $coordW && $bboxW <= $coordE)
                         || ($bboxE >= $coordW && $bboxE <= $coordE))
                         && (($bboxS >= $coordS && $bboxS <= $coordN)
                         || ($bboxN >= $coordS && $bboxN <= $coordN))
@@ -429,18 +429,18 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     }
                     if ($coordIntersect == true) {
                         // Calculate center point
-                        $centerWE = (($coordW - $coordE)/2) + $coordE;
-                        $centerSN = (($coordN - $coordS)/2) + $coordS;
+                        $centerWE = (($coordW - $coordE) / 2) + $coordE;
+                        $centerSN = (($coordN - $coordS) / 2) + $coordS;
 
                         //Does center point fall within search box?
                         if (($centerWE >= $bboxW && $centerWE <= $bboxE)
-                            && ($centerSN >= $bboxS && $centerSN <=$bboxN)
+                            && ($centerSN >= $bboxS && $centerSN <= $bboxN)
                         ) {
                             // convert coordinate to 180 degree grid
                             if ($centerWE > 180) {
                                 $centerWE = $centerWE - 360;
                             }
-                                $centerCoords[] = [$idCoords[0], 
+                                $centerCoords[] = [$idCoords[0],
                                 $centerWE, $centerSN
                                 ];
                                 $addCtr = true;
@@ -457,27 +457,27 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             if ($coordN > $bboxN) {
                                 $coordN = $bboxN;
                             }
-                            $centerWE = (($coordE - $coordW)/2) + $coordW;
-                            $centerSN = (($coordN - $coordS)/2) + $coordS;
+                            $centerWE = (($coordE - $coordW) / 2) + $coordW;
+                            $centerSN = (($coordN - $coordS) / 2) + $coordS;
                             //Does center point fall within search box?
                             if (($centerWE >= $bboxW && $centerWE <= $bboxE)
-                                && ($centerSN >= $bboxS && $centerSN <=$bboxN)
+                                && ($centerSN >= $bboxS && $centerSN <= $bboxN)
                             ) {
                                 // convert coordinate to 180 degree grid
                                 if ($centerWE > 180) {
                                     $centerWE = $centerWE - 360;
                                 }
-                                $centerCoords[] = [$idCoords[0], 
+                                $centerCoords[] = [$idCoords[0],
                                 $centerWE, $centerSN
                                 ];
                                 $addCtr = true;
                             } else {  // make center point center of search box
-                                $centerWE = (($bboxE - $bboxW)/2) + $bboxW;
-                                $centerSN = (($bboxN - $bboxS)/2) + $bboxS;
+                                $centerWE = (($bboxE - $bboxW) / 2) + $bboxW;
+                                $centerSN = (($bboxN - $bboxS) / 2) + $bboxS;
                                 if ($centerWE > 180) {
                                     $centerWE = $centerWE - 360;
                                 }
-                                $centerCoords[] = [$idCoords[0], 
+                                $centerCoords[] = [$idCoords[0],
                                 $centerWE, $centerSN
                                 ];
                                 $addCtr = true;
@@ -492,12 +492,12 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             }
         }
         $addIds = array_merge(
-            array_diff($rawCoordIds, $centerCoordIds), 
+            array_diff($rawCoordIds, $centerCoordIds),
             array_diff($centerCoordIds, $rawCoordIds)
         );
         if (count($addIds)>0) {
-            $centerWE = (($bboxE - $bboxW)/2) + $bboxW;
-            $centerSN = (($bboxN - $bboxS)/2) + $bboxS;
+            $centerWE = (($bboxE - $bboxW) / 2) + $bboxW;
+            $centerSN = (($bboxN - $bboxS) / 2) + $bboxS;
             if ($centerWE > 180) {
                 $centerWE = $centerWE - 360;
             }
