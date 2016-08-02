@@ -76,6 +76,13 @@ class Map extends AbstractBase
     protected $mapLabelsLookup;
 
     /**
+     * GoogleMapAPI key from config.ini.
+     *
+     * @var string
+     */
+    protected $googleMapAPI;
+
+    /**
      * Constructor
      *
      * @param array $options from config.ini file
@@ -97,6 +104,9 @@ class Map extends AbstractBase
             }
             if (isset($options[3])) {
                 $this->mapLabelsLookup = $options[3];
+            }
+            if (isset($options[4])) {
+                $this->googleMapAPI = $options[4];
             }
         }
     }
@@ -130,6 +140,16 @@ class Map extends AbstractBase
     public function getMapType()
     {
         return $this->mapType;
+    }
+
+    /**
+     * Get the GoogleMapAPI.
+     *
+     * @return string
+     */
+    public function getGoogleMapAPI()
+    {
+        return $this->googleMapAPI;
     }
 
     /**
