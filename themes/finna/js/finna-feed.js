@@ -155,6 +155,7 @@ finna.feed = (function() {
                     if (finna.layout.isTouchDevice()
                         && typeof settings['linkText'] == 'undefined'
                     ) {
+                        $('.carousel-text').css('padding-bottom', '30px');
                         holder.find('.slick-slide a').click(function(event) {
                             if (!$(this).closest('.slick-slide').hasClass('clicked')) {
                                 $(this).closest('.slick-slide').addClass('clicked');
