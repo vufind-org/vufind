@@ -1,7 +1,7 @@
 <?
   $searchParams = $this->recommend->getSearchParams();
 
-  $this->headScript()->appendFile('https://maps.googleapis.com/maps/api/js?v=3.8&sensor=false&language='.$this->layout()->userLang);
+  $this->headScript()->appendFile('https://maps.googleapis.com/maps/api/js?key=' . urlencode($this->recommend->getGoogleMapAPI()) . '&sensor=false&language='.$this->layout()->userLang);
   $this->headScript()->appendFile('vendor/markerclusterer.min.js');
 ?>
 <script type="text/javascript">
@@ -44,7 +44,7 @@ ClusterIcon.prototype.onAdd = function () {
   this.div_ = document.createElement("div");
   this.div_.className = "clusterDiv";
   if (this.visible_) {
-    this.removeClass('hidden');
+    $(this).removeClass('hidden');
   }
 
   this.getPanes().overlayMouseTarget.appendChild(this.div_);
@@ -86,7 +86,7 @@ ClusterIcon.prototype.onAdd = function () {
  * @type {string}
  * @constant
  */
-MarkerClusterer.IMAGE_PATH = "https://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/images/m";
+MarkerClusterer.IMAGE_PATH = "https://raw.githubusercontent.com/googlemaps/js-marker-clusterer/gh-pages/images/m";
 
 var markers;
 var mc;

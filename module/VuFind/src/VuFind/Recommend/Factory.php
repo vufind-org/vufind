@@ -221,6 +221,21 @@ class Factory
     }
 
     /**
+     * Factory for ResultGoogleMapAjax Recommendations.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ResultGoogleMapAjax
+     */
+    public static function getResultGoogleMapAjax(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $key = isset($config->Content->googleMapAPI)
+            ? $config->Content->googleMapAPI : null;
+        return new ResultGoogleMapAjax($key);
+    }
+
+    /**
      * Factory for SideFacets module.
      *
      * @param ServiceManager $sm Service manager.
