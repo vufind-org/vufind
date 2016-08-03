@@ -410,7 +410,7 @@ class AjaxController extends AbstractBase
 
         // Determine location string based on findings:
         $location = $this->pickValue(
-            $locations, $locationSetting, 'Multiple Locations', 'location_'
+            $locations, $locationSetting, 'Multiple Locations', 'Location::'
         );
 
         if (!empty($services)) {
@@ -487,7 +487,7 @@ class AjaxController extends AbstractBase
                 'availability' =>
                     isset($details['available']) ? $details['available'] : false,
                 'location' => htmlentities(
-                    $this->translate('location_' . $location, [], $location),
+                    $this->translate('Location::' . $location, [], $location),
                     ENT_COMPAT, 'UTF-8'
                 ),
                 'callnumbers' =>
@@ -1309,7 +1309,7 @@ class AjaxController extends AbstractBase
                 foreach ($results as &$result) {
                     if (isset($result['name'])) {
                         $result['name'] = $this->translate(
-                            'location_' . $result['name'],
+                            'Location::' . $result['name'],
                             [],
                             $result['name']
                         );
@@ -1365,7 +1365,7 @@ class AjaxController extends AbstractBase
                 foreach ($results as &$result) {
                     if (isset($result['locationDisplay'])) {
                         $result['locationDisplay'] = $this->translate(
-                            'location_' . $result['locationDisplay'],
+                            'Location::' . $result['locationDisplay'],
                             [],
                             $result['locationDisplay']
                         );

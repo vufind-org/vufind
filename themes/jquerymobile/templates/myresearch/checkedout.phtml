@@ -77,7 +77,7 @@
             <? endif; ?>
 
             <? if (!empty($ilsDetails['borrowingLocation'])): ?>
-              <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], array(), $ilsDetails['borrowingLocation'])?>
+              <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('Location::' . $ilsDetails['borrowingLocation'], array(), $ilsDetails['borrowingLocation'])?>
               <br />
             <? endif; ?>
 
