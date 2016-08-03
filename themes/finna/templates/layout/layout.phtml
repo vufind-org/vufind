@@ -5,7 +5,6 @@
 <html lang="<?=$this->layout()->userLang?>">
   <head>
     <?$this->headThemeResources()?>
-    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <? // Turn off automatic telephone number detection on iOS ?>
@@ -204,7 +203,7 @@ JS;
         $this->layout()->searchbox = $this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => isset($this->layout()->ignoreHiddenFilterMemory) ? $this->layout()->ignoreHiddenFilterMemory : false]);
       }
     ?>
-    <header role="banner" class="hidden-print">
+    <header class="hidden-print">
       <? if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/(?i)msie [5-8]/',$_SERVER['HTTP_USER_AGENT'])): ?>
       <div class="container-fluid system-messages">
         <div class="row">
@@ -237,7 +236,7 @@ JS;
         </div>
       </div>
     </header>
-    <section role="search" class="searchLayout<?=$currentTabClass?>" id="content">
+    <section role="search" class="searchLayout<?=$currentTabClass?>">
       <? if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
           <a class="btn btn-primary floating-feedback-btn hidden-xs" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Give Feedback')?></a>
       <? endif; ?>
@@ -315,14 +314,14 @@ JS;
         <?=$this->layout()->content ?>
       </div>
     </section>
-    <footer role="contentinfo" class="hidden-print">
+    <footer class="hidden-print">
       <div class="container">
         <?=$this->render('footer.phtml')?>
         <?=$this->layout()->poweredBy ?>
       </div>
     </footer>
     <!-- MODAL IN CASE WE NEED ONE -->
-    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="sr-only"><?=$this->transEsc('close') ?></span></button>
