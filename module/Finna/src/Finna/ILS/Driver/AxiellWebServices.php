@@ -411,7 +411,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             if (is_object($organisation->branches->branch)) {
                 $locationsList[] = [
                     'locationID' =>
-                       $organisationID . '.' .  $organisation->branches->branch->id,
+                       $organisationID . '.' . $organisation->branches->branch->id,
                     'locationDisplay' => $organisation->branches->branch->name
                 ];
             } else {

@@ -91,7 +91,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
                 ? $feedback->recipient_name : 'Your Library';
             $email_subject = isset($feedback->email_subject)
                 ? $feedback->email_subject : 'VuFind Feedback';
-            $email_subject .= ' (' .  $this->translate($category) . ')';
+            $email_subject .= ' (' . $this->translate($category) . ')';
             $sender_email = isset($feedback->sender_email)
                 ? $feedback->sender_email : 'noreply@vufind.org';
             $sender_name = isset($feedback->sender_name)
