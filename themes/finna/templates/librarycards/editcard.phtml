@@ -29,11 +29,17 @@
   <div class="form-group">
     <label class="col-sm-3 control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
     <div class="col-sm-9">
-      <select id="login_target" name="target" class="form-control">
-      <? foreach ($this->targets as $target): ?>
-        <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
-      <? endforeach; ?>
-      </select>
+      <? if (count($this->targets) > 1): ?>
+        <select id="login_target" name="target" class="form-control">
+        <? foreach ($this->targets as $target): ?>
+          <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
+        <? endforeach; ?>
+        </select>
+      <? endif; ?>
+      <? if (count($this->targets) == 1): ?>
+        <input type="hidden" id="login_target" name="target" class="form-control" value="<?=$this->escapeHtmlAttr($target)?>" />
+        <p style="padding-top:7px;"><?=$this->transEsc("source_$target", null, $target)?></p>
+      <? endif; ?>
     </div>
   </div>
   <? endif; ?>

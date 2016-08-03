@@ -1,17 +1,22 @@
 <!-- START of: finna - Auth/MultiILS/loginfields.phtml -->
 <div class="col-sm-6">
   <div class="form-group">
-    <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
-      <?$currentTarget = $this->request->get('target'); if (!$currentTarget) $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();?>
+    <?$currentTarget = $this->request->get('target'); if (!$currentTarget) $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();?>
+    <? if (count($this->auth()->getManager()->getLoginTargets()) > 1): ?>
+      <label class="control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
       <select id="login_target" name="target" class="form-control">
-      <?foreach ($this->auth()->getManager()->getLoginTargets() as $target):?>
+        <?foreach ($this->auth()->getManager()->getLoginTargets() as $target):?>
         <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
-      <? endforeach ?>
+        <? endforeach ?>
       </select>
+    <? else: ?>
+      <input type="hidden" id="login_target" name="target" value="<?=$this->escapeHtmlAttr($currentTarget)?>">
+      <div><strong><?=$this->transEsc("source_$currentTarget", null, $currentTarget)?></strong></div>
+    <? endif; ?>
   </div>
   <div class="form-group">
     <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
-      <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"/>
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"/>
   </div>
 
   <div class="form-group">
@@ -21,7 +26,7 @@
 
   <div class="form-group">
     <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
-      <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" type="password" name="password" class="form-control"/>
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" type="password" name="password" class="form-control"/>
   </div>
 </div>
 <div class="col-sm-6 hidden-xs">
