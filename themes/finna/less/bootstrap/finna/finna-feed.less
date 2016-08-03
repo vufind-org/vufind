@@ -106,23 +106,26 @@
         & p {
             position: relative;
             margin: 0;
-            
+            top: 0;
             padding: 10px 0px;
             text-shadow: @finna-text-shadow;
             transition: opacity 0.4s ease;
             
             word-break: break-word;
             word-wrap: break-word;
-            & .carousel-link {
-                border-top: 1px solid @carousel-slide-text-color;
-                padding-top: 5px;
-                margin-top: 5px;
-                margin-bottom: 5px;
-                display: block;
-                color: @carousel-slide-link-color;
-                font-weight: bold;
-            }
-        }        
+        }   
+        & a.carousel-link {
+            position: absolute;
+            bottom: 0px;
+            width: 100%;
+            font-weight: bold;
+            margin-left: -10px;
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid @carousel-slide-text-color;
+            padding: 5px 10px;
+            box-shadow: 0px -11px 20px -9px black;
+            color: @carousel-slide-link-color;
+        }
     }
 
     & .slick-slider.slick-vertical {
