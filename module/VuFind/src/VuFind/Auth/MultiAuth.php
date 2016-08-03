@@ -130,9 +130,11 @@ class MultiAuth extends AbstractBase
     public function setConfig($config)
     {
         parent::setConfig($config);
-        $this->methods = array_map(
-            'trim', explode(',', $config->MultiAuth->method_order)
-        );
+        if (isset($config->MultiAuth->method_order)) {
+            $this->methods = array_map(
+                'trim', explode(',', $config->MultiAuth->method_order)
+            );
+        }
         if (isset($config->MultiAuth->filters)
             && strlen($config->MultiAuth->filters)
         ) {
