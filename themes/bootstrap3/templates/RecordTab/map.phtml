@@ -41,9 +41,9 @@
     deleteOverlays();
     markers = [];
     for (var i = 0; i<markersData.length; i++){
-      var disTitle = markersData[i][0].title;
+      var disTitle = markersData[i][0].title ? markersData[i][0].title : '';
       var iconTitle = disTitle;
-      if (disTitle && disTitle.length>25){
+      if (disTitle.length>25){
           iconTitle = disTitle.substring(0,25) + "...";
       }
       var markerImg = "https://chart.googleapis.com/chart?chst=d_bubble_text_small&chld=edge_bc|" + iconTitle +"|EEEAE3|";
