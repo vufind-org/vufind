@@ -187,12 +187,13 @@ class Map extends AbstractBase
         $markers = [];
         foreach ($longLat as $key => $value) {
             $coordval = explode(',', $value);
-            $label = $mapDisplayLabels[$key];
+            $label = isset($mapDisplayLabels[$key])
+                ? $mapDisplayLabels[$key] : '';
             $markers[] = [
                 [
                     'title' => $label,
-                    'lon' => $longLat[0],
-                    'lat' => $longLat[1]
+                    'lon' => $coordval[0],
+                    'lat' => $coordval[1]
                 ]
             ];
         }
@@ -288,24 +289,26 @@ class Map extends AbstractBase
                  fclose($fp);
             }
             $labels = [];
-            foreach ($coords as $val) {
-                $coord = explode(' ', $val);
-                $labelW = $coord[0];
-                $labelE = $coord[1];
-                $labelN = $coord[2];
-                $labelS = $coord[3];
-                /* Make combined coordinate string to match 
-                    against lookup table coordinate */
-                $coordmatch = $labelW . $labelE . $labelN . $labelS;
-                /* See if coordinate string matches lookup 
-                    table coordinates and if so return label */
-                $labelname = [];
-                foreach ($label_lookup as $data) {
-                    if ($data[0] == $coordmatch) {
-                        $labelname = $data[1];
+            if (null !== $coords) {
+                foreach ($coords as $val) {
+                    $coord = explode(' ', $val);
+                    $labelW = $coord[0];
+                    $labelE = $coord[1];
+                    $labelN = $coord[2];
+                    $labelS = $coord[3];
+                    /* Make combined coordinate string to match 
+                        against lookup table coordinate */
+                    $coordmatch = $labelW . $labelE . $labelN . $labelS;
+                    /* See if coordinate string matches lookup 
+                        table coordinates and if so return label */
+                    $labelname = [];
+                    foreach ($label_lookup as $data) {
+                        if ($data[0] == $coordmatch) {
+                            $labelname = $data[1];
+                        }
                     }
+                    array_push($labels, $labelname);
                 }
-                array_push($labels, $labelname);
             }
             return $labels;
         }
