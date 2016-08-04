@@ -50,6 +50,20 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
     protected $apiUrl;
 
     /**
+     * REST API user userid/login
+     *
+     * @var string
+     */
+    protected $apiUserid;
+
+    /**
+     * REST API user password
+     *
+     * @var string
+     */
+    protected $apiPassword;
+
+    /**
      * Location codes
      *
      * @var array
@@ -106,6 +120,15 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
         $this->apiUrl = isset($this->config['Catalog']['apiurl'])
             ? $this->config['Catalog']['url'] : "";
 
+        // Storing the base URL of ILS
+        $this->apiUserid = isset($this->config['Catalog']['apiuserid'])
+            ? $this->config['Catalog']['apiuserid'] : null;
+
+        // Storing the base URL of ILS
+        $this->apiPassword = isset($this->config['Catalog']['apiuserpassword'])
+            ? $this->config['Catalog']['apiuserpassword'] : null;
+
+
         // Default location defined in 'KohaRESTful.ini'
         $this->defaultLocation
             = isset($this->config['Holds']['defaultPickUpLocation'])
@@ -129,19 +152,31 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
      *
      * Makes a request to the Koha ILSDI API
      *
-     * @param string $api_query   Query string for request (starts with "/")
-     * @param string $http_method HTTP method (default = GET)
+     * @param string $apiQuery   Query string for request (starts with "/")
+     * @param string $httpMethod HTTP method (default = GET)
      * @param array  $data        If method is PUT or POST, provide needed data i this paramater (default = null)
      *
      * @throws ILSException
      * @return array
      */
-    protected function makeRequest($api_query, $http_method = "GET", $data = null)
+    protected function makeRequest($apiQuery, $httpMethod = "GET", $data = null)
     {
-        $http_headers = [
+        $kohaDate = date("r"), // RFC 1123/2822
+        $signature = implode(" ", [(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "HTTPS" : "HTTP",
+                                   $this->apiUserid,
+                                   $kohaDate
+                     ]);
+
+        $hashedSignature = hash_hmac("sha256", $signature, $this->apiPassword);
+
+        $httpHeaders = [
+            "Accept" => "application/json",
+            "X-Koha-Date" => $kohaDate,
+            "Authorization" => "Koha " . $this->apiUserid . ":" . $hashedSignature ;
         ];
 
-        $client = $this->httpService->createClient($this->apiurl . $api_query, $http_method);
+        $client = $this->httpService->createClient($this->apiUrl . $apiQuery, $httpMethod);
+        $client->setHeaders($httpHeaders);
         if($data !== null) {
             $client->setRawBody(http_build_query($data));
         }
@@ -155,7 +190,7 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
         if (!$response->isSuccess()) {
             $this->debug(
                 'HTTP status ' . $response->getStatusCode() .
-                ' received, accessing Koha RESTful API: ' . $api_query
+                ' received, accessing Koha RESTful API: ' . $apiQuery
             );
             return false;
         }
@@ -166,7 +201,7 @@ class KohaRESTful extends \VuFind\ILS\Driver\KohaILSDI implements
    /**
     * https://vufind.org/wiki/development:plugins:ils_drivers#getpickuplocations
     */
-    public function getPickupLocations($patron = false, $hodDetails = null)
+    public function getPickupLocations($patron = false, $holdDetails = null)
     {
         $libraries = $this->makeRequest("/libraries");
         $locations = [];
