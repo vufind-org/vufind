@@ -3,10 +3,13 @@ import org.marc4j.marc.DataField;
 import org.solrmarc.index.UpdateDateTracker;
 import org.ini4j.Ini;
 import java.util.Arrays;
+import java.util.ArrayList;
 
 // define the base level indexer so that its methods can be called from the script.
 // note that the SolrIndexer code will set this value before the script methods are called.
 org.solrmarc.index.SolrIndexer indexer = null;
+
+relatorSynonymLookup = new HashMap();
 
 /**
  * Check if a particular Datafield meets the specified relator requirements.
@@ -143,6 +146,20 @@ public List getAuthorsFilteredByRelator(Record record, String tagList,
 }
 
 /**
+ * If the provided relator is included in the synonym list, convert it back to
+ * a code (for better standardization/translation).
+ *
+ * @param relator Relator code to check
+ * @return Code version, if found, or raw string if no match found.
+ */
+public String mapRelatorStringToCode(relator)
+{
+    String normalizedRelator = normalizeRelatorString(relator);
+    return relatorSynonymLookup.containsKey(normalizedRelator)
+        ? relatorSynonymLookup.get(normalizedRelator) : relator;
+}
+
+/**
  * Filter values retrieved using tagList to include only those whose relator
  * values are acceptable. Used for separating different types of authors.
  *
@@ -216,7 +233,7 @@ public List getRelatorsFilteredByRelator(Record record, String tagList,
                     }
                 }
 
-                result.add(relator);
+                result.add(mapRelatorStringToCode(relator));
             }
         }
     }
@@ -276,20 +293,43 @@ public String[] loadRelatorConfig(String setting) {
 }
 
 /**
+ * Normalizes a relator string and returns a list containing the normalized
+ * relator plus any configured synonyms.
+ *
+ * @param relator Relator term to normalize
+ * @return List of strings
+ */
+public List normalizeRelatorAndAddSynonyms(String relator)
+{
+    newList = new ArrayList();
+    String normalized = normalizeRelatorString(relator);
+    newList.add(normalized);
+    String synonyms = indexer.getConfigSetting(
+        "author-classification.ini", "RelatorSynonyms", relator
+    );
+    if (null != synonyms && synonyms.length() > 0) {
+        for (String synonym: synonyms.split("\\|")) {
+            String normalizedSynonym = normalizeRelatorString(synonym);
+            relatorSynonymLookup.put(normalizedSynonym, relator);
+            newList.add(normalizedSynonym);
+        }
+    }
+    return newList;
+}
+
+/**
  * Normalizes the strings in a list.
  *
  * @param stringList List of strings to be normalized
- * @return stringList Normalized List of strings 
+ * @return Normalized List of strings 
  */
 public List normalizeRelatorStringList(List stringList)
 {
-    for (int j = 0; j < stringList.size(); j++) {
-        stringList.set(
-            j,
-            normalizeRelatorString(stringList.get(j))
-        );
+    newList = new ArrayList();
+    for (String relator: stringList) {
+        newList.addAll(normalizeRelatorAndAddSynonyms(relator));
     }
-    return stringList;
+    return newList;
 }
 
 /**
