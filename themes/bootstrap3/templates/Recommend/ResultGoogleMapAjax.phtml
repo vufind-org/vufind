@@ -116,20 +116,25 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
       };
       map = new google.maps.Map(document.getElementById("map_canvas"),
           myOptions);
-      //mc = new MarkerClusterer(map);
-      showMarkers();
+
+      var useGmm = document.getElementById('usegmm');
+      google.maps.event.addDomListener(useGmm, 'click', refreshMap);
+
       var checkbx = document.getElementById("useCluster");
       var wrap = document.getElementById("mapWrap");
       wrap.style.display = "block";
       checkbx.style.display = "block";
+
+      showMarkers();
     });
   }
   function showMarkers(){
+    markers = [];
+
     deleteOverlays();
-    if(mc != null) {
+    if (mc) {
       mc.clearMarkers();
     }
-    markers = [];
 
     for (var i = 0; i<markersData.length; i++){
       var disTitle = markersData[i].title;
@@ -159,7 +164,7 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
       mc = new MarkerClusterer(map, markers);
     } else {
       for (var i = 0; i < markers.length; i++) {
-        map.addOverlay(markers[i]);
+        markers[i].setMap(map);
       }
     }
   }
@@ -187,6 +192,7 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
       }
   }
   function refreshMap() {
+    deleteOverlays();
     showMarkers();
   }
 
@@ -197,7 +203,7 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
   <div class="mapClusterToggle" id="useCluster">
     <div class="checkbox">
       <label for="usegmm">
-        <input type="checkbox" id="usegmm" checked="true" onclick="refreshMap();"></input>
+        <input type="checkbox" id="usegmm" checked="true"></input>
         <?=$this->transEsc('google_map_cluster_points') ?>
       </label>
     </div>
