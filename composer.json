@@ -8,12 +8,6 @@
         }
     ],
     "license": "GPL-2.0",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/zendframework/zendservice_amazon"
-        }
-    ],
     "require": {
         "aferrandini/phpqrcode": "1.0.1",
         "jasig/phpcas": "1.3.3",
