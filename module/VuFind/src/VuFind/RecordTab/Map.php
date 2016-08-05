@@ -221,8 +221,7 @@ class Map extends AbstractBase
                 $latN = (float)$match[3];
                 $latS = (float)$match[4];
                 // Display as point or polygon? 
-                // Use 0.4 as point threshold due to ol3 display oddities
-                if ((abs($lonE - $lonW) < 0.4) && (abs($latN - $latS) < 0.4)) {
+                if (($lonE == $lonW) && ($latN == $latS)) {
                     $shape = 2;
                 } else {
                     $shape = 4;
