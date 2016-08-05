@@ -92,51 +92,49 @@
       </span>
       <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
       <div class="no-js">
-        <? if(!empty($this->formOverride)): ?>
+        <? if (!empty($this->formOverride)): ?>
           <?=$this->formOverride ?>
         <? else: ?>
-
-          <? for($group=0 ; $group<3 || $group<=$setGroupCount ; $group++): ?>
-            <? if($group == 0): ?>
-            <div id="new_group_template">
+          <? for ($group=0 ; $group<3 || $group<=$setGroupCount ; $group++): ?>
+            <? if ($group == 0): ?>
+              <div id="new_group_template">
             <? endif; ?>
-              <div id="group<?=$group ?>" class="group well">
-                <a href="#" class="group-close hidden" title="<?=$this->transEsc("del_search")?>"><i class="fa fa-times" aria-hidden="true"></i> <?=$this->transEsc("del_search")?></a>
-                <div class="row">
-                  <div class="col-sm-5 col-sm-push-7 match">
-                    <label class="search_bool"><?=$this->transEsc("search_match")?>:</label>
-                    <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control form-inline">
-                      <option value="AND"<? if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
-                      <option value="OR"<? if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
-                      <option value="NOT"<? if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_NOT")?></option>
-                    </select>
-                  </div>
-                  <div class="col-sm-7 col-sm-pull-5">
-                    <? for($search=0 ; $search<3 || (isset($setQueries[$group]) && $search<count($setQueries[$group])) ; $search++): ?>
-                      <? if($group == 0 && $search == 0): ?>
-                        <div id="new_search_template">
-                      <? endif; ?>
-                      <div id="search<?=$group.'_'.$search ?>" class="search">
-                        <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="form-control form-inline responsive-field" placeholder="<?=$this->transEsc("Search words")?>..." type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
-                          <select class="type form-control form-inline responsive-field" name="type<?=$group ?>[]">
-                          <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                            <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>
-                          <? endforeach; ?>
-                          </select>
+            <div id="group<?=$group ?>" class="group well">
+              <a href="#" class="group-close hidden" title="<?=$this->transEsc("del_search")?>"><i class="fa fa-times" aria-hidden="true"></i> <?=$this->transEsc("del_search")?></a>
+              <div class="row">
+                <div class="col-sm-5 col-sm-push-7 match">
+                  <label class="search_bool"><?=$this->transEsc("search_match")?>:</label>
+                  <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control form-inline">
+                    <option value="AND"<? if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
+                    <option value="OR"<? if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
+                    <option value="NOT"<? if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_NOT")?></option>
+                  </select>
+                </div>
+                <div class="col-sm-7 col-sm-pull-5">
+                  <? for ($search=0 ; $search<3 || (isset($setQueries[$group]) && $search<count($setQueries[$group])) ; $search++): ?>
+                    <? if ($group == 0 && $search == 0): ?>
+                      <div id="new_search_template">
+                    <? endif; ?>
+                    <div id="search<?=$group.'_'.$search ?>" class="search">
+                      <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="form-control form-inline responsive-field" placeholder="<?=$this->transEsc("Search words")?>..." type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
+                      <select class="type form-control form-inline responsive-field" name="type<?=$group ?>[]">
+                        <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                          <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>
+                        <? endforeach; ?>
+                      </select>
+                    </div>
+                    <? if ($group == 0 && $search == 0): ?>
                       </div>
-                      <? if($group == 0 && $search == 0): ?>
-                          </div>
-                        <span class="search_place_holder hidden"></span> <a href="#" class="add_search_link hidden"><i class="fa fa-plus-small" aria-hidden="true"></i> <?=$this->transEsc("add_search")?></a>
-                      <? endif; ?>
-                    <? endfor; ?>
-                  </div>
+                      <span class="search_place_holder hidden"></span> <a href="#" class="add_search_link hidden"><i class="fa fa-plus-small" aria-hidden="true"></i> <?=$this->transEsc("add_search")?></a>
+                    <? endif; ?>
+                  <? endfor; ?>
                 </div>
               </div>
-            <? if($group == 0): ?>
+              <? if($group == 0): ?>
+                </div>
+              <? endif; ?>
             </div>
-            <? endif; ?>
           <? endfor; ?>
-
         <? endif; ?>
       </div>
       <div class="row">
@@ -155,19 +153,19 @@
         <?=$this->extraAdvancedControls ?>
       <? endif; ?>
       <div class="col-xs-12">
-          <span class="limit-container">
-              <?=$this->render('search/advanced/limit.phtml')?>
-          </span>
-          <button class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>"><i class="fa fa-search-adv"></i> <?= $this->transEsc('Find')?></button>
+        <span class="limit-container">
+          <?=$this->render('search/advanced/limit.phtml')?>
+        </span>
+        <button class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>"><i class="fa fa-search-adv"></i> <?= $this->transEsc('Find')?></button>
       </div>
     </div>
     <? if ($hasDefaultsApplied): ?>
       <input type="hidden" name="dfApplied" value="1" />
     <? endif ?>
     <? if (!empty($searchFilters)): ?>
-    <div class="row">
-      <div class="col-sm-6 applied-adv-search-filters sidebar">
-        <h4><?=$this->transEsc("adv_search_filters")?></h4>
+      <div class="row">
+        <div class="col-sm-6 applied-adv-search-filters sidebar">
+          <h4><?=$this->transEsc("adv_search_filters")?></h4>
           <div class="col-xs-12">
             <label>
               <input type="checkbox" checked="checked" class="checkbox-select-all" />
@@ -180,21 +178,19 @@
             <? foreach ($searchFilters as $field => $data): ?>
               <? foreach ($data as $value): ?>
                 <div>
-                    <label>
-                      <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?>
-                    </label>
+                  <label>
+                    <input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?>
+                  </label>
                 </div>
               <? endforeach; ?>
-          <? endforeach; ?>
+            <? endforeach; ?>
           </div>
         </div>
       </div>
-      <? endif; ?>
-    </div>
-    <? if ($template = $this->content()->findTemplateForLng("content/Additions/solr-advanced-post")): ?>
-      <?=$this->render($template)?>
     <? endif; ?>
   </div>
-  </div>
+  <? if ($template = $this->content()->findTemplateForLng("content/Additions/solr-advanced-post")): ?>
+    <?=$this->render($template)?>
+  <? endif; ?>
 </form>
 <!-- END of: finna - search/advanced/layout.phtml -->
