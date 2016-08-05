@@ -98,7 +98,8 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
         ol.proj.transform([boundingBox[0], boundingBox[3]], srcProj, dstProj),
         ol.proj.transform([boundingBox[0], boundingBox[1]], srcProj, dstProj),
         ol.proj.transform([boundingBox[2], boundingBox[1]], srcProj, dstProj),
-        ol.proj.transform([boundingBox[2], boundingBox[3]], srcProj, dstProj)
+        ol.proj.transform([boundingBox[2], boundingBox[3]], srcProj, dstProj),
+        ol.proj.transform([boundingBox[0], boundingBox[3]], srcProj, dstProj)
       ]]); 
       var featureBbox = new ol.Feature({ 
         name: "bbox",
