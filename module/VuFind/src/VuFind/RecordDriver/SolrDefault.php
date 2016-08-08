@@ -68,7 +68,27 @@ class SolrDefault extends AbstractBase
         'title_full_unstemmed', 'title_auth', 'title_sub', 'spelling', 'id',
         'ctrlnum', 'author_variant', 'author2_variant'
     ];
+    
+    /**
+     * A map of author types to their corresponding fields
+     *
+     * @var array
+     */
+    protected $authorFields = [
+        'main'      => "author",
+        'secondary' => "author2",
+        'corporate' => "author_corporate"
+    ];
 
+    /**
+     * An array denoting author data subfields
+     * Used with $authorFields to genreate a unique field name
+     * e.g. author_role, author2_role, author_corporate_role
+     *
+     * @var array
+     */
+    protected $authorDataFields = ['role'];
+    
     /**
      * These are captions corresponding with Solr fields for use when displaying
      * snippets.
@@ -241,7 +261,51 @@ class SolrDefault extends AbstractBase
     {
         return null;
     }
+    
+    /**
+     * Get Author Data
+     *
+     * @param string $authorField The author field
+     * @param array  $dataFields  An array of fields to override the default values
+     *
+     * @return array
+     */
+    public function getAuthorData($authorField, $dataFields = [])
+    {
+        $data = [];
+        
+        $authors = $this->getField($authorField);
 
+        foreach ($authors as $index => $author) {
+            
+            if (!isset($data[$author])) {
+                $data[$author]  = [];
+            }
+            $dataFields = !empty($dataFields) ? $dataFields : $this->authorDataFields;
+            
+            foreach ($this->authorDataFields as $dataField) {
+                $dataFieldString = sprintf("%s_%s", $authorField, $dataField);
+                $data[$author][$dataField] = $this->getAuthorDataFieldValue($dataFieldString, $index);
+            }
+        }
+        
+        return $data;
+    }
+    
+    /**
+     * Get an author data field value by index
+     *
+     * @param string $field
+     * @param int    $index
+     *
+     * @return mixed
+     */
+    public function getAuthorDataFieldValue($field, $index)
+    {
+        $data = $this->getField($field);
+        return isset($data[$index]) ? $data[$index] : [];
+    }
+    
     /**
      * Get award notes for the record.
      *
@@ -424,20 +488,12 @@ class SolrDefault extends AbstractBase
      */
     public function getDeduplicatedAuthors()
     {
-        $authors = [
-            'main' => $this->getAuthorRolesArray(
-                $this->getPrimaryAuthors(),
-                $this->getPrimaryAuthorsRoles()
-            ),
-            'corporate' => $this->getAuthorRolesArray(
-                $this->getCorporateAuthors(),
-                $this->getCorporateAuthorsRoles()
-            ),
-            'secondary' => $this->getAuthorRolesArray(
-                $this->getSecondaryAuthors(),
-                $this->getSecondaryAuthorsRoles()
-            )
-        ];
+        $authors = [];
+        
+        foreach ($this->authorFields as $index => $field)
+        {
+            $authors[$index] = $this->getAuthorData($field);
+        }
 
         // deduplicate
         $dedup = function (&$array1, &$array2) {
@@ -458,46 +514,20 @@ class SolrDefault extends AbstractBase
         $dedup($authors['secondary'], $authors['corporate']);
         $dedup($authors['main'], $authors['secondary']);
 
-        $dedup_roles = function (&$array) {
-            foreach ($array as $author => $roles) {
-                if (is_array($roles)) {
-                    $array[$author] = array_unique($roles);
+        $dedup_data = function (&$array) {
+            foreach ($array as $author => $data) {
+                foreach ($data as $field => $values)
+                if (is_array($values)) {
+                    $array[$author][$field] = array_unique($values);
                 }
             }
         };
 
-        $dedup_roles($authors['main']);
-        $dedup_roles($authors['secondary']);
-        $dedup_roles($authors['corporate']);
+        $dedup_data($authors['main']);
+        $dedup_data($authors['secondary']);
+        $dedup_data($authors['corporate']);
 
         return $authors;
-    }
-
-    /**
-     * Helper function to restructure author arrays including relators
-     *
-     * @param array $authors Array of authors
-     * @param array $roles   Array with relators of authors
-     *
-     * @return array
-     */
-    protected function getAuthorRolesArray($authors = [], $roles = [])
-    {
-        $authorRolesArray = [];
-
-        if (!empty($authors)) {
-            foreach ($authors as $index => $author) {
-                if (!isset($authorRolesArray[$author])) {
-                    $authorRolesArray[$author] = [];
-                }
-                if (isset($roles[$index]) && !empty($roles[$index])
-                ) {
-                    $authorRolesArray[$author][] = $roles[$index];
-                }
-            }
-        }
-
-        return $authorRolesArray;
     }
 
     /**
@@ -509,6 +539,12 @@ class SolrDefault extends AbstractBase
     {
         return isset($this->fields['edition']) ?
             $this->fields['edition'] : '';
+    }
+    
+    public function getField($field, $default = [])
+    {
+        return isset($this->fields[$field])
+        ? $this->fields[$field] : $default;
     }
 
     /**
