@@ -30,6 +30,14 @@
   $dataSource = $this->driver->tryMethod('getDataSource');
   $headText = $this->driver->getBreadcrumb() . (isset($dataSource) ? ' | ' . $this->transEsc('default::source_'. $dataSource, null, $dataSource) : '');
   $this->headTitle($headText);
+
+  // Add map css if necessary:
+  foreach ($this->tabs as $tab) {
+    if ($tab instanceof \Finna\RecordTab\Map) {
+      $this->headLink()->appendStylesheet('vendor/leaflet.css');
+      break;
+    }
+  }
 ?>
 </div>
 <div class="container-fluid record-view-header">

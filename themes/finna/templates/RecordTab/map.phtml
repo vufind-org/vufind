@@ -1,63 +1,22 @@
 <!-- START of: finna - RecordTab/map.phtml -->
 <?
-    $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/jquery.geo.min.js');
-    $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/bootstrap-slider.js');
-    echo $this->inlineScript();
+  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/leaflet.js');
+  echo $this->inlineScript();
 ?>
 
-<div id="wrap">
-  <div id="map-canvas">
-    <div class="zoom-slider">
-      <div class="fa fa-plus-small zoom-control-plus"></div>
-      <div class="zoom-range">
-        <div class="zoom-path"></div>
-      </div>
-      <div class="fa fa-minus zoom-control-minus"></div>
-    </div>
-  </div>
-</div>
+<div class="map-canvas"></div>
 
 <script type="text/javascript">
 $(document).ready(function() {
-    <? // Ok, this is ugly but somehow the container gets resized after the tab is loaded so give it time to finish ?>
-    setTimeout(initMap, 0);
-});
-
-function initMap()
-{
-  $(document).on('resize', function() { console.log("Resized"); });
-  var map = $('#map-canvas').geomap({
-    center: [27, 66],
-    scroll: 'off',
-    zoom: 4,
-    zoomMin: 1,
-    zoomMax: 17,
-    bboxchange: function() {
-      $('.zoom-path').slider('setValue', $(this).geomap('option', 'zoom'));
-    }
+  var tileLayer = L.tileLayer('//api.digitransit.fi/map/v1/{id}/{z}/{x}/{y}.png', {
+    'id': 'hsl-map',
+    maxZoom: 18,
+    // bounds: L.latLngBounds(L.latLng(60, 19.5), L.latLng(70, 30)),
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
   });
 
-  var slider = $('.zoom-path').slider({
-    orientation: 'vertical',
-    reversed: true,
-    min: parseInt(map.geomap('option', 'zoomMin')),
-    max: parseInt(map.geomap('option', 'zoomMax')),
-    value: map.geomap('option', 'zoom'),
-  }).on('slideStop', function(event) {
-    map.geomap('option', 'zoom', event.value);
-  });
-
-  $('.zoom-control-plus').click(function() {
-    $('#map-canvas').geomap('zoom', 1);
-    slider.slider('setValue', map.geomap('option', 'zoom'));
-  });
-  $('.zoom-control-minus').click(function() {
-    $('#map-canvas').geomap('zoom', -1);
-    slider.slider('setValue', map.geomap('option', 'zoom'));
-  });
-  $('.zoom-slider').bind('dblclick', function(e) {
-    e.preventDefault();
-  });
+  var center = new L.LatLng(64.8, 26);
+  var drawnItems = new L.FeatureGroup();
 
   var markersData = <?=$this->tab->getMapMarkers() ?>;
   for (var i = 0; i < markersData.length; i++) {
@@ -68,45 +27,54 @@ function initMap()
     }
     if (markersData[i].polygon) {
       var polygon = markersData[i].polygon;
-      map.geomap('append', { type: 'Polygon', coordinates: polygon });
+      new L.polygon(polygon).addTo(drawnItems);
       if (i == 0) {
-	      var lon = 0, lat = 0;
+	      var lat = 0, lon = 0;
 	      for (var c = 0; c < polygon[0].length - 1; c++) {
 	        var coord = polygon[0][c];
-	        lon += coord[0];
-	        lat += coord[1];
+	        lat += coord[0];
+	        lon += coord[1];
 	      }
-	      lon /= (polygon[0].length - 1);
 	      lat /= (polygon[0].length - 1);
-	      map.geomap('option', 'center', [lon, lat]);
+	      lon /= (polygon[0].length - 1);
+	      center.lat = lat;
+	      center.lng = lon;
       }
     } else if (markersData[i].multipolygon) {
-      // Handle multipolygon as multiple separate polygons for now due to https://github.com/AppGeo/geo/issues/130
       var multipolygon = markersData[i].multipolygon;
-      for (m = 0; m < multipolygon.length; m++) {
-        map.geomap('append', { type: 'Polygon', coordinates: multipolygon[m] });
-      }
+      new L.multiPolygon(multipolygon).addTo(drawnItems);
       if (i == 0) {
         var lon = 0, lat = 0;
         for (var m = 0; m < multipolygon[0].length; m++) {
           for (var c = 0; c < multipolygon[m][0].length - 1; c++) {
             var coord = multipolygon[m][0][c];
-            lon += coord[0];
-            lat += coord[1];
+            lat += coord[0];
+            lon += coord[1];
           }
-          lon /= (multipolygon[m][0].length - 1);
           lat /= (multipolygon[m][0].length - 1);
+          lon /= (multipolygon[m][0].length - 1);
         }
-        map.geomap('option', 'center', [lon, lat]);
+	      center.lat = lat;
+	      center.lng = lon;
       }
     } else {
-      map.geomap('append', { type: 'Point', coordinates: [markersData[i].lon, markersData[i].lat] }, '<span class="map-marker">' + iconTitle + '</span>');
+      var icon = L.divIcon({
+        className: 'mapMarker',
+        iconSize: null,
+        html: '<div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -5px; margin-top: -17px; width: 24px; height: 24px;"><i class="fa fa-map-marker" style="position: relative; font-size: 20px;"></i></div>'
+      });
+      new L.marker([markersData[i].lat, markersData[i].lon], {icon: icon}).addTo(drawnItems);
       if (i == 0) {
-        map.geomap('option', 'center', [markersData[i].lon, markersData[i].lat]);
+	      center.lat = markersData[i].lat;
+	      center.lng = markersData[i].lon;
       }
     }
-    map.geomap('refresh');
   }
-}
+  var map = new L.Map($('.map-canvas').get(0), {
+    layers: [tileLayer, drawnItems],
+    center: center,
+    zoom: 9
+  });
+});
 </script>
 <!-- END of: finna - RecordTab/map.phtml -->
