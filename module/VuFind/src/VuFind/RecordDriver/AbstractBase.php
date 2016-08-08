@@ -495,15 +495,17 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * useful for checking for the existence of get methods for particular types of
      * data without causing fatal errors.
      *
-     * @param string $method Name of method to call.
-     * @param array  $params Array of parameters to pass to method.
+     * @param string $method  Name of method to call.
+     * @param array  $params  Array of parameters to pass to method.
+     * @param mixed  $default A default value to return if the method is not
+     *                        callable
      *
      * @return mixed
      */
-    public function tryMethod($method, $params = [])
+    public function tryMethod($method, $params = [], $default = null)
     {
         return is_callable([$this, $method])
             ? call_user_func_array([$this, $method], $params)
-            : null;
+            : $default;
     }
 }

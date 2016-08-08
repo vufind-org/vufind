@@ -96,11 +96,11 @@
       <? endif; ?>
 
       <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
-      <? if (isset($authors['main']) && !empty($authors['main'])): ?>
+      <? if (isset($authors['primary']) && !empty($authors['primary'])): ?>
       <tr>
-        <th><?=$this->transEsc(count($authors['main']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
+        <th><?=$this->transEsc(count($authors['primary']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
         <td>
-          <? $i = 0; foreach ($authors['main'] as $author => $data): ?>
+          <? $i = 0; foreach ($authors['primary'] as $author => $data): ?>
             <?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a>
             <? if (isset($data['role']) && count($data['role']) > 0): ?> (<? $j = 0; foreach ($data['role'] as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?>
           <? endforeach; ?>
