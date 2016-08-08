@@ -227,6 +227,7 @@ class Facets extends AbstractChannelProvider
         $newResults->performAndProcessSearch();
         return [
             'title' => $title,
+            'providerId' => $this->providerId,
             'searchUrl' => $searchUrl,
             'channelsUrl' => $channelsUrl,
             'contents' => $this->summarizeRecordDrivers($newResults->getResults())

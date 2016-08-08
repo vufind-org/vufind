@@ -70,4 +70,14 @@ interface ChannelProviderInterface
      * @return array
      */
     public function getFromSearch(Results $results, $channelToken = null);
+
+    /**
+     * Set an identifier that will be injected as the 'providerId' key of all
+     * channels created by this provider.
+     *
+     * @param string $id Provider ID
+     *
+     * @return void
+     */
+    public function setProviderId($id);
 }

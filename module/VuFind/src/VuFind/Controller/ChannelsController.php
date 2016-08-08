@@ -129,7 +129,9 @@ class ChannelsController extends AbstractBase
      */
     protected function getChannelProvider($id)
     {
-        return $this->getServiceLocator()
+        $provider = $this->getServiceLocator()
             ->get('VuFind\ChannelProviderPluginManager')->get($id);
+        $provider->setProviderId($id);
+        return $provider;
     }
 }

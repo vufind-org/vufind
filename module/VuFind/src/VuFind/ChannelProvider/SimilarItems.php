@@ -155,6 +155,7 @@ class SimilarItems extends AbstractChannelProvider
         $heading = $this->translate('Similar Items');
         return [
             'title' => "{$heading}: {$driver->getBreadcrumb()}",
+            'providerId' => $this->providerId,
             'contents' => $this->summarizeRecordDrivers($similar)
         ];
     }

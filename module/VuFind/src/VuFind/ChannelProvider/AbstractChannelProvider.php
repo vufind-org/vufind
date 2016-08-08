@@ -47,6 +47,13 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
     protected $coverRouter = null;
 
     /**
+     * Provider ID
+     *
+     * @var string
+     */
+    protected $providerId = '';
+
+    /**
      * Inject cover router
      *
      * @param CoverRouter $coverRouter Cover router.
@@ -56,6 +63,19 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
     public function setCoverRouter(CoverRouter $coverRouter)
     {
         $this->coverRouter = $coverRouter;
+    }
+
+    /**
+     * Set an identifier that will be injected as the 'providerId' key of all
+     * channels created by this provider.
+     *
+     * @param string $id Provider ID
+     *
+     * @return void
+     */
+    public function setProviderId($id)
+    {
+        $this->providerId = $id;
     }
 
     /**
