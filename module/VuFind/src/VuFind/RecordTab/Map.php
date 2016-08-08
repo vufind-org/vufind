@@ -76,7 +76,7 @@ class Map extends AbstractBase
     protected $mapLabelsLookup;
 
     /**
-     * Google Maps API key from config.ini.
+     * Google Maps API key.
      *
      * @var string
      */
