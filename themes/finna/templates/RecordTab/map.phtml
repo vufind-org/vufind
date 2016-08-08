@@ -20,11 +20,6 @@ $(document).ready(function() {
 
   var markersData = <?=$this->tab->getMapMarkers() ?>;
   for (var i = 0; i < markersData.length; i++) {
-    var disTitle = markersData[i].title;
-    var iconTitle = disTitle;
-    if (disTitle.length > 50) {
-      iconTitle = disTitle.substring(0, 47) + '...';
-    }
     if (markersData[i].polygon) {
       var polygon = markersData[i].polygon;
       new L.polygon(polygon).addTo(drawnItems);

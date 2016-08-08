@@ -42,6 +42,17 @@ namespace Finna\RecordTab;
 class Map extends \VuFind\RecordTab\Map
 {
     /**
+     * Can this tab be loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function supportsAjax()
+    {
+        // Yes, no magic required
+        return true;
+    }
+
+    /**
      * Get all map markers (points, polygons etc.)
      *
      * @return string
