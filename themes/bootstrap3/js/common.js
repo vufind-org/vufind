@@ -56,7 +56,7 @@ var VuFind = (function VuFind() {
       window.location.href = href;
     }
   };
-  
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -129,6 +129,14 @@ function lessFacets(id) {
   $('.' + id).addClass('hidden');
   $('#more-' + id).removeClass('hidden');
   return false;
+}
+function facetSessionStorage(e) {
+  var id = e.target.id;
+  if (!sessionStorage.getItem('sidefacet-'+id)) {
+    sessionStorage.setItem('sidefacet-'+id, document.getElementById(id).className);
+  } else {
+    sessionStorage.removeItem('sidefacet-'+id);
+  }
 }
 
 // Phone number validation
@@ -325,4 +333,13 @@ $(document).ready(function commonDocReady() {
     $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
     window.location.assign($(this).attr('href'));
   });
+
+  // Side facet status saving
+  $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
+    if (sessionStorage.getItem('sidefacet-'+item.id)) {
+      item.className = sessionStorage.getItem('sidefacet-'+item.id);
+    }
+  });
+  $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
+  $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
 });
