@@ -230,8 +230,8 @@ class Factory
     public static function getResultGoogleMapAjax(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $key = isset($config->Content->googleMapAPI)
-            ? $config->Content->googleMapAPI : null;
+        $key = isset($config->Content->googleMapApiKey)
+            ? $config->Content->googleMapApiKey : null;
         return new ResultGoogleMapAjax($key);
     }
 

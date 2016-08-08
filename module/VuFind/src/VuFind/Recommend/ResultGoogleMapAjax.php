@@ -55,7 +55,7 @@ class ResultGoogleMapAjax implements RecommendInterface
      *
      * @var string
      */
-    protected $googleMapAPI;
+    protected $googleMapApiKey;
 
     /**
      * Constructor
@@ -64,7 +64,7 @@ class ResultGoogleMapAjax implements RecommendInterface
      */
     public function __construct($key)
     {
-        $this->googleMapAPI = $key;
+        $this->googleMapApiKey = $key;
     }
 
     /**
@@ -111,13 +111,13 @@ class ResultGoogleMapAjax implements RecommendInterface
     }
 
     /**
-     * Get the GoogleMapAPI.
+     * Get the Google Maps API key.
      *
      * @return string
      */
-    public function getGoogleMapAPI()
+    public function getGoogleMapApiKey()
     {
-        return $this->googleMapAPI;
+        return $this->googleMapApiKey;
     }
 
     /**

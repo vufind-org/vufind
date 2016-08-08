@@ -188,10 +188,11 @@ class Factory
                 ? $config->Content->mapLabels : null;
             $mapLabelsLookup = isset($config->Content->mapLabelsLookup)
                 ? $config->Content->mapLabelsLookup : null;
-            $googleMapAPI = isset($config->Content->googleMapAPI)
-                ? $config->Content->googleMapAPI : null;
+            $googleMapApiKey = isset($config->Content->googleMapApiKey)
+                ? $config->Content->googleMapApiKey : null;
             $options = [
-                $enabled, $displayCoords, $mapLabels, $mapLabelsLookup, $googleMapAPI
+                $enabled, $displayCoords, $mapLabels, $mapLabelsLookup,
+                $googleMapApiKey
             ];
         }
         return new Map($options);

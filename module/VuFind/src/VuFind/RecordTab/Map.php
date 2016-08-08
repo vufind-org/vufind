@@ -76,11 +76,11 @@ class Map extends AbstractBase
     protected $mapLabelsLookup;
 
     /**
-     * GoogleMapAPI key from config.ini.
+     * Google Maps API key from config.ini.
      *
      * @var string
      */
-    protected $googleMapAPI;
+    protected $googleMapApiKey;
 
     /**
      * Constructor
@@ -106,7 +106,7 @@ class Map extends AbstractBase
                 $this->mapLabelsLookup = $options[3];
             }
             if (isset($options[4])) {
-                $this->googleMapAPI = $options[4];
+                $this->googleMapApiKey = $options[4];
             }
         }
     }
@@ -143,13 +143,13 @@ class Map extends AbstractBase
     }
 
     /**
-     * Get the GoogleMapAPI.
+     * Get the Google Maps API key.
      *
      * @return string
      */
-    public function getGoogleMapAPI()
+    public function getGoogleMapApiKey()
     {
-        return $this->googleMapAPI;
+        return $this->googleMapApiKey;
     }
 
     /**

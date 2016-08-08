@@ -1,7 +1,7 @@
 <?
   $searchParams = $this->recommend->getSearchParams();
 
-  $this->headScript()->appendFile('https://maps.googleapis.com/maps/api/js?key=' . urlencode($this->recommend->getGoogleMapAPI()) . '&sensor=false&language='.$this->layout()->userLang);
+  $this->headScript()->appendFile('https://maps.googleapis.com/maps/api/js?key=' . urlencode($this->recommend->getGoogleMapApiKey()) . '&sensor=false&language='.$this->layout()->userLang);
   $this->headScript()->appendFile('vendor/markerclusterer.min.js');
 ?>
 <script type="text/javascript">
