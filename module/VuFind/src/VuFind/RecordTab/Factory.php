@@ -177,25 +177,18 @@ class Factory
     public static function getMap(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $mapType = isset($config->Content->recordMap)
+            ? $config->Content->recordMap : null;
         $options = [];
-        if (isset($config->Content->recordMap)
-            && in_array($config->Content->recordMap, ['google', 'openlayers'])
-        ) {
-            $enabled = $config->Content->recordMap;
-            $displayCoords = isset($config->Content->displayCoords)
-                ? $config->Content->displayCoords : null;
-            $mapLabels = isset($config->Content->mapLabels)
-                ? $config->Content->mapLabels : null;
-            $mapLabelsLookup = isset($config->Content->mapLabelsLookup)
-                ? $config->Content->mapLabelsLookup : null;
-            $googleMapApiKey = isset($config->Content->googleMapApiKey)
-                ? $config->Content->googleMapApiKey : null;
-            $options = [
-                $enabled, $displayCoords, $mapLabels, $mapLabelsLookup,
-                $googleMapApiKey
-            ];
+        $optionFields = [
+            'displayCoords', 'mapLabels', 'mapLabelsLookup', 'googleMapApiKey'
+        ];
+        foreach ($optionFields as $field) {
+            if (isset($config->Content->$field)) {
+                $options[$field] = $config->Content->$field;
+            }
         }
-        return new Map($options);
+        return new Map($mapType, $options);
     }
 
     /**

@@ -41,76 +41,69 @@ namespace VuFind\RecordTab;
 class Map extends AbstractBase
 {
     /**
-     * Is this module enabled in the configuration?
-     *
-     * @var bool
-     */
-    protected $enabled;
-
-    /**
      * What type of map interface should be used?
      *
      * @var string
      */
-    protected $mapType;
+    protected $mapType = null;
 
-        /**
-     * Map display coordinates setting from config.ini.
+    /**
+     * Should we display coordinates as part of labels?
      *
-     * @var string
+     * @var bool
      */
-    protected $displayCoords;
+    protected $displayCoords = false;
 
     /**
      * Map labels setting from config.ini.
      *
      * @var string
      */
-    protected $mapLabels;
+    protected $mapLabels = null;
 
     /**
      * Map labels location setting from config.ini.
      *
      * @var string
      */
-    protected $mapLabelsLookup;
+    protected $mapLabelsLookup = null;
 
     /**
      * Google Maps API key.
      *
      * @var string
      */
-    protected $googleMapApiKey;
+    protected $googleMapApiKey = null;
 
     /**
      * Constructor
      *
-     * @param array $options from config.ini file
+     * @param string $mapType Map provider (valid options: 'google' or 'openlayers';
+     * null to disable this feature)
+     * @param array  $options Additional settings
      */
-    public function __construct($options)
+    public function __construct($mapType = null, $options = [])
     {
-        if ($options[0] == 'openlayers' || $options[0] == 'google') {
-            $this->enabled = true;
-            $this->mapType = $options[0];
-
-            if (isset($options[0]) == true) {
-                $this->enabled = $options[0];
-            }
-            if (isset($options[1])) {
-                $this->displayCoords = $options[1];
-            }
-            if (isset($options[2])) {
-                $this->mapLabels = $options[2];
-            }
-            if (isset($options[3])) {
-                $this->mapLabelsLookup = $options[3];
-            }
-            if (isset($options[4])) {
-                $this->googleMapApiKey = $options[4];
-            }
+        switch (trim(strtolower($mapType))) {
+            case 'google':
+                // Confirm API key, then fall through to 'openlayers' case for
+                // other standard behavior:
+                if (empty($options['googleMapApiKey'])) {
+                    throw new \Exception('Google API key must be set in config.ini');
+                }
+                $this->googleMapApiKey = $options['googleMapApiKey'];
+            case 'openlayers':
+                $this->mapType = $mapType;
+                $legalOptions = ['displayCoords', 'mapLabels', 'mapLabelsLookup'];
+                foreach ($legalOptions as $option) {
+                    if (isset($options[$option])) {
+                        $this->$option = $options[$option];
+                    }
+                }
+                break;
         }
     }
-    
+
     /**
      * Can this tab be loaded via AJAX?
      *
@@ -159,17 +152,14 @@ class Map extends AbstractBase
      */
     public function isActive()
     {
-        if (!$this->enabled) {
-            return false;
-        }
         if ($this->mapType == 'openlayers') {
             $geocoords = $this->getRecordDriver()->tryMethod('getBbox');
             return !empty($geocoords);
-        }
-        if ($this->mapType == 'google') {
+        } else if ($this->mapType == 'google') {
             $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
             return !empty($longLat);
         }
+        return false;
     }
 
     /**
@@ -220,7 +210,7 @@ class Map extends AbstractBase
                 $lonE = (float)$match[2];
                 $latN = (float)$match[3];
                 $latS = (float)$match[4];
-                // Display as point or polygon? 
+                // Display as point or polygon?
                 if (($lonE == $lonW) && ($latN == $latS)) {
                     $shape = 2;
                 } else {
@@ -232,7 +222,7 @@ class Map extends AbstractBase
         }
         return $coordarray;
     }
-     
+
     /**
      * Get the map display coordinates.
      *
@@ -260,7 +250,7 @@ class Map extends AbstractBase
         }
         return $label_coords;
     }
-    
+
     /**
      * Get the map labels.
      *
@@ -279,13 +269,13 @@ class Map extends AbstractBase
             $label_lookup = [];
             $file = \VuFind\Config\Locator::getConfigPath($this->mapLabelsLookup);
             if (file_exists($file)) {
-                 $fp = fopen($file, 'r');
+                $fp = fopen($file, 'r');
                 while (($line = fgetcsv($fp, 0, "\t")) !== false) {
                     if ($line) {
                         $label_lookup[] = $line;
                     }
                 }
-                 fclose($fp);
+                fclose($fp);
             }
             $labels = [];
             if (null !== $coords) {
@@ -295,10 +285,10 @@ class Map extends AbstractBase
                     $labelE = $coord[1];
                     $labelN = $coord[2];
                     $labelS = $coord[3];
-                    /* Make combined coordinate string to match 
+                    /* Make combined coordinate string to match
                         against lookup table coordinate */
                     $coordmatch = $labelW . $labelE . $labelN . $labelS;
-                    /* See if coordinate string matches lookup 
+                    /* See if coordinate string matches lookup
                         table coordinates and if so return label */
                     $labelname = [];
                     foreach ($label_lookup as $data) {
@@ -312,7 +302,7 @@ class Map extends AbstractBase
             return $labels;
         }
     }
-    
+
     /**
      * Construct the map coordinates and labels array.
      *
@@ -327,7 +317,7 @@ class Map extends AbstractBase
         $mapTabData = [];
         $mapDisplayCoords = [];
         $mapDisplayLabels = [];
-        if ($this->displayCoords == true) {
+        if ($this->displayCoords) {
              $mapDisplayCoords = $this->getDisplayCoords();
         }
         if (isset($this->mapLabels)) {
