@@ -51,6 +51,23 @@ class ResultGoogleMapAjax implements RecommendInterface
     protected $searchObject;
 
     /**
+     * GoogleMapAPI key from config.ini.
+     *
+     * @var string
+     */
+    protected $googleMapApiKey;
+
+    /**
+     * Constructor
+     *
+     * @param string $key API key
+     */
+    public function __construct($key)
+    {
+        $this->googleMapApiKey = $key;
+    }
+
+    /**
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -91,6 +108,16 @@ class ResultGoogleMapAjax implements RecommendInterface
     public function process($results)
     {
         $this->searchObject = $results;
+    }
+
+    /**
+     * Get the Google Maps API key.
+     *
+     * @return string
+     */
+    public function getGoogleMapApiKey()
+    {
+        return $this->googleMapApiKey;
     }
 
     /**
