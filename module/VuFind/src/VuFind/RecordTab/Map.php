@@ -85,22 +85,22 @@ class Map extends AbstractBase
     public function __construct($mapType = null, $options = [])
     {
         switch (trim(strtolower($mapType))) {
-            case 'google':
-                // Confirm API key, then fall through to 'openlayers' case for
-                // other standard behavior:
-                if (empty($options['googleMapApiKey'])) {
-                    throw new \Exception('Google API key must be set in config.ini');
+        case 'google':
+            // Confirm API key, then fall through to 'openlayers' case for
+            // other standard behavior:
+            if (empty($options['googleMapApiKey'])) {
+                throw new \Exception('Google API key must be set in config.ini');
+            }
+            $this->googleMapApiKey = $options['googleMapApiKey'];
+        case 'openlayers':
+            $this->mapType = trim(strtolower($mapType));
+            $legalOptions = ['displayCoords', 'mapLabels', 'mapLabelsLookup'];
+            foreach ($legalOptions as $option) {
+                if (isset($options[$option])) {
+                    $this->$option = $options[$option];
                 }
-                $this->googleMapApiKey = $options['googleMapApiKey'];
-            case 'openlayers':
-                $this->mapType = trim(strtolower($mapType));
-                $legalOptions = ['displayCoords', 'mapLabels', 'mapLabelsLookup'];
-                foreach ($legalOptions as $option) {
-                    if (isset($options[$option])) {
-                        $this->$option = $options[$option];
-                    }
-                }
-                break;
+            }
+            break;
         }
     }
 
