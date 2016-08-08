@@ -51,7 +51,7 @@ class ResultGoogleMapAjax implements RecommendInterface
     protected $searchObject;
 
     /**
-     * GoogleMapAPI key from config.ini.
+     * Google Maps API key.
      *
      * @var string
      */
