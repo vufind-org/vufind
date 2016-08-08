@@ -82,7 +82,7 @@ class SolrDefault extends AbstractBase
 
     /**
      * An array denoting author data subfields
-     * Used with $authorFields to genreate a unique field name
+     * Used with $authorFields to generate a unique field name
      * e.g. author_role, author2_role, author_corporate_role
      *
      * @var array
