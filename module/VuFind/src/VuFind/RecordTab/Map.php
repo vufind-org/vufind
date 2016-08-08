@@ -93,7 +93,7 @@ class Map extends AbstractBase
                 }
                 $this->googleMapApiKey = $options['googleMapApiKey'];
             case 'openlayers':
-                $this->mapType = $mapType;
+                $this->mapType = trim(strtolower($mapType));
                 $legalOptions = ['displayCoords', 'mapLabels', 'mapLabelsLookup'];
                 foreach ($legalOptions as $option) {
                     if (isset($options[$option])) {
