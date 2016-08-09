@@ -12,64 +12,40 @@ $(document).ready(function() {
     'id': 'hsl-map',
     maxZoom: 18,
     // bounds: L.latLngBounds(L.latLng(60, 19.5), L.latLng(70, 30)),
+    tileSize: 512,
+    zoomOffset: -1,
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
   });
 
-  var center = new L.LatLng(64.8, 26);
   var drawnItems = new L.FeatureGroup();
 
   var markersData = <?=$this->tab->getMapMarkers() ?>;
   for (var i = 0; i < markersData.length; i++) {
     if (markersData[i].polygon) {
-      var polygon = markersData[i].polygon;
-      new L.polygon(polygon).addTo(drawnItems);
-      if (i == 0) {
-	      var lat = 0, lon = 0;
-	      for (var c = 0; c < polygon[0].length - 1; c++) {
-	        var coord = polygon[0][c];
-	        lat += coord[0];
-	        lon += coord[1];
-	      }
-	      lat /= (polygon[0].length - 1);
-	      lon /= (polygon[0].length - 1);
-	      center.lat = lat;
-	      center.lng = lon;
-      }
+      L.polygon(markersData[i].polygon).addTo(drawnItems);
     } else if (markersData[i].multipolygon) {
       var multipolygon = markersData[i].multipolygon;
-      new L.multiPolygon(multipolygon).addTo(drawnItems);
-      if (i == 0) {
-        var lon = 0, lat = 0;
-        for (var m = 0; m < multipolygon[0].length; m++) {
-          for (var c = 0; c < multipolygon[m][0].length - 1; c++) {
-            var coord = multipolygon[m][0][c];
-            lat += coord[0];
-            lon += coord[1];
-          }
-          lat /= (multipolygon[m][0].length - 1);
-          lon /= (multipolygon[m][0].length - 1);
-        }
-	      center.lat = lat;
-	      center.lng = lon;
-      }
+      L.multiPolygon(multipolygon).addTo(drawnItems);
     } else {
       var icon = L.divIcon({
         className: 'mapMarker',
         iconSize: null,
         html: '<div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -5px; margin-top: -17px; width: 24px; height: 24px;"><i class="fa fa-map-marker" style="position: relative; font-size: 20px;"></i></div>'
       });
-      new L.marker([markersData[i].lat, markersData[i].lon], {icon: icon}).addTo(drawnItems);
-      if (i == 0) {
-	      center.lat = markersData[i].lat;
-	      center.lng = markersData[i].lon;
-      }
+      L.marker([markersData[i].lat, markersData[i].lon], {icon: icon}).addTo(drawnItems);
     }
   }
   var map = new L.Map($('.map-canvas').get(0), {
     layers: [tileLayer, drawnItems],
-    center: center,
-    zoom: 9
+    center: drawnItems.getBounds().getCenter(),
+    zoom: 5
   });
+  var onLoad = function() {
+    fitZoom = map.getBoundsZoom(drawnItems.getBounds());
+    map.setZoom(fitZoom <= 9 ? fitZoom - 1 : 9);
+    tileLayer.off('load', onLoad);
+  };
+  tileLayer.on('load', onLoad);
 });
 </script>
 <!-- END of: finna - RecordTab/map.phtml -->
