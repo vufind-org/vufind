@@ -31,7 +31,7 @@ function loadMapTab(mapData) {
     var featureCount = mapData.length;
     var label, label_on;
     var label_name;
-    var label_coord, label_coord1, label_coord2;
+    var label_coords, label_coord, label_coord1, label_coord2;
     var i = 0;
     for (i; i < featureCount; i++) {
       // Construct the label names
@@ -39,10 +39,10 @@ function loadMapTab(mapData) {
       //Construct the coordinate labels
       label_coords = mapData[i][5];
       if (label_coords) {
-        label_coord1 = mapData[i][5].substring(0,16);
+        label_coord1 = mapData[i][5].substring(0, 16);
         label_coord2 = mapData[i][5].substring(16);
         if (label_coord2) {
-          label_coord = label_coord1+'<br/>'+label_coord2;
+          label_coord = label_coord1 + '<br/>' + label_coord2;
         } else {
           label_coord = label_coord1;
         }
