@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordTabs
@@ -39,20 +39,39 @@ namespace VuFind\RecordTab;
 class Map extends AbstractBase
 {
     /**
-     * Is this module enabled in the configuration?
+     * What type of map interface should be used?
      *
-     * @var bool
+     * @var string
      */
-    protected $enabled;
+    protected $mapType = null;
+
+    /**
+     * Google Maps API key.
+     *
+     * @var string
+     */
+    protected $googleMapApiKey = null;
 
     /**
      * Constructor
      *
-     * @param bool $enabled Is this module enabled in the configuration?
+     * @param string $mapType Map provider (valid options: 'google' or 'openlayers';
+     * null to disable this feature)
+     * @param array  $options Additional settings
      */
-    public function __construct($enabled = true)
+    public function __construct($mapType = null, $options = [])
     {
-        $this->enabled = $enabled;
+        switch (trim(strtolower($mapType))) {
+        case 'google':
+            // Confirm API key, then fall through to 'openlayers' case for
+            // other standard behavior:
+            if (empty($options['googleMapApiKey'])) {
+                throw new \Exception('Google API key must be set in config.ini');
+            }
+            $this->googleMapApiKey = $options['googleMapApiKey'];
+            $this->mapType = trim(strtolower($mapType));
+            break;
+        }
     }
 
     /**
@@ -99,16 +118,36 @@ class Map extends AbstractBase
     }
 
     /**
+     * Get the map type for determining template to use.
+     *
+     * @return string
+     */
+    public function getMapType()
+    {
+        return $this->mapType;
+    }
+
+    /**
+     * Get the Google Maps API key.
+     *
+     * @return string
+     */
+    public function getGoogleMapApiKey()
+    {
+        return $this->googleMapApiKey;
+    }
+
+    /**
      * Is this tab active?
      *
      * @return bool
      */
     public function isActive()
     {
-        if (!$this->enabled) {
-            return false;
+        if ($this->mapType == 'google') {
+            $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
+            return !empty($longLat);
         }
-        $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
-        return !empty($longLat);
+        return false;
     }
 }

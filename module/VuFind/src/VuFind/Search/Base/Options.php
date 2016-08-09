@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Base
@@ -259,6 +259,13 @@ abstract class Options implements TranslatorAwareInterface
      * @var int
      */
     protected $resultLimit = -1;
+
+    /**
+     * Is the first/last navigation scroller enabled?
+     *
+     * @var bool
+     */
+    protected $firstlastNavigation = false;
 
     /**
      * Constructor
@@ -900,5 +907,15 @@ abstract class Options implements TranslatorAwareInterface
         unset($vars['translator']);
         $vars = array_keys($vars);
         return $vars;
+    }
+
+    /**
+     * Should we include first/last options in result scroller navigation?
+     *
+     * @return bool
+     */
+    public function supportsFirstLastNavigation()
+    {
+        return $this->firstlastNavigation;
     }
 }
