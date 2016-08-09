@@ -34,41 +34,33 @@ function loadMapTab(mapData) {
     var label_coord, label_coord1, label_coord2;
     var i = 0;
     for (i; i < featureCount; i++) {
+      // Construct the label names
+      label_name = mapData[i][6];
       //Construct the coordinate labels
-      if ((mapData[i][5] === 'cl') || (mapData[i][5] === 'c')) { 
-        label_coord1 = mapData[i][6].substring(0, 16); 
-        label_coord2 = mapData[i][6].substring(16); 
+      label_coords = mapData[i][5];
+      if (label_coords) {
+        label_coord1 = mapData[i][5].substring(0,16);
+        label_coord2 = mapData[i][5].substring(16);
         if (label_coord2) {
-          label_coord = label_coord1 + '<br/>' + label_coord2;
+          label_coord = label_coord1+'<br/>'+label_coord2;
         } else {
           label_coord = label_coord1;
         }
       }
-      // Construct the label names
-      if (mapData[i][5] === 'l') {
-        label_name = mapData[i][6];
-      }
-      if (mapData[i][5] === 'cl') {
-        label_name = mapData[i][7];
-      }
       // Construct the entire label string
-      if (mapData[i][5] === 'cl') {
+      if (label_coord && label_name) {
         label = label_coord + '<br/>' + label_name;
         label_on = true;
-      }
-      if (mapData[i][5] === 'c') {
-        label = label_coord;
-        label_on = true;
-      }
-      if (mapData[i][5] === 'l') {
+      } else if (label_name){
         label = label_name;
         label_on = true;
-      }
-      if (mapData[i][5] === 'n') {
+      } else if (label_coord) {
+        label = label_coord;
+        label_on = true;
+      } else {
         label = '';
         label_on = false;
       }
-
       // Determine if entry is point or polygon - Does W=E & N=S? //
       if (mapData[i][4] === 2) {
       //It's a point feature //
