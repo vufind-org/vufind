@@ -6,7 +6,29 @@ module.exports = function(grunt) {
     less: {
       compile: {
         options: {
-          paths: ["themes/bootprint3/less", "themes/bootstrap3/less"],
+          paths: function (file) {
+            var fs = require('fs'), config;
+            parts = file.split('/');
+            parts.pop(); // eliminate filename
+
+            // initialize search path with directory containing LESS file
+            retVal = [];
+            retVal.push(parts.join('/'));
+
+            // Iterate through theme.config.php files collecting parent themes in search path:
+            while (config = fs.readFileSync("themes/" + parts[1] + "/theme.config.php", "UTF-8")) {
+              var matches = config.match(/["']extends["']\s*=>\s*['"](\w+)['"]/);
+
+              // "extends" set to "false" or missing entirely? We've hit the end of the line:
+              if (matches === null || matches[1] === 'false') {
+                break;
+              }
+
+              parts[1] = matches[1];
+              retVal.push(parts.join('/'));
+            }
+            return retVal;
+          },
           compress: true,
           modifyVars: {
             'fa-font-path': '"fonts"',
