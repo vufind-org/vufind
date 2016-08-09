@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -735,12 +735,15 @@ class AbstractSearch extends AbstractBase
             $this->params()->fromQuery('facetop', 'AND') == 'OR'
         );
         $list = $facets[$facet]['data']['list'];
+        $params->activateAllFacets();
+        $facetLabel = $params->getFacetLabel($facet);
 
         $view = $this->createViewModel(
             [
                 'data' => $list,
                 'exclude' => $this->params()->fromQuery('facetexclude', 0),
                 'facet' => $facet,
+                'facetLabel' => $facetLabel,
                 'operator' => $this->params()->fromQuery('facetop', 'AND'),
                 'page' => $page,
                 'results' => $results,
