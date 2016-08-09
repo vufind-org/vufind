@@ -35,7 +35,7 @@ module.exports = function(grunt) {
         }
       }
     },
-    // Convert LESS to SASS
+    // Convert LESS to SASS, mostly for development team use
     lessToSass: {
       convert: {
         files: [
