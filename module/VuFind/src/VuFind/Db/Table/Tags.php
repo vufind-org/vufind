@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Db_Table
@@ -104,7 +104,7 @@ class Tags extends Gateway
                     new Expression(
                         'DISTINCT(?)', ['resource.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), 'id'
+                    ),
                 ]
             );
             $select->join(
@@ -117,7 +117,7 @@ class Tags extends Gateway
                 'rt.resource_id = resource.id',
                 '*'
             );
-            $select->where->like('tags.tag', $query);
+            $select->where->literal('lower(tags.tag) like lower(?)', [$query]);
 
             if (!empty($source)) {
                 $select->where->equalTo('source', $source);
