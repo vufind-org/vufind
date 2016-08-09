@@ -162,6 +162,8 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
         map.addOverlay(markers[i]);
       }
     }
+    mapcenter = map.getCenter();
+    map.setCenter(new google.maps.LatLng((mapcenter.lat() + 0.0000001), mapcenter.lng()));
   }
   function load_content(marker){
     var xmlhttp;
