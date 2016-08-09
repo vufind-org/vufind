@@ -159,67 +159,22 @@ class PAIA extends DAIA
     // public functions implemented to satisfy Driver Interface
 
     /*
-    -- = previously implemented
-    +- = modified implementation
-    ?? = unclear if necessary for PAIA
-    !! = not necessary for PAIA
-    DD = implemented in DAIA
-    CC = should be implemented/customized for individual needs
-
-    VuFind2 ILS-Driver methods:
-
-    -- - cancelHolds
-    +- - changePassword
-    CC - checkRequestIsValid
-    !! - findReserves
-    -- - getCancelHoldDetails
-    !! - getCancelHoldLink
-    DD - getConfig
-    !! - getConsortialHoldings
-    !! - getCourses
-    -- - getDefaultPickUpLocation
-    !! - getDepartments
-    -- - getFunds
-    ?? - getHoldDefaultRequiredDate
-    +- - getHolding
-    +- - getHoldLink  // should be customized for individual needs via getILSHoldLink
-    !! - getInstructors
-    +- - getMyFines
-    +- - getMyHolds
-    +- - getMyProfile
-    +- - getMyTransactions
-    +- - getNewItems
-    !! - getOfflineMode
-    -- - getPickUpLocations // should be customized for individual needs
-    DD - getPurchaseHistory
-    -- - getRenewDetails
-    DD - getStatus
-    DD - getStatuses
-    !! - getSuppressedAuthorityRecords
-    !! - getSuppressedRecords
-    !! - hasHoldings
-    -- - init
-    !! - loginIsHidden
-    +- - patronLogin
-    +- - placeHold
-    +- - renewMyItems
-    !! - renewMyItemsLink
-    DD - setConfig
-    !! - supportsMethod
-
-    +- - getMyStorageRetrievalRequests
-    +- - checkStorageRetrievalRequestIsValid
-    +- - placeStorageRetrievalRequest
-    CC - cancelStorageRetrievalRequests
-    CC - getCancelStorageRetrievalRequestDetails
-
-    CC - getMyILLRequests
-    CC - checkILLRequestIsValid
-    CC - getILLPickupLibraries
-    CC - getILLPickupLocations
-    CC - placeILLRequest
-    CC - cancelILLRequests
-    CC - getCancelILLRequestDetails
+    These methods are not implemented in the PAIA driver as they are probably
+    not necessary in PAIA context:
+    - findReserves
+    - getCancelHoldLink
+    - getConsortialHoldings
+    - getCourses
+    - getDepartments
+    - getHoldDefaultRequiredDate
+    - getInstructors
+    - getOfflineMode
+    - getSuppressedAuthorityRecords
+    - getSuppressedRecords
+    - hasHoldings
+    - loginIsHidden
+    - renewMyItemsLink
+    - supportsMethod
     */
 
     /**
@@ -265,7 +220,7 @@ class PAIA extends DAIA
 
         $details = [];
 
-        if (array_key_exists('error', $array_response)) {
+        if (isset($array_response['error'])) {
             $details[] = [
                 'success' => false,
                 'status' => $array_response['error_description'],
@@ -417,6 +372,164 @@ class PAIA extends DAIA
         // array here and the limit control on the new item search screen
         // will disappear.
         return [];
+    }
+
+    /**
+     * Cancel Storage Retrieval Request
+     *
+     * Attempts to Cancel a Storage Retrieval Request on a particular item. The
+     * data in $cancelDetails['details'] is determined by
+     * getCancelStorageRetrievalRequestDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelStorageRetrievalRequests($cancelDetails)
+    {
+        // Not yet implemented
+        return [];
+    }
+
+    /**
+     * Get Cancel Storage Retrieval Request Details
+     *
+     * In order to cancel a hold, Voyager requires the patron details an item ID
+     * and a recall ID. This function returns the item id and recall id as a string
+     * separated by a pipe, which is then submitted as form data in Hold.php. This
+     * value is then extracted by the CancelHolds function.
+     *
+     * @param array $details An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelStorageRetrievalRequestDetails($details)
+    {
+        // Not yet implemented
+        return '';
+    }
+
+    /**
+     * Get Patron ILL Requests
+     *
+     * This is responsible for retrieving all ILL requests by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's ILL requests
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getMyILLRequests($patron)
+    {
+        // Not yet implemented
+        return [];
+    }
+
+    /**
+     * Check if ILL request available
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return bool True if request is valid, false if not
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function checkILLRequestIsValid($id, $data, $patron)
+    {
+        // Not yet implemented
+        return false;
+    }
+    /**
+     * Place ILL Request
+     *
+     * Attempts to place an ILL request on a particular item and returns
+     * an array with result details
+     *
+     * @param array $details An array of item and patron data
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function placeILLRequest($details)
+    {
+        // Not yet implemented
+        return [];
+    }
+
+    /**
+     * Get ILL Pickup Libraries
+     *
+     * This is responsible for getting information on the possible pickup libraries
+     *
+     * @param string $id     Record ID
+     * @param array  $patron Patron
+     *
+     * @return bool|array False if request not allowed, or an array of associative
+     * arrays with libraries.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getILLPickupLibraries($id, $patron)
+    {
+        // Not yet implemented
+        return false;
+    }
+
+    /**
+     * Get ILL Pickup Locations
+     *
+     * This is responsible for getting a list of possible pickup locations for a
+     * library
+     *
+     * @param string $id        Record ID
+     * @param string $pickupLib Pickup library ID
+     * @param array  $patron    Patron
+     *
+     * @return bool|array False if request not allowed, or an array of locations.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getILLPickupLocations($id, $pickupLib, $patron)
+    {
+        // Not yet implemented
+        return false;
+    }
+
+    /**
+     * Cancel ILL Request
+     *
+     * Attempts to Cancel an ILL request on a particular item. The
+     * data in $cancelDetails['details'] is determined by
+     * getCancelILLRequestDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelILLRequests($cancelDetails)
+    {
+        // Not yet implemented
+        return [];
+    }
+
+    /**
+     * Get Cancel ILL Request Details
+     *
+     * @param array $details An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelILLRequestDetails($details)
+    {
+        // Not yet implemented
+        return '';
     }
 
     /**
@@ -798,7 +911,7 @@ class PAIA extends DAIA
         }
 
         $details = [];
-        if (array_key_exists('error', $array_response)) {
+        if (isset($array_response['error'])) {
             $details = [
                 'success' => false,
                 'sysMessage' => $array_response['error_description']
@@ -806,7 +919,7 @@ class PAIA extends DAIA
         } else {
             $elements = $array_response['doc'];
             foreach ($elements as $element) {
-                if (array_key_exists('error', $element)) {
+                if (isset($element['error'])) {
                     $details = [
                         'success' => false,
                         'sysMessage' => $element['error']
@@ -889,7 +1002,7 @@ class PAIA extends DAIA
 
         $details = [];
 
-        if (array_key_exists('error', $array_response)) {
+        if (isset($array_response['error'])) {
             $details[] = [
                 'success' => false,
                 'sysMessage' => $array_response['error_description']
@@ -898,7 +1011,7 @@ class PAIA extends DAIA
             $elements = $array_response['doc'];
             foreach ($elements as $element) {
                 $item_id = $element['item'];
-                if (array_key_exists('error', $element)) {
+                if (isset($element['error'])) {
                     $details[$item_id] = [
                         'success' => false,
                         'sysMessage' => $element['error']
