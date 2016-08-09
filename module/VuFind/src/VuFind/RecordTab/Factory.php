@@ -177,8 +177,18 @@ class Factory
     public static function getMap(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $enabled = isset($config->Content->recordMap);
-        return new Map($enabled);
+        $mapType = isset($config->Content->recordMap)
+            ? $config->Content->recordMap : null;
+        $options = [];
+        $optionFields = [
+            'googleMapApiKey'
+        ];
+        foreach ($optionFields as $field) {
+            if (isset($config->Content->$field)) {
+                $options[$field] = $config->Content->$field;
+            }
+        }
+        return new Map($mapType, $options);
     }
 
     /**
