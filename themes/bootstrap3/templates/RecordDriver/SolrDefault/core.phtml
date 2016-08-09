@@ -100,10 +100,7 @@
       <tr>
         <th><?=$this->transEsc(count($authors['primary']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
         <td>
-          <? $i = 0; foreach ($authors['primary'] as $author => $data): ?>
-            <?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a>
-            <? if (isset($data['role']) && count($data['role']) > 0): ?> (<? $j = 0; foreach ($data['role'] as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?>
-          <? endforeach; ?>
+          <?=$this->record($this->driver)->getDeduplicatedAuthors($authors['primary'])?>
         </td>
       </tr>
       <? endif; ?>
@@ -112,10 +109,7 @@
       <tr>
         <th><?=$this->transEsc(count($authors['corporate']) > 1 ? 'Corporate Author' : 'Corporate Authors')?>: </th>
         <td>
-          <? $i = 0; foreach ($authors['corporate'] as $corporate => $data): ?>
-            <?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a>
-            <? if (isset($data['role']) && count($data['role']) > 0): ?> (<? $j = 0; foreach ($data['role'] as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?>
-          <? endforeach; ?>
+          <?=$this->record($this->driver)->getDeduplicatedAuthors($authors['corporate'])?>
         </td>
       </tr>
       <? endif; ?>
@@ -124,10 +118,7 @@
       <tr>
         <th><?=$this->transEsc('Other Authors')?>: </th>
         <td>
-          <? $i = 0; foreach ($authors['secondary'] as $author => $data): ?>
-            <?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a>
-            <? if (isset($data['role']) && count($data['role']) > 0): ?> (<? $j = 0; foreach ($data['role'] as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?>
-          <? endforeach; ?>
+          <?=$this->record($this->driver)->getDeduplicatedAuthors($authors['secondary'])?>
         </td>
       </tr>
       <? endif; ?>

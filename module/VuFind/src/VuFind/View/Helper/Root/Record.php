@@ -188,6 +188,22 @@ class Record extends AbstractHelper
     {
         return $this->renderTemplate('collection-info.phtml');
     }
+    
+    /**
+     * Render deduplicated authors.
+     *
+     * @param array $authors An array of authors with optional data fields
+     *                       e.g. "role"
+     *
+     * @return string
+     */
+    public function getDeduplicatedAuthors($authors)
+    {
+        return $this->renderTemplate(
+            'deduplicated-authors.phtml',
+            ['driver' => $this->driver, 'authors' => $authors]
+        );
+    }
 
     /**
      * Export the record in the requested format.  For legal values, see

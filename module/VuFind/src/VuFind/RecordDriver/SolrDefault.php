@@ -70,22 +70,6 @@ class SolrDefault extends AbstractBase
     ];
     
     /**
-     * A map of author types to their corresponding fields
-     *
-     * @var array
-     */
-    protected $authorFields = ['primary', 'secondary', 'corporate'];
-
-    /**
-     * An array denoting author data subfields
-     * Used with $authorFields to generate a unique field name
-     * e.g. author_role, author2_role, author_corporate_role
-     *
-     * @var array
-     */
-    protected $authorDataFields = ['role'];
-    
-    /**
      * These are captions corresponding with Solr fields for use when displaying
      * snippets.
      *
@@ -259,26 +243,26 @@ class SolrDefault extends AbstractBase
     }
     
     /**
-     * Get Author Data
+     * Get Author Data Fields
      *
      * @param string $index       The author index
+     * @param array  $authors     An array of authors
      * @param array  $dataFields  An array of fields to override the default values
+     *
      *
      * @return array
      */
-    public function getAuthorData($index, $dataFields = [])
+    public function getAuthorDataFields($index, $authors, $dataFields = [])
     {
         $data            = [];
         $dataFieldValues = [];
-        
-        $authorMethod = sprintf("get%sAuthors", ucfirst($index));
-        $authors      = $this->tryMethod($authorMethod, [], []);
-        
-        $dataFields = !empty($dataFields) ? $dataFields : $this->authorDataFields;
-        
+
         foreach ($dataFields as $dataField) {
-            $dataFieldMethod = sprintf("get%sAuthors%ss", ucfirst($index), ucfirst($dataField));
-            $dataFieldValues[$dataField] = $this->tryMethod($dataFieldMethod, [], []);
+            $dataFieldMethod = sprintf(
+                "get%sAuthors%ss", ucfirst($index), ucfirst($dataField)
+            );
+            $dataFieldValues[$dataField]
+                = $this->tryMethod($dataFieldMethod, [], []);
         }
 
         foreach ($authors as $i => $author) {
@@ -288,9 +272,9 @@ class SolrDefault extends AbstractBase
             }
             
             foreach ($dataFieldValues as $field => $dataFieldValue) {
-                if (isset($dataFieldValue[$i]) && !empty($dataFieldValue[$i])) {
-                    $data[$author][$field] = $dataFieldValue[$i];
-                }
+                $data[$author][$field]
+                    = (isset($dataFieldValue[$i]) && !empty($dataFieldValue[$i]))
+                        ? $dataFieldValue[$i] : [];
             }
         }
         return $data;
@@ -474,16 +458,23 @@ class SolrDefault extends AbstractBase
      * Deduplicate author information into associative array with main/corporate/
      * secondary keys.
      *
+     * @param array $dataFields An array of datafields to retrieve
+     *
      * @return array
      */
-    public function getDeduplicatedAuthors()
+    public function getDeduplicatedAuthors($dataFields = ['role'])
     {
         $authors = [];
         
-        foreach ($this->authorFields as $index)
-        {
-            $authors[$index] = $this->getAuthorData($index);
-        }
+        $authors['primary'] = $this->getAuthorDataFields(
+            "primary", $this->getPrimaryAuthors(), $dataFields
+        );
+        $authors['secondary'] = $this->getAuthorDataFields(
+            "secondary", $this->getSecondaryAuthors(), $dataFields
+        );
+        $authors['corporate'] = $this->getAuthorDataFields(
+            "corporate", $this->getCorporateAuthors(), $dataFields
+        );
 
         // deduplicate
         $dedup = function (&$array1, &$array2) {
@@ -529,12 +520,6 @@ class SolrDefault extends AbstractBase
     {
         return isset($this->fields['edition']) ?
             $this->fields['edition'] : '';
-    }
-    
-    public function getField($field, $default = [])
-    {
-        return isset($this->fields[$field])
-        ? $this->fields[$field] : $default;
     }
 
     /**
