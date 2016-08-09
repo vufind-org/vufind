@@ -323,54 +323,23 @@ class Map extends AbstractBase
         if (isset($this->mapLabels)) {
             $mapDisplayLabels = $this->getMapLabels();
         }
-        if (!empty($mapDisplayLabels) && !empty($mapDisplayCoords)) {
-            // Pass coordinates, display coordinates, and labels
-            foreach ($geoCoords as $key => $value) {
-                array_push(
-                    $mapTabData, [
-                        $geoCoords[$key][0], $geoCoords[$key][1],
-                        $geoCoords[$key][2], $geoCoords[$key][3],
-                        $geoCoords[$key][4], 'cl',
-                        $mapDisplayCoords[$key],$mapDisplayLabels[$key]
-                        ]
-                );
+        // Pass coordinates, display coordinates, and labels
+        foreach ($geoCoords as $key => $value) {
+            $mapCoords = '';
+            $mapLabel = '';
+            if ($this->displayCoords) {
+                $mapCoords = $mapDisplayCoords[$key];
             }
-        }
-        if (!empty($mapDisplayLabels) && empty($mapDisplayCoords)) {
-            // Pass coordinates and labels
-            foreach ($geoCoords as $key => $value) {
-                array_push(
-                    $mapTabData, [
-                        $geoCoords[$key][0], $geoCoords[$key][1],
-                        $geoCoords[$key][2], $geoCoords[$key][3],
-                        $geoCoords[$key][4], 'l', $mapDisplayLabels[$key]
-                        ]
-                );
+            if (isset($this->mapLabels)) {
+                $mapLabel = $mapDisplayLabels[$key];
             }
-        }
-        if (empty($mapDisplayLabels) && !empty($mapDisplayCoords)) {
-            // Pass coordinates and display coordinates
-            foreach ($geoCoords as $key => $value) {
-                array_push(
-                    $mapTabData, [
-                        $geoCoords[$key][0], $geoCoords[$key][1],
-                        $geoCoords[$key][2], $geoCoords[$key][3],
-                        $geoCoords[$key][4], 'c', $mapDisplayCoords[$key]
-                        ]
-                );
-            }
-        }
-        if (empty($mapDisplayLabels) && empty($mapDisplayCoords)) {
-            // Pass only coordinates
-            foreach ($geoCoords as $key => $value) {
-                array_push(
-                    $mapTabData, [
-                        $geoCoords[$key][0], $geoCoords[$key][1],
-                        $geoCoords[$key][2], $geoCoords[$key][3],
-                        $geoCoords[$key][4], 'n'
-                        ]
-                );
-            }
+            array_push(
+                $mapTabData, [
+                    $geoCoords[$key][0], $geoCoords[$key][1],
+                    $geoCoords[$key][2], $geoCoords[$key][3],
+                    $geoCoords[$key][4], $mapLabel, $mapCoords
+                    ]
+            );
         }
         return $mapTabData;
     }
