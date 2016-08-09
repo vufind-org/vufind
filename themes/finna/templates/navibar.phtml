@@ -86,8 +86,8 @@
     <? endif; ?>
 
   </div>
-
-  <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+  <? //hide login/logout if unavailable;?>
+  <? if (is_object($account) && $account->loginEnabled()): ?>
   <ul role="menu" class="nav navbar-nav nav-absolute">
     <? $user = $account->isLoggedIn(); ?>
     <li role="menuitem" class="logoutOptions<? if (!$user): ?> hidden<? endif ?>">
@@ -96,12 +96,13 @@
         <li role="menuitem" class="logoutOptions<? if (!$user): ?> hidden<? endif ?>">
           <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" title="<?=$this->transEsc("Your Account")?>"><strong><i class="fa fa-user" aria-hidden="true"></i> <?=$this->transEsc("Your Account")?></strong><div class="description"><?=$this->transEsc("your_account_info")?></div></a>
         </li>
+        <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user, 'loginMenu' => 'true'));?>
         <li role="menuitem" class="logoutOptions<? if (!$user): ?> hidden<? endif ?>">
           <? $logoutClass = $this->personaAuth()->getUser() === null ? '' : ' persona-logout' ?>
           <a href="<?=$this->url('myresearch-logout')?>" class="logout<?=$logoutClass?>" title="<?=$this->transEsc("Log Out")?>"><strong><i class="fa fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?></strong></a>
         </li>
       </ul>
-    <? if (!$user): ?></li><? endif; ?>
+    </li>
     <li role="menuitem" id="loginOptions"<? if($account->isLoggedIn()): ?> class="hidden"<? endif ?>>
       <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
       <a href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>

@@ -5,8 +5,11 @@
         $this->layout()->finnaMainHeader .= '<span class="tooltip-myaccount" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="' . $this->transesc("tooltip_myaccount_html") . '"><i class="fa fa-info-big"></i></span>';
     }
     if ($this->auth()->getManager()->isLoggedIn()) {
+        $user = $this->auth()->isLoggedIn();
         $logoutClass = $this->personaAuth()->getUser() === null ? '' : ' persona-logout';
         $this->layout()->finnaMainHeader .= '<a class="btn btn-primary pull-right' . $logoutClass . '" href="' . $this->url('myresearch-logout') . '" title="'.$this->transEsc('Log Out') . '"><i class="fa fa-sign-out"></i> ' . $this->transEsc('Log Out') . '</a>';
+        $this->layout()->finnaMainHeader .= $this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user, 'label' => 'Library Card'));
+
     }
     $this->layout()->finnaMainHeader .= '</div>';
 
