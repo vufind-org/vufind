@@ -60,68 +60,6 @@
         background: linear-gradient( @gray-light, darken(@gray-light,8%));
         color: @body-bg;
     }
-    & .select-card-wrapper {
-        font-size: 14px;
-    
-        .dropdown {
-            display: inline-block;
-            & > a {
-                padding: 7px 7px;
-                background: @brand-primary;
-                color: #fff;
-                border-radius: 10px;
-                display: inline-block;
-                margin-top: -7px;
-                &:hover, &:focus {
-                    text-decoration: none;
-                    background: darken(@brand-primary, 10%);
-                }
-            }
-            & i {
-                font-size: 12px;
-                position: absolute;
-                top: 5px;
-                right: 11px;
-            }
-            & span {
-                padding-right: 20px;
-                font-size: 13px;
-                border-radius: 10px;
-            }
-        }
-        display: inline-block;
-        vertical-align: top;
-        margin-bottom: 1px;
-        margin-top: 6px;
-        margin-left: 5px;
-    }
-    & .myresearch-profile-header, .useraccount-header {
-        .select-card-wrapper .dropdown > a {
-            background: #fff;
-            color: @gray;
-            border: 1px solid @gray-lighter;
-        
-        }
-    }
-    & .finna-main-header .select-card-wrapper{
-        @media (max-width: 600px) {
-            display: block;
-            text-align: right;
-            margin-top: 20px;
-            margin-left: 0px;
-            & li {
-                text-align: left;   
-            }
-            & .select-card-label {
-                margin-top: -7px;   
-            }
-        }
-        @media (max-width: 350px) {
-            & .select-card-label {
-                display: none;   
-            } 
-        }
-    }
 
     & .online-payment-data {
         font-size: 1.2em;
