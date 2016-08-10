@@ -135,15 +135,19 @@ module.exports = function(grunt) {
     for (var i in themeList) {
       var config = {
         options: {},
-        files: {}
+        files: [{
+          expand: true,
+          cwd: path.join('themes', themeList[i], 'scss'),
+          src: ['compiled.scss'],
+          dest: path.join('themes', themeList[i], 'css'),
+          ext: '.css'
+        }]
       };
       for (var key in this.data.options) {
         config.options[key] = this.data.options[key] + '';
       }
-      config.options.loadPath = getLoadPaths('themes/' + themeList[i] + '/scss/compiled.scss');
+      config.options.includePaths = getLoadPaths('themes/' + themeList[i] + '/scss/compiled.scss');
 
-      var compiledPath = 'themes/' + themeList[i] + '/css/compiled.css';
-      config.files[compiledPath] = 'themes/' + themeList[i] + '/scss/compiled.scss';
       sassConfig[themeList[i]] = config;
     }
 
