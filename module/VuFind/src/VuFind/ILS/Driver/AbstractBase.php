@@ -43,7 +43,7 @@ use Zend\Cache\Storage\StorageInterface,
 abstract class AbstractBase implements DriverInterface
 {
     use KeyGeneratorTrait;
-    
+
     /**
      * Cache for storing ILS data temporarily (e.g. patron blocks)
      *
@@ -157,6 +157,6 @@ abstract class AbstractBase implements DriverInterface
         if (null === $this->cache) {
             return;
         }
-        $this->cache->removeItem($this->formatCacheKey($key));
+        $this->cache->removeItem($this->getCacheKey($key));
     }
 }
