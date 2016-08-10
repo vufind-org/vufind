@@ -122,8 +122,20 @@ module.exports = function(grunt) {
           ]
         }
       }
+    },
+    watch: {
+      options: {
+        atBegin: true
+      },
+      less: {
+        files: 'themes/**/*.less',
+        tasks: ['less']
+      },
+      scss: {
+        files: 'themes/**/*.scss',
+        tasks: ['scss']
+      }
     }
-
   });
   grunt.registerMultiTask('scss', function sassScan() {
     var sassConfig = {},
