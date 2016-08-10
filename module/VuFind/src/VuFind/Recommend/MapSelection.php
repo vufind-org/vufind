@@ -390,32 +390,32 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $coordS = $coordinate[3];
 
         //Does coordinate fall within search box
-        if ((($coordW >= $bboxW && $coordW <= $bboxE) 
-            || ($coordE >= $bboxW && $coordE <= $bboxE)) 
-            && (($coordS >= $bboxS && $coordS <= $bboxN) 
+        if ((($coordW >= $bboxW && $coordW <= $bboxE)
+            || ($coordE >= $bboxW && $coordE <= $bboxE))
+            && (($coordS >= $bboxS && $coordS <= $bboxN)
             || ($coordN >= $bboxS && $coordN <= $bboxN))
         ) {
             $coordIntersect = true;
         }
 
         // Does searchbox fall within coordinate
-        if ((($bboxW >= $coordW && $bboxW <= $coordE) 
-            || ($bboxE >= $coordW && $bboxE <= $coordE)) 
-            && (($bboxS >= $coordS && $bboxS <= $coordN) 
+        if ((($bboxW >= $coordW && $bboxW <= $coordE)
+            || ($bboxE >= $coordW && $bboxE <= $coordE))
+            && (($bboxS >= $coordS && $bboxS <= $coordN)
             || ($bboxN >= $coordS && $bboxN <= $coordN))
         ) {
             $coordIntersect = true;
         }
         // Does searchbox span coordinate
-        if ((($coordE >= $bboxW && $coordE <= $bboxE) 
-            && ($coordW >= $bboxW && $coordW <= $bboxE)) 
+        if ((($coordE >= $bboxW && $coordE <= $bboxE)
+            && ($coordW >= $bboxW && $coordW <= $bboxE))
             && ($coordN > $bboxN && $coordS < $bboxS)
         ) {
             $coordIntersect = true;
         }
         // Does coordinate span searchbox
-        if (($coordW < $bboxW && $coordE > $bboxE) 
-            && (($coordS >= $bboxS && $coordS <= $bboxN) 
+        if (($coordW < $bboxW && $coordE > $bboxE)
+            && (($coordS >= $bboxS && $coordS <= $bboxN)
             && ($coordN >= $bboxS && $coordN <= $bboxN))
         ) {
             $coordIntersect = true;
