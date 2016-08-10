@@ -330,7 +330,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @return string
      */
-    protected function formatCacheKey($key)
+    protected function getCacheKey($key = null)
     {
         // Override the base class formatting with Voyager-specific details
         // to ensure proper caching in a MultiBackend environment.
