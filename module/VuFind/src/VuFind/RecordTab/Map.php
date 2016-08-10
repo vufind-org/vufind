@@ -62,13 +62,6 @@ class Map extends AbstractBase
     protected $mapLabels = null;
 
     /**
-     * Map labels location setting from config.ini.
-     *
-     * @var string
-     */
-    protected $mapLabelsLookup = null;
-
-    /**
      * Google Maps API key.
      *
      * @var string
@@ -94,7 +87,7 @@ class Map extends AbstractBase
             $this->googleMapApiKey = $options['googleMapApiKey'];
         case 'openlayers':
             $this->mapType = trim(strtolower($mapType));
-            $legalOptions = ['displayCoords', 'mapLabels', 'mapLabelsLookup'];
+            $legalOptions = ['displayCoords', 'mapLabels'];
             foreach ($legalOptions as $option) {
                 if (isset($options[$option])) {
                     $this->$option = $options[$option];
@@ -259,15 +252,16 @@ class Map extends AbstractBase
     public function getMapLabels()
     {
         $labels = [];
-        if ($this->mapLabels == 'long_lat_label') {
+        $mapLabelData = explode(':', $this->mapLabels);
+        if ($mapLabelData[0] == 'field') {
             $labels = $this->getRecordDriver()->tryMethod('getCoordinateLabels');
             return $labels;
         }
-        if ($this->mapLabels == 'file') {
+        if ($mapLabelData[0] == 'file') {
             $coords = $this->getRecordDriver()->tryMethod('getDisplayCoords');
             /* read lookup file into array */
             $label_lookup = [];
-            $file = \VuFind\Config\Locator::getConfigPath($this->mapLabelsLookup);
+            $file = \VuFind\Config\Locator::getConfigPath($mapLabelsData[1]);
             if (file_exists($file)) {
                 $fp = fopen($file, 'r');
                 while (($line = fgetcsv($fp, 0, "\t")) !== false) {
