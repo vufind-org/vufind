@@ -460,7 +460,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $rawCoordIds = [];
         $centerCoordIds = [];
         // Both coordinate variables are in WENS order //
-        $rawCoords = $this->getSearchResultCoordinates();a
+        $rawCoords = $this->getSearchResultCoordinates();
         // Convert bbox coords to 360 grid  //
         $bboxCoords = $this->coordinatesToGrid($this->bboxSearchCoords);
         $bboxW = $bboxCoords[0];
