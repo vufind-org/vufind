@@ -402,22 +402,22 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         if ((($bboxW >= $coordW && $bboxW <= $coordE) 
             || ($bboxE >= $coordW && $bboxE <= $coordE)) 
             && (($bboxS >= $coordS && $bboxS <= $coordN) 
-            || ($bboxN >= $coordS && $bboxN <= $coordN))) 
-        {
+            || ($bboxN >= $coordS && $bboxN <= $coordN))
+        ) {
             $coordIntersect = true;
         }
         // Does searchbox span coordinate
         if ((($coordE >= $bboxW && $coordE <= $bboxE) 
             && ($coordW >= $bboxW && $coordW <= $bboxE)) 
-            && ($coordN > $bboxN && $coordS < $bboxS)) 
-        {
+            && ($coordN > $bboxN && $coordS < $bboxS)
+        ) {
             $coordIntersect = true;
         }
         // Does coordinate span searchbox
         if (($coordW < $bboxW && $coordE > $bboxE) 
             && (($coordS >= $bboxS && $coordS <= $bboxN) 
-            && ($coordN >= $bboxS && $coordN <= $bboxN))) 
-        {
+            && ($coordN >= $bboxS && $coordN <= $bboxN))
+        ) {
             $coordIntersect = true;
         }
         return $coordIntersect;
