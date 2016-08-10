@@ -162,6 +162,8 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
         map.addOverlay(markers[i]);
       }
     }
+    // Workaround for library bug that causes disappearing markers -- we may be able to eliminate
+    // the next two lines at some point in the future:
     mapcenter = map.getCenter();
     map.setCenter(new google.maps.LatLng((mapcenter.lat() + 0.0000001), mapcenter.lng()));
   }
