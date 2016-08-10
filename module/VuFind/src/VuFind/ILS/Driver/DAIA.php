@@ -516,21 +516,6 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Add instance-specific context to a cache key suffix (to ensure that
-     * multiple drivers don't accidentally share values in the cache).
-     *
-     * @param string $key Cache key suffix
-     *
-     * @return string
-     */
-    protected function formatCacheKey($key)
-    {
-        // Override the base class formatting with DAIA-specific URI
-        // to ensure proper caching in a MultiBackend environment.
-        return 'DAIA-' . md5($key);
-    }
-
-    /**
      * Parse a DAIA document depending on its type.
      *
      * Parse a DAIA document depending on its type and return a VuFind
