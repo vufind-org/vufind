@@ -1,38 +1,42 @@
 module.exports = function(grunt) {
   require('jit-grunt')(grunt); // Just in time library loading
 
+  var fs = require('fs');
+
+  function getLoadPaths(file) {
+    var config;
+    var parts = file.split('/');
+    parts.pop(); // eliminate filename
+
+    // initialize search path with directory containing LESS file
+    var retVal = [];
+    retVal.push(parts.join('/'));
+
+    // Iterate through theme.config.php files collecting parent themes in search path:
+    while (config = fs.readFileSync("themes/" + parts[1] + "/theme.config.php", "UTF-8")) {
+      var matches = config.match(/["']extends["']\s*=>\s*['"](\w+)['"]/);
+
+      // "extends" set to "false" or missing entirely? We've hit the end of the line:
+      if (matches === null || matches[1] === 'false') {
+        break;
+      }
+
+      parts[1] = matches[1];
+      retVal.push(parts.join('/') + '/');
+    }
+    return retVal;
+  }
+
   grunt.initConfig({
     // LESS compilation
     less: {
       compile: {
         options: {
-          paths: function (file) {
-            var fs = require('fs'), config;
-            parts = file.split('/');
-            parts.pop(); // eliminate filename
-
-            // initialize search path with directory containing LESS file
-            retVal = [];
-            retVal.push(parts.join('/'));
-
-            // Iterate through theme.config.php files collecting parent themes in search path:
-            while (config = fs.readFileSync("themes/" + parts[1] + "/theme.config.php", "UTF-8")) {
-              var matches = config.match(/["']extends["']\s*=>\s*['"](\w+)['"]/);
-
-              // "extends" set to "false" or missing entirely? We've hit the end of the line:
-              if (matches === null || matches[1] === 'false') {
-                break;
-              }
-
-              parts[1] = matches[1];
-              retVal.push(parts.join('/'));
-            }
-            return retVal;
-          },
+          paths: getLoadPaths,
           compress: true,
           modifyVars: {
             'fa-font-path': '"fonts"',
-            'img-path': '"../images"',
+            'img-path': '"../images"'
           }
         },
         files: [{
@@ -45,15 +49,10 @@ module.exports = function(grunt) {
       }
     },
     // SASS compilation
-    sass: {
-      compile: {
+    scss: {
+      sass: {
         options: {
-          loadPath: ["themes/bootprint3/sass", "themes/bootstrap3/sass"],
           style: 'compress'
-        },
-        files: {
-          "themes/bootstrap3/css/compiled.css": "themes/bootstrap3/sass/bootstrap.scss",
-          "themes/bootprint3/css/compiled.css": "themes/bootprint3/sass/bootprint.scss"
         }
       }
     },
@@ -80,8 +79,8 @@ module.exports = function(grunt) {
           replacements: [
             { // Replace ; in include with ,
               pattern: /(\s+)@include ([^\(]+)\(([^\)]+)\);/gi,
-              replacement: function (match, space, $1, $2) {
-                return space+'@include '+$1+'('+$2.replace(/;/g, ',')+');';
+              replacement: function mixinCommas(match, space, $1, $2) {
+                return space + '@include ' + $1 + '(' + $2.replace(/;/g, ',') + ');';
               },
               order: 3
             },
@@ -124,5 +123,31 @@ module.exports = function(grunt) {
         }
       }
     }
+
+  });
+  grunt.registerMultiTask('scss', function sassScan() {
+    var sassConfig = {},
+      path = require('path'),
+      themeList = fs.readdirSync(path.resolve('themes')).filter(function (theme) {
+        return fs.existsSync(path.resolve('themes/' + theme + '/scss/compiled.scss'));
+      });
+
+    for (var i in themeList) {
+      var config = {
+        options: {},
+        files: {}
+      };
+      for (var key in this.data.options) {
+        config.options[key] = this.data.options[key] + '';
+      }
+      config.options.loadPath = getLoadPaths('themes/' + themeList[i] + '/scss/compiled.scss');
+
+      var compiledPath = 'themes/' + themeList[i] + '/css/compiled.css';
+      config.files[compiledPath] = 'themes/' + themeList[i] + '/scss/compiled.scss';
+      sassConfig[themeList[i]] = config;
+    }
+
+    grunt.config.set('sass', sassConfig);
+    grunt.task.run('sass');
   });
 };
