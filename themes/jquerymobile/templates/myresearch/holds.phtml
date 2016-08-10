@@ -61,7 +61,7 @@
             <? if (!empty($ilsDetails['requestGroup'])): ?>
               <p>
                 <strong><?=$this->transEsc('hold_requested_group') ?>:</strong>
-                <?=$this->transEsc('location_' . $ilsDetails['requestGroup'], array(), $ilsDetails['requestGroup'])?>
+                <?=$this->transEsc('request_group_' . $ilsDetails['requestGroup'], null, $ilsDetails['requestGroup'])?>
               </p>
             <? endif; ?>
 
@@ -85,7 +85,7 @@
             <? if (!empty($pickupDisplay)): ?>
               <p>
                 <strong><?=$this->transEsc('pick_up_location') ?>:</strong>
-                <?=$pickupTranslate ? $this->transEsc($pickupDisplay) : $this->escapeHtml($pickupDisplay)?>
+                <?=$pickupTranslate ? $this->transEsc('location_' . $pickupDisplay, null, $pickupDisplay) : $this->escapeHtml($pickupDisplay)?>
               </p>
             <? endif; ?>
 
