@@ -393,8 +393,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         if ((($coordW >= $bboxW && $coordW <= $bboxE) 
             || ($coordE >= $bboxW && $coordE <= $bboxE)) 
             && (($coordS >= $bboxS && $coordS <= $bboxN) 
-            || ($coordN >= $bboxS && $coordN <= $bboxN))) 
-        {
+            || ($coordN >= $bboxS && $coordN <= $bboxN))
+        ) {
             $coordIntersect = true;
         }
 
