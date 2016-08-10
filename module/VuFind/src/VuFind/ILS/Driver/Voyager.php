@@ -158,7 +158,7 @@ class Voyager extends AbstractBase
                ')';
         try {
             $this->db = new Oci8(
-                "oci:dbname=$tns;charset=US_ACII",
+                "oci:dbname=$tns;charset=US_ASCII",
                 $this->config['Catalog']['user'],
                 $this->config['Catalog']['password']
             );
