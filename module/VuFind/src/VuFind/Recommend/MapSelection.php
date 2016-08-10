@@ -340,6 +340,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     /**
      * Convert coordinates to 360degree grid
      *
+     * @param $coordinates coordinates for conversion
      * @return array
      */
     public function coordinatesToGrid($coordinates)
@@ -349,18 +350,18 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $coordE = $coordinates[1];
         $coordN = $coordinates[2];
         $coordS = $coordinates[3];
-
+        
         if ($coordE == (float)-0) {
-          $coordE = (float)0;
+            $coordE = (float)0;
         }
 
         // Convert coordinates to 360 degree grid
-        if ($coordE < $coordW && $coordE < 0)  {
-          $coordE = 360 + $coordE;
+        if ($coordE < $coordW && $coordE < 0) {
+            $coordE = 360 + $coordE;
         }
         if ($coordW < 0 && $coordW >= -180) {
-          $coordW = 360 + $coordW;
-          $coordE = 360 + $coordE;
+            $coordW = 360 + $coordW;
+            $coordE = 360 + $coordE;
         }
         $gridCoords = [$coordW, $coordE, $coordN, $coordS];
         return $gridCoords;
@@ -369,6 +370,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     /**
      * Check to see if coordinate and bbox intersect
      *
+     * @param $bboxCoords searchbox coordinates
+     * @param $coordinate result record coordinates
      * @return bool
      */
     public function coordBboxIntersect($bboxCoords, $coordinate)
@@ -385,25 +388,39 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $coordS = $coordinate[3];
 
         //Does coordinate fall within search box
-        if ((($coordW >= $bboxW && $coordW <= $bboxE) || ($coordE >= $bboxW && $coordE <= $bboxE))
-        && (($coordS >= $bboxS && $coordS <= $bboxN) || ($coordN >= $bboxS && $coordN <= $bboxN))) {
-          $coordIntersect = true;
+        if (
+            (($coordW >= $bboxW && $coordW <= $bboxE)
+            || ($coordE >= $bboxW && $coordE <= $bboxE))
+            && (($coordS >= $bboxS && $coordS <= $bboxN)
+            || ($coordN >= $bboxS && $coordN <= $bboxN))
+        ) {
+            $coordIntersect = true;
         }
 
         // Does searchbox fall within coordinate
-        if ((($bboxW >= $coordW && $bboxW <= $coordE) || ($bboxE >= $coordW && $bboxE <= $coordE))
-          && (($bboxS >= $coordS && $bboxS <= $coordN) || ($bboxN >= $coordS && $bboxN <= $coordN))) {
+        if (
+            (($bboxW >= $coordW && $bboxW <= $coordE)
+            || ($bboxE >= $coordW && $bboxE <= $coordE))
+            && (($bboxS >= $coordS && $bboxS <= $coordN) 
+            || ($bboxN >= $coordS && $bboxN <= $coordN))
+        ) {
             $coordIntersect = true;
         }
         // Does searchbox span coordinate
-        if ((($coordE >= $bboxW && $coordE <= $bboxE) && ($coordW >= $bboxW && $coordW <= $bboxE))
-          && ($coordN > $bboxN && $coordS < $bboxS)) {
-          $coordIntersect = true;
+        if (
+            (($coordE >= $bboxW && $coordE <= $bboxE) 
+            && ($coordW >= $bboxW && $coordW <= $bboxE))
+            && ($coordN > $bboxN && $coordS < $bboxS)
+        ) {
+            $coordIntersect = true;
         }
         // Does coordinate span searchbox
-        if (($coordW < $bboxW && $coordE > $bboxE)
-          && (($coordS >= $bboxS && $coordS <= $bboxN) && ($coordN >= $bboxS && $coordN <= $bboxN))) {
-           $coordIntersect = true;
+        if (
+            ($coordW < $bboxW && $coordE > $bboxE)
+            && (($coordS >= $bboxS && $coordS <= $bboxN) 
+            && ($coordN >= $bboxS && $coordN <= $bboxN))
+        ) {
+            $coordIntersect = true;
         }
         return $coordIntersect;
     }
@@ -411,6 +428,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     /**
      * Calculate center point of coordinate set
      *
+     * @param $coordinate centerPoint coordinate
      * @return array
      */
     public function calculateCenterPoint($coordinate)
@@ -483,7 +501,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     );
                     if ($coordIntersect == true) {
                         // Calculate center point
-                        $centerPt = $this->calculateCenterPoint([$coordW, $coordE, $coordN, $coordS]);
+                        $centerPt = $this->calculateCenterPoint(
+                            [$coordW, $coordE, $coordN, $coordS]
+                        );
                         //Does centerpoint intersect search box
                         $centerIntersect = $this->coordBboxIntersect($bboxCoords, $centerPt);
                         if ($centerIntersect) {
