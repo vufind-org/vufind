@@ -33,7 +33,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
   });
 
   var clusterSource = new ol.source.Cluster({
-    distance: 40,
+    distance: 60,
     source: resultSource
   });
 
@@ -42,27 +42,24 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
     source: clusterSource,
     style: function addClusterStyle(feature) {
       var size = feature.get('features').length;
+      var pointRadius = 8 + (size.toString().length * 2);
       var style = styleCache[size];
       if (!style) {
         style = [new ol.style.Style({
           image: new ol.style.Circle({
-            radius: 10,
+            radius: pointRadius,
             stroke: new ol.style.Stroke({
               color: '#ff0000'
             }),
             fill: new ol.style.Fill({
-              color: '#750000'
+              color: '#ffb3b3'
             })
           }),
           text: new ol.style.Text({
             text: size.toString(),
-            scale: 1,
+            font: 'bold 12px arial,sans-serif',
             fill: new ol.style.Fill({
-              color: '#fff'
-            }),
-            stroke: new ol.style.Stroke({
-              color: '#fff',
-              width: .25
+              color: 'black'
             })
           })
         })];
