@@ -8101,6 +8101,48 @@ a.carousel-control:focus {
 .alert-danger:hover {
   color: #a82824; }
 
+/* mixins */
+input::-webkit-input-placeholder, input:-ms-input-placeholder, input::-ms-input-placeholder, input::placeholder, textarea::-webkit-input-placeholder, textarea:-ms-input-placeholder, textarea::-ms-input-placeholder, textarea::placeholder {
+  color: #888; }
+
+.sr-only {
+  clip: rect(1px, 1px, 1px, 1px);
+  position: absolute;
+  /* reset */
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0; }
+
+.sr-only:focus {
+  background-color: #fff;
+  border-radius: 4px;
+  clip: auto;
+  color: #333;
+  display: block;
+  font-size: 14px;
+  height: 50px;
+  line-height: 20px;
+  padding: 15px 15px;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  text-decoration: none;
+  text-transform: none;
+  width: auto;
+  z-index: 100000;
+  /* Above WP toolbar */ }
+
+/* this mixins give output generate duplicate CSS code
+ * alternatively you will to have to rewrite the original mixin in buttons.less
+ */
+.navbar-brand {
+  font-size: 20px; }
+
+/* buttons */
+/* link on white background */
 .group {
   position: relative;
   background: #eeeeee;
@@ -8160,12 +8202,12 @@ a.carousel-control:focus {
     width: 10%;
     text-align: center; }
   .alphabrowse tr.browse-match td {
-    border-top: 0.2em solid #337ab7;
-    border-bottom: 0.2em solid #337ab7; }
+    border-top: 0.2em solid #265680;
+    border-bottom: 0.2em solid #265680; }
     .alphabrowse tr.browse-match td:first-child {
-      border-left: 0.2em solid #337ab7; }
+      border-left: 0.2em solid #265680; }
     .alphabrowse tr.browse-match td:last-child {
-      border-right: 0.2em solid #337ab7; }
+      border-right: 0.2em solid #265680; }
 
 /* crhallberg/autocomplete.js 0.14 */
 .autocomplete-results {
@@ -8187,12 +8229,12 @@ a.carousel-control:focus {
     .autocomplete-results .item:last-child {
       border: 0; }
     .autocomplete-results .item:hover {
-      background-color: white; }
+      background-color: #e2edf6; }
     .autocomplete-results .item.loading {
       background-color: #fff; }
     .autocomplete-results .item.selected {
-      background-color: #337ab7;
-      color: contrast(#337ab7); }
+      background-color: #265680;
+      color: contrast(#265680); }
     .autocomplete-results .item small {
       display: block;
       color: darkgray; }
@@ -8563,7 +8605,7 @@ li.jstree-facet ul {
       top: 50%;
       width: calc($offcanvas-padding - 5px);
       padding: 20px 0;
-      background: #337ab7;
+      background: #265680;
       color: #EEE;
       text-align: center;
       z-index: 5; }
@@ -8601,7 +8643,7 @@ li.jstree-facet ul {
   line-height: 1.428571429;
   border-radius: 4px; }
   .tagList .tag.selected {
-    background-color: #337ab7; }
+    background-color: #265680; }
     .tagList .tag.selected a {
       color: #fff; }
     .tagList .tag.selected .badge {
@@ -8619,7 +8661,7 @@ li.jstree-facet ul {
   display: inline; }
 
 .tagList.loggedin .tag:not(.selected) .badge:hover {
-  background-color: #5cb85c; }
+  background-color: #028302; }
 
 .subject-line:hover {
   color: #999; }
@@ -8884,9 +8926,9 @@ label.list-group-item, .result.embedded label.getFull.expanded, .result.embedded
     background: #777777;
     box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.4); }
   .slider-container .slider-handle {
-    background: #337ab7;
+    background: #265680;
     background-image: none;
-    border: 1px solid #337ab7;
+    border: 1px solid #265680;
     box-shadow: none;
     opacity: .9; }
     .slider-container .slider-handle:hover, .slider-container .slider-handle:active, .slider-container .slider-handle:focus {
@@ -8894,7 +8936,7 @@ label.list-group-item, .result.embedded label.getFull.expanded, .result.embedded
       background: #FFF;
       border-color: #777777; }
     .slider-container .slider-handle:active, .slider-container .slider-handle:focus {
-      border-color: #337ab7; }
+      border-color: #265680; }
   .slider-container .slider-selection {
     background: #CCC;
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.3); }
@@ -8998,7 +9040,7 @@ img {
   background-color: #fff;
   fill: #eaeaea;
   outline-color: #c38835;
-  stroke: #337ab7; }
+  stroke: #265680; }
 
 /* --- Table wrapping to prevent horizontal overflow --- */
 .table {
