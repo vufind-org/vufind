@@ -489,7 +489,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string     URI of the DAIA document
      *
-     * @see http://gbv.github.io/daiaspec/daia.html#query-api
+     * @see http://gbv.github.io/daia/daia.html#query-parameters
      */
     protected function generateURI($id)
     {
@@ -504,7 +504,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string   Combined URIs (delimited by "|")
      *
-     * @see http://gbv.github.io/daiaspec/daia.html#query-api
+     * @see http://gbv.github.io/daia/daia.html#query-parameters
      */
     protected function generateMultiURIs($ids)
     {
