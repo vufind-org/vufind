@@ -3,27 +3,31 @@
 <? $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js'); ?>
 <? $this->headLink()->appendStylesheet('vendor/flickity.min.css'); ?>
 <? foreach ($channels as $key=>$channel): ?>
-  <div class="channel-title">
-    <? if (isset($channel['searchUrl'])): ?>
-      <a href="<?=$channel['searchUrl'] ?>" class="pull-left"><i class="fa fa-fw fa-search" title="<?=$this->transEsc('channel_search_icon') ?>"></i></a>
-    <? else: ?>
-      <span class="placeholder pull-left">&nbsp;</span>
-    <? endif; ?>
-    <? if (isset($channel['channelsUrl'])): ?>
-      <a href="<?=$channel['channelsUrl'] ?>" class="pull-left"><i class="fa fa-fw fa-plus-circle" title="<?=$this->transEsc('channel_expand_icon') ?>"></i></a>
-    <? else: ?>
-      <span class="placeholder pull-left">&nbsp;</span>
-    <? endif; ?>
-    <h2><?=$this->escapeHtml($channel['title'])?></h2>
-  </div>
-  <? $channelID = 'channel-' . $key; ?>
-  <div id="<?=$channelID ?>" class="channel" style="clear:both">
-    <!-- Wrapper for slides -->
-    <? foreach ($channel['contents'] as $item): ?>
-      <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
-        <div class="img" style="background-image:url(<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>)"></div>
-        <?=$this->escapeHtml($item['title'])?>
-      </a>
-    <? endforeach; ?>
-  </div>
+  <? if (isset($channel['contents'])): ?>
+    <div class="channel-title">
+      <? if (isset($channel['searchUrl'])): ?>
+        <a href="<?=$channel['searchUrl'] ?>" class="pull-left"><i class="fa fa-fw fa-search" title="<?=$this->transEsc('channel_search_icon') ?>"></i></a>
+      <? else: ?>
+        <span class="placeholder pull-left">&nbsp;</span>
+      <? endif; ?>
+      <? if (isset($channel['channelsUrl'])): ?>
+        <a href="<?=$channel['channelsUrl'] ?>" class="pull-left"><i class="fa fa-fw fa-plus-circle" title="<?=$this->transEsc('channel_expand_icon') ?>"></i></a>
+      <? else: ?>
+        <span class="placeholder pull-left">&nbsp;</span>
+      <? endif; ?>
+      <h2><?=$this->escapeHtml($channel['title'])?></h2>
+    </div>
+    <? $channelID = 'channel-' . $key; ?>
+    <div id="<?=$channelID ?>" class="channel" style="clear:both">
+      <!-- Wrapper for slides -->
+      <? foreach ($channel['contents'] as $item): ?>
+        <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
+          <div class="img" style="background-image:url(<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>)"></div>
+          <?=$this->escapeHtml($item['title'])?>
+        </a>
+      <? endforeach; ?>
+    </div>
+  <? elseif (isset($channel['token'])): ?>
+    <!-- found channel token: <?=$this->escapeHtml($channel['token'])?> -->
+  <? endif; ?>
 <? endforeach; ?>

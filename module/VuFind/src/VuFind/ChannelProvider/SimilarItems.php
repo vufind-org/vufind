@@ -102,7 +102,7 @@ class SimilarItems extends AbstractChannelProvider
     {
         // If we have a token and it doesn't match the record driver, we can't
         // fetch any results!
-        if ($channelToken !== null && $channelToken !== $driver->getUniqueId()) {
+        if ($channelToken !== null && $channelToken !== $driver->getUniqueID()) {
             return [];
         }
         $channel = $this->buildChannelFromRecord($driver);
@@ -124,15 +124,16 @@ class SimilarItems extends AbstractChannelProvider
         foreach ($results->getResults() as $driver) {
             // If we have a token and it doesn't match the current driver, skip
             // that driver.
-            if ($channelToken !== null && $channelToken !== $driver->getUniqueId()) {
+            if ($channelToken !== null && $channelToken !== $driver->getUniqueID()) {
                 continue;
             }
-            $channel = $this->buildChannelFromRecord($driver);
-            if (count($channel['contents']) > 0) {
-                $channels[] = $channel;
-            }
-            if (count($channels) >= $this->maxRecordsToExamine) {
-                break;
+            if (count($channels) < $this->maxRecordsToExamine) {
+                $channel = $this->buildChannelFromRecord($driver);
+                if (count($channel['contents']) > 0) {
+                    $channels[] = $channel;
+                }
+            } else {
+                $channels[] = $this->buildChannelFromRecord($driver, true);
             }
         }
         return $channels;
@@ -142,21 +143,29 @@ class SimilarItems extends AbstractChannelProvider
      * Add a new filter to an existing search results object to populate a
      * channel.
      *
-     * @param RecordDriver $driver Record driver
+     * @param RecordDriver $driver    Record driver
+     * @param bool         $tokenOnly Create full channel (false) or return a
+     * token for future loading (true)?
      *
      * @return array
      */
-    protected function buildChannelFromRecord(RecordDriver $driver)
-    {
-        $params = new \VuFindSearch\ParamBag(['rows' => $this->channelSize]);
-        $similar = $this->searchService->similar(
-            $driver->getSourceIdentifier(), $driver->getUniqueId(), $params
-        );
+    protected function buildChannelFromRecord(RecordDriver $driver,
+        $tokenOnly = false
+    ) {
         $heading = $this->translate('Similar Items');
-        return [
+        $retVal = [
             'title' => "{$heading}: {$driver->getBreadcrumb()}",
             'providerId' => $this->providerId,
-            'contents' => $this->summarizeRecordDrivers($similar)
         ];
+        if ($tokenOnly) {
+            $retVal['token'] = $driver->getUniqueID();
+        } else {
+            $params = new \VuFindSearch\ParamBag(['rows' => $this->channelSize]);
+            $similar = $this->searchService->similar(
+                $driver->getSourceIdentifier(), $driver->getUniqueID(), $params
+            );
+            $retVal['contents'] = $this->summarizeRecordDrivers($similar);
+        }
+        return $retVal;
     }
 }
