@@ -181,7 +181,7 @@ class Factory
             ? $config->Content->recordMap : null;
         $options = [];
         $optionFields = [
-            'displayCoords', 'mapLabels', 'mapLabelsLookup', 'googleMapApiKey'
+            'displayCoords', 'mapLabels', 'googleMapApiKey'
         ];
         foreach ($optionFields as $field) {
             if (isset($config->Content->$field)) {
