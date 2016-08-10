@@ -109,6 +109,7 @@ function initialize() {
 
     var useGmm = document.getElementById('usegmm');
     google.maps.event.addDomListener(useGmm, 'click', refreshMap);
+    map.addListener('zoom_changed', refreshMap);
 
     var checkbx = document.getElementById("useCluster");
     var wrap = document.getElementById("mapWrap");
@@ -180,6 +181,12 @@ function deleteOverlays() {
 function refreshMap() {
   deleteOverlays();
   showMarkers();
+  // The following two lines are a workaround for a library bug that causes
+  // clusters to disappear after zoom and other events; these may be able to be
+  // removed along with the zoom_changed event hook above in the future if the
+  // library is fixed.
+  mapcenter = map.getCenter();
+  map.setCenter(new google.maps.LatLng((mapcenter.lat() + 0.0000001), mapcenter.lng()));
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
