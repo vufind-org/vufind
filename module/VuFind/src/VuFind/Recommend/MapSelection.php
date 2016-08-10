@@ -340,7 +340,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     /**
      * Convert coordinates to 360degree grid
      *
-     * @param $coordinates coordinates for conversion
+     * @param array $coordinates coordinates for conversion
+     * 
      * @return array
      */
     public function coordinatesToGrid($coordinates)
@@ -370,8 +371,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     /**
      * Check to see if coordinate and bbox intersect
      *
-     * @param $bboxCoords searchbox coordinates
-     * @param $coordinate result record coordinates
+     * @param array $bboxCoords searchbox coordinates
+     * @param array $coordinate result record coordinates
+     * 
      * @return bool
      */
     public function coordBboxIntersect($bboxCoords, $coordinate)
@@ -388,38 +390,34 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $coordS = $coordinate[3];
 
         //Does coordinate fall within search box
-        if (
-            (($coordW >= $bboxW && $coordW <= $bboxE)
+        if ((($coordW >= $bboxW && $coordW <= $bboxE)
             || ($coordE >= $bboxW && $coordE <= $bboxE))
             && (($coordS >= $bboxS && $coordS <= $bboxN)
-            || ($coordN >= $bboxS && $coordN <= $bboxN))
-        ) {
+            || ($coordN >= $bboxS && $coordN <= $bboxN)))
+        {
             $coordIntersect = true;
         }
 
         // Does searchbox fall within coordinate
-        if (
-            (($bboxW >= $coordW && $bboxW <= $coordE)
+        if ((($bboxW >= $coordW && $bboxW <= $coordE)
             || ($bboxE >= $coordW && $bboxE <= $coordE))
             && (($bboxS >= $coordS && $bboxS <= $coordN) 
-            || ($bboxN >= $coordS && $bboxN <= $coordN))
-        ) {
+            || ($bboxN >= $coordS && $bboxN <= $coordN)))
+        {
             $coordIntersect = true;
         }
         // Does searchbox span coordinate
-        if (
-            (($coordE >= $bboxW && $coordE <= $bboxE) 
+        if ((($coordE >= $bboxW && $coordE <= $bboxE) 
             && ($coordW >= $bboxW && $coordW <= $bboxE))
-            && ($coordN > $bboxN && $coordS < $bboxS)
-        ) {
+            && ($coordN > $bboxN && $coordS < $bboxS))
+        {
             $coordIntersect = true;
         }
         // Does coordinate span searchbox
-        if (
-            ($coordW < $bboxW && $coordE > $bboxE)
+        if (($coordW < $bboxW && $coordE > $bboxE)
             && (($coordS >= $bboxS && $coordS <= $bboxN) 
-            && ($coordN >= $bboxS && $coordN <= $bboxN))
-        ) {
+            && ($coordN >= $bboxS && $coordN <= $bboxN)))
+        {
             $coordIntersect = true;
         }
         return $coordIntersect;
@@ -428,7 +426,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     /**
      * Calculate center point of coordinate set
      *
-     * @param $coordinate centerPoint coordinate
+     * @param array $coordinate centerPoint coordinate
+     * 
      * @return array
      */
     public function calculateCenterPoint($coordinate)
@@ -505,7 +504,9 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             [$coordW, $coordE, $coordN, $coordS]
                         );
                         //Does centerpoint intersect search box
-                        $centerIntersect = $this->coordBboxIntersect($bboxCoords, $centerPt);
+                        $centerIntersect = $this->coordBboxIntersect(
+                            $bboxCoords, $centerPt
+                        );
                         if ($centerIntersect) {
                             $centerWE = $centerPt[0];
                             $centerSN = $centerPt[2];
@@ -528,7 +529,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             // Calculate new center point
                             $newCenterPt = $this->calculateCenterPoint(
                                 [min($cbLon), max($cbLon), min($cbLat), max($cbLat)]
-                                );
+                            );
                             //Does center point fall within search box
                             $centerIntersect = $this->coordBboxIntersect(
                                 $bboxCoords, $newCenterPt
