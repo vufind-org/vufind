@@ -169,19 +169,11 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
     }
   }
   function load_content(marker){
-    var xmlhttp;
-    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safarihttp://www.google.ie/search?hl=en&cp=10&gs_id=2i&xhr=t&q=php+cast+string+to+int&pq=php+int+to+string&gs_sm=&gs_upl=&bav=on.2,or.r_gc.r_pw.&biw=1876&bih=1020&um=1&ie=UTF-8&tbm=isch&source=og&sa=N&tab=wi
-      xmlhttp=new XMLHttpRequest();
-    }
-    else{// code for IE6, IE5
-      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-    }
     var ajaxUrl = VuFind.path+'/AJAX/ResultGoogleMapInfo?limit=5&filter[]=long_lat%3A"' + marker.loc_facet+'"&<?=$searchParams ?>';
-    xmlhttp.open("GET", ajaxUrl, false);
-    xmlhttp.send();
-
-    infowindow.setContent(xmlhttp.responseText);
-    infowindow.open(map, marker);
+    $.ajax(ajaxUrl, { dataType: 'html' }).done(function (html) {
+      infowindow.setContent(html);
+      infowindow.open(map, marker);
+    });
   }
   function deleteOverlays() {
       if (markers) {
