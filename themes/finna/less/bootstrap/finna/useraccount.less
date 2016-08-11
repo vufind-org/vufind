@@ -6,8 +6,10 @@
     h1 {
         display: inline-block;
     }
-    .finna-main-header .form-inline {
-        margin-left: 20px;
+    .finna-main-header {
+        & .form-inline {
+            margin-left: 20px;
+        }
     }
     & .useraccount-header {
         font-weight: bold;
@@ -58,6 +60,7 @@
         background: linear-gradient( @gray-light, darken(@gray-light,8%));
         color: @body-bg;
     }
+
     & .online-payment-data {
         font-size: 1.2em;
         margin-bottom: 40px;
@@ -147,9 +150,7 @@
         line-height: 1.1em;
         margin-top: 15px;
     }
-    & select#library_card {
-        display: inline-block;   
-    }
+
     & .useraccount-table {
         margin-bottom: 40px;
         border: 1px solid @gray-lighter;
