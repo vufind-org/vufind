@@ -1,63 +1,5 @@
 /*global VuFind*/
 finna.common = (function() {
-
-    var loginSetup = function() {
-        // Standalone login form
-        $('#loginForm').submit(function(evt) { 
-            evt.preventDefault();
-            standaloneAjaxLogin(evt.target);
-        });
-    };
-    
-    // ajaxLogin equivalent for non-lightbox login
-    var standaloneAjaxLogin = function (form) {
-        $(form).find('div.alert').remove();
-        $(form).find('input[type=submit]').after('<i class="fa fa-spinner fa-spin"></i>');
-        $.ajax({
-            url: VuFind.path + '/AJAX/JSON?method=getSalt',
-            dataType: 'json'
-        })
-        .done(function(response) {
-            var salt = response.data;
-
-            // get the user entered password
-            var password = form.password.value;
-            
-            // base-64 encode the password (to allow support for Unicode)
-            // and then encrypt the password with the salt
-            password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
-            
-            // hex encode the encrypted password
-            password = hexEncode(password);
-            
-            var params = {password:password};
-            
-            // get any other form values
-            for (var i = 0; i < form.length; i++) {
-                if (form.elements[i].name == 'password') {
-                    continue;
-                }
-                params[form.elements[i].name] = form.elements[i].value;
-            }
-            
-            // login via ajax
-            $.ajax({
-                type: 'POST',
-                url: VuFind.path + '/AJAX/JSON?method=login',
-                dataType: 'json',
-                data: params
-            }).done(function(response) {
-                // No reload since any post params would cause a prompt
-                window.location.href = window.location.href;
-            })
-            .fail(function(response, textStatus) {
-                var div = $('<div/>').addClass('alert alert-danger').text(response.responseJSON.data);
-                $(form).prepend(div);
-                $(form).find('.fa-spinner').hide();
-            });
-        });
-    };    
-    
     var initSearchInputListener = function() {
         var searchInput = $('.searchForm_lookfor:visible');
         if (searchInput.length == 0) {
@@ -93,7 +35,6 @@ finna.common = (function() {
     
     var my = {
         init: function() {
-            loginSetup();
             initSearchInputListener();
         }
     };

@@ -274,17 +274,15 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
-     * Add instance-specific context to a cache key suffix to ensure that
-     * multiple drivers don't accidentally share values in the cache.
-     * This implementation works anywhere but can be overridden with something more
-     * performant.
+     * Method to ensure uniform cache keys for cached VuFind objects.
      *
-     * @param string $key Cache key suffix
+     * @param string|null $suffix Optional suffix that will get appended to the
+     * object class name calling getCacheKey()
      *
      * @return string
      */
-    protected function formatCacheKey($key)
+    protected function getCacheKey($suffix = null)
     {
-        return 'MultiBackend-' . md5($key);
+        return 'MultiBackend-' . md5($suffix);
     }
 }
