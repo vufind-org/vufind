@@ -881,7 +881,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             }
 
             $items = [];
-            foreach ($results->hold as $hold) {
+            foreach ($results->$request as $hold) {
                 foreach ($hold->items->item as $item) {
                     $items[(string)$item->item_id] = 1;
                 }
