@@ -86,7 +86,7 @@
     <? endif; ?>
 
   </div>
-  <? //hide login/logout if unavailable;?>
+  <? //hide login/logout if unavailable ?>
   <? if (is_object($account) && $account->loginEnabled()): ?>
   <ul role="menu" class="nav navbar-nav nav-absolute">
     <? $user = $account->isLoggedIn(); ?>
