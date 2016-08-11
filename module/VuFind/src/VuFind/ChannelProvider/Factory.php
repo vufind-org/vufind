@@ -69,7 +69,11 @@ class Factory
      */
     public static function getSimilarItems(ServiceManager $sm)
     {
-        $helper = new SimilarItems($sm->getServiceLocator()->get('VuFind\Search'));
+        $helper = new SimilarItems(
+            $sm->getServiceLocator()->get('VuFind\Search'),
+            $sm->getServiceLocator()->get('ControllerPluginManager')->get('url'),
+            $sm->getServiceLocator()->get('VuFind\RecordRouter')
+        );
         $helper->setCoverRouter(
             $sm->getServiceLocator()->get('VuFind\Cover\Router')
         );

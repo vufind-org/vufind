@@ -27,8 +27,10 @@
  */
 namespace VuFind\ChannelProvider;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\Record\Router as RecordRouter;
 use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use Zend\Mvc\Controller\Plugin\Url;
 
 /**
  * "Similar items" channel provider.
@@ -66,13 +68,32 @@ class SimilarItems extends AbstractChannelProvider
     protected $searchService;
 
     /**
+     * URL helper
+     *
+     * @var Url
+     */
+    protected $url;
+
+    /**
+     * Record router
+     *
+     * @var RecordRouter
+     */
+    protected $recordRouter;
+
+    /**
      * Constructor
      *
      * @param \VuFindSearch\Service $search Search service
+     * @param Url                   $url    URL helper
+     * @param RecordRouter          $router Record router
      */
-    public function __construct(\VuFindSearch\Service $search)
-    {
+    public function __construct(\VuFindSearch\Service $search, Url $url,
+        RecordRouter $router
+    ) {
         $this->searchService = $search;
+        $this->url = $url;
+        $this->recordRouter = $router;
     }
 
     /**
@@ -165,6 +186,12 @@ class SimilarItems extends AbstractChannelProvider
                 $driver->getSourceIdentifier(), $driver->getUniqueID(), $params
             );
             $retVal['contents'] = $this->summarizeRecordDrivers($similar);
+            $retVal['channelsUrl'] = $this->url->fromRoute('channels-record')
+                . '?id=' . urlencode($driver->getUniqueID())
+                . '&source=' . urlencode($driver->getSourceIdentifier());
+            $route = $this->recordRouter->getRouteDetails($driver);
+            $retVal['searchUrl'] = $this->url
+                ->fromRoute($route['route'], $route['params']);
         }
         return $retVal;
     }
