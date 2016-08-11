@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -651,7 +651,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $loc = $shelf = '';
         $reserves = "N";
 
-        $sql = "select i.itemnumber as ITEMNO, i.location, 
+        $sql = "select i.itemnumber as ITEMNO, i.location,
             COALESCE(av.lib_opac,av.lib, av.authorised_value) AS LOCATION,
             i.holdingbranch as HLDBRNCH, i.homebranch as HOMEBRANCH,
             i.reserves as RESERVES, i.itemcallnumber as CALLNO, i.barcode as BARCODE,
