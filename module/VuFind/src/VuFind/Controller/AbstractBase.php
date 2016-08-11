@@ -648,4 +648,13 @@ class AbstractBase extends AbstractActionController
         $cfg = $this->getServiceLocator()->get('Config');
         return $cfg['vufind']['recorddriver_tabs'];
     }
+    /**
+     * Alias for getRecordTabConfig
+     *
+     * @return array
+     */
+    protected function getTabConfiguration()
+    {
+        return $this->getRecordTabConfig();
+    }
 }
