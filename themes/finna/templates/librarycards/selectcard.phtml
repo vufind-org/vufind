@@ -3,7 +3,7 @@
   <?$cards = $this->user->getLibraryCards(); if ($cards->count() > 1): ?>
     <? if (isset($loginMenu) && $loginMenu): ?>
         <li role="menuitem" class="logoutOptions card-selection">
-            <h5 style="margin-left: 15px"><?=$this->transEsc(isset($this->label) ? $this->label : 'Kirjastokortti');?></h5>
+            <h5><?=$this->transEsc(isset($this->label) ? $this->label : 'Kirjastokortti');?></h5>
             <? foreach ($cards as $card): ?>
               <?
                 $target = '';
@@ -20,7 +20,7 @@
                 }
               ?>
               <? $selectedCard = (!isset($this->displaySelected) || $this->displaySelected) && ($card->cat_username == $this->user->cat_username) ;?>
-              <a href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->id)?>" <?=$selectedCard ? 'class="selected"' : '' ;?>><?=$selectedCard ? '<i class="fa fa-check"></i> ' : '' ;?><?=$display ?></a>
+              <a href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->id)?>";?><?=$selectedCard ? '<i class="fa fa-check"></i><span class="sr-only">(' . $this->transEsc("selected") . ')</span> ' : '' ;?><?=$display ?></a>
             <? endforeach; ?>
         </li>
 
