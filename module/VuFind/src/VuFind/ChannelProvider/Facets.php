@@ -134,21 +134,17 @@ class Facets extends AbstractChannelProvider
                     'value' => $value,
                     'displayText' => $value,
                 ];
+                $tokenOnly = $fieldCount >= $this->maxFieldsToSuggest
+                    || $currentValueCount >= $this->maxValuesToSuggestPerField;
                 $channel = $this
-                    ->buildChannelFromFacet($results, $field, $current);
-                if (count($channel['contents']) > 0) {
+                    ->buildChannelFromFacet($results, $field, $current, $tokenOnly);
+                if ($tokenOnly || count($channel['contents']) > 0) {
                     $channels[] = $channel;
                     $currentValueCount++;
-                }
-                if ($currentValueCount >= $this->maxValuesToSuggestPerField) {
-                    break;
                 }
             }
             if ($currentValueCount > 0) {
                 $fieldCount++;
-            }
-            if ($fieldCount >= $this->maxFieldsToSuggest) {
-                break;
             }
         }
         return $channels;
@@ -178,60 +174,78 @@ class Facets extends AbstractChannelProvider
             $currentValueCount = 0;
             foreach ($facetList[$field]['list'] as $current) {
                 if (!$current['isApplied']) {
-                    $channel = $this
-                        ->buildChannelFromFacet($results, $field, $current);
-                    if (count($channel['contents']) > 0) {
+                    $tokenOnly = $fieldCount >= $this->maxFieldsToSuggest
+                        || $currentValueCount >= $this->maxValuesToSuggestPerField;
+                    $channel = $this->buildChannelFromFacet(
+                        $results, $field, $current, $tokenOnly
+                    );
+                    if ($tokenOnly || count($channel['contents']) > 0) {
                         $channels[] = $channel;
                         $currentValueCount++;
                     }
                 }
-                if ($currentValueCount >= $this->maxValuesToSuggestPerField) {
-                    break;
-                }
             }
             if ($currentValueCount > 0) {
                 $fieldCount++;
-            }
-            if ($fieldCount >= $this->maxFieldsToSuggest) {
-                break;
             }
         }
         return $channels;
     }
 
     /**
+     * Turn a filter and title into a token.
+     *
+     * @param string $filter Filter to apply to Solr
+     * @param string $title  Channel title
+     *
+     * @return string
+     */
+    protected function getToken($filter, $title)
+    {
+        return str_replace('|', ' ', $title)    // make sure delimiter not in title
+            . '|' . $filter;
+    }
+
+    /**
      * Add a new filter to an existing search results object to populate a
      * channel.
      *
-     * @param Results $results Results object
-     * @param string  $filter  Filter to apply to Solr
-     * @param string  $title   Channel title
+     * @param Results $results   Results object
+     * @param string  $filter    Filter to apply to Solr
+     * @param string  $title     Channel title
+     * @param bool    $tokenOnly Create full channel (false) or return a
+     * token for future loading (true)?
      *
      * @return array
      */
-    protected function buildChannel(Results $results, $filter, $title)
-    {
-        $newResults = clone($results);
-        $params = $newResults->getParams();
-
-        // Determine the filter for the current channel, and add it:
-        $params->addFilter($filter);
-
-        $query = $newResults->getUrlQuery()->addFilter($filter);
-        $searchUrl = $this->url->fromRoute($params->getOptions()->getSearchAction())
-            . $query;
-        $channelsUrl = $this->url->fromRoute('channels-search') . $query
-            . '&source=' . urlencode($params->getSearchClassId());
-
-        // Run the search and convert the results into a channel:
-        $newResults->performAndProcessSearch();
-        return [
+    protected function buildChannel(Results $results, $filter, $title,
+        $tokenOnly = false
+    ) {
+        $retVal = [
             'title' => $title,
             'providerId' => $this->providerId,
-            'searchUrl' => $searchUrl,
-            'channelsUrl' => $channelsUrl,
-            'contents' => $this->summarizeRecordDrivers($newResults->getResults())
         ];
+        if ($tokenOnly) {
+            $retVal['token'] = $this->getToken($filter, $title);
+        } else {
+            $newResults = clone($results);
+            $params = $newResults->getParams();
+
+            // Determine the filter for the current channel, and add it:
+            $params->addFilter($filter);
+
+            $query = $newResults->getUrlQuery()->addFilter($filter);
+            $retVal['searchUrl'] = $this->url
+                ->fromRoute($params->getOptions()->getSearchAction()) . $query;
+            $retVal['channelsUrl'] = $this->url->fromRoute('channels-search')
+                . $query . '&source=' . urlencode($params->getSearchClassId());
+
+            // Run the search and convert the results into a channel:
+            $newResults->performAndProcessSearch();
+            $retVal['contents']
+                = $this->summarizeRecordDrivers($newResults->getResults());
+        }
+        return $retVal;
     }
 
     /**
@@ -254,18 +268,22 @@ class Facets extends AbstractChannelProvider
     /**
      * Call buildChannel using data from facet results.
      *
-     * @param Results $results Results object
-     * @param string  $field   Field name (for filter)
-     * @param array   $value   Field value information (for filter)
+     * @param Results $results   Results object
+     * @param string  $field     Field name (for filter)
+     * @param array   $value     Field value information (for filter)
+     * @param bool    $tokenOnly Create full channel (false) or return a
+     * token for future loading (true)?
      *
      * @return array
      */
-    protected function buildChannelFromFacet(Results $results, $field, $value)
-    {
+    protected function buildChannelFromFacet(Results $results, $field, $value,
+        $tokenOnly = false
+    ) {
         return $this->buildChannel(
             $results,
             "$field:{$value['value']}",
-            "{$this->fields[$field]}: {$value['displayText']}"
+            "{$this->fields[$field]}: {$value['displayText']}",
+            $tokenOnly
         );
     }
 }
