@@ -131,11 +131,13 @@ function lessFacets(id) {
   return false;
 }
 function facetSessionStorage(e) {
+  var source = $('#result0 .hiddenSource').val();
   var id = e.target.id;
-  if (!sessionStorage.getItem('sidefacet-'+id)) {
-    sessionStorage.setItem('sidefacet-'+id, document.getElementById(id).className);
+  var key = 'sidefacet-'+source+id;
+  if (!sessionStorage.getItem(key)) {
+    sessionStorage.setItem(key, document.getElementById(id).className);
   } else {
-    sessionStorage.removeItem('sidefacet-'+id);
+    sessionStorage.removeItem(key);
   }
 }
 
@@ -338,6 +340,11 @@ $(document).ready(function commonDocReady() {
   $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
     if (sessionStorage.getItem('sidefacet-'+item.id)) {
       item.className = sessionStorage.getItem('sidefacet-'+item.id);
+      if (item.className.indexOf('in') < 0) {
+        $(item).siblings('.title').addClass('collapsed');
+      } else {
+        $(item).siblings('.title').removeClass('collapsed');
+      }
     }
   });
   $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
