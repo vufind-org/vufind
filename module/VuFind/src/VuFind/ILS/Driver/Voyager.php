@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2007.
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,7 +29,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 namespace VuFind\ILS\Driver;
-use File_MARC, PDO, PDOException,
+use File_MARC, Yajra\Pdo\Oci8, PDO, PDOException,
     VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface,
@@ -57,7 +57,7 @@ class Voyager extends AbstractBase
     /**
      * Database connection
      *
-     * @var PDO
+     * @var Oci8
      */
     protected $db;
 
@@ -157,8 +157,8 @@ class Voyager extends AbstractBase
                  ')' .
                ')';
         try {
-            $this->db = new PDO(
-                "oci:dbname=$tns",
+            $this->db = new Oci8(
+                "oci:dbname=$tns;charset=US_ASCII",
                 $this->config['Catalog']['user'],
                 $this->config['Catalog']['password']
             );

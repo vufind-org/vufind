@@ -8,12 +8,6 @@
         }
     ],
     "license": "GPL-2.0",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/zendframework/zendservice_amazon"
-        }
-    ],
     "require": {
         "aferrandini/phpqrcode": "1.0.1",
         "jasig/phpcas": "1.3.3",
@@ -29,6 +23,7 @@
         "vufind-org/vufindcode": "1.0.3",
         "vufind-org/vufindharvest": "2.1.0",
         "vufind-org/vufindhttp": "2.1.0",
+        "yajra/laravel-pdo-via-oci8": "1.1.1",
         "zendframework/zendframework": "2.4.6",
         "zendframework/zendrest": "2.0.2",
         "zendframework/zendservice-amazon": "2.0.4",

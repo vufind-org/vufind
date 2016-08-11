@@ -586,14 +586,7 @@ class Demo extends AbstractBase
      */
     public function getStatuses($ids)
     {
-        // Random Seed
-        srand(time());
-
-        $status = [];
-        foreach ($ids as $id) {
-            $status[] = $this->getStatus($id);
-        }
-        return $status;
+        return array_map([$this, 'getStatus'], $ids);
     }
 
     /**
