@@ -53,7 +53,19 @@
     </div>
   </div>
 <? endif; ?>
-  <? if (isset($this->illustratedLimit)): ?>
+<div class="row">
+  <div class="col-xs-12">
+    <h4><?=$this->transEsc('Geographical Area') ?></h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 map-container">
+    <fieldset class="well map">
+      <?=$this->render('search/advanced/map.phtml', ['searchClassId' => $searchClassId])?>
+    </fieldset>
+  </div>
+</div>
+<? if (isset($this->illustratedLimit)): ?>
   <div class="row">
     <fieldset class="col-sm-4">
       <legend><?=$this->transEsc("Illustrated")?>:</legend>

@@ -78,9 +78,6 @@ class Map extends \VuFind\RecordTab\Map
      */
     public function isActive()
     {
-        if (!$this->enabled) {
-            return false;
-        }
         $locations = $this->getRecordDriver()->tryMethod('getGeoLocations');
         return !empty($locations);
     }

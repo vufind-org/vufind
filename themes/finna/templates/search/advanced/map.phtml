@@ -1,0 +1,17 @@
+<!-- START of: finna - search/advanced/map.phtml -->
+<?
+  $this->headLink()->appendStylesheet('vendor/leaflet.css');
+  $this->headScript()->appendFile('vendor/leaflet.js');
+  $this->headScript()->appendFile('vendor/leaflet.draw.js');
+  $this->jsTranslations()->addStrings(
+    [
+      'radiusPrefix' => 'Radius',
+      'circleCaption' => 'Select Area',
+      'clearCaption' => 'Clear Selections',
+      'removeCaption' => 'Clear',
+      'zoomIn' => 'Zoom In',
+      'zoomOut' => 'Zoom Out'
+  ]);
+?>
+<div class="selection-map-canvas"></div>
+<!-- END of: finna - search/advanced/map.phtml -->

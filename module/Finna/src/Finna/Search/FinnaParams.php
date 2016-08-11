@@ -91,6 +91,22 @@ trait FinnaParams
     }
 
     /**
+     * Get a user-friendly string to describe the provided facet field.
+     *
+     * @param string $field Facet field name.
+     * @param string $value Facet value.
+     *
+     * @return string       Human-readable description of field.
+     */
+    public function getFacetLabel($field, $value = null)
+    {
+        if (strncmp($field, '{!geofilt', 9) == 0) {
+            return 'Geographical Area';
+        }
+        return parent::getFacetLabel($field, $value);
+    }
+
+    /**
      * Does the object already contain the specified hidden filter?
      *
      * @param string $filter A filter string from url : "field:value"
