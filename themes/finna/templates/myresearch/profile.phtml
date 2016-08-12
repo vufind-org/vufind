@@ -60,13 +60,13 @@
       <?
         $selectedCard = null;
         foreach ($cards as $card) {
-            if ($card['cat_username'] === $user->cat_username) {
+            if ($card->cat_username === $user->cat_username) {
                 $selectedCard = $card;
                 break;
             }
         }
       ?>
-      <? if ($selectedCard !== null): ?>
+      <? if ($selectedCard !== null && $this->ils()->checkFunction('changePassword', $selectedCard->toArray())): ?>
         <div class="col-xs-12">
           <span class="myresearch-profile-middle-header"><?=$this->transEsc('change_password_heading') ?></span>
         </div>
