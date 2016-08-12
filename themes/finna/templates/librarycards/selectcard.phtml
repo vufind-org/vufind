@@ -1,6 +1,7 @@
 <!-- START of: finna - librarycards/selectcard.phtml -->
 <? if ($this->user): ?>
-  <?$cards = $this->user->getLibraryCards(); if ($cards->count() > 1): ?>
+  <? $cards = $this->user->getLibraryCards(); if ($cards->count() > 1): ?>
+    <? $targetCount = $this->ils()->checkCapability('getLoginDrivers') ? count($this->ils()->getLoginDrivers()) : 1; ?>
     <? if (isset($loginMenu) && $loginMenu): ?>
         <li role="menuitem" class="logoutOptions card-selection">
             <h5><?=$this->transEsc(isset($this->label) ? $this->label : 'Kirjastokortti');?></h5>
@@ -15,7 +16,7 @@
                 if ($display == "$target.$username") {
                   $display = $username;
                 }
-                if ($target) {
+                if ($target && $targetCount > 1) {
                   $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
                 }
               ?>
@@ -39,7 +40,7 @@
                 if ($display == "$target.$username") {
                   $display = $username;
                 }
-                if ($target) {
+                if ($target && $targetCount > 1) {
                   $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
                 }
               ?>
@@ -63,7 +64,7 @@
                   if ($display == "$target.$username") {
                     $display = $username;
                   }
-                  if ($target) {
+                  if ($target && $targetCount > 1) {
                     $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
                   }
                 ?>
