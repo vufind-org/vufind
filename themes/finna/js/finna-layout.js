@@ -491,7 +491,7 @@ finna.layout = (function() {
             }
             // // show filter if 15+ organisations
             if (tree.parent().parent().attr('id') == 'side-panel-building' && tree.find('ul.jstree-container-ul > li').length > 15) {
-               $(this).prepend('<div class="building-filter"><input class="form-control" id="building_filter" placeholder="'+VuFind.translate('Organisation')+'..."></input></div>');
+               $(this).prepend('<div class="building-filter"><label for="building_filter" class="sr-only">'+VuFind.translate('Organisation')+'</label><input class="form-control" id="building_filter" placeholder="'+VuFind.translate('Organisation')+'..."></input></div>');
                initBuildingFilter();
             }
             // open facet if it has children and it is selected

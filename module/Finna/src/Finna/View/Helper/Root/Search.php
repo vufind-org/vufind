@@ -90,6 +90,7 @@ class Search extends \VuFind\View\Helper\Bootstrap3\Search
     protected function renderExpandLink($url, $view)
     {
         return '<a href="' . $url . '" title="' . $view->transEsc('spell_expand_alt')
-            . '"><i class="fa fa-plus-small"></i></a>';
+            . '"><span class="sr-only">' . $view->transEsc('spell_expand_alt')
+            . '</span><i class="fa fa-plus-small"></i></a>';
     }
 }

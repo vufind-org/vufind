@@ -3,9 +3,11 @@
   <form action="<?= $this->formAction; ?>" class="year-form">
     <div class="form-ui">
 	  <div class="year-range">
-	    <input class="form-control form-inline input-year year-from" type="number" value="<?= $this->from; ?>">
+      <label for="year-from" class="sr-only"><?=$this->transEsc('year_from');?></label>
+	    <input id="year-from" class="form-control form-inline input-year year-from" type="number" value="<?= $this->from; ?>">
 	    <span class="year-separator">&ndash;</span>
-	    <input class="form-control form-inline input-year year-to" type="number" value="<?= $this->to; ?>">
+      <label for="year-to" class="sr-only"><?=$this->transEsc('year_to');?></label>
+	    <input id="year-to" class="form-control form-inline input-year year-to" type="number" value="<?= $this->to; ?>">
 	  </div>
 	  <button class="btn btn-primary submit" type="submit">
       <i class="fa fa-search"></i><span><?= $this->translate($this->submitLabel); ?></span>

@@ -26,7 +26,7 @@
         <? if ($showCheckboxes): ?>
           <?=$this->record($current)->getCheckbox()?>
         <? endif; ?>
-        <?=$recordNumber?>
+        <?=$this->transEsc('Search Result');?> <?=$recordNumber?>
       </label>
     </div>
     <?=$this->record($current)->getSearchResult('list')?>

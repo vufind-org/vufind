@@ -116,8 +116,8 @@
                       <div id="new_search_template">
                     <? endif; ?>
                     <div id="search<?=$group.'_'.$search ?>" class="search">
-                      <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="form-control form-inline responsive-field" placeholder="<?=$this->transEsc("Search words")?>..." type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
-                      <select class="type form-control form-inline responsive-field" name="type<?=$group ?>[]">
+                      <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" title="<?=$this->transEsc("Search words");?>" class="form-control form-inline responsive-field" placeholder="<?=$this->transEsc("Search words")?>..." type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
+                      <select class="type form-control form-inline responsive-field" name="type<?=$group ?>[]" title="<?=$this->transEsc("search_in_field");?>">
                         <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                           <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>
                         <? endforeach; ?>

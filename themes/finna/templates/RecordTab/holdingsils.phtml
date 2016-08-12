@@ -130,7 +130,7 @@
       <div class="dedup-information">
         <span class="holdings-title"><?=$this->transEsc("source_$currentSource", null, $currentSource) ?></span>
         <? if ($mergedData && count($mergedData['records']) > 1): ?>
-          <select class="dedup-select form-control jumpMenuUrl hidden-print" role="listbox" aria-haspopup="true">
+          <select class="dedup-select form-control jumpMenuUrl hidden-print" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
             <option value="#" role="option" selected="selected"><?=$this->transEsc('Other Libraries'); ?></option>
             <? foreach ($mergedData['records'] as $current): ?>
               <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>

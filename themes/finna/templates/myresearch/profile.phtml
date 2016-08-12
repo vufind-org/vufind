@@ -129,7 +129,7 @@
           <? if ($updatePhone): ?>
             <div class="col-sm-4 profile-title"><?=$this->transEsc('Phone') ?>:</div>
             <div class="col-sm-8">
-              <input class="form-control" type="tel" name="profile_tel" value="<?=$this->escapeHtml($this->profile['phone']) ?>"/>
+              <input class="form-control" type="tel" name="profile_tel" value="<?=$this->escapeHtml($this->profile['phone']) ?>" title="<?=$this->transEsc('Phone') ?>" />
             </div>
           <? else: ?>
             <div class="col-sm-4 profile-title"><?=$this->transEsc('Phone') ?>:</div>
@@ -140,7 +140,7 @@
           <div class="col-sm-4 profile-title"><?=$this->transEsc('Email') ?>:</div>
           <? if ($updateEmail): ?>
             <div class="col-sm-8">
-              <input class="form-control" type="email" name="profile_email" value="<?=$this->escapeHtml($this->profile['email']) ?>"/>
+              <input class="form-control" type="email" name="profile_email" value="<?=$this->escapeHtml($this->profile['email']) ?>" title="<?=$this->transEsc('Email') ?>" />
             </div>
           <? else: ?>
             <div class="col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['email']) ?></div>
