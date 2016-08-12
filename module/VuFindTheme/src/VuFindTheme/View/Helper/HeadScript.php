@@ -109,7 +109,8 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     protected function isExcludedFromConcat($item)
     {
         return empty($item->attributes['src'])
-            || isset($item->attributes['conditional']);
+            || isset($item->attributes['conditional'])
+            || strpos($item->attributes['src'], '://');
     }
 
     /**

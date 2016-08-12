@@ -2,6 +2,7 @@
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
   $this->headScript()->appendFile("check_save_statuses.js");
+  $this->headScript()->appendFile("https://raw.githubusercontent.com/toddmotto/apollo/master/dist/apollo.min.js");
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
