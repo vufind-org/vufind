@@ -178,7 +178,7 @@
                   <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
                   <label for="<?=$this->escapeHtmlAttr($title)?>from"><?=$this->transEsc('new_items_from')?></label>
                   <input type="text" class="form-control form-inline date-picker-field" autocomplete="off" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" maxlength="10" size="10" value="<?=$this->escapeHtmlAttr($this->dateTime()->convertToDisplayDate('Y-m-d', $newItemsFacets[$title]['date'])) ?>" placeholder="<?=$this->dateTime()->getDisplayDateFormat() ?>">
-                  <button class="btn btn-primary btn-default date-picker-button" type="submit" value=""><i class="fa fa-search"></i></button>
+                  <button class="btn btn-primary btn-default date-picker-button" type="submit" value=""><i class="fa fa-search"></i><span class="sr-only"><?=$this->transEsc('Search');?></span></button>
                 </form>
 <?
   $component = $this->escapeHtmlAttr($title) . 'from';

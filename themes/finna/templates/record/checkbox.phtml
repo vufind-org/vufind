@@ -1,9 +1,10 @@
 <!-- START of: finna - record/checkbox.phtml -->
 <? // autocomplete="off" is needed to uncheck the checkbox after copying to another list ?>
 <? if ($this->label): ?>
-<label>
+<label for="<?=$this->escapeHtmlAttr($this->id) ?>">
+<span class="sr-only"><?=$this->transEsc('Select');?></span>
 <? endif; ?>
-<input autocomplete="off" class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"/>
+<input autocomplete="off" id="<?=$this->escapeHtmlAttr($this->id) ?>" class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"/>
 <? if ($this->label): ?>
 </label>
 <? endif; ?>

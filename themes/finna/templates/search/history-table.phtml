@@ -57,7 +57,7 @@
           <? if (isset($this->schedule[$info->getSearchId()])): ?>
           <? $schedule = $this->schedule[$info->getSearchId()]; ?>
           <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
-            <select name="schedule" class="jumpMenu form-control">
+            <select name="schedule" class="jumpMenu form-control" aria-haspopup="true" title="<?=$this->transEsc("history_schedule")?>">
               <option value="0"<?=($schedule == 0) ? (' selected') : ('')?>><?=$this->transEsc("schedule_none")?></option>
               <option value="1"<?=($schedule == 1) ? (' selected') : ('')?>><?=$this->transEsc("schedule_daily")?></option>
               <option value="2"<?=($schedule == 2) ? (' selected') : ('')?>><?=$this->transEsc("schedule_weekly")?></option>
@@ -76,9 +76,9 @@
       </td>
       <td class="history-save">
         <? if ($this->showSaved): ?>
-          <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-remove fa-button" aria-hidden="true"></i></a>
+          <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><span class="sr-only"><?=$this->transEsc('Delete');?></span><i class="fa fa-remove fa-button" aria-hidden="true"></i></a>
         <? else: ?>
-          <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-plus-big" aria-hidden="true"></i></a>
+          <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><span class="sr-only"><?=$this->transEsc('Save');?></span><i class="fa fa-plus-big" aria-hidden="true"></i></a>
         <? endif; ?>
       </td>
     </tr>

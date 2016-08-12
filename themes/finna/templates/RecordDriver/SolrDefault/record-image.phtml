@@ -14,7 +14,7 @@ $imageData = array('images' => $images, 'type' => $type);
 <?= $this->partial('RecordDriver/SolrDefault/record-image-navi.phtml', $imageData) ?>
 
 <? if ($mediumImage): ?>
-<a class="image-popup-trigger" href="<?= $this->recordLink()->getUrl($this->driver) ?>#image">
+<a class="image-popup-trigger" href="<?= $this->recordLink()->getUrl($this->driver) ?>#image" title="<?=$this->transEsc('Open Preview')?>">
 <? if (count($allImages) <= 1): ?>
   <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
 <? endif; ?>

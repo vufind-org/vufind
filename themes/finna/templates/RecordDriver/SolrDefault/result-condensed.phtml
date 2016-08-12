@@ -128,7 +128,7 @@
       $dedupData = $this->driver->getDedupData();
       if (count($dedupData) > 1): ?>
         <div class="dedupInformation">
-            <select class="dedup-select form-control" role="listbox" aria-haspopup="true">
+            <select class="dedup-select form-control" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
             <? foreach ($dedupData as $source => $current): ?>
               <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>"><?=$this->transEsc("source_$source", null, $source) ?></option>
             <? endforeach; ?>

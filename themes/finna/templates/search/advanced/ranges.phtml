@@ -10,6 +10,7 @@
         <? if ($current['type'] == 'date'): ?>
         <div class="col-md-10">
           <div class="slider-container">
+            <label for="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider" class="sr-only"><?=$this->transEsc('year_slider');?></label>
             <input type="text" id="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider">
           </div>
           <? endif; ?>
@@ -18,9 +19,11 @@
             <? if (isset($current['rangeType'])): ?>
                <input type="hidden" name="<?= $current['field'] ?>_type" value="<?= $current['rangeType'] ?>"/>
             <? endif ?>
-            <input type="number" class="form-control form-inline input-year" id="<?=$escField?>from" value="<?=isset($current['values'][0])?$this->escapeHtmlAttr($current['values'][0]):''?>" size="5"/>
+            <label for="year-from" class="sr-only"><?=$this->transEsc('year_from');?></label>
+            <input id="year-from" type="number" class="form-control form-inline input-year" id="<?=$escField?>from" value="<?=isset($current['values'][0])?$this->escapeHtmlAttr($current['values'][0]):''?>" size="5"/>
             <span class="divider"> - </span>
-            <input type="number" class="form-control form-inline input-year" id="<?=$escField?>to" value="<?=isset($current['values'][1])?$this->escapeHtmlAttr($current['values'][1]):''?>" size="5"/>
+            <label for="year-to" class="sr-only"><?=$this->transEsc('year_to');?></label>
+            <input id="year-to" type="number" class="form-control form-inline input-year" id="<?=$escField?>to" value="<?=isset($current['values'][1])?$this->escapeHtmlAttr($current['values'][1]):''?>" size="5"/>
           </div>
         </div>
         <? if ($current['type'] == 'date'): ?>

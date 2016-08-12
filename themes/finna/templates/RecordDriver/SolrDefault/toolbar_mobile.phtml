@@ -52,9 +52,9 @@
           <? if (!empty($addThis)): ?>
           <li class="addthis-share-buttons">
             <div class="addthis_toolbox addthis_default_style">
-              <a class="addthis_button_facebook"><i class="fa fa-facebook"></i></a>
-              <a class="addthis_button_twitter"><i class="fa fa-twitter"></i></a>
-              <a class="addthis_button_pinterest_share"><i class="fa fa-pinterest"></i></a>
+              <a class="addthis_button_facebook"><i class="fa fa-facebook"></i><span class="sr-only">Facebook</span></a>
+              <a class="addthis_button_twitter"><i class="fa fa-twitter"></i><span class="sr-only">Twitter</span></a>
+              <a class="addthis_button_pinterest_share"><i class="fa fa-pinterest"></i><span class="sr-only">Pinterest</span></a>
               <!-- <a class="addthis_button_google_plusone_share"><i class="fa fa-google-plus"></i></a> -->
             </div>
             <? // Fetch correct image link and metadata here for Facebook, Twitter and Pinterest ?>
@@ -67,7 +67,7 @@
             -->
           </li>
           <li class="whatsapp">
-            <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=urlencode($this->serverUrl() . $this->recordLink()->getUrl($this->driver)) ?>" data-action="share/whatsapp/share" rel="nofollow"><i class="fa fa-phone"></i></a></span>
+            <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=urlencode($this->serverUrl() . $this->recordLink()->getUrl($this->driver)) ?>" data-action="share/whatsapp/share" rel="nofollow"><i class="fa fa-phone"></i><span class="sr-only">Whatsapp</span></a></span>
           </li>
           <? endif; ?>
           <li class="mail-record"><a class="mail-record-mobile" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email') ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope"></i> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
