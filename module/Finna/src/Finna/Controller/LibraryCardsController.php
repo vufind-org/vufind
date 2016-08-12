@@ -181,6 +181,25 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         }
 
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+
+        if (!empty($cardName)) {
+            list($cardInstitution) = explode('.', $username,  2);
+            foreach ($user->getLibraryCards() as $otherCard) {
+                if ($otherCard->id == $id) {
+                    continue;
+                }
+                list($otherInstitution) = explode('.', $otherCard->cat_username, 2);
+                if ($cardInstitution == $otherInstitution
+                    && strcasecmp($cardName, $otherCard->card_name) == 0
+                ) {
+                    $this->flashMessenger()->addMessage(
+                        'library_card_name_exists', 'error'
+                    );
+                    return false;
+                }
+            }
+        }
+
         try {
             $user->saveLibraryCard(
                 $id == 'NEW' ? null : $id, $cardName, $username, $password
