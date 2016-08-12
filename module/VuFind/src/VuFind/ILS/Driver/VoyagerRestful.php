@@ -3262,9 +3262,23 @@ EOT;
                 $this->sanitizePIN($details['oldPassword']), ENT_COMPAT, 'UTF-8'
             )
         );
+
         if ($oldPIN === '') {
             // Voyager requires the PIN code to be set even if it was empty
             $oldPIN = '     ';
+
+            // In this case we have to check that the user didn't previously have a
+            // PIN code since Voyager doesn't validate the 'empty' old PIN
+            $sql = "SELECT PATRON_PIN FROM {$this->dbName}.PATRON WHERE"
+                . ' PATRON_ID=:id';
+            $sqlStmt = $this->executeSQL($sql, ['id' => $patron['id']]);
+            if (!($row = $sqlStmt->fetch(PDO::FETCH_ASSOC))
+                || null !== $row['PATRON_PIN']
+            ) {
+                return [
+                    'success' => false, 'status' => 'authentication_error_invalid'
+                ];
+            }
         }
         $newPIN = trim(
             htmlspecialchars(
