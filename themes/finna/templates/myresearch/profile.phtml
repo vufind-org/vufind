@@ -40,7 +40,7 @@
               ?>
               <select id="home_library" name="home_library" class="form-control">
                 <? foreach ($this->pickup as $lib): ?>
-                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
+                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?></option>
                 <? endforeach; ?>
               </select>
           </div>
