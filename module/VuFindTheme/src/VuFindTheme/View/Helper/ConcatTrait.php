@@ -42,11 +42,7 @@ use VuFindTheme\ThemeInfo;
 trait ConcatTrait
 {
     // Required property and methods to use ConcatTrait
-    /**
-     * Folder name and file extension
-     *
-     * protected $fileType = string;
-     */
+    // Folder name and file extension: protected $fileType = string;
     /**
      * Returns true if file should not be included in the compressed concat file
      *
