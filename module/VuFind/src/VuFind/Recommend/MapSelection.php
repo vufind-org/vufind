@@ -564,7 +564,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             $addCtr = true;
                         } else {
                             // re-calculate center point
-                            $centerCoordBbox = $this->getCenterFromBboxCoordIntersect(
+                            $centerCoordBbox = $this->
+                                getCenterFromBboxCoordIntersect(
                                 [$bboxW,$bboxE,$bboxN,$bboxS], 
                                 [$coordW,$coordE,$coordN,$coordS]
                             );
