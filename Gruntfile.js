@@ -65,14 +65,14 @@ module.exports = function(grunt) {
             cwd: 'themes/bootstrap3/less',
             src: ['*.less', 'components/*.less'],
             ext: '.scss',
-            dest: 'themes/bootstrap3/sass'
+            dest: 'themes/bootstrap3/scss'
           },
           {
             expand: true,
             cwd: 'themes/bootprint3/less',
             src: ['*.less'],
             ext: '.scss',
-            dest: 'themes/bootprint3/sass'
+            dest: 'themes/bootprint3/scss'
           }
         ],
         options: {
