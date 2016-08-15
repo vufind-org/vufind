@@ -338,7 +338,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     }
     
     /**
-     * Convert coordinates to 360degree grid
+     * Convert coordinates to 360 degree grid
      *
      * @param array $coordinates coordinates for conversion
      * 
@@ -355,7 +355,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         if ($coordE == (float)-0) {
             $coordE = (float)0;
         }
-
         // Convert coordinates to 360 degree grid
         if ($coordE < $coordW && $coordE < 0) {
             $coordE = 360 + $coordE;
@@ -366,6 +365,57 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         }
         $gridCoords = [$coordW, $coordE, $coordN, $coordS];
         return $gridCoords;
+    }
+    
+    /**
+     * Convert coordinates to longitude latitude grid
+     *
+     * @param array $centerPt coordinates for conversion
+     *
+     * @return array
+     */
+    public function centerToLongLat($centerPt)
+    {
+        $LongLatCoords = [];
+        $coordWE = $centerPt[0];
+        $coordSN = $centerPt[1];
+        // convert coordinate to 180 degree grid
+        if ($coordWE > 180) {
+            $coordWE = $coordWE - 360;
+        }
+        $LongLatCoords = [$coordWE, $coordSN];
+        return $LongLatCoords;
+    }
+
+    /**
+     * Calculated the center of search box and coordinate overlap
+     *
+     * @param array $bboxCoords  search box coordinates
+     * @param array $coordinates coordinates for conversion
+     *
+     * @return array
+     */
+    public function getCenterFromBboxCoordIntersect($bboxCoords, $coordinates)
+    {
+        $centerCoordBbox = [];
+        $bboxW = $bboxCoords[0];
+        $bboxE = $bboxCoords[1];
+        $bboxN = $bboxCoords[2];
+        $bboxS = $bboxCoords[3];
+        $coordW = $coordinates[0];
+        $coordE = $coordinates[1];
+        $coordN = $coordinates[2];
+        $coordS = $coordinates[3];
+        $bboxLon = range(floor($bboxW), ceil($bboxE));
+        $bboxLat = range(floor($bboxS), ceil($bboxN));
+        $coordLon = range(floor($coordW), ceil($coordE));
+        $coordLat = range(floor($coordS), ceil($coordN));
+        $cbLon = array_intersect($coordLon, $bboxLon);
+        $cbLat = array_intersect($coordLat, $bboxLat);
+        $centerCoordBbox = [
+            min($cbLon), max($cbLon), min($cbLat), max($cbLat)
+        ];
+        return $centerCoordBbox;
     }
 
     /**
@@ -383,12 +433,10 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $bboxE = $bboxCoords[1];
         $bboxN = $bboxCoords[2];
         $bboxS = $bboxCoords[3];
-
         $coordW = $coordinate[0];
         $coordE = $coordinate[1];
         $coordN = $coordinate[2];
         $coordS = $coordinate[3];
-
         //Does coordinate fall within search box
         if ((($coordW >= $bboxW && $coordW <= $bboxE)
             || ($coordE >= $bboxW && $coordE <= $bboxE))
@@ -437,7 +485,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $coordE = $coordinate[1];
         $coordN = $coordinate[2];
         $coordS = $coordinate[3];
-
         // Calculate center point
         $centerWE = (($coordW - $coordE) / 2) + $coordE;
         $centerSN = (($coordN - $coordS) / 2) + $coordS;
@@ -508,24 +555,19 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             $bboxCoords, $centerPt
                         );
                         if ($centerIntersect) {
-                            $centerWE = $centerPt[0];
-                            $centerSN = $centerPt[2];
-                            // convert coordinate to 180 degree grid
-                            if ($centerWE > 180) {
-                                $centerWE = $centerWE - 360;
-                            }
-                                $centerCoords[] = [$idCoords[0],
-                                $centerWE, $centerSN
-                                ];
-                                $addCtr = true;
+                            $centerLongLat = $this->centerToLongLat(
+                                [$centerPt[0],$centerPt[2]]
+                            );
+                            $centerCoords[] = [$idCoords[0], 
+                                $centerLongLat[0], $centerLongLat[1]
+                            ];
+                            $addCtr = true;
                         } else {
                             // re-calculate center point
-                            $bboxLon = range($bboxW, $bboxE);
-                            $bboxLat = range($bboxS, $bboxN);
-                            $coordLon = range($coordW, $coordE);
-                            $coordLat = range($coordS, $coordN);
-                            $cbLon = array_intersect($coordLon, $bboxLon);
-                            $cbLat = array_intersect($coordLat, $bboxLat);
+                            $centerCoordBbox = $this->getCenterFromBboxCoordIntersect(
+                                [$bboxW,$bboxE,$bboxN,$bboxS], 
+                                [$coordW,$coordE,$coordN,$coordS]
+                            );
                             // Calculate new center point
                             $newCenterPt = $this->calculateCenterPoint(
                                 [min($cbLon), max($cbLon), min($cbLat), max($cbLat)]
@@ -535,25 +577,23 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                                 $bboxCoords, $newCenterPt
                             );
                             if ($centerIntersect) {
-                                $centerWE = $newCenterPt[0];
-                                $centerSN = $newCenterPt[2];
-                                // convert coordinate to 180 degree grid
-                                if ($centerWE > 180) {
-                                    $centerWE = $centerWE - 360;
-                                }
-                                $centerCoords[] = [$idCoords[0],
-                                $centerWE, $centerSN
+                                $centerLongLat = $this->centerToLongLat(
+                                    [$newCenterPt[0],$newCenterPt[2]]
+                                );
+                                $centerCoords[] = [$idCoords[0], 
+                                    $centerLongLat[0], $centerLongLat[1]
                                 ];
                                 $addCtr = true;
                             } else {
                                 // make center point center of search box
-                                $centerWE = (($bboxE - $bboxW) / 2) + $bboxW;
-                                $centerSN = (($bboxN - $bboxS) / 2) + $bboxS;
-                                if ($centerWE > 180) {
-                                    $centerWE = $centerWE - 360;
-                                }
-                                $centerCoords[] = [$idCoords[0],
-                                $centerWE, $centerSN
+                                $bboxCenter = $this->calculateCenterPoint(
+                                    [$bboxW, $bboxE, $bboxN, $bboxS]
+                                );
+                                $centerLongLat = $this->centerToLongLat(
+                                    [$bboxCenter[0],$bboxCenter[2]]
+                                );
+                                $centerCoords[] = [$idCoords[0], 
+                                    $centerLongLat[0], $centerLongLat[1]
                                 ];
                                 $addCtr = true;
                             }
@@ -573,13 +613,16 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             array_diff($centerCoordIds, $rawCoordIds)
         );
         if (count($addIds) > 0) {
-            $centerWE = (($bboxE - $bboxW) / 2) + $bboxW;
-            $centerSN = (($bboxN - $bboxS) / 2) + $bboxS;
-            if ($centerWE > 180) {
-                $centerWE = $centerWE - 360;
-            }
+            $bboxCenter = $this->calculateCenterPoint(
+                [$bboxW, $bboxE, $bboxN, $bboxS]
+            );
+            $centerLongLat = $this->centerToLongLat(
+                [$bboxCenter[0],$bboxCenter[2]]
+            );
             foreach ($addIds as $coordId) {
-                $centerCoords[] = [$coordId, $centerWE, $centerSN];
+                $centerCoords[] = [$coordId, 
+                    $centerLongLat[0], $centerLongLat[1]
+                ];
             }
         }
         return $centerCoords;
