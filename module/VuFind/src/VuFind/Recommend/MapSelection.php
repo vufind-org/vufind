@@ -558,7 +558,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             $centerLongLat = $this->centerToLongLat(
                                 [$centerPt[0],$centerPt[2]]
                             );
-                            $centerCoords[] = [$idCoords[0], 
+                            $centerCoords[] = [$idCoords[0],
                                 $centerLongLat[0], $centerLongLat[1]
                             ];
                             $addCtr = true;
@@ -566,7 +566,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                             // re-calculate center point
                             $centerCoordBbox = $this->
                                 getCenterFromBboxCoordIntersect(
-                                    [$bboxW,$bboxE,$bboxN,$bboxS], 
+                                    [$bboxW,$bboxE,$bboxN,$bboxS],
                                     [$coordW,$coordE,$coordN,$coordS]
                                 );
                             // Calculate new center point
@@ -581,7 +581,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                                 $centerLongLat = $this->centerToLongLat(
                                     [$newCenterPt[0],$newCenterPt[2]]
                                 );
-                                $centerCoords[] = [$idCoords[0], 
+                                $centerCoords[] = [$idCoords[0],
                                     $centerLongLat[0], $centerLongLat[1]
                                 ];
                                 $addCtr = true;
@@ -593,7 +593,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                                 $centerLongLat = $this->centerToLongLat(
                                     [$bboxCenter[0],$bboxCenter[2]]
                                 );
-                                $centerCoords[] = [$idCoords[0], 
+                                $centerCoords[] = [$idCoords[0],
                                     $centerLongLat[0], $centerLongLat[1]
                                 ];
                                 $addCtr = true;
@@ -621,7 +621,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                 [$bboxCenter[0],$bboxCenter[2]]
             );
             foreach ($addIds as $coordId) {
-                $centerCoords[] = [$coordId, 
+                $centerCoords[] = [$coordId,
                     $centerLongLat[0], $centerLongLat[1]
                 ];
             }
