@@ -41,32 +41,43 @@ use VuFindTheme\ThemeInfo;
  */
 trait ConcatTrait
 {
+    // Required property and methods to use ConcatTrait
     /**
-     * Required property and methods to use ConcatTrait
+     * Folder name and file extension
      *
-     * * Folder name and file extension for trait (js, css, etc)
-     * * protected $fileType = string;
-     *
-     * * protected function isExcludedFromConcat($item)
-     * * Returns true if file should not be included in the compressed concat file
-     * * - param stdClass $item Link element object
-     * * - return bool
-     *
-     * * protected function getResourceFilePath($item)
-     * * Get the file path from the link object
-     * * - param stdClass $item Link element object
-     * * - return string
-     *
-     * * protected function setResourceFilePath($item, $path)
-     * * Set the file path of the link object
-     * * - param stdClass $item Link element object
-     * * - param string   $path New path string
-     * * - return void
-     *
-     * * protected function getMinifier()
-     * * Get the minifier that can handle these file types
-     * * - return minifying object like \MatthiasMullie\Minify\JS
+     * protected $fileType = string;
      */
+    /**
+     * Returns true if file should not be included in the compressed concat file
+     *
+     * @param stdClass $item Link element object
+     *
+     * @return bool
+     */
+    abstract protected function isExcludedFromConcat($item);
+    /**
+     * Get the file path from the link object
+     *
+     * @param stdClass $item Link element object
+     *
+     * @return string
+     */
+    abstract protected function getResourceFilePath($item);
+    /**
+     * Set the file path of the link object
+     *
+     * @param stdClass $item Link element object
+     * @param string   $path New path string
+
+     * @return void
+     */
+    abstract protected function setResourceFilePath($item, $path);
+    /**
+     * Get the minifier that can handle these file types
+     *
+     * @return minifying object like \MatthiasMullie\Minify\JS
+     */
+    abstract protected function getMinifier();
 
     /**
      * Should we use the asset pipeline to join files together and minify them?
