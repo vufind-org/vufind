@@ -253,7 +253,7 @@ class Map extends AbstractBase
     {
         $labels = [];
         $mapLabelData = explode(':', $this->mapLabels);
-        if ($mapLabelData[0] == 'field') {
+        if ($mapLabelData[0] == 'driver') {
             $labels = $this->getRecordDriver()->tryMethod('getCoordinateLabels');
             return $labels;
         }
