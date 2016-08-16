@@ -250,7 +250,6 @@ class SolrDefault extends AbstractBase
      * @param array  $dataFields An array of fields to used to construct method
      *                           names
      *
-     *
      * @return array
      */
     public function getAuthorDataFields($index, $authors, $dataFields = [])
