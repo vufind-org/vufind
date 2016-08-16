@@ -245,9 +245,10 @@ class SolrDefault extends AbstractBase
     /**
      * Get Author Data Fields
      *
-     * @param string $index       The author index
-     * @param array  $authors     An array of authors
-     * @param array  $dataFields  An array of fields to override the default values
+     * @param string $index      The author index [primary, corporate, or secondary]
+     * @param array  $authors    An array of authors
+     * @param array  $dataFields An array of fields to used to construct method
+     *                           names
      *
      *
      * @return array
@@ -497,9 +498,10 @@ class SolrDefault extends AbstractBase
 
         $dedup_data = function (&$array) {
             foreach ($array as $author => $data) {
-                foreach ($data as $field => $values)
-                if (is_array($values)) {
-                    $array[$author][$field] = array_unique($values);
+                foreach ($data as $field => $values) {
+                    if (is_array($values)) {
+                        $array[$author][$field] = array_unique($values);
+                    }
                 }
             }
         };
