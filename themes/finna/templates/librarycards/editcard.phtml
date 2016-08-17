@@ -16,59 +16,69 @@
 <?=$this->flashmessages()?>
 
 <h2><?=$this->transEsc($pageTitle); ?></h2>
-
-<form class="form-horizontal edit-card-form" method="post" name="<?=empty($this->card->id) ? 'newCardForm' : 'editCardForm'?>">
-  <input type="hidden" name="id" value="<?=empty($this->card->id) ? 'NEW' : $this->card->id ?>"/>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>:</label>
-    <div class="col-sm-9">
-      <input id="card_name" class="form-control" type="text" placeholder="<?=$this->escapeHtmlAttr($this->translate('library_card_name_placeholder')) ?>" title="<?=$this->escapeHtmlAttr($this->translate('library_card_name_instructions')) ?>" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName == "{$this->target}.{$this->username}" ? $this->username : $this->cardName)?>"/>
-    </div>
-  </div>
-  <? if ($this->targets !== null): ?>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
-    <div class="col-sm-9">
-      <? if (count($this->targets) > 1): ?>
-        <select id="login_target" name="target" class="form-control">
-        <? foreach ($this->targets as $target): ?>
-          <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
-        <? endforeach; ?>
-        </select>
+<div class="row">
+  <div class="col-sm-7 col-xs-12">
+    <form class="form-horizontal edit-card-form" method="post" name="<?=empty($this->card->id) ? 'newCardForm' : 'editCardForm'?>">
+      <input type="hidden" name="id" value="<?=empty($this->card->id) ? 'NEW' : $this->card->id ?>"/>
+      <div class="form-group">
+        <label class="col-sm-5 control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>:</label>
+        <div class="col-sm-7">
+          <input id="card_name" class="form-control form-inline" type="text" placeholder="<?=$this->transEsc('library_card_name_placeholder'); ?>" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName == "{$this->target}.{$this->username}" ? $this->username : $this->cardName)?>"/>
+          <? if (!$this->translationEmpty('tooltip_library_card_name_html')): ?><span class="tooltip-library-card-name" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title='<?=$this->transesc("tooltip_library_card_name_html") ?>'><i class="fa fa-info-big"></i> </span><? endif; ?>
+        </div>
+      </div>
+      <? if ($this->targets !== null): ?>
+      <div class="form-group">
+        <label class="col-sm-5 control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
+        <div class="col-sm-7">
+          <? if (count($this->targets) > 1): ?>
+            <select id="login_target" name="target" class="form-control">
+            <? foreach ($this->targets as $target): ?>
+              <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
+            <? endforeach; ?>
+            </select>
+          <? endif; ?>
+          <? if (count($this->targets) == 1): ?>
+            <input type="hidden" id="login_target" name="target" class="form-control" value="<?=$this->escapeHtmlAttr($target)?>" />
+            <p style="padding-top:7px;"><?=$this->transEsc("source_$target", null, $target)?></p>
+          <? endif; ?>
+        </div>
+      </div>
       <? endif; ?>
-      <? if (count($this->targets) == 1): ?>
-        <input type="hidden" id="login_target" name="target" class="form-control" value="<?=$this->escapeHtmlAttr($target)?>" />
-        <p style="padding-top:7px;"><?=$this->transEsc("source_$target", null, $target)?></p>
+      <div class="form-group">
+        <label class="col-sm-5 control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
+        <div class="col-sm-7">
+          <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="form-control"/>
+        </div>
+      </div>
+      <? if ($this->secondaryLoginFieldLabel || $this->targets !== null): ?>
+      <div class="form-group">
+        <label class="col-sm-5 control-label" for="login_secondary_username"><?=$this->transEsc($this->secondaryLoginFieldLabel) ?>:</label>
+        <div class="col-sm-7">
+          <input id="login_secondary_username" type="text" name="secondary_username" value="<?=$this->escapeHtmlAttr($this->secondaryUsername)?>" class="form-control"/>
+        </div>
+      </div>
       <? endif; ?>
-    </div>
+      <div class="form-group">
+        <label class="col-sm-5 control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
+        <div class="col-sm-7">
+          <input id="login_password" type="password" name="password" value="<?=$this->escapeHtmlAttr($this->password)?>" class="form-control"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-6 col-sm-offset-5">
+          <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
+        </div>
+      </div>
+    </form>
   </div>
-  <? endif; ?>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
-    <div class="col-sm-9">
-      <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="form-control"/>
+  <div class="col-sm-4 col-xs-12">
+    <? if (!$this->translationEmpty('login_desc_add_library_card_html') && empty($this->card->id)): ?>
+    <div class="login-description">
+      <p class="login-info"><?=$this->translate('login_desc_add_library_card_html');?></p>
     </div>
+    <? endif; ?>
   </div>
-  <? if ($this->secondaryLoginFieldLabel || $this->targets !== null): ?>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="login_secondary_username"><?=$this->transEsc($this->secondaryLoginFieldLabel) ?>:</label>
-    <div class="col-sm-9">
-      <input id="login_secondary_username" type="text" name="secondary_username" value="<?=$this->escapeHtmlAttr($this->secondaryUsername)?>" class="form-control"/>
-    </div>
-  </div>
-  <? endif; ?>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
-    <div class="col-sm-9">
-      <input id="login_password" type="password" name="password" value="<?=$this->escapeHtmlAttr($this->password)?>" class="form-control"/>
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-9 col-sm-offset-3">
-      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
-    </div>
-  </div>
-</form>
 
 <?
   if ($this->targets !== null) {

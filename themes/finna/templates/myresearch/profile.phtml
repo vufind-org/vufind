@@ -38,14 +38,11 @@
                 $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
                   ? $this->profile['home_library'] : $this->defaultPickupLocation
               ?>
-              <select id="home_library" name="home_library" class="form-control">
+              <select id="home_library" name="home_library" class="jumpMenu form-control">
                 <? foreach ($this->pickup as $lib): ?>
                   <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?></option>
                 <? endforeach; ?>
               </select>
-          </div>
-          <div class="col-xs-12">
-            <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save')?>" name="save_home_library" />
           </div>
         </form>
       <? elseif (!empty($this->pickup)): ?>
