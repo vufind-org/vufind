@@ -1086,6 +1086,15 @@ class AjaxController extends AbstractBase
             );
         }
 
+        $useCaptcha = $this->recaptcha()->active('UserComments');
+        if (!$this->formWasSubmitted('comment', $useCaptcha)) {
+            return $this->output(
+                $this->translate('recaptcha_not_passed'),
+                self::STATUS_ERROR,
+                403
+            );
+        }
+
         $table = $this->getTable('Resource');
         $resource = $table->findResource(
             $id, $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)

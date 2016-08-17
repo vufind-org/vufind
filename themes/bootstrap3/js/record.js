@@ -78,6 +78,7 @@ function refreshCommentList($target, recordId, recordSource) {
       return false;
     });
     $target.find('.comment-form input[type="submit"]').button('reset');
+    grecaptcha.reset();
   });
 }
 
@@ -91,8 +92,11 @@ function registerAjaxCommentRecord() {
     var data = {
       comment: form.comment.value,
       id: id,
-      source: recordSource
+      source: recordSource,
     };
+    if (grecaptcha && grecaptcha.getResponse()) {
+      data['g-recaptcha-response'] = grecaptcha.getResponse();
+    }
     $.ajax({
       type: 'POST',
       url: url,
@@ -107,7 +111,7 @@ function registerAjaxCommentRecord() {
     })
     .fail(function addCommentFail(response, textStatus) {
       if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
-      VuFind.lightbox.update(response.responseJSON.data);
+      VuFind.lightbox.alert(response.responseJSON.data, 'danger');
     });
     return false;
   });
