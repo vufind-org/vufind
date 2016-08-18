@@ -97,7 +97,12 @@ function registerAjaxCommentRecord() {
       source: recordSource
     };
     if (typeof grecaptcha !== 'undefined') {
-      data['g-recaptcha-response'] = grecaptcha.getResponse();
+      try {
+        data['g-recaptcha-response'] = grecaptcha.getResponse(0);
+      } catch(e) {
+        console.error('Expected errors: placeholder element full and Invalid client ID');
+        console.error(e);
+      }
     }
     $.ajax({
       type: 'POST',
