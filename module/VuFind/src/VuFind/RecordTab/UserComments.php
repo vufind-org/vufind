@@ -56,6 +56,7 @@ class UserComments extends AbstractBase
      * Constructor
      *
      * @param bool $enabled is this tab enabled?
+     * @param bool $urc     use recaptcha?
      */
     public function __construct($enabled = true, $urc = false)
     {
