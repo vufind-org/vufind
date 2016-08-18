@@ -78,7 +78,9 @@ function refreshCommentList($target, recordId, recordSource) {
       return false;
     });
     $target.find('.comment-form input[type="submit"]').button('reset');
-    grecaptcha.reset();
+    if (typeof grecaptcha !== 'undefined') {
+      grecaptcha.reset();
+    }
   });
 }
 
@@ -94,7 +96,7 @@ function registerAjaxCommentRecord() {
       id: id,
       source: recordSource,
     };
-    if (grecaptcha && grecaptcha.getResponse()) {
+    if (typeof grecaptcha !== 'undefined') {
       data['g-recaptcha-response'] = grecaptcha.getResponse();
     }
     $.ajax({
