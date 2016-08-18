@@ -90,7 +90,7 @@ class Record extends AbstractHelper
         $this->coverRouter = $router;
     }
 
-    
+
     /**
      * Render a template within a record driver folder.
      *
@@ -380,6 +380,7 @@ class Record extends AbstractHelper
         $classParts = explode('\\', get_class($tab));
         $template = 'RecordTab/' . strtolower(array_pop($classParts)) . '.phtml';
         $oldContext = $this->contextHelper->apply($context);
+        $this->view->recordTab = $tab;
         $html = $this->view->render($template);
         $this->contextHelper->restore($oldContext);
         return $html;

@@ -107,14 +107,4 @@ class Recaptcha extends AbstractHelper
         }
         return $this->prefixHtml . $this->recaptcha->getHtml() . $this->suffixHtml;
     }
-
-    /**
-     * Return whether Captcha is active in the config
-     *
-     * @return boolean
-     */
-    public function active()
-    {
-        return $this->active;
-    }
 }

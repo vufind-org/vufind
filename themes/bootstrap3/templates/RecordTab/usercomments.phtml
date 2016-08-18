@@ -17,7 +17,7 @@
       <? $user = $this->auth()->isLoggedIn() ?>
       <? if($user): ?>
         <textarea name="comment" class="form-control" rows="3" required></textarea><br/>
-        <? if ($this->recaptcha()->active('UserComments')): ?>
+        <? if ($this->recordTab->useRecaptcha): ?>
           <?=$this->recaptcha()->html(true, false) ?><br/>
         <? endif; ?>
         <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
