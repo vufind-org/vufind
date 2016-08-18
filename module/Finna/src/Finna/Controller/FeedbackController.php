@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -51,6 +51,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
      */
     public function emailAction()
     {
+        $view = $this->createViewModel();
         $category = $this->params()->fromPost('category');
         $name = $this->params()->fromPost('name');
         $users_email = $this->params()->fromPost('email');
@@ -63,7 +64,6 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             if (empty($captcha)
                 || $captcha != $this->translate('feedback_captcha_answer')
             ) {
-                $view = $this->createViewModel();
                 $view->setTemplate('feedback/home');
                 $view->category = $category;
                 $view->name = $name;
@@ -124,7 +124,6 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             $headers->removeHeader('Content-Type');
             $headers->addHeaderLine('Content-Type', 'text/plain; charset=UTF-8');
 
-            $view = $this->createViewModel();
             try {
                 $this->getServiceLocator()->get('VuFind\Mailer')->getTransport()
                     ->send($mail);
