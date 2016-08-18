@@ -1,4 +1,4 @@
-/*global deparam, syn_get_widget, userIsLoggedIn, VuFind */
+/*global deparam, grecaptcha, syn_get_widget, userIsLoggedIn, VuFind */
 /*exported ajaxTagUpdate, recordDocReady */
 
 /**
@@ -94,7 +94,7 @@ function registerAjaxCommentRecord() {
     var data = {
       comment: form.comment.value,
       id: id,
-      source: recordSource,
+      source: recordSource
     };
     if (typeof grecaptcha !== 'undefined') {
       data['g-recaptcha-response'] = grecaptcha.getResponse();
