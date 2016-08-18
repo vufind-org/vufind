@@ -52,6 +52,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
     public function emailAction()
     {
         $view = $this->createViewModel();
+        $view->useRecaptcha = $this->recaptcha()->active('feedback');
         $category = $this->params()->fromPost('category');
         $name = $this->params()->fromPost('name');
         $users_email = $this->params()->fromPost('email');
