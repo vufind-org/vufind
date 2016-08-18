@@ -264,8 +264,8 @@ class Factory
         $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $useRecaptcha = isset($config->Captcha) && isset($config->Captcha->forms)
-            && ($config->Captcha->forms === '*'
-            || strpos(strtolower($config->Captcha->forms), 'usercomments'));
+            && (trim($config->Captcha->forms) === '*'
+            || strpos($config->Captcha->forms, 'userComments'));
         return new UserComments(
             'enabled' === $capabilities->getCommentSetting(),
             $useRecaptcha

@@ -1086,7 +1086,7 @@ class AjaxController extends AbstractBase
             );
         }
 
-        $useCaptcha = $this->recaptcha()->active('UserComments');
+        $useCaptcha = $this->recaptcha()->active('userComments');
         $this->recaptcha()->setErrorMode('throw');
         if (!$this->formWasSubmitted('comment', $useCaptcha)) {
             return $this->output(
