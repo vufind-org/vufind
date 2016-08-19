@@ -99,7 +99,7 @@ function registerAjaxCommentRecord() {
     if (typeof grecaptcha !== 'undefined') {
       try {
         data['g-recaptcha-response'] = grecaptcha.getResponse(0);
-      } catch(e) {
+      } catch (e) {
         console.error('Expected errors: placeholder element full and Invalid client ID');
         console.error(e);
       }

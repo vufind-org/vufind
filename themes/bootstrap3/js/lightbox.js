@@ -1,4 +1,4 @@
-/*global VuFind */
+/*global grecaptcha, VuFind */
 VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
