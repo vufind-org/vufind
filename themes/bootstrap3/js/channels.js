@@ -59,7 +59,7 @@ $(document).ready(function channelReady() {
   });
 
   $('.channel-add-menu .dropdown-menu a').click(function selectAddedChannel(e) {
-    $.ajax(e.target.href).done(function (data) {
+    $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
       $(e.target).closest('.channel-add-menu').before(data);
       $(e.target).remove();
       $('.channel').flickity({
@@ -73,7 +73,7 @@ $(document).ready(function channelReady() {
   });
   $('.channel-add-menu .add-btn').click(function addChannels(e) {
     var links = $(e.target).parent().find('.dropdown-menu a');
-    for (var i=0; i<links.length && i<2; i++) {
+    for (var i = 0; i < links.length && i < 2; i++) {
       links[i].click();
     }
   });
