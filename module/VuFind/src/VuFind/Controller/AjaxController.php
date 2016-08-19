@@ -1087,7 +1087,7 @@ class AjaxController extends AbstractBase
         }
 
         $useCaptcha = $this->recaptcha()->active('userComments');
-        $this->recaptcha()->setErrorMode('throw');
+        $this->recaptcha()->setErrorMode('none');
         if (!$this->formWasSubmitted('comment', $useCaptcha)) {
             return $this->output(
                 $this->translate('recaptcha_not_passed'),
@@ -1095,7 +1095,6 @@ class AjaxController extends AbstractBase
                 403
             );
         }
-        $this->recaptcha()->setErrorMode('flash');
 
         $table = $this->getTable('Resource');
         $resource = $table->findResource(
