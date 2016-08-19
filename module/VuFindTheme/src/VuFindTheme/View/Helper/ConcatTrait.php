@@ -211,6 +211,7 @@ trait ConcatTrait
         $escapeEnd   = ($useCdata) ? '//]]>' : '//-->';
 
         $output = [];
+        error_log(count($this));
         foreach ($this as $index => $item) {
             if ($index == $this->concatIndex) {
                 $this->setResourceFilePath($item, $this->getConcatenatedFilePath());
@@ -259,7 +260,9 @@ trait ConcatTrait
     {
         // toString must not throw exception
         try {
-            if (!$this->isPipelineActive() || !$this->filterItems()) {
+            if (!$this->isPipelineActive() || !$this->filterItems()
+                || count($this) == 1
+            ) {
                 return parent::toString($indent);
             }
 
