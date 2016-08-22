@@ -9,3 +9,5 @@ TAGS
 composer.lock
 composer.phar
 import/solrmarc.log
+themes/root/js/concat/
+themes/root/css/concat/
