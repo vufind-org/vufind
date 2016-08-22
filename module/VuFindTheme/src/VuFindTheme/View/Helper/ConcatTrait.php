@@ -79,6 +79,8 @@ trait ConcatTrait
      * Set the file path of the link object
      *
      * @param stdClass $item Link element object
+     *
+     * @return string
      */
     public function getType($item)
     {
