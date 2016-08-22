@@ -194,6 +194,15 @@ trait ConcatTrait
      */
     protected function getConcatenatedFilePath($group)
     {
+        // Don't recompress individual files
+        if (count($group['items']) === 1) {
+            $path = $this->getResourceFilePath($group['items'][0]);
+            $details = $this->themeInfo->findContainingTheme(
+                $this->fileType . '/' . $path,
+                ThemeInfo::RETURN_ALL_DETAILS
+            );
+            return $details['path'];
+        }
         // Locate/create concatenated css file
         $filename = md5($group['key']) . '.min.' . $this->fileType;
         $concatPath = $this->getResourceCacheDir() . $filename;
