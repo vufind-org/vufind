@@ -92,29 +92,12 @@ trait ConcatTrait
      */
     protected $usePipeline = false;
 
+    /**
+     * Array of resource items by type, contains key as well
+     *
+     * @var array
+     */
     protected $groups = [];
-    protected $groupTypes = [];
-
-    /**
-     * String of all filenames and mod dates
-     *
-     * @var string
-     */
-    protected $concatKey = '';
-
-    /**
-     * Items to be concatenated
-     *
-     * @var array
-     */
-    protected $concatItems = [];
-
-    /**
-     * Items to be rendered separately
-     *
-     * @var array
-     */
-    protected $otherItems = [];
 
     /**
      * Future order of the concatenated file
@@ -133,7 +116,7 @@ trait ConcatTrait
     protected function filterItems()
     {
         $this->groups = [];
-        $this->groupTypes = [];
+        $groupTypes = [];
 
         $this->getContainer()->ksort();
 
@@ -143,7 +126,7 @@ trait ConcatTrait
                     'other' => true,
                     'item' => $item
                 ];
-                $this->groupTypes[] = 'other';
+                $groupTypes[] = 'other';
                 continue;
             }
 
@@ -153,13 +136,13 @@ trait ConcatTrait
             );
 
             $type = $this->getType($item);
-            $index = array_search($type, $this->groupTypes);
+            $index = array_search($type, $groupTypes);
             if ($index === false) {
                 $this->groups[] = [
                     'items' => [$item],
                     'key' => $details['path'] . filemtime($details['path'])
                 ];
-                $this->groupTypes[] = $type;
+                $groupTypes[] = $type;
             } else {
                 $this->groups[$index]['items'][] = $item;
                 $this->groups[$index]['key'] .=
@@ -168,7 +151,7 @@ trait ConcatTrait
         }
 
 
-        return count($this->groupTypes) > 0;
+        return count($groupTypes) > 0;
     }
 
     /**
@@ -190,10 +173,14 @@ trait ConcatTrait
      * Using the concatKey, return the path of the concatenated file.
      * Generate if it does not yet exist.
      *
+     * @param array $group Object containing 'key' and stdobj file 'items'
+     *
      * @return string
      */
     protected function getConcatenatedFilePath($group)
     {
+        $urlHelper = $this->getView()->plugin('url');
+
         // Don't recompress individual files
         if (count($group['items']) === 1) {
             $path = $this->getResourceFilePath($group['items'][0]);
@@ -201,7 +188,8 @@ trait ConcatTrait
                 $this->fileType . '/' . $path,
                 ThemeInfo::RETURN_ALL_DETAILS
             );
-            return $details['path'];
+            return $urlHelper('home') . 'themes/' . $details['theme']
+                . '/' . $this->fileType . '/' . $path;
         }
         // Locate/create concatenated css file
         $filename = md5($group['key']) . '.min.' . $this->fileType;
@@ -218,7 +206,6 @@ trait ConcatTrait
             $minifier->minify($concatPath);
         }
 
-        $urlHelper = $this->getView()->plugin('url');
         return $urlHelper('home') . 'themes'
             . $this->getResourceCacheDir(false) . $filename;
     }
