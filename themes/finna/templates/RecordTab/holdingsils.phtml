@@ -111,9 +111,9 @@
     <? $patron = $ilsLoginAvailable && $user->cat_username ? $this->ils()->patronLogin($user->cat_username, $user->getCatPassword()) : null; if ($patron): ?>
       <? if ($profile = $this->ils()->getMyProfile($patron)): ?>
         <? if (!empty($profile['blocks'])): ?>
-          <?=$this->transEsc('hold_error_blocked'); ?>
+          <p><?=$this->transEsc('hold_error_blocked'); ?></p>
         <? elseif (!$illRequestLink && !$holdLinks): ?>
-          <?=$this->transEsc('title_cant_place_hold'); ?>
+          <p><?=$this->transEsc('title_cant_place_hold'); ?></p>
         <? endif; ?>
       <? endif; ?>
     <? endif; ?>

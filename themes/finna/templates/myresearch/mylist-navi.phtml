@@ -1,9 +1,20 @@
 <!-- START of: finna - myresearch/mylist-navi.phtml -->
-<? $numOfResources = $user->getNumOfResources(); ?>
+<?
+  $numOfResources = $user->getNumOfResources();
+  $limitList = $this->results->getParams()->getLimitList();
+  $currentLimit = 20; // default limit for favorites
+  foreach ($limitList as $limitVal => $limitData) {
+    if ($limitData['selected']) {
+      $currentLimit = $limitVal;
+      break;
+    }
+  }
+?>
+
   <h4><?=$this->transEsc('Your Lists')?></h4>
   <ul class="list-group mylist-nav">
     <li>
-      <a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=!$activeId ? ' active' : ''?>">
+      <a href="<?=$this->url('myresearch-favorites')?>?limit=<?=$currentLimit;?>" class="list-group-item<?=!$activeId ? ' active' : ''?>">
         <?=$this->transEsc('All Favourites')?>
         <span> (<?=$numOfResources; ?>)</span>
       </a>
@@ -11,7 +22,7 @@
     <? foreach ($lists as $list): ?>
     <? $active = ($list->id === $activeId); ?>
     <li>
-      <a href="<?= $active ? '#' : $this->url('userList', array('id' => $list['id']))?>" class="list-group-item<?=$list && $active ? ' active' : ''?>">
+      <a href="<?= $active ? '#' : $this->url('userList', array('id' => $list['id']))?>?limit=<?=$currentLimit;?>" class="list-group-item<?=$list && $active ? ' active' : ''?>">
         <? if ($list['public']): ?>
         <i class="fa fa-public public-favorite-list pull-left"></i>
         <? endif; ?>
