@@ -148,8 +148,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      */
     protected function isExcludedFromConcat($item)
     {
-        return $item->rel != 'stylesheet'
-            || (isset($item->media) && $item->media != 'all')
+        return !isset($item->rel) || $item->rel != 'stylesheet'
             || strpos($item->href, '://');
     }
 
@@ -173,11 +172,24 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      * @param stdClass $item Link element object
      * @param string   $path New path string
      *
-     * @return void
+     * @return stdClass
      */
     protected function setResourceFilePath($item, $path)
     {
         $item->href = $path;
+        return $item;
+    }
+
+    /**
+     * Get the file type
+     *
+     * @param stdClass $item Link element object
+     *
+     * @return string
+     */
+    public function getType($item)
+    {
+        return isset($item->media) ? $item->media : 'all';
     }
 
     /**

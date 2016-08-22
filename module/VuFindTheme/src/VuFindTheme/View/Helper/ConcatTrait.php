@@ -46,23 +46,23 @@ trait ConcatTrait
     /**
      * Returns true if file should not be included in the compressed concat file
      *
-     * @param stdClass $item Link element object
+     * @param stdClass $item Element object
      *
      * @return bool
      */
     abstract protected function isExcludedFromConcat($item);
     /**
-     * Get the file path from the link object
+     * Get the file path from the element object
      *
-     * @param stdClass $item Link element object
+     * @param stdClass $item Element object
      *
      * @return string
      */
     abstract protected function getResourceFilePath($item);
     /**
-     * Set the file path of the link object
+     * Set the file path of the element object
      *
-     * @param stdClass $item Link element object
+     * @param stdClass $item Element object
      * @param string   $path New path string
 
      * @return void
@@ -76,11 +76,24 @@ trait ConcatTrait
     abstract protected function getMinifier();
 
     /**
+     * Set the file path of the link object
+     *
+     * @param stdClass $item Link element object
+     */
+    public function getType($item)
+    {
+        return 'default';
+    }
+
+    /**
      * Should we use the asset pipeline to join files together and minify them?
      *
      * @var bool
      */
     protected $usePipeline = false;
+
+    protected $groups = [];
+    protected $groupTypes = [];
 
     /**
      * String of all filenames and mod dates
@@ -119,20 +132,19 @@ trait ConcatTrait
      */
     protected function filterItems()
     {
-        $this->concatKey = '';
-        $this->concatItems = [];
-        $this->otherItems = [];
-        $this->concatIndex = null;
+        $this->groups = [];
+        $this->groupTypes = [];
 
         $this->getContainer()->ksort();
 
         foreach ($this as $key => $item) {
             if ($this->isExcludedFromConcat($item)) {
-                $this->otherItems[$key] = $item;
+                $this->groups[] = [
+                    'other' => true,
+                    'item' => $item
+                ];
+                $this->groupTypes[] = 'other';
                 continue;
-            }
-            if ($this->concatIndex == null) {
-                $this->concatIndex = $key;
             }
 
             $details = $this->themeInfo->findContainingTheme(
@@ -140,11 +152,23 @@ trait ConcatTrait
                 ThemeInfo::RETURN_ALL_DETAILS
             );
 
-            $this->concatKey .= $details['path'] . filemtime($details['path']);
-            $this->concatItems[] = $details['path'];
+            $type = $this->getType($item);
+            $index = array_search($type, $this->groupTypes);
+            if ($index === false) {
+                $this->groups[] = [
+                    'items' => [$item],
+                    'key' => $details['path'] . filemtime($details['path'])
+                ];
+                $this->groupTypes[] = $type;
+            } else {
+                $this->groups[$index]['items'][] = $item;
+                $this->groups[$index]['key'] .=
+                    $details['path'] . filemtime($details['path']);
+            }
         }
 
-        return $this->concatKey !== '';
+
+        return count($this->groupTypes) > 0;
     }
 
     /**
@@ -168,15 +192,19 @@ trait ConcatTrait
      *
      * @return string
      */
-    protected function getConcatenatedFilePath()
+    protected function getConcatenatedFilePath($group)
     {
         // Locate/create concatenated css file
-        $filename = md5($this->concatKey) . '.min.' . $this->fileType;
+        $filename = md5($group['key']) . '.min.' . $this->fileType;
         $concatPath = $this->getResourceCacheDir() . $filename;
         if (!file_exists($concatPath)) {
             $minifier = $this->getMinifier();
-            for ($i = 0; $i < count($this->concatItems); $i++) {
-                $minifier->add($this->concatItems[$i]);
+            foreach ($group['items'] as $item) {
+                $details = $this->themeInfo->findContainingTheme(
+                    $this->fileType . '/' . $this->getResourceFilePath($item),
+                    ThemeInfo::RETURN_ALL_DETAILS
+                );
+                $minifier->add($details['path']);
             }
             $minifier->minify($concatPath);
         }
@@ -211,17 +239,16 @@ trait ConcatTrait
         $escapeEnd   = ($useCdata) ? '//]]>' : '//-->';
 
         $output = [];
-        error_log(count($this));
-        foreach ($this as $index => $item) {
-            if ($index == $this->concatIndex) {
-                $this->setResourceFilePath($item, $this->getConcatenatedFilePath());
+        foreach ($this->groups as $group) {
+            if (isset($group['other'])) {
+                $output[] = $this->itemToString(
+                    $group['item'], $indent, $escapeStart, $escapeEnd
+                );
+            } else {
+                $path = $this->getConcatenatedFilePath($group);
+                $item = $this->setResourceFilePath($group['items'][0], $path);
                 $output[] = parent::itemToString(
                     $item, $indent, $escapeStart, $escapeEnd
-                );
-            }
-            if (isset($this->otherItems[$index])) {
-                $output[] = $this->itemToString(
-                    $this->otherItems[$index], $indent, $escapeStart, $escapeEnd
                 );
             }
         }

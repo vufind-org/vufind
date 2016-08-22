@@ -133,11 +133,12 @@ class HeadScript extends \Zend\View\Helper\HeadScript
      * @param stdClass $item Script element object
      * @param string   $path New path string
      *
-     * @return void
+     * @return stdClass
      */
     protected function setResourceFilePath($item, $path)
     {
         $item->attributes['src'] = $path;
+        return $item;
     }
 
     /**
