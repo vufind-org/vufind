@@ -93,9 +93,9 @@ class SearchSpecsReader
             // Generate data if not found in cache:
             if ($cache === false || !($results = $cache->getItem($cacheKey))) {
                 $results = file_exists($fullpath)
-                    ? Yaml::parse(file_get_contents($fullpath)) : [];
+                    ? $this->parseYaml($fullpath) : [];
                 if (!empty($local)) {
-                    $localResults = Yaml::parse(file_get_contents($local));
+                    $localResults = $this->parseYaml($local);
                     foreach ($localResults as $key => $value) {
                         $results[$key] = $value;
                     }
@@ -109,4 +109,46 @@ class SearchSpecsReader
 
         return $this->searchSpecs[$filename];
     }
+
+    /**
+     * Returns content of yaml as an array, considers import of other a parent-yaml-file using "@parent_yaml="
+     *
+     * @param string $file_contents yaml as a string
+     *
+     * @return array
+     */
+    private function parseYaml($filepath)
+    {
+        $file_contents = file_get_contents($filepath);
+        $parentYamlDirectiveString = '@parent_yaml=';
+        $parent_directive_startpos = strpos($file_contents, $parentYamlDirectiveString);
+        $parent_yaml_array = null;
+
+        if ($parent_directive_startpos !== false) {
+            // read parent yaml:
+            $parent_directive_endpos = strpos($file_contents, PHP_EOL, $parent_directive_startpos + 1);
+            $parent_yaml_filepath =
+                substr(
+                    $file_contents, $parent_directive_startpos + strlen($parentYamlDirectiveString),
+                    $parent_directive_endpos - $parent_directive_startpos - strlen($parentYamlDirectiveString)
+                );
+            $parent_yaml_filepath = pathinfo($filepath)[dirname] . "/" .  $parent_yaml_filepath;
+            $parent_yaml_array = Yaml::parse(file_get_contents($parent_yaml_filepath));
+
+            //remove include-directive from yaml:
+            $file_contents =
+                substr($file_contents, 0, $parent_directive_startpos) . substr(
+                    $file_contents,
+                    $parent_directive_endpos + 1
+                );
+        }
+
+        $yaml_array = Yaml::parse($file_contents);
+        if ($parent_yaml_array !== null) {
+            // overwrite parent_yaml_array with yaml_array
+            $yaml_array = array_replace_recursive($parent_yaml_array, $yaml_array);
+        }
+        return $yaml_array;
+    }
+
 }
