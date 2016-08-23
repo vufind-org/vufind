@@ -53,16 +53,18 @@
     </div>
   </div>
 <? endif; ?>
-<div class="row">
-  <div class="col-xs-12">
-    <h4><?=$this->transEsc('Geographical Area') ?></h4>
+<div class="search-map-container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h4><?=$this->transEsc('Geographical Area') ?></h4>
+    </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-xs-12 map-container">
-    <fieldset class="well map">
-      <?=$this->render('search/advanced/map.phtml', ['searchClassId' => $searchClassId])?>
-    </fieldset>
+  <div class="row">
+    <div class="col-xs-12 map-container">
+      <fieldset class="well map">
+        <?=$this->render('search/advanced/map.phtml', ['searchClassId' => $searchClassId])?>
+      </fieldset>
+    </div>
   </div>
 </div>
 <? if (isset($this->illustratedLimit)): ?>
