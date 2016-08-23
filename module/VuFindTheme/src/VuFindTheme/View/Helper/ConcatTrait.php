@@ -152,7 +152,6 @@ trait ConcatTrait
             }
         }
 
-
         return count($groupTypes) > 0;
     }
 
