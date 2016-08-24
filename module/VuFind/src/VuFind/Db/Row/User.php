@@ -610,6 +610,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             $list = $table->getExisting($current->id);
             $list->delete($this, true);
         }
+        $resourceTags = $this->getDbTable('ResourceTags');
+        $resourceTags->destroyLinks(null, $this->id);
 
         // Remove the user itself:
         return parent::delete();
