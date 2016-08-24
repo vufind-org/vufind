@@ -365,10 +365,10 @@ trait SolrFinna
             $urls = array_keys($urls);
             if ($index == 0) {
                 $url = $urls[0];
+            } elseif (isset($urls[$index])) {
+                $url = $urls[$index];
             } else {
-                if (isset($urls[$index])) {
-                    $url = $urls[$index];
-                }
+                $url = null;
             }
             if (!is_array($url)) {
                 $params = ['id' => $this->getUniqueId(), 'url' => $url];
