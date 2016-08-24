@@ -120,32 +120,16 @@ class SearchSpecsReader
     private function parseYaml($filepath)
     {
         $file_contents = file_get_contents($filepath);
-        $parentYamlDirectiveString = '@parent_yaml=';
-        $parent_directive_startpos = strpos($file_contents, $parentYamlDirectiveString);
         $parent_yaml_array = null;
+        $yaml_array = Yaml::parse($file_contents);
 
-        if ($parent_directive_startpos !== false) {
-            // read parent yaml:
-            $parent_directive_endpos = strpos($file_contents, PHP_EOL, $parent_directive_startpos + 1);
-            $parent_yaml_filepath =
-                substr(
-                    $file_contents, $parent_directive_startpos + strlen($parentYamlDirectiveString),
-                    $parent_directive_endpos - $parent_directive_startpos - strlen($parentYamlDirectiveString)
-                );
-            $parent_yaml_filepath = pathinfo($filepath)[dirname] . "/" .  $parent_yaml_filepath;
+        if (array_key_exists("parent_yaml", $yaml_array)) {
+            $parent_yaml_filepath = $yaml_array["parent_yaml"];
+            $parent_yaml_filepath = pathinfo($filepath)[dirname] . "/" . $parent_yaml_filepath;
             $parent_yaml_array = Yaml::parse(file_get_contents($parent_yaml_filepath));
-
-            //remove include-directive from yaml:
-            $file_contents =
-                substr($file_contents, 0, $parent_directive_startpos) . substr(
-                    $file_contents,
-                    $parent_directive_endpos + 1
-                );
         }
 
-        $yaml_array = Yaml::parse($file_contents);
         if ($parent_yaml_array !== null) {
-            // overwrite parent_yaml_array with yaml_array
             $yaml_array = array_replace_recursive($parent_yaml_array, $yaml_array);
         }
         return $yaml_array;
