@@ -73,13 +73,23 @@ class GeoCoords extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Invoke
+     * Get search URL if geo search is enabled for the specified search class ID,
+     * false if disabled.
      *
-     * @return string
+     * @param string $source Search class ID
+     *
+     * @return string|bool
      */
-    public function __invoke()
+    public function getSearchUrl($source)
     {
-        $data = [$this->enabled, $this->coords, $this->geoField];
-        return $data;
+        // Currently, only Solr is supported; we may eventually need a more
+        // robust mechanism here.
+        if (!$this->enabled || strtolower($source) !== 'solr') {
+            return false;
+        }
+        $urlHelper = $this->getView()->plugin('url');
+        return $urlHelper('search-results')
+            . '?filter[]=' . urlencode($this->geoField)
+            . ':Intersects(ENVELOPE(' . urlencode($this->coords) . '))';
     }
 }
