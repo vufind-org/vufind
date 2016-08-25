@@ -236,12 +236,12 @@ Subject:
       - [or, ~]
 
   Coordinate:
-  DismaxFields:
-    - long_lat_display
-  QueryFields:
-    long_lat_display:
-      - [and, 100]
-      - [or, ~]
+    DismaxFields:
+      - long_lat_display
+    QueryFields:
+      long_lat_display:
+        - [and, 100]
+        - [or, ~]
       
 #  ExactSettings:
 #    DismaxFields:
