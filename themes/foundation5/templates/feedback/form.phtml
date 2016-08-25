@@ -4,14 +4,14 @@
 <form name="feedback" method="post" action="<?=$this->url('feedback-email')?>">
   <div class="row">
     <label class="small-3 columns" for="name"><?=$this->transEsc("feedback_name")?></label>
-    <div class="small-9 columns">
-      <input type="text" id="name" name="name" value="<?=$this->escapeHtmlAttr(isset($name) ? $name : '')?>" class="auto-width"/>
+    <div class="small-9 medium-5 columns end">
+      <input type="text" id="name" name="name" value="<?=$this->escapeHtmlAttr(isset($name) ? $name : '')?>" />
     </div>
   </div>
   <div class="row">
     <label class="small-3 columns" for="email"><?=$this->transEsc("Email")?></label>
-    <div class="small-9 columns">
-      <input type="email" id="email" name="email" value="<?=$this->escapeHtmlAttr(isset($email) ? $email : '')?>" class="auto-width"/>
+    <div class="small-9 medium-5 columns end">
+      <input type="email" id="email" name="email" value="<?=$this->escapeHtmlAttr(isset($email) ? $email : '')?>" />
     </div>
   </div>
   <div class="row">

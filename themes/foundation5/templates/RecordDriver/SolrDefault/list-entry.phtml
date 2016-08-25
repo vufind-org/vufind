@@ -23,10 +23,10 @@
   <? if ($cover): ?>
     <?=$cover ?>
   </div>
-  <div class="small-6 columns middle">
+  <div class="small-7 columns middle">
       <? else: ?>
   </div>
-  <div class="small-7 columns middle">
+  <div class="small-8 columns middle">
   <? endif ?>
 
     <div class="resultItemLine1">
@@ -162,7 +162,7 @@
     </div>
   </div>
 
-  <div class="small-2 columns right hide-for-print">
+  <div class="small-3 columns right hide-for-print">
     <i class="fa fa-fw fa-edit"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
     <? /* How can I turn this into a modal link - fixme - CK */ ?>
     <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */

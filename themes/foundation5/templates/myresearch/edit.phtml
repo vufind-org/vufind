@@ -23,13 +23,14 @@
     </p>
   <? else: ?>
     <? foreach ($this->savedData as $i=>$current): ?>
-        <div class="row collapse">
-          <div class="small-12 columns ">
-            <a ref="<?=$this->url('userList', array('id' => $current['listId'])) ?>?delete=<?=urlencode($this->driver->getUniqueId())?>&amp;source=<?=urlencode($this->driver->getSourceIdentifier())?>" id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>delete<?=$current['listId'] ?>" title="<?=$this->transEsc('confirm_delete')?>" class="button alert small right nomargins"><?=$this->transEsc('List') ?>: <?=$this->escapeHtml($current['listTitle'])?> <?=$this->transEsc('Delete')?></a>
+      <fieldset class="row collapse">
+        <legend class="small-12 columns">
+          <div class="small-8 columns no-padding-l">
+            <?=$this->transEsc('List') ?>: <?=$this->escapeHtml($current['listTitle'])?>
           </div>
-      <fieldset class="small-12 columns">
-        <legend>
-          <?=$this->transEsc('List') ?>: <?=$this->escapeHtml($current['listTitle'])?>
+          <div class="small-4 columns text-right">
+            <a href="<?=$this->url('userList', array('id' => $current['listId'])) ?>?delete=<?=urlencode($this->driver->getUniqueId())?>&amp;source=<?=urlencode($this->driver->getSourceIdentifier())?>" id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>delete<?=$current['listId'] ?>" title="<?=$this->transEsc('confirm_delete')?>" class="close button small alert" data-lightbox><?=$this->transEsc('list_item_delete') ?></a>
+          </div>
         </legend>
         <input type="hidden" name="lists[]" value="<?=$current['listId'] ?>"/>
         <? if ($this->usertags()->getMode() !== 'disabled'): ?>
@@ -48,7 +49,6 @@
           </div>
         </div>
       </fieldset>
-     </div>
       <? if($i < count($this->savedData)-1): ?>
         <hr/>
       <? endif; ?>
