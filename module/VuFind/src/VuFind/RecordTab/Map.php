@@ -258,15 +258,15 @@ class Map extends AbstractBase
             return $labels;
         }
         if ($mapLabelData[0] == 'file') {
-            $coords = $this->getRecordDriver()->tryMethod('getDisplayCoords');
+            $coords = $this->getRecordDriver()->tryMethod('getDisplayCoordinates');
             /* read lookup file into array */
             $label_lookup = [];
-            $file = \VuFind\Config\Locator::getConfigPath($mapLabelsData[1]);
+            $file = \VuFind\Config\Locator::getConfigPath($mapLabelData[1]);
             if (file_exists($file)) {
                 $fp = fopen($file, 'r');
                 while (($line = fgetcsv($fp, 0, "\t")) !== false) {
-                    if ($line) {
-                        $label_lookup[] = $line;
+                    if (count($line) > 1) {
+                        $label_lookup[$line[0]] = $line[1];
                     }
                 }
                 fclose($fp);
@@ -274,22 +274,13 @@ class Map extends AbstractBase
             $labels = [];
             if (null !== $coords) {
                 foreach ($coords as $val) {
-                    $coord = explode(' ', $val);
-                    $labelW = $coord[0];
-                    $labelE = $coord[1];
-                    $labelN = $coord[2];
-                    $labelS = $coord[3];
-                    /* Make combined coordinate string to match
+                    /* Collapse spaces to make combined coordinate string to match
                         against lookup table coordinate */
-                    $coordmatch = $labelW . $labelE . $labelN . $labelS;
+                    $coordmatch = implode('', explode(' ', $val));
                     /* See if coordinate string matches lookup
                         table coordinates and if so return label */
-                    $labelname = [];
-                    foreach ($label_lookup as $data) {
-                        if ($data[0] == $coordmatch) {
-                            $labelname = $data[1];
-                        }
-                    }
+                    $labelname = isset($label_lookup[$coordmatch])
+                        ? $label_lookup[$coordmatch] : '';
                     array_push($labels, $labelname);
                 }
             }
