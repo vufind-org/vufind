@@ -41,21 +41,6 @@ VuFind.register('lightbox', function Lightbox() {
     return document.dispatchEvent(event);
   }
 
-  /**
-   * Reload the page without causing trouble with POST parameters while keeping hash
-   */
-  function _refreshPage() {
-    var parts = window.location.href.split('#');
-    if (typeof parts[1] === 'undefined') {
-      window.location.href = window.location.href;
-    } else {
-      var href = parts[0];
-      // Force reload with a timestamp
-      href += href.indexOf('?') === -1 ? '?_=' : '&_=';
-      href += new Date().getTime() + '#' + parts[1];
-      window.location.href = href;
-    }
-  }
   // Public: Present an alert
   function showAlert(message, _type) {
     var type = _type || 'info';
@@ -140,7 +125,7 @@ VuFind.register('lightbox', function Lightbox() {
     _xhr.always(function lbAjaxAlways() { _xhr = false; })
       .done(function lbAjaxDone(content, status, jq_xhr) {
         if (jq_xhr.status === 205) {
-          _refreshPage();
+          VuFind.refreshPage();
           return;
         }
         // Place Hold error isolation
@@ -154,7 +139,7 @@ VuFind.register('lightbox', function Lightbox() {
         }
         if ( // Close the lightbox after deliberate login
           obj.method                                                                 // is a form
-          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/))                // that matches login/create account
+          && ((obj.url.match(/MyResearch/) && !obj.url.match(/Bulk/) && !obj.url.match(/Delete/)) // that matches login/create account
             || obj.url.match(/catalogLogin/))                                        // or catalog login for holds
           && $('<div/>').html(content).find('.flash-message.alert-danger').length === 0 // skip failed logins
         ) {
@@ -164,7 +149,7 @@ VuFind.register('lightbox', function Lightbox() {
           });
           if (_originalUrl.match(/UserLogin/) || obj.url.match(/catalogLogin/)) {
             if (eventResult) {
-              _refreshPage();
+              VuFind.refreshPage();
             }
             return false;
           } else {
@@ -263,8 +248,9 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // onclose behavior
     if ('string' === typeof $(form).data('lightboxOnclose')) {
-      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(ev) {
-        _evalCallback($(form).data('lightboxOnclose'), ev);
+      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(e) {
+        this.removeEventListener('VuFind.lightbox.closed', arguments.callee);
+        _evalCallback($(form).data('lightboxOnclose'), e);
       }, false);
     }
     // Loading
@@ -313,7 +299,7 @@ VuFind.register('lightbox', function Lightbox() {
     _modalBody = _modal.find('.modal-body');
     _modal.on('hide.bs.modal', function lightboxHide() {
       if (VuFind.lightbox.refreshOnClose) {
-        _refreshPage();
+        VuFind.refreshPage();
       }
       _emit('VuFind.lightbox.closing');
     });

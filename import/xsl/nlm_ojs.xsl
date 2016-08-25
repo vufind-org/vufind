@@ -62,7 +62,7 @@
                     </field>
                 </xsl:if>
 
-                <!-- Article endPage !! Only enable this part of the code if you have defined "container_end_page" in  ./solr/biblio/conf/schema.xml -> <field name="container_end_page" type="text" indexed="true" stored="true"/> !!
+                <!-- Article endPage !! Only enable this part of the code if you have defined "container_end_page" in  ./solr/vufind/biblio/conf/schema.xml -> <field name="container_end_page" type="text" indexed="true" stored="true"/> !!
 
                 <xsl:if test="//nlm:lpage[normalize-space()]">
                         <field name="container_end_page">
