@@ -90,7 +90,6 @@ class Record extends AbstractHelper
         $this->coverRouter = $router;
     }
 
-    
     /**
      * Render a template within a record driver folder.
      *
