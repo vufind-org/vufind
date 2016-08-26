@@ -78,6 +78,8 @@ public class VuFindIndexer extends SolrIndexer
     private static SimpleDateFormat marc005date = new SimpleDateFormat("yyyyMMddHHmmss.S");
     private static SimpleDateFormat marc008date = new SimpleDateFormat("yyMMdd");
 
+    private static HashMap<String, Ini> configCache = new HashMap<String, Ini>();
+
     // Shutdown flag:
     private boolean shuttingDown = false;
 
@@ -179,14 +181,17 @@ public class VuFindIndexer extends SolrIndexer
      */
     public Ini loadConfigFile(String filename)
     {
-        // Obtain the DSN from the config.ini file:
-        Ini ini = new Ini();
-        try {
-            ini.load(new FileReader(findConfigFile(filename)));
-        } catch (Throwable e) {
-            dieWithError("Unable to access " + filename);
+        // Retrieve the file if it is not already cached.
+        if (!configCache.containsKey(filename)) {
+            Ini ini = new Ini();
+            try {
+                ini.load(new FileReader(findConfigFile(filename)));
+                configCache.put(filename, ini);
+            } catch (Throwable e) {
+                dieWithError("Unable to access " + filename);
+            }
         }
-        return ini;
+        return configCache.get(filename);
     }
 
     /**
