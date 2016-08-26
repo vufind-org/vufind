@@ -50,7 +50,7 @@ class UserComments extends AbstractBase
      *
      * @var bool
      */
-    public $useRecaptcha;
+    protected $useRecaptcha;
 
     /**
      * Constructor
@@ -62,6 +62,16 @@ class UserComments extends AbstractBase
     {
         $this->enabled = $enabled;
         $this->useRecaptcha = $urc;
+    }
+
+    /**
+     * Is Recaptcha active?
+     *
+     * @return bool
+     */
+    public function isRecaptchaActive()
+    {
+        return $this->useRecaptcha;
     }
 
     /**
