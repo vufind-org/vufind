@@ -1,15 +1,15 @@
 <!-- START of: finna - metalib/search-tools.phtml -->
+<? $account = $this->auth()->getManager(); ?>
 <div class="container">
   <div class="row">
     <div class="searchtools hidden-print col-xs-12">
       <a href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><i class="fa fa-envelope"></i> <?=$this->transEsc('Email this Search')?></a>
 
-      <? if (is_numeric($this->results->getSearchId())): ?>
-        <? if ($this->results->isSavedSearch()): ?>
-        <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove"></i> <?=$this->transEsc('save_search_remove')?></a>
-        <? else: ?>
-        <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-plus-square"></i> <?=$this->transEsc('save_search')?></a>
-        <? endif; ?>
+      <? if (is_numeric($this->results->getSearchId()) && (is_object($account) && $account->loginEnabled())): ?>
+          <? if ($this->results->isSavedSearch()): ?>
+          <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove"></i> <?=$this->transEsc('save_search_remove')?></a>
+          <? else: ?>
+          <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-plus-square"></i> <?=$this->transEsc('save_search')?></a>
       <? endif; ?>
     </div>
   </div>
