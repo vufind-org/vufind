@@ -51,8 +51,7 @@ interface SimilarBuilderInterface
     /**
      * Build SOLR query based on VuFind query object.
      *
-     * @param string  $id      Record id
-     * @param ParamBag $params Search backend parameters
+     * @param string $id Record id
      *
      * @return ParamBag
      */

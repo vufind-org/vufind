@@ -81,7 +81,7 @@ class SimilarBuilder implements SimilarBuilderInterface
      * Constructor.
      *
      * @param \Zend\Config\Config $searchConfig Search config
-     * @param string              $uniqueKey Solr field used to store unique
+     * @param string              $uniqueKey    Solr field used to store unique
      * identifier
      *
      * @return void
@@ -109,8 +109,7 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Return SOLR search parameters based on a record Id and params.
      *
-     * @param string   $id     Record Id
-     * @param ParamBag $params Search backend parameters
+     * @param string $id Record Id
      *
      * @return ParamBag
      */
