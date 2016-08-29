@@ -115,28 +115,6 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     protected $adapter = 'Zend\Http\Client\Adapter\Socket';
 
     /**
-     * Whether to use the MoreLikeThis query handler.
-     *
-     * @var bool
-     */
-    protected $useMLTHandler = false;
-
-    /**
-     * MoreLikeThis query handler parameters.
-     *
-     * @var string
-     */
-    protected $mltParams = '';
-
-    /**
-     * Number of similar records to retrieve when using the MoreLikeThis query
-     * handler.
-     *
-     * @var int
-     */
-    protected $mltCount = 5;
-
-    /**
      * Constructor
      *
      * @param string|array $url       SOLR core URL or an array of alternative URLs
@@ -153,24 +131,6 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /// Public API
-
-    /**
-     * Enable MoreLikeThis handler that can be used instead of the traditional
-     * MoreLikeThis component.
-     *
-     * @param string   $params MoreLikeThis params
-     * @param int|null $count  Result count
-     *
-     * @return void
-     */
-    public function enableMoreLikeThisHandler($params, $count)
-    {
-        $this->useMLTHandler = true;
-        $this->mltParams = $params;
-        if (null !== $count) {
-            $this->mltCount = $count;
-        }
-    }
 
     /**
      * Get the Solr URL.
@@ -225,35 +185,16 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     /**
      * Return records similar to a given record specified by id.
      *
-     * Uses MoreLikeThis Request Handler
+     * Uses MoreLikeThis Request Component or MoreLikeThis Handler
      *
-     * @param string   $id     Id of given record
      * @param ParamBag $params Parameters
      *
      * @return string
      */
-    public function similar($id, ParamBag $params = null)
+    public function similar(ParamBag $params)
     {
-        $params = $params ?: new ParamBag();
-        if ($this->useMLTHandler) {
-            $mltParams = $this->mltParams
-                ? $this->mltParams
-                : 'qf=title,title_short,callnumber-label,topic,language,author,'
-                    . 'publishDate mintf=1 mindf=1 boost=true';
-            $params->set('q', sprintf('{!mlt %s}%s', $mltParams, $id));
-            if (null === $params->get('rows')) {
-                $params->set('rows', $this->mltCount);
-            }
-        } else {
-            $params->set(
-                'q', sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"'))
-            );
-            $params->set('qt', 'morelikethis');
-        }
-
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-
         return $this->query($handler, $params);
     }
 
