@@ -123,6 +123,17 @@ $(document).ready(function() {
   .on('slide', fillTexts)
   .data('slider');
 });
+
+$('#{$this->escapeHtmlAttr($title)}from, #{$this->escapeHtmlAttr($title)}to').change(function () {
+  $('#{$this->escapeHtmlAttr($title)}dateSlider').slider(
+    'setValue',
+    [
+      Number($('#{$this->escapeHtmlAttr($title)}from').val()) <= 0 ? {$min} : Number($('#{$this->escapeHtmlAttr($title)}from').val()),
+      Number($('#{$this->escapeHtmlAttr($title)}to').val()) <= 0 ? {$max} : Number($('#{$this->escapeHtmlAttr($title)}to').val())
+    ],
+    true
+  );
+});
 JS;
             ?>
             <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
