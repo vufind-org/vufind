@@ -59,7 +59,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      * Constructor
      *
      * @param ThemeInfo $themeInfo Theme information service
-     * @param boolean   $plconfig  Whether or not to concatenate
+     * @param string    $plconfig  Whether or not to concatenate
      */
     public function __construct(ThemeInfo $themeInfo, $plconfig = false)
     {

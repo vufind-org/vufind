@@ -111,7 +111,11 @@ trait ConcatTrait
     protected $concatIndex = null;
 
     /**
+     * Check if config is enamled for this file type
      *
+     * @param string $config Config for current application environment
+     *
+     * @return boolean
      */
     protected function enabledInConfig($config)
     {
