@@ -484,13 +484,7 @@ EOT;
         $searchTerms = $escape($params->getDisplayQuery());
         $searchType = $escape($params->getSearchType());
         $resultCount = $results->getResultTotal();
-        if (preg_match(
-            '/\\\\([^\\\\]+)\\\\[^\\\\]+$/', get_class($results), $matches)
-        ) {
-            $backendId = $matches[1];
-        } else {
-            $backendId = DEFAULT_SEARCH_BACKEND;
-        }
+        $backendId = $results->getOptions()->getSearchClassId();
 
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
