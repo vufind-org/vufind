@@ -111,9 +111,9 @@ class SearchSpecsReader
     }
 
     /**
-     * Returns content of yaml as an array, considers import of other a parent-yaml-file using "@parent_yaml="
+     * Returns content of yaml as an array, considers import of other a parent-yaml-file using the key "@parent_yaml"
      *
-     * @param string $file_contents yaml as a string
+     * @param string $filepath path of the yaml file
      *
      * @return array
      */
@@ -123,16 +123,20 @@ class SearchSpecsReader
         $parent_yaml_array = null;
         $yaml_array = Yaml::parse($file_contents);
 
-        if (array_key_exists("parent_yaml", $yaml_array)) {
-            $parent_yaml_filepath = $yaml_array["parent_yaml"];
+        if (array_key_exists("@parent_yaml", $yaml_array)) {
+            $parent_yaml_filepath = $yaml_array["@parent_yaml"];
             $parent_yaml_filepath = pathinfo($filepath)[dirname] . "/" . $parent_yaml_filepath;
             $parent_yaml_array = Yaml::parse(file_get_contents($parent_yaml_filepath));
         }
 
-        if ($parent_yaml_array !== null) {
-            $yaml_array = array_replace_recursive($parent_yaml_array, $yaml_array);
+        $combined_yaml_array = $parent_yaml_array;
+        if ($combined_yaml_array !== null) {
+            foreach ($yaml_array as $key => $value) {
+                $combined_yaml_array[$key] = $value;
+            }
         }
-        return $yaml_array;
+        else $combined_yaml_array = $yaml_array;
+        return $combined_yaml_array;
     }
 
 }
