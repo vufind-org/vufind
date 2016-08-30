@@ -65,7 +65,7 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     {
         parent::__construct();
         $this->themeInfo = $themeInfo;
-        $this->usePipeline = $plconfig;
+        $this->usePipeline = $this->enabledInConfig($plconfig);
     }
 
     /**

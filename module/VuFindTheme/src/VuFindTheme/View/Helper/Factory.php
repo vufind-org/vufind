@@ -42,7 +42,7 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the HeadLink helper.
+     * Split config and return prefixed setting with current environment.
      *
      * @param ServiceManager $sm Service manager.
      *
@@ -51,10 +51,27 @@ class Factory
     protected static function getPipelineConfig(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $settings = isset($config['Site']['asset_pipeline'])
-            ? array_map('trim', explode(',', $config['Site']['asset_pipeline']))
-            : [];
-        return in_array('*', $settings) || in_array(APPLICATION_ENV, $settings);
+        if (isset($config['Site']['asset_pipeline'])) {
+            if (strpos($config['Site']['asset_pipeline'], ':') !== false) {
+                $settings = array_map(
+                    'trim',
+                    explode(';', $config['Site']['asset_pipeline'])
+                );
+                $default = false;
+                foreach ($settings as $setting) {
+                    $parts = array_map('trim', explode(':', $setting));
+                    if (APPLICATION_ENV === $parts[0]) {
+                        return $parts[1];
+                    }
+                    if (count($parts) < 2 || $parts[0] == '*') {
+                        $default = $setting;
+                    }
+                }
+                return $default;
+            }
+            return trim($config['Site']['asset_pipeline']);
+        }
+        return false;
     }
 
     /**

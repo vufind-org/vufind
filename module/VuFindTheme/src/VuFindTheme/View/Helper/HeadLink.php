@@ -65,7 +65,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     {
         parent::__construct();
         $this->themeInfo = $themeInfo;
-        $this->usePipeline = $plconfig;
+        $this->usePipeline = $this->enabledInConfig($plconfig);
     }
 
     /**
