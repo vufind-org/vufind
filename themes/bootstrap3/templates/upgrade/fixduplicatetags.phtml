@@ -8,12 +8,14 @@
 <h2><?=$this->transEsc('Upgrade VuFind')?></h2>
 <?=$this->flashmessages()?>
 
-<p>Due to a bug in earlier versions of VuFind, you have some duplicate tags
-in your database.  It is recommended that you fix these.  Click Submit to proceed.</p>
+<p>Some duplicate tags have been detected in your database.  This may be due to a bug in an earlier
+version of VuFind, or it may be related to a change to your case_sensitive_tags setting in the [Social]
+section of VuFind.  If you want case-sensitive tags, make sure that the setting is on and try again;
+otherwise, it is recommended that you fix these.  Click Submit to proceed.</p>
 
 <p>If you do not wish to fix the problem at this time, click the Skip button.</p>
 
-<p>See <a target="_jira" href="https://vufind.org/jira/browse/VUFIND-805">https://vufind.org/jira/browse/VUFIND-805</a> for more details.</p>
+<p>See <a target="_jira" href="https://vufind.org/jira/browse/VUFIND-805">https://vufind.org/jira/browse/VUFIND-805</a> and <a target="_jira" href="https://vufind.org/jira/browse/VUFIND-1187">https://vufind.org/jira/browse/VUFIND-1187</a> for more details.</p>
 
 <br />
 
