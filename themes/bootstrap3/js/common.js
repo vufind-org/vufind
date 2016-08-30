@@ -338,8 +338,10 @@ $(document).ready(function commonDocReady() {
 
   // Side facet status saving
   $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
-    if (sessionStorage.getItem('sidefacet-'+item.id)) {
-      item.className = sessionStorage.getItem('sidefacet-'+item.id);
+    var source = $('#result0 .hiddenSource').val();
+    var storedItem = sessionStorage.getItem('sidefacet-'+source+item.id);
+    if (storedItem) {
+      item.className = storedItem;
       if (item.className.indexOf('in') < 0) {
         $(item).siblings('.title').addClass('collapsed');
       } else {
