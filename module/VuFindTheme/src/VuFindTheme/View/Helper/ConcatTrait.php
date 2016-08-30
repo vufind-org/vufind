@@ -192,7 +192,7 @@ trait ConcatTrait
             return $urlHelper('home') . 'themes/' . $details['theme']
                 . '/' . $this->fileType . '/' . $path;
         }
-        // Locate/create concatenated css file
+        // Locate/create concatenated asset file
         $filename = md5($group['key']) . '.min.' . $this->fileType;
         $concatPath = $this->getResourceCacheDir() . $filename;
         if (!file_exists($concatPath)) {
