@@ -484,10 +484,19 @@ EOT;
         $searchTerms = $escape($params->getDisplayQuery());
         $searchType = $escape($params->getSearchType());
         $resultCount = $results->getResultTotal();
+        if (preg_match(
+            '/\\\\([^\\\\]+)\\\\[^\\\\]+$/', get_class($results), $matches)
+        ) {
+            $backendId = $matches[1];
+        } else {
+            $backendId = DEFAULT_SEARCH_BACKEND;
+        }
 
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
-    VuFindPiwikTracker.trackSiteSearch('$searchTerms', '$searchType', $resultCount);
+    VuFindPiwikTracker.trackSiteSearch(
+        '$backendId|$searchTerms', '$searchType', $resultCount
+    );
 
 EOT;
     }
@@ -505,25 +514,24 @@ EOT;
         $escape = $this->getView()->plugin('escapeHtmlAttr');
         $params = $results->getParams();
         $searchTerms = $escape($params->getDisplayQuery());
-        $searchType = 'combined';
+        $searchType = $escape($params->getSearchType());
         $resultCount = 0;
-        $allAjax = true;
         foreach ($combinedResults as $currentSearch) {
-            if (!$currentSearch['ajax']) {
-                $allAjax = false;
-                $resultCount += $currentSearch['view']->results
-                    ->getResultTotal();
+            if ($currentSearch['ajax']) {
+                // Some results fetched via ajax, so report that we don't know the
+                // result count.
+                $resultCount = 'false';
+                break;
             }
-        }
-        if ($allAjax) {
-            // All results fetched via ajax, so report that we don't know the result
-            // count.
-            $resultCount = 'false';
+            $resultCount += $currentSearch['view']->results
+                ->getResultTotal();
         }
 
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
-    VuFindPiwikTracker.trackSiteSearch('$searchTerms', '$searchType', $resultCount);
+    VuFindPiwikTracker.trackSiteSearch(
+        'Combined|$searchTerms', '$searchType', $resultCount
+    );
 
 EOT;
     }
