@@ -93,9 +93,9 @@ class SearchSpecsReader
             // Generate data if not found in cache:
             if ($cache === false || !($results = $cache->getItem($cacheKey))) {
                 $results = file_exists($fullpath)
-                    ? Yaml::parse(file_get_contents($fullpath)) : [];
+                    ? $this->parseYaml($fullpath) : [];
                 if (!empty($local)) {
-                    $localResults = Yaml::parse(file_get_contents($local));
+                    $localResults = $this->parseYaml($local);
                     foreach ($localResults as $key => $value) {
                         $results[$key] = $value;
                     }
@@ -109,4 +109,34 @@ class SearchSpecsReader
 
         return $this->searchSpecs[$filename];
     }
+
+    /**
+     * Returns content of yaml as an array, considers import of other a parent-yaml-file using the key "@parent_yaml"
+     *
+     * @param string $filepath path of the yaml file
+     *
+     * @return array
+     */
+    private function parseYaml($filepath)
+    {
+        $file_contents = file_get_contents($filepath);
+        $parent_yaml_array = null;
+        $yaml_array = Yaml::parse($file_contents);
+
+        if (array_key_exists("@parent_yaml", $yaml_array)) {
+            $parent_yaml_filepath = $yaml_array["@parent_yaml"];
+            $parent_yaml_filepath = pathinfo($filepath)[dirname] . "/" . $parent_yaml_filepath;
+            $parent_yaml_array = Yaml::parse(file_get_contents($parent_yaml_filepath));
+        }
+
+        $combined_yaml_array = $parent_yaml_array;
+        if ($combined_yaml_array !== null) {
+            foreach ($yaml_array as $key => $value) {
+                $combined_yaml_array[$key] = $value;
+            }
+        }
+        else $combined_yaml_array = $yaml_array;
+        return $combined_yaml_array;
+    }
+
 }
