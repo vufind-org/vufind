@@ -134,6 +134,13 @@ class SearchSpecsReader
         $results = (!empty($file) && file_exists($file))
             ? Yaml::parse(file_get_contents($file)) : [];
 
+        // Override default parent with explicitly-defined parent, if present:
+        if (isset($results['@parent_yaml'])) {
+            $defaultParent = $results['@parent_yaml'];
+            // Swallow the directive after processing it:
+            unset($results['@parent_yaml']);
+        }
+
         // Now load in missing sections from parent, if applicable:
         if (null !== $defaultParent) {
             foreach ($this->parseYaml($defaultParent) as $section => $contents) {
