@@ -68,4 +68,50 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
         $specs = $reader->get('notreallyasearchspecs.yaml');
         $this->assertEquals([], $specs);
     }
+
+    /**
+     * Test direct loading of two single files.
+     *
+     * @return void
+     */
+    public function testYamlLoad()
+    {
+        $reader = new SearchSpecsReader();
+        $core = __DIR__ . '/../../../../fixtures/configs/yaml/core.yaml';
+        $local = __DIR__ . '/../../../../fixtures/configs/yaml/local.yaml';
+        $this->assertEquals(
+            [
+                'top' => ['foo' => 'bar'],
+                'bottom' => ['goo' => 'gar'],
+            ],
+            $this->callMethod($reader, 'getFromPaths', [$core])
+        );
+        $this->assertEquals(
+            [
+                'top' => ['foo' => 'xyzzy'],
+                'middle' => ['moo' => 'cow'],
+            ],
+            $this->callMethod($reader, 'getFromPaths', [$local])
+        );
+    }
+
+    /**
+     * Test merging of two files.
+     *
+     * @return void
+     */
+    public function testYamlMerge()
+    {
+        $reader = new SearchSpecsReader();
+        $core = __DIR__ . '/../../../../fixtures/configs/yaml/core.yaml';
+        $local = __DIR__ . '/../../../../fixtures/configs/yaml/local.yaml';
+        $this->assertEquals(
+            [
+                'top' => ['foo' => 'xyzzy'],
+                'middle' => ['moo' => 'cow'],
+                'bottom' => ['goo' => 'gar'],
+            ],
+            $this->callMethod($reader, 'getFromPaths', [$core, $local])
+        );
+    }
 }
