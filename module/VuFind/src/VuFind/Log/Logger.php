@@ -291,6 +291,24 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Given an exception, return a severity level for logging purposes.
+     *
+     * @param \Exception $error Exception to analyze
+     *
+     * @return int
+     */
+    protected function getSeverityFromException($error)
+    {
+        // Treat unexpected or 5xx errors as more severe than 4xx errors.
+        if ($error instanceof \VuFind\Exception\HttpStatusInterface
+            && in_array($error->getHttpStatus(), [403, 404])
+        ) {
+            return BaseLogger::WARN;
+        }
+        return BaseLogger::CRIT;
+    }
+
+    /**
      * Log an exception triggered by ZF2 for administrative purposes.
      *
      * @param \Exception              $error  Exception to log
@@ -350,7 +368,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             5 => $baseError . $detailedServer . $detailedBacktrace
         ];
 
-        $this->log(BaseLogger::CRIT, $errorDetails);
+        $this->log($this->getSeverityFromException($error), $errorDetails);
     }
 
     /**
