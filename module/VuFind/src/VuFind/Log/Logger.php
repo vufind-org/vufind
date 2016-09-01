@@ -320,7 +320,12 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
     {
         // We need to build a variety of pieces so we can supply
         // information at five different verbosity levels:
-        $baseError = $error->getMessage();
+        $baseError = get_class($error) . ' : ' . $error->getMessage();
+        $prev = $error->getPrevious();
+        while ($prev) {
+            $baseError .= ' ; ' . get_class($prev) . ' : ' . $prev->getMessage();
+            $prev = $prev->getPrevious();
+        }
         $referer = $server->get('HTTP_REFERER', 'none');
         $basicServer
             = '(Server: IP = ' . $server->get('REMOTE_ADDR') . ', '
