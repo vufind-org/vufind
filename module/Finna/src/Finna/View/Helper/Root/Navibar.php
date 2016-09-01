@@ -359,8 +359,9 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
 
         foreach ($sortDataOrder as $index => $menuKey) {
             $sortDataProcessed[$menuKey] = $sortData[$menuKey];
+            unset($sortData[$menuKey]);
         }
-        $sortData = $sortDataProcessed;
+        $sortData = array_merge($sortDataProcessed, $sortData);
 
         return ['menuData' => $menuData, 'sortData' => $sortData];
     }
