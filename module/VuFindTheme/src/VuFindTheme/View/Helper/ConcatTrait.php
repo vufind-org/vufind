@@ -187,10 +187,9 @@ trait ConcatTrait
      *
      * @return string
      */
-    protected function getResourceCacheDir($fullDiskPath = true)
+    protected function getResourceCacheDir()
     {
-        return ($fullDiskPath ? $this->themeInfo->getBaseDir() : '')
-            . '/root/' . $this->fileType . '/concat/';
+        return $this->themeInfo->getBaseDir() . '/../local/cache/public/';
     }
 
     /**
@@ -230,8 +229,7 @@ trait ConcatTrait
             $minifier->minify($concatPath);
         }
 
-        return $urlHelper('home') . 'themes'
-            . $this->getResourceCacheDir(false) . $filename;
+        return $urlHelper('home') . 'cache/' . $filename;
     }
 
     /**

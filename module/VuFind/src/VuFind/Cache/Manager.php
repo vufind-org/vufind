@@ -92,6 +92,7 @@ class Manager
         foreach (['config', 'cover', 'language', 'object'] as $cache) {
             $this->createFileCache($cache, $cacheBase . $cache . 's');
         }
+        $this->createFileCache('public', $cacheBase . 'public');
 
         // Set up search specs cache based on config settings:
         $searchCacheType = isset($searchConfig->Cache->type)
