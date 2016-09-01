@@ -119,6 +119,27 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             $this->addWriters($writer, $filters);
         }
 
+        // Activate slack logging, if applicable:
+        if (isset($config->Logging->slack) && isset($config->Logging->slackurl)) {
+            // Get config
+            list($channel, $error_types) = explode(':', $config->Logging->slack);
+            if ($error_types == null) {
+                $error_types = $channel;
+                $channel = null;
+            }
+            $filters = explode(',', $error_types);
+            // Make Writers
+            $writer = new Writer\Slack(
+                $config->Logging->slackurl,
+                $this->getServiceLocator()->get('VuFind\Http')->createClient(),
+                $channel
+            );
+            $writer->setContentType('application/json');
+            $formatter = new \Zend\Log\Formatter\Simple("%priorityName%: %message%");
+            $writer->setFormatter($formatter);
+            $this->addWriters($writer, $filters);
+        }
+
         // Null (no-op) writer to avoid errors
         if (count($this->writers) == 0) {
             $nullWriter = 'Zend\Log\Writer\Noop';
