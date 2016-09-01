@@ -93,7 +93,7 @@ class Post extends \Zend\Log\Writer\AbstractWriter
     /**
      * Set verbosity
      *
-     * @param integer $verb verbosity setting
+     * @param integer $type content type string
      *
      * @return void
      */
