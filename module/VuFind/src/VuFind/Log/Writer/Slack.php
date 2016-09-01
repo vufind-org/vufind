@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Log\Writer;
+use Zend\Http\Client;
 
 /**
  * This class extends the Zend Logging to send errors to Slack
@@ -48,11 +49,11 @@ class Slack extends Post
     /**
      * Constructor
      *
-     * @param string            $url     URL to open as a stream
-     * @param string            $channel Slack channel
-     * @param \Zend\Http\Client $client  Pre-configured http client
+     * @param string $url     URL to open as a stream
+     * @param Client $client  Pre-configured http client
+     * @param string $channel Slack channel
      */
-    public function __construct($url, $channel, $client)
+    public function __construct($url, Client $client, $channel = '#vufind_log')
     {
         $this->channel = $channel;
         parent::__construct($url, $client);

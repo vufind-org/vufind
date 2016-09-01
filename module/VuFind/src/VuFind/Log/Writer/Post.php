@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Log\Writer;
+use Zend\Http\Client;
 
 /**
  * This class extends the Zend Logging to sent POST messages over HTTP
@@ -69,10 +70,10 @@ class Post extends \Zend\Log\Writer\AbstractWriter
     /**
      * Constructor
      *
-     * @param string            $url    URL to open as a stream
-     * @param \Zend\Http\Client $client Pre-configured http client
+     * @param string $url    URL to open as a stream
+     * @param Client $client Pre-configured http client
      */
-    public function __construct($url, $client)
+    public function __construct($url, Client $client)
     {
         $this->url = $url;
         $this->client = $client;
