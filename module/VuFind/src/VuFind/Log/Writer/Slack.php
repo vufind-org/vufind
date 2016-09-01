@@ -44,7 +44,14 @@ class Slack extends Post
      *
      * @var string
      */
-    protected $channel;
+    protected $channel = '#vufind_log';
+
+    /**
+     * The slack username messages are posted under.
+     *
+     * @var string
+     */
+    protected $username = 'VuFind Log';
 
     /**
      * Constructor
@@ -53,9 +60,14 @@ class Slack extends Post
      * @param Client $client  Pre-configured http client
      * @param string $channel Slack channel
      */
-    public function __construct($url, Client $client, $channel = '#vufind_log')
+    public function __construct($url, Client $client, $channel = null, $name = null)
     {
-        $this->channel = $channel;
+        if ($channel) {
+            $this->channel = $channel;
+        }
+        if ($name) {
+            $this->username = $name;
+        }
         parent::__construct($url, $client);
     }
 
@@ -79,12 +91,11 @@ class Slack extends Post
             ':beetle: '              // DEBUG
         ];
         $data = [
+            'channel' => $this->channel,
+            'username' => $this->username,
             'text' => $icons[$event['priority']] . $this->formatter->format($event)
                 . PHP_EOL,
         ];
-        if ($this->channel) {
-            $data['channel'] = $this->channel;
-        }
         return json_encode($data);
     }
 }
