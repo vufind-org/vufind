@@ -68,7 +68,20 @@ class Slack extends Post
      */
     protected function getBody($event)
     {
-        $data = ['text' => $this->formatter->format($event) . PHP_EOL];
+        $icons = [
+            ':fire: :fire: :fire: ', // EMERG
+            ':rotating_light: ',     // ALERT
+            ':red_circle: ',         // CRIT
+            ':exclamation: ',        // ERR
+            ':warning: ',            // WARN
+            ':speech_balloon: ',     // NOTICE
+            ':information_source: ', // INFO
+            ':beetle: '              // DEBUG
+        ];
+        $data = [
+            'text' => $icons[$event['priority']] . $this->formatter->format($event)
+                . PHP_EOL,
+        ];
         if ($this->channel) {
             $data['channel'] = $this->channel;
         }

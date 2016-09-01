@@ -135,7 +135,9 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
                 $channel
             );
             $writer->setContentType('application/json');
-            $formatter = new \Zend\Log\Formatter\Simple("%priorityName%: %message%");
+            $formatter = new \Zend\Log\Formatter\Simple(
+                "*%priorityName%*: %message%"
+            );
             $writer->setFormatter($formatter);
             $this->addWriters($writer, $filters);
         }
