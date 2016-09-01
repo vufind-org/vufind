@@ -20,14 +20,16 @@
     <? $this->headScript()->appendFile("openurl.js"); ?>
     <? $haveRecommendationHolder = true; ?>
   <? endif; ?>
-  <div id="result<?=$i++ ?>" class="row result clearfix">
-    <div class="col-xs-1 hidden-print<? if ($showCheckboxes): ?> checkbox<? endif; ?> sr-only">
-      <label>
-        <? if ($showCheckboxes): ?>
+  <div id="result<?=$i++ ?>" class="row result clearfix<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
+    <div class="checkbox hidden-print sr-only">
+      <? if ($showCheckboxes): ?>
+        <label>
           <?=$this->record($current)->getCheckbox()?>
-        <? endif; ?>
-        <?=$this->transEsc('Search Result');?> <?=$recordNumber?>
-      </label>
+          <?=$this->transEsc('Search Result');?> <?=$recordNumber ?>
+        </label>
+      <? else: ?>
+        <?=$this->transEsc('Search Result');?> <?=$recordNumber ?>
+      <? endif; ?>
     </div>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>

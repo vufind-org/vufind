@@ -1,9 +1,18 @@
 <!-- START of: finna - RecordDriver/SolrLido/result-list.phtml -->
 <?
   $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
-?>
+  $img = $this->recordImage($this->record($this->driver));
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  if ($img):
+    ob_start(); ?>
+    <?=$img->render('list', array('medium' => array('w' => 300, 'h' => 300))) ?>
+    <? $thumbnail = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+<? endif;?>
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?> list-view">
-    <div class="col-xs-9 <?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-8 col-sm-push-3 col-md-9 col-md-push-2' ?>">
+  <div class="media">
+    <div class="media-body col-xs-9 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-8 col-sm-push-3 col-md-9 col-md-push-2' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-10' : 'col-sm-8 col-md-9' ?><? endif; ?>">
       <div>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
         <?
@@ -56,11 +65,12 @@
       <? endif; ?>
 
     </div>
-    <div class="col-xs-3 <?= $combinedView ? 'col-sm-2 col-sm-pull-10' : 'col-sm-3 col-sm-pull-8 col-md-2 col-md-pull-9' ?> resultThumb">
+    <div class="media-<?=$thumbnailAlignment ?> col-xs-3 <? if ($thumbnailAlignment == 'left'): ?><?= $combinedView ? 'col-sm-2 col-sm-pull-10' : 'col-sm-3 col-sm-pull-8 col-md-2 col-md-pull-9' ?><? elseif ($thumbnailAlignment == 'right'): ?><?= $combinedView ? 'col-sm-2' : 'col-sm-3 col-md-2' ?><? endif; ?> resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
-      <? $img = $this->recordImage($this->record($this->driver))?>
-      <?= $img->render('list', array('medium' => array('w' => 300, 'h' => 300))) ?>
+    <? if ($thumbnail): ?>
+      <?=$thumbnail ?>
+    <? endif; ?>
     </div>
     <div class="col-xs-12 <?= $combinedView ? 'col-sm-10 col-sm-push-2' : 'col-sm-1' ?> hidden-print add-to-favorite-col">
       <? /* Display qrcode if appropriate: */ ?>
@@ -91,5 +101,6 @@
         <strong><?=$this->transEsc("Saved in")?>:</strong>
       </div>
     </div>
+  </div>
 </div>
 <!-- END of: finna - RecordDriver/SolrLido/result-list.phtml -->

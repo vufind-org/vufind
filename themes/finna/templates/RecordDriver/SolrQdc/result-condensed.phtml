@@ -1,4 +1,14 @@
 <!-- START of: finna - RecordDriver/SolrQdc/result-condensed.phtml -->
+<?
+  $img = $this->recordImage($this->record($this->driver));
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  if ($img):
+    ob_start(); ?>
+    <?=$img->render('list', array('medium' => array('w' => 250))) ?>
+    <? $thumbnail = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+<? endif;?>
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view" id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
   <div class="col-xs-12 condensed-collapse-toggle">
       <div class="col-sm-6 col-md-8">
@@ -89,8 +99,8 @@
       </div>
   </div>
   <div class="clearfix"></div>
-  <div class="condensed-collapse-data col-xs-12">
-    <div class="col-xs-9 col-sm-push-2">
+  <div class="media condensed-collapse-data col-xs-12">
+    <div class="media-body col-xs-9<? if ($thumbnailAlignment == 'left'): ?> col-sm-push-2<? endif; ?>">
         <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
             <div class="resultClassification">
               <?=$this->transEsc('Classification') ?>:
@@ -158,11 +168,12 @@
     </div>
 
   </div>
-  <div class="col-xs-3 col-sm-2 col-sm-pull-9 resultThumb">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
-      <? $img = $this->recordImage($this->record($this->driver))?>
-      <?= $img->render('list', array('medium' => array('w' => 250))) ?>
+  <div class="media-<?=$thumbnailAlignment ?> col-xs-3 col-sm-2<? if ($thumbnailAlignment == 'left'): ?> col-sm-pull-9<? endif; ?> resultThumb">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+    <? if ($thumbnail): ?>
+      <?=$thumbnail ?>
+    <? endif; ?>
   </div>
 
   <? endif; ?>

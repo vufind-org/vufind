@@ -1,16 +1,20 @@
 <!-- START of: finna - RecordDriver/SolrQdc/core.phtml -->
-<? $this->headScript()->appendFile("finna-record.js"); ?>
-<div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-  <div class="col-sm-3 col-md-2">
+<?
+  $img = $this->recordImage($this->record($this->driver));
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  ob_start(); ?>
+  <div class="media-<?=$thumbnailAlignment ?> col-sm-3 col-md-2">
     <div class="row">
       <div class="col-xs-12 image-information">
         <div class="cover-wrapper">
           <? /* Display thumbnail if appropriate: */ ?>
-          <? $img = $this->recordImage($this->record($this->driver)) ?>
-          <?= $img->render('record', array('small' => array('w' => 50, 'h' => 50), 'medium' => array('w' => 1200, 'h' => 1200))) ?>
+          <? if ($img): ?>
+            <?= $img->render('record', array('small' => array('w' => 50, 'h' => 50), 'medium' => array('w' => 1200, 'h' => 1200))) ?>
+          <? endif;?>
           <? /* Display qrcode if appropriate: */ ?>
           <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
-          <? if($QRCode): ?>
+          <? if ($QRCode): ?>
             <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
           <? endif; ?>
         </div>
@@ -41,8 +45,14 @@
     <? endif; ?>
 
   </div>
-
-  <div class="col-sm-9 col-md-10 record-information">
+  <? $thumbnail = ob_get_contents(); ?>
+<? ob_end_clean(); ?>
+<? $this->headScript()->appendFile("finna-record.js"); ?>
+<div class="media row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+  <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?=$thumbnail ?>
+  <? endif; ?>
+  <div class="media-body col-sm-9 col-md-10 record-information">
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
     <div class="description">
       <span id="description_text" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>">
@@ -350,5 +360,8 @@
     </div>
     <? endif; ?>
   </div>
+  <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <?=$thumbnail ?>
+  <? endif; ?>
 </div>
 <!-- END of: finna - RecordDriver/SolrQdc/core.phtml -->
