@@ -38,7 +38,12 @@ namespace VuFind\Log\Writer;
  */
 class Slack extends Post
 {
-    protected $channel = null;
+    /**
+     * The slack channel that should receive messages.
+     *
+     * @var string
+     */
+    protected $channel;
 
     /**
      * Constructor
