@@ -187,11 +187,15 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * Uses MoreLikeThis Request Component or MoreLikeThis Handler
      *
+     * @param string   $id     ID of given record (not currently used, but
+     * retained for backward compatibility / extensibility).
      * @param ParamBag $params Parameters
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function similar(ParamBag $params)
+    public function similar($id, ParamBag $params)
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);

@@ -219,7 +219,7 @@ class Backend extends AbstractBackend
         $this->injectResponseWriter($params);
 
         $params->mergeWith($this->getSimilarBuilder()->build($id, $params));
-        $response   = $this->connector->similar($params);
+        $response   = $this->connector->similar($id, $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
