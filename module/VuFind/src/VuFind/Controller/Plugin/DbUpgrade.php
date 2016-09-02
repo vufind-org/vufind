@@ -191,6 +191,89 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
+     * Retrieve (and statically cache) table status information.
+     *
+     * @return array
+     */
+    public function getTableStatus()
+    {
+        static $status = false;
+        if (!$status) {
+            $status = $this->getAdapter()
+                ->query('SHOW TABLE STATUS', DbAdapter::QUERY_MODE_EXECUTE)
+                ->toArray();
+        }
+        return $status;
+    }
+
+    /**
+     * Check whether the actual table collation matches the expected table
+     * collation; return false if there is no problem, the name of the desired
+     * collation otherwise.
+     *
+     * @param array $table Information about a table (from getTableStatus())
+     *
+     * @return bool|string
+     */
+    protected function getCollationProblemsForTable($table)
+    {
+        // For now, we'll only detect problems in utf8-encoded tables; if the
+        // user has a Latin1 database, they probably have more complex issues to
+        // work through anyway.
+        preg_match_all(
+            '/CHARSET=utf8 COLLATE (\w+)/', $this->dbCommands[$table['Name']][0],
+            $matches
+        );
+        if (isset($matches[1][0])
+            && strtolower($matches[1][0]) != strtolower($table['Collation'])
+        ) {
+            return $matches[1][0];
+        }
+        return false;
+    }
+
+    /**
+     * Get information on incorrectly collated tables/columns. Return value is
+     * associative array of table name => correct collation value.
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function getCollationProblems()
+    {
+        // Load details:
+        $retVal = [];
+        foreach ($this->getTableStatus() as $current) {
+            if ($problem = $this->getCollationProblemsForTable($current)) {
+                $retVal[$current['Name']] = $problem;
+            }
+        }
+        return $retVal;
+    }
+
+    /**
+     * Fix collation problems based on the output of getCollationProblems().
+     *
+     * @param array $tables Output of getCollationProblems()
+     * @param bool  $logsql Should we return the SQL as a string rather than
+     * execute it?
+     *
+     * @throws \Exception
+     * @return string       SQL if $logsql is true, empty string otherwise
+     */
+    public function fixCollationProblems($tables, $logsql = false)
+    {
+        $sqlcommands = '';
+        foreach ($tables as $table => $newCollation) {
+            // Adjust default table collation:
+            $sql = "ALTER TABLE `$table` CONVERT TO CHARACTER SET utf8 "
+                . "COLLATE $newCollation;";
+            $sqlcommands .= $this->query($sql, $logsql);
+        }
+        return $sqlcommands;
+    }
+
+    /**
      * Get information on incorrectly encoded tables/columns.
      *
      * @throws \Exception
@@ -198,16 +281,12 @@ class DbUpgrade extends AbstractPlugin
      */
     public function getEncodingProblems()
     {
-        // Get table summary:
-        $sql = "SHOW TABLE STATUS";
-        $results = $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
-
         // Load details:
         $retVal = [];
-        foreach ($results as $current) {
-            if (strtolower(substr($current->Collation, 0, 6)) == 'latin1') {
-                $retVal[$current->Name]
-                    = $this->getEncodingProblemsForTable($current->Name);
+        foreach ($this->getTableStatus() as $current) {
+            if (strtolower(substr($current['Collation'], 0, 6)) == 'latin1') {
+                $retVal[$current['Name']]
+                    = $this->getEncodingProblemsForTable($current['Name']);
             }
         }
 

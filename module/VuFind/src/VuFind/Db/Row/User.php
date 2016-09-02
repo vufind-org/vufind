@@ -140,9 +140,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getCatPassword()
     {
-        return $this->passwordEncryptionEnabled()
-            ? $this->encryptOrDecrypt($this->cat_pass_enc, false)
-            : (isset($this->cat_password) ? $this->cat_password : null);
+        if ($this->passwordEncryptionEnabled()) {
+            return isset($this->cat_pass_enc)
+                ? $this->encryptOrDecrypt($this->cat_pass_enc, false) : null;
+        }
+        return isset($this->cat_password) ? $this->cat_password : null;
     }
 
     /**
@@ -229,51 +231,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     public function getTags($resourceId = null, $listId = null,
         $source = DEFAULT_SEARCH_BACKEND
     ) {
-        $userId = $this->id;
-        $callback = function ($select) use ($userId, $resourceId, $listId, $source) {
-            $select->columns(
-                [
-                    'id' => new Expression(
-                        'min(?)', ['tags.id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ),
-                    'tag',
-                    'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', ['rt.resource_id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    )
-                ]
-            );
-            $select->join(
-                ['rt' => 'resource_tags'], 'tags.id = rt.tag_id', []
-            );
-            $select->join(
-                ['r' => 'resource'], 'rt.resource_id = r.id', []
-            );
-            $select->join(
-                ['ur' => 'user_resource'], 'r.id = ur.resource_id', []
-            );
-            $select->group(['tag'])
-                ->order(['tag']);
-
-            $select->where->equalTo('ur.user_id', $userId)
-                ->equalTo('rt.user_id', $userId)
-                ->equalTo(
-                    'ur.list_id', 'rt.list_id',
-                    Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER
-                )
-                ->equalTo('r.source', $source);
-
-            if (!is_null($resourceId)) {
-                $select->where->equalTo('r.record_id', $resourceId);
-            }
-            if (!is_null($listId)) {
-                $select->where->equalTo('rt.list_id', $listId);
-            }
-        };
-
-        $table = $this->getDbTable('Tags');
-        return $table->select($callback);
+        return $this->getDbTable('Tags')
+            ->getForUser($this->id, $resourceId, $listId, $source);
     }
 
     /**
@@ -653,6 +612,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             $list = $table->getExisting($current->id);
             $list->delete($this, true);
         }
+        $resourceTags = $this->getDbTable('ResourceTags');
+        $resourceTags->destroyLinks(null, $this->id);
 
         // Remove the user itself:
         return parent::delete();
