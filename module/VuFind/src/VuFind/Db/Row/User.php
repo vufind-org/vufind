@@ -140,9 +140,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getCatPassword()
     {
-        return $this->passwordEncryptionEnabled()
-            ? $this->encryptOrDecrypt($this->cat_pass_enc, false)
-            : (isset($this->cat_password) ? $this->cat_password : null);
+        if ($this->passwordEncryptionEnabled()) {
+            return isset($this->cat_pass_enc)
+                ? $this->encryptOrDecrypt($this->cat_pass_enc, false) : null;
+        }
+        return isset($this->cat_password) ? $this->cat_password : null;
     }
 
     /**
