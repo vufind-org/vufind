@@ -39,6 +39,8 @@ use Zend\Http\Client;
  */
 class Post extends \Zend\Log\Writer\AbstractWriter
 {
+    use VerbosityTrait;
+
     /**
      * Holds the verbosity level
      *
@@ -52,13 +54,6 @@ class Post extends \Zend\Log\Writer\AbstractWriter
      * @var \Zend\Http\Client
      */
     protected $client = null;
-
-    /**
-     * Holds the verbosity level
-     *
-     * @var int
-     */
-    protected $verbosity = 1;
 
     /**
      * Content type
@@ -77,18 +72,6 @@ class Post extends \Zend\Log\Writer\AbstractWriter
     {
         $this->url = $url;
         $this->client = $client;
-    }
-
-    /**
-     * Set verbosity
-     *
-     * @param integer $verb verbosity setting
-     *
-     * @return void
-     */
-    public function setVerbosity($verb)
-    {
-        $this->verbosity = $verb;
     }
 
     /**
@@ -134,7 +117,7 @@ class Post extends \Zend\Log\Writer\AbstractWriter
         $this->client->setUri($this->url);
         $this->client->setMethod('POST');
         $this->client->setEncType($this->contentType);
-        $this->client->setRawBody($this->getBody($event));
+        $this->client->setRawBody($this->getBody($this->applyVerbosity($event)));
         // Send
         $response = $this->client->send();
     }
