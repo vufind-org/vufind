@@ -61,21 +61,21 @@ class SimilarBuilder implements SimilarBuilderInterface
      *
      * @var bool
      */
-    protected $useMLTHandler = false;
+    protected $useHandler = false;
 
     /**
      * MoreLikeThis Handler parameters
      *
      * @var string
      */
-    protected $mltHandlerParams = '';
+    protected $handlerParams = '';
 
     /**
      * Number of similar records to retrieve
      *
      * @var int
      */
-    protected $mltCount = 5;
+    protected $count = 5;
 
     /**
      * Constructor.
@@ -95,11 +95,11 @@ class SimilarBuilder implements SimilarBuilderInterface
             if (isset($mlt->useMoreLikeThisHandler)
                 && $mlt->useMoreLikeThisHandler
             ) {
-                $this->useMLTHandler = true;
-                $this->mltHandlerParams = isset($mlt->params) ? $mlt->params : '';
+                $this->useHandler = true;
+                $this->handlerParams = isset($mlt->params) ? $mlt->params : '';
             }
             if (isset($mlt->count)) {
-                $this->mltCount = $mlt->count;
+                $this->count = $mlt->count;
             }
         }
     }
@@ -116,9 +116,9 @@ class SimilarBuilder implements SimilarBuilderInterface
     public function build($id)
     {
         $params = new ParamBag();
-        if ($this->useMLTHandler) {
-            $mltParams = $this->mltHandlerParams
-                ? $this->mltHandlerParams
+        if ($this->useHandler) {
+            $mltParams = $this->handlerParams
+                ? $this->handlerParams
                 : 'qf=title,title_short,callnumber-label,topic,language,author,'
                     . 'publishDate mintf=1 mindf=1';
             $params->set('q', sprintf('{!mlt %s}%s', $mltParams, $id));
@@ -129,7 +129,7 @@ class SimilarBuilder implements SimilarBuilderInterface
             $params->set('qt', 'morelikethis');
         }
         if (null === $params->get('rows')) {
-            $params->set('rows', $this->mltCount);
+            $params->set('rows', $this->count);
         }
         return $params;
     }
