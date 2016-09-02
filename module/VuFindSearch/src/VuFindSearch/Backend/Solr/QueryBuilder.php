@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -120,10 +120,13 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $params = new ParamBag();
 
-        // Add spelling query if applicable -- note that we mus set this up before
+        // Add spelling query if applicable -- note that we must set this up before
         // we process the main query in order to avoid unwanted extra syntax:
         if ($this->createSpellingQuery) {
-            $params->set('spellcheck.q', $query->getAllTerms());
+            $params->set(
+                'spellcheck.q',
+                $this->getLuceneHelper()->extractSearchTerms($query->getAllTerms())
+            );
         }
 
         if ($query instanceof QueryGroup) {
