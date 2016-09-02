@@ -54,6 +54,22 @@ class Slack extends Post
     protected $username = 'VuFind Log';
 
     /**
+     * Icons that appear at the start of log messages in Slack, by severity
+     *
+     * @var array
+     */
+    protected $messageIcons = [
+        ':fire: :fire: :fire: ', // EMERG
+        ':rotating_light: ',     // ALERT
+        ':red_circle: ',         // CRIT
+        ':exclamation: ',        // ERR
+        ':warning: ',            // WARN
+        ':speech_balloon: ',     // NOTICE
+        ':information_source: ', // INFO
+        ':beetle: '              // DEBUG
+    ];
+
+    /**
      * Constructor
      *
      * @param string $url     URL to open as a stream
@@ -81,21 +97,11 @@ class Slack extends Post
      */
     protected function getBody($event)
     {
-        $icons = [
-            ':fire: :fire: :fire: ', // EMERG
-            ':rotating_light: ',     // ALERT
-            ':red_circle: ',         // CRIT
-            ':exclamation: ',        // ERR
-            ':warning: ',            // WARN
-            ':speech_balloon: ',     // NOTICE
-            ':information_source: ', // INFO
-            ':beetle: '              // DEBUG
-        ];
         $data = [
             'channel' => $this->channel,
             'username' => $this->username,
-            'text' => $icons[$event['priority']] . $this->formatter->format($event)
-                . PHP_EOL,
+            'text' => $this->messageIcons[$event['priority']]
+                . $this->formatter->format($event) . PHP_EOL
         ];
         return json_encode($data);
     }
