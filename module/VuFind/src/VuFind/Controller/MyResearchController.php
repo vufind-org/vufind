@@ -919,7 +919,7 @@ class MyResearchController extends AbstractBase
                 $catalog, $current, $cancelStatus
             );
             if ($cancelStatus && $cancelStatus['function'] != "getCancelHoldLink"
-                && !empty($current['cancel_details'])
+                && isset($current['cancel_details'])
             ) {
                 // Enable cancel form if necessary:
                 $view->cancelForm = true;
