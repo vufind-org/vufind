@@ -59,7 +59,7 @@ class Slack extends Post
      * @param string $url     URL to open as a stream
      * @param Client $client  Pre-configured http client
      * @param array  $options Optional settings (may contain 'channel' for the
-     * Slack channel to use and/or 'name' for the username messages are posted under
+     * Slack channel to use and/or 'name' for the username messages are posted under)
      */
     public function __construct($url, Client $client, array $options = [])
     {
