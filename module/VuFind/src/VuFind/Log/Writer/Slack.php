@@ -61,7 +61,7 @@ class Slack extends Post
      * @param string $channel Slack channel
      * @param string $name    Username messages are posted under
      */
-    public function __construct(Client $client, $options)
+    public function __construct($url, Client $client, $options)
     {
         if (isset($options['channel'])) {
             $this->channel = $options['channel'];
@@ -69,7 +69,7 @@ class Slack extends Post
         if (isset($options['name'])) {
             $this->username = $options['name'];
         }
-        parent::__construct($options['url'], $client);
+        parent::__construct($url, $client);
     }
 
     /**
