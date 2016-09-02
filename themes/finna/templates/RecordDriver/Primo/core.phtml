@@ -30,9 +30,7 @@
     <? if (!empty($urls) || $openUrlActive): ?>
       <? $formats = $this->driver->getFormats(); ?>
       <div class="primo-available-online-record">
-        <? foreach ($urls as $current): ?>
-          <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc('format_PCI_' . strtolower(end($formats)), null, end($formats)) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
-        <? endforeach; ?>
+        <?=$this->partial('RecordDriver/Primo/online-url-list.phtml', ['driver' => $this->driver, 'urls' => $urls])?>
         <? if ($openUrlActive): ?>
           <?=$openUrl->renderTemplate()?>
         <? endif; ?>

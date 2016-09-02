@@ -4,24 +4,13 @@ $openUrl = $this->openUrl($this->driver, 'results');
 $openUrlActive = $openUrl->isActive();
 // Account for replace_other_urls setting
 $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
-
-$fulltextLinkAvailable = false;
-foreach ($urls as $url) {
-  if (!$url['citation']) {
-    $fulltextLinkAvailable = true;
-    break;
-  }
-}
 $fulltextAvailable = $this->driver->getFulltextAvailable();
 ?>
 <div class="primo-available-online<?= $fulltextAvailable ? ' fulltext-available' : ''?>">
   <? if ($openUrlActive || !empty($urls)): ?>
     <div class="heading <?=!empty($urls) ? '' : 'hidden'?>"><strong><?=$this->transEsc('Available Online')?></strong></div>
     <? if(!$this->driver->isCollection()): ?>
-      <? foreach ($urls as $current): ?>
-        <? $format = $this->driver->getFormats(); $format = end($format); ?>
-        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] && ($fulltextLinkAvailable || !$fulltextAvailable) ? $this->transEsc('Citation') : $this->transEsc('format_PCI_' . strtolower($format), null, $format) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
-      <? endforeach; ?>
+    <?=$this->partial('RecordDriver/Primo/online-url-list.phtml', ['driver' => $this->driver, 'urls' => $urls])?>
     <? endif; ?>
   <? endif; ?>
 

@@ -133,6 +133,10 @@ class Primo extends \VuFind\RecordDriver\Primo
      */
     public function getURLs()
     {
+        if (!$this->showOnlineURLs()) {
+            return [];
+        }
+
         $urls = [];
 
         $rec = $this->getSimpleXML();
@@ -154,6 +158,76 @@ class Primo extends \VuFind\RecordDriver\Primo
             }
         }
         return $urls;
+    }
+
+    /**
+     * Check if Primo online URLs (local links from record metadata) should be
+     * displayed for this record.
+     *
+     * @return boolean
+     */
+    protected function showOnlineURLs()
+    {
+        if (!isset($this->recordConfig->OnlineURLs)) {
+            return true;
+        }
+
+        $rec = $this->getSimpleXML();
+        if (!isset($rec->search->sourceid)) {
+            return true;
+        }
+
+        $fulltextAvailable = $this->getFulltextAvailable();
+
+        $config = $this->recordConfig->OnlineURLs;
+        $hideFromSource = isset($config->hideFromSource)
+            ? $config->hideFromSource->toArray() : [];
+        $showFromSource = isset($config->showFromSource)
+            ? $config->showFromSource->toArray() : [];
+
+        if ($fulltextAvailable) {
+            if ($config->hideFromSourceWithFulltext) {
+                $hideFromSourceWithFulltext
+                    = $config->hideFromSourceWithFulltext->toArray();
+                if (!is_array($hideFromSourceWithFulltext)) {
+                    $hideFromSourceWithFulltext = [$hideFromSourceWithFulltext];
+                }
+                $hideFromSource = array_merge(
+                    $hideFromSource, $hideFromSourceWithFulltext
+                );
+            }
+
+            if ($config->showFromSourceWithFulltext) {
+                $showFromSourceWithFulltext
+                    = $config->showFromSourceWithFulltext->toArray();
+                if (!is_array($showFromSourceWithFulltext)) {
+                    $showFromSourceWithFulltext = [$showFromSourceWithFulltext];
+                }
+                $showFromSource = array_merge(
+                    $showFromSource, $showFromSourceWithFulltext
+                );
+            }
+        }
+
+        if (!$hideFromSource && !$showFromSource) {
+            return true;
+        }
+
+        $source = $rec->search->sourceid;
+
+        if ($showFromSource) {
+            if (!count(array_intersect($showFromSource, ['*', $source]))) {
+                return false;
+            }
+        }
+
+        if ($hideFromSource) {
+            if (count(array_intersect($hideFromSource, ['*', $source]))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

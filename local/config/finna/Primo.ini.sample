@@ -231,3 +231,31 @@ enabled = 1
 ; which is handled separately and overrides the pcAvailability checkbox facet. 
 [HiddenFilters]
 pcAvailability = true
+
+; Settings for showing or hiding online URLs for records from selected sources.
+; Record source is read from record > search > sourceid. Use '*' as a wild card 
+; to indicate all sources. If no filters are defined, URLs are shown for all records.
+;
+; showFromSourcesWithFulltext/hideFromSourcesWithFulltext -lists are used when the 
+; record contains a fulltext link. Othervise showFromSources/hideFromSources.
+;
+; Note: filtering only affects local URLs (from record metadata). SFX-resolver links 
+; are not filtered.
+[OnlineURLs]
+
+; List of sources whose URLs are shown.
+;showFromSource[] = 'wiki'
+
+; List of sources whose URLs are shown for records with a fulltext link.
+;showFromSourceWithFulltext[] = '*'
+;showFromSourceWithFulltext[] = 'sciversesciencedirect_elsevier'
+
+; List of sources whose URLs are not shown.
+;hideFromSource[] = '*'
+;hideFromSource[] = 'eric'
+;hideFromSource[] = 'wiki'
+
+; List of sources whose URLs are not shown for records with a fulltext link.
+;hideFromSourceWithFulltext[] = '*'
+;hideFromSourceWithFulltext[] = 'wiki'
+;hideFromSourceWithFulltext[] = 'sciversesciencedirect_elsevier'
