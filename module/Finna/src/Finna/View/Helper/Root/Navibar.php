@@ -39,32 +39,11 @@ namespace Finna\View\Helper\Root;
 class Navibar extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * Browse view helper
+     * View helpers
      *
-     * @var Zend\View\Helper\Url
+     * @var array
      */
-    protected $browseHelper;
-
-    /**
-     * MetaLib view helper
-     *
-     * @var Zend\View\Helper\Url
-     */
-    protected $metaLibHelper;
-
-    /**
-     * Primo view helper
-     *
-     * @var Zend\View\Helper\Url
-     */
-    protected $primoHelper;
-
-    /**
-     * Url view helper
-     *
-     * @var Zend\View\Helper\Url
-     */
-    protected $urlHelper;
+    protected $viewHelpers = [];
 
     /**
      * Menu configuration
@@ -133,10 +112,6 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     public function getMenuItems($lng)
     {
         if (!$this->menuItems || $lng != $this->language) {
-            $this->browseHelper = $this->getView()->plugin('browse');
-            $this->metaLibHelper = $this->getView()->plugin('metalib');
-            $this->primoHelper = $this->getView()->plugin('primo');
-            $this->urlHelper = $this->getView()->plugin('url');
             $this->language = $lng;
             $this->parseMenuConfig($lng);
         }
@@ -156,11 +131,18 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
             return $data['url'];
         }
 
-        if (isset($data['routeParams'])) {
-            return $this->urlHelper->__invoke($data['url'], $data['routeParams']);
-        } else {
-            return $this->urlHelper->__invoke($data['url']);
+        try {
+            if (isset($data['routeParams'])) {
+                return $this->getViewHelper('url')->__invoke(
+                    $data['url'], $data['routeParams']
+                );
+            } else {
+                return $this->getViewHelper('url')->__invoke($data['url']);
+            }
+        } catch (\Exception $e) {
         }
+
+        return null;
     }
 
     /**
@@ -272,27 +254,8 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
                     $parseUrl($action)
                 );
 
-                if ($option['route']) {
-                    if (strpos('metalib-', $option['url']) === 0) {
-                        if (!$this->metaLibHelper->isAvailable()) {
-                            continue;
-                        }
-                    }
-                    if (strpos('primo-', $option['url']) === 0) {
-                        if (!$this->primoHelper->isAvailable()) {
-                            continue;
-                        }
-                    }
-                    if ($option['url'] === 'browse-database'
-                        && !$this->browseHelper->isAvailable('Database')
-                    ) {
-                        continue;
-                    }
-                    if ($option['url'] === 'browse-journal'
-                        && !$this->browseHelper->isAvailable('Journal')
-                    ) {
-                        continue;
-                    }
+                if (!$this->menuItemEnabled($option)) {
+                    continue;
                 }
 
                 $desc = 'menu_' . $itemKey . '_desc';
@@ -311,6 +274,39 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
         $this->menuItems = $this->sortMenuItems($result, $sortData);
     }
 
+    /**
+     * Check if menu item may be enabled.
+     *
+     * @param array $item Menu item configuration
+     *
+     * @return boolean
+     */
+    protected function menuItemEnabled($item)
+    {
+        if (empty($item['route'])) {
+            return true;
+        }
+
+        $url = $item['url'];
+
+        if (strpos($url, 'combined-') === 0) {
+            return $this->getViewHelper('combined')->isAvailable();
+        }
+        if (strpos($url, 'metalib-') === 0) {
+            return $this->getViewHelper('metalib')->isAvailable();
+        }
+        if (strpos($url, 'primo-') === 0) {
+            return $this->getViewHelper('primo')->isAvailable();
+        }
+        if ($url === 'browse-database') {
+            return $this->getViewHelper('browse')->isAvailable('Database');
+        }
+        if ($url === 'browse-journal') {
+            return $this->getViewHelper('browse')->isAvailable('Journal');
+        }
+
+        return true;
+    }
     /**
      * Separate menu data from menu order data (__[menu]_sort__ sections).
      *
@@ -452,5 +448,20 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
         $move = array_splice($items, $from, 1);
         array_splice($items, $to, 0, $move);
         return $items;
+    }
+
+    /**
+     * Return view helper
+     *
+     * @param string $id Helper id
+     *
+     * @return \Zend\View\Helper
+     */
+    protected function getViewHelper($id)
+    {
+        if (!isset($this->viewHelpers[$id])) {
+            $this->viewHelpers[$id] = $this->getView()->plugin($id);
+        }
+        return $this->viewHelpers[$id];
     }
 }

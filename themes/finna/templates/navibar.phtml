@@ -16,16 +16,15 @@
         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-nav-<?=$val['label'] ?>" aria-hidden="true"></i><?= $this->transEsc($val['label']) ?> <b class="caret"></b></a>
         <ul role="presentation" class="dropdown-menu">
           <? foreach ($val['items'] as $itemKey => $itemVal): ?>
-          <? if ((0 !== strncmp($itemVal['url'], 'combined-', 9) || $this->combined()->isAvailable()) && (0 !== strncmp($itemVal['url'], 'metalib-', 8) || $this->metalib()->isAvailable()) && (0 !== strncmp($itemVal['url'], 'primo-', 6) || $this->primo()->isAvailable())): ?>
+          <? if (!($itemUrl = $this->navibar()->getMenuItemUrl($itemVal))) { continue; } ?>
           <li role="menuitem">
-            <a<?= isset($itemVal['target']) ? ' target="' . $this->escapeHtmlAttr($itemVal['target']) . '"' : ''?> href="<?= $this->navibar()->getMenuItemUrl($itemVal) ?>">
+            <a<?= isset($itemVal['target']) ? ' target="' . $this->escapeHtmlAttr($itemVal['target']) . '"' : ''?> href="<?=$itemUrl?>">
               <div><?= $this->transEsc($itemVal['label']) ?></div>
               <? if(isset($itemVal['desc'])): ?>
               <div class="description" role="note"><?= $this->transEsc($itemVal['desc']) ?></div>
               <? endif; ?>
             </a>
           </li>
-          <? endif; ?>
           <? endforeach; ?>
         </ul>
       </li>
