@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 
@@ -75,10 +76,12 @@ public class VuFindIndexer extends SolrIndexer
     private Connection vufindDatabase = null;
     private UpdateDateTracker tracker = null;
 
-    private static SimpleDateFormat marc005date = new SimpleDateFormat("yyyyMMddHHmmss.S");
-    private static SimpleDateFormat marc008date = new SimpleDateFormat("yyMMdd");
+    // the SimpleDateFormat class is not Thread-safe the below line were changes to be not static 
+    // which given the rest of the design of SolrMarc will make them work correctly.
+    private SimpleDateFormat marc005date = new SimpleDateFormat("yyyyMMddHHmmss.S");
+    private SimpleDateFormat marc008date = new SimpleDateFormat("yyMMdd");
 
-    private static HashMap<String, Ini> configCache = new HashMap<String, Ini>();
+    private static ConcurrentHashMap<String, Ini> configCache = new ConcurrentHashMap<String, Ini>();
 
     // Shutdown flag:
     private boolean shuttingDown = false;
@@ -186,7 +189,7 @@ public class VuFindIndexer extends SolrIndexer
             Ini ini = new Ini();
             try {
                 ini.load(new FileReader(findConfigFile(filename)));
-                configCache.put(filename, ini);
+                configCache.putIfAbsent(filename, ini);
             } catch (Throwable e) {
                 dieWithError("Unable to access " + filename);
             }
@@ -482,7 +485,7 @@ public class VuFindIndexer extends SolrIndexer
             List<Subfield> currentDates = df.getSubfields('c');
             for (Subfield sf : currentDates) {
                 String currentDateStr = Utils.cleanDate(sf.getData());
-                dates.add(currentDateStr);
+                if (currentDateStr != null) dates.add(currentDateStr);
             }
         }
 
@@ -501,10 +504,10 @@ public class VuFindIndexer extends SolrIndexer
                 switch (ind2)
                 {
                     case '1':
-                        pubDates.add(currentDateStr);
+                        if (currentDateStr != null) pubDates.add(currentDateStr);
                         break;
                     case '4':
-                        copyDates.add(currentDateStr);
+                        if (currentDateStr != null) copyDates.add(currentDateStr);
                         break;
                 }
             }
