@@ -44,18 +44,47 @@ class Slack extends Post
      *
      * @var string
      */
-    protected $channel;
+    protected $channel = '#vufind_log';
+
+    /**
+     * The slack username messages are posted under.
+     *
+     * @var string
+     */
+    protected $username = 'VuFind Log';
+
+    /**
+     * Icons that appear at the start of log messages in Slack, by severity
+     *
+     * @var array
+     */
+    protected $messageIcons = [
+        ':fire: :fire: :fire: ', // EMERG
+        ':rotating_light: ',     // ALERT
+        ':red_circle: ',         // CRIT
+        ':exclamation: ',        // ERR
+        ':warning: ',            // WARN
+        ':speech_balloon: ',     // NOTICE
+        ':information_source: ', // INFO
+        ':beetle: '              // DEBUG
+    ];
 
     /**
      * Constructor
      *
      * @param string $url     URL to open as a stream
      * @param Client $client  Pre-configured http client
-     * @param string $channel Slack channel
+     * @param array  $options Optional settings (may contain 'channel' for the
+     * Slack channel to use and/or 'name' for the username messages are posted under)
      */
-    public function __construct($url, Client $client, $channel = '#vufind_log')
+    public function __construct($url, Client $client, array $options = [])
     {
-        $this->channel = $channel;
+        if (isset($options['channel'])) {
+            $this->channel = $options['channel'];
+        }
+        if (isset($options['name'])) {
+            $this->username = $options['name'];
+        }
         parent::__construct($url, $client);
     }
 
@@ -68,10 +97,12 @@ class Slack extends Post
      */
     protected function getBody($event)
     {
-        $data = ['text' => $this->formatter->format($event) . PHP_EOL];
-        if ($this->channel) {
-            $data['channel'] = $this->channel;
-        }
+        $data = [
+            'channel' => $this->channel,
+            'username' => $this->username,
+            'text' => $this->messageIcons[$event['priority']]
+                . $this->formatter->format($event) . PHP_EOL
+        ];
         return json_encode($data);
     }
 }
