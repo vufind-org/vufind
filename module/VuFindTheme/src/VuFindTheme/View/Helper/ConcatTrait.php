@@ -41,10 +41,6 @@ use VuFindTheme\ThemeInfo;
  */
 trait ConcatTrait
 {
-    // Required property and methods to use ConcatTrait
-
-    // Folder name and file extension: protected $fileType = string;
-
     /**
      * Returns true if file should not be included in the compressed concat file
      *
@@ -53,6 +49,12 @@ trait ConcatTrait
      * @return bool
      */
     abstract protected function isExcludedFromConcat($item);
+    /**
+     * Get the folder name and file extension
+     *
+     * @return string
+     */
+    abstract protected function getFileType();
     /**
      * Get the file path from the element object
      *
@@ -128,7 +130,7 @@ trait ConcatTrait
             return true;
         }
         $settings = array_map('trim', explode(',', $config));
-        return in_array($this->fileType, $settings);
+        return in_array($this->getFileType(), $settings);
     }
 
     /**
@@ -156,7 +158,7 @@ trait ConcatTrait
             }
 
             $details = $this->themeInfo->findContainingTheme(
-                $this->fileType . '/' . $this->getResourceFilePath($item),
+                $this->getFileType() . '/' . $this->getResourceFilePath($item),
                 ThemeInfo::RETURN_ALL_DETAILS
             );
 
@@ -205,20 +207,20 @@ trait ConcatTrait
         if (count($group['items']) === 1) {
             $path = $this->getResourceFilePath($group['items'][0]);
             $details = $this->themeInfo->findContainingTheme(
-                $this->fileType . '/' . $path,
+                $this->getFileType() . '/' . $path,
                 ThemeInfo::RETURN_ALL_DETAILS
             );
             return $urlHelper('home') . 'themes/' . $details['theme']
-                . '/' . $this->fileType . '/' . $path;
+                . '/' . $this->getFileType() . '/' . $path;
         }
         // Locate/create concatenated asset file
-        $filename = md5($group['key']) . '.min.' . $this->fileType;
+        $filename = md5($group['key']) . '.min.' . $this->getFileType();
         $concatPath = $this->getResourceCacheDir() . $filename;
         if (!file_exists($concatPath)) {
             $minifier = $this->getMinifier();
             foreach ($group['items'] as $item) {
                 $details = $this->themeInfo->findContainingTheme(
-                    $this->fileType . '/' . $this->getResourceFilePath($item),
+                    $this->getFileType() . '/' . $this->getResourceFilePath($item),
                     ThemeInfo::RETURN_ALL_DETAILS
                 );
                 $minifier->add($details['path']);

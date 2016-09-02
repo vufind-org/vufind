@@ -49,13 +49,6 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     protected $themeInfo;
 
     /**
-     * Folder name and file extension for trait
-     *
-     * @var string
-     */
-    protected $fileType = 'js';
-
-    /**
      * Constructor
      *
      * @param ThemeInfo $themeInfo Theme information service
@@ -66,6 +59,16 @@ class HeadScript extends \Zend\View\Helper\HeadScript
         parent::__construct();
         $this->themeInfo = $themeInfo;
         $this->usePipeline = $this->enabledInConfig($plconfig);
+    }
+
+    /**
+     * Folder name and file extension for trait
+     *
+     * @return string
+     */
+    protected function getFileType()
+    {
+        return 'js';
     }
 
     /**

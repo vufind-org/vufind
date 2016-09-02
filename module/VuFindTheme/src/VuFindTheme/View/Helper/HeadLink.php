@@ -49,13 +49,6 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     protected $themeInfo;
 
     /**
-     * Folder name and file extension for trait
-     *
-     * @var string
-     */
-    protected $fileType = 'css';
-
-    /**
      * Constructor
      *
      * @param ThemeInfo $themeInfo Theme information service
@@ -66,6 +59,16 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         parent::__construct();
         $this->themeInfo = $themeInfo;
         $this->usePipeline = $this->enabledInConfig($plconfig);
+    }
+
+    /**
+     * Folder name and file extension for trait
+     *
+     * @return string
+     */
+    protected function getFileType()
+    {
+        return 'css';
     }
 
     /**
