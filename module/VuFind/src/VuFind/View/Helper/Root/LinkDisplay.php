@@ -114,6 +114,7 @@ class LinkDisplay extends AbstractHelper
     public function getDisplayBlock($context)
     {
         $displayLogic = $this->permissionDeniedManager->getDisplayLogic($context);
+
         if ($displayLogic) {
             $return = '';
             if ($displayLogic['action'] == 'showMessage') {
@@ -121,7 +122,7 @@ class LinkDisplay extends AbstractHelper
             }
             elseif ($displayLogic['action'] == 'showTemplate') {
                 $return = $this->view->context($this->view)->renderInContext(
-                    $diplayLogic['value'],
+                    $displayLogic['value'],
                     $this->permissionDeniedManager->getDisplayLogicParameters($context)
                 );
             }

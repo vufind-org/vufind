@@ -87,13 +87,13 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
      * @param array         $permConfig   Tab permission configuration
      */
     public function __construct(PluginManager $results, array $tabConfig,
-        array $filterConfig, array $permConfig, Request $request
+        array $filterConfig, Request $request, array $permConfig = []
     ) {
         $this->results = $results;
         $this->tabConfig = $tabConfig;
         $this->filterConfig = $filterConfig;
-        $this->permissionConfig = $permConfig;
         $this->request = $request;
+        $this->permissionConfig = $permConfig;
     }
 
     /**

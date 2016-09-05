@@ -109,7 +109,7 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
         $translator = new \VuFind\View\Helper\Root\Translate();
         $realView = $this->getPhpRenderer(['translate' => $translator]);
 
-        $linkDisplayHelper = new LinkDisplay($mockPmdMessage);
+        $linkDisplayHelper = new LinkDisplay($this->getMockPm(false), $mockPmdMessage);
         $linkDisplayHelper->setView($realView);
 
         $displayBlock = $linkDisplayHelper->getDisplayBlock('permissionDeniedMessage');
@@ -140,7 +140,7 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
             ['translate' => $translate, 'context' => $context]
         );
 
-        $linkDisplayHelper = new LinkDisplay($mockPmd);
+        $linkDisplayHelper = new LinkDisplay($this->getMockPm(false), $mockPmd);
         $linkDisplayHelper->setView($realView);
 
         $displayBlock = $linkDisplayHelper->getDisplayBlock('permissionDeniedTemplate');
@@ -173,7 +173,7 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
             ['translate' => $translator, 'escapehtml' => $escaper, 'transesc' => $transEsc, 'context' => $context]
         );
 
-        $linkDisplayHelper = new LinkDisplay($mockPmd);
+        $linkDisplayHelper = new LinkDisplay($this->getMockPm(false), $mockPmd);
         $linkDisplayHelper->setView($realView);
 
         $displayBlock = $linkDisplayHelper->getDisplayBlock('permissionDeniedTemplate');
@@ -195,6 +195,25 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
         $mockPmd->expects($this->any())->method('getDisplayLogicParameters')
             ->will($this->returnValue($displayLogic['parameters']));
         return $mockPmd;
+    }
+
+    /**
+     * Get mock driver that returns a displayLogic.
+     *
+     * @param array $isAuthorized isAuthorized value to return
+     *
+     * @return \VuFind\PermissionManager
+     */
+    protected function getMockPm($isAuthorized = false) {
+        $mockPm = $this->getMockBuilder('\VuFind\PermissionManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockPm->expects($this->any())->method('isAuthorized')
+            ->will($this->returnValue($isAuthorized));
+        $mockPm->expects($this->any())->method('permissionRuleExists')
+            ->will($this->returnValue(true));
+
+        return $mockPm;
     }
 
     /**
