@@ -104,7 +104,8 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
                             if (is_a($exception, 'Exception')) {
                                 $this->logError(
                                     "Custom Exception: "
-                                    . $dl['value']."(".$exceptionDescription.")"
+                                    . $dl['value'] . "(" . $exceptionDescription
+                                    . ")"
                                 );
                                 throw $exception;
                             }
