@@ -114,7 +114,7 @@ class Shibboleth extends AbstractBase
             if (isset($shib->$attribute)) {
                 $value = $request->getServer()->get($shib->$attribute);
                 if ($attribute != 'cat_password') {
-                    $user->$attribute = $value;
+                    $user->$attribute = ($value === null) ? '' : $value;
                 } else {
                     $catPassword = $value;
                 }

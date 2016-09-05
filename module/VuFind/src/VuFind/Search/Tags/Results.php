@@ -48,7 +48,7 @@ class Results extends BaseResults
     protected function performSearch()
     {
         $table = $this->getTable('Tags');
-        $tag = $table->getByText($this->getParams()->getDisplayQuery());
+        $tag = $table->getByText($this->getParams()->getDisplayQuery(), false);
         if (!empty($tag)) {
             $rawResults = $tag->getResources(null, $this->getParams()->getSort());
         } else {

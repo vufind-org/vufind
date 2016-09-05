@@ -10,8 +10,8 @@
     "license": "GPL-2.0",
     "repositories": [
         {
-            "type": "composer",
-            "url": "https://packages.zendframework.com/"
+            "type": "vcs",
+            "url": "https://github.com/zendframework/zendservice_amazon"
         }
     ],
     "require": {
