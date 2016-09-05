@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -149,8 +149,9 @@ class Query extends AbstractQuery
      */
     public function containsTerm($needle)
     {
-        // Escape slashes in $needle to avoid regular expression errors:
-        $needle = str_replace('/', '\/', $needle);
+        // Escape characters with special meaning in regular expressions to avoid
+        // errors:
+        $needle = preg_quote($needle, '/');
 
         return (bool)preg_match("/\b$needle\b/u", $this->getString());
     }
@@ -177,7 +178,7 @@ class Query extends AbstractQuery
     {
         // Escape $from so it is regular expression safe (just in case it
         // includes any weird punctuation -- unlikely but possible):
-        $from = addcslashes($from, '\^$.[]|()?*+{}/');
+        $from = preg_quote($from, '/');
 
         // If our "from" pattern contains non-word characters, we can't use word
         // boundaries for matching.  We want to try to use word boundaries when

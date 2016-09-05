@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -695,5 +695,64 @@ class AbstractSearch extends AbstractBase
         }
 
         return $formatted;
+    }
+
+    /**
+     * Returns a list of all items associated with one facet for the lightbox
+     *
+     * Parameters:
+     * facet        The facet to retrieve
+     * searchParams Facet search params from $results->getUrlQuery()->getParams()
+     *
+     * @return mixed
+     */
+    public function facetListAction()
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+        // Get results
+        $results = $this->getResultsManager()->get($this->searchClassId);
+        $params = $results->getParams();
+        $params->initFromRequest($this->getRequest()->getQuery());
+        // Get parameters
+        $facet = $this->params()->fromQuery('facet');
+        $page = (int) $this->params()->fromQuery('facetpage', 1);
+        $options = $results->getOptions();
+        $facetSortOptions = $options->getFacetSortOptions();
+        $sort = $this->params()->fromQuery('facetsort', null);
+        if ($sort === null || !in_array($sort, array_keys($facetSortOptions))) {
+            $sort = empty($facetSortOptions)
+                ? 'count'
+                : current(array_keys($facetSortOptions));
+        }
+        $config = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($options->getFacetsIni());
+        $limit = isset($config->Results_Settings->lightboxLimit)
+            ? $config->Results_Settings->lightboxLimit
+            : 50;
+        $limit = $this->params()->fromQuery('facetlimit', $limit);
+        $facets = $results->getPartialFieldFacets(
+            [$facet], false, $limit, $sort, $page,
+            $this->params()->fromQuery('facetop', 'AND') == 'OR'
+        );
+        $list = $facets[$facet]['data']['list'];
+        $params->activateAllFacets();
+        $facetLabel = $params->getFacetLabel($facet);
+
+        $view = $this->createViewModel(
+            [
+                'data' => $list,
+                'exclude' => $this->params()->fromQuery('facetexclude', 0),
+                'facet' => $facet,
+                'facetLabel' => $facetLabel,
+                'operator' => $this->params()->fromQuery('facetop', 'AND'),
+                'page' => $page,
+                'results' => $results,
+                'anotherPage' => $facets[$facet]['more'],
+                'sort' => $sort,
+                'sortOptions' => $facetSortOptions
+            ]
+        );
+        $view->setTemplate('search/facet-list');
+        return $view;
     }
 }

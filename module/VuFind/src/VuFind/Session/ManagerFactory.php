@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -91,7 +91,7 @@ class ManagerFactory implements \Zend\ServiceManager\FactoryInterface
      * handler: http://us.php.net/manual/en/function.session-set-save-handler.php
      *
      * This method sets that up.
-     * 
+     *
      * @param SessionManager $sessionManager Session manager instance
      *
      * @return void
@@ -133,7 +133,7 @@ class ManagerFactory implements \Zend\ServiceManager\FactoryInterface
         // be written as part of the current process):
         $settings = $sm->get('VuFind\Session\Settings');
         if ($settings->setSessionManager($sessionManager)->isWriteDisabled()) {
-            $sessionManager->writeClose();
+            $sessionManager->getSaveHandler()->disableWrites();
         } else {
             // If the session is not disabled, we should set up the normal
             // shutdown function:

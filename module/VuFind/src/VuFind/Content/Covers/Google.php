@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Content
@@ -78,48 +78,27 @@ class Google extends \VuFind\Content\AbstractCover
      */
     public function getUrl($key, $size, $ids)
     {
-        // Don't bother trying if we can't read JSON:
-        if (!is_callable('json_decode')) {
+        // Don't bother trying if we can't read JSON or ISBN is missing:
+        if (!is_callable('json_decode') || !isset($ids['isbn'])) {
             return false;
         }
-        if (!isset($ids['isbn'])) {
-            return false;
-        }
-        $isbn = $ids['isbn']->get13();
 
-        // Construct the request URL:
-        $url = 'http://books.google.com/books?jscmd=viewapi&' .
-               'bibkeys=ISBN:' . $isbn . '&callback=addTheCover';
-
-        // Make the HTTP request:
+        // Construct the request URL and make the HTTP request:
+        $url = 'https://books.google.com/books?jscmd=viewapi&' .
+               'bibkeys=ISBN:' . $ids['isbn']->get13() . '&callback=addTheCover';
         $result = $this->getHttpClient($url)->send();
 
-        // Was the request successful?
-        if ($result->isSuccess()) {
-            // grab the response:
-            $json = $result->getBody();
-
-            // extract the useful JSON from the response:
-            $count = preg_match('/^[^{]*({.*})[^}]*$/', $json, $matches);
-            if ($count < 1) {
-                return false;
-            }
-            $json = $matches[1];
-
+        // If the request was successful and we can extract a valid response...
+        if ($result->isSuccess()
+            && preg_match('/^[^{]*({.*})[^}]*$/', $result->getBody(), $matches)
+        ) {
             // convert \x26 or \u0026 to &
-            $json = str_replace(["\\x26", "\\u0026"], "&", $json);
-
-            // decode the object:
-            $json = json_decode($json, true);
-
-            // convert a flat object to an array -- probably unnecessary, but
-            // retained just in case the response format changes:
-            if (isset($json['thumbnail_url'])) {
-                $json = [$json];
-            }
+            $json = json_decode(
+                str_replace(['\\x26', '\\u0026'], '&', $matches[1]), true
+            );
 
             // find the first thumbnail URL and process it:
-            foreach ($json as $current) {
+            foreach ((array)$json as $current) {
                 if (isset($current['thumbnail_url'])) {
                     return $current['thumbnail_url'];
                 }

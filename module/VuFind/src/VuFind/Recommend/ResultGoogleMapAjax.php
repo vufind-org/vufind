@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Recommendations
@@ -49,6 +49,23 @@ class ResultGoogleMapAjax implements RecommendInterface
      * @var \VuFind\Search\Base\Results
      */
     protected $searchObject;
+
+    /**
+     * Google Maps API key.
+     *
+     * @var string
+     */
+    protected $googleMapApiKey;
+
+    /**
+     * Constructor
+     *
+     * @param string $key API key
+     */
+    public function __construct($key)
+    {
+        $this->googleMapApiKey = $key;
+    }
 
     /**
      * Store the configuration of the recommendation module.
@@ -91,6 +108,16 @@ class ResultGoogleMapAjax implements RecommendInterface
     public function process($results)
     {
         $this->searchObject = $results;
+    }
+
+    /**
+     * Get the Google Maps API key.
+     *
+     * @return string
+     */
+    public function getGoogleMapApiKey()
+    {
+        return $this->googleMapApiKey;
     }
 
     /**

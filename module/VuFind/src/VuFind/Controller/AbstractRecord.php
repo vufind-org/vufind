@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -26,7 +26,8 @@
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Mail as MailException,
+use VuFind\Exception\Forbidden as ForbiddenException,
+    VuFind\Exception\Mail as MailException,
     VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 
 /**
@@ -104,8 +105,20 @@ class AbstractRecord extends AbstractBase
      */
     public function addcommentAction()
     {
+        // Make sure comments are enabled:
+        if (!$this->commentsEnabled()) {
+            throw new ForbiddenException('Comments disabled');
+        }
+
+        $recaptchaActive = $this->recaptcha()->active('userComments');
+
         // Force login:
         if (!($user = $this->getUser())) {
+            // Validate CAPTCHA before redirecting to login:
+            if (!$this->formWasSubmitted('comment', $recaptchaActive)) {
+                return $this->redirectToRecord('', 'UserComments');
+            }
+
             // Remember comment since POST data will be lost:
             return $this->forceLogin(
                 null, ['comment' => $this->params()->fromPost('comment')]
@@ -119,6 +132,11 @@ class AbstractRecord extends AbstractBase
         $comment = $this->params()->fromPost('comment');
         if (empty($comment)) {
             $comment = $this->followup()->retrieveAndClear('comment');
+        } else {
+            // Validate CAPTCHA now only if we're not coming back post-login:
+            if (!$this->formWasSubmitted('comment', $recaptchaActive)) {
+                return $this->redirectToRecord('', 'UserComments');
+            }
         }
 
         // At this point, we should have a comment to save; if we do not,
@@ -145,6 +163,11 @@ class AbstractRecord extends AbstractBase
      */
     public function deletecommentAction()
     {
+        // Make sure comments are enabled:
+        if (!$this->commentsEnabled()) {
+            throw new ForbiddenException('Comments disabled');
+        }
+
         // Force login:
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
@@ -168,7 +191,7 @@ class AbstractRecord extends AbstractBase
     {
         // Make sure tags are enabled:
         if (!$this->tagsEnabled()) {
-            throw new \Exception('Tags disabled');
+            throw new ForbiddenException('Tags disabled');
         }
 
         // Force login:
@@ -203,7 +226,7 @@ class AbstractRecord extends AbstractBase
     {
         // Make sure tags are enabled:
         if (!$this->tagsEnabled()) {
-            throw new \Exception('Tags disabled');
+            throw new ForbiddenException('Tags disabled');
         }
 
         // Force login:
@@ -311,7 +334,7 @@ class AbstractRecord extends AbstractBase
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            throw new \Exception('Lists disabled');
+            throw new ForbiddenException('Lists disabled');
         }
 
         // Process form submission:
@@ -695,6 +718,10 @@ class AbstractRecord extends AbstractBase
             $driver = $this->loadRecord();
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
+
+        $view->callnumberHandler = isset($config->Item_Status->callnumber_handler)
+            ? $config->Item_Status->callnumber_handler
+            : false;
 
         $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');
         return $view;
