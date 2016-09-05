@@ -95,8 +95,7 @@ class PermissionManager
     public function permissionRuleExists($context)
     {
         foreach ($this->config as $key => $value) {
-            if (
-                isset($value['permission'])
+            if (isset($value['permission'])
                 && $value['permission'] == $context
             ) {
                 return true;

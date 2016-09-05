@@ -125,7 +125,9 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
                 && $this->helper->filtersMatch($class, $hiddenFilters, $filters)
             ) {
                 $matchFound = true;
-                $retVal[] = $this->createSelectedTab($key, $class, $label, $permissionName);
+                $retVal[] = $this->createSelectedTab(
+                    $key, $class, $label, $permissionName
+                );
             } else if ($type == 'basic') {
                 if (!isset($activeOptions)) {
                     $activeOptions
@@ -134,11 +136,17 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
                 $newUrl = $this->remapBasicSearch(
                     $activeOptions, $class, $query, $handler, $filters
                 );
-                $retVal[] = $this->createBasicTab($key, $class, $label, $newUrl, $permissionName);
+                $retVal[] = $this->createBasicTab(
+                    $key, $class, $label, $newUrl, $permissionName
+                );
             } else if ($type == 'advanced') {
-                $retVal[] = $this->createAdvancedTab($key, $class, $label, $filters, $permissionName);
+                $retVal[] = $this->createAdvancedTab(
+                    $key, $class, $label, $filters, $permissionName
+                );
             } else {
-                $retVal[] = $this->createHomeTab($key, $class, $label, $filters, $permissionName);
+                $retVal[] = $this->createHomeTab(
+                    $key, $class, $label, $filters, $permissionName
+                );
             }
         }
         if (!$matchFound && !empty($retVal)) {
@@ -233,9 +241,10 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Create information representing a selected tab.
      *
-     * @param string $id    Tab ID
-     * @param string $class Search class ID
-     * @param string $label Display text for tab
+     * @param string $id             Tab ID
+     * @param string $class          Search class ID
+     * @param string $label          Display text for tab
+     * @param string $permissionName Name of a permissionrule
      *
      * @return array
      */
@@ -286,10 +295,11 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Create information representing a basic search tab.
      *
-     * @param string $id     Tab ID
-     * @param string $class  Search class ID
-     * @param string $label  Display text for tab
-     * @param string $newUrl Target search URL
+     * @param string $id             Tab ID
+     * @param string $class          Search class ID
+     * @param string $label          Display text for tab
+     * @param string $newUrl         Target search URL
+     * @param string $permissionName Name of a permissionrule
      *
      * @return array
      */
@@ -308,10 +318,11 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Create information representing a tab linking to "search home."
      *
-     * @param string $id      Tab ID
-     * @param string $class   Search class ID
-     * @param string $label   Display text for tab
-     * @param array  $filters Tab filters
+     * @param string $id             Tab ID
+     * @param string $class          Search class ID
+     * @param string $label          Display text for tab
+     * @param array  $filters        Tab filters
+     * @param string $permissionName Name of a permissionrule
      *
      * @return array
      */
@@ -335,15 +346,17 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     /**
      * Create information representing an advanced search tab.
      *
-     * @param string $id      Tab ID
-     * @param string $class   Search class ID
-     * @param string $label   Display text for tab
-     * @param array  $filters Tab filters
+     * @param string $id             Tab ID
+     * @param string $class          Search class ID
+     * @param string $label          Display text for tab
+     * @param array  $filters        Tab filters
+     * @param string $permissionName Name of a permissionrule
      *
      * @return array
      */
-    protected function createAdvancedTab($id, $class, $label, $filters, $permissionName)
-    {
+    protected function createAdvancedTab($id, $class, $label, $filters,
+        $permissionName
+    ) {
         // If an advanced search is available, link there; otherwise, just go
         // to the search home:
         $results = $this->results->get($class);

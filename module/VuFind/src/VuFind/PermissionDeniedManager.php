@@ -63,8 +63,7 @@ class PermissionDeniedManager
     {
         $this->config = $config;
         // if the config contains a parameter for the defaultAction, apply it
-        if (
-            isset($config['global']['defaultAction'])
+        if (isset($config['global']['defaultAction'])
             && $config['global']['defaultAction']
         ) {
             $this->defaultAction = $config['global']['defaultAction'];
@@ -75,6 +74,8 @@ class PermissionDeniedManager
      * Set the default action for a denied permission
      *
      * @param String $value Default action for a denied permission
+     *
+     * @return void
      */
     public function setDefaultAction($value)
     {
@@ -96,7 +97,9 @@ class PermissionDeniedManager
     public function getActionLogic($context)
     {
         $permissionDeniedAction = null;
-        $permissionDeniedActions = $this->getPermissionDeniedLogic($context, 'permissionDeniedAction');
+        $permissionDeniedActions = $this->getPermissionDeniedLogic(
+            $context, 'permissionDeniedAction'
+        );
         if ($permissionDeniedActions === false) {
             $permissionDeniedAction = $permissionDeniedActions;
         } else if ($permissionDeniedActions) {
@@ -128,9 +131,11 @@ class PermissionDeniedManager
     public function getDisplayLogic($context)
     {
         $permissionDeniedAction = null;
-        $permissionDeniedActions = $this->getPermissionDeniedLogic($context, 'permissionDeniedDisplayLogic');
-        // If $permissionDeniedActions is false, this means, that permission is denied,
-        // but there is no behaviour configured for that
+        $permissionDeniedActions = $this->getPermissionDeniedLogic(
+            $context, 'permissionDeniedDisplayLogic'
+        );
+        // If $permissionDeniedActions is false, this means, that permission is
+        // denied, but there is no behaviour configured for that
         if ($permissionDeniedActions === false) {
             $permissionDeniedAction = $permissionDeniedActions;
         } else if ($permissionDeniedActions) {
@@ -161,7 +166,9 @@ class PermissionDeniedManager
      */
     public function getActionLogicParameters($context)
     {
-        return $this->getPermissionDeniedParameters($context, 'permissionDeniedAction');
+        return $this->getPermissionDeniedParameters(
+            $context, 'permissionDeniedAction'
+        );
     }
 
     /**
@@ -173,7 +180,9 @@ class PermissionDeniedManager
      */
     public function getDisplayLogicParameters($context)
     {
-        return $this->getPermissionDeniedParameters($context, 'permissionDeniedDisplayLogic');
+        return $this->getPermissionDeniedParameters(
+            $context, 'permissionDeniedDisplayLogic'
+        );
     }
 
     /**
@@ -187,8 +196,7 @@ class PermissionDeniedManager
      */
     protected function getPermissionDeniedLogic($context, $mode)
     {
-        if (
-            $mode !== 'permissionDeniedAction'
+        if ($mode !== 'permissionDeniedAction'
             && $mode !== 'permissionDeniedDisplayLogic'
         ) {
             throw new Exception(
@@ -212,6 +220,8 @@ class PermissionDeniedManager
      * Get action logic parameters
      *
      * @param string $context Context for the permission behavior
+     * @param string $mode    Mode of the operation. Should be either
+     *                        permissionDeniedAction or permissionDeniedDisplayLogic
      *
      * @return array|bool
      */

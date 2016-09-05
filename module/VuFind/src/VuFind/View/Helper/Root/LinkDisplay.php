@@ -119,11 +119,11 @@ class LinkDisplay extends AbstractHelper
             $return = '';
             if ($displayLogic['action'] == 'showMessage') {
                 $return = $this->view->translate($displayLogic['value']);
-            }
-            elseif ($displayLogic['action'] == 'showTemplate') {
+            } elseif ($displayLogic['action'] == 'showTemplate') {
                 $return = $this->view->context($this->view)->renderInContext(
                     $displayLogic['value'],
-                    $this->permissionDeniedManager->getDisplayLogicParameters($context)
+                    $this->permissionDeniedManager
+                        ->getDisplayLogicParameters($context)
                 );
             }
             return $return;
