@@ -29,6 +29,8 @@
  */
 namespace Finna\View\Helper\Root;
 
+use VuFind\Exception\RecordMissing as RecordMissingException;
+
 /**
  * MetaLib record link view helper
  *
@@ -41,6 +43,32 @@ namespace Finna\View\Helper\Root;
  */
 class RecordLink extends \VuFind\View\Helper\Root\RecordLink
 {
+    /**
+     * Given a record driver, get a URL for that record.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
+     * representing record to link to, or source|id pipe-delimited string
+     * @param string                                   $tab    Optional record
+     * tab to access
+     *
+     * @return string
+     */
+    public function getTabUrl($driver, $tab = null)
+    {
+        // Build the URL:
+        $urlHelper = $this->getView()->plugin('url');
+        // Try to get record-specific router but fall back to generic route if the
+        // record cannot be loaded.
+        try {
+            $details = $this->router->getTabRouteDetails($driver, $tab);
+        } catch (RecordMissingException $e) {
+            $details = $this->router->getRouteDetails(
+                $driver, '', empty($tab) ? [] : ['tab' => $tab]
+            );
+        }
+        return $urlHelper($details['route'], $details['params']);
+    }
+
     /**
      * Given an array representing a related record,
      * this helper renders a URL linking to that record.
