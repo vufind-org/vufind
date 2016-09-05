@@ -1,0 +1,8 @@
+<!-- admin - tags - toolbar.phtml -->
+<div class="toolbar">
+  <dl class="nav sub-nav">
+    <dd<?=strtolower($this->layout()->templateName) == "tagslist" ? ' class="active"' : ''?>><a href="<?=$this->url('admin/tags', array('action' => 'List'))?>"><?=$this->transEsc('List Tags')?></a></dd>
+    <dd<?=strtolower($this->layout()->templateName) == "tagsmanage" ? ' class="active"' : ''?>><a href="<?=$this->url('admin/tags', array('action' => 'Manage'))?>"><?=$this->transEsc('Manage Tags')?></a></dd>
+  </dl>
+</div>
+<!-- admin - tags - toolbar.phtml - END -->

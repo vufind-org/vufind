@@ -1,0 +1,93 @@
+<!-- admin - tags - manage.phtml -->
+<?
+  // Set page title.
+  $this->headTitle($this->translate('VuFind Administration - Tag Maintenance'));
+?>
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <h2><?=$this->translate('Tag Management')?></h2>
+    <h3><?=$this->translate('Manage Tags')?></h3>
+
+    <?=$this->render("admin/tags/menu.phtml")?>
+
+    <?=$this->flashmessages()?>
+
+    <form action="<?= $this->url('admin/tags', array('action' => 'Manage'));?>" method="post" role="form">
+      <div class="row">
+        <label for="type" class="medium-2 columns"><?=$this->translate('delete_tags_by')?>:</label>
+        <div class="medium-6 columns">
+          <select id="type" name="type">
+            <option value="user" <? if("user" == $this->type) echo " selected=selected";?>><?=$this->translate('Username')?></option>
+            <option value="tag" <? if("tag" == $this->type) echo " selected=selected";?>><?=$this->translate('Tag')?></option>
+            <option value="resource" <? if("resource" == $this->type) echo " selected=selected";?>><?=$this->translate('Title')?></option>
+          </select>
+        </div>
+        <div class="medium-4 columns">
+          <input type="submit" value="<?=$this->translate('Submit')?>" class="button small"/>
+        </div>
+      </div>
+    </form>
+
+    <? if(false !== $this->type):?>
+      <form action="<?= $this->url('admin/tags', array('action' => 'Delete'))?>" method="post">
+        <input type="hidden" name="origin" value="manage" />
+        <input type="hidden" name="type" value="<?= $this->type; ?>" />
+        <? if("user" == $type):?>
+          <div class="row">
+            <label for="user_id" class="medium-2 columns"><?=$this->translate('Username')?></label>
+            <div class="medium-6 columns">
+              <select name="user_id" id="user_id">
+                <? foreach($this->uniqueUsers as $user):?>
+                <option value="<?= $user['user_id'] ?>">
+                  <?= $user['username'] ?>
+                </option>
+                <? endforeach;?>
+              </select>
+            </div>
+            <div class="medium-4 columns">
+              <input type="submit"  name="deleteFilter" value="<?=$this->translate('delete_tags')?>" class="button small"/>
+            </div>
+          </div>
+        <? elseif("tag" == $type):?>
+          <div class="row">
+            <label for="tag_id" class="medium-2 columns"><?=$this->translate('Tag')?></label>
+            <div class="medium-6 columns">
+              <select name="tag_id" id="tag_id">
+                <? foreach($this->uniqueTags as $tag):?>
+                <option value="<?= $tag['tag_id'] ?>">
+                    <?= $tag['tag'] ?>
+                </option>
+                <? endforeach;?>
+              </select>
+            </div>
+            <div class="medium-4 columns">
+              <input type="submit" name="deleteFilter" value="<?=$this->translate('delete_tags')?>" class="button small"/>
+            </div>
+          </div>
+        <? elseif("resource" == $type):?>
+          <div class="row">
+            <label for="resource_id" class="medium-2 columns"><?=$this->translate('Title')?></label>
+            <div class="medium-6 columns">
+              <select name="resource_id" id="resource_id">
+                <? foreach($this->uniqueResources as $resource):?>
+                <option value="<?=$resource['resource_id'] ?>" title="<?=$resource['title'] ?>">
+                  <?=$this->truncate($resource['title'], 80) ?> (<?= $resource['resource_id'] ?>)
+                </option>
+                <? endforeach;?>
+              </select>
+            </div>
+            <div class="medium-4 columns">
+              <input type="submit" name="deleteFilter" value="<?=$this->translate('delete_tags')?>" class="button small"/>
+            </div>
+          </div>
+        <? endif;?>
+      </form>
+    <? endif;?>
+
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->render("admin/menu.phtml")?>
+  </div>
+</div>
+<!-- admin - tags - manage.phtml - END -->

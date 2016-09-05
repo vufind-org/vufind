@@ -24,7 +24,7 @@ $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink
           <button type="button" class="button secondary small hide" data-dropdown="itemhide"  aria-controls="itemhide" aria-expanded="false">
             <?=count($this->records).' '.$this->transEsc('items') ?>
           </button>
-          <ul id="itemhide" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
+          <ul id="itemhide" class="f-dropdown open" data-dropdown-content aria-hidden="true" tabindex="-1">
             <? foreach ($this->records as $current): ?>
               <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
             <? endforeach; ?>
@@ -39,14 +39,15 @@ $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink
       <div class="medium-9 columns">
         <select name="format" id="format" class="auto-width">
           <? foreach ($this->exportOptions as $exportOption): ?>
-            <option value="<?=$this->escapeHtmlAttr($exportOption)?>"><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
+            <? if ($firstOption == null) $firstOption = $exportOption; ?>
+            <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<? if($this->export()->needsRedirect($exportOption)): ?> data-redirect<? endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
           <? endforeach; ?>
         </select>
       </div>
     </div>
     <div class="row">
       <div class="medium-9 columns medium-offset-3">
-        <input class="button secondary small" type="submit" name="submit" value="<?=$this->transEsc('Export')?>"/>
+        <input class="button secondary small" type="submit" name="submit" value="<?=$this->transEsc('Export')?>" <? if($this->export()->needsRedirect($firstOption)): ?> data-lightbox-ignore<? endif; ?>/>
       </div>
     </div>
   </form>
@@ -54,6 +55,14 @@ $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink
 <?
 $script = <<<JS
   $('button.button.hide').removeClass('hide');
+  $('#itemhide').removeClass('open');
+  $('#format').change(function exportFormatChange(e) {
+    if (this.selectedOptions[0].getAttribute('data-redirect') === null) {
+      $('.export.button').removeAttr('data-lightbox-ignore');
+    } else {
+      $('.export.button').attr('data-lightbox-ignore', '1');
+    }
+  });
 JS;
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
