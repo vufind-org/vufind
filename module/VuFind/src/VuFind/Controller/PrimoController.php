@@ -38,7 +38,6 @@ namespace VuFind\Controller;
  */
 class PrimoController extends AbstractSearch
 {
-
     /**
      * Constructor
      */

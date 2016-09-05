@@ -28,7 +28,6 @@
  */
 namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\LinkDisplay;
-use VuFind\PermissionDeniedManager as PermissionDeniedManager;
 
 /**
  * LinkDisplay view helper Test Class

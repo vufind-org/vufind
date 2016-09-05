@@ -35,7 +35,8 @@ use VuFind\Exception\Forbidden as ForbiddenException,
     Zend\Mvc\MvcEvent,
     Zend\View\Model\ViewModel,
     ZfcRbac\Service\AuthorizationServiceAwareInterface,
-    ZfcRbac\Service\AuthorizationServiceAwareTrait;
+    ZfcRbac\Service\AuthorizationServiceAwareTrait,
+    Zend\Log\LoggerAwareInterface;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -49,8 +50,10 @@ use VuFind\Exception\Forbidden as ForbiddenException,
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class AbstractBase extends AbstractActionController
+class AbstractBase extends AbstractActionController implements LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Permission that must be granted to access this module (false for no
      * restriction)
@@ -99,9 +102,9 @@ class AbstractBase extends AbstractActionController
                         ) {
                             $exception = new $dl['value']($exceptionDescription);
                             if (is_a($exception, 'Exception')) {
-                                error_log(
+                                $this->logError(
                                     "Custom Exception: "
-                                    .$dl['value']."(".$exceptionDescription.")"
+                                    . $dl['value']."(".$exceptionDescription.")"
                                 );
                                 throw $exception;
                             }
@@ -109,9 +112,9 @@ class AbstractBase extends AbstractActionController
                         // Do not break; if the if-clause is not true,
                         // just continue with default section
                     default:
-                        error_log(
+                        $this->logError(
                             "Default Exception: ForbiddenException with message: "
-                            .$exceptionDescription
+                            . $exceptionDescription
                         );
                         throw new ForbiddenException($exceptionDescription);
                             break;
