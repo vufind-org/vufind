@@ -118,7 +118,7 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
                             . $exceptionDescription
                         );
                         throw new ForbiddenException($exceptionDescription);
-                            break;
+                        break;
                     }
                 } else if ($dl === false) {
                     // if we have no behavior rules,
