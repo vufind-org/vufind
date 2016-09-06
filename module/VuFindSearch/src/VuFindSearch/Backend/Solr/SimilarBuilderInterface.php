@@ -1,10 +1,12 @@
 <?php
+
 /**
- * Mail log writer
+ * SOLR SimilarBuilder interface definition.
  *
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,37 +22,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Error_Logging
- * @author   Chris Hallberg <challber@villanova.edu>
+ * @package  Search
+ * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
+ * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org
  */
-namespace VuFind\Log\Writer;
+namespace VuFindSearch\Backend\Solr;
+
+use VuFindSearch\ParamBag;
 
 /**
- * This class extends the Zend Logging towards Mail systems
+ * SOLR SimilarBuilder interface definition.
  *
  * @category VuFind
- * @package  Error_Logging
- * @author   Chris Hallberg <challber@villanova.edu>
+ * @package  Search
+ * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
+ * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org
  */
-class Mail extends \Zend\Log\Writer\Mail
+interface SimilarBuilderInterface
 {
-    use VerbosityTrait;
-    
     /**
-     * Write a message to the log.
+     * Build SOLR query based on VuFind query object.
      *
-     * @param array $event event data
+     * @param string $id Record id
      *
-     * @return void
-     * @throws \Zend\Log\Exception\RuntimeException
+     * @return ParamBag
      */
-    protected function doWrite(array $event)
-    {
-        // Apply verbosity, Call parent method:
-        return parent::doWrite($this->applyVerbosity($event));
-    }
+    public function build($id);
 }
