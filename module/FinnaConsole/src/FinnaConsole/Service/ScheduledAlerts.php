@@ -424,7 +424,7 @@ class ScheduledAlerts extends AbstractService
 
                 $resultsTotal = $collection->getTotal();
                 if ($resultsTotal < 1) {
-                    $this->msg(      'No results found for search ' . $s->id);
+                    $this->msg('      No results found for search ' . $s->id);
                     continue;
                 }
 
