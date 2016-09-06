@@ -107,6 +107,9 @@ class PAIA extends DAIA
     /**
      * Get the PAIA specific CacheKey
      *
+     * @param string $key A string that will be used as the dynamic part for the
+     *                    cache key
+     *
      * @return string
      */
     protected function getPaiaCacheKey($key)

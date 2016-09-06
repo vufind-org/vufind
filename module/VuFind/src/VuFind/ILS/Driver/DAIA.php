@@ -184,6 +184,9 @@ class DAIA extends AbstractBase implements
     /**
      * Get the DAIA specific CacheKey.
      *
+     * @param string $key A string that will be used as the dynamic part for the
+     *                    cache key
+     *
      * @return string
      */
     protected function getDaiaCacheKey($key)
