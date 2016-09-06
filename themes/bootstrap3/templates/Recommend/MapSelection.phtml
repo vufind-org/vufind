@@ -1,3 +1,4 @@
+<? if ($this->recommend->getSearchResultCoordinates()) :?>
 <?
   $this->headScript()->appendFile('vendor/ol/ol.js');
   $this->headScript()->appendFile('map_selection.js');
@@ -34,3 +35,4 @@ EOF;
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $addSearchOption, 'SET');?>
   <? endif; ?>
 </div>
+<? endif; ?>
