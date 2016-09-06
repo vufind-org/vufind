@@ -327,7 +327,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $result = [];
         $params = $this->searchFilters;
         // Check to makes sure we have a geographic search
-        if (strpos($params->get('fq')[0],'bbox_geo') !== false) {
+        if (strpos($params->get('fq')[0], 'bbox_geo') !== false) {
             $params->mergeWith($this->queryBuilder->build($this->searchQuery));
             $params->set('fl', 'id, bbox_geo');
             $params->set('wt', 'json');
