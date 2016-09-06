@@ -90,7 +90,6 @@ function registerAjaxCommentRecord() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
-    var url = VuFind.path + '/AJAX/JSON?' + $.param({ method: 'commentRecord' });
     var data = {
       comment: form.comment.value,
       id: id,
@@ -104,21 +103,10 @@ function registerAjaxCommentRecord() {
         console.error(e);
       }
     }
-    $.ajax({
+    VuFind.lightbox.ajax({
       type: 'POST',
-      url: url,
-      data: data,
-      dataType: 'json'
-    })
-    .done(function addCommentDone(/*response, textStatus*/) {
-      var $tab = $(form).closest('.tab-pane');
-      refreshCommentList($tab, id, recordSource);
-      $(form).find('textarea[name="comment"]').val('');
-      $(form).find('input[type="submit"]').button('loading');
-    })
-    .fail(function addCommentFail(response, textStatus) {
-      if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
-      VuFind.lightbox.alert(response.responseJSON.data, 'danger');
+      url: this.action,
+      data: data
     });
     return false;
   });
