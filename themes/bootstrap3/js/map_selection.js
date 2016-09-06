@@ -177,10 +177,10 @@ function loadMapSelection(geoField, boundingBox, baseURL, searchParams, showSele
     map.addInteraction(draw);
   }   
   init();
-  $('button').on('click', function clearAndDrawMap() {
+  document.getElementById("draw_box").onclick = function clearAndDrawMap() {
     map.removeInteraction(draw);
     addInteraction();
-  });
+  }
 
   init = false;
 }
