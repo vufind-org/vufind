@@ -164,8 +164,8 @@ VuFind.register('lightbox', function Lightbox() {
         }
         _update(content);
       })
-      .fail(function lbAjaxFail() {
-        showAlert(VuFind.translate('error_occurred'), 'danger');
+      .fail(function lbAjaxFail(deferred, errorType, msg) {
+        showAlert(VuFind.translate('error_occurred') + '<br/>' + msg, 'danger');
       });
     return _xhr;
   }
