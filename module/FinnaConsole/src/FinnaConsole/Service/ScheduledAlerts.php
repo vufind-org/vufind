@@ -424,7 +424,7 @@ class ScheduledAlerts extends AbstractService
 
                 $resultsTotal = $collection->getTotal();
                 if ($resultsTotal < 1) {
-                    $this->msg('No results found for search ' . $s->id);
+                    $this->msg(      'No results found for search ' . $s->id);
                     continue;
                 }
 
@@ -440,7 +440,7 @@ class ScheduledAlerts extends AbstractService
             $lastExecutionDate = $lastTime->format($iso8601);
             if ($newestRecordDate < $lastExecutionDate) {
                 $this->msg(
-                    'No new results for search ' . $s->id
+                    '      No new results for search ' . $s->id
                     . ": $newestRecordDate < $lastExecutionDate"
                 );
                 continue;
