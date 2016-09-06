@@ -833,8 +833,8 @@ class Factory
             ? $config->SearchTabsPermissions->toArray() : [];
         return new \VuFind\Search\SearchTabsHelper(
             $sm->get('VuFind\SearchResultsPluginManager'),
-            $tabConfig, $filterConfig, $permissionConfig,
-            $sm->get('Application')->getRequest()
+            $tabConfig, $filterConfig,
+            $sm->get('Application')->getRequest(), $permissionConfig
         );
     }
 
