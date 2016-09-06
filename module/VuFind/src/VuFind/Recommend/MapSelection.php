@@ -326,13 +326,16 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     {
         $result = [];
         $params = $this->searchFilters;
-        $params->mergeWith($this->queryBuilder->build($this->searchQuery));
-        $params->set('fl', 'id, bbox_geo');
-        $params->set('wt', 'json');
-        $params->set('rows', '10000000'); // set to return all results
-        $response = json_decode($this->solrConnector->search($params));
-        foreach ($response->response->docs as $current) {
-            $result[] = [$current->id, $current->bbox_geo];
+        // Check to makes sure we have a geographic search
+        if (strpos($params->get('fq')[0],'bbox_geo') !== false) {
+            $params->mergeWith($this->queryBuilder->build($this->searchQuery));
+            $params->set('fl', 'id, bbox_geo');
+            $params->set('wt', 'json');
+            $params->set('rows', '10000000'); // set to return all results
+            $response = json_decode($this->solrConnector->search($params));
+            foreach ($response->response->docs as $current) {
+                $result[] = [$current->id, $current->bbox_geo];
+            }
         }
         return $result;
     }
