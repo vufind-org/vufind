@@ -97,6 +97,37 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
+     * Restore settings from a minified object found in the database.
+     *
+     * @param \VuFind\Search\Minified $minified Minified Search Object
+     *
+     * @return void
+     */
+    public function deminify($minified)
+    {
+        parent::deminify($minified);
+        $dateRangeField = $this->getDateRangeSearchField();
+        if (!$dateRangeField) {
+            return;
+        }
+        // Convert any VuFind 1 spatial date range filter
+        if (isset($this->filterList[self::SPATIAL_DATERANGE_FIELD_VF1])) {
+            $dateRangeFilters = $this->filterList[self::SPATIAL_DATERANGE_FIELD_VF1];
+            unset($this->filterList[self::SPATIAL_DATERANGE_FIELD_VF1]);
+
+            foreach ($dateRangeFilters as $filter) {
+                if ($range = $this->parseDateRangeFilter($filter)) {
+                    $from = $range['from'];
+                    $to = $range['to'];
+                    $type = isset($range['type']) ? $range['type'] : 'overlap';
+                    $filter = "$dateRangeField:$type|[$from TO $to]";
+                    parent::addFilter($filter);
+                }
+            }
+        }
+    }
+
+    /**
      * Support method for initSearch() -- handle basic settings.
      *
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
