@@ -1,8 +1,8 @@
 <? /* Display thumbnail if appropriate: */ ?>
 <? if ($cover): ?>
   <? if ($this->link): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>"><? endif; ?>
-  <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($cover); ?>"/>
+  <img alt="<?=$this->transEsc('Cover Image')?>" <? if ($linkPreview): ?>data-linkpreview="true" <? endif; ?>class="recordcover" src="<?=$this->escapeHtmlAttr($cover); ?>"/>
   <? if ($this->link): ?></a><? endif; ?>
 <? else: ?>
-  <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+  <img src="<?=$this->url('cover-unavailable')?>" <? if ($linkPreview): ?>data-linkpreview="true" <? endif; ?>class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
 <? endif; ?>

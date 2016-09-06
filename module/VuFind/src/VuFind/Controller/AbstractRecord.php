@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -110,8 +110,15 @@ class AbstractRecord extends AbstractBase
             throw new ForbiddenException('Comments disabled');
         }
 
+        $recaptchaActive = $this->recaptcha()->active('userComments');
+
         // Force login:
         if (!($user = $this->getUser())) {
+            // Validate CAPTCHA before redirecting to login:
+            if (!$this->formWasSubmitted('comment', $recaptchaActive)) {
+                return $this->redirectToRecord('', 'UserComments');
+            }
+
             // Remember comment since POST data will be lost:
             return $this->forceLogin(
                 null, ['comment' => $this->params()->fromPost('comment')]
@@ -125,6 +132,11 @@ class AbstractRecord extends AbstractBase
         $comment = $this->params()->fromPost('comment');
         if (empty($comment)) {
             $comment = $this->followup()->retrieveAndClear('comment');
+        } else {
+            // Validate CAPTCHA now only if we're not coming back post-login:
+            if (!$this->formWasSubmitted('comment', $recaptchaActive)) {
+                return $this->redirectToRecord('', 'UserComments');
+            }
         }
 
         // At this point, we should have a comment to save; if we do not,
