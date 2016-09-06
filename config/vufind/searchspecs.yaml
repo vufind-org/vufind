@@ -148,6 +148,19 @@
 # [uppercase] - Convert string to uppercase
 #
 # See the CallNumber search below for an example of custom munging in action.
+#
+#-----------------------------------------------------------------------------------
+#
+# Note that you may create a "@parent_yaml" entry at the very top of the file to
+# inherit sections from another file. For example:
+#
+# @parent_yaml: "/path/to/my/file.yaml"
+#
+# Only sections not found in this file will be loaded in from the parent file.
+# In some complex scenarios, this can be a useful way of sharing settings
+# between multiple configured VuFind instances. You can create a chain of parent
+# files if necessary.
+#
 #-----------------------------------------------------------------------------------
 
 # These searches use Dismax when possible:
