@@ -105,6 +105,16 @@ class PAIA extends DAIA
     }
 
     /**
+     * Get the PAIA specific CacheKey
+     *
+     * @return string
+     */
+    protected function getPaiaCacheKey($key)
+    {
+        return md5($this->paiaURL) . $key . '_items';
+    }
+
+    /**
      * Get the session container (constructing it on demand if not already present)
      *
      * @return SessionContainer
@@ -256,7 +266,9 @@ class PAIA extends DAIA
             // Otherwise the changed status will not be shown before the cache
             // expires.
             if ($this->paiaCacheEnabled) {
-                $this->removeCachedData($patron['cat_username'] . '_items');
+                $this->removeCachedData(
+                    $this->getPaiaCacheKey($patron['cat_username'])
+                );
             }
         }
         $returnArray = ['count' => $count, 'items' => $details];
@@ -933,7 +945,9 @@ class PAIA extends DAIA
                     // current item otherwise the changed status will not be shown
                     // before the cache expires
                     if ($this->daiaCacheEnabled) {
-                        $this->removeCachedData($holdDetails['doc_id']);
+                        $this->removeCachedData(
+                            $this->getDaiaCacheKey($holdDetails['doc_id'])
+                        );
                     }
                 }
             }
@@ -1041,7 +1055,9 @@ class PAIA extends DAIA
             // item renew was successfull and therefore the status changed. Otherwise
             // the changed status will not be shown before the cache expires.
             if ($this->paiaCacheEnabled) {
-                $this->removeCachedData($patron['cat_username'] . '_items');
+                $this->removeCachedData(
+                    $this->getPaiaCacheKey($patron['cat_username'])
+                );
             }
         }
         $returnArray = ['blocks' => false, 'details' => $details];
@@ -1079,7 +1095,7 @@ class PAIA extends DAIA
         // check for existing data in cache
         if ($this->paiaCacheEnabled) {
             $itemsResponse = $this->getCachedData(
-                $patron['cat_username'] . '_items'
+                $this->getPaiaCacheKey($patron['cat_username'])
             );
         }
 
@@ -1089,7 +1105,7 @@ class PAIA extends DAIA
             );
             if ($this->paiaCacheEnabled) {
                 $this->putCachedData(
-                    $patron['cat_username'] . '_items', $itemsResponse
+                    $this->getPaiaCacheKey($patron['cat_username']), $itemsResponse
                 );
             }
         }
