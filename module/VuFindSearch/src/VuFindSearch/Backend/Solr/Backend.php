@@ -74,6 +74,13 @@ class Backend extends AbstractBackend
     protected $queryBuilder = null;
 
     /**
+     * Similar records query builder.
+     *
+     * @var SimilarBuilder
+     */
+    protected $similarBuilder = null;
+
+    /**
      * Constructor.
      *
      * @param Connector $connector SOLR connector
@@ -211,6 +218,7 @@ class Backend extends AbstractBackend
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
+        $params->mergeWith($this->getSimilarBuilder()->build($id, $params));
         $response   = $this->connector->similar($id, $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
@@ -302,6 +310,33 @@ class Backend extends AbstractBackend
             $this->queryBuilder = new QueryBuilder();
         }
         return $this->queryBuilder;
+    }
+
+    /**
+     * Set the similar records query builder.
+     *
+     * @param SimilarBuilder $similarBuilder Similar builder
+     *
+     * @return void
+     */
+    public function setSimilarBuilder(SimilarBuilder $similarBuilder)
+    {
+        $this->similarBuilder = $similarBuilder;
+    }
+
+    /**
+     * Return similar records query builder.
+     *
+     * Lazy loads an empty default SimilarBuilder if none was set.
+     *
+     * @return SimilarBuilder
+     */
+    public function getSimilarBuilder()
+    {
+        if (!$this->similarBuilder) {
+            $this->similarBuilder = new SimilarBuilder();
+        }
+        return $this->similarBuilder;
     }
 
     /**
