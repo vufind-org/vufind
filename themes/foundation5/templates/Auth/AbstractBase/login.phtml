@@ -1,0 +1,24 @@
+<!-- auth - abstractbase - LOGIN.phtml -->
+<? $account = $this->auth()->getManager(); ?>
+<? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
+<? if (!$sessionInitiator): // display default login form if no login URL provided ?>
+  <form method="post" class="form-horizontal" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
+    <?=$this->auth()->getLoginFields()?>
+    <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
+    <div class="row">
+      <div class="medium-9 columns medium-offset-3">
+        <? if ($account->supportsCreation()): ?>
+          <a class="button link createAccountLink" role="button" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
+        <? endif; ?>
+        <input class="button" role="button" aria-label="submit form" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
+        <? if ($account->supportsRecovery()): ?>
+          <br/>
+          <a class="button link" role="button" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
+        <? endif; ?>
+      </div>
+    </div>
+  </form>
+<? else: ?>
+  <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+<? endif; ?>
+<!-- auth - abstractbase - LOGIN.phtml end -->

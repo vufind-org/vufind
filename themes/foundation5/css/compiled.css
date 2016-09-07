@@ -1,0 +1,1370 @@
+meta.foundation-version {
+  font-family: "/{{VERSION}}/";
+}
+
+meta.foundation-mq-small {
+  font-family: "/only screen/";
+  width: 0;
+}
+
+meta.foundation-mq-small-only {
+  font-family: "/only screen and (max-width: 40em)/";
+  width: 0;
+}
+
+meta.foundation-mq-medium {
+  font-family: "/only screen and (min-width:40.0625em)/";
+  width: 40.0625em;
+}
+
+meta.foundation-mq-medium-only {
+  font-family: "/only screen and (min-width:40.0625em) and (max-width:64em)/";
+  width: 40.0625em;
+}
+
+meta.foundation-mq-large {
+  font-family: "/only screen and (min-width:64.0625em)/";
+  width: 64.0625em;
+}
+
+meta.foundation-mq-large-only {
+  font-family: "/only screen and (min-width:64.0625em) and (max-width:90em)/";
+  width: 64.0625em;
+}
+
+meta.foundation-mq-xlarge {
+  font-family: "/only screen and (min-width:90.0625em)/";
+  width: 90.0625em;
+}
+
+meta.foundation-mq-xlarge-only {
+  font-family: "/only screen and (min-width:90.0625em) and (max-width:120em)/";
+  width: 90.0625em;
+}
+
+meta.foundation-mq-xxlarge {
+  font-family: "/only screen and (min-width:120.0625em)/";
+  width: 120.0625em;
+}
+
+meta.foundation-data-attribute-namespace {
+  font-family: false;
+}
+
+html, body {
+  height: 100%;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: inherit;
+  -moz-box-sizing: inherit;
+  box-sizing: inherit;
+}
+
+html,
+body {
+  font-size: 100%;
+}
+
+body {
+  background: #fff;
+  color: #222;
+  cursor: auto;
+  font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+a:hover {
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+img {
+  -ms-interpolation-mode: bicubic;
+}
+
+#map_canvas img,
+#map_canvas embed,
+#map_canvas object,
+.map_canvas img,
+.map_canvas embed,
+.map_canvas object,
+.mqa-display img,
+.mqa-display embed,
+.mqa-display object {
+  max-width: none !important;
+}
+
+.left {
+  float: left !important;
+}
+
+.right {
+  float: right !important;
+}
+
+.clearfix:before, .clearfix:after {
+  content: " ";
+  display: table;
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.hide {
+  display: none;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.antialiased {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+textarea {
+  height: auto;
+  min-height: 50px;
+}
+
+select {
+  width: 100%;
+}
+
+/* Note:  replace $default-danger with the standard alert color of your customized Foundation download */
+html {
+  overflow: -moz-scrollbars-vertical !important;
+  /* Avoid Mozilla horizontal jumps upon dropdown content extending past bottom of browser window */
+}
+
+body {
+  background-color: #F6F6F6;
+}
+
+.main.panel {
+  background: #fff;
+}
+
+/* LISTS */
+.list-unstyled {
+  padding-left: 0;
+  list-style: none none;
+}
+
+/* LISTS end */
+/* TABLES */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  max-width: 100%;
+}
+
+.table {
+  width: 100%;
+  word-wrap: break-word;
+  margin-bottom: 1.25rem;
+  border-spacing: 0;
+  border-collapse: collapse !important;
+}
+
+.alphabrowse.table {
+  margin-bottom: 0;
+  table-layout: fixed;
+}
+
+.citation .pace-car th, .citation .pace-car td {
+  border: 0;
+  padding: 0;
+}
+
+.citation th {
+  text-align: right;
+}
+
+/*
+table col[class*="col-"]{position: static;float: none;display: table-column}
+table td[class*="col-"],table th[class*="col-"]{position: static;float: none;display: table-cell	}
+*/
+/* TABLES - end */
+/* MODALS */
+/* legacy BS modals */
+/* copied from BS compiles.css + adapted slightly - replace when FNDTN modal is ready */
+/* -- Removed for Foundation features -- */
+/* legacy BS modals - end */
+/* MODALS - end */
+/*LIST GROUPS - do not exist in FNDTN */
+/* -- Removed for Foundation features -- */
+.sidebar .accordion {
+  margin-bottom: 6px;
+  margin-left: 0;
+}
+
+.sidebar .accordion .content {
+  border: 1px solid #e8e8e8;
+  border-bottom: 0;
+}
+
+.sidebar .side-nav {
+  padding: 0;
+}
+
+.sidebar .side-nav li {
+  margin: 0;
+}
+
+/* CHECK relevance of the following - in use? - Fixme */
+.panel > .list-group {
+  margin-bottom: 0;
+}
+
+.panel > .list-group .list-group-item {
+  border-width: 1px 0;
+}
+
+.panel > .list-group:first-child .list-group-item:first-child {
+  border-top: 0;
+}
+
+.panel > .list-group:last-child .list-group-item:last-child {
+  border-bottom: 0;
+}
+
+.panel h1 + .list-group .list-group-item:first-child,
+.panel h2 + .list-group .list-group-item:first-child,
+.panel h3 + .list-group .list-group-item:first-child,
+.panel h4 + .list-group .list-group-item:first-child,
+.panel h5 + .list-group .list-group-item:first-child {
+  border-top-width: 0;
+}
+
+label.list-group-item {
+  font-weight: normal;
+  margin-top: 0;
+  padding-left: 2rem;
+}
+
+.list-group-item.title {
+  font-weight: normal;
+}
+
+.browse.list-group .list-group-item {
+  word-wrap: break-word;
+}
+
+.browse.list-group .list-group-item.view-record {
+  border-top: 0;
+  font-size: .75rem;
+  padding: 0.1rem 0.25rem;
+  text-align: right;
+}
+
+.list-group-item.active i.fa,
+.badge i.fa {
+  cursor: inherit;
+}
+
+/* CHECK relevance 2 here - Fixme */
+/* List-groups - end */
+/* Badges = round labels = also used as blocks with number of items in facets - we take the roundness out */
+.badge {
+  padding: 0.25em 0.5em;
+  display: inline-block;
+  white-space: nowrap;
+  color: #fff;
+  background: #999;
+  font-size: .85em;
+  line-height: 1.5;
+  text-align: center;
+  min-width: .75em;
+  vertical-align: baseline;
+  border-radius: 0;
+}
+
+.badge:empty {
+  display: none;
+}
+
+.button .badge {
+  position: relative;
+  top: -1px;
+  margin-left: .5rem;
+}
+
+.button.small .badge {
+  top: 0;
+  padding: 1px 4px;
+}
+
+/* Check if button.small exists - Fixme  */
+a.badge:hover,
+a.badge:focus {
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.list-group-item.active > .badge,
+.sub-nav > .active > a > .badge {
+  color: #2ba6cb;
+  background-color: #fff;
+}
+
+.sub-nav > li > a > .badge {
+  margin-left: 4px;
+}
+
+.badge a {
+  color: #FFF;
+}
+
+/* Badges - end */
+/* Help blocks */
+/* short messages with hints such as eg. my account - favourites - edit: 'separate tags ... with comma' or advanced search - 'search for' */
+.help-block {
+  display: block;
+  color: #4D4D4D;
+  font-size: .875rem;
+}
+
+/* Help blocks - end */
+/* Link button - a 'deemphasized' BS button that looks like a link but has button behavior, original btn-link, used only in auth/abstractbase/login.phtml. */
+.button.link {
+  color: #008cba;
+  font-weight: normal;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+
+.button.link,
+.button.link:active,
+.button.link[disabled],
+fieldset[disabled] .button.link {
+  background-color: transparent;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.button.link,
+.button.link:hover,
+.button.link:focus,
+.button.link:active {
+  border-color: transparent;
+}
+
+.button.link:hover,
+.button.link:focus {
+  color: #0078a0;
+  text-decoration: underline;
+  background-color: transparent;
+}
+
+.button.link[disabled]:hover,
+fieldset[disabled] .button.link:hover,
+.button.link[disabled]:focus,
+fieldset[disabled] .button.link:focus {
+  color: #999;
+  text-decoration: none;
+}
+
+/* Link button - end */
+/* SYMBOLS and ICONS */
+/* Dropdown symbol (e.g. Language selection */
+.caret {
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid;
+  margin-left: 2px;
+  width: 0;
+  display: inline-block;
+  height: 0;
+  vertical-align: middle;
+}
+
+/* Dropdown symbol - end */
+/* Close X */
+.close {
+  float: right;
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0px 1px 0px #FFF;
+  opacity: 0.2;
+  margin-top: -1rem;
+  margin-right: 0;
+}
+
+.close:hover, .close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+/* Close X - END */
+/* SYMBOLS and ICONS - end */
+/* SCREENREADER-specific (only 'visible' on screen readers) */
+.sr-only {
+  width: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  position: absolute;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.sr-only {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  position: absolute;
+  height: auto;
+  overflow: hidden;
+}
+
+.sr-only:focus {
+  padding: 15px 15px;
+  width: auto;
+  display: block;
+  color: #132531;
+  background: #ffffff;
+  font-size: 1rem;
+  line-height: 20px;
+  text-decoration: none;
+  text-transform: none;
+  clip: auto;
+  height: 50px;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 100000;
+  border-radius: 4px;
+}
+
+/* SCREENREADER-specific - end */
+/* HIDDEN elements, used for Login/-out, accordion-more-collapsibles (facets) etc.,  */
+/* -- Removed for Foundation features (.hide) -- */
+/* HIDDEN elements - end */
+/* HEADER */
+/* Sticky header, TopBar, searchbox, breadcrumbs */
+.top-bar {
+  height: auto;
+}
+
+.top-bar .name {
+  margin-left: 0;
+}
+
+.top-bar #searchForm {
+  margin-left: 81px;
+}
+
+.top-bar #searchForm li.has-form {
+  height: auto;
+  margin-bottom: .4rem;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.top-bar input, .top-bar select, .top-bar button, .top-bar .button {
+  height: 2rem;
+  position: relative;
+  top: .4rem;
+}
+
+.top-bar button, .top-bar .button {
+  line-height: 1.3rem;
+}
+
+.top-bar select {
+  line-height: .8rem;
+}
+
+.top-bar .has-form,
+.top-bar.search {
+  height: auto;
+}
+
+.top-bar .has-form input,
+.top-bar .has-form select,
+.top-bar .has-form button,
+.top-bar .has-form .button,
+.top-bar.search input, .top-bar.search select, .top-bar.search button, .top-bar.search .button {
+  top: 0;
+}
+
+.top-bar .has-form .button,
+.top-bar.search .button {
+  line-height: 1.25rem;
+}
+
+.top-bar .has-form li.has-form,
+.top-bar.search li.has-form {
+  height: 2.5rem;
+}
+
+.contain-to-grid .breadcrumbs {
+  max-width: 62.5rem;
+  margin: 0 auto;
+  margin-bottom: 0;
+}
+
+/* max-width to prevent from going full width on scroll-down */
+/*	.contain-to-grid .breadcrumbs { max-width: 60.5rem; } max-width to prevent from going full width on scroll-down */
+.breadcrumbs.columns {
+  float: none;
+}
+
+.breadcrumbs {
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid #666666;
+  background-color: inherit;
+  color: #FFF;
+}
+
+.breadcrumbs > * {
+  color: #FFFFFF;
+}
+
+.breadcrumbs > * a {
+  color: #DDDDDD;
+}
+
+/* Sticky header, TopBar, searchbox, breadcrumbs - end */
+/* Searchbox */
+/* see also form-control below */
+.twitter-typeahead {
+  background: #fff;
+  vertical-align: top;
+  width: 100%;
+  border: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* is used in search and advanced search - css copied over - CK  */
+.top-bar .twitter-typeahead {
+  line-height: 1.5;
+}
+
+.top-bar .twitter-typeahead input {
+  top: 0;
+}
+
+.top-bar .twitter-typeahead {
+  top: 0;
+}
+
+.top-bar #searchForm .columns {
+  top: 0.53125rem;
+}
+
+.twitter-typeahead .tt-hint {
+  display: none !important;
+}
+
+.tt-dropdown-menu {
+  margin-bottom: 1.25rem;
+  padding-left: 0;
+}
+
+/* Placement of Search and Advanced buttons */
+#searchForm .button-group.even-2 li:nth-of-type(2) {
+  float: right;
+}
+
+#searchForm .button-group.even-2 li {
+  width: 48.25%;
+}
+
+/* Placement of Search and Advanced buttons - end */
+/* Keep filter checkbox */
+#searchForm .checkbox label {
+  font-size: .75rem;
+  color: #FFF;
+  line-height: 0.2;
+  margin-left: .75rem;
+}
+
+/* Keep filter checkbox - end */
+.searchHomeContent .panel {
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+}
+
+.nav.searchbox.large-12.hide-for-large-up {
+  background-color: #333;
+}
+
+/* Dark BG for searchbox when located directly under header */
+/* Position of ai and devel checkboxes for developer machines */
+#searchForm input[type="checkbox"] {
+  margin-left: 1rem;
+}
+
+.top-bar #searchForm input[type="checkbox"] {
+  margin-left: 0;
+}
+
+/* Position of ai and devel checkboxes for developer machines */
+/* Searchbox - end */
+/* Advanced Search: search term insert */
+#top-srchbx .tabs-content {
+  border: none;
+}
+
+p.adv_search_terms {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  margin-top: .25rem;
+  margin-bottom: .25rem;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  font-size: .80rem;
+}
+
+ul.adv_search_links {
+  list-style: none;
+}
+
+.top-bar-section .adv_search_links {
+  float: left;
+  margin-bottom: 1rem;
+}
+
+.adv_search_links li {
+  border: 1px solid #ccc;
+}
+
+.top-bar-section .adv_search_links > a {
+  font-size: .80rem;
+}
+
+/* Advanced Search: search term insert - END */
+/* HEADER end */
+/* NAVIGATION BAR */
+ul[role=navigation] {
+  list-style: none;
+}
+
+/* NAVIGATION BAR end */
+/* MAIN content area */
+/* for Searchbox see header, above, for Advanced Search fields see below */
+#content.panel {
+  padding: 1rem;
+}
+
+/* Advanced Search: criterion remove button */
+#advSearchForm .close {
+  margin-top: -1.5rem;
+  margin-right: -1.5rem;
+}
+
+#advSearchForm .panel {
+  margin-bottom: 1rem;
+}
+
+#advSearchForm #limit {
+  margin-top: 1.25rem;
+}
+
+/* top-align the fields at the bottom of advanced search page */
+/* Advanced Search: criterion remove button - END */
+/* List view */
+/* Rows */
+.row.result {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.row.result:first-of-type {
+  padding-top: 0;
+}
+
+.row.result:nth-of-type(even) {
+  background-color: #eaeaea;
+}
+
+/* Rows - end */
+/* Limit, sort and select-boxes */
+.form-inline.sort label,
+.form-inline.limit label {
+  /*float: left; margin-right: .25em;*/
+  font-size: .875em;
+}
+
+/*.form-inline .jumpMenu {max-width: 100%} */
+.sort select,
+.limit select {
+  width: auto;
+}
+
+/* Limit, sort and view selector dropdowns - end */
+/* Bulk action buttons, e.g. favourites list */
+.bulk-action-buttons {
+  clear: both;
+}
+
+/* Images column */
+form .row.result .row {
+  margin-left: -1rem;
+}
+
+form .row.result .row .columns,
+form .row.result .row .column {
+  padding-left: 0 !important;
+}
+
+img.recordcover {
+  height: 100%;
+}
+
+/* Images column - end */
+/* Full text links */
+/* Full text links - end */
+/* Favourites, Edit and Delete links */
+.delete.tool,
+.edit.tool,
+.save-record,
+.qrcodeLink,
+.hierarchyTreeLinkText {
+  font-size: .875rem;
+}
+
+/* Favourites and Delete links - end */
+/* List view - end */
+/* Detail view */
+/* Page browser */
+.pager {
+  margin: 0 0 1rem 0;
+  padding: 0;
+  text-align: center;
+  list-style: outside none none;
+}
+
+.pager li {
+  display: inline;
+}
+
+.pager li.disabled {
+  display: none;
+}
+
+.pager li:first-of-type {
+  float: left;
+}
+
+.pager li:last-of-type {
+  float: right;
+}
+
+.pager li > a,
+.pager li > span {
+  display: inline-block;
+  padding: 0.25rem 1rem;
+}
+
+.pager li > a:first-of-type {
+  padding-left: .75rem;
+}
+
+.pager li > a:last-of-type {
+  padding-right: .75rem;
+}
+
+.pager .button:first-of-type {
+  margin-left: 0;
+}
+
+.pager .button:last-of-type {
+  margin-right: 0;
+}
+
+/* Page browser - end */
+/* Sub-nav with modal links */
+.main .sub-nav {
+  width: 100%;
+}
+
+.sub-nav dd {
+  margin-left: 0;
+}
+
+.sub-nav dd:first-of-type a {
+  padding-left: 0;
+}
+
+.sub-nav dt a,
+.sub-nav dd a {
+  padding: 0.1875rem 1rem 0.1875rem 0;
+}
+
+.sub-nav .f-dropdown li a {
+  padding: 0.35rem 0.75rem;
+}
+
+/* Sub-nav with modal links - END */
+/* Book cover column */
+.bookimgs {
+  padding-top: .4rem;
+}
+
+.bookimgs img {
+  width: 100%;
+}
+
+/* Book cover column - end */
+/* Clearing lightboxes for book images */
+.bookimgs .clearing-blackout {
+  background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.45);
+  /*height: 80%; width:80%;margin: 2em 10%; */
+}
+
+.bookimgs .clearing-blackout .carousel {
+  display: none;
+}
+
+/* This is the container for the thumbnails - only useful for multiple images */
+.bookimgs .clearing-container .visible-img {
+  max-width: 90%;
+  max-height: 70%;
+  border: 2px solid #fff;
+  margin: 2em auto;
+}
+
+.bookimgs .clearing-assembled .clearing-container .visible-img {
+  background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.7);
+}
+
+.bookimgs .visible-img img {
+  width: auto;
+  height: 100%;
+}
+
+.bookimgs .clearing-main-prev,
+.bookimgs .clearing-main-next {
+  display: none;
+}
+
+/* This is the container for the thumbnails - only useful for multiple images */
+.bookimgs p.clearing-caption {
+  color: #ccc;
+  background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.7);
+}
+
+/* Clearing lightboxes - end */
+#content h2 {
+  font-size: 1.6875rem;
+}
+
+/* Detail view - end */
+/* Tabs */
+.tabs {
+  border: 1px solid #DDD;
+  border-bottom: none;
+}
+
+.tabs dd > a,
+.tabs .tab-title > a {
+  padding: 0.5rem 1rem;
+}
+
+.tabs-content {
+  border: 1px solid #DDD;
+  border-top: none;
+}
+
+.tabs-content > .content {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.tabs-content > .content.active {
+  background: #fff;
+}
+
+/* Description, Details tab */
+/* Note: minimum width = small mobile landscape */
+#description-tab.content,
+#details-tab.content {
+  padding: 0;
+}
+
+#description-tab table,
+#details-tab table {
+  padding: 0;
+  border: none;
+}
+
+.citation .pace-car th,
+.citation .pace-car td {
+  border: 0;
+  padding: 0;
+}
+
+.citation th {
+  text-align: right;
+}
+
+#description-tab table tr th,
+#description-tab table tr td,
+table.citation tr th,
+table.citation tr td {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  vertical-align: top;
+  border-top: 1px solid #DDD;
+  word-wrap: break-word;
+  -moz-hyphens: auto;
+  -o-hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
+
+/* Details tab - END */
+/* Hierarchy tab */
+#hierarchyTreeHolder {
+  border-right: 1px solid #eee;
+  overflow-x: hidden;
+}
+
+/* Hierarchy tab - end */
+/* Tabs - end */
+/* Forms */
+legend {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 1.5rem;
+  line-height: inherit;
+  color: #333;
+  border: 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+fieldset {
+  border: none;
+}
+
+fieldset legend {
+  background: none;
+}
+
+/* the following copied from BS compiles.css + adapted in places */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-horizontal .form-group {
+  margin-bottom: 1em;
+  display: inline-block;
+  clear: both;
+  width: 100%;
+}
+
+/*.form-horizontal .form-group:after {clear: both}*/
+.form-horizontal .control-label,
+.form-horizontal .radio,
+.form-horizontal .checkbox,
+.form-horizontal .radio-inline,
+.form-horizontal .checkbox-inline {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: .5em;
+}
+
+.form-horizontal .radio,
+.form-horizontal .checkbox {
+  min-height: 1.5rem;
+}
+
+.form-horizontal .form-group {
+  margin-left: -1rem;
+  margin-right: -1rem;
+}
+
+.form-horizontal .form-control-static {
+  padding-top: .5rem;
+}
+
+.form-horizontal .has-feedback .form-control-feedback {
+  top: 0;
+  right: 1rem;
+}
+
+.form-horizontal .form-group:before,
+.form-horizontal .form-group:after {
+  content: " ";
+  display: table;
+}
+
+.form-horizontal .form-group:after {
+  clear: both;
+}
+
+.navbar-form .form-control {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.form-control {
+  display: block;
+  height: 2.3125rem;
+  font-size: .875rem;
+  line-height: 1.42857;
+  color: #555;
+  background-color: #FFF;
+  background-image: none;
+  border: 1px soli #CCC;
+}
+
+.form-control:focus {
+  border-color: #66afe9;
+  outline: 0;
+}
+
+.form-control::-moz-placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+.form-control:-ms-input-placeholder {
+  color: #999;
+}
+
+.form-control::-webkit-input-placeholder {
+  color: #999;
+}
+
+.form-control[disabled],
+.form-control[readonly],
+fieldset[disabled] .form-control {
+  cursor: not-allowed;
+  background-color: #eee;
+  opacity: 1;
+}
+
+textarea.form-control {
+  height: auto;
+}
+
+/* copied from BS compiles.css + adapted in places - end */
+/* Forms end */
+/* Alert boxes */
+.alert-box ul {
+  font-size: inherit;
+  margin-bottom: 0;
+}
+
+/* same font size as alert box */
+.alert-box.success a {
+  color: #FFF;
+}
+
+/* Link colour in alert boxes same as standard link color - fixed here ! */
+.alert-box.success a:hover,
+.alert-box.success a:focus {
+  color: #CCC;
+}
+
+.alert-box.alert a,
+.alert-box.alert a:hover,
+.alert-box.alert a:focus {
+  color: #FF9500;
+}
+
+/* Alert boxes - end */
+/* Text highlighting */
+.text-success,
+.text-error,
+.text-muted {
+  padding-left: .25em;
+  padding-right: .25em;
+}
+
+.text-success {
+  background-color: #43AC6A;
+  border-color: #3A945B;
+  color: #FFF;
+}
+
+.text-alert,
+.text-error,
+.text-muted {
+  background-color: #FFF;
+  border-color: #FFF;
+  color: #999;
+}
+
+.text-warning {
+  color: #c09853;
+}
+
+a.text-warning:hover,
+a.text-warning:focus {
+  color: #a47e3c;
+}
+
+.text-alert,
+.text-error {
+  color: #b94a48;
+}
+
+a.text-alert:hover,
+a.text-alert:focus,
+a.text-error:hover,
+a.text-error:focus {
+  color: #953b39;
+}
+
+.text-info {
+  color: #3a87ad;
+}
+
+a.text-info:hover,
+a.text-info:focus {
+  color: #2d6987;
+}
+
+.text-success {
+  color: #468847;
+}
+
+a.text-success:hover,
+a.text-success:focus {
+  color: #356635;
+}
+
+/* Text highlighting - end */
+/* MAIN content area - end */
+/* FOOTER */
+footer.panel {
+  padding: 1rem;
+}
+
+/* FOOTER - end */
+/* SIDEBAR, FACETS ETC */
+/* MOVE TO MQueries - FIXME */
+.sidebar.columns,
+.sidebar.column {
+  /*padding-right:0;*/
+}
+
+/* use when no padding desired but check with Sidebar on left! */
+.sidebar h4 {
+  font-size: 1rem;
+  /*margin-top: 1.5em*/
+}
+
+/* Facet header */
+.sidebar .list-group:not(.filters) .title {
+  cursor: pointer;
+}
+
+.sidebar .list-group:not(.filters) .title a.facet-hdr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.sidebar .list-group:not(.filters) .title.active a.facet-hdr {
+  border-bottom: none;
+}
+
+/* Expand toggle icon */
+.sidebar .list-group:not(.filters) .title.active a.facet-hdr:after {
+  content: '\25BC';
+  color: #333;
+}
+
+.sidebar .list-group:not(.filters) .title a.facet-hdr:after {
+  content: '\25B2';
+  float: right;
+  color: #333;
+}
+
+/* Check float - FIXME */
+/* Expand toggle icon - end */
+/* Facet header - end */
+/* List items in sidebar and elsewhere */
+.list-group-item {
+  padding: 0.75em 1em;
+  /*margin-bottom: -1px;*/
+  border-bottom: 1px solid #dddddd;
+  display: block;
+  background: #ffffff;
+  position: relative;
+}
+
+li.list-group-item {
+  padding: 0;
+  border: 1px solid #dddddd;
+  border-bottom: none;
+}
+
+/* Remove-search-filters box */
+/* Remove-search-filters header */
+.filters .list-group-item.title {
+  background: #e8e8e8;
+  color: #222;
+  padding: 1rem;
+  display: block;
+  font-size: 1rem;
+}
+
+/* Remove-search-filters header - end */
+.filters li.list-group-item {
+  border-color: #dddddd;
+}
+
+.filters a.list-group-item {
+  border-left: 1px solid #dddddd;
+  border-right: 1px solid #dddddd;
+}
+
+.filters a.list-group-item:last-of-type {
+  border-bottom: 1px solid #dddddd;
+}
+
+/* Remove-search-filters box - end */
+/* Selected filters */
+a.list-group-item.active,
+a.list-group-item.active:hover,
+a.list-group-item.active:focus {
+  z-index: 2;
+  color: #FFF;
+  background-color: #2ba6cb;
+  border-color: #2ba6cb;
+}
+
+/* Selected filters - end */
+/*check if also relevant for other Lists in sidebar! - FIXME */
+.sidebar > .accordion .accordion-navigation > .content {
+  padding: 0;
+}
+
+/* Similar items */
+.similar-items li.list-group-item,
+.related-evuditions li.list-group-item {
+  padding: 0.75em 1em;
+}
+
+/* Similar items - end */
+/* Badges in sidebar  */
+.list-group-item > .badge {
+  float: right;
+}
+
+.list-group-item > .badge + .badge {
+  margin-right: .25em;
+}
+
+/* CHECK relevance - FIXME */
+/* Badges in sidebar - end */
+/* List items in sidebar - end */
+/* Publication year with range slider */
+ul.date-range-slider {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+/*ul.date-range-slider > .columns {padding-left: .75em; padding-right: .75em}*/
+ul.date-range-slider .list-group-item {
+  border: none;
+}
+
+ul.date-range-slider .slider-container {
+  padding-left: .6rem;
+  padding-right: .6rem;
+  margin-bottom: 1rem;
+}
+
+/* Publication year with range slider - end */
+/* SIDEBAR, FACETS ETC - end */
+/* ICONS and SYMBOLS */
+/* Favorites */
+.fa-star:hover {
+  color: #ffa500;
+}
+
+/* Close facet, close modal, close alert box etc */
+.fa-times:hover {
+  color: #c60f13;
+}
+
+/* RSS subscribe, send per mail, save search in central column */
+.searchtools > .fa:hover {
+  color: #c60f13;
+}
+
+/* Log-out button, Your Account button  */
+.top-bar-section ul li.logoutLink > a {
+  color: #ff0000;
+}
+
+.top-bar-section ul li.logoutOptions a:hover,
+.top-bar-section ul li.logoutOptions a:focus {
+  color: #ffa500;
+}
+
+/* Icons and Symbols - end */
+.radio,
+.checkbox {
+  position: relative;
+  display: block;
+  margin-top: .7rem;
+  margin-bottom: .7rem;
+}
+
+.radio label,
+.checkbox label {
+  min-height: .8rem;
+  padding-left: 20px;
+  margin-bottom: 0;
+  font-weight: normal;
+  line-height: .8rem;
+  cursor: pointer;
+}
+
+.radio input[type="radio"],
+.radio-inline input[type="radio"],
+.checkbox input[type="checkbox"],
+.checkbox-inline input[type="checkbox"] {
+  position: absolute;
+  margin-left: -20px;
+  margin-top: 4px \9;
+}
+
+.radio + .radio,
+.checkbox + .checkbox {
+  margin-top: -5px;
+}

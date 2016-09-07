@@ -1,0 +1,132 @@
+<!-- search - advanced - EDS.phtml -->
+<div class="clearfix"></div>
+<div class="row">
+  <? if (!empty($this->expanderList)): ?>
+    <fieldset class="medium-4 columns">
+      <legend><?=$this->transEsc('eds_modes_and_expanders')?></legend>
+      <? foreach ($this->expanderList as $field => $expander):
+        $value = $expander['Value'] ?>
+        <div class="checkbox">
+          <label for="expand_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
+            <input id="expand_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($expander['selected']) && $expander['selected'])?'checked="checked"':''?> name="filter[]" value="EXPAND:<?=$this->escapeHtmlAttr($value)?>">
+            <?=$this->transEsc('eds_expander_' . $value, array(), $expander['Label'])?>
+          </label>
+        </div>
+      <? endforeach; ?>
+
+      <label class="displayBlock" for="searchModes"><?=$this->transEsc('Search Mode')?></label>
+      <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" class="form-control">
+        <? foreach ($this->searchModes as $field => $searchMode):
+          $value = $searchMode['Value'] ?>
+          <option <?=(isset($searchMode['selected']) && $searchMode['selected'])?'selected="selected"':''?> value="SEARCHMODE:<?=$this->escapeHtmlAttr($value)?>">
+            <?= /* 'Label' comes from API and is always in English; try to translate structured value before using it: */ $this->transEsc('eds_mode_' . $value, array(), $searchMode['Label']) ?>
+          </option>
+        <? endforeach; ?>
+      </select>
+    </fieldset>
+  <? endif; ?>
+
+  <? if (!empty($this->limiterList)): ?>
+    <fieldset class="medium-4 columns">
+      <legend><?=$this->transEsc('Limit To')?></legend>
+      <? foreach ($this->limiterList as $field => $facet): ?>
+        <? switch($facet['Type']){
+            case 'multiselectvalue': ?>
+              <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>"><?=$this->transEsc($facet['Label'])?></label><br/>
+              <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="form-control">
+                <? foreach ($facet['LimiterValues'] as $id => $facetValue): ?>
+                  <? $value = $facetValue['Value']; ?>
+                  <option value="<?='LIMIT|'.$this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
+                <? endforeach; ?>
+              </select>
+              <!-- <br/> -->
+              <? break;
+            case 'select':
+              $value = $facet['LimiterValues'][0]['Value'] ?>
+              <div class="checkbox">
+                <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
+                  <input id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($facet['LimiterValues'][0]['selected']) && $facet['LimiterValues'][0]['selected'])?'checked="checked"':''?> name="filter[]" value="<?=$this->escapeHtmlAttr('LIMIT|'.$field . ':' . $value)?>">
+                  <?=$this->transEsc('eds_limiter_' . $field, array(), $facet['Label'])?>
+                </label>
+              </div>
+              <? break;
+            case 'text': ?>
+              <!-- not implemented -->
+              <? break;
+            case 'numeric':?>
+              <!-- not implemented -->
+              <? break;
+            case 'numericrange':?>
+              <!-- not implemented -->
+              <? break;
+            case 'ymrange': ?>
+              <!-- not implemented -->
+              <? break;
+            case 'yrange': ?>
+              <!-- not implemented -->
+              <? break;
+            case 'historicalrange':?>
+              <!-- not implemented -->
+              <? break;
+            case 'singleselectvalue':?>
+              <!-- not implemented -->
+              <? break;
+          }; ?>
+      <? endforeach; ?>
+    </fieldset>
+  <? endif; ?>
+  <? if (isset($this->dateRangeLimit)): ?>
+    <fieldset class="medium-4 columns">
+      <legend><?=$this->transEsc('adv_search_year')?></legend>
+      <input type="hidden" name="daterange[]" value="PublicationDate"/>
+      <div class="row">
+        <div class="medium-6 columns">
+          <label for="PublicationDatefrom"><?=$this->transEsc('date_from')?>:</label>
+          <input type="text" name="PublicationDatefrom" id="PublicationDatefrom" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[0])?>" class="form-control"/>
+</div>
+        <div class="medium-6 columns">
+          <label for="PublicationDateto"><?=$this->transEsc('date_to')?>:</label>
+          <input type="text" name="PublicationDateto" id="PublicationDateto" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[1])?>" class="form-control"/>
+        </div>
+      </div>
+        <div class="slider-container">
+          <input type="text" id="PublicationDateSlider">
+        </div>
+        <?
+          $this->headScript()->appendFile('vendor/bootstrap-slider.js');
+          $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
+          $future = date('Y', time()+31536000);
+          $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
+          $low  = !empty($current['values'][0]) ? $current['values'][0] : $min;
+          $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
+          $min = intval($min);
+          $max = intval($max);
+          $low = intval($low);
+          $high = intval($high);
+          $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
+          $script = <<<JS
+$(document).ready(function() {
+  var fillTexts = function() {
+    var v = PublicationDateSlider.getValue();
+    $('#PublicationDatefrom').val(v[0]);
+    $('#PublicationDateto').val(v[1]);
+  };
+  var PublicationDateSlider = $('#PublicationDateSlider')
+    .slider({
+       'min':{$min},
+       'max':{$max},
+       'handle':"square",
+       'tooltip':"hide",
+       'value':[{$low},{$high}]
+    })
+    .on('slide', fillTexts)
+    .data('slider');
+  {$init}
+});
+JS;
+      ?>
+      <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+    </fieldset>
+  <? endif; ?>
+</div>
+<!-- search - advanced - EDS.phtml end -->

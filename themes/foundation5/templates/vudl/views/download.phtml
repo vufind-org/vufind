@@ -1,0 +1,24 @@
+<!-- templates - vudl - views - DOWNLOAD.phtml -->
+<script>
+  // Mandatory update function
+  updateFunction = function(data, tab) {
+    $('#file-download').attr("action", data['master']);
+  };
+  $(document).ready(function() {
+    $('#view .tabs dd.opener a').addClass('hide');
+  });
+</script>
+<dl class="tabs" data-tab>
+  <dd class="static opener">
+    <a onClick="toggleSideNav()">
+      <i class="fa fa-caret-right"></i>
+      <i class="fa fa-caret-right"></i>
+      <i class="fa fa-caret-right"></i>
+    </a>
+  </dd>
+  <dd class="active"><a href="#master" id="master-tab">Downloads</a></dd>
+</dl>
+<div class="tab-container text-center content">
+  <?=$this->context($this)->renderInContext('vudl/master-tab.phtml', array())?>
+</div>
+<!-- templates - vudl - views - DOWNLOAD.phtml end -->

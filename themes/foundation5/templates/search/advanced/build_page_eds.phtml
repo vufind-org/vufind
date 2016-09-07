@@ -1,0 +1,28 @@
+<!-- search - advanced - BUILD_PAGE_EDS.phtml -->
+$(document).ready(function() {
+  <? if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>
+    <? foreach ($this->searchDetails->getQueries() as $searchGroup): ?>
+      <? $i = 0; foreach ($searchGroup->getQueries() as $search): ?>
+        <? if (++$i == 1): ?>
+          var new_group = addGroup(
+            '<?=addslashes($search->getString())?>',
+            '<?=addslashes($search->getHandler())?>',
+            '<?=$searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator()?>'
+          );
+        <? else: ?>
+          addSearch(new_group,
+            '<?=addslashes($search->getString())?>',
+            '<?=addslashes($search->getHandler())?>',
+            '<?=addslashes($search->getOperator())?>'
+          );
+        <? endif; ?>
+      <? endforeach; ?>
+    <? endforeach; ?>
+  <? else: ?>
+    var new_group = addGroup();
+    addSearch(new_group);
+    addSearch(new_group);
+  <? endif; ?>
+
+});
+<!-- search - advanced - BUILD_PAGE_EDS.phtml - END -->

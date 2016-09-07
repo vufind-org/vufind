@@ -1,0 +1,150 @@
+<!-- layout.PHTML begin -->
+<?=$this->doctype('HTML5')?>
+<html lang="<?=$this->layout()->userLang?>">
+  <head>
+    <?$this->headThemeResources()?>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <?=$this->headMeta()?>
+    <?=$this->headTitle()?>
+    <?
+      // Set up OpenSearch link:
+      $this->headLink(
+        array(
+          'href' => $this->url('search-opensearch') . '?method=describe',
+          'type' => 'application/opensearchdescription+xml',
+          'title' => $this->transEsc('Library Catalog Search'),
+          'rel' => 'search'
+        )
+      );
+    ?>
+    <?=$this->headLink()?>
+    <?=$this->headStyle()?>
+    <?
+      // Set global path for Javascript code:
+      $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
+
+      // Deal with cart stuff:
+      if (!isset($this->renderingError)) {
+        $cart = $this->cart();
+        $this->jsTranslations()->addStrings(
+          array(
+            'bulk_email_success' => 'bulk_email_success',
+            'bulk_save_success' => 'bulk_save_success',
+            'close' => 'close',
+            'loading' => 'Loading',
+            'sms_success' => 'sms_success'
+          )
+        );
+        if ($cart->isActive()) {
+          $this->headScript()->appendFile("vendor/cookies.js");
+          $this->headScript()->appendFile("cart.js");
+          $domain = $cart->getCookieDomain();
+          $this->headScript()->appendScript(
+            'var cartCookieDomain = ' . (!empty($domain) ? "'$domain'" : 'false') . ';'
+          );
+          $this->jsTranslations()->addStrings(
+            array(
+              'bulk_noitems_advice' => 'bulk_noitems_advice',
+              'confirmDelete' => 'confirm_delete',
+              'confirmEmpty' => 'bookbag_confirm_empty',
+              'viewBookBag' => 'View Book Bag',
+              'addBookBag' => 'Add to Book Bag',
+              'removeBookBag' => 'Remove from Book Bag',
+              'itemsAddBag' => 'items_added_to_bookbag',
+              'itemsInBag' => 'items_already_in_bookbag',
+              'bookbagMax' => $cart->getMaxSize(),
+              'bookbagFull' => 'bookbag_full_msg',
+              'bookbagStatusFull' => 'bookbag_full',
+              'no_tags' => 'No Tags'
+            )
+          );
+        }
+        $this->headScript()->appendScript($this->jsTranslations()->getScript());
+      }
+
+      // Session keep-alive
+      if ($this->KeepAlive()) {
+          $this->headScript()->appendScript('var keepAliveInterval = '
+            . $this->KeepAlive());
+          $this->headScript()->appendFile("keep_alive.js");
+      }
+    ?>
+    <?=$this->headScript()?>
+  </head>
+  <body>
+    <? // Set up the search box -- there are three possible cases:
+      // 1. No search box was set; we should default to the normal box
+      // 2. It was set to false; we should display nothing
+      // 3. It is set to a custom string; we should display the provided version
+      // Set up default search box if no data was provided from the template;
+      // this covers case 1.  Cases 2 and 3 are then covered by logic below.
+      if (!isset($this->layout()->searchbox)) {
+        $this->layout()->searchbox = $this->render('search/searchbox.phtml');
+      }
+    ?>
+    <div class="row collapse">
+        <header role="banner" class="sticky contain-to-grid hide-for-print">
+            <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+            <?=$this->render('header.phtml')?>
+                <nav class="nav searchbox large-12 large-centered columns hide-for-large-up hide-for-print">
+                  <?=$this->layout()->searchbox ?>
+                </nav>
+                <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
+                  && !empty($this->layout()->breadcrumbs)
+                  && $this->layout()->breadcrumbs !== false
+                ): ?>
+                  <ul class="breadcrumbs large-12 large-centered columns hide-for-print">
+                  <? if(is_array($this->layout()->breadcrumbs)): ?>
+                    <? if(count($this->layout()->breadcrumbs) > 1): ?>
+                      <?=$this->render('breadcrumbs/multi.phtml', array(
+                          'parents' => $this->layout()->breadcrumbs,
+                          'title'   => $this->layout()->title,
+                          'end'     => $this->layout()->breadcrumbEnd,
+                          'from'    => $this->layout()->from
+                        )) ?>
+                    <? else: ?>
+                      <?=$this->render('breadcrumbs/default.phtml', array(
+                          'parents' => $this->layout()->breadcrumbs,
+                          'title'   => $this->layout()->title
+                        )) ?>
+                    <? endif; ?>
+                  <? else: ?>
+                    <?=$this->layout()->breadcrumbs ?>
+                  <? endif; ?>
+                  </ul>
+                <? endif; ?>
+         </header>
+    </div>
+
+    <div class="row">
+    <div role="main" class="main panel template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>" id="content">
+		  <div class="container">
+        	<?=$this->layout()->content ?>
+      </div>
+    </div>
+</div>
+<div class="row">
+    <footer role="contentinfo" class="panel hide-for-print">
+      <div class="container">
+        <?=$this->render('footer.phtml')?>
+        <?=$this->layout()->poweredBy ?>
+      </div>
+    </footer>
+</div>
+<!-- MODAL IN CASE WE NEED ONE -->
+<div id="modal" class="reveal-modal medium" data-reveal aria-hidden="true" role="dialog">
+  <div class="modal-body"><?=$this->transEsc('loading') ?>...</div>
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+<!-- MODAL IN CASE WE NEED ONE - END -->
+<?=$this->googleanalytics()?>
+<?=$this->piwik()?>
+<!-- Initializing call for FOUNDATION functions -->
+    <script>
+        $(document).foundation();
+    </script>
+  </body>
+</html>
+<!-- layout.PHTML end -->

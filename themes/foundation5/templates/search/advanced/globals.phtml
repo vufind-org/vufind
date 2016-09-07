@@ -1,0 +1,17 @@
+<!-- search - advanced - GLOBALS.phtml -->
+var searchFields = new Array();
+<? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+  searchFields["<?=$this->escapeHtml($searchVal)?>"] = "<?=$this->transEsc($searchDesc)?>";
+<? endforeach; ?>
+
+var searchJoins = new Array();
+searchJoins["AND"]  = "<?=$this->transEsc("search_AND")?>";
+searchJoins["OR"]   = "<?=$this->transEsc("search_OR")?>";
+searchJoins["NOT"]  = "<?=$this->transEsc("search_NOT")?>";
+
+var addSearchString = "<?=$this->transEsc("add_search")?>";
+var deleteSearchGroupString = "<?=$this->transEsc("del_search")?>";
+var searchFieldLabel = "<?=$this->transEsc("in")?>";
+var searchLabel      = "<?=$this->transEsc("adv_search_label")?>";
+var searchMatch      = "<?=$this->transEsc("search_match")?>";
+<!-- search - advanced - GLOBALS.phtml - END -->

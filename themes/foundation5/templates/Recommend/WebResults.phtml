@@ -1,0 +1,33 @@
+<!-- recommend - WEBRESULTS.phtml -->
+<? $searchObject = $this->recommend->getResults(); $results = $searchObject->getResults(); if (!empty($results)): ?>
+<div class="sidegroup">
+  <h4><?=$this->transEsc('Library Web Search')?></h4>
+
+  <ul class="list-unstyled">
+    <? foreach ($results as $driver): ?>
+    <li>
+      <a href="<?=$this->escapeHtmlAttr($driver->getUrl())?>" class="title"><?
+        $summHighlightedTitle = $driver->getHighlightedTitle();
+        $summTitle = $driver->getTitle();
+        if (!empty($summHighlightedTitle)) {
+            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+        } else if (!empty($summTitle)) {
+            echo $this->escapeHtml($this->truncate($summTitle, 180));
+        } else {
+            echo $this->transEsc('Title not available');
+        }
+      ?></a>
+      <? $snippet = $driver->getHighlightedSnippet(); ?>
+      <? $summary = $driver->getSummary(); ?>
+      <? if (!empty($snippet)): ?>
+        <br /><?=$this->highlight($snippet['snippet'])?>
+      <? elseif (!empty($summary)): ?>
+        <br /><?=$this->escapeHtml($summary[0])?>
+      <? endif; ?>
+    </li>
+    <? endforeach; ?>
+  </ul>
+  <p><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('Find More')?>...</a></p>
+</div>
+<? endif ?>
+<!-- recommend - WEBRESULTS.phtml - end -->

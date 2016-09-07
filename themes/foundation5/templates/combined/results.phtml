@@ -1,0 +1,77 @@
+<!-- combined - RESULTS.phtml -->
+<?
+  // Set up page title:
+  $lookfor = $this->params->getDisplayQuery();
+  if (isset($this->overrideTitle)) {
+    $this->headTitle($this->overrideTitle);
+  } else {
+      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+  }
+
+  // Set up search box:
+  $this->layout()->searchbox = $this->context($this)->renderInContext(
+    'search/searchbox.phtml',
+    array(
+      'lookfor' => $lookfor,
+      'searchIndex' => $this->params->getSearchHandler(),
+      'searchType' => $this->params->getSearchType(),
+      'searchId' => $this->results->getSearchId(),
+      'searchClassId' => $this->params->getsearchClassId(),
+      'checkboxFilters' => $this->params->getCheckboxFacets(),
+      'filterList' => $this->params->getFilters(),
+      'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
+      'selectedShards' => $this->params->getSelectedShards()
+    )
+  );
+
+  // Create shortcut to combined results (since $this->results may get overwritten in processing below):
+  $combinedResults = $this->results;
+
+  // Set up breadcrumbs:
+  if (isset($this->overrideTitle)) {
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->escapeHtml($this->overrideTitle) . '</li>';
+  } else {
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Combined Search') . ': ' .
+      $this->escapeHtml($lookfor) . '</li>';
+  }
+
+  // Enable cart if appropriate:
+  $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
+  // Enable bulk options if appropriate:
+  $this->showBulkOptions = $this->supportsCart && $this->showBulkOptions;
+
+  // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("check_item_statuses.js");
+  $this->headScript()->appendFile("check_save_statuses.js");
+  // Style
+  $this->headLink()->appendStylesheet('combined-search.css');
+?>
+<?=$this->flashmessages()?>
+<form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+  <? $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
+    <div>
+      <? foreach ($recs as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
+    </div>
+  <? endif; ?>
+      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
+        <?
+          $viewParams = array(
+            'searchClassId' => $searchClassId,
+      'combinedResults' => $this->combinedResults,
+      'supportsCartOptions' => $this->supportsCartOptions,
+      'showCartControls' => $this->showCartControls,
+      'showBulkOptions' => $this->showBulkOptions
+          );
+        ?>
+  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
+  <? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
+    <div>
+      <? foreach ($recs as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
+    </div>
+  <? endif; ?>
+</form>
+<!-- combined - RESULTS.phtml - end -->

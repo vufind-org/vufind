@@ -1,0 +1,41 @@
+<!-- cart - EMAIL.phtml -->
+<?
+// Set page title.
+$this->headTitle($this->translate('email_selected_favorites'));
+
+// Set up breadcrumbs:
+$this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+    . '<li><a href="' .$this->url('cart-home'). '">' .$this->transEsc('Cart'). '</a></li> '
+    . '<li class="active">' . $this->transEsc('email_selected_favorites') . '</li>';
+?>
+<?=$this->flashmessages()?>
+  <form class="form-horizontal" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
+    <? foreach ($this->records as $current): ?>
+      <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+    <? endforeach; ?>
+    <div class="form-group">
+      <label class="medium-3 columns control-label"><?=$this->transEsc('Title')?></label>
+      <div class="medium-9 columns">
+        <? if(count($this->records) > 1): ?>
+          <button type="button" class="button secondary tiny hide" data-dropdown="itemhide" role="button" aria-controls="itemhide" aria-expanded="false">
+            <?=count($this->records).' '.$this->transEsc('items') ?>
+          </button>
+          <ul id="itemhide" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
+              <? foreach ($this->records as $current): ?>
+                <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
+              <? endforeach; ?>
+          </ul>
+        <? else: ?>
+          <p class="form-control-static"><?=$this->records[0]->getBreadcrumb() ?></p>
+        <? endif; ?>
+      </div>
+    </div>
+  <?=$this->render('Helpers/email-form-fields.phtml')?>
+  </form>
+<?
+$script = <<<JS
+    $('button.button.hide').removeClass('hide');
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
+<!-- cart - EMAIL.phtml - END -->

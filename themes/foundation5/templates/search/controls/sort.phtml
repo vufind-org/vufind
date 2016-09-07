@@ -1,0 +1,20 @@
+<!-- search - controls - SORT.phtml -->
+<? $list = $this->params->getSortList(); if (!empty($list)): ?>
+  <form class="form-inline sort" action="<?=$this->currentPath()?>" method="get" name="sort">
+    <?=$this->results->getUrlQuery()->asHiddenFields(array('sort' => '/.*/'));?>
+    <div class="row">
+      <div class="small-5 columns">
+        <label for="sort_options_1" class="right inline"><?=$this->transEsc('Sort')?></label>
+      </div>
+      <div class="small-7 columns">
+        <select id="sort_options_1" name="sort" class="jumpMenu">
+          <? foreach ($list as $sortType => $sortData): ?>
+            <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected']?' selected="selected"':''?>><?=$this->transEsc($sortData['desc'])?></option>
+          <? endforeach; ?>
+        </select>
+      </div>
+    </div>
+    <noscript><input type="submit" class="button secondary tiny" role="button" value="<?=$this->transEsc("Set")?>" /></noscript>
+  </form>
+<? endif; ?>
+<!-- search - controls - SORT.phtml - end -->

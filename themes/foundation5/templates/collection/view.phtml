@@ -1,0 +1,99 @@
+<!-- collection - VIEW.phtml -->
+<?
+  // Set up standard record scripts:
+  $this->headScript()->appendFile("record.js");
+  $this->headScript()->appendFile("check_save_statuses.js");
+  // Activate Syndetics Plus if necessary:
+  if ($this->syndeticsPlus()->isActive()) {
+	echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+  }
+
+  // Add RDF header link if applicable:
+  if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
+	  $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+  }
+
+  // Set flag for special cases relating to full-width hierarchy tree tab:
+  $tree = (strtolower($this->activeTab) == 'hierarchytree');
+
+  // Set up breadcrumbs:
+  $lastSearch = $this->getLastSearchLink($this->transEsc('Search'));
+  if (!empty($lastSearch)) {
+	$this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
+  }
+  $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> '
+	 . '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
+?>
+
+<? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
+  <ul class="pager">
+	<? if ($this->scrollData['previousRecord']): ?>
+	  <li>
+		<a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>">&laquo; <?=$this->transEsc('Prev')?></a>
+	  </li>
+	<? else: ?>
+	  <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
+	<? endif; ?>
+    #<?=$this->localizedNumber($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->localizedNumber($this->scrollData['resultTotal']) . ' ' . $this->transEsc('results') ?>
+	<? if ($this->scrollData['nextRecord']): ?>
+	  <li>
+		<a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>"><?=$this->transEsc('Next')?> &raquo;</a>
+	  </li>
+	<? else: ?>
+	  <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
+	<? endif; ?>
+  </ul>
+<? endif; ?>
+
+<?=$this->record($this->driver)->getToolbar()?>
+
+<div class="row">
+  <div class="<?=$tree ? 'medium-12 columns' : $this->layoutClass('mainbody') ?>">
+	<div class="record">
+	  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+	  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+	  <?=$this->flashmessages()?>
+	  <?=$this->record($this->driver)->getCollectionMetadata()?>
+	</div>
+
+	<? if (count($this->tabs) > 0): ?>
+	  <a name="tabnav"></a>
+	  <ul class="recordTabs tabs"><? /*<!-- DO NOT use standard data-tab option (<ul class="recordTabs tabs" data-tab>) here as it triggers Foundation's normal tab behaviour while Vufind only uses tab appearance! FIXME CK */ ?>
+		<? foreach ($this->tabs as $tab => $obj): ?>
+		<? // add current tab to breadcrumbs if applicable:
+		  $desc = $obj->getDescription();
+          $tab_classes = array();
+          if (0 === strcasecmp($this->activeTab, $tab)) {
+            $tab_classes[] = 'active';
+			$this->layout()->breadcrumbs .= ' <li class="active">' . $this->transEsc($desc) . '</li>';
+			$activeTabObj = $obj;
+		  }
+          if (!$obj->isVisible()) { $tab_classes[] = 'hide'; }
+          if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+		?>
+        <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+		</li>
+		<? endforeach; ?>
+	  </ul>
+	<? endif; ?>
+
+
+    <div class="collectionDetails<?=$tree ? 'Tree' : ''?> tabs-content" id="record-tabs">
+		<div class="content active" id="<?=$this->activeTab ?>-tab">
+	        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+		</div>
+    </div>
+
+	<span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
+  </div>
+
+  <? if (isset($activeTabObj) && is_callable(array($activeTabObj, 'getSideRecommendations'))): ?>
+	<div class="<?=$this->layoutClass('sidebar')?>">
+	  <? foreach ($activeTabObj->getSideRecommendations() as $current): ?>
+		<?=$this->recommend($current)?>
+	  <? endforeach; ?>
+	</div>
+  <? endif; ?>
+</div>
+<!-- collection - VIEW.phtml end -->

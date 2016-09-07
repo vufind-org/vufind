@@ -1,0 +1,98 @@
+<!-- HEADER.PHTML begin -->
+<? $account = $this->auth()->getManager(); ?>
+    <nav class="top-bar" role="navigation" data-topbar data-options="sticky_on:all">
+        <ul class="title-area">
+            <li class="name">
+                <h1><a role="logo" class="navbar-brand" href="<?=$this->url('home')?>">VuFind</a></h1>
+            </li>
+            <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+            <li class="toggle-topbar menu-icon"><a href="#"><span>Toggle Menu</span></a></li>
+        </ul>
+        <section class="top-bar-section">
+            <? // Set default value if necessary:
+            if (!isset($this->searchClassId)) {
+                $this->searchClassId = 'Solr';
+            } ?>
+            <? $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType); ?>
+            <? if ($this->layout()->searchbox !== false): ?>
+                <? if(count($searchTabs) > 0): ?>
+                    <!-- search - searchtabs.PHTML -->
+                    <ul class="left">
+                        <? foreach ($searchTabs as $tab): ?>
+                            <li<?=$tab['selected'] ? ' class="active"' : ''?>>
+                                <a <?=$tab['selected'] ? '#' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
+                            </li>
+                        <? endforeach; ?>
+                    </ul>
+                <? else: ?>
+                    <?= $this->render('search/searchbox-topbar'); ?>
+                <? endif; ?>
+            <? endif; ?>
+            <? if (!isset($this->layout()->renderingError)): ?>
+                <!-- Right-hand  Nav Section -->
+                <ul class="right">
+                    <? if ($this->feedback()->tabEnabled()): ?>
+                        <li>
+                            <a id="feedbackLink" class="modal-link" href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope"></i> <?=$this->transEsc("Feedback")?></a>
+                        </li>
+                    <? endif; ?>
+                    <? $cart = $this->cart(); if ($cart->isActive()): ?>
+                        <li id="cartSummary">
+                            <a id="cartItems" class="modal-link" title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><i class="fa fa-suitcase"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?><?=$cart->isFull() ? ' (' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
+                        </li>
+                    <? endif; ?>
+                    <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+                        <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hide<? endif ?>">
+                            <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" class="modal-link" title="<?=$this->transEsc("Your Account")?>"><i class="fa fa-home"></i> <?=$this->transEsc("Your Account")?></a>
+                        </li>
+                        <li class="logoutLink logoutOptions<? if(!$account->isLoggedIn()): ?> hide<? endif ?>">
+                            <a href="<?=$this->url('myresearch-logout')?>" class="modal-link" title="<?=$this->transEsc("Log Out")?>"><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></a>
+                        </li>
+                        <li id="loginOptions" class="<? if($account->isLoggedIn()): ?> hide<? endif ?>">
+                            <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+                                <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>
+                            <? else: ?>
+                                <a href="<?=$this->url('myresearch-userlogin')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
+                            <? endif; ?>
+                        </li>
+                    <? endif; ?>
+
+                    <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
+                        <li class="has-dropdown">
+                            <form method="post" name="themeForm" action="" id="themeForm">
+                                <input type="hidden" name="ui"/>
+                            </form>
+                            <a href="#"><?=$this->transEsc("Theme")?></a>
+                            <ul class="dropdown">
+                                <? foreach ($this->layout()->themeOptions as $current): ?>
+                                  <li<?=$current['selected'] ? ' class="active"' : ''?>><a href="#" onClick="document.themeForm.ui.value='<?=$this->escapeHtmlAttr($current['name'])?>';document.themeForm.submit()"><?=$this->transEsc($current['desc'])?></a></li>
+                                <? endforeach; ?>
+                            </ul>
+                        </li>
+                    <? endif; ?>
+
+                    <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+                        <li class="has-dropdown">
+                            <form method="post" name="langForm" action="" id="langForm">
+                                <input type="hidden" name="mylang"/>
+                            </form>
+                            <a href="#"  aria-controls="langmenu" aria-expanded="false"><?=$this->transEsc("Language")?></a>
+                            <ul id="langmenu" class="dropdown">
+                                <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+                                    <li<?=$this->layout()->userLang == $langCode ? ' class="active"' : ''?>><a href="#" onClick="document.langForm.mylang.value='<?=$langCode?>';document.langForm.submit()"><?=$this->displayLanguageOption($langName)?></a></li>
+                                <? endforeach; ?>
+                            </ul>
+                        </li>
+                    <? endif; ?>
+                </ul>
+            <? endif; ?>
+        </section>
+    </nav>
+    <? if ($this->layout()->searchbox !== false && count($searchTabs) > 0): ?>
+        <nav class="top-bar search">
+            <section class="top-bar-section">
+                <?= $this->render('search/searchbox-topbar'); ?>
+            </section>
+        </nav>
+    <? endif; ?>
+<!-- HEADER.PHTML end -->

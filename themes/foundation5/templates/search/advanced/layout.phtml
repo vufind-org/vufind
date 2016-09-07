@@ -1,0 +1,111 @@
+<!-- search - advanced - LAYOUT.phtml -->
+<?
+// Set page title.
+$this->headTitle($this->translate('Advanced Search'));
+
+// Disable top search box -- this page has a special layout.
+$this->layout()->searchbox = false;
+
+// Set up breadcrumbs:
+$this->layout()->breadcrumbs = '<li>';
+$lastSearchLink = $this->getLastSearchLink($this->transEsc('Search'));
+$this->layout()->breadcrumbs .= !empty($lastSearchLink)
+    ? $lastSearchLink : $this->transEsc('Search');
+$this->layout()->breadcrumbs .= '</li> <li class="active">' . $this->transEsc('Advanced') . '</li>';
+
+// Set up saved search details:
+if (isset($this->saved) && is_object($this->saved)) {
+    $searchDetails = $this->saved->getParams()->getQuery();
+    if ($searchDetails instanceof \VuFindSearch\Query\Query) {
+        // Not an advanced query -- ignore it.
+        $searchDetails = $groups = false;
+    } else {
+        $groups = $searchDetails->getQueries();
+    }
+    $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
+    $searchFilters = $this->saved->getParams()->getFilterList();
+} else {
+    $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
+}
+
+// Set up Javascript:
+// Step 1: Define our search arrays so they are useable in the javascript
+$this->headScript()->appendScript($this->render('search/advanced/globals.phtml'));
+// Step 2: Call the javascript to make use of the above
+$this->headScript()->appendFile(
+    isset($this->advancedSearchJsOverride) ? $this->advancedSearchJsOverride : 'advanced_search.js'
+);
+// Step 3: Build the page
+$this->headScript()->appendScript(
+    $this->partial(
+        isset($this->buildPageOverride) ? $this->buildPageOverride : 'search/advanced/build_page.phtml',
+        array('searchDetails' => $searchDetails)
+    )
+);
+?>
+
+<?= $this->flashmessages() ?>
+<form role="search" name="searchForm" id="advSearchForm" method="get" action="<?= $this->url($this->options->getSearchAction()) ?>">
+    <div class="row">
+        <div class="<?= $this->layoutClass('mainbody') ?>">
+            <input type="hidden" name="sort" value="relevance">
+            <div class="clearfix">
+                <p class="lead pull-left"><?= $this->transEsc('Advanced Search') ?></p>
+                <div id="groupJoin" class="form-inline pull-right hide">
+                    <label for="groupJoinOptions"><?= $this->transEsc("search_match") ?>:</label>
+                    <select id="groupJoinOptions" name="join" class="form-control">
+                        <option value="AND"<? if ($searchDetails && $searchDetails->getOperator() == 'ALL'): ?> selected<? endif ?>><?= $this->transEsc('group_AND') ?></option>
+                        <option value="OR"<? if ($searchDetails && $searchDetails->getOperator() == 'OR'): ?> selected<? endif ?>><?= $this->transEsc('group_OR') ?></option>
+                    </select>
+                </div>
+            </div>
+      <span id="groupPlaceHolder">
+        <i class="fa fa-plus-circle"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('add_search_group') ?></a>
+      </span>
+            <input class="button tiny pull-right" type="submit" role="button" value="<?= $this->transEsc('Find') ?>">
+            <? if (isset($this->extraAdvancedControls)): ?>
+                <?= $this->extraAdvancedControls ?>
+                <input class="button tiny pull-right" type="submit" role="button" value="<?= $this->transEsc('Find') ?>"/>
+            <? endif; ?>
+        </div>
+
+        <div class="<?= $this->layoutClass('sidebar') ?>">
+            <? if ($hasDefaultsApplied): ?>
+                <input type="hidden" name="dfApplied" value="1"/>
+            <? endif ?>
+            <? if (!empty($searchFilters)): ?>
+                <h4><?= $this->transEsc("adv_search_filters") ?></h4>
+                <ul class="list-unstyled">
+                    <li>
+                        <label>
+                            <input type="checkbox" checked="checked" class="checkbox-select-all"/>
+                            <?= $this->transEsc("adv_search_select_all") ?>
+                        </label>
+                    </li>
+                </ul>
+                <? foreach ($searchFilters as $field => $data): ?>
+                    <ul class="list-unstyled">
+                        <li><?= $this->transEsc($field) ?></li>
+                        <? foreach ($data as $value): ?>
+                            <label class="checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value='<?= $this->escapeHtmlAttr($value['field']) ?>:"<?= $this->escapeHtmlAttr($value['value']) ?>"'/> <?= $this->escapeHtml($value['displayText']) ?></label>
+                        <? endforeach; ?>
+                    </ul>
+                <? endforeach; ?>
+            <? endif; ?>
+            <div class="sidegroup">
+                <h4><?= $this->transEsc("Search Tips") ?></h4>
+                <ul class="list-unstyled">
+                    <li>
+                        <a class="list-group-item help-link" href="<?=
+                    $this->url
+                    ('help-home') ?>?topic=advsearch" title="<?= $this->transEsc('Help with Advanced Search') ?>"><?= $this->transEsc("Help with Advanced Search") ?></a>
+                    </li>
+                    <li>
+                        <a class="list-group-item help-link" href="<?= $this->url('help-home') ?>?topic=search" title="<?= $this->transEsc('Help with Search Operators') ?>"><?= $this->transEsc("Help with Search Operators") ?></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</form>
+<!-- search - advanced - LAYOUT.phtml end -->

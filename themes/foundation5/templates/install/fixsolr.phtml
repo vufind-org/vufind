@@ -1,0 +1,18 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('auto_configure_title'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') .'">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="active">' . $this->transEsc('Fix Solr') . '</li>';
+?>
+<h2><?=$this->transEsc('auto_configure_title')?></h2>
+
+<p>VuFind cannot communicate with the Solr index.</p>
+
+<p>Troubleshooting steps:</p>
+
+<ol>
+  <li>Did you start the Solr server?  See <a href="http://vufind.org/wiki/starting_and_stopping_vufind">Starting and Stopping VuFind</a> in the documentation.</li>
+  <li>Have you checked the Solr admin panel for errors?  You may be able to find it <a href="<?=$this->escapeHtmlAttr($this->userUrl)?>">here</a>.</li>
+  <li>Are you using non-default Solr settings?  If your Solr URL is not <strong><?=$this->escapeHtml($this->rawUrl)?></strong> or your core name is not <strong><?=$this->escapeHtml($this->core)?></strong>, you will need to customize the [Index] section of <?=$this->escapeHtml($this->configFile)?>.</li>
+</ol>
