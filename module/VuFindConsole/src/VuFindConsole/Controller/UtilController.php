@@ -27,6 +27,7 @@
  */
 namespace VuFindConsole\Controller;
 use File_MARC, File_MARCXML, VuFind\Sitemap\Generator as Sitemap;
+use VuFind\Log\Logger;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 use Zend\Console\Console;
@@ -472,6 +473,152 @@ class UtilController extends AbstractBase
         $solr->commit($backend);
         $solr->optimize($backend);
         return $this->getSuccessResponse();
+    }
+
+    /**
+     * Tool to synchronize language files
+     *
+     * @return \Zend\Console\Response
+     */
+    public function synclangfilesAction()
+    {
+        $this->checkLocalSetting();
+
+        $this->consoleOpts->addRules(
+            [
+                'h|help' => 'Get help',
+                'enable-comments' => 'Write output as ini comments',
+                'enable-fallback' => 'Enable fallback languages',
+                'ignore-local-dir' => 'ignore VUFIND_LOCAL_DIR',
+                'write-keys' => 'Write keys of language files as translation',
+                'write-to-ini' => 'Write missing lines directly to .ini files',
+            ]
+        );
+
+        if ($this->consoleOpts->getOption('h')
+            || $this->consoleOpts->getOption('help')
+        ) {
+            Console::writeLine('Synchronize language files.');
+            Console::writeLine('');
+            Console::writeLine(
+                'Options:'
+            );
+            Console::writeLine(
+                '--help             this output.'
+            );
+            Console::writeLine(
+                '--enable-comments  write output as ini comments (disabled by default).'
+            );
+            Console::writeLine(
+                '--enable-fallback  fallback languages are enabled (by default, fallback logic is overriden).'
+            );
+            Console::writeLine(
+                '--ignore-local-dir ignore VUFIND_LOCAL_DIR if set and only sync language files in VUFIND_HOME/languages.'
+            );
+            Console::writeLine(
+                '--write-keys       write language file keys as translation (write translation by default).'
+            );
+            Console::writeLine(
+                '--write-to-ini     write missing lines directly into .ini files (writes to stdout by default).'
+            );
+            return $this->getFailureResponse();
+        }
+
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+
+        $pathStack = [
+            APPLICATION_PATH  . '/languages'
+        ];
+        if (!$this->consoleOpts->getOption('ignore-local-dir') && LOCAL_OVERRIDE_DIR != '')
+            $pathStack[] = LOCAL_OVERRIDE_DIR . '/languages';
+
+        $fallbackLocales = $config->Site->language == 'en'
+            ? 'en'
+            : [$config->Site->language, 'en'];
+
+        $languageFile = new \VuFind\I18n\Translator\Loader\ExtendedIni(
+            $pathStack,
+            ($this->consoleOpts->getOption('enable-fallback')
+                ? $fallbackLocales : [])
+        );
+
+        $languages = $config->Languages->toArray();
+
+        $diffArray = [];
+
+        foreach ($languages as $lang => $value) {
+            if (is_array($fallbackLocales)) {
+                foreach ($fallbackLocales as $fallback) {
+                    if ($fallback != $lang) {
+                        $dataLang = $languageFile->load($lang, null);
+                        $dataFallback = $languageFile->load($fallback, null);
+                        $diffArray[$fallback][$lang] = array_diff_key($dataFallback->getArrayCopy(), $dataLang->getArrayCopy());
+                    }
+                }
+            } else {
+                if ($fallbackLocales != $lang) {
+                    $dataLang = $languageFile->load($lang, null);
+                    $dataFallback = $languageFile->load($fallbackLocales, null);
+                    $diffArray[$fallbackLocales][$lang] = array_diff_key($dataFallback->getArrayCopy(), $dataLang->getArrayCopy());
+                }
+            }
+        }
+
+        if (!empty ($diffArray)) {
+            foreach ($diffArray as $referenceLang => $targetLang) {
+                foreach ($targetLang as $lang => $messages) {
+                    if (count($messages)) {
+                        $counter = 0;
+
+                        if ($this->consoleOpts->getOption('write-to-ini')) {
+                            if ($this->consoleOpts->getOption('ignore-local-dir') &&
+                                file_exists($pathStack[0] . "/" . $lang . ".ini")) {
+                                $writerPath = "file://" . $pathStack[0] . "/" . $lang . ".ini";
+                            } elseif (!$this->consoleOpts->getOption('ignore-local-dir') &&
+                                file_exists($pathStack[1] . "/" . $lang . ".ini")) {
+                                $writerPath = "file://" . $pathStack[1] . "/" . $lang . ".ini";
+                            } else {
+                                $writerPath = "php://stdout";
+                            }
+                        } else {
+                            $writerPath = "php://stdout";
+                        }
+                        $writer = new \Zend\Log\Writer\Stream($writerPath);
+                        $writer->setFormatter(
+                            new \Zend\Log\Formatter\Simple('%message%')
+                        );
+
+                        $logger = new Logger();
+                        $logger->addWriter($writer);
+                        $logger->info(";------");
+                        $logger->info(";missing lines from " . $referenceLang . ".ini (compiled from files in " . implode(', ', $pathStack) . ")"
+                            . ($this->consoleOpts->getOption('write-to-ini') ? '' : ' in ' . $lang . '.ini'));
+                        $logger->info(";------");
+
+                        foreach($messages as $key => $message) {
+                            if ($key != "@parent_ini") {
+                                $counter++;
+                                if ($this->consoleOpts->getOption('write-keys')) {
+                                    $logger->info(
+                                        ($this->consoleOpts->getOption('enable-comments') ? ";" : "") .
+                                        $key. " = " . $key);
+                                } else {
+                                    $logger->info(
+                                        ($this->consoleOpts->getOption('enable-comments') ? ";" : "") .
+                                        $key. " = " . $message);
+                                }
+                            }
+                        }
+
+                        if ($this->consoleOpts->getOption('write-to-ini')) {
+                            Console::writeLine('Added ' . $counter . ' lines from ' . $referenceLang . '.ini (compiled from files in ' . implode(', ', $pathStack) . ') to ' . $writerPath);
+                        }
+                        unset($logger);
+                        unset($writer);
+                    }
+                }
+            }
+        }
     }
 
     /**
