@@ -233,7 +233,15 @@ class MyResearchController extends AbstractBase
             return $this->redirect()->toRoute('home');
         }
         $this->clearFollowupUrl();
-        $this->setFollowupUrlToReferer();
+        $config = $this->getConfig();
+        if (isset($config->Site->loginToAccount)
+            && $config->Site->loginToAccount
+        ) {
+            $this->followup()->store(array(),
+                $this->getServerUrl('myresearch-home'));
+        } else {
+            $this->setFollowupUrlToReferer();
+        }
         if ($si = $this->getSessionInitiator()) {
             return $this->redirect()->toUrl($si);
         }
