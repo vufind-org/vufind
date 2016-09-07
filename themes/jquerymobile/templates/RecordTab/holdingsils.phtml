@@ -124,6 +124,9 @@
               </ul>
             <? endif; ?>
           <? endif; ?>
+          <? if (isset($row['limitation'])): ?>
+            <span><?=$this->escapeHtml($row['limitation'])?></span>
+          <? endif; ?>
         </td>
       </tr>
     <? endif; ?>

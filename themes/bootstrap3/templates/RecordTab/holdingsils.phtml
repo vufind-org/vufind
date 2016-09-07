@@ -148,6 +148,9 @@
               </div>
             <? endif; ?>
           <? endif; ?>
+          <? if (isset($row['limitation'])): ?>
+            <span><?=$this->escapeHtml($row['limitation'])?></span>
+          <? endif; ?>
           <? /* Embed item structured data: library, barcode, call number */ ?>
           <? if ($row['location']): ?>
             <meta property="seller" content="<?=$this->escapeHtmlAttr($row['location'])?>" />

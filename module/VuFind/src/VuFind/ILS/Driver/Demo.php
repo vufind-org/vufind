@@ -353,6 +353,7 @@ class Demo extends AbstractBase
             'barcode'      => sprintf("%08d", rand() % 50000),
             'availability' => $status == 'Available',
             'status'       => $status,
+            'limitation'   => (rand() % 2 == 1) ? 'Limited access!' : null,
             'location'     => $location,
             'locationhref' => $locationhref,
             'reserve'      => (rand() % 100 > 49) ? 'Y' : 'N',
