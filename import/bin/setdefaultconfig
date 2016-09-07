@@ -1,7 +1,6 @@
 #! /bin/bash
 # setdefaultconfig
 # Set the name of the default config file to use.
-# $Id: setdefaultconfig
 
 E_BADARGS=65
 

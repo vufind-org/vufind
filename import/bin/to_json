@@ -1,7 +1,6 @@
 #! /bin/bash
 # to_json.sh
 # Diagnostic program to display marc records.
-# $Id: to_json.sh 
 
 E_BADARGS=65
 

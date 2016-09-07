@@ -1,7 +1,6 @@
 #! /bin/bash
 # index_file.sh
 # Import a single marc file into a Solr index
-# $Id: indexfile.sh 
 
 E_BADARGS=65
 

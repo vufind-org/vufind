@@ -1,7 +1,6 @@
 #! /bin/bash
 # optimizesolr
 # Run an optimize process on the solr index
-# $Id: optimizesolr
 
 E_BADARGS=65
 

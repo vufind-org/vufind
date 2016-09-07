@@ -1,7 +1,6 @@
 #! /bin/bash
 # marcerror.sh
 # Diagnostic program to show look for errors in Marc records.
-# $Id: marcerror.sh 
 
 E_BADARGS=65
 

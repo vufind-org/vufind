@@ -2,7 +2,6 @@
 :: hathifetch.bat
 :: Program to retrieve JSON records from Hathi Trust and extract the 
 :: marc records from those JSON records.
-:: $Id: hathifetch.bat 
 setlocal
 ::Get the current batch file's short path
 for %%x in (%~f0) do set scriptdir=%%~dpsx

@@ -1,7 +1,6 @@
 #! /bin/bash
 # marcupdate.sh
 # Program to copy a marc record file, merging in updates and deletions
-# $Id: marcupdate.sh 
 
 E_BADARGS=65
 

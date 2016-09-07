@@ -2,7 +2,6 @@
 :: indextest.bat
 :: Diagnostic program to show how a set of marc records would be indexed,
 :: without actually adding any records to Solr.
-:: $Id: indextest.bat 
 setlocal
 ::Get the current batch file's short path
 for %%x in (%~f0) do set scriptdir=%%~dpsx

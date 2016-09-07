@@ -1,7 +1,6 @@
 #! /bin/bash
 # marcdiff.sh
 # Diagnostic program to show look for differences between Marc record files.
-# $Id: marcdiff.sh 
 
 E_BADARGS=65
 

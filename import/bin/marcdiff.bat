@@ -1,7 +1,6 @@
 @echo off
 :: marcdiff.sh
 :: Diagnostic program to show look for differences between Marc record files.
-:: $Id: marcdiff.sh 
 setlocal
 ::Get the current batch file's short path
 for %%x in (%~f0) do set scriptdir=%%~dpsx

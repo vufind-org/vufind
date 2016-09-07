@@ -1,6 +1,5 @@
 @echo off
 :: A simple script to start jetty given the default configuration of solr for solrmarc
-:: $Id: jettystart.bat
 
 setlocal
 

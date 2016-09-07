@@ -1,7 +1,6 @@
 #! /bin/bash
 # to_marc8.sh
 # Diagnostic program to display marc records.
-# $Id: to_marc8.sh 
 
 E_BADARGS=65
 

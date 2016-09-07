@@ -1,7 +1,6 @@
 @echo off
 :: to_json.bat
 :: Diagnostic program to display marc records.
-:: $Id: to_json.bat
 setlocal
 ::Get the current batch file's short path
 for %%x in (%~f0) do set scriptdir=%%~dpsx

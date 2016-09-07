@@ -1,7 +1,6 @@
 @echo off
 :: setdefaultconfig.bat
 :: Set the name of the default config file to use.
-:: $Id: setdefaultconfig.bat
 setlocal
 ::Get the current batch file's short path
 for %%x in (%~f0) do set scriptdir=%%~dpsx

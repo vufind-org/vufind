@@ -2,7 +2,6 @@
 # indextest.sh
 # Diagnostic program to show how a set of marc records would be indexed,
 # without actually adding any records to Solr.
-# $Id: indextest.sh 
 
 E_BADARGS=65
 

@@ -1,7 +1,6 @@
 @echo off
 :: indexfile.bat
 :: Import a single marc file into a Solr index
-:: # $Id: indexfile.bat
 setlocal
 ::Get the current batch file's short path
 for %%x in (%~f0) do set scriptdir=%%~dpsx
