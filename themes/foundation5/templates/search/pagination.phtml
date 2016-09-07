@@ -1,0 +1,27 @@
+<!-- search - pagination -->
+<? if ($this->pageCount): ?>
+<div class="pagination-centered">
+  <ul class="pagination hide-for-print" role="menubar" aria-label="Pagination">
+    <? if (isset($this->previous)): ?>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a></li>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
+    <? endif; ?>
+
+    <? if (count($this->pagesInRange) > 1): ?>
+      <? foreach ($this->pagesInRange as $page): ?>
+        <? if ($page != $this->current): ?>
+          <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>"><?=$page?></a></li>
+        <? else: ?>
+          <li class="current"><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>"><?=$page?></a></li>
+        <? endif; ?>
+      <? endforeach; ?>
+    <? endif; ?>
+
+    <? if (isset($this->next)): ?>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a></li>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a></li>
+    <? endif; ?>
+  </ul>
+</div>
+<? endif; ?>
+<!-- search - pagination - END -->

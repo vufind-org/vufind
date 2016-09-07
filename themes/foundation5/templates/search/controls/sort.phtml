@@ -1,0 +1,15 @@
+<!-- search - controls - SORT.phtml -->
+<? /* NOTE: DO NOT use the FNDTN form placement with rows and columns as it breaks the form; alignment solved per CSS */  ?>
+<? $list = $this->params->getSortList(); if (!empty($list)): ?>
+  <form class="sort text-right" action="<?=$this->currentPath()?>" method="get" name="sort">
+    <?=$this->results->getUrlQuery()->asHiddenFields(array('sort' => '/.*/'));?>
+    <label class="inline" for="sort_options_1"><?=$this->transEsc('Sort')?></label>
+    <select id="sort_options_1" name="sort" class="jumpMenu auto">
+      <? foreach ($list as $sortType => $sortData): ?>
+        <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected']?' selected="selected"':''?>><?=$this->transEsc($sortData['desc'])?></option>
+      <? endforeach; ?>
+    </select>
+    <noscript><input type="submit" class="button secondary tiny" role="button" value="<?=$this->transEsc("Set")?>" /></noscript>
+  </form>
+<? endif; ?>
+<!-- search - controls - SORT.phtml - end -->

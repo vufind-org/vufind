@@ -1,0 +1,15 @@
+<!-- search - EMAIL.phtml -->
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Email this Search'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
+    '<li class="active">' . $this->transEsc('Email this Search') . '</li>';
+?>
+<?=$this->flashmessages()?>
+<form method="post" name="emailSearch">
+  <input type="hidden" name="url" value="<?=$this->escapeHtmlAttr($this->url)?>" />
+  <?=$this->render('Helpers/email-form-fields.phtml')?>
+</form>
+<!-- search - EMAIL.phtml end -->

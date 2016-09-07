@@ -1,0 +1,62 @@
+<!-- search - RESERVES.phtml -->
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Reserves Search'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Reserves') . '</li>';
+?>
+<h2><?=$this->transEsc('Search For Items on Reserve')?></h2>
+<form method="get" name="searchForm">
+  <? if (is_array($this->courseList)): ?>
+    <div class="row">
+      <label for="reserves_by_course" class="medium-2 columns"><?=$this->transEsc('By Course')?>:</label>
+      <div class="medium-5 columns">
+        <select name="course" id="reserves_by_course" class="auto">
+          <option></option>
+          <? foreach ($this->courseList as $courseId => $courseName): ?>
+            <option value="<?=$this->escapeHtmlAttr($courseId)?>"><?=$this->escapeHtml($courseName)?></option>
+          <? endforeach; ?>
+        </select>
+      </div>
+      <div class="medium-2 columns">
+        <input class="button small" type="submit" name="submit" role="button" value="<?=$this->transEsc('Find')?>"/>
+      </div>
+    </div>
+  <? endif; ?>
+
+  <? if (is_array($this->instList)): ?>
+    <div class="row">
+      <label for="reserves_by_inst" class="medium-2 columns"><?=$this->transEsc('By Instructor')?>:</label>
+      <div class="medium-5 columns">
+        <select name="inst" id="reserves_by_inst" class="auto">
+          <option></option>
+          <? foreach ($this->instList as $instId => $instName): ?>
+            <option value="<?=$this->escapeHtmlAttr($instId)?>"><?=$this->escapeHtml($instName)?></option>
+          <? endforeach; ?>
+        </select>
+      </div>
+      <div class="medium-2 columns">
+        <input class="button small" type="submit" name="submit" role="button" value="<?=$this->transEsc('Find')?>"/>
+      </div>
+    </div>
+  <? endif; ?>
+
+  <? if (is_array($this->deptList)): ?>
+    <div class="row">
+      <label for="reserves_by_dept" class="medium-2 columns"><?=$this->transEsc('By Department')?>:</label>
+      <div class="medium-5 columns">
+        <select name="dept" id="reserves_by_dept" class="auto">
+          <option></option>
+          <? foreach ($this->deptList as $deptId => $deptName): ?>
+            <option value="<?=$this->escapeHtmlAttr($deptId)?>"><?=$this->escapeHtml($deptName)?></option>
+          <? endforeach; ?>
+        </select>
+      </div>
+      <div class="medium-2 columns">
+        <input class="button small" type="submit" name="submit" role="button" value="<?=$this->transEsc('Find')?>"/>
+      </div>
+    </div>
+  <? endif; ?>
+</form>
+<!-- search - RESERVES.phtml end -->

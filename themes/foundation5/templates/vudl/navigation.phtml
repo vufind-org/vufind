@@ -1,0 +1,91 @@
+<!-- vudl - NAVIGATION.phtml -->
+<?
+  // Parent collections for Prev/Next Item
+  $parents = array();
+  $parentKeys = array();
+  foreach($this->parents as $trail) {
+    if(is_array($trail)) {
+      end($trail);
+    }
+    if(!in_array(key($trail), $parentKeys)) {
+      $uniqueParents[] = array(
+        'id'    => key($trail),
+        'title' => current($trail)
+      );
+      $parentKeys[] = key($trail);
+    }
+  }
+  $siblingHref = $this->url('vudl-sibling') . '?id=' . $this->layout()->vudlID;
+  if(count($uniqueParents) <= 1) {
+    $siblingHref .= '&trail=' . $uniqueParents[0]['id'];
+  }
+?>
+<nav class="sibling-form navbar" role="navigation">
+  <ul class="nav navbar-nav">
+    <? if(count($uniqueParents) > 1): ?>
+      <li class="dropdown">
+        <a id="sibling-prev" class="button secondary small" role="button" data-toggle="dropdown" title="<?=$this->transEsc('Prev Item in Collection')?>">
+          <?=$this->transEsc('Prev Item')?> <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="sibling-prev">
+          <li role="presentation" class="dropdown-header"><?=$this->transEsc('Choose a collection') ?></li>
+          <? foreach($uniqueParents as $trail): ?>
+            <li role="presentation">
+              <a role="menuitem" tabindex="-1" href="<?=$siblingHref ?>&trail=<?=$trail['id'] ?>&prev=1">
+                <?=$trail['title'] ?>
+              </a>
+            </li>
+          <? endforeach; ?>
+        </ul>
+      </li>
+    <? else: ?>
+      <li>
+        <a href="<?=$siblingHref ?>&prev=1" class="button secondary small" role="button" title="<?=$this->transEsc('Prev Item in Collection')?>">
+          <i class="fa fa-angle-left"></i>
+          <?=$this->transEsc('Prev Item')?>
+        </a>
+      </li>
+    <? endif; ?>
+    <li>
+      <ul class="button-group">
+        <li>
+          <a href="javascript:prevPage()" role="button" class="turn-button button secondary small<? if($this->outline['counts'][$this->initList] <= 1): ?> hide<? endif; ?>">Prev Page</a>
+        </li>
+        <li>
+          <a href="<?=$this->url('vudl-grid', array('id'=>$this->id)) ?>" class="button secondary small" role="button">
+            <i class="fa fa-th hide-for-small"></i>
+            <span class="visible-small-inline"><?=$this->transEsc('grid_view') ?></span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:nextPage()" class="button secondary small<? if($this->outline['counts'][$this->initList] <= 1): ?> hide<? endif; ?>" role="button">Next Page</a>
+        </li>
+      </ul>
+    </li>
+    <? if(count($uniqueParents) > 1): ?>
+      <li class="dropdown">
+        <a id="sibling-next" class="button secondary small" role="button" data-toggle="dropdown" title="<?=$this->transEsc('Next Item in Collection')?>">
+          <?=$this->transEsc('Next Item')?> <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="sibling-next">
+          <li role="presentation" class="dropdown-header"><?=$this->transEsc('Choose a collection') ?></li>
+          <? foreach($uniqueParents as $trail): ?>
+            <li role="presentation">
+              <a role="menuitem" tabindex="-1" href="<?=$siblingHref ?>&trail=<?=$trail['id'] ?>&next=1">
+                <?=$trail['title'] ?>
+              </a>
+            </li>
+          <? endforeach; ?>
+        </ul>
+      </li>
+    <? else: ?>
+      <li>
+        <a href="<?=$siblingHref ?>&next=1" class="button secondary small" role="button" title="<?=$this->transEsc('Next Item in Collection')?>">
+          <?=$this->transEsc('Next Item')?>
+          <i class="fa fa-angle-right"></i>
+        </a>
+      </li>
+    <? endif; ?>
+  </ul>
+</nav>
+<!-- vudl - NAVIGATION.phtml end -->

@@ -1,0 +1,66 @@
+<!-- search - advanced - RANGES.phtml -->
+<? if (isset($this->ranges) && !empty($this->ranges)): ?>
+  <? $params = $this->searchParams($this->searchClassId);
+  $params->activateAllFacets(); ?>
+  <? foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
+    <? $extraInputAttribs = ($current['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
+    <div class="medium-4 columns">
+    <fieldset>
+    <legend><?= $this->transEsc($params->getFacetLabel($current['field'])) ?></legend>
+    <input type="hidden" name="<?= $this->escapeHtmlAttr($current['type']) ?>range[]" value="<?= $escField ?>"/>
+    <div class="row">
+      <div class="medium-6 columns">
+        <label for="<?= $escField ?>from"><?= $this->transEsc('date_from') ?>:</label>
+        <input type="text" name="<?= $escField ?>from" id="<?= $escField ?>from"
+               value="<?= isset($current['values'][0]) ? $this->escapeHtmlAttr($current['values'][0]) : '' ?>" <?= $extraInputAttribs ?>/>
+      </div>
+      <div class="medium-6 columns">
+        <label for="<?= $escField ?>to"><?= $this->transEsc('date_to') ?>:</label>
+        <input type="text" name="<?= $escField ?>to" id="<?= $escField ?>to" value="<?= isset($current['values'][1]) ? $this->escapeHtmlAttr($current['values'][1]) : '' ?>" <?= $extraInputAttribs ?>/>
+      </div>
+    </div>
+    <? if ($current['type'] == 'date'): ?>
+      <div class="slider-container">
+        <input type="text" id="<?= $escField ?><?= $this->escapeHtmlAttr($current['type']) ?>Slider">
+      </div>
+      <?
+      $this->headLink()->appendStylesheet('vendor/bootstrap-slider.css');
+      $this->headScript()->appendFile('vendor/bootstrap-slider.js');
+      $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
+      $future = date('Y', time() + 31536000);
+      $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
+      $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
+      $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
+      $min = intval($min);
+      $max = intval($max);
+      $low = intval($low);
+      $high = intval($high);
+      $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
+      $script = <<<JS
+$(document).ready(function() {
+  var fillTexts = function() {
+	var v = {$escField}dateSlider.getValue();
+	$('#${escField}from').val(v[0]);
+	$('#${escField}to').val(v[1]);
+  };
+  var {$escField}dateSlider = $('#{$escField}dateSlider')
+	.slider({
+	   'min':{$min},
+	   'max':{$max},
+	   'handle':"square",
+	   'tooltip':"hide",
+	   'value':[{$low},{$high}]
+	})
+	.on('slide', fillTexts)
+	.data('slider');
+  {$init}
+});
+JS;
+      ?>
+      <?= $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+      </fieldset>
+      </div>
+    <? endif; ?>
+  <? endforeach; ?>
+<? endif; ?>
+<!-- search - advanced - RANGES.phtml end -->

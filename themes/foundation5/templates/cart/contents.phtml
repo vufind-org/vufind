@@ -1,0 +1,19 @@
+<!-- myresearch - CHECKEDOUT.phtml -->
+<? $records = $this->cart()->getRecordDetails(); if (!empty($records)): ?>
+  <hr/>
+  <ul class="list-unstyled">
+  <? foreach ($records as $i => $record): ?>
+    <li>
+      <div class="checkbox">
+        <label>
+          <?=$this->record($record)->getCheckbox('cart')?>
+          <a title="<?=$this->transEsc('View Record')?>" href="<?=$this->recordLink()->getUrl($record)?>"><?=$this->escapeHtml($record->getBreadcrumb())?></a>
+        </label>
+      </div>
+    </li>
+  <? endforeach; ?>
+  </ul>
+<? else: ?>
+  <p data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->transEsc('bookbag_is_empty')?>.</p>
+<? endif; ?>
+<!-- myresearch - CHECKEDOUT.phtml end -->

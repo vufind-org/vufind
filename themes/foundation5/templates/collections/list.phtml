@@ -1,0 +1,17 @@
+<!-- collections - list.phtml -->
+<ul class="list-unstyled">
+  <? foreach ($result as $i => $item): ?>
+    <li>
+      <a class="button secondary" href="<?=$this->url('collection', array
+    ('id' =>
+        $item['value']))?>">
+      <strong><?=$this->escapeHtml($item['displayText'])?></strong>
+      <span class="label">
+        <?=$item['count']?> <?=$this->transEsc('items')?>
+        <i class="fa fa-angle-right"></i>
+      </span>
+      </a>
+    </li>
+  <? endforeach; ?>
+</ul>
+<!-- collections - list.phtml - END -->

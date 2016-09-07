@@ -1,0 +1,1458 @@
+$include-html-classes: false;
+// import entire Foundation CSS - remove in header via theme.config.php
+@import "vendor/foundation";
+
+// Our own mixins here
+
+// Change the grid width, if desired, in _settings.scss lines 89 or thereabouts
+// Change the BASEFONT size, if desired, in _settings.scss lines 69 or thereabouts - make sure to remove or adapt the fs-smaller mixin
+// This is used to adjust the font size in the sidebar, labels and browse collections panels
+@mixin fs-smaller {
+  font-size: .875rem
+}
+// This is used for adjusting the max width (breadcrumbs etc.) to the max width of the content as set in _settings.scss
+// 72 rem for 16px base font and 82px (82.285) for 14 px base font
+@mixin max-cont-width {
+  max-width:82rem;
+}
+// Equal 1rem padding left and right used for boxes, standard spacing
+@mixin pad-l-r {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+// Panel with smaller padding
+.small-padding-panel {
+  @include panel(
+    // Sets the panel padding amount. Default: $panel-padding
+    $padding: .5rem
+  );
+}
+
+// Avoid Mozilla horizontal jumps
+html {
+  overflow: -moz-scrollbars-vertical !important;
+}
+
+body {
+  background-color: $snow;
+}
+
+.main.panel {
+  background: $white;
+  /*@include fs-smaller;*/
+}
+
+// ICONS
+.fa-grid:before {
+  content: "\f00a";
+}
+
+.fa-visual:before {
+  content: "\f1fe";
+}
+
+// ICONS - END
+
+// LISTS
+ul {
+  &.list-unstyled {
+    margin-left: 0;
+
+    li {
+      list-style: none none;
+      padding-left: 0;
+    }
+
+    .content & {
+      margin-left:1.1rem;
+    }
+  }
+
+    .sidebar & {
+     /*@include fs-smaller;*/
+      margin-left: 0;
+}
+
+    // labels in sidebar and browse collections pages
+  // check: may be redundant if pull-right used consistently - fixme CK
+    &.label {
+      float: right;
+    }
+}
+
+// LISTS - END
+
+// TABLES
+.alphabrowse.table {
+  margin-bottom: 0;
+  table-layout: fixed;
+}
+
+.citation {
+  // This combination in staffviewarray record tab and record-marc.xsl only !
+  &.table {
+    word-break: break-all;
+    word-wrap: break-word;
+  }
+
+// the following only in module - finc - xsl - record-marc.xsl - move to finc.scss - fixme CK
+  .pace-car th, .pace-car td {
+    border: 0;
+    padding: 0;
+  }
+
+  th {
+    text-align: right;
+  }
+
+  th, td {
+    .strong {
+      font-weight: bold;
+    }
+    @media only screen and (min-width: 20em) {
+     /* font-size: 80%;*/ padding: .25em; // Details tab
+    }
+    @media only screen and (min-width: 48rem) {
+      /*@include fs-smaller;*/
+      @include pad-l-r;
+    }
+  }
+}
+
+// TABLES - END
+
+// MODALS
+#modal .close-reveal-modal {
+  right: -2.5rem;
+  color: $white;
+}
+
+// MODALS - END
+
+// former LIST GROUPS - (list-groups do not exist in FNDTN, use ul side-nav for nav items in sidebar otherwise list-unstyled and define via parent container e.g. sidebar ul ...) - used in facets etc
+.sidebar {
+  .accordion {
+    margin-left: 0;
+
+    .accordion-navigation > a,
+    dd > a {
+      font-size: inherit;
+      padding: .5rem 1rem;
+    }
+
+    .content {
+      border: 1px solid $accordion-navigation-active-bg-color;
+      border-bottom: 0;
+      padding: 0;
+    }
+  }
+
+  .accordion-navigation:not(.active),
+  .filters,
+  .side-nav {
+    margin-bottom: 6px !important;
+  }
+
+  .side-nav {
+    padding: 0;
+
+    // this is for the labels of item numbers and exclude option
+   .label {
+     @include fs-smaller;
+
+     a {
+       color: $snow
+     }
+    }
+
+    li {
+      border-bottom: 1px solid $accordion-navigation-active-bg-color;
+      margin: 0;
+
+      &.facetOR,
+      &.facetAND {
+        .label {
+          margin-top: .4em;
+          padding-left: .5em;
+        }
+      }
+
+      .active {
+        background-color: $primary-color;
+        color: $white !important;
+        z-index: 2;
+
+        &:hover {background-color: $primary-color;}
+      }
+    }
+    // create border around normal nav items
+    li:not(.accordion-navigation) {
+      border-left: 1px solid $accordion-navigation-active-bg-color;
+      border-right: 1px solid $accordion-navigation-active-bg-color;
+
+      &:first-of-type {
+        border-top: 1px solid $accordion-navigation-active-bg-color;
+      }
+    }
+    // Facets exclude-symbol in label immediately followed by link
+    // Improve this later - fixme -CK
+    li.facetOR span.label > a:not(.button),
+    li.facetAND span.label > a:not(.button) {
+        display: inline-block;
+        padding: .25em 0 .25em .25em;
+    }
+  }
+
+  h4 {
+    margin-top: 0;
+    padding:  1rem 1rem 0 1rem;
+
+  }
+
+  .list-unstyled {
+    margin-bottom: 1rem;
+
+    li {
+      border-color: $gainsboro;
+      border-image: none;
+      border-style: solid solid none;
+      border-width: 1px 1px medium;
+      padding: .75rem 1em;
+      -moz-border-bottom-colors: none;
+      -moz-border-left-colors: none;
+      -moz-border-right-colors: none;
+      -moz-border-top-colors: none;
+
+      &:last-of-type {
+        border-bottom: 1px solid $gainsboro;
+      }
+    }
+  }
+}
+
+// Up- down-icons in facets
+.sidebar {
+  a.title {
+    &:after {
+      content: '\25BC';
+      float: right;
+      color: $steel;
+    }
+  }
+  & .active {
+    a.title {
+      &:after {
+        content: '\25B2';
+      }
+    }
+  }
+}
+
+// Browse collections button stacks
+.browse .button {
+  /*@include fs-smaller;*/
+  padding: 1rem;
+  text-align: left;
+  word-wrap: break-word;
+
+  &.active {
+    background-color: $primary-color;
+    color: $snow;
+  }
+}
+
+// former List-groups - END
+
+// Range sliders
+#side-panel-publishDate ul {
+  list-style: none
+}
+
+ul.date-range-slider {
+  margin: .25rem 1rem 0 1rem
+}
+
+.slider-container {
+  padding-right: 1.25rem
+}
+
+// Range sliders - END
+
+// Help blocks
+// short messages with hint texts such as e.g. my account - favourites - edit: 'separate tags ... with comma' or advanced search - 'search for'
+.help-block {
+  color: #4D4D4D;
+  display: block;
+  /*@include fs-smaller;*/
+}
+
+// Help blocks - END
+
+// Link button - "a 'de-emphasized' BS button that looks like a link but has button behavior", original btn-link, used in combined/results-list, myresearch/account, myresearch/mylist etc.
+.button.link {
+  @include button($bg: rgba(255, 255, 255, 0));
+  color: $primary-color;
+  font-size: $button-sml;
+
+  &:active,
+  &:focus,
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Link button - END
+
+// SCREENREADER-specifics (only 'visible' on screen readers)
+.sr-only {
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  height: auto;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: auto;
+
+  &:focus {
+    background: $white;
+    clip: auto;
+    color: #132531;
+    display: block;
+    font-size: 1rem;
+    height: 3rem;
+    left: .25rem;
+    line-height: 1.5rem;
+    padding: 1rem;
+    position: absolute;
+    text-decoration: none;
+    text-transform: none;
+    top: .25rem;
+    width: auto;
+    z-index: 100000;
+  }
+}
+
+// SCREENREADER-specifics - END
+
+// HEADER
+// Sticky header, top-bar, search box in top-bar, breadcrumbs
+// Do NOT set top-bar height to auto in default or toggles wont work on small devices
+.top-bar {
+  @media only screen and (min-width: 45rem) {
+    height: auto
+  }
+  .name {
+    margin-left: 0;
+  }
+
+  #searchForm {
+    margin-left: 81px; // verify - this should be solved more elegantly - fixme CK
+
+      li.has-form {
+        height: auto;
+        padding-left: 2px;
+        padding-right: 2px;
+      }
+  }
+
+  input,
+  select,
+  button,
+  .button {
+    height: 2rem;
+    margin-bottom: .4rem;
+    position: relative;
+    top: .4rem;
+  }
+
+  button,
+  .button {
+    line-height: 1.3rem;
+  }
+
+  select {
+    line-height: .8rem;
+  }
+
+  .has-form,
+  &.search {
+    height: auto;
+
+    li.has-form {
+      height: 2.5rem;
+    }
+  }
+
+  .logoutLink > a {
+    // color: #F00; // shows in white
+  }
+}
+
+// Breadcrumbs - prevent spilling of breadcrumbs over main content margins
+.contain-to-grid .breadcrumbs {
+  margin: 0 auto;
+  margin-bottom: 0;
+ @include max-cont-width;
+}
+
+// max-width to prevent from going full width on scroll-down
+.breadcrumbs.columns { float: none; }
+
+.breadcrumbs {
+  background-color: inherit;
+  border: none;
+  border-radius: 0;
+  /*border-top: 1px solid $steel; */
+  clear: both;
+  color: $white;
+  > * {
+    color: $white;
+
+    a {
+      color: $gainsboro;
+    }
+  }
+  @media (min-width: 62rem) {
+    clear: both;
+    @include max-cont-width;
+  }
+}
+
+// Sticky header, top-bar, searchbox in top-bar, breadcrumbs - END
+
+// Searchbox typeahead
+.twitter-typeahead {
+  background: $white;
+  border: none;
+  /*height: 32px;*/
+  margin-top: 0;
+  padding-top: 0;
+  vertical-align: top;
+  width: 100%;
+
+  @media only screen and (max-width: 767px) {
+    width: 100%
+  }
+}
+
+// Top-bar typeahead
+.top-bar {
+  .twitter-typeahead {
+    line-height: 1.5;
+    top: .5rem;
+
+    input {
+      top: 0;
+    }
+  }
+}
+
+.tt-hint {
+  color: $iron;
+}
+
+// check widths for block below - Fixme CK
+.tt-dropdown-menu {
+  background-color: $white;
+  border: 1px solid $iron;
+  margin-top: 2px;
+  width: 464px;
+}
+
+.tt-suggestion {
+  border-bottom: 1px solid $iron;
+  line-height: 24px;
+  padding: 6px 20px 4px;
+
+  &:last-child {
+    border: 0;
+  }
+
+  &.tt-cursor {
+    background-color: $primary-color;
+    color: $white;
+    cursor: pointer;
+  }
+
+  p {
+    font-size: 85% !important;
+    margin: 0;
+  }
+}
+
+// Search form general - top-bar searchForm above
+#searchForm_lookfor, #searchForm_type {margin-top: 1px;} // search term and all fields fields
+
+#searchForm {
+
+  ul {
+    margin-bottom: 0;
+  }
+
+  input[type="text"] {
+    margin-bottom: 0;
+  }
+
+  select {
+    margin-bottom: .5em;
+  }
+
+  // Keep filter checkbox
+  .checkbox {
+    margin-bottom: 0;
+    margin-left: 1.4em;
+    margin-top: -.8em;
+    input[type="checkbox"] {
+      margin-top: 4px;
+    }
+    label {
+      color: $white;
+      padding-left: 0;
+    }
+  }
+  // Keep filter checkbox - END
+}
+
+// Searchbox BG and sizes, test for search box AND adv search terms display
+.top-bar + .nav.searchbox {
+  background-color: $topbar-bg-color;
+
+  // stacked full width lis on small devices
+  ul {
+    width: 100%;
+
+    // no bottom margin for buttons on small devices
+    button,
+    .button {
+      margin-bottom: 0;
+    }
+  }
+
+  // Inline on larger devices
+  @media only screen and (min-width: 48rem) {
+    ul li {
+      display: inline; // CHECK - FIXME CK
+    }
+  }
+}
+
+// Shard selector checkboxes for developer machines in top-bar and search form + Keep Filters
+#shard-selector {
+  &:before {
+    content: " ";
+    display: block;
+    clear: both;
+  }
+ input[type="checkbox"] + label{
+   color: $secondary-color;
+ }
+ // Add sufficient space for selecting on devices up to 768px
+  @media only screen and (max-width: 767px) {
+    float: left;
+    margin-top: 1rem;
+  }
+}
+  // shard selector on home page
+.searchHomeContent #shard-selector {
+  input[type="checkbox"] + label {
+    color: $oil;
+  }
+}
+
+// Keep Filters checkbox
+#keepfilters {
+  clear: left;
+  display: inline-block;
+  float: left;
+
+  &:before {
+    content: " ";
+    display: block;
+    clear: both;
+  }
+  &.checkbox {
+    margin-top: 0;
+  }
+  input[type="checkbox"] {
+    margin-top: 0 !important;
+
+    + label {
+      color: $secondary-color;
+      margin-top: 1em;
+    }
+  }
+
+}
+
+// Shard selector checkboxes for developer machines + Keep Filters  - END
+// Searchbox on Home page - special case - searchbox not in header!
+.searchHomeContent .panel {
+  padding-bottom: 0;
+
+  // full width lis on small
+  ul {
+      width: 100%;
+
+      // no bottom margin for buttons on small devices
+      button,
+      .button {
+        margin-bottom: 0;
+      }
+    }
+
+    // Inline on larger displays, stacked on small
+    @media only screen and (min-width: 48rem) {
+      ul {
+        display: inline;
+
+        li {
+          float: left;
+          padding-right: 1rem;
+
+         // Reset Advanced Search button to normal appearance  on home page (not in top-bar)
+          .postfix.button {
+            padding: 0 2.28571rem 1.21429rem;
+          }
+        }
+      }
+    }
+  }
+
+  // Advanced Search terms
+  p.adv_search_terms {
+    background-color: #f1f1f1;
+    border: 1px solid $iron;
+    margin-bottom: .25rem;
+    padding: .35rem .5rem;
+    width: 100%;
+  }
+
+  ul.adv_search_links {
+    list-style: none; // shorten this? - Fixme - CK
+    margin-bottom: 0;
+    margin-left: 0;
+
+    li {
+      border-bottom: 1px solid $iron;
+      border-top: none;
+      padding-left: .5em;
+
+      &:last-of-type {
+        border-bottom: none;
+      }
+    }
+    // 786px and above as inline list
+    @media only screen and (min-width: 48rem) {
+      li {
+        border-bottom: none;
+        border-right: 1px solid $iron;
+        display: inline;
+
+        padding-right: .5em;
+
+        &:last-of-type {
+          border-right: none;
+        }
+      }
+    }
+  }
+
+  .top-bar-section .adv_search_links {
+    float: left;
+    margin-bottom: 1rem;
+
+    > a {
+      font-size: .80rem;
+    }
+  }
+
+  // Advanced Search: search term insert - END
+
+
+  // Searchbox - END
+
+  .grid {
+    @media only screen and (max-width: 767px) {
+      min-height: 250px; // e.g. search/list-grid.phtml
+    }
+  }
+
+
+  // HEADER - END
+
+  // NAVIGATION BAR
+  ul[role=navigation] {
+    list-style: none;
+  }
+
+  // NAVIGATION BAR - END
+
+  // MAIN content area
+  // for Search Box see header, above, for Advanced Search fields see below
+
+  // padding for main content including sidebar
+  #content.panel {
+    padding: 1rem;
+
+  p.lead {margin-bottom: .875rem}
+}
+
+// Advanced Search: criterion remove button and other settings
+#advSearchForm {
+
+  .small-padding-panel {
+    margin-bottom: 1rem;
+  }
+
+// Add a border around all subfield groups + padding on small devices
+  div[id^="search0_"] {
+    @media screen and (max-width: 767px) {
+      border: 1px solid $secondary-color;
+      margin-bottom: 1rem;
+      padding: .5rem .5rem 0 .5rem;
+
+      // Move delete-button up on small devices
+      .close {margin-top: -2rem}
+  }
+  }
+  .close,
+  .group-close {
+    float: right;
+    font-weight: bold;
+    font-size: x-large;
+  }
+  // normal removal link for field selection
+  .close a {
+    color: #f08a24 !important;
+  }
+  // removal link that appears after 'add group' has been clicked, placement for medium (768px) up
+  // a.group-close {
+//    @media screen and (min-width: 48rem) {
+//      margin-right: -1rem;
+//      margin-top: -1.5rem;
+//    }
+//  }
+
+
+  // top-align the fields at the bottom of advanced search page
+  #limit {
+    margin-top: 1.25rem;
+  }
+
+  #groupPlaceHolder {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  // add space between 'add searchfield' and 'matches ...' on small screens
+  .match {
+    @media screen and (max-width: 767px) {
+      margin-top: 1rem;
+    }
+  }
+}
+
+// Advanced Search: criterion remove button and other settings - END
+
+// LIST VIEW
+// Rows
+.row.result {
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+  /*@include fs-smaller;*/
+
+  &:first-of-type {
+    padding-top: 0;
+  }
+
+  &:nth-of-type(even) {
+    background-color: $silver;
+  }
+}
+
+// Rows - END
+
+// Limit, sort and select-boxes
+.sort,
+.limit {
+  // Display form labels and select fields as inline blocks; Apply to label and select boxes
+  label {
+    display: inline-block;
+   &.inline {margin-bottom: 1px}
+  }
+  select {
+        margin-bottom: 0 !important;
+        display: inline-block;
+  }
+}
+
+// Limit, sort and view selector dropdowns - END
+
+// Bulk action buttons, e.g. favourites list
+.bulk-action-buttons {
+  clear: both;
+}
+
+// Images column in results list
+// images in details view below
+form .row.result .row {
+  margin-left: -1rem;
+
+  .columns,
+  .column {
+    padding-left: 0 !important;
+  }
+}
+
+img.recordcover {
+  height: 100%;
+  margin-top: -.15rem;
+}
+
+// Images column - end
+
+// Favourites, Edit and Delete links
+.delete.tool,
+.edit.tool,
+.save-record,
+.qrcodeLink,
+.hierarchyTreeLinkText {
+  /*@include fs-smaller;*/
+}
+
+// Favourites and Delete links - END
+
+// Saved in Favourites List ...
+.savedLists {
+  ul {
+    @extend .list-unstyled;
+    margin-bottom: 0;
+  }
+}
+// Saved in Favourites List - END
+
+// Pagination
+.pagination {margin-top: 1rem}
+// Pagination - END
+
+// LIST VIEW  - END
+
+// Select all checkboxes in bookbag, search results, account bulk actions ...
+.checkbox.select-all {
+  clear: both;
+  margin-top: 0;
+    label {
+      @include button-size;
+      @include fs-smaller; // otherwise too small/big
+      padding-left: 1.25rem;
+    }
+  }
+
+// Select all checkboxes in bookbag and search results - END
+
+
+// DETAILS VIEW
+// create smaller small buttons that fit the height of Select inputs
+button,
+.button {
+  &.small {
+    padding: .75rem 1rem .75rem;
+  }
+}
+
+// Page browser
+.pager {
+  list-style: outside none none;
+  margin: 0 0 1rem 0;
+  padding: 0;
+  text-align: center;
+
+  li {
+    display: inline;
+
+    &.disabled {
+      > a,
+      > a:hover,
+      > a:focus,
+      > a span {
+        color: $silver;
+        background-color: #FFF;
+        cursor: not-allowed;
+      }
+    }
+
+    &:first-of-type {
+      float: left;
+    }
+
+    &:last-of-type {
+      float: right;
+    }
+    > a,
+    > span {
+      display: inline-block;
+      padding: .25rem 1rem;
+    }
+
+    > a {
+      &:first-of-type {
+        padding-left: .75rem;
+      }
+      &:last-of-type {
+        padding-right: .75rem;
+      }
+    }
+  }
+  .button {
+    &:first-of-type {
+      margin-left: 0;
+    }
+    &:last-of-type {
+      margin-right: 0;
+    }
+  }
+}
+
+// Page browser - end
+
+// Sub-nav with modal links
+.sub-nav {
+  width: 100%;
+
+  dd {
+    margin-left: 0;
+  }
+  dd,
+  dt {
+    a {
+      padding: 0.1875rem 1rem 0.1875rem 0;
+      }
+  }
+
+  dd:first-of-type a {
+    padding-left: 0;
+  }
+
+  .f-dropdown li a {
+    padding: .35rem .75rem;
+  }
+}
+
+// Sub-nav with modal links - END
+
+// Entire record block
+#record {
+  margin-top: .6rem;
+}
+// Entire record block - END
+// Book covers column
+.bookimgs {
+  padding-top: .4rem;
+
+  img {
+    width: 100%;
+  }
+
+  // Clearing lightboxes for book images  // are these used ? - fixme ck
+  .clearing-blackout {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.45);
+    //height: 80%; width:80%;margin: 2em 10%;
+
+    .carousel {
+      display: none;
+    }
+  }
+  // This is the container for the thumbnails - only useful for multiple images
+  .clearing-container .visible-img {
+    border: 2px solid $white;
+    margin: 2em auto;
+    max-height: 70%;
+    max-width: 90%;
+  }
+
+  // is this following stacking necessary ? can we use standard FNDTN values?- fixme CK
+  .clearing-assembled .clearing-container .visible-img {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.7); // use variable here - fixme CK
+  }
+
+  .visible-img img {
+    height: 100%;
+    width: auto;
+  }
+
+  .clearing-main-prev,
+  .clearing-main-next {
+    display: none;
+  }
+
+  // This is the container for the thumbnails - only useful for multiple images
+  p.clearing-caption {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.7); // use variable here - fixme CK
+    color: $iron;
+  }
+
+  // Clearing lightboxes - end
+}
+
+// Book cover column - END
+
+// where does the following go best - or leave standard values? - fixme ck
+#content {
+  h2 {
+    font-size: 1.6875rem !important;
+  }
+  h3 {
+  font-size: 1.375rem !important;
+  }
+  h4 {
+    font-size: 1.125rem !important;
+  }
+}
+// Tabs
+.tabs {
+  border: 1px solid $gainsboro;
+  border-bottom: none;
+
+  .tab-title {
+    @include fs-smaller
+  }
+
+  dd > a,
+  .tab-title > a {
+    font-size: 1rem;
+    padding: .5rem 1rem;
+  }
+}
+header #searchForm .tabs {
+  border: 0;
+
+  &:before {
+    display: none;
+  }
+
+  a {
+    color: $white;
+  }
+}
+.searchHomeContent .tabs {
+  border: 0;
+
+  &:before,
+  &:after {
+    display: none;
+  }
+}
+
+.tabs-content {
+  border: 1px solid $gainsboro;
+  border-top: none;
+
+  h3 {font-size: inherit !important;}
+
+  > .content {
+    @include pad-l-r;
+
+    .active {
+      background: $white;
+    }
+  }
+}
+
+// Hierarchy tab
+#hierarchyTreeHolder {
+  /*border-right: 1px solid #eee; */
+  overflow-x: hidden;
+
+  ul {
+    list-style: none;
+    margin-left: 0;
+
+    li {
+      .jstree-icon {
+        padding-right: .25rem;
+      }
+
+      ul {
+        margin-left: .5rem;
+      }
+    }
+  }
+}
+
+// Check jsTree from here - fixme
+// Hierarchical facets - jsTree - included here because the hierarchy tree tab content is below
+// Should be done more elegantly
+// jsTree arrows
+.facet .jstree-ocl:before {
+  float: left;
+  width: 10px;
+  padding: 0;
+  margin-left: -10px;
+  font-family: "FontAwesome", sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration:inherit;
+  cursor: pointer;
+  /*speak: none;*/
+}
+.facet .jstree-default {
+  & .jstree-open > .jstree-ocl:before {content: "\f0d7";}
+  & .jstree-closed > .jstree-ocl:before {content: "\f0da";}
+  & .jstree-leaf > .jstree-ocl:before {content: " ";}
+}
+// facet list styling
+.jstree-facet li span.main {
+  display: block;
+  padding-left: 1px; // Fix Firefox cutting the checkboxes
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.jstree-facet .jstree-container-ul {
+  padding: 0;
+  & > li.active,
+  & > li.active a.jstree-anchor {
+    background-color: $side-nav-link-bg-hover;
+    color: $side-nav-link-color-active;
+  }
+}
+li.jstree-facet,
+li.jstree-node {
+  list-style: none;
+}
+li.jstree-facet .badge {cursor: text;}  // check and replace badge with label! - fixme CK
+li.jstree-facet ul {padding-left: 1rem;}
+
+// jsTree arrows in hierarchy tree !
+.hierarchy-tree {
+  .jstree-ocl:before {
+    /*float: left;*/ // otherwise blank line in tree above active link // // check - fixme CK
+    width: 10px;
+    padding: 0;
+    margin-left: -10px;
+    font-family: "FontAwesome", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    cursor: pointer;
+    text-decoration: inherit;
+    /*speak: none; */
+  }
+  .jstree-open > .jstree-ocl:before {content: "\f0d7";}
+  .jstree-closed > .jstree-ocl:before {content: "\f0da";}
+  .jstree-leaf > .jstree-ocl:before {content: " ";}
+  .jstree-icon {
+    width: 16px;
+    color: #000;
+  }
+  .jstree-anchor {
+    padding: 2px 5px;
+    white-space: nowrap;
+  }
+  .jstree-container-ul,
+  .jstree-children {
+    padding-left: 16px;
+  }
+  .jstree-initial-node {display: none;}
+  .jstree-clicked {
+    color: $topbar-link-color-active;
+    background-color: $topbar-link-bg-active;
+    .jstree-icon {
+      color: #fff;
+    }
+  }
+}
+// Check jsTree to here - fixme - END
+
+// Hierarchy tab - END
+
+// Similar items tab with  carousel (with Slick carousel)
+#similar-items-carousel {
+  .hover-overlay {
+    display: block;
+    margin: auto;
+    min-height: 12rem;
+    min-width: 30%;
+    position: relative;
+    text-align: center;
+
+    .content {
+      background: rgba(0, 0, 0, 0.5); // use variable here - fixme CK
+      color: $white;
+      display: none;
+      height: 100%;
+      left: 0;
+      padding: .5em .5em 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+    &:hover .content {
+      display: block
+    }
+  }
+}
+
+.slick-slide {
+  /*@include fs-smaller;*/
+  margin: 0 .5rem .5rem .5rem;
+
+  img {
+    margin-bottom: .5rem;
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 12rem;
+  }
+}
+
+.slick-prev, .slick-next {
+  background-color: rgba(0, 0, 0, 0.1); // use variable here - fixme CK
+  color: white;
+  height: 3rem;
+  line-height: 4rem;
+  margin-top: -2.5rem;
+  padding: 0;
+  position: absolute;
+  text-indent: -9999px !important;
+  top: 50%;
+  width: 2rem;
+  z-index: 10;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.3); // use variable here - fixme CK
+  }
+
+  > span {
+    border: 10px inset;
+    display: block;
+    height: 0;
+    margin-top: -10px;
+    position: absolute;
+    top: 50%;
+    width: 0;
+  }
+}
+
+.slick-prev {
+  left: -1rem;
+}
+
+.slick-next {
+  right: -1rem;
+}
+
+.slick-prev > span {
+  border-color: transparent $white transparent transparent;
+  border-right-style: solid;
+}
+
+.slick-next > span {
+  border-color: transparent transparent transparent $white;
+  border-left-style: solid;
+  left: 50%;
+  margin-left: -4px;
+}
+
+.slick-prev:hover > span {
+  border-right-color: $white;
+}
+
+.slick-next:hover > span {
+  border-left-color: $white;
+}
+
+@media only screen and (max-width: 35.5556em) {
+  .slick-next, .slick-prev {
+    display: none;
+  }
+
+}
+
+/* Similar items tab carousel - END */
+// Tabs - END
+// DETAILS VIEW - END
+
+// FOOTER
+footer {
+  /*@include fs-smaller;*/
+  .panel {
+    padding: 1rem;
+  }
+  ul {
+    font-size: inherit;
+    p {
+      margin-bottom: 0;
+      font-size: inherit;
+    }
+  }
+}
+// FOOTER - END
+
+// Inputs, checkboxes and radios
+// Indent the labels to position radios/checkboxes as hanging controls.
+// https://github.com/twbs/bootstrap/blob/b6e6a05b951aac3fad30da441c765dbb86518644/less/forms.less
+
+// Input fields as in maintenance - home.phtml + auto-width for select fields
+input,
+select {
+  &.auto {
+    width: auto;
+    // advanced search facet limiters
+    &[id^=limit_] {
+      max-width: 19rem;
+    }
+  }
+  &.left {
+    margin-right: .25rem;
+  }
+}
+.radio,
+.checkbox {
+  display: block;
+  margin-bottom: .7rem;
+  margin-top: .7rem;
+  position: relative;
+
+  label {
+    min-height: .8rem;
+    // Ensure the input doesn't jump when there is no text
+    padding-left: 1.25rem;
+    margin-bottom: 0;
+    font-weight: normal;
+    line-height: .8rem;
+    cursor: pointer;
+
+    // set all checkbox-select-item labels to same font-size as select-all
+      &.checkbox-select-items {
+      font-size: .8125rem;
+      margin-top: -.45rem;
+    }
+  }
+}
+
+
+// try to shorten the following
+.radio input[type="radio"],
+.radio-inline input[type="radio"],
+.checkbox input[type="checkbox"],
+.checkbox-inline input[type="checkbox"] {
+  margin-left: -1.25rem;
+ /* margin-top: 4px;*/
+  position: absolute;
+}
+
+.radio + .radio,
+.checkbox + .checkbox {
+  margin-top: -5px;
+  // Move up sibling radios or checkboxes for tighter spacing
+}
+
+// SPECIAL CLASSES
+
+// No Margins, used for buttons on top of content etc
+.nomargins {
+  margin: 0 !important;
+}
+
+// visibility classes - leave at end of file to overrule other display settings
+.hide {
+  display: none
+}
+// display inline on small devices vudl - navigation
+.visible-small-inline {
+  @media (max-width: 767px) {
+    display: inline !important;
+  }
+}
+
+// Redi link-resolver traffic lights
+.traffic-light {
+  display: inline;
+  padding: 0;
+  span {
+    background-color: $silver; // temporary, will be overwritten by first, second, third items below
+    background-image: -webkit-gradient(radial, 50% 0, 100, 50% 0, 0, from(rgba(255, 255, 255, 0)), to(rgba(255, 255, 255, 0.38)));
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    display: inline-block;
+    height: 1em;
+    margin: 0 -3px 0 0;
+    padding-right: .5rem;
+    width: 1em;
+
+    &.last {
+      margin-right: .5em;
+    }
+  }
+  
+  &.access-denied {
+    span {
+      &.first {
+        background-color: $alert-color;
+      }
+      &.second {
+        background-color: $gainsboro;
+      }
+      &.last {
+        background-color: $gainsboro;
+      }
+    }
+  }
+  &.access-limited {
+    span {
+      &.first {
+        background-color: $gainsboro;
+      }
+      &.second {
+        background-color: $warning-color;
+      }
+      &.last {
+        background-color: $gainsboro;
+      }
+    }
+  }
+  &.access-open {
+    span {
+      &.first {
+        background-color: $gainsboro;
+      }
+     &.second {
+        background-color: $gainsboro;
+      }
+      &.last {
+        background-color: $success-color;
+      }
+    }
+  }
+}
+
+// SPECIAL CLASSES - End
+
+// Offcanvas - move later fixme - CK
+.offcanvas-overlay,
+.offcanvas-toggle {display: none;}
+
+// PRINT STYLES
+@media print {
+  .columns {
+    width: auto
+  }
+  // for similar layout as on screen
+  // Print links
+  // Show verbose links for certain elements
+  // It should be easier to list the elements where the link should be SHOWN and generally switch this feature off
+  // Turn off verbose links
+  a[href]:after {
+    content: "";
+  }
+  a,
+  a:visited {
+    text-decoration: none;
+  }
+  // Show links for
+  a.fulltext[href]:after {
+    content: " (" attr(href) ")";
+    text-decoration: underline
+  }
+}
+// PRINT STYLES - end

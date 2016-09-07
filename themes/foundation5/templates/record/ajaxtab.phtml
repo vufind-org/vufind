@@ -1,0 +1,7 @@
+<?
+foreach ($this->tabs as $tab => $obj) {
+    if (strtolower($this->activeTab) == strtolower($tab)) {
+        echo $this->record($this->driver)->getTab($obj);
+    }
+}
+?>

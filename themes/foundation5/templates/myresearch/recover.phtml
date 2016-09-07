@@ -1,0 +1,9 @@
+<h2><?=$this->transEsc('recovery_title') ?></h2>
+<?=$this->flashmessages()?>
+<? if (!$this->auth()->getManager()->supportsRecovery()): ?>
+  <div class="error"><?=$this->transEsc('recovery_disabled') ?></div>
+<? else: ?>
+  <form method="post">
+    <?=$this->auth()->getPasswordRecoveryForm() ?>
+  </form>
+<? endif; ?>

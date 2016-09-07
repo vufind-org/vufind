@@ -1,0 +1,46 @@
+<!-- recommend - RANDOMRECOMMEND.phtml -->
+<? $recommend = $this->recommend->getResults();
+if (count($recommend) > 0): ?>
+  <ul class="accordion random <?= $this->recommend->getDisplayMode() ?>" data-accordion>
+    <li class="accordion-navigation title">
+      <a href="#side-collapse-randomrecommend"><?= $this->transEsc("random_recommendation_title") ?></a>
+
+      <div id="side-collapse-randomrecommend" class="content <? if (!in_array('RandomRecommend', $collapsedFacets)): ?> active<? endif ?>">
+        <? foreach ($recommend as $driver): ?>
+          <ul>
+            <li>
+              <? if ($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"): ?>
+
+                <? /* Display thumbnail if appropriate: */ ?>
+                <?= $this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLink()->getUrl($driver)); ?>
+              <? endif; ?>
+
+              <? $formats = $driver->getFormats();
+              $format = isset($formats[0]) ? $formats[0] : ''; ?>
+              <a href="<?= $this->recordLink()->getUrl($driver) ?>" class="title <?= $this->record($driver)->getFormatClass($format) ?> clearfix">
+                <?= $this->record($driver)->getTitleHtml() ?>
+                <? $summAuthor = $driver->getPrimaryAuthor(); ?>
+                <span class="small<? if (!empty($summAuthor)): ?> right<? endif; ?>">
+                    <? $summDate = $driver->getPublicationDates(); ?>
+                  <? if (!empty($summDate)): ?>
+                    <?= $this->transEsc('Published') ?>
+                    : (
+                    <?= $this->escapeHtml($summDate[0]) ?>
+                    )
+                  <? endif; ?>
+                    </span>
+              </a>
+              <? if (!empty($summAuthor)): ?>
+                <a class="small text-right" href="<?= $this->record($driver)->getLink('author', $summAuthor) ?>">
+                  <span><?= $this->transEsc('By') ?></span>
+                  <?= $this->escapeHtml($summAuthor) ?>
+                </a>
+              <? endif; ?>
+            </li>
+          </ul>
+        <? endforeach; ?>
+      </div>
+    <li>
+  </ul>
+<? endif; ?>
+<!-- recommend - RANDOMRECOMMED.phtml end -->

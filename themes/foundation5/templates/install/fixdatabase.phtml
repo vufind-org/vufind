@@ -1,0 +1,85 @@
+<!-- install - FIXDATABASE.phtml -->
+<?
+    // Set page title.
+    $this->headTitle($this->translate('auto_configure_title'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') .'">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="active">' . $this->transEsc('Fix Database') . '</li>';
+?>
+<h2><?=$this->transEsc('auto_configure_title')?></h2>
+
+<?=$this->flashmessages()?>
+
+<p>To create a new database for VuFind, please fill in this form:</p>
+
+<form method="post">
+  <div class="row">
+    <label class="medium-3 columns" for="dbname">Select database type:</label>
+    <div class="medium-9 columns">
+      <select name="driver" class="auto">
+        <option value="mysql">MySQL</option>
+        <option <? if ($driver == 'pgsql'): ?>selected="selected" <? endif; ?>value="pgsql">PostgreSQL</option>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="dbname">New database name:</label>
+    <div class="medium-9 columns">
+      <input type="text" name="dbname" value="<?=$this->escapeHtmlAttr($this->dbname)?>" class="auto"/>
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="dbuser">New database user:</label>
+    <div class="medium-9 columns">
+      <input type="text" name="dbuser" value="<?=$this->escapeHtmlAttr($this->dbuser)?>" class="auto"/>
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="dbpass">New user password:</label>
+    <div class="medium-9 columns">
+      <input type="password" name="dbpass" value="" class="auto"/>
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="dbpassconfirm">Confirm new user password:</label>
+    <div class="medium-9 columns">
+      <input type="password" name="dbpassconfirm" value="" class="auto"/>
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="dbhost">MySQL Host:</label>
+    <div class="medium-9 columns">
+      <input type="text" name="dbhost" value="<?=$this->escapeHtmlAttr($this->dbhost)?>" class="auto"/>
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="vufindhost">VuFind IP/Host (if different from SQL Host):</label>
+    <div class="medium-9 columns">
+      <input type="text" name="vufindhost" value="<?=$this->escapeHtmlAttr($this->vufindhost)?>"/>
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="dbrootuser">MySQL Root User:</label>
+    <div class="medium-9 columns">
+      <input type="text" name="dbrootuser" value="<?=$this->escapeHtmlAttr($this->dbrootuser)?>" class="auto"/>
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="dbrootpass">MySQL Root Password:</label>
+    <div class="medium-9 columns">
+      <input type="password" name="dbrootpass" value="" class="auto"/>
+    </div>
+  </div>
+  <div class="row">
+    <div class="medium-9 columns medium-offset-3">
+      <input class="button small" type="submit" name="submit" role="button" value="<?=$this->transEsc('Submit') ?>" />
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="printsql">If you don't have the credentials or you wish to print the SQL out :</label>
+    <div class="medium-9 columns">
+      <p class="auto-static">Click here to <input class="button secondary small" role="button" type="submit" name="printsql" value="Skip"/> credentials.</p>
+    </div>
+  </div>
+</form>
+<!-- install - FIXDATABASE.phtml end -->

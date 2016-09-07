@@ -1,0 +1,148 @@
+<!-- alphabrowse - HOME.phtml -->
+<?
+  $this->headTitle($this->translate('Browse the Collection Alphabetically'));
+  $this->layout()->breadcrumbs = '<a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a>';
+  $baseQuery = array('source' => $this->source, 'from' => $this->from);
+?>
+
+<? /* LOAD THE LINK INFORMATION INTO $pageLinks, similar to smarty's {capture} */ ?>
+<? ob_start(); ?>
+  <ul class="pager">
+    <? if (isset($this->prevpage)): ?>
+      <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->prevpage))))?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
+    <? else: ?>
+      <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
+    <? endif; ?>
+
+    <? if (isset($this->nextpage)): ?>
+      <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->nextpage))))?>"><?=$this->transEsc('Next')?> &raquo;</a></li>
+    <? else: ?>
+      <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
+    <? endif; ?>
+  </ul>
+<? $pageLinks = ob_get_contents(); ?>
+<? ob_end_clean(); ?>
+
+<form method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm">
+  <div class="row">
+    <div class="small-3 columns">
+    <label for="alphaBrowseForm_source" class="right"><?=$this->transEsc('Browse Alphabetically') ?></label>
+  </div>
+  <div class="small-9 columns">
+    <select id="alphaBrowseForm_source" name="source" class="auto">
+      <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
+      <option value="<?=$this->escapeHtmlAttr($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
+      <? endforeach; ?>
+    </select>
+  </div>
+</div>
+  <div class="row">
+    <div class="small-3 columns">
+      <label for="alphaBrowseForm_from" class="right"><?=$this->transEsc('starting from') ?></label>
+    </div>
+    <div class="small-9 columns">
+      <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>" class="auto"/>
+      <input class="button secondary small" type="submit" value="<?=$this->transEsc('Browse') ?>" role="button" aria-label="submit form"/>
+    </div>
+  </div>
+</form>
+
+<? if ($this->result): ?>
+  <?=$pageLinks ?>
+  <table class="alphabrowse table">
+    <thead>
+      <tr>
+        <th class="<?=$this->source ?>">
+          <?=$this->transEsc("browse_" . $this->source) ?>
+        </th>
+        <? foreach ($this->extras as $e): ?>
+          <th><?=$this->transEsc("browse_" . $e) ?></th>
+        <? endforeach; ?>
+        <th class="titles"><?=$this->transEsc("alphabrowse_matches") ?></th>
+      </tr>
+    </thead>
+    <tbody>
+      <? $row = 0; ?>
+      <? foreach ($this->result['Browse']['items'] as $item): ?>
+        <? if (isset($this->highlight_row) && $row == $this->highlight_row): ?>
+          <tr class="browse-match">
+          <? if (isset($this->match_type) && ($this->match_type == "NONE")): ?>
+            <?// this is the right row but query doesn't match value ?>
+            <td colspan="<?=count($this->extras) + 2;?>"><?=$this->transEsc('your_match_would_be_here')?></td>
+            </tr>
+        <tr>
+          <? endif; ?>
+              <? else: ?>
+          <tr>
+              <? endif; ?>
+          <td class="<?=$this->source ?>">
+            <b>
+              <? if ($url = $this->alphabrowse()->getUrl($this->source, $item)): ?>
+                <a href="<?=$this->escapeHtmlAttr($url)?>"><?=$this->escapeHtml($item['heading'])?></a>
+            <? else: ?>
+                <?=$this->escapeHtml($item['heading'])?>
+            <? endif; ?>
+            </b>
+
+            <? if (count($item['useInstead']) > 0): ?>
+              <div>
+                <?=$this->transEsc('Use instead') ?>:
+                <ul>
+                  <? foreach ($item['useInstead'] as $heading): ?>
+                  <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
+                  <? endforeach; ?>
+                </ul>
+              </div>
+            <? endif; ?>
+
+            <? if (count($item['seeAlso']) > 0): ?>
+              <div>
+                <?=$this->transEsc('See also') ?>:
+                <ul>
+                  <? foreach ($item['seeAlso'] as $heading): ?>
+                  <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
+                  <? endforeach; ?>
+                </ul>
+              </div>
+            <? endif; ?>
+
+            <? if ($item['note']): ?>
+              <div>
+                <?=$this->transEsc('Note') ?>:
+                <ul>
+                  <li><?=$this->escapeHtml($item['note'])?></li>
+                </ul>
+              </div>
+            <? endif; ?>
+          </td>
+
+          <? foreach ($this->extras as $extraName): ?>
+            <td>
+              <?
+                $extraDisplayArray = array();
+                foreach ($item['extras'][$extraName] as $j => $e):
+                  $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
+                endforeach;
+                echo empty($extraDisplayArray) ? '&nbsp;' : implode('<br />', $extraDisplayArray);
+              ?>
+            </td>
+          <? endforeach; ?>
+
+          <td class="titles">
+            <? if ($item['count'] > 0): ?>
+              <?=$item['count']; ?>
+            <? endif; ?>
+          </td>
+        </tr>
+        <? $row++; ?>
+      <? endforeach; ?>
+        <? if (isset($this->highlight_end)): ?>
+          <tr class="browse-match">
+            <td colspan="<?=count($this->extras) + 2;?>"><?=$this->transEsc('your_match_would_be_here')?></td>
+          </tr>
+        <? endif; ?>
+    </tbody>
+  </table>
+  <?= $pageLinks ?>
+<? endif; ?>
+<!-- alphabrowse - HOME.phtml - end -->

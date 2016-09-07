@@ -1,0 +1,24 @@
+<!-- recordtab - collectionhierarchytree -->
+<?
+    $this->mainTreeClass = 'medium-6 columns';
+    $this->treeContext = 'Collection';
+?>
+<div class="row">
+  <div class="medium-6 columns">
+    <?=$this->render('RecordTab/hierarchytree.phtml')?>
+  </div>
+  <div class="medium-6 columns">
+    <div id="hierarchyRecordHolder">
+      <div id="hierarchyRecord">
+        <? if (($collectionRecord = $this->tab->getActiveRecord()) !== false): ?>
+          <? if ($collectionRecord === null): ?>
+            <?=$this->render('collection/collection-record-error.phtml')?>
+          <? else: ?>
+            <?=html_entity_decode($this->record($collectionRecord)->getCollectionBriefRecord())?>
+          <? endif; ?>
+        <? endif; ?>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- recordtab - collectionhierarchytree - END -->

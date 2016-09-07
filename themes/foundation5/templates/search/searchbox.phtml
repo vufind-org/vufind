@@ -1,0 +1,121 @@
+<!-- search - searchbox.PHTML begin -->
+<?
+// Set default value if necessary:
+if (!isset($this->searchClassId)) {
+  $this->searchClassId = 'Solr';
+}
+
+// Load search actions and settings (if any):
+$options = $this->searchOptions($this->searchClassId);
+$handlers = $this->searchbox()->getHandlers(
+    $this->searchClassId,
+    isset($this->searchIndex) ? $this->searchIndex : null
+);
+$handlerCount = count($handlers);
+$basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
+$searchHome = $options->getSearchHomeAction();
+$advSearch = $options->getAdvancedSearchAction();
+$lastSort = $options->getLastSort();
+$lastLimit = $options->getLastLimit();
+?>
+<? if ($this->searchType == 'advanced'): ?>
+  <div id="searchForm">
+    <? $tabs = $this->render('search/searchTabs'); ?>
+    <? if (!empty($tabs)): ?><?= $tabs ?>
+    <div class="tabs-content clearfix"><? endif; ?>
+      <p class="adv_search_terms"><?= $this->transEsc("Your search terms") ?> : "<strong><?= $this->escapeHtml($this->lookfor) ?></strong>"</p>
+      <ul class="adv_search_links"><!-- this ul-li is better than the original p-a-list - stick to it - CK -->
+        <li>
+          <a href="<?= $this->url($advSearch) ?>?edit=<?= $this->escapeHtmlAttr($this->searchId) ?>"><?= $this->transEsc("Edit this Advanced Search") ?></a>
+        </li>
+        <li>
+          <a href="<?= $this->url($advSearch) ?>"><?= $this->transEsc("Start a new Advanced Search") ?></a>
+        </li>
+        <li>
+          <a href="<?= $this->url($searchHome) ?>"><?= $this->transEsc("Start a new Basic Search") ?></a>
+        </li>
+      </ul>
+      <? if (!empty($tabs)): ?></div><? endif; ?>
+  </div>
+<? else: ?>
+<form role="search" method="get" action="<?= $this->url($basicSearch) ?>" name="searchForm" id="searchForm" autocomplete="off" class="inline">
+  <?= $this->render('search/searchTabs'); ?>
+  <ul class="left list-unstyled">
+    <li class="has-form">
+      <input class="search-query<? if ($this->searchbox()->autocompleteEnabled($this->searchClassId)): ?> autocomplete searcher:<?= $this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" id="searchForm_lookfor" type="text" name="lookfor" value="<?= $this->escapeHtmlAttr($this->lookfor) ?>"/>
+    </li>
+    <? if ($handlerCount > 1): ?>
+      <li class="has-form">
+        <select id="searchForm_type" name="type" data-native-menu="false">
+          <? foreach ($handlers as $handler): ?>
+            <option value="<?= $this->escapeHtmlAttr($handler['value']) ?>"<?= $handler['selected'] ? ' selected="selected"' : '' ?>><?= $handler['indent'] ? '-- ' : '' ?><?= $this->transEsc($handler['label']) ?></option>
+          <? endforeach; ?>
+        </select>
+      </li>
+    <? elseif ($handlerCount == 1): ?>
+      <input type="hidden" name="type" value="<?= $this->escapeHtmlAttr($handlers[0]['value']) ?>"/>
+    <? endif; ?>
+    <li class="has-form">
+      <button type="submit" class="postfix" role="button"><i class="fa fa-search"></i> <?= $this->transEsc("Find") ?></button>
+    </li>
+    <? if ($advSearch): ?>
+      <li class="has-form">
+        <a href="<?= $this->url($advSearch) ?>" class="button secondary postfix" role="button" rel="nofollow"><?= $this->transEsc("Advanced") ?></a>
+      </li>
+    <? endif; ?>
+  </ul>
+
+  <div id="shard-selector">
+    <? $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>
+      <?
+      $selectedShards = isset($this->selectedShards)
+          ? $this->selectedShards : $options->getDefaultSelectedShards();
+      ?>
+      <? foreach ($shards as $shard => $val): ?>
+        <? $isSelected = empty($selectedShards) || in_array($shard, $selectedShards); ?>
+        <input type="checkbox" <?= $isSelected ? 'checked="checked" ' : '' ?>name="shard[]" value='<?= $this->escapeHtmlAttr($shard) ?>' id='checkbox_<?= $this->escapeHtmlAttr($shard) ?>' /> <label for="checkbox_<?= $this->escapeHtmlAttr($shard) ?>"><?= $this->transEsc($shard) ?></label>
+      <? endforeach; ?>
+    <? endif; ?>
+  </div>
+
+  <?
+  $filterDetails = $this->searchbox()->getFilterDetails(
+      isset($this->filterList) && is_array($this->filterList) ? $this->filterList : array(),
+      isset($this->checkboxFilters) && is_array($this->checkboxFilters) ? $this->checkboxFilters : array()
+  );
+  ?>
+  <? if ((isset($hasDefaultsApplied) && $hasDefaultsApplied) || !empty($filterDetails)): ?>
+    <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
+    <div class="checkbox" id="keepfilters">
+        <input onChange="$('.applied-filter').click()" type="checkbox"<?= $defaultFilterState ?> id="searchFormKeepFilters"/>
+      <label for="searchFormKeepFilters"><?= $this->transEsc("basic_search_keep_filters") ?></label>
+    </div>
+    <div class="hide">
+      <? foreach ($filterDetails as $current): ?>
+        <input class="applied-filter" id="<?= $this->escapeHtmlAttr($current['id']) ?>" type="checkbox"<?= $defaultFilterState ?> name="filter[]" value="<?= $this->escapeHtmlAttr($current['value']) ?>"/>
+        <label for="<?= $this->escapeHtmlAttr($current['id']) ?>"><?= $this->escapeHtml($current['value']) ?></label>
+      <? endforeach; ?>
+      <? if (isset($hasDefaultsApplied) && $hasDefaultsApplied): ?>
+        <!-- this is a hidden element that flags whether or not default filters have been applied;
+           it is intentionally unlabeled, as users are not meant to manipulate it directly. -->
+        <input class="applied-filter" id="dfApplied" type="checkbox" name="dfApplied" value="1"<?= $defaultFilterState ?> />
+      <? endif; ?>
+    </div>
+  <? endif; ?>
+  <?
+  /* Show hidden field for active search class when in combined handler mode. */
+  if ($this->searchbox()->combinedHandlersActive()) {
+    echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtmlAttr($this->searchClassId) . '" />';
+  }
+  /* Load hidden limit preference from Session */
+  if (!empty($lastLimit)) {
+    echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
+  }
+  if (!empty($lastSort)) {
+    echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '" />';
+  }
+  ?>
+</form>
+<script type="text/javascript">$("#searchForm_lookfor").focus()</script>
+<? endif; ?>
+<!-- search - searchbox.PHTML end -->

@@ -1,0 +1,123 @@
+<!-- record - STORAGERETRIEVALREQUEST.phtml -->
+<?
+    // Set page title.
+    $this->headTitle($this->translate('storage_retrieval_request_place_text') . ': ' . $this->driver->getBreadcrumb());
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li>')
+        . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>'
+        . '<li class="active">' . $this->transEsc('storage_retrieval_request_place_text') . '</li>';
+?>
+<h2><?=$this->transEsc('storage_retrieval_request_place_text')?></h2>
+<? if ($this->helpText): ?>
+<p class="helptext"><?=$this->helpText?></p>
+<? endif; ?>
+
+<?=$this->flashmessages()?>
+<div class="storage-retrieval-request-form">
+  <form name="placeStorageRetrievalRequest" method="post">
+    <? if (in_array("item-issue", $this->extraFields)): ?>
+      <div class="row">
+        <div class="medium-3 columns controls">
+            <label>
+              <input type="radio" id="storageRetrievalRequestItem" name="gatheredDetails[level]" value="copy"<?=!isset($this->gatheredDetails['level']) || $this->gatheredDetails['level'] != 'title' ? ' checked="checked"' : ''?>>
+              <?=$this->transEsc('storage_retrieval_request_selected_item')?>
+            </label>
+
+            <label>
+              <input type="radio" id="storageRetrievalRequestTitle" name="gatheredDetails[level]" value="title"<?=isset($this->gatheredDetails['level']) && $this->gatheredDetails['level'] == 'title' ? ' checked="checked"' : ''?>>
+              <?=$this->transEsc('storage_retrieval_request_reference')?>
+            </label>
+        </div>
+      </div>
+      <div class="row">
+        <div id="storageRetrievalRequestReference" class="storageRetrievalRequestReference">
+          <label class="medium-3 columns"><?=$this->transEsc('storage_retrieval_request_volume')?>:</label>
+          <div class="medium-9 columns">
+            <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['volume']) ? $this->escapeHtmlAttr($this->gatheredDetails['volume']) : ''?>" class="auto"/><br/>
+          </div>
+          <label class="medium-3 columns"><?=$this->transEsc('storage_retrieval_request_issue')?>:</label>
+          <div class="medium-9 columns">
+            <input type="text" name="gatheredDetails[issue]" value="<?=isset($this->gatheredDetails['issue']) ? $this->escapeHtmlAttr($this->gatheredDetails['issue']) : ''?>" class="auto"/><br/>
+          </div>
+          <label class="medium-3 columns"><?=$this->transEsc('storage_retrieval_request_year')?>:</label>
+          <div class="medium-9 columns">
+            <input type="text" name="gatheredDetails[year]" value="<?=isset($this->gatheredDetails['year']) ? $this->escapeHtmlAttr($this->gatheredDetails['year']) : ''?>" class="auto"/><br/>
+          </div>
+        </div>
+      </div>
+    <? endif; ?>
+
+    <? if (in_array("requiredByDate", $this->extraFields)): ?>
+      <div class="row">
+        <label class="medium-3 columns"><?=$this->transEsc("hold_required_by")?>:</label>
+        <div class="medium-9 columns">
+          <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="auto"/>
+          (<?=$this->dateTime()->getDisplayDateFormat()?>)
+        </div>
+      </div>
+    <? endif; ?>
+
+    <? if (in_array("pickUpLocation", $this->extraFields)): ?>
+      <? if (count($this->pickup) > 1): ?>
+        <div class="row">
+          <?
+            if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
+                $selected = $this->gatheredDetails['pickUpLocation'];
+            } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
+                $selected = $this->homeLibrary;
+            } else {
+                $selected = $this->defaultPickup;
+            }
+          ?>
+          <label class="medium-3 columns"><?=$this->transEsc("pick_up_location")?>:</label>
+          <div class="medium-9 columns">
+            <select name="gatheredDetails[pickUpLocation]" class="auto">
+            <? if ($selected === false): ?>
+              <option value="" selected="selected">
+                <?=$this->transEsc('select_pickup_location')?>
+              </option>
+            <? endif; ?>
+            <? foreach ($this->pickup as $lib): ?>
+              <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
+                <?=$this->escapeHtml($lib['locationDisplay'])?>
+              </option>
+            <? endforeach; ?>
+            </select>
+          </div>
+        </div>
+      <? else: ?>
+        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
+      <? endif; ?>
+    <? endif; ?>
+
+    <? if (in_array("comments", $this->extraFields)): ?>
+      <div class="row">
+        <label class="medium-3 columns"><?=$this->transEsc("Comments")?>:</label>
+        <div class="medium-9 columns">
+          <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="auto"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
+        </div>
+      </div>
+    <? endif; ?>
+
+    <div class="row">
+      <div class="medium-9 columns medium-offset-3">
+        <input class="button small" type="submit" name="placeStorageRetrievalRequest" role="button" value="<?=$this->transEsc('storage_retrieval_request_submit_text')?>"/>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $("input[type='radio']").change(function() {
+    if ($('#storageRetrievalRequestItem').is(':checked')) {
+      $('#storageRetrievalRequestReference input').attr('disabled', 'disabled');
+    } else {
+      $('#storageRetrievalRequestReference input').removeAttr('disabled');
+    }
+  });
+  $('#storageRetrievalRequestItem').trigger('change');
+});
+</script>
+<!-- record - STORAGERETRIEVALREQUEST.phtml end -->

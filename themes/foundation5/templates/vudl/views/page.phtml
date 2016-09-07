@@ -1,0 +1,114 @@
+<!-- templates - vudl - views - PAGE.phtml -->
+<script>
+  // Mandatory update function
+  updateFunction = function(data, tab) {
+    $('.loading-bar').removeClass('hide');
+    if(!data['zoom'] && data['large']) data['zoom'] = data['large'];
+    pageData = data;
+    //console.log(data);
+    $('#view .tabs dd:not(.static) a').addClass('hide');
+    for(var i in data) {
+      $('#'+i+'-tab').removeClass('hide');
+    }
+    $('.download').attr('href', data['master']);
+    Zoomy.load(data['large'], function() {$('.loading-bar').addClass('hide')});
+    $('#'+tab).click();
+  };
+  // Load an image into the preview (to be deprecated by the new template system)
+  var currentPreview = "";
+  function showPreview(index, tab) {
+    if(currentPreview !== pageData[index]) {
+      currentPreview = pageData[index];
+      $('.loading-bar').removeClass('hide');
+      $('#preview')
+        .load(function() {
+          $('#preview').css('opacity','1');
+          $('.loading-bar').addClass('hide');
+        })
+        .css('opacity','.3')
+        .attr({
+          'src':pageData[index]
+        })
+    }
+  }
+
+  function resizeZoom() {
+    var $height = $(window).height() + window.scrollY - $('#zoomy').offset().top - 10;
+    if($('#side-nav').height() > 200) {
+      $height = Math.min($height, $('#side-nav').height() - 80);
+    } else {
+      $height = Math.min($height, $(window).height() - 270);
+    }
+    $('#zoomy').css({
+      'width' : '100%',
+      'height': Math.max(400, $height)
+    });
+  }
+
+  $(document).ready(function() {
+    $('#view .tabs dd.opener a').addClass('hide');
+    $('#view .tabs dd:not(.static) a').click(function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+      currentTab = $(this).attr('id');
+    });
+    // Initialize the size of Zoomy
+    $('#zoom-tab').on('shown.bs.tab', function() {
+      resizeZoom();
+      Zoomy.init(document.getElementById('zoomy'));
+      Zoomy.load(pageData['large'], function() { $('.loading-bar').addClass('hide'); });
+    });
+    $(window).scroll(resizeZoom);
+    $(window).resize(resizeZoom);
+    resizeZoom();
+    updateFunction({
+      'id'       :'<?=$this->id ?>',
+      'medium'   :'<?=$this->medium ?>',
+      'large'    :'<?=$this->large ?>',
+      'zoom'     :'<?=$this->zoom ?: $this->large ?>',
+      'master'   :'<?=$this->master ?>',
+      'thumbnail':'<?=$this->thumbnail ?>',
+      'mimetype' :'<?=$this->mimetype ?>'
+    }, 'medium-tab');
+  });
+</script>
+<dl class="tabs" data-tab><? /* Check if data-tab should be removed, Fixme - CK */ ?>
+  <dd class="static opener">
+    <a onClick="toggleSideNav()">
+      <i class="fa fa-caret-right"></i>
+      <i class="fa fa-caret-right"></i>
+      <i class="fa fa-caret-right"></i>
+    </a>
+  </dd>
+  <dd><a href="#image" id="medium-tab" onClick="showPreview('medium', this)">Medium</a></dd>
+  <dd class="hide-for-small"><a href="#image" id="large-tab" onClick="showPreview('large', this)">Large</a></dd>
+  <dd><a href="#zoom" id="zoom-tab">Zoom</a></dd>
+  <dd><a href="#master" id="master-tab">Downloads</a></dd>
+</dl>
+<div class="tabs-content">
+  <div class="loading-bar front">
+    <div class="progress progress-striped active">
+      <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+        <span><?=$this->transEsc("Loading")?>&nbsp;...</span>
+      </div>
+    </div>
+  </div>
+  <div class="content text-center" id="image">
+    <img id="preview" src="<?=isset($this->medium) ? $this->medium : '' ?>">
+  </div>
+  <div class="content text-center" id="zoom">
+    <a class="button secondary small" role="button" onClick="Zoomy.turnLeft()"><i class="fa fa-rotate-left"></i></a>
+    <a class="button secondary small" role="button" onClick="Zoomy.zoom({deltaY:1})"><i class="fa fa-search-minus"></i></a>
+    <a class="button secondary small" role="button" onClick="Zoomy.zoom(0,1)">[1:1]</a>
+    <a class="button secondary small" role="button" onClick="Zoomy.toggleMap();$(this).children('.fa').toggleClass('fa fa-toggle-down').toggleClass('fa fa-toggle-up');" title="<?=$this->transEsc('more_info_toggle') ?>">
+      <i class="fa fa-toggle-down"></i>
+    </a>
+    <a class="button secondary small" role="button" onClick="Zoomy.zoom({deltaY:-1})"><i class="fa fa-search-plus"></i></a>
+    <a class="button secondary small" role="button" onClick="Zoomy.turnRight()"><i class="fa fa-rotate-right"></i></a>
+    <canvas id="zoomy"></canvas>
+  </div>
+  <div class="content text-center" id="master">
+    <?=$this->context($this)->renderInContext('vudl/master-tab.phtml', array())?>
+  </div>
+</div>
+<!-- templates - vudl - views - PAGE.phtml end -->

@@ -1,0 +1,12 @@
+<!-- ajax - EXPORT-FAVORTIES.phtml -->
+<div data-alert class="alert-box info" tabindex="0" aria-live="assertive" role="dialogalert">
+  <div class="text-center">
+    <?=$this->transEsc('export_success'); ?>&nbsp;&mdash;&nbsp;
+    <a class="button small" role="button" href="<?=$this->escapeHtmlAttr($this->url)?>"<?=$this->export()->needsRedirect($this->format) ? ' target="_blank"' : ''?>><?=
+        $this->export()->needsRedirect($this->format)
+            ? $this->transEsc('export_redirect', array('%%service%%' => $this->translate($this->export()->getLabelForFormat($this->format))))
+            : $this->transEsc('export_download')
+      ?></a>
+  </div>
+</div>
+<!-- ajax - EXPORT-FAVORTIES.phtml end -->

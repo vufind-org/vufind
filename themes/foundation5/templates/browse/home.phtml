@@ -1,0 +1,96 @@
+<!-- browse - home.phtml -->
+<?
+  $this->headTitle($this->translate('Browse the Catalog'));
+  $this->layout()->breadcrumbs = '<a href="' . $this->url('browse-home') . '">' . $this->transEsc('Browse') . '</a>';
+
+  $BROWSE_BASE = $this->url('browse-' . strtolower($this->currentAction));
+  $SEARCH_BASE = $this->url($this->currentAction == 'Tag' ? 'tag-home' : 'search-results');
+?>
+
+<? if (!isset($this->currentAction)): ?>
+  <h2><?=$this->transEsc('Choose a Category to Begin Browsing') ?>:</h2>
+<? endif; ?>
+
+<div class="row">
+  <ul class="stack button-group browse medium-3 columns<? if (!empty($this->categoryList)): ?> hide-for-small<? endif ?>" id="list1">
+  <? foreach ($this->browseOptions as $item=>$currentOption): ?>
+    <li>
+      <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>" class="button secondary <? if($currentOption['action'] == $this->currentAction): ?> active<? endif; ?>">
+      <?=$this->transEsc($currentOption['description']) ?>
+      <span class="pull-right"><i class="fa fa-angle-right"></i></span>
+    </a>
+    </li>
+  <? endforeach; ?>
+  </ul>
+
+  <? if (!empty($this->categoryList)): ?>
+    <ul class="stack button-group browse medium-3 columns left<? if (!empty($this->secondaryList) || !empty($this->resultList)): ?> hide-for-small<? endif ?>" id="list2">
+      <? foreach($this->categoryList as $findby=>$category): ?>
+        <li>
+          <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>" class="button secondary clearfix<? if ($this->findby == $findby): ?> active<? endif; ?>">
+          <? if(is_string($category)): ?>
+            <?=$this->transEsc($category)?>
+            <span class="pull-right"><i class="fa fa-angle-right"></i></span>
+          <? else: ?>
+            <?=$this->transEsc($category['text'])?>
+            <span class="label"><?=number_format($category['count'])?></span>
+          <? endif; ?>
+        </a>
+        </li>
+      <? endforeach; ?>
+    </ul>
+  <? endif; ?>
+
+  <? if (!empty($this->secondaryList)): ?>
+    <ul class="stack button-group browse medium-3 columns left<? if (!empty($this->resultList)): ?> hide-for-small<? endif ?>" id="list3">
+    <? foreach($this->secondaryList as $secondary): ?>
+      <? $url = $BROWSE_BASE . '?findby=' . urlencode($this->findby)
+          . '&category=' . urlencode($this->category)
+          . '&query=' . urlencode($secondary['value']);
+        if ($this->facetPrefix) {
+          $url .= '&facet_prefix=' . urlencode($secondary['displayText']);
+        }
+        if ($this->secondaryParams) {
+          foreach($this->secondaryParams as $var=>$val) {
+            $url .= '&' . $var .'=' . urlencode($val);
+          }
+        }
+        $viewRecord = !empty($this->categoryList) && $this->currentAction != 'Tag' && $this->findby != 'alphabetical';
+      ?>
+      <li>
+        <a href="<?=$url ?>" class="button secondary clearfix<? if ($this->query == $secondary['value'].'' || $this->query == $secondary['value'].'*'): ?> active<? endif; ?>">
+        <?=$this->escapeHtml($secondary['displayText']) ?>
+        <? if ($this->findby != 'alphabetical' && isset($secondary['count'])): ?>
+          <span class="label"><?=number_format($secondary['count']) ?></span>
+        <? else: ?>
+          <span class="pull-right"><i class="fa fa-angle-right"></i></span>
+        <? endif; ?>
+      </a>
+      </li>
+      <? if($viewRecord): ?>
+        <li class="button">
+          <a class="button secondary view-record" href="<?=$SEARCH_BASE ?>?lookfor=<? if ($this->filter): ?>&filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+','&filter[]=', urlencode($secondary['value'])) ?><? endif; ?>&filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]<? if($this->dewey_flag):?>&sort=dewey-sort<?endif;?>"><?=$this->transEsc('View Records') ?></a>
+        </li>
+      <? endif; ?>
+    <? endforeach; ?>
+    </ul>
+  <? endif; ?>
+
+  <? if (!empty($this->resultList)): ?>
+    <ul class="stack button-group browse medium-3 columns left" id="list4">
+    <? foreach($this->resultList as $result): ?>
+        <li>
+          <a class="button secondary clearfix" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>">
+        <?=$this->escapeHtml($result['displayText'])?>
+        <span class="label"><?=number_format($result['count']) ?></span>
+      </a>
+        </li>
+    <? endforeach; ?>
+    </ul>
+  <? elseif (isset($this->query)): ?>
+    <ul class="stack button-group browse medium-3 columns left" id="list4">
+      <li><button class="alert"><?=$this->transEsc('nohit_heading') ?></button></li>
+    </ul>
+  <? endif; ?>
+</div>
+<!-- browse - home.phtml - END -->

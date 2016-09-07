@@ -1,0 +1,67 @@
+<!-- templates - recordDriver - solrDefault - TOOLBAR.phtml -->
+<?
+$addThis = $this->addThis();
+if (!empty($addThis)) {
+  $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
+}
+
+// Set up some variables for convenience:
+$id = $this->driver->getUniqueId();
+$controllerClass = 'controller:' . $this->record($this->driver)->getController();
+$cart = $this->cart();
+$cartId = $this->driver->getResourceSource() . '|' . $id;
+?>
+<dl class="sub-nav hide-for-print">
+    <? if (count($this->driver->getCitationFormats()) > 0): ?>
+      <dd><? /* a id="cite-record" class="modal-link ..." href="..." data-reveal-id="modal" title="..." data-reveal-replace-content=".modal-body"  data-reveal-ajax="true"><i class="fa fa-asterisk"></i> ...</a --><!-- potential modal solution with next FNDTN theme - FIXME - CK */ ?>
+        <a id="cite-record" class="modal-link <?= $controllerClass ?>" href="<?= $this->url('record-cite', array('id' => $id)) ?>" title="<?= $this->transEsc('Cite this') ?>" rel="nofollow"><i
+              class="fa fa-asterisk"></i> <?= $this->transEsc('Cite this') ?></a>
+      </dd>
+    <? endif; ?>
+    <dd><a id="sms-record" class="modal-link <?= $controllerClass ?>" href="<?= $this->url('record-sms', array('id' => $id)) ?>" title="<?= $this->transEsc('Text this') ?>" rel="nofollow"><i
+            class="fa fa-mobile"></i> <?= $this->transEsc('Text this') ?></a></dd>
+    <dd><a id="mail-record" class="modal-link <?= $controllerClass ?>" href="<?= $this->url('record-email', array('id' => $id)) ?>" title="<?= $this->transEsc('Email this') ?>" rel="nofollow"><i
+            class="fa fa-envelope"></i> <?= $this->transEsc('Email this') ?></a></dd>
+
+    <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
+    <? if (count($exportFormats) > 0): ?>
+      <dd class="dropdown">
+        <a class="export-toggle" data-dropdown="exportDD" data-options="is_hover:true" href="<?= $this->recordLink()->getActionUrl($this->driver, 'Export') ?>" rel="nofollow"><i
+              class="fa fa-list-alt"></i> <?= $this->transEsc('Export Record') ?></a>
+        <ul id="exportDD" class="f-dropdown" role="menu" data-dropdown-content>
+          <? foreach ($exportFormats as $exportFormat): ?>
+            <li><a <? if ($this->export()->needsRedirect($exportFormat)): ?>target="<?= $this->escapeHtmlAttr($exportFormat) ?>Main"
+                   <? endif; ?>href="<?= $this->recordLink()->getActionUrl($this->driver, 'Export') ?>?style=<?= $this->escapeHtmlAttr($exportFormat) ?>"
+                   rel="nofollow"><?= $this->transEsc('Export to') ?><?= $this->transEsc($this->export()->getLabelForFormat($exportFormat)) ?></a></li>
+          <? endforeach; ?>
+        </ul>
+      </dd>
+    <? endif; ?>
+
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <dd><a id="save-record" class="modal-link <?= $controllerClass ?>" href="<?= $this->recordLink()->getActionUrl($this->driver, 'Save') ?>" title="<?= $this->transEsc('Add to favorites') ?>"
+             rel="nofollow"><i class="fa fa-star"></i> <?= $this->transEsc('Add to favorites') ?></a></dd>
+    <? endif; ?>
+    <? if (!empty($addThis)): ?>
+      <dd><a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?= urlencode($addThis) ?>"><i class="fa fa-bookmark"></i> <?= $this->transEsc('Bookmark') ?></a>
+      </dd>
+    <? endif; ?>
+    <? if ($cart->isActive()): ?>
+      <dd id="bookbag-menu">
+        <input id="cartId" type="hidden" name="ids[]" value="<?= $this->escapeHtmlAttr($cartId) ?>"/>
+        <a id="cart-add" class="<? if (!$cart->contains($cartId)): ?>correct <? endif ?>hide" href="#"><i class="fa fa-plus"></i> <?= $this->transEsc('Add to Book Bag') ?></a>
+        <a id="cart-remove" class="<? if ($cart->contains($cartId)): ?>correct <? endif ?>hide" href="#"><i class="fa fa-minus-circle"></i> <?= $this->transEsc('Remove from Book Bag') ?></a>
+        <noscript>
+          <form method="post" name="addForm" action="<?= $this->url('cart-home') ?>">
+            <input type="hidden" name="ids[]" value="<?= $this->escapeHtmlAttr($cartId) ?>"/>
+            <? if ($cart->contains($cartId)): ?>
+              <input class="button secondary small" type="submit" name="delete" role="button" value="<?= $this->transEsc('Remove from Book Bag') ?>"/>
+            <? else: ?>
+              <input class="button secondary small" type="submit" name="add" role="button" value="<?= $this->transEsc('Add to Book Bag') ?>"/>
+            <? endif; ?>
+          </form>
+        </noscript>
+      </dd>
+    <? endif; ?>
+  </dl>
+<!-- templates - recordDriver - solrDefault - TOOLBAR.phtml - End -->

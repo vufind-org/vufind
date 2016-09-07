@@ -1,0 +1,41 @@
+<!-- install - FIXILS.phtml -->
+<?
+    // Set page title.
+    $this->headTitle($this->translate('auto_configure_title'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') .'">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="active">' . $this->transEsc('Fix ILS') . '</li>';
+?>
+<h2><?=$this->transEsc('auto_configure_title')?></h2>
+
+<? if (isset($this->demo)): ?>
+  <p>You are using one of VuFind's simulated Integrated Library System (ILS) drivers, which display fake information
+  in order to demonstrate the capabilities of the system.  If you want real patron and status information to display,
+  you should change your configuration to communicate with a real ILS.</p>
+
+  <form method="post" role="form">
+    <div class="row">
+      <label for="driver" class="medium-2 columns">Pick a driver:</label>
+      <div class="medium-10 columns">
+        <select id="driver" name="driver" class="auto">
+          <? foreach ($this->drivers as $driver): ?>
+            <option value="<?=$this->escapeHtmlAttr($driver)?>"><?=$this->escapeHtml($driver)?></option>
+          <? endforeach; ?>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="medium-10 columns medium-offset-2">
+        <input type="submit" class="button small" role="button" aria-label="submit form"/>
+      </div>
+    </div>
+  </form>
+
+  <p>If your ILS is not available in this list, you may be able to write your own driver.  See the
+  <a href="http://vufind.org/wiki/vufind2:developer_manual" target="_new">Developer Manual</a>.</p>
+<? else: ?>
+  <p>VuFind is having trouble communicating with your Integrated Library System (ILS).  Check your configuration.
+  You may need to edit the file at <strong><?=$this->escapeHtml($this->configPath)?></strong> and fill in some
+  connection details.</p>
+<? endif; ?>
+<!-- install - FIXILS.phtml end -->

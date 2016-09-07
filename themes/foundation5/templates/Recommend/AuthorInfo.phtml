@@ -1,0 +1,16 @@
+<!-- recommend - authorinfo.phtml -->
+<? $this->info = $this->recommend->getAuthorInfo() ?>
+<? if (!(empty($this->info['description']) || empty($this->info))): ?>
+<div class="panel clearfix">
+  <h2><?=$this->info['name'] ?></h2>
+
+  <? if (isset($this->info['image'])): ?>
+    <img class="left" src="<?=$this->info['image'] ?>" alt="<?=$this->escapeHtmlAttr($this->info['altimage']) ?>" width="150px"/>
+  <? endif; ?>
+
+  <?=preg_replace('/___baseurl___/', $this->url('search-results'), $this->info['description']) ?>
+
+  <a class="wikipedia" href="http://<?=$this->info['wiki_lang'] ?>.wikipedia.org/wiki/<?=$this->escapeHtmlAttr($this->info['name']/*url*/) ?>" target="new"><?=$this->transEsc('wiki_link') ?></a>
+</div>
+<? endif; ?>
+<!-- recommend - authorinfo.phtml -->

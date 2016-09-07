@@ -1,0 +1,55 @@
+<!-- librarycards - editcard -->
+<?
+  // Set up page title:
+  $pageTitle = empty($this->card->id) ? 'Add a Library Card' : "Edit Library Card";
+  $this->headTitle($this->translate($pageTitle));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+    . '<li><a href="' . $this->url('librarycards-home') . '">' . $this->transEsc('Library Cards') . '</a></li>'
+    . '<li>' . $this->transEsc($pageTitle) . '</li>';
+?>
+
+<?=$this->flashmessages()?>
+
+<h2><?=$this->transEsc($pageTitle); ?></h2>
+
+<form class="edit-card-form" method="post" name="<?=empty($this->card->id) ? 'newCardForm' : 'editCardForm'?>">
+  <input type="hidden" name="id" value="<?=empty($this->card->id) ? 'NEW' : $this->card->id ?>"/>
+  <div class="row">
+    <label class="medium-3 columns" for="card_name"><?=$this->transEsc('Library Card Name'); ?>:</label>
+    <div class="medium-9 columns">
+      <input id="card_name" class="auto" type="text" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName)?>"/>
+    </div>
+  </div>
+  <? if ($this->targets !== null): ?>
+  <div class="row">
+    <label class="medium-3 columns" for="login_target"><?=$this->transEsc('login_target')?>:</label>
+    <div class="medium-9 columns">
+      <select id="login_target" name="target" class="auto">
+      <? foreach ($this->targets as $target): ?>
+        <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
+      <? endforeach; ?>
+      </select>
+    </div>
+  </div>
+  <? endif; ?>
+  <div class="row">
+    <label class="medium-3 columns" for="login_username"><?=$this->transEsc('Username')?>:</label>
+    <div class="medium-9 columns">
+      <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="auto"/>
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="login_password"><?=$this->transEsc('Password')?>:</label>
+    <div class="medium-9 columns">
+      <input id="login_password" type="password" name="password" value="<?=$this->escapeHtmlAttr($this->password)?>" class="auto"/>
+    </div>
+  </div>
+  <div class="row">
+    <div class="medium-9 columns medium-offset-3">
+      <input class="button small" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
+    </div>
+  </div>
+</form>
+<!-- librarycards - editcard - END -->
