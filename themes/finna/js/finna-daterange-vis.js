@@ -133,6 +133,9 @@ finna.dateRangeVis = (function() {
             }
         );
 
+        // Re-encode '#' (required for advanced filters)
+        url = url.replace('#', '%23');
+
         holder.find('.content').addClass('loading');
         loading = true;
 
