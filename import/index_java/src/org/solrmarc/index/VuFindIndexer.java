@@ -1123,7 +1123,7 @@ public class VuFindIndexer extends SolrIndexer
      * @return sortable shelf key of the first valid LC number encountered, 
      *         otherwise shelf key of the first call number found.
      */
-    public static String getLCSortable(Record record, String fieldSpec) {
+    public String getLCSortable(Record record, String fieldSpec) {
         // Loop through the specified MARC fields:
         Set<String> input = getFieldList(record, fieldSpec);
         String firstCall = "";
@@ -1154,7 +1154,7 @@ public class VuFindIndexer extends SolrIndexer
      * @param callType  literal call number code
      * @return sort key for first identified LC call number
      */
-    public static String getLCSortableByType(
+    public String getLCSortableByType(
             Record record, String fieldSpec, String callTypeSf, String callType) {
         String sortKey = null;
         for (String tag : fieldSpec.split(":")) {
