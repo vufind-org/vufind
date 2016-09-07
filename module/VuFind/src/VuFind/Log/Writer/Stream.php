@@ -38,24 +38,7 @@ namespace VuFind\Log\Writer;
  */
 class Stream extends \Zend\Log\Writer\Stream
 {
-    /**
-     * Holds the verbosity level
-     *
-     * @var int
-     */
-    protected $verbosity = 1;
-
-    /**
-     * Set verbosity
-     *
-     * @param integer $verb verbosity setting
-     *
-     * @return void
-     */
-    public function setVerbosity($verb)
-    {
-        $this->verbosity = $verb;
-    }
+    use VerbosityTrait;
 
     /**
      * Write a message to the log.
@@ -67,12 +50,7 @@ class Stream extends \Zend\Log\Writer\Stream
      */
     protected function doWrite(array $event)
     {
-        // Apply verbosity filter:
-        if (is_array($event['message'])) {
-            $event['message'] = $event['message'][$this->verbosity];
-        }
-
-        // Call parent method:
-        return parent::doWrite($event);
+        // Apply verbosity, Call parent method:
+        return parent::doWrite($this->applyVerbosity($event));
     }
 }

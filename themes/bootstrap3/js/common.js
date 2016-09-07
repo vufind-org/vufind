@@ -56,7 +56,7 @@ var VuFind = (function VuFind() {
       window.location.href = href;
     }
   };
-  
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -129,6 +129,16 @@ function lessFacets(id) {
   $('.' + id).addClass('hidden');
   $('#more-' + id).removeClass('hidden');
   return false;
+}
+function facetSessionStorage(e) {
+  var source = $('#result0 .hiddenSource').val();
+  var id = e.target.id;
+  var key = 'sidefacet-'+source+id;
+  if (!sessionStorage.getItem(key)) {
+    sessionStorage.setItem(key, document.getElementById(id).className);
+  } else {
+    sessionStorage.removeItem(key);
+  }
 }
 
 // Phone number validation
@@ -325,4 +335,20 @@ $(document).ready(function commonDocReady() {
     $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
     window.location.assign($(this).attr('href'));
   });
+
+  // Side facet status saving
+  $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
+    var source = $('#result0 .hiddenSource').val();
+    var storedItem = sessionStorage.getItem('sidefacet-'+source+item.id);
+    if (storedItem) {
+      item.className = storedItem;
+      if (item.className.indexOf('in') < 0) {
+        $(item).siblings('.title').addClass('collapsed');
+      } else {
+        $(item).siblings('.title').removeClass('collapsed');
+      }
+    }
+  });
+  $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
+  $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
 });
