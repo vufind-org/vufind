@@ -16,12 +16,20 @@
         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-nav-<?=$val['label'] ?>" aria-hidden="true"></i><?= $this->transEsc($val['label']) ?> <b class="caret"></b></a>
         <ul role="presentation" class="dropdown-menu">
           <? foreach ($val['items'] as $itemKey => $itemVal): ?>
-          <? if (!($itemUrl = $this->navibar()->getMenuItemUrl($itemVal))) { continue; } ?>
+          <?
+          if (!($itemUrl = $this->navibar()->getMenuItemUrl($itemVal))) {
+             continue;
+          }
+          $url = $itemUrl['url'];
+          $target = !empty($itemUrl['target']) ? $itemUrl['target'] : null;
+          $label = $itemVal['label'];
+          $desc = !empty($itemVal['desc']) ? $itemVal['desc'] : null;
+          ?>
           <li role="menuitem">
-            <a<?= isset($itemVal['target']) ? ' target="' . $this->escapeHtmlAttr($itemVal['target']) . '"' : ''?> href="<?=$itemUrl?>">
-              <div><?= $this->transEsc($itemVal['label']) ?></div>
-              <? if(isset($itemVal['desc'])): ?>
-              <div class="description" role="note"><?= $this->transEsc($itemVal['desc']) ?></div>
+            <a<?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?=$url?>">
+              <div><?= $this->transEsc($label) ?></div>
+              <? if ($desc): ?>
+              <div class="description" role="note"><?= $this->transEsc($desc) ?></div>
               <? endif; ?>
             </a>
           </li>
@@ -29,10 +37,15 @@
         </ul>
       </li>
       <? else:
-        $val = $val['items'][0];
-        $target = isset($val['target']) ? $val['target'] : null;
+        $itemVal = $val['items'][0];
+        if (!($itemUrl = $this->navibar()->getMenuItemUrl($itemVal))) {
+           continue;
+        }
+        $url = $itemUrl['url'];
+        $target = isset($itemUrl['target']) ? $itemUrl['target'] : null;
+        $label = $itemVal['label'];
       ?>
-      <li><a<?= isset($target) ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?= $this->navibar()->getMenuItemUrl($val) ?>"><i class="fa fa-nav-<?=$val['label'] ?>" aria-hidden="true"></i><?= $this->transEsc($val['label']) ?></a></li>
+      <li><a<?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?= $url ?>"><i class="fa fa-nav-<?=$label ?>" aria-hidden="true"></i><?= $this->transEsc($label) ?></a></li>
       <? endif; ?>
       <? endforeach; ?>
     </ul>

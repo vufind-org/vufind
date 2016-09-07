@@ -127,18 +127,24 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      */
     public function getMenuItemUrl(array $data)
     {
-        if (!$data['route']) {
-            return $data['url'];
+        $action = $data['action'];
+        $target = isset($action['target']) ? $action['target'] : null;
+        if (!$action || empty($action['url'])) {
+            return null;
+        }
+        if (!$action['route']) {
+            return ['url' => $action['url'], 'target' => $target];
         }
 
         try {
-            if (isset($data['routeParams'])) {
-                return $this->getViewHelper('url')->__invoke(
-                    $data['url'], $data['routeParams']
+            if (isset($action['routeParams'])) {
+                $url =  $this->getViewHelper('url')->__invoke(
+                    $action['url'], $action['routeParams']
                 );
             } else {
-                return $this->getViewHelper('url')->__invoke($data['url']);
+                $url = $this->getViewHelper('url')->__invoke($action['url']);
             }
+            return ['url' => $url, 'target' => $target];
         } catch (\Exception $e) {
         }
 
@@ -189,6 +195,9 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
         $translationEmpty = $this->getView()->plugin('translationEmpty');
 
         $parseUrl = function ($url) {
+            if (!$url) {
+                return null;
+            }
             $url = trim($url);
 
             $data = [];
@@ -238,25 +247,14 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
 
             $options = [];
             foreach ($items as $itemKey => $action) {
-                if (!$action) {
-                    continue;
-                }
                 if (!is_string($action)) {
-                    if (!isset($action[$lng])) {
-                        continue;
-                    } else {
-                        $action = $action[$lng];
-                    }
+                    $action = isset($action[$lng]) ? $action[$lng] : null;
                 }
 
-                $option = array_merge(
-                    ['id' => $itemKey, 'label' => "menu_$itemKey"],
-                    $parseUrl($action)
-                );
-
-                if (!$this->menuItemEnabled($option)) {
-                    continue;
-                }
+                $option = [
+                    'id' => $itemKey, 'label' => "menu_$itemKey",
+                    'action' => $parseUrl($action)
+                ];
 
                 $desc = 'menu_' . $itemKey . '_desc';
                 if (!$translationEmpty($desc)) {
@@ -271,7 +269,26 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
                 $result[] = $item;
             }
         }
-        $this->menuItems = $this->sortMenuItems($result, $sortData);
+
+        $menuItems = $this->sortMenuItems($result, $sortData);
+
+        foreach ($menuItems as $menuKey => $option) {
+            foreach ($option['items'] as $itemKey => $item) {
+                if (!$item['action'] || !$this->menuItemEnabled($item)) {
+                    unset($menuItems[$menuKey]['items'][$itemKey]);
+                }
+            }
+            $menuItems[$menuKey]['items']
+                = array_values($menuItems[$menuKey]['items']);
+
+            if (isset($menuItems[$menuKey]['items'])
+                && empty($menuItems[$menuKey]['items'])
+            ) {
+                unset($menuItems[$menuKey]);
+            }
+        }
+
+        $this->menuItems = $menuItems;
     }
 
     /**
@@ -283,11 +300,15 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      */
     protected function menuItemEnabled($item)
     {
-        if (empty($item['route'])) {
+        $action = $item['action'];
+        if (!$action) {
+            return false;
+        }
+        if (empty($action['route'])) {
             return true;
         }
 
-        $url = $item['url'];
+        $url = $action['url'];
 
         if (strpos($url, 'combined-') === 0) {
             return $this->getViewHelper('combined')->isAvailable();
