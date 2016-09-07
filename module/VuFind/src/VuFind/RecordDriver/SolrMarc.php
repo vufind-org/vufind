@@ -391,6 +391,49 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * Get the item's publication dates.
+     *
+     * @return array
+     */
+    public function getPublicationDates()
+    {
+        // First check old-style 260c dates:
+        $dates = $this->getFieldArray('260', array('c'), false);
+
+        // Now track down relevant RDA-style 264c dates; we only care about
+        // copyright and publication dates (and ignore copyright dates if
+        // publication dates are present).  This behavior is designed to be
+        // consistent with default SolrMarc handling of names/dates.
+        $pubDates = $copyDates = array();
+
+        $fields = $this->marcRecord->getFields('264');
+        if (is_array($fields)) {
+            foreach ($fields as $currentField) {
+                $currentDate = $currentField->getSubfield('c');
+                $currentDate = is_object($currentDate)
+                ? $currentDate->getData() : null;
+                if (!empty($currentDate)) {
+                    switch ($currentField->getIndicator('2')) {
+                    case '1':
+                        $pubDates[] = $currentDate;
+                        break;
+                    case '4':
+                        $copyDates[] = $currentDate;
+                        break;
+                    }
+                }
+            }
+        }
+        if (count($pubDates) > 0) {
+            $dates = array_merge($dates, $pubDates);
+        } else if (count($copyDates) > 0) {
+            $dates = array_merge($dates, $copyDates);
+        }
+
+        return $dates;
+    }
+
+    /**
      * Get an array of publication frequency information.
      *
      * @return array
