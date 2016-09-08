@@ -16,7 +16,7 @@
 
 <span class="openUrlControls<? if ($this->openUrlEmbed): ?> openUrlEmbed<? if ($this->openUrlEmbedAutoLoad): ?> openUrlEmbedAutoLoad<? endif; ?><? endif; ?>">
   <? if (!$this->openUrlImageBasedSrc || $this->openUrlImageBasedMode == 'both'): ?>
-  <a href="<?=$this->escapeHtmlAttr($this->openUrlBase . '?' . $this->openUrl)?>"<?=$class?> data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>">
+  <a href="<?=$this->escapeHtmlAttr($this->resolverLink)?>"<?=$class?> data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>">
     <? /* put the openUrl here in a span (COinS almost) so we can retrieve it later */ ?>
     <span title="<?=$this->escapeHtmlAttr($this->openUrl)?>" class="openUrl"></span>
     <? if ($this->openUrlGraphic): ?>

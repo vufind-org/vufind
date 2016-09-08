@@ -60,6 +60,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $openUrlRules;
 
     /**
+     * Resolver plugin manager
+     *
+     * @var \VuFind\ResolverDriverPluginManager
+     */
+    protected $resolverPluginManager;
+
+    /**
      * Current RecordDriver
      *
      * @var \VuFind\RecordDriver
@@ -76,15 +83,17 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \VuFind\View\Helper\Root\Context $context      Context helper
-     * @param array                            $openUrlRules VuFind OpenURL rules
-     * @param \Zend\Config\Config              $config       VuFind OpenURL config
+     * @param \VuFind\View\Helper\Root\Context    $context               Context helper
+     * @param array                               $openUrlRules          VuFind OpenURL rules
+     * @param \VuFind\ResolverDriverPluginManager $resolverPluginManager Resolver plugin manager
+     * @param \Zend\Config\Config                 $config                VuFind OpenURL config
      */
     public function __construct(\VuFind\View\Helper\Root\Context $context,
-        $openUrlRules, $config = null
+        $openUrlRules, $resolverPluginManager, $config = null
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;
+        $this->resolverPluginManager = $resolverPluginManager;
         $this->config = $config;
     }
 
@@ -192,8 +201,22 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             );
         }
 
+        // instantiate the resolver plugin to get a proper resolver link
+        if (!$this->resolverPluginManager->has($resolver)) {
+            return $this->output(
+                $this->translate("Could not load driver for $resolver"),
+                self::STATUS_ERROR,
+                500
+            );
+        }
+        $resolverObj = new \VuFind\Resolver\Connection(
+            $this->resolverPluginManager->get($resolver)
+        );
+        $resolverLink = $resolverObj->getResolverLink($openurl);
+
         // Build parameters needed to display the control:
         $params = [
+            'resolverLink' => $resolverLink,
             'openUrl' => $this->recordDriver->getOpenUrl(),
             'openUrlBase' => empty($base) ? false : $base,
             'openUrlWindow' => empty($this->config->window_settings)

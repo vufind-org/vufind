@@ -1257,11 +1257,24 @@ class AjaxController extends AbstractBase
             $base = false;
         }
 
+        // Get setting for more options link
+        $enableMoreOptionsLink =
+            (isset($config->OpenURL)
+                && isset($config->OpenURL->enable_more_options_link)
+            )
+            ? $config->OpenURL->enable_more_options_link
+            : true;
+
+        $moreOptionsLink =
+            $enableMoreOptionsLink ? $resolver->getResolverLink($openUrl) : '';
+
         // Render the links using the view:
         $view = [
             'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
             'electronic' => $electronic, 'services' => $services,
-            'searchClassId' => $searchClassId
+            'searchClassId' => $searchClassId,
+            'enableMoreOptionsLink' => $enableMoreOptionsLink,
+            'moreOptionsLink' => $moreOptionsLink
         ];
         $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
 
