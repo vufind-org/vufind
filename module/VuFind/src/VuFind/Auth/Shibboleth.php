@@ -62,7 +62,8 @@ class Shibboleth extends AbstractBase
      *
      * @param \Zend\Session\ManagerInterface $sessionManager Session manager
      */
-    public function __construct(\Zend\Session\ManagerInterface $sessionManager) {
+    public function __construct(\Zend\Session\ManagerInterface $sessionManager)
+    {
         $this->sessionManager = $sessionManager;
     }
 

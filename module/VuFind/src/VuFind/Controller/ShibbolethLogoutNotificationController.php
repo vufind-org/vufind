@@ -160,15 +160,18 @@ class ShibbolethLogoutNotificationController extends AbstractBase
         </operation>
     </portType>
 
-    <binding name="LogoutNotificationBinding" type="notify:LogoutNotificationPortType">
+    <binding name="LogoutNotificationBinding"
+        type="notify:LogoutNotificationPortType">
         <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
         <operation name="LogoutNotification">
-            <soap:operation soapAction="urn:xmethods-logout-notification#LogoutNotification"/>
+            <soap:operation
+                soapAction="urn:xmethods-logout-notification#LogoutNotification"/>
         </operation>
     </binding>
 
     <service name="LogoutNotificationService">
-          <port name="LogoutNotificationPort" binding="notify:LogoutNotificationBinding">
+          <port name="LogoutNotificationPort"
+            binding="notify:LogoutNotificationBinding">
             <soap:address location="$uri"/>
           </port>
     </service>
