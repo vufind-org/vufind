@@ -541,6 +541,33 @@ class UtilController extends AbstractBase
     }
 
     /**
+     * Command-line tool to clear unwanted entries
+     * from external_session database table.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function expireExternalSessionsAction()
+    {
+        $this->consoleOpts->addRules(
+            [
+                'h|help' => 'Get help',
+                'batch=i' => 'Batch size',
+                'sleep=i' => 'Sleep interval between batches'
+            ]
+        );
+
+        if ($this->consoleOpts->getOption('h')) {
+            return $this->expirationHelp('external sessions');
+        }
+
+        return $this->expire(
+            'ExternalSession',
+            '%%count%% expired external sessions deleted.',
+            'No expired external sessions to delete.'
+        );
+    }
+
+    /**
      * Command-line tool to delete suppressed records from the index.
      *
      * @return \Zend\Console\Response

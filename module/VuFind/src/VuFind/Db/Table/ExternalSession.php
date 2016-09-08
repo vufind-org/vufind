@@ -93,6 +93,31 @@ class ExternalSession extends Gateway
     }
 
     /**
+     * Delete expired sessions. Allows setting of 'from' and 'to' ID's so that rows
+     * can be deleted in small batches.
+     *
+     * @param int $daysOld Age in days of an "expired" session.
+     * @param int $idFrom  Lowest id of rows to delete.
+     * @param int $idTo    Highest id of rows to delete.
+     *
+     * @return int Number of rows deleted
+     */
+    public function deleteExpired($daysOld = 2, $idFrom = null, $idTo = null)
+    {
+        $expireDate = date('Y-m-d', time() - $daysOld * 24 * 60 * 60);
+        $callback = function ($select) use ($expireDate, $idFrom, $idTo) {
+            $where = $select->where->lessThan('created', $expireDate);
+            if (null !== $idFrom) {
+                $where->and->greaterThanOrEqualTo('id', $idFrom);
+            }
+            if (null !== $idTo) {
+                $where->and->lessThanOrEqualTo('id', $idTo);
+            }
+        };
+        return $this->delete($callback);
+    }
+
+    /**
      * Get the lowest id and highest id for expired sessions.
      *
      * @param int $daysOld Age in days of an "expired" session.
@@ -102,7 +127,7 @@ class ExternalSession extends Gateway
      */
     public function getExpiredIdRange($daysOld = 2)
     {
-        $expireDate = time() - $daysOld * 24 * 60 * 60;
+        $expireDate = date('Y-m-d', time() - $daysOld * 24 * 60 * 60);
         $callback = function ($select) use ($expireDate) {
             $select->where->lessThan('created', $expireDate);
         };
