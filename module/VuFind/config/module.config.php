@@ -57,6 +57,36 @@ $config = [
                         'action'     => 'Home',
                     ]
                 ]
+            ],
+            'soap-shibboleth-logout-notification-handler' => [
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => [
+                    'route' => '/soap/shiblogout',
+                    'defaults' => [
+                        'controller' => 'ShibbolethLogoutNotification',
+                        'action' => 'index'
+                    ]
+                ],
+                'child_routes' => [
+                    'get' => [
+                        'type' => 'method',
+                        'options' => [
+                            'verb' => 'get',
+                            'defaults' => [
+                                'action' => 'get'
+                            ],
+                        ],
+                    ],
+                    'post' => [
+                        'type' => 'method',
+                        'options' => [
+                            'verb' => 'post',
+                            'defaults' => [
+                                'action' => 'post'
+                            ]
+                        ]
+                    ]
+                ]
             ]
         ],
     ],
@@ -98,6 +128,7 @@ $config = [
             'qrcode' => 'VuFind\Controller\QRCodeController',
             'records' => 'VuFind\Controller\RecordsController',
             'search' => 'VuFind\Controller\SearchController',
+            'shibbolethlogoutnotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
             'tag' => 'VuFind\Controller\TagController',
@@ -247,13 +278,13 @@ $config = [
                     'facebook' => 'VuFind\Auth\Factory::getFacebook',
                     'ils' => 'VuFind\Auth\Factory::getILS',
                     'multiils' => 'VuFind\Auth\Factory::getMultiILS',
+                    'shibboleth' => 'VuFind\Auth\Factory::getShibboleth'
                 ],
                 'invokables' => [
                     'cas' => 'VuFind\Auth\CAS',
                     'database' => 'VuFind\Auth\Database',
                     'ldap' => 'VuFind\Auth\LDAP',
                     'multiauth' => 'VuFind\Auth\MultiAuth',
-                    'shibboleth' => 'VuFind\Auth\Shibboleth',
                     'sip2' => 'VuFind\Auth\SIP2',
                 ],
                 'aliases' => [

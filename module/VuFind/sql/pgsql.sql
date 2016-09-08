@@ -183,10 +183,28 @@ session_id varchar(128),
 data text,
 last_used int NOT NULL default 0,
 created timestamp NOT NULL default '1970-01-01 00:00:00',
+external_session_id varchar(255),
 PRIMARY KEY (id),
 UNIQUE (session_id)
 );
 CREATE INDEX last_used_idx on session(last_used);
+CREATE INDEX external_session_id on session(external_session_id);
+
+--
+-- Table structure for table external_session
+--
+
+DROP TABLE IF EXISTS "external_session";
+
+CREATE TABLE external_session (
+id SERIAL,
+session_id varchar(128),
+external_session_id varchar(255),
+created timestamp NOT NULL default '1970-01-01 00:00:00',
+PRIMARY KEY (id),
+UNIQUE (session_id)
+);
+CREATE INDEX external_session_id on external_session(external_session_id);
 
 --
 -- Table structure for table change_tracker
