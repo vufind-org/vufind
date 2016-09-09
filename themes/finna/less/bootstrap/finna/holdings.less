@@ -221,7 +221,7 @@
         border-bottom: 1px solid @gray-lighter;
         padding: 2px 0;
         @media (max-width: @screen-xs-max) {
-            padding: 6px 0;   
+            padding: 6px 0 17px; 
         }
     }
     & .holdings-container.root > .header {
@@ -292,6 +292,12 @@
             text-align: right;
             clear: both;
             padding-top: 5px;
+        }
+        @media (max-width: @screen-xs-max) {
+            float: none;
+            & .all-holdings {
+                text-align: left;   
+            }
         }
     }
     & .fa.arrow {
