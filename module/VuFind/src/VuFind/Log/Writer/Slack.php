@@ -101,7 +101,7 @@ class Slack extends Post
             'channel' => $this->channel,
             'username' => $this->username,
             'text' => $this->messageIcons[$event['priority']]
-                . $this->formatter->format($this->applyVerbosity($event)) . PHP_EOL
+                . $this->formatter->format($event) . PHP_EOL
         ];
         return json_encode($data);
     }
