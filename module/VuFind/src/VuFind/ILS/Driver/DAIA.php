@@ -182,16 +182,17 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Get the DAIA specific CacheKey.
+     * DAIA specific override of method to ensure uniform cache keys for cached
+     * VuFind objects.
      *
-     * @param string $key A string that will be used as the dynamic part for the
-     *                    cache key
+     * @param string|null $suffix Optional suffix that will get appended to the
+     * object class name calling getCacheKey()
      *
      * @return string
      */
-    protected function getDaiaCacheKey($key)
+    protected function getCacheKey($suffix = null)
     {
-        return md5($this->baseURL) . $key;
+        return parent::getCacheKey(md5($this->baseURL) . $suffix);
     }
 
     /**
@@ -243,9 +244,7 @@ class DAIA extends AbstractBase implements
     {
         // check ids for existing availability data in cache and skip these ids
         if ($this->daiaCacheEnabled
-            && $item = $this->getCachedData(
-                $this->getDaiaCacheKey($this->generateURI($id))
-            )
+            && $item = $this->getCachedData($this->generateURI($id))
         ) {
             if ($item != null) {
                 return $item;
@@ -263,9 +262,7 @@ class DAIA extends AbstractBase implements
                 $data = $this->parseDaiaDoc($id, $doc);
                 // cache the status information
                 if ($this->daiaCacheEnabled) {
-                    $this->putCachedData(
-                        $this->getDaiaCacheKey($this->generateURI($id)), $data
-                    );
+                    $this->putCachedData($this->generateURI($id), $data);
                 }
                 return $data;
             }
@@ -301,9 +298,7 @@ class DAIA extends AbstractBase implements
         // check cache for given ids and skip these ids if availability data is found
         foreach ($ids as $key => $id) {
             if ($this->daiaCacheEnabled
-                && $item = $this->getCachedData(
-                    $this->getDaiaCacheKey($this->generateURI($id))
-                )
+                && $item = $this->getCachedData($this->generateURI($id))
             ) {
                 if ($item != null) {
                     $status[] = $item;
@@ -331,10 +326,7 @@ class DAIA extends AbstractBase implements
                             $data = $this->parseDaiaDoc($id, $doc);
                             // cache the status information
                             if ($this->daiaCacheEnabled) {
-                                $this->putCachedData(
-                                    $this->getDaiaCacheKey($this->generateURI($id)),
-                                    $data
-                                );
+                                $this->putCachedData($this->generateURI($id), $data);
                             }
                             $status[] = $data;
                         }
@@ -354,10 +346,7 @@ class DAIA extends AbstractBase implements
                             $data = $this->parseDaiaDoc($id, $doc);
                             // cache the status information
                             if ($this->daiaCacheEnabled) {
-                                $this->putCachedData(
-                                    $this->getDaiaCacheKey($this->generateURI($id)),
-                                    $data
-                                );
+                                $this->putCachedData($this->generateURI($id), $data);
                             }
                             $status[] = $data;
                         }
