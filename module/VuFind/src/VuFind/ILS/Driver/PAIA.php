@@ -1026,26 +1026,31 @@ class PAIA extends DAIA
         } else {
             $elements = $array_response['doc'];
             foreach ($elements as $element) {
-                $item_id = $element['item'];
-                if (isset($element['error'])) {
-                    $details[$item_id] = [
-                        'success' => false,
-                        'sysMessage' => $element['error']
-                    ];
-                } elseif ($element['status'] == '3') {
-                    $details[$item_id] = [
-                        'success'  => true,
-                        'new_date' => $element['endtime'],
-                        'item_id'  => 0,
-                        'sysMessage' => 'Successfully renewed'
-                    ];
-                } else {
-                    $details[$item_id] = [
-                        'success'  => false,
-                        'new_date' => $element['endtime'],
-                        'item_id'  => 0,
-                        'sysMessage' => 'Request rejected'
-                    ];
+                // VuFind can only assign the response to an id - if none is given
+                // (which is possible) simply skip this response element
+                if (isset($element['item'])) {
+                    if (isset($element['error'])) {
+                        $details[$element['item']] = [
+                            'success' => false,
+                            'sysMessage' => $element['error']
+                        ];
+                    } elseif ($element['status'] == '3') {
+                        $details[$element['item']] = [
+                            'success'  => true,
+                            'new_date' => isset($element['endtime'])
+                                ? $this->convertDatetime($element['endtime']) : '',
+                            'item_id'  => 0,
+                            'sysMessage' => 'Successfully renewed'
+                        ];
+                    } else {
+                        $details[$element['item']] = [
+                            'success'  => false,
+                            'item_id'  => 0,
+                            'new_date' => isset($element['endtime'])
+                                ? $this->convertDatetime($element['endtime']) : '',
+                            'sysMessage' => 'Request rejected'
+                        ];
+                    }
                 }
 
                 // DAIA cache cannot be cleared for particular item as PAIA only

@@ -272,7 +272,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'details' => [
             'http://uri.gbv.de/document/opac-de-830:bar:830$22061137' => [
                 'success' => true,
-                'new_date' => "2016-07-18",
+                'new_date' => "07-18-2016",
                 'item_id' => 0,
                 'sysMessage' => "Successfully renewed"
             ]
