@@ -128,11 +128,11 @@ module.exports = function(grunt) {
         atBegin: true
       },
       less: {
-        files: 'themes/**/*.less',
+        files: 'themes/*/less/**/*.less',
         tasks: ['less']
       },
       scss: {
-        files: 'themes/**/*.scss',
+        files: 'themes/*/scss/**/*.scss',
         tasks: ['scss']
       }
     }
