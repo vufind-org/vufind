@@ -602,6 +602,18 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Alias to getRecordTabConfig for backward compatibility.
+     *
+     * @deprecated use getRecordTabConfig instead
+     *
+     * @return array
+     */
+    protected function getTabConfiguration()
+    {
+        return $this->getRecordTabConfig();
+    }
+
+    /**
      * Support method to load tab information from the RecordTabPluginManager.
      *
      * @return void
