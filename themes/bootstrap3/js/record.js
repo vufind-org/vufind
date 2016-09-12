@@ -1,4 +1,4 @@
-/*global deparam, syn_get_widget, userIsLoggedIn, VuFind */
+/*global deparam, grecaptcha, syn_get_widget, userIsLoggedIn, VuFind */
 /*exported ajaxTagUpdate, recordDocReady */
 
 /**
@@ -78,6 +78,9 @@ function refreshCommentList($target, recordId, recordSource) {
       return false;
     });
     $target.find('.comment-form input[type="submit"]').button('reset');
+    if (typeof grecaptcha !== 'undefined') {
+      grecaptcha.reset();
+    }
   });
 }
 
@@ -93,6 +96,14 @@ function registerAjaxCommentRecord() {
       id: id,
       source: recordSource
     };
+    if (typeof grecaptcha !== 'undefined') {
+      try {
+        data['g-recaptcha-response'] = grecaptcha.getResponse(0);
+      } catch (e) {
+        console.error('Expected errors: placeholder element full and Invalid client ID');
+        console.error(e);
+      }
+    }
     $.ajax({
       type: 'POST',
       url: url,
@@ -107,7 +118,7 @@ function registerAjaxCommentRecord() {
     })
     .fail(function addCommentFail(response, textStatus) {
       if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
-      VuFind.lightbox.update(response.responseJSON.data);
+      VuFind.lightbox.alert(response.responseJSON.data, 'danger');
     });
     return false;
   });

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -712,9 +712,9 @@ class Generator
 
         $bc = str_split($bc);
         for ($k = 0;$k < 4;$k++) {
-            $x = $k % 2   ? $halfWidth : $halfWidth - $boxWidth;
+            $x = $k % 2 ? $halfWidth : $halfWidth - $boxWidth;
             $y = $k / 2 < 1 ? $halfHeight : $halfHeight - $boxHeight;
-            $u = $k % 2   ? $boxWidth : -$boxWidth;
+            $u = $k % 2 ? $boxWidth : -$boxWidth;
             $v = $k / 2 < 1 ? $boxHeight : -$boxHeight;
             for ($i = 0;$i < 16;$i++) {
                 if ($bc[$i] == "1") {
