@@ -65,9 +65,22 @@
     <div class="col-md-11 col-lg-9">
         <h4><?=$this->transEsc('Polytechnic Libraries')?></h4>
         <div class="row organisation-list-inner-row">
+            <div class="col-xs-6 col-sm-3"> <a href="https://arcada.finna.fi/"><img src="<?=$this->imageLink('finnafrontpages/arcada.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'arcada.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/ARCADA/')?></p>
+                <p class="organisation-list-url">arcada.finna.fi</p></a>
+                <p class="organisation-list-beta">beta</p>
+            </div>
             <div class="col-xs-6 col-sm-3"> <a href="https://centria.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/centria.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'centria.finna.fi'])); ?>" />
                 <p class="organisation-list-header"><?=$this->transEsc('0/CENTRIA/')?></p>
                 <p class="organisation-list-url">centria.finna.fi</p></a>
+            </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://diak.finna.fi/"><img src="<?=$this->imageLink('finnafrontpages/diak.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'diak.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/DIAK/')?></p>
+                <p class="organisation-list-url">diak.finna.fi</p></a>
+            </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://haagahelia.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/haagahelia.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'haagahelia.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/HAAGA-HELIA/')?></p>
+                <p class="organisation-list-url">haagahelia.finna.fi</p></a>
             </div>
             <div class="col-xs-6 col-sm-3"> <a href="https://humak.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/humak.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'humak.finna.fi'])); ?>" />
                 <p class="organisation-list-header"><?=$this->transEsc('0/HUMAK/')?></p>
@@ -80,10 +93,6 @@
             <div class="col-xs-6 col-sm-3"> <a href="https://janet.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/janet.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'janet.finna.fi'])); ?>" />
                 <p class="organisation-list-header"><?=$this->transEsc('0/JAMK/')?></p>
                 <p class="organisation-list-url">janet.finna.fi</p></a>
-            </div>
-            <div class="col-xs-6 col-sm-3"> <a href="https://kaakkuri.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kaakkuri.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'kaakkuri.finna.fi'])); ?>" />
-                <p class="organisation-list-header"><?=$this->transEsc('0/XAMK/')?></p>
-                <p class="organisation-list-url">kaakkuri.finna.fi</p></a>
             </div>
             <div class="col-xs-6 col-sm-3"> <a href="https://kaakkuri.finna.fi/kyamk/"><img src="<?=$this->imageLink('finnafrontpages/kyamk.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'kaakkuri.finna.fi/kyamk/'])); ?>" />
                 <p class="organisation-list-header"><?=$this->transEsc('0/XAMK/')?></p>
@@ -105,6 +114,15 @@
                 <p class="organisation-list-header"><?=$this->transEsc('0/PHKK/')?></p>
                 <p class="organisation-list-url">masto.finna.fi</p></a>
             </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://luc.finna.fi/lapinamk"><img src="<?=$this->imageLink('finnafrontpages/luc_lapinamk.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'luc.finna.fi/lapinamk'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/LUC/')?></p>
+                <p class="organisation-list-url">luc.finna.fi/lapinamk</p></a>
+                <p class="organisation-list-beta">beta</p>
+            </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://wilma.finna.fi/saimia"><img src="<?=$this->imageLink('finnafrontpages/saimia.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'wilma.finna.fi/saimia'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/LUT/')?></p>
+                <p class="organisation-list-url">wilma.finna.fi/saimia</p></a>
+            </div>
             <div class="col-xs-6 col-sm-3"> <a href="https://laurea.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/laurea.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'laurea.finna.fi'])); ?>" />
                 <p class="organisation-list-header"><?=$this->transEsc('0/LAUREA/')?></p>
                 <p class="organisation-list-url">laurea.finna.fi</p></a>
@@ -121,6 +139,11 @@
                 <p class="organisation-list-header"><?=$this->transEsc('0/SAMK/')?></p>
                 <p class="organisation-list-url">samk.finna.fi</p></a>
             </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://savonia.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/savonia.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'savonia.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/SAVONIA/')?></p>
+                <p class="organisation-list-url">savonia.finna.fi</p></a>
+                <p class="organisation-list-beta">beta</p>
+            </div>
             <div class="col-xs-6 col-sm-3"> <a href="https://seamk.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/seamk.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'seamk.finna.fi'])); ?>" />
                 <p class="organisation-list-header"><?=$this->transEsc('0/SEAMK/')?></p>
                 <p class="organisation-list-url">seamk.finna.fi</p></a>
@@ -129,24 +152,19 @@
                 <p class="organisation-list-header"><?=$this->transEsc('0/TAMK/')?></p>
                 <p class="organisation-list-url">tamk.finna.fi</p></a>
             </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://tritonia.finna.fi/novia/"><img src="<?=$this->imageLink('finnafrontpages/novia.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'https://tritonia.finna.fi/novia/'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/TRITONIA-NOVIA/')?></p>
+                <p class="organisation-list-url">https://tritonia.finna.fi/novia/</p></a>
+                <p class="organisation-list-beta">beta</p>
+            </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://tritonia.finna.fi/vamk/"><img src="<?=$this->imageLink('finnafrontpages/vamk.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'https://tritonia.finna.fi/vamk/'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/TRITONIA-VAMK/')?></p>
+                <p class="organisation-list-url">https://tritonia.finna.fi/vamk/</p></a>
+                <p class="organisation-list-beta">beta</p>
+            </div>
             <div class="col-xs-6 col-sm-3"> <a href="https://turkuamk.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/turkuamk.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'turkuamk.finna.fi'])); ?>" />
                 <p class="organisation-list-header"><?=$this->transEsc('0/TUAMK/')?></p>
                 <p class="organisation-list-url">turkuamk.finna.fi</p></a>
-            </div>
-            <div class="col-xs-6 col-sm-3"> <a href="https://haagahelia.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/haagahelia.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'haagahelia.finna.fi'])); ?>" />
-                <p class="organisation-list-header"><?=$this->transEsc('0/HAAGA-HELIA/')?></p>
-                <p class="organisation-list-url">haagahelia.finna.fi</p></a>
-                <p class="organisation-list-beta">beta</p>
-            </div>
-            <div class="col-xs-6 col-sm-3"> <a href="https://luc.finna.fi/lapinamk"><img src="<?=$this->imageLink('finnafrontpages/luc_lapinamk.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'luc.finna.fi/lapinamk'])); ?>" />
-                <p class="organisation-list-header"><?=$this->transEsc('0/LUC/')?></p>
-                <p class="organisation-list-url">luc.finna.fi/lapinamk</p></a>
-                <p class="organisation-list-beta">beta</p>
-            </div>
-            <div class="col-xs-6 col-sm-3"> <a href="https://savonia.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/savonia.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'savonia.finna.fi'])); ?>" />
-                <p class="organisation-list-header"><?=$this->transEsc('0/SAVONIA/')?></p>
-                <p class="organisation-list-url">savonia.finna.fi</p></a>
-                <p class="organisation-list-beta">beta</p>
             </div>
         </div>
     </div>
@@ -156,18 +174,6 @@
     <div class="col-md-11 col-lg-9">
         <h4><?=$this->transEsc('University Libraries')?></h4>
         <div class="row organisation-list-inner-row">
-            <div class="col-xs-6 col-sm-3"> <a href="https://jyu.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/jyu.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'jyu.finna.fi'])); ?>" />
-                <p class="organisation-list-header"><?=$this->transEsc('0/JYU/')?></p>
-                <p class="organisation-list-url">jyu.finna.fi</p></a>
-            </div>
-            <div class="col-xs-6 col-sm-3"> <a href="https://luc.finna.fi/ulapland"><img src="<?=$this->imageLink('finnafrontpages/luc_ulapland.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'luc.finna.fi/ulapland'])); ?>" />
-                <p class="organisation-list-header"><?=$this->transEsc('0/LUC/')?></p>
-                <p class="organisation-list-url">luc.finna.fi/ulapland</p></a>
-            </div>
-            <div class="col-xs-6 col-sm-3"> <a href="https://hanken.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/hanken.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'hanken.finna.fi'])); ?>" />
-                <p class="organisation-list-header"><?=$this->transEsc('0/SHH/')?></p>
-                <p class="organisation-list-url">hanken.finna.fi</p></a>
-            </div>
             <div class="col-xs-6 col-sm-3"> <a href="https://aalto.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/aalto.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'aalto.finna.fi'])); ?>" />
                 <p class="organisation-list-header"><?=$this->transEsc('0/AALTO/')?></p>
                 <p class="organisation-list-url">aalto.finna.fi</p></a>
@@ -178,9 +184,40 @@
                 <p class="organisation-list-url">uef.finna.fi</p></a>
                 <p class="organisation-list-beta">beta</p>
             </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://jyu.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/jyu.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'jyu.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/JYU/')?></p>
+                <p class="organisation-list-url">jyu.finna.fi</p></a>
+            </div>
             <div class="col-xs-6 col-sm-3"> <a href="https://kansalliskirjasto.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kansalliskirjasto.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'kansalliskirjasto.finna.fi'])); ?>" />
                 <p class="organisation-list-header"><?=$this->transEsc('0/NLF/')?></p>
                 <p class="organisation-list-url">kansalliskirjasto.finna.fi</p></a>
+                <p class="organisation-list-beta">beta</p>
+            </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://luc.finna.fi/ulapland"><img src="<?=$this->imageLink('finnafrontpages/luc_ulapland.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'luc.finna.fi/ulapland'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/LUC/')?></p>
+                <p class="organisation-list-url">luc.finna.fi/ulapland</p></a>
+            </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://wilma.finna.fi/lut"><img src="<?=$this->imageLink('finnafrontpages/lut.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'wilma.finna.fi/lut'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/LUT/')?></p>
+                <p class="organisation-list-url">wilma.finna.fi/lut</p></a>
+            </div> 
+            <div class="col-xs-6 col-sm-3"> <a href="https://oula.finna.fi/"><img src="<?=$this->imageLink('finnafrontpages/oula.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'oula.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/OY/')?></p>
+                <p class="organisation-list-url">oula.finna.fi</p></a>
+                <p class="organisation-list-beta">beta</p>
+            </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://hanken.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/hanken.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'hanken.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/SHH/')?></p>
+                <p class="organisation-list-url">hanken.finna.fi</p></a>
+            </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://tamcat.finna.fi/"><img src="<?=$this->imageLink('finnafrontpages/tay.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'tamcat.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/TAY/')?></p>
+                <p class="organisation-list-url">tamcat.finna.fi</p></a>
+                <p class="organisation-list-beta">beta</p>
+            </div>
+            <div class="col-xs-6 col-sm-3"> <a href="https://tritonia.finna.fi/uva/"><img src="<?=$this->imageLink('finnafrontpages/uva.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'tritonia.finna.fi/uva'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/TRITONIA-UVA/')?></p>
+                <p class="organisation-list-url">tritonia.finna.fi/uva</p></a>
                 <p class="organisation-list-beta">beta</p>
             </div>
             <div class="col-xs-6 col-sm-3"> <a href="https://abo.finna.fi/"><img src="<?=$this->imageLink('finnafrontpages/abo.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'abo.finna.fi'])); ?>" />
@@ -188,6 +225,27 @@
                 <p class="organisation-list-url">abo.finna.fi</p></a>
                 <p class="organisation-list-beta">beta</p>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-11 col-lg-9">
+        <h4><?=$this->transEsc('Shared libraries')?></h4>
+        <div class="row organisation-list-inner-row">
+        <div class="col-xs-6 col-sm-3"> <a href="https://kaakkuri.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kaakkuri.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'kaakkuri.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/XAMK/')?></p>
+                <p class="organisation-list-url">kaakkuri.finna.fi</p></a>
+        </div>
+        <div class="col-xs-6 col-sm-3"> <a href="https://luc.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/luc.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'luc.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/LUC/')?></p>
+                <p class="organisation-list-url">luc.finna.fi</p></a>
+        </div>
+        <div class="col-xs-6 col-sm-3"> <a href="https://tritonia.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/tritonia.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'tritonia.finna.fi'])); ?>" />
+                <p class="organisation-list-header"><?=$this->transEsc('0/TRITONIA/')?></p>
+                <p class="organisation-list-url">tritonia.finna.fi</p></a>
+                <p class="organisation-list-beta">beta</p>
+        </div>
         </div>
     </div>
 </div>
