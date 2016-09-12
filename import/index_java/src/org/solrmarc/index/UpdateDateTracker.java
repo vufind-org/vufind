@@ -24,7 +24,7 @@ public class UpdateDateTracker
     private Connection db;
     private String core;
     private String id;
-    private static SimpleDateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private SimpleDateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     private Timestamp firstIndexed;
     private Timestamp lastIndexed;
@@ -139,7 +139,7 @@ public class UpdateDateTracker
     {
         // If core and ID match the values currently in the class, we have already
         // indexed the record and do not need to repeat ourselves!
-        if (core == selectedCore && id == selectedId) {
+        if (selectedCore.equals(core) && selectedId.equals(id)) {
             return;
         }
 
