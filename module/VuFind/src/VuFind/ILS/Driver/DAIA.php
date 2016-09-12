@@ -171,8 +171,10 @@ class DAIA extends AbstractBase implements
         } else {
             $this->debug('Caching not enabled, disabling it by default.');
         }
-        if (isset($this->config['DAIA']['daiaCacheLifetime'])) {
-            $this->cacheLifetime = $this->config['DAIA']['daiaCacheLifetime'];
+        if (isset($this->config['General'])
+            && isset($this->config['General']['cacheLifetime'])
+        ) {
+            $this->cacheLifetime = $this->config['General']['cacheLifetime'];
         } else {
             $this->debug(
                 'Cache lifetime not set, using VuFind\ILS\Driver\AbstractBase ' .
