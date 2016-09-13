@@ -266,6 +266,10 @@ trait ConcatTrait
                     $group['item'], $indent, $escapeStart, $escapeEnd
                 );
             } else {
+                // Note that we  use parent::itemToString() below instead of
+                // $this->itemToString() to bypass VuFind logic that determines
+                // file paths within the theme (not appropriate for concatenated
+                // files, which are stored in a theme-independent cache).
                 $path = $this->getConcatenatedFilePath($group);
                 $item = $this->setResourceFilePath($group['items'][0], $path);
                 $output[] = parent::itemToString(
