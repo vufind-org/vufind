@@ -636,7 +636,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                     } else {
                         $title = '';
                     }
-                    $centerCoords[] =[$coordId,
+                    $centerCoords[] = [$coordId,
                         $centerLongLat[0],
                         $centerLongLat[1],
                         $title
