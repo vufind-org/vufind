@@ -610,6 +610,8 @@ $config = [
         // driver is not defined here, it will inherit configuration from a configured
         // parent class.  The defaultTab setting may be used to specify the default
         // active tab; if null, the value from the relevant .ini file will be used.
+        // You can also specify which tabs are loaded in the background when arriving
+        // at a record tabs view with backgroundLoadedTabs as a list of tab indexes.
         'recorddriver_tabs' => [
             'VuFind\RecordDriver\EDS' => [
                 'tabs' => [
@@ -654,6 +656,7 @@ $config = [
                     'Details' => 'StaffViewArray',
                 ],
                 'defaultTab' => null,
+                // 'backgroundLoadedTabs' => ['UserComments', 'Details']
             ],
             'VuFind\RecordDriver\SolrMarc' => [
                 'tabs' => [
