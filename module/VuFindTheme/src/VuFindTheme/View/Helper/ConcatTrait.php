@@ -49,12 +49,14 @@ trait ConcatTrait
      * @return bool
      */
     abstract protected function isExcludedFromConcat($item);
+
     /**
      * Get the folder name and file extension
      *
      * @return string
      */
     abstract protected function getFileType();
+
     /**
      * Get the file path from the element object
      *
@@ -63,6 +65,7 @@ trait ConcatTrait
      * @return string
      */
     abstract protected function getResourceFilePath($item);
+
     /**
      * Set the file path of the element object
      *
@@ -72,6 +75,7 @@ trait ConcatTrait
      * @return void
      */
     abstract protected function setResourceFilePath($item, $path);
+
     /**
      * Get the minifier that can handle these file types
      *
