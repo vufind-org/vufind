@@ -75,7 +75,7 @@
         if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
       ?>
       <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
-        <div id="<?=strtolower($tab)?>_<?=$idSuffix?>" class="list-tab-toggle panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-content">
+        <div id="<?=strtolower($tab)?>_<?=$idSuffix?>" class="list-tab-toggle panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-content"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<? endif ?>>
           <h4 class="panel-title">
             <a class="accordion-toggle" data-href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$desc ?></a>
           </h4>

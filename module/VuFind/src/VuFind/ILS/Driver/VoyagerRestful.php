@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -330,7 +330,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @return string
      */
-    protected function formatCacheKey($key)
+    protected function getCacheKey($key = null)
     {
         // Override the base class formatting with Voyager-specific details
         // to ensure proper caching in a MultiBackend environment.
@@ -881,7 +881,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             }
 
             $items = [];
-            foreach ($results->hold as $hold) {
+            foreach ($results->$request as $hold) {
                 foreach ($hold->items->item as $item) {
                     $items[(string)$item->item_id] = 1;
                 }
@@ -3257,9 +3257,23 @@ EOT;
                 $this->sanitizePIN($details['oldPassword']), ENT_COMPAT, 'UTF-8'
             )
         );
+
         if ($oldPIN === '') {
             // Voyager requires the PIN code to be set even if it was empty
             $oldPIN = '     ';
+
+            // In this case we have to check that the user didn't previously have a
+            // PIN code since Voyager doesn't validate the 'empty' old PIN
+            $sql = "SELECT PATRON_PIN FROM {$this->dbName}.PATRON WHERE"
+                . ' PATRON_ID=:id';
+            $sqlStmt = $this->executeSQL($sql, ['id' => $patron['id']]);
+            if (!($row = $sqlStmt->fetch(PDO::FETCH_ASSOC))
+                || null !== $row['PATRON_PIN']
+            ) {
+                return [
+                    'success' => false, 'status' => 'authentication_error_invalid'
+                ];
+            }
         }
         $newPIN = trim(
             htmlspecialchars(
