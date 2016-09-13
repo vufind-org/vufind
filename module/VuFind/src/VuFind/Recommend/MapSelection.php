@@ -329,12 +329,12 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         // Check to makes sure we have a geographic search
         if (strpos($params->get('fq')[0], 'bbox_geo') !== false) {
             $params->mergeWith($this->queryBuilder->build($this->searchQuery));
-            $params->set('fl', 'id, bbox_geo');
+            $params->set('fl', 'id, bbox_geo, title');
             $params->set('wt', 'json');
             $params->set('rows', '10000000'); // set to return all results
             $response = json_decode($this->solrConnector->search($params));
             foreach ($response->response->docs as $current) {
-                $result[] = [$current->id, $current->bbox_geo];
+                $result[] = [$current->id, $current->bbox_geo, $current->title];
             }
         }
         return $result;
@@ -520,6 +520,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
 
         foreach ($rawCoords as $idCoords) {
             foreach ($idCoords[1] as $coord) {
+                $title = $idCoords[2];
                 $rawCoordIds[] = $idCoords[0];
                 $match = [];
                 $addCtr = false;
@@ -562,7 +563,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                                 [$centerPt[0],$centerPt[2]]
                             );
                             $centerCoords[] = [$idCoords[0],
-                                $centerLongLat[0], $centerLongLat[1]
+                                $centerLongLat[0], $centerLongLat[1],
+                                $title
                             ];
                             $addCtr = true;
                         } else {
@@ -574,7 +576,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                                 );
                             // Calculate new center point
                             $newCenterPt = $this->calculateCenterPoint(
-                                [min($cbLon), max($cbLon), min($cbLat), max($cbLat)]
+                                $centerCoordBbox
                             );
                             //Does center point fall within search box
                             $centerIntersect = $this->coordBboxIntersect(
@@ -585,7 +587,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                                     [$newCenterPt[0],$newCenterPt[2]]
                                 );
                                 $centerCoords[] = [$idCoords[0],
-                                    $centerLongLat[0], $centerLongLat[1]
+                                    $centerLongLat[0], $centerLongLat[1],
+                                    $title
                                 ];
                                 $addCtr = true;
                             } else {
@@ -597,7 +600,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                                     [$bboxCenter[0],$bboxCenter[2]]
                                 );
                                 $centerCoords[] = [$idCoords[0],
-                                    $centerLongLat[0], $centerLongLat[1]
+                                    $centerLongLat[0], $centerLongLat[1],
+                                    $title
                                 ];
                                 $addCtr = true;
                             }
@@ -616,6 +620,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             array_diff($rawCoordIds, $centerCoordIds),
             array_diff($centerCoordIds, $rawCoordIds)
         );
+        //Remove duplicate ids
+        $addIds = array_unique($addIds);
         if (count($addIds) > 0) {
             $bboxCenter = $this->calculateCenterPoint(
                 [$bboxW, $bboxE, $bboxN, $bboxS]
@@ -624,9 +630,18 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                 [$bboxCenter[0],$bboxCenter[2]]
             );
             foreach ($addIds as $coordId) {
-                $centerCoords[] = [$coordId,
-                    $centerLongLat[0], $centerLongLat[1]
-                ];
+                foreach ($rawCoords as $idCoords) {
+                    if ($coordId == $idCoords[0]) {
+                        $title = $idCoords[2];
+                    } else {
+                        $title = '';
+                    }
+                    $centerCoords[] =[$coordId,
+                        $centerLongLat[0],
+                        $centerLongLat[1],
+                        $title
+                    ];
+                }
             }
         }
         return $centerCoords;
