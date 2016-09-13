@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -72,6 +72,13 @@ class Backend extends AbstractBackend
      * @var QueryBuilder
      */
     protected $queryBuilder = null;
+
+    /**
+     * Similar records query builder.
+     *
+     * @var SimilarBuilder
+     */
+    protected $similarBuilder = null;
 
     /**
      * Constructor.
@@ -211,6 +218,7 @@ class Backend extends AbstractBackend
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
+        $params->mergeWith($this->getSimilarBuilder()->build($id, $params));
         $response   = $this->connector->similar($id, $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
@@ -302,6 +310,33 @@ class Backend extends AbstractBackend
             $this->queryBuilder = new QueryBuilder();
         }
         return $this->queryBuilder;
+    }
+
+    /**
+     * Set the similar records query builder.
+     *
+     * @param SimilarBuilder $similarBuilder Similar builder
+     *
+     * @return void
+     */
+    public function setSimilarBuilder(SimilarBuilder $similarBuilder)
+    {
+        $this->similarBuilder = $similarBuilder;
+    }
+
+    /**
+     * Return similar records query builder.
+     *
+     * Lazy loads an empty default SimilarBuilder if none was set.
+     *
+     * @return SimilarBuilder
+     */
+    public function getSimilarBuilder()
+    {
+        if (!$this->similarBuilder) {
+            $this->similarBuilder = new SimilarBuilder();
+        }
+        return $this->similarBuilder;
     }
 
     /**

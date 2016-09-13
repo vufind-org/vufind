@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -796,6 +796,7 @@ class AjaxController extends AbstractBase
                 'Information'
             );
 
+        $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
         $html = $this->getViewRenderer()
             ->render(
                 "record/ajaxview-" . $viewtype . ".phtml",
@@ -803,6 +804,9 @@ class AjaxController extends AbstractBase
                     'defaultTab' => $details['default'],
                     'driver' => $driver,
                     'tabs' => $details['tabs'],
+                    'backgroundTabs' => $rtpm->getBackgroundTabNames(
+                        $driver, $this->getRecordTabConfig()
+                    )
                 ]
             );
         return $this->output($html, self::STATUS_OK);
@@ -1083,6 +1087,16 @@ class AjaxController extends AbstractBase
                 $this->translate('bulk_error_missing'),
                 self::STATUS_ERROR,
                 400
+            );
+        }
+
+        $useCaptcha = $this->recaptcha()->active('userComments');
+        $this->recaptcha()->setErrorMode('none');
+        if (!$this->formWasSubmitted('comment', $useCaptcha)) {
+            return $this->output(
+                $this->translate('recaptcha_not_passed'),
+                self::STATUS_ERROR,
+                403
             );
         }
 

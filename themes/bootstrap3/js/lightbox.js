@@ -1,4 +1,4 @@
-/*global VuFind */
+/*global grecaptcha, VuFind */
 VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
@@ -101,6 +101,11 @@ VuFind.register('lightbox', function Lightbox() {
     $('#modal').find('.checkbox-select-item').change(function lbSelectAllDisable() {
       $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
     });
+    // Recaptcha
+    var modalCaptcha = $('#modal .g-recaptcha');
+    if (modalCaptcha.length && typeof grecaptcha !== 'undefined' && modalCaptcha.is(':empty')) {
+      grecaptcha.render(modalCaptcha[0], modalCaptcha[0].dataset);
+    }
   }
 
   var _xhr = false;
@@ -248,8 +253,9 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // onclose behavior
     if ('string' === typeof $(form).data('lightboxOnclose')) {
-      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(ev) {
-        _evalCallback($(form).data('lightboxOnclose'), ev);
+      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(e) {
+        this.removeEventListener('VuFind.lightbox.closed', arguments.callee);
+        _evalCallback($(form).data('lightboxOnclose'), e);
       }, false);
     }
     // Loading

@@ -157,6 +157,9 @@ VuFind.register('embedded', function embedded() {
                   );
                 }
               );
+              longNode.find('[data-background]').each(function setupEmbeddedBackgroundTabs(index, el) {
+                ajaxLoadTab(el.id, false);
+              });
               // Add events to record toolbar
               VuFind.lightbox.bind(longNode);
               if (typeof checkSaveStatuses == 'function') {

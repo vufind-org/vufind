@@ -1,0 +1,87 @@
+HTTP/1.1 200 OK
+Server: vzg-paia/2.2-RC3 (Wed Jun 01 17:38:24 CEST 2016)
+Date: Mon, 20 Jun 2016 10:38:21 GMT
+Cache-Control: no-cache
+Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: X-OAuth-Scopes, X-Accepted-OAuth-Scopes
+Access-Control-Allow-Headers: Content-Type, Authorization
+Pragma: no-cache
+X-OAuth-Scopes: change_password read_items read_fees read_patron
+X-Accepted-OAuth-Scopes: read_patron
+Content-Type: application/json; charset=UTF-8
+
+{
+  "doc": [{
+    "queue": 0,
+    "canrenew": false,
+    "cancancel": false,
+    "storageid": "de-830:desk:23",
+    "label": "34:3409-6983",
+    "reminder": 0,
+    "edition": "http://uri.gbv.de/document/opac-de-830:ppn:040445623",
+    "status": 4,
+    "starttime": "2016-06-17",
+    "storage": "Test-Theke",
+    "about": "Praktikum über Entwurf und Manipulation von Datenbanken : SQL/DS (IBM), UDS (Siemens) und MEMODAX / Vossen, Gottfried (1986)",
+    "renewals": 0,
+    "item": "http://uri.gbv.de/document/opac-de-830:bar:830$34096983"
+  }, {
+    "queue": 0,
+    "canrenew": false,
+    "cancancel": false,
+    "storageid": "de-830:desk:1",
+    "label": "24:2426-0127",
+    "reminder": 0,
+    "edition": "http://uri.gbv.de/document/opac-de-830:ppn:020966334",
+    "endtime": "2016-05-23",
+    "status": 2,
+    "starttime": "2016-04-25T08:50:41+02:00",
+    "storage": "Ausleihe",
+    "about": "Gold / Kettell, Brian (1982)",
+    "renewals": 0,
+    "item": "http://uri.gbv.de/document/opac-de-830:bar:830$24260127"
+  },{
+    "queue": 0,
+    "canrenew": false,
+    "cancancel": false,
+    "storageid": "de-830:desk:1",
+    "label": "28:2834-2436",
+    "reminder": 1,
+    "edition": "http://uri.gbv.de/document/opac-de-830:ppn:58891861X",
+    "endtime": "2016-06-15",
+    "status": 3,
+    "starttime": "2013-11-15",
+    "storage": "Ausleihe",
+    "about": "Theoretische Informatik : mit 22 Tabellen und 78 Aufgaben / Hoffmann, Dirk W. (2009)",
+    "renewals": 12,
+    "item": "http://uri.gbv.de/document/opac-de-830:bar:830$28342436"
+  }, {
+    "queue": 0,
+    "canrenew": false,
+    "cancancel": false,
+    "storageid": "de-830:desk:612",
+    "label": "22:2227-8001",
+    "reminder": 0,
+    "edition": "http://uri.gbv.de/document/opac-de-830:ppn:659228084",
+    "endtime": "2016-07-14",
+    "status": 3,
+    "starttime": "2011-12-22",
+    "storage": "Ausleihe",
+    "about": "Linked Open Library Data : bibliographische Daten und ihre Zugänglichkeit im Web der Daten ; Innovationspreis 2011 / Fürste, Fabian M. (2011)",
+    "renewals": 9,
+    "item": "http://uri.gbv.de/document/opac-de-830:bar:830$22278001"
+  }, {
+    "queue": 0,
+    "canrenew": false,
+    "cancancel": true,
+    "storageid": "de-830:desk:613",
+    "label": "28:2829-5402",
+    "edition": "http://uri.gbv.de/document/opac-de-830:ppn:391260316",
+    "endtime": "2016-06-15",
+    "status": 1,
+    "starttime": "2016-06-15T13:22:27+02:00",
+    "storage": "Ausleihe",
+    "about": "Open source licensing : software freedom and intellectual property law ; [open source licensees are free to: use open source software for any purpose, make and distribute copies, create and distribute derivative works, access and use the source code, com / Rosen, Lawrence (c 2005)",
+    "item": "http://uri.gbv.de/document/opac-de-830:bar:830$28295402"
+  } ]
+}

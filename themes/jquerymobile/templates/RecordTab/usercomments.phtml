@@ -13,6 +13,7 @@
     <label for="comments_form_comment"><?=$this->transEsc("Your Comment")?>:</label>
     <textarea id="comments_form_comment" name="comment"></textarea>
   </div>
+  <?=$this->recaptcha()->html($this->tab->isRecaptchaActive()) ?>
   <div data-role="fieldcontain">
     <input type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
   </div>

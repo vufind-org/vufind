@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -128,9 +128,12 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
             $this->lightbox = $this->params['lightbox'];
         }
 
-        if ($results = $this->getSearchResults()) {
+        $results = $this->getSearchResults();
+        if ($results && ($combinedResults = $this->getCombinedSearchResults())) {
+            $code = $this->trackCombinedSearch($results, $combinedResults);
+        } elseif ($results) {
             $code = $this->trackSearch($results);
-        } else if ($recordDriver = $this->getRecordDriver()) {
+        } elseif ($recordDriver = $this->getRecordDriver()) {
             $code = $this->trackRecordPage($recordDriver);
         } else {
             $code = $this->trackPageView();
@@ -156,6 +159,28 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         $code = $this->getOpeningTrackingCode();
         $code .= $this->getCustomVarsCode($customVars);
         $code .= $this->getTrackSearchCode($results);
+        $code .= $this->getClosingTrackingCode();
+
+        return $code;
+    }
+
+    /**
+     * Track a Combined Search
+     *
+     * @param VuFind\Search\Base\Results $results         Search Results
+     * @param array                      $combinedResults Combined Search Results
+     *
+     * @return string Tracking Code
+     */
+    protected function trackCombinedSearch($results, $combinedResults)
+    {
+        $customVars = $this->lightbox
+            ? $this->getLightboxCustomVars()
+            : $this->getSearchCustomVars($results);
+
+        $code = $this->getOpeningTrackingCode();
+        $code .= $this->getCustomVarsCode($customVars);
+        $code .= $this->getTrackCombinedSearchCode($results, $combinedResults);
         $code .= $this->getClosingTrackingCode();
 
         return $code;
@@ -218,6 +243,25 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
                 if (is_a($results, 'VuFind\Search\Base\Results')) {
                     return $results;
                 }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get Combined Search Results if on a Results Page
+     *
+     * @return array|null Array of search results or null if not on a combined search
+     * page
+     */
+    protected function getCombinedSearchResults()
+    {
+        $viewModel = $this->getView()->plugin('view_model');
+        $children = $viewModel->getCurrent()->getChildren();
+        if (isset($children[0])) {
+            $results = $children[0]->getVariable('combinedResults');
+            if (is_array($results)) {
+                return $results;
             }
         }
         return null;
@@ -440,10 +484,48 @@ EOT;
         $searchTerms = $escape($params->getDisplayQuery());
         $searchType = $escape($params->getSearchType());
         $resultCount = $results->getResultTotal();
+        $backendId = $results->getOptions()->getSearchClassId();
 
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
-    VuFindPiwikTracker.trackSiteSearch('$searchTerms', '$searchType', $resultCount);
+    VuFindPiwikTracker.trackSiteSearch(
+        '$backendId|$searchTerms', '$searchType', $resultCount
+    );
+
+EOT;
+    }
+
+    /**
+     * Get Site Search Tracking Code for Combined Search
+     *
+     * @param VuFind\Search\Base\Results $results         Search results
+     * @param array                      $combinedResults Combined Search Results
+     *
+     * @return string JavaScript Code Fragment
+     */
+    protected function getTrackCombinedSearchCode($results, $combinedResults)
+    {
+        $escape = $this->getView()->plugin('escapeHtmlAttr');
+        $params = $results->getParams();
+        $searchTerms = $escape($params->getDisplayQuery());
+        $searchType = $escape($params->getSearchType());
+        $resultCount = 0;
+        foreach ($combinedResults as $currentSearch) {
+            if ($currentSearch['ajax']) {
+                // Some results fetched via ajax, so report that we don't know the
+                // result count.
+                $resultCount = 'false';
+                break;
+            }
+            $resultCount += $currentSearch['view']->results
+                ->getResultTotal();
+        }
+
+        // Use trackSiteSearch *instead* of trackPageView in searches
+        return <<<EOT
+    VuFindPiwikTracker.trackSiteSearch(
+        'Combined|$searchTerms', '$searchType', $resultCount
+    );
 
 EOT;
     }
