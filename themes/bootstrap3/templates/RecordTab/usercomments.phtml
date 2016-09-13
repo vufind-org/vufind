@@ -6,7 +6,7 @@
 <div class="comment-list">
   <?=$this->render('record/comments-list.phtml')?>
 </div>
-<form class="comment-form row" name="commentRecord" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post">
+<form class="comment-form" name="commentRecord" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post">
   <div class="row">
     <div class="col-sm-3 name">
       <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
@@ -17,6 +17,9 @@
       <? $user = $this->auth()->isLoggedIn() ?>
       <? if($user): ?>
         <textarea name="comment" class="form-control" rows="3" required></textarea><br/>
+        <? if ($this->tab->isRecaptchaActive()): ?>
+          <?=$this->recaptcha()->html(true, false) ?><br/>
+        <? endif; ?>
         <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
       <? else: ?>
         <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary" data-lightbox title="Login"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("You must be logged in first") ?></a>
