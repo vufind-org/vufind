@@ -5,6 +5,7 @@
   $this->headLink()->appendStylesheet('vendor/ol/ol.css');
 
   $resultsCoords = $this->recommend->getMapResultCoordinates();
+  $baseUrl = $this->url('home');
   $geoField = $this->recommend->getGeoField();
   $urlpath = $this->url('search-results');
   $coordinates = $this->recommend->getSelectedCoordinates();
@@ -16,7 +17,8 @@
   $height = $this->recommend->getHeight();
   $searchParams = $this->recommend->getSearchParams();
   $params = array(json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
-    json_encode($searchParams), json_encode($showSelection), json_encode($resultsCoords));
+    json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
+    json_encode($resultsCoords));
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapSelection(" . $jsParams . ");";
   $addSearchOption = <<<EOF
@@ -27,7 +29,11 @@ EOF;
   <div id="geo_search" style="display: none;">
     <button id="draw_box"><?=$this->transEsc('Draw Search Box')?></button>
     <span class="geo_maphelp">&nbsp;<a href="<?=$this->url('help-home')?>?topic=geosearch" data-lightbox class="help-link"><?=$this->transEsc('Need Help?')?></a></span>
-    <div id="geo_search_map" style="height: <?=$height?>px;"></div>
+    <div id="geo_search_map" style="height: <?=$height?>px;">
+      <div id="popup">
+	<div id="popup_content"></div>
+      </div>
+    </div>
   </div>
   <? if ($showSelection) :?>
     <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET');?>
