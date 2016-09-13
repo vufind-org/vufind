@@ -62,7 +62,7 @@ class Factory
                 if (APPLICATION_ENV === $parts[0]) {
                     return $parts[1];
                 } else if (count($parts) < 2) {
-                    $default = $setting;
+                    $default = $parts[0];
                 } else if ($parts[0] === '*') {
                     $default = $parts[1];
                 }
