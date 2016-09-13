@@ -146,7 +146,9 @@ module.exports = function(grunt) {
 
     for (var i in themeList) {
       var config = {
-        options: {},
+        options: {
+          outputStyle: 'compressed'
+        },
         files: [{
           expand: true,
           cwd: path.join('themes', themeList[i], 'scss'),
