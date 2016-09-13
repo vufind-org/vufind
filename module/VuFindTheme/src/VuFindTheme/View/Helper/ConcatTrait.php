@@ -315,7 +315,6 @@ trait ConcatTrait
             }
 
             return $this->outputInOrder($indent);
-
         } catch (\Exception $e) {
             error_log($e->getMessage());
         }
