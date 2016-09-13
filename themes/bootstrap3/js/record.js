@@ -236,7 +236,7 @@ function getNewRecordTab(tabid) {
 }
 
 function backgroundLoadTab(tabid) {
-  if ($('.' + tabid + '-tab').length === 0) {
+  if ($('.' + tabid + '-tab').length > 0) {
     return;
   }
   var newTab = getNewRecordTab(tabid);
