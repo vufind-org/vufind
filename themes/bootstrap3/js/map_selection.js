@@ -8,27 +8,19 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     var dstProj = 'EPSG:900913';
     var osm = new ol.layer.Tile({source: new ol.source.OSM()});
     var searchboxSource = new ol.source.Vector();
-    var searchboxStyle = new ol.style.Style(
-        {
-            fill: new ol.style.Fill(
-                {
-                    color: [255, 0, 0, .1]
-                }
-            ),
-            stroke: new ol.style.Stroke(
-                {
-                    color: [255, 0, 0, 1],
-                    width: 2
-                }
-            )
-        }
-    );
-    var searchboxLayer = new ol.layer.Vector(
-        {
-            source: searchboxSource,
-            style: searchboxStyle
-        }
-    );
+    var searchboxStyle = new ol.style.Style({
+        fill: new ol.style.Fill({
+            color: [255, 0, 0, .1]
+        }),
+        stroke: new ol.style.Stroke({
+            color: [255, 0, 0, 1],
+            width: 2
+        })
+    });
+    var searchboxLayer = new ol.layer.Vector({
+        source: searchboxSource,
+        style: searchboxStyle
+    });
     var draw, map;
     var count = resultsCoords.length;
     var searchResults = new Array(count);
@@ -37,96 +29,70 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
         var coordinates = ol.proj.transform(
             [resultsCoords[i][1], resultsCoords[i][2]], srcProj, dstProj
         );
-        searchResults[i] = new ol.Feature(
-            {
-                geometry: new ol.geom.Point(coordinates),
-                id: resultsCoords[i][0],
-                name: resultsCoords[i][3]
-            }
-        );
+        searchResults[i] = new ol.Feature({
+            geometry: new ol.geom.Point(coordinates),
+            id: resultsCoords[i][0],
+            name: resultsCoords[i][3]
+        });
         searchIds[i] = resultsCoords[i][0];
     }
-    var resultSource = new ol.source.Vector(
-        {
-            features: searchResults
-        }
-    );
-    var clusterSource = new ol.source.Cluster(
-        {
-            distance: 60,
-            source: resultSource
-        }
-    );
+    var resultSource = new ol.source.Vector({
+        features: searchResults
+    });
+    var clusterSource = new ol.source.Cluster({
+        distance: 60,
+        source: resultSource
+    });
     var styleCache = {};
-    var clusterLayer = new ol.layer.Vector(
-        {
-            id: 'clusterLayer',
-            source: clusterSource,
-            style: function addClusterStyle(feature) {
-                var size = feature.get('features').length;
-                var pointRadius = 8 + (size.toString().length * 2);
-                var style = styleCache[size];
-                if (!style) {
-                    style = [
-                        new ol.style.Style(
-                            {
-                                image: new ol.style.Circle(
-                                    {
-                                        radius: pointRadius,
-                                        stroke: new ol.style.Stroke(
-                                            {
-                                                color: '#ff0000'
-                                            }
-                                        ),
-                                        fill: new ol.style.Fill(
-                                             {
-                                                 color: '#ffb3b3'
-                                             }
-                                         )
-                                     }
-                                ),
-                              text: new ol.style.Text(
-                                    {
-                                        text: size.toString(),
-                                        font: 'bold 12px arial,sans-serif',
-                                        fill: new ol.style.Fill(
-                                            {
-                                                color: 'black'
-                                            }
-                                        )
-                                    }
-                                )
-                            }
-                        )
-                    ];
-                    styleCache[size] = style;
-                }
-                map.removeInteraction(draw);
-                return style;
-            }   
-        }
-    );
+    var clusterLayer = new ol.layer.Vector({
+        id: 'clusterLayer',
+        source: clusterSource,
+        style: function addClusterStyle(feature) {
+            var size = feature.get('features').length;
+            var pointRadius = 8 + (size.toString().length * 2);
+            var style = styleCache[size];
+            if (!style) {
+                style = [
+                    new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: pointRadius,
+                            stroke: new ol.style.Stroke({
+                                color: '#ff0000'
+                            }),
+                            fill: new ol.style.Fill({
+                                color: '#ffb3b3'
+                            }) 
+                         }),
+                         text: new ol.style.Text({
+                             text: size.toString(),
+                             font: 'bold 12px arial,sans-serif',
+                             fill: new ol.style.Fill({
+                                 color: 'black'
+                             })
+                         }) 
+                    })
+                ];
+                styleCache[size] = style;
+            }
+            map.removeInteraction(draw);
+            return style;
+        }   
+    });
 
     $('#geo_search').show();
     init = function drawMap() {
-        map = new ol.Map(
-            {
-                interactions: ol.interaction.defaults(
-                    {
-                        shiftDragZoom: false
-                    }
-                ),
-                target: 'geo_search_map',
-                projection: dstProj,
-                layers: [osm, searchboxLayer, clusterLayer],
-                view: new ol.View(
-                    {
-                        center: [0, 0],
-                        zoom: 1
-                    }
-                )
-            }
-        );
+        map = new ol.Map({
+            interactions: ol.interaction.defaults({
+                shiftDragZoom: false
+            }),
+            target: 'geo_search_map',
+            projection: dstProj,
+            layers: [osm, searchboxLayer, clusterLayer],
+            view: new ol.View({
+                center: [0, 0],
+                zoom: 1
+            })
+        });
 
         if (showSelection === true) {
             searchboxSource.clear();
@@ -134,21 +100,17 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
             if (boundingBox[0] > boundingBox[2]) {
                 boundingBox[2] = boundingBox[2] + 360;
             }
-            var newBbox = new ol.geom.Polygon(
-                [[
-                    ol.proj.transform([boundingBox[0], boundingBox[3]], srcProj, dstProj),
-                    ol.proj.transform([boundingBox[0], boundingBox[1]], srcProj, dstProj),
-                    ol.proj.transform([boundingBox[2], boundingBox[1]], srcProj, dstProj),
-                    ol.proj.transform([boundingBox[2], boundingBox[3]], srcProj, dstProj),
-                    ol.proj.transform([boundingBox[0], boundingBox[3]], srcProj, dstProj)
-                ]]
-            ); 
-            var featureBbox = new ol.Feature(
-                { 
-                    name: "bbox",
-                    geometry: newBbox
-                }
-            );
+            var newBbox = new ol.geom.Polygon([[
+                ol.proj.transform([boundingBox[0], boundingBox[3]], srcProj, dstProj),
+                ol.proj.transform([boundingBox[0], boundingBox[1]], srcProj, dstProj),
+                ol.proj.transform([boundingBox[2], boundingBox[1]], srcProj, dstProj),
+                ol.proj.transform([boundingBox[2], boundingBox[3]], srcProj, dstProj),
+                ol.proj.transform([boundingBox[0], boundingBox[3]], srcProj, dstProj)
+            ]]); 
+            var featureBbox = new ol.Feature({
+                name: "bbox",
+                geometry: newBbox
+            });
             searchboxSource.addFeature(featureBbox);
             map.getView().fit(searchboxSource.getExtent(), map.getSize());
         }
@@ -158,12 +120,10 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
         var popup_content = document.getElementById('popup-content');
 
        // Add popup element to map
-       var popup = new ol.Overlay(
-           {
-               element: element,
-               stopEvent: true
-           }
-       );
+       var popup = new ol.Overlay({
+           element: element,
+           stopEvent: true
+       });
        map.addOverlay(popup);
 
        // Display popup on click
@@ -186,15 +146,13 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
                        pcontent += cFeatureContent;
                    }
                    popup.setPosition(coordinate);
-                   $(element).popover(
-                       {
-                           'placement': 'auto bottom',
-                           'animation' : false,
-                           'html' : true,
-                           'title' : 'Records at this location:<button class="close">&times;</button>',
-                           'content' : pcontent
-                       }
-                   ).on('shown.bs.popover', function closePopup(evt) {
+                   $(element).popover({
+                       'placement': 'auto bottom',
+                       'animation' : false,
+                       'html' : true,
+                       'title' : 'Records at this location:<button class="close">&times;</button>',
+                       'content' : pcontent
+                   }).on('shown.bs.popover', function closePopup(evt) {
                        // 'aria-describedby' is the id of the current popover
                        var current_popover = '#' + $(evt.target).attr('aria-describedby');
                        var $cur_pop = $(current_popover);
