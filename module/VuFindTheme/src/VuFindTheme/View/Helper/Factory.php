@@ -51,27 +51,24 @@ class Factory
     protected static function getPipelineConfig(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $default = false;
         if (isset($config['Site']['asset_pipeline'])) {
-            if (strpos($config['Site']['asset_pipeline'], ':') !== false) {
-                $settings = array_map(
-                    'trim',
-                    explode(';', $config['Site']['asset_pipeline'])
-                );
-                $default = false;
-                foreach ($settings as $setting) {
-                    $parts = array_map('trim', explode(':', $setting));
-                    if (APPLICATION_ENV === $parts[0]) {
-                        return $parts[1];
-                    }
-                    if (count($parts) < 2 || $parts[0] == '*') {
-                        $default = $setting;
-                    }
+            $settings = array_map(
+                'trim',
+                explode(';', $config['Site']['asset_pipeline'])
+            );
+            foreach ($settings as $setting) {
+                $parts = array_map('trim', explode(':', $setting));
+                if (APPLICATION_ENV === $parts[0]) {
+                    return $parts[1];
+                } else if (count($parts) < 2) {
+                    $default = $setting;
+                } else if ($parts[0] === '*') {
+                    $default = $parts[1];
                 }
-                return $default;
             }
-            return trim($config['Site']['asset_pipeline']);
         }
-        return false;
+        return $default;
     }
 
     /**
