@@ -1500,4 +1500,32 @@ class AjaxController extends AbstractBase
     {
         return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
     }
+
+    /**
+     * Get Ils Status
+     *
+     * This will check the ILS for being online and will return the ils-offline
+     * template upon failure.
+     *
+     * @return \Zend\Http\Response
+     * @author André Lahmann <lahmann@ub.uni-leipzig.de>
+     */
+    protected function getIlsStatusAjax()
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+        $offlineModeMsg = $this->params()->fromPost(
+            'offlineModeMsg',
+            $this->params()->fromQuery('offlineModeMsg')
+        );
+        if ($this->getILS()->getOfflineMode() == 'ils-offline') {
+            return $this->output(
+                $this->getViewRenderer()->render(
+                    'Helpers/ils-offline.phtml',
+                    $offlineModeMsg
+                ),
+                self::STATUS_OK
+            );
+        }
+        return $this->output('', self::STATUS_OK);
+    }
 }

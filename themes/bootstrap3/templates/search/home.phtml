@@ -19,7 +19,22 @@
 ?>
 
 <div class="searchHomeContent">
-  <?=($this->ils()->getOfflineMode() == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_home_message']) : ''?>
+  <?
+  $ilsStatusScript = <<<JS
+      $(document).ready(function() {
+        $.ajax({
+            dataType: 'json',
+            method: 'GET',
+            data: {'offlineModeMsg':'ils_offline_home_message'},
+            url: VuFind.path + '/AJAX/JSON?method=getIlsStatus',
+            success: function(response) {
+                $('.searchHomeContent').append(response.data);
+            }
+        });
+      });
+JS;
+  ?>
+  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $ilsStatusScript, 'SET'); ?>
   <div class="well well-lg clearfix" role="search">
     <?=$this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => true])?>
   </div>
