@@ -58,7 +58,7 @@ function loadMapTab(mapData) {
         label = label_coord;
         label_on = true;
       } else {
-        label = '';
+        label = 'No information available';
         label_on = false;
       }
       // Determine if entry is point or polygon - Does W=E & N=S? //
@@ -130,7 +130,8 @@ function loadMapTab(mapData) {
           var coordinate = evt.coordinate;
           popup.setPosition(coordinate);
           $(element).popover({
-            'placement': 'top',
+            'placement': 'auto',
+            'container': 'body',
             'animation': false,
             'html': true,
             'title': 'Record information:<button class="close">&times;</button>'
