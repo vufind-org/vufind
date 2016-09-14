@@ -59,7 +59,7 @@ class CollectionController extends AbstractRecord
      *
      * @return array
      */
-    protected function getTabConfiguration()
+    protected function getRecordTabConfig()
     {
         $cfg = $this->getServiceLocator()->get('Config');
         return $cfg['vufind']['recorddriver_collection_tabs'];
