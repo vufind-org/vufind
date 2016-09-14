@@ -147,7 +147,8 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
           }
           popup.setPosition(coordinate);
           $(element).popover({
-            'placement': 'auto bottom',
+            'placement': 'auto',
+            'container': 'body',
             'animation': false,
             'html': true,
             'title': 'Records at this location:<button class="close">&times;</button>',
