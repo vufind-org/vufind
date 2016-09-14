@@ -96,6 +96,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     }
 
     /**
+     * Get an array of tabs names configured to load via AJAX in the background
+     *
+     * @param AbstractRecordDriver $driver Record driver
+     * @param array                $config Tab configuration (associative array
+     * including 'tabs' array mapping driver class => tab service name)
+     *
+     * @return array
+     */
+    public function getBackgroundTabNames(AbstractRecordDriver $driver,
+        array $config
+    ) {
+        return $this->getConfigByClass($driver, $config, 'backgroundLoadedTabs', []);
+    }
+
+    /**
      * Get a default tab by looking up the provided record driver in the tab
      * configuration array.
      *

@@ -1,0 +1,22 @@
+HTTP/1.1 200 OK
+Server: vzg-paia/2.2-RC3 (Wed Jun 01 17:38:24 CEST 2016)
+Date: Mon, 20 Jun 2016 10:38:21 GMT
+Cache-Control: no-cache
+Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: X-OAuth-Scopes, X-Accepted-OAuth-Scopes
+Access-Control-Allow-Headers: Content-Type, Authorization
+Pragma: no-cache
+X-OAuth-Scopes: change_password read_items read_fees read_patron
+X-Accepted-OAuth-Scopes: read_patron
+Content-Type: application/json; charset=UTF-8
+
+{
+  "name": " Nobody Nothing",
+  "expires": "2015-12-31",
+  "email": "nobody@vufind.org",
+  "status": 0,
+  "address": "No Street at all 8, D-21073 Hamburg",
+  "type": ["de-830:user-type:20"]
+}
+
+

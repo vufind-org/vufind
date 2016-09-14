@@ -65,9 +65,15 @@ class Factory
      */
     public static function getDAIA(ServiceManager $sm)
     {
-        return new DAIA(
+        $daia = new DAIA(
             $sm->getServiceLocator()->get('VuFind\DateConverter')
         );
+
+        $daia->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+
+        return $daia;
     }
 
     /**
@@ -154,6 +160,27 @@ class Factory
     public static function getNoILS(ServiceManager $sm)
     {
         return new NoILS($sm->getServiceLocator()->get('VuFind\RecordLoader'));
+    }
+
+    /**
+     * Factory for PAIA driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return PAIA
+     */
+    public static function getPAIA(ServiceManager $sm)
+    {
+        $paia = new PAIA(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
+
+        $paia->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+
+        return $paia;
     }
 
     /**
