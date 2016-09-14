@@ -42,6 +42,36 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Split config and return prefixed setting with current environment.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HeadLink
+     */
+    protected static function getPipelineConfig(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $default = false;
+        if (isset($config['Site']['asset_pipeline'])) {
+            $settings = array_map(
+                'trim',
+                explode(';', $config['Site']['asset_pipeline'])
+            );
+            foreach ($settings as $setting) {
+                $parts = array_map('trim', explode(':', $setting));
+                if (APPLICATION_ENV === $parts[0]) {
+                    return $parts[1];
+                } else if (count($parts) == 1) {
+                    $default = $parts[0];
+                } else if ($parts[0] === '*') {
+                    $default = $parts[1];
+                }
+            }
+        }
+        return $default;
+    }
+
+    /**
      * Construct the HeadLink helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -51,7 +81,8 @@ class Factory
     public static function getHeadLink(ServiceManager $sm)
     {
         return new HeadLink(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            Factory::getPipelineConfig($sm)
         );
     }
 
@@ -65,7 +96,8 @@ class Factory
     public static function getHeadScript(ServiceManager $sm)
     {
         return new HeadScript(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            Factory::getPipelineConfig($sm)
         );
     }
 
@@ -107,7 +139,8 @@ class Factory
     public static function getInlineScript(ServiceManager $sm)
     {
         return new InlineScript(
-            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
+            Factory::getPipelineConfig($sm)
         );
     }
 
