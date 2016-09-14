@@ -22,7 +22,7 @@
 
 <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
 
-<?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml') : ''?>
+<?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
 <? if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings)) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
