@@ -1,5 +1,5 @@
 /*global deparam, grecaptcha, syn_get_widget, userIsLoggedIn, VuFind */
-/*exported ajaxTagUpdate, recordDocReady */
+/*exported addRecordCommentCallback, ajaxTagUpdate, recordDocReady */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -57,6 +57,9 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
   });
 }
 
+function addRecordCommentCallback(event, form) {
+  refreshCommentList($(form).closest('.record'));
+}
 function refreshCommentList($target, recordId, recordSource) {
   var url = VuFind.path + '/AJAX/JSON?' + $.param({
     method: 'getRecordCommentsAsHTML',
@@ -84,45 +87,7 @@ function refreshCommentList($target, recordId, recordSource) {
   });
 }
 
-function registerAjaxCommentRecord() {
-  // Form submission
-  $('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
-    var form = this;
-    var id = form.id.value;
-    var recordSource = form.source.value;
-    var data = {
-      comment: form.comment.value,
-      id: id,
-      source: recordSource
-    };
-    if (typeof grecaptcha !== 'undefined') {
-      try {
-        data['g-recaptcha-response'] = grecaptcha.getResponse(0);
-      } catch (e) {
-        console.error('Expected errors: placeholder element full and Invalid client ID');
-        console.error(e);
-      }
-    }
-    VuFind.lightbox.ajax({
-      type: 'POST',
-      url: this.action,
-      data: data
-    });
-    return false;
-  });
-  // Delete links
-  $('.delete').click(function commentDeleteClick() {
-    var commentId = this.id.substr('recordComment'.length);
-    deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), commentId);
-    return false;
-  });
-  // Prevent form submit
-  return false;
-}
-
 function registerTabEvents() {
-  // Logged in AJAX
-  registerAjaxCommentRecord();
   // Delete links
   $('.delete').click(function commentTabDeleteClick() {
     deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));
@@ -228,7 +193,7 @@ function backgroundLoadTab(tabid) {
     return;
   }
   var newTab = getNewRecordTab(tabid);
-  $('.nav-tabs a.'+tabid).closest('.result,.record').find('.tab-content').append(newTab);
+  $('.nav-tabs a.' + tabid).closest('.result,.record').find('.tab-content').append(newTab);
   return ajaxLoadTab(newTab, tabid, false);
 }
 
