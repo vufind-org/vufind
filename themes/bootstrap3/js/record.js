@@ -59,8 +59,11 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
 
 function addRecordCommentCallback(event, form) {
   refreshCommentList($(form).closest('.record'));
+  $(form).find('textarea').val('');
 }
-function refreshCommentList($target, recordId, recordSource) {
+function refreshCommentList($target, _id, _source) {
+  var recordId = _id || $target.find('.hiddenId').val();
+  var recordSource = _source || $target.find('.hiddenSource').val();
   var url = VuFind.path + '/AJAX/JSON?' + $.param({
     method: 'getRecordCommentsAsHTML',
     id: recordId,
