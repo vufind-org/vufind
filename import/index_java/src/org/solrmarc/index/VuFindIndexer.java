@@ -327,7 +327,7 @@ public class VuFindIndexer extends SolrIndexer
     /**
      * Establish UpdateDateTracker object if not already available.
      */
-    private void loadUpdateDateTracker()
+    private void loadUpdateDateTracker() throws java.sql.SQLException
     {
         if (tracker == null) {
             connectToDatabase();
@@ -1431,11 +1431,11 @@ public class VuFindIndexer extends SolrIndexer
      */
     public UpdateDateTracker updateTracker(String core, String id, java.util.Date latestTransaction)
     {
-        // Initialize date tracker if not already initialized:
-        loadUpdateDateTracker();
-
         // Update the database (if necessary):
         try {
+            // Initialize date tracker if not already initialized:
+            loadUpdateDateTracker();
+
             tracker.index(core, id, latestTransaction);
         } catch (java.sql.SQLException e) {
             // If we're in the process of shutting down, an error is expected:
