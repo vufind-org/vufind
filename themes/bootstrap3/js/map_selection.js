@@ -128,7 +128,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     // Display popup on click
     map.on('click', function displayPopup(evt) {
       var popupfeature = map.forEachFeatureAtPixel(evt.pixel,
-        function showFeature(feature, layer) {
+        function showFeature(feature) {
           return {'feature': feature, 'layer': clusterLayer};
         });
       if (popupfeature) {
@@ -176,7 +176,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
       var pixel = map.getEventPixel(evt.originalEvent);
       var hit = map.hasFeatureAtPixel(pixel);
       if (hit) {
-        var fl = map.forEachFeatureAtPixel(pixel, function getFeature(feature, layer) {
+        var fl = map.forEachFeatureAtPixel(pixel, function getFeature(feature) {
           return {'feature': feature, 'layer': clusterLayer};
         });
         var cFeatures = fl.feature.get('features');
