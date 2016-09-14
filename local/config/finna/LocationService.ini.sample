@@ -30,3 +30,8 @@ url[fi] = "https://libapps.uef.fi/sijaintiopas/?infoViewMode=selSignum&language=
 [haltia]
 url[en-gb] = "https://haltia.amkit.fi/vwebv/ui/fi_FI/htdocs/libmap/html/Libmap.html?callno={callno}&collection={collection}&status=1&lang=english"
 url[fi] = "https://haltia.amkit.fi/vwebv/ui/fi_FI/htdocs/libmap/html/Libmap.html?callno={callno}&collection={collection}&status=1&lang=suomi"
+
+[tria]
+url[fi] = "https://tria.linneanet.fi/cgi-bin/getlocfinna.cgi?la=fi&co={collection}&ca={callno}&lo={location}&ti={title}"
+url[sv] = "https://tria.linneanet.fi/cgi-bin/getlocfinna.cgi?la=sv&co={collection}&ca={callno}&lo={location}&ti={title}"
+url[en-gb] = "https://tria.linneanet.fi/cgi-bin/getlocfinna.cgi?la=en&co={collection}&ca={callno}&lo={location}&ti={title}"

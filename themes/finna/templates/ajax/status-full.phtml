@@ -172,7 +172,7 @@ foreach ($this->statusItems as $item):
           <? endif; ?>
         </span>
         <? endif; ?>
-      <span class="info text-right"><?=$this->callnumber()->callnumber($source, $item['callnumber'], isset($item['collection']) ? $item['collection'] : null, $this->layout()->userLang, 'results')?></span>
+      <span class="info text-right"><?=$this->callnumber()->callnumber($source, $driver->getFullTitle(), $item['callnumber'], isset($item['collection']) ? $item['collection'] : null, isset($item['location']) ? $item['location'] : null, $this->layout()->userLang, 'results')?></span>
     </div>
   <div class="holdings<?=$collapseBranches ? ' collapsible collapsed' : ''?>">
 <? endif; ?>
@@ -215,7 +215,7 @@ foreach ($this->statusItems as $item):
             <? if (!empty($item['callnumbers'])): ?>
               (<?=$this->transEsc($item['callnumbers'])?>)
             <? elseif (!empty($item['callnumber'])): ?>
-              <?=$this->callnumber()->callnumber($source, $item['callnumber'], isset($item['collection']) ? $item['collection'] : null, $this->layout()->userLang, 'results')?>
+              <?=$this->callnumber()->callnumber($source, $driver->getFullTitle(), $item['callnumber'], isset($item['collection']) ? $item['collection'] : null, isset($item['location']) ? $item['location'] : null, $this->layout()->userLang, 'results')?>
             <? endif; ?>
           </div>
         <? endif; ?>

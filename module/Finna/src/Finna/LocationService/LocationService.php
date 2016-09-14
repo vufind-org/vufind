@@ -59,8 +59,10 @@ class LocationService
      * Return configuration parameter for a Location Service link.
      *
      * @param string $source     Record source
+     * @param string $title      Record title
      * @param string $callnumber Callnumber that is used as a location code.
      * @param string $collection Collection
+     * @param string $location   Location
      * @param string $language   Language
      *
      * @return array Array with the following keys:
@@ -68,8 +70,9 @@ class LocationService
      *   [modal] boolean True if the map should be displayed in a modal.
      *   [qr]    boolean True if a QR-code of the map link should be displayed.
      */
-    public function getConfig($source, $callnumber, $collection, $language)
-    {
+    public function getConfig(
+        $source, $title, $callnumber, $collection, $location, $language
+    ) {
         if (empty($this->config['General']['enabled'])
             || empty($this->config['General']['url'])
             || empty($this->config[$source])
@@ -95,6 +98,8 @@ class LocationService
         $params = [
             'callno' => $callnumber,
             'collection' => $collection,
+            'location' => $location,
+            'title' => $title,
             'lang' => substr($language, 0, 2),
             'owner' => isset($this->config[$source]['owner'])
                ? $this->config[$source]['owner']

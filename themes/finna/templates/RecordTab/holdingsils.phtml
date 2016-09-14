@@ -208,13 +208,21 @@
     $callnumbers = [];
     foreach ($this->tab->getUniqueCallNumbers($holding['items']) as $callNo) {
        $collection = null;
+       $location = null;
        foreach ($holding['items'] as $item) {
-          if (isset($item['collection']) && $item['callnumber'] === $callNo) {
-             $collection = $item['collection'];
-             break;
+          if ($item['callnumber'] === $callNo) {
+             if (!$collection && isset($item['collection'])) {
+                $collection = $item['collection'];
+             }
+             if (!$location && isset($item['location'])) {
+                $location = $item['location'];
+             }
+             if ($collection && $location) {
+                break;
+             }
           }
        }
-       $callnumbers[] = ['callNo' => $callNo, 'collection' => $collection];
+       $callnumbers[] = ['callNo' => $callNo, 'collection' => $collection, 'location' => $location];
     }
     $dialogTitle = ': ' . $this->driver->getTitle();
     $titleLocation = $this->transEsc('location_' . $holding['location'], array(), $holding['location']);
@@ -243,7 +251,7 @@
     <div class="holdings-details col-sm-3 col-xs-6"><?=$holdingSummary ?></div>
     <div class="location-link col-sm-3 col-xs-12 text-right">
       <? foreach ($callnumbers as $data): ?>
-        <?=$this->callnumber()->callnumber($currentSource, $data['callNo'], $data['collection'], $this->layout()->userLang)?>
+        <?=$this->callnumber()->callnumber($currentSource, $this->driver->getFullTitle(), $data['callNo'], $data['collection'], $data['location'], $this->layout()->userLang)?>
       <? endforeach; ?>
       <? if ($holdsAllowed && isset($holdLinksLocation[$holding['location']])): ?>
         <a class="expandedCheckRequest inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($holdLinksLocation[$holding['location']])?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . $dialogTitle); ?>"><?=$this->transEsc("request_place_text")?></a>

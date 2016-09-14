@@ -152,6 +152,17 @@ trait SolrFinna
     }
 
     /**
+     * Get the full title of the record.
+     *
+     * @return string
+     */
+    public function getFullTitle()
+    {
+        return isset($this->fields['title_full']) ?
+            $this->fields['title_full'] : '';
+    }
+
+    /**
      * Return genres
      *
      * @return array

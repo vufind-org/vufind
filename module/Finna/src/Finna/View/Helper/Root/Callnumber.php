@@ -60,24 +60,31 @@ class Callnumber extends \Zend\View\Helper\AbstractHelper
      * Returns HTML for a holding callnumber.
      *
      * @param string $source     Record source
+     * @param string $title      Record title
      * @param string $callnumber Callnumber
      * @param string $collection Collection
+     * @param string $location   Location
      * @param string $language   Language
      * @param string $page       Page (record|results)
      *
      * @return string
      */
     public function callnumber(
-        $source, $callnumber, $collection, $language, $page = 'record'
+        $source, $title, $callnumber, $collection, $location,
+        $language, $page = 'record'
     ) {
-        $params
-            = ['callnumber' => $callnumber, 'page' => $page, 'source' => $source];
+        $params = [
+            'callnumber' => $callnumber, 'location' => $location, 'title' => $title,
+            'page' => $page, 'source' => $source
+        ];
         $config = $this->locationService->getConfig(
-            $source, $callnumber, $collection, $language
+            $source, $title, $callnumber, $collection, $location, $language
         );
 
         if ($config) {
             $params['collection'] = $collection;
+            $params['location'] = $location;
+            $params['title'] = $title;
             $params['locationServiceUrl'] = $config['url'];
             $params['locationServiceModal'] = $config['modal'];
             $params['qrCode']
