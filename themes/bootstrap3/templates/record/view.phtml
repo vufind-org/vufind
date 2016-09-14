@@ -56,14 +56,12 @@
 
 <?=$this->record($this->driver)->getToolbar()?>
 
-<div class="row">
+<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> row">
   <div class="<?=$this->layoutClass('mainbody')?>">
-    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
-      <?=$this->flashmessages()?>
-      <?=$this->record($this->driver)->getCoreMetadata()?>
-    </div>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
+    <?=$this->flashmessages()?>
+    <?=$this->record($this->driver)->getCoreMetadata()?>
 
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
@@ -85,7 +83,7 @@
               if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
             ?>
             <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-              <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+              <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<? endif ?>><?=$this->transEsc($desc)?></a>
             </li>
           <? endforeach; ?>
         </ul>

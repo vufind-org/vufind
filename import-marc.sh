@@ -5,8 +5,6 @@
 #
 # VUFIND_HOME
 #   Path to the vufind installation
-# SOLRMARC_HOME
-#   Path to the solrmarc installation
 # JAVA_HOME
 #   Path to the java
 # INDEX_OPTIONS
@@ -58,9 +56,9 @@ fi
 ##################################################
 # Set SOLRCORE
 ##################################################
-if [ -z "$SOLRCORE" ]
+if [ ! -z "$SOLRCORE" ]
 then
-  SOLRCORE="biblio"
+  EXTRA_SOLRMARC_SETTINGS="$EXTRA_SOLRMARC_SETTINGS -Dsolr.core.name=$SOLRCORE"
 fi
 
 
@@ -70,24 +68,6 @@ fi
 if [ -z "$VUFIND_HOME" ]
 then
   VUFIND_HOME="/usr/local/vufind"
-fi
-
-
-##################################################
-# Use SOLR_HOME if set
-##################################################
-if [ ! -z "$SOLR_HOME" ]
-then
-  EXTRA_SOLRMARC_SETTINGS="$EXTRA_SOLRMARC_SETTINGS -Dsolr.path=$SOLR_HOME -Dsolr.solr.home=$SOLR_HOME -Dsolrmarc.solr.war.path=$SOLR_HOME/jetty/webapps/solr.war"
-fi
-
-
-##################################################
-# Set SOLRMARC_HOME
-##################################################
-if [ ! -z "$SOLRMARC_HOME" ]
-then
-  EXTRA_SOLRMARC_SETTINGS="$EXTRA_SOLRMARC_SETTINGS -Dsolrmarc.path=$VUFIND_HOME/import"
 fi
 
 
@@ -117,7 +97,7 @@ fi
 ##################################################
 # Set Command Options
 ##################################################
-JAR_FILE="$VUFIND_HOME/import/SolrMarc.jar"
+JAR_FILE="$VUFIND_HOME/import/solrmarc_core.jar"
 
 #####################################################
 # Verify that JAR_FILE exists
@@ -139,7 +119,7 @@ MARC_FILE=`basename $1`
 # Execute Importer
 #####################################################
 
-RUN_CMD="$JAVA $INDEX_OPTIONS -Duser.timezone=UTC -Dsolr.core.name=$SOLRCORE $EXTRA_SOLRMARC_SETTINGS -jar $JAR_FILE $PROPERTIES_FILE $MARC_PATH/$MARC_FILE"
+RUN_CMD="$JAVA $INDEX_OPTIONS -Duser.timezone=UTC $EXTRA_SOLRMARC_SETTINGS -jar $JAR_FILE $PROPERTIES_FILE -solrj $VUFIND_HOME/solr/vendor/dist/solrj-lib $MARC_PATH/$MARC_FILE"
 echo "Now Importing $1 ..."
 # solrmarc writes log messages to stderr, write RUN_CMD to the same place
 echo "`date '+%h %d, %H:%M:%S'` $RUN_CMD" >&2
