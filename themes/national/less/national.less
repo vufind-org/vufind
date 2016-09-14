@@ -320,3 +320,25 @@ form.navbar-form {
         vertical-align: -3px;
     }
 }
+
+// available online links
+.recordURLs a, .available-online-links div:not(.more-options) > a { 
+    display: inline-block;
+    line-height: 1.5em;
+    background: @link-color;
+    margin-bottom: 2px;
+    margin-top: 2px;
+    margin-right: 3px;
+    padding: 3px 8px 3px 20px;
+    word-break: break-all;
+    color: #fff;
+    border-radius: 10px;
+    & i {
+        font-size: 1em;
+        margin-left: -14px;
+        transition: transform .2s ease-in-out;
+    }
+    &:hover i {
+        transform: translateX(-2px);
+    }
+}
