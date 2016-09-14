@@ -115,28 +115,37 @@ function loadMapTab(mapData) {
     if (label_on === true) {
       var element = document.getElementById('popup');
       var popup = new ol.Overlay({
-        element: element
+        element: element,
+        stopEvent: true
       });
       map.addOverlay(popup);
 
-      // display popup on click
+      // Display popup on click
       map.on('click', function displayPopup(evt) {
         var popupfeature = map.forEachFeatureAtPixel(evt.pixel,
           function showFeature(feature) {
             return feature;
           });
         if (popupfeature) {
-          element = popup.getElement();
           var coordinate = evt.coordinate;
-          $(element).popover('destroy');
           popup.setPosition(coordinate);
           $(element).popover({
             'placement': 'top',
             'animation': false,
             'html': true,
-            'content': popupfeature.get('name')
+            'title': 'Record information:<button class="close">&times;</button>'
+          }).on('shown.bs.popover', function closePopup(e) {
+            // 'aria-describedby' is the id of the current popover
+            var current_popover = '#' + $(e.target).attr('aria-describedby');
+            var $cur_pop = $(current_popover);
+            $cur_pop.find('.close').click(function closeCurPop(){
+              $(element).popover('destroy');
+            });
           });
+          $(element).data('bs.popover').options.content=popupfeature.get('name');
           $(element).popover('show');
+        } else {
+          $(element).popover('destroy');
         }
       });
 
