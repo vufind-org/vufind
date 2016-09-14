@@ -164,8 +164,8 @@ VuFind.register('lightbox', function Lightbox() {
         }
         _update(content);
       })
-      .fail(function lbAjaxFail() {
-        showAlert(VuFind.translate('error_occurred'), 'danger');
+      .fail(function lbAjaxFail(deferred, errorType, msg) {
+        showAlert(VuFind.translate('error_occurred') + '<br/>' + msg, 'danger');
       });
     return _xhr;
   }
@@ -255,7 +255,7 @@ VuFind.register('lightbox', function Lightbox() {
     if ('string' === typeof $(form).data('lightboxOnclose')) {
       document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(e) {
         this.removeEventListener('VuFind.lightbox.closed', arguments.callee);
-        _evalCallback($(form).data('lightboxOnclose'), e);
+        _evalCallback($(form).data('lightboxOnclose'), e, form);
       }, false);
     }
     // Loading
