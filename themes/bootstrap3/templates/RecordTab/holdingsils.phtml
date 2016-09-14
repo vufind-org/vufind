@@ -8,9 +8,10 @@
     $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     $offlineMode = $this->ils()->getOfflineMode();
     try {
-      $holdings = $this->driver->getRealTimeHoldings();
+        $holdings = $this->driver->getRealTimeHoldings();
     } catch (\VuFind\Exception\ILS $e) {
-      $holdings = [];
+        $holdings = [];
+        $offlineMode = 'ils-offline';
     }
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
