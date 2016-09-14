@@ -801,6 +801,7 @@ class AjaxController extends AbstractBase
                 'Information'
             );
 
+        $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
         $html = $this->getViewRenderer()
             ->render(
                 "record/ajaxview-" . $viewtype . ".phtml",
@@ -808,6 +809,9 @@ class AjaxController extends AbstractBase
                     'defaultTab' => $details['default'],
                     'driver' => $driver,
                     'tabs' => $details['tabs'],
+                    'backgroundTabs' => $rtpm->getBackgroundTabNames(
+                        $driver, $this->getRecordTabConfig()
+                    )
                 ]
             );
         return $this->output($html, self::STATUS_OK);
