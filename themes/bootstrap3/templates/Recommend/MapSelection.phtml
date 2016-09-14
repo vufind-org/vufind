@@ -30,9 +30,7 @@ EOF;
     <button id="draw_box"><?=$this->transEsc('Draw Search Box')?></button>
     <span class="geo_maphelp">&nbsp;<a href="<?=$this->url('help-home')?>?topic=geosearch" data-lightbox class="help-link"><?=$this->transEsc('Need Help?')?></a></span>
     <div id="geo_search_map" style="height: <?=$height?>px;">
-      <div id="popup">
-	<div id="popup_content"></div>
-      </div>
+      <div id="popup"></div>
     </div>
   </div>
   <? if ($showSelection) :?>
