@@ -149,7 +149,7 @@ class DAIA extends AbstractBase implements
         } else {
             throw new ILSException('DAIA/baseUrl configuration needs to be set.');
         }
-        // use PAIA specific timeout setting for http requests if configured
+        // use DAIA specific timeout setting for http requests if configured
         if ((isset($this->config['DAIA']['timeout']))) {
             $this->daiaTimeout = $this->config['DAIA']['timeout'];
         }
