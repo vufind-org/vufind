@@ -20,7 +20,7 @@ org.solrmarc.index.SolrIndexer indexer = null;
 public Boolean authorHasAppropriateRelator(DataField authorField,
     String[] noRelatorAllowed, String relatorConfig
 ) {
-    return getValidRelators(authorField, noRelatorAllowed, relatorConfig).length() > 0;
+    return getValidRelators(authorField, noRelatorAllowed, relatorConfig).size() > 0;
 }
 
 /**
