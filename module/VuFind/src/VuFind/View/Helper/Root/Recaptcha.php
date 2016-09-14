@@ -93,13 +93,17 @@ class Recaptcha extends AbstractHelper
      * Generate <div> with ReCaptcha from render.
      *
      * @param boolean $useRecaptcha Boolean of active state, for compact templating
+     * @param boolean $wrapHtml     Include prefix and suffix?
      *
      * @return string $html
      */
-    public function html($useRecaptcha = true)
+    public function html($useRecaptcha = true, $wrapHtml = true)
     {
         if (!isset($useRecaptcha) || !$useRecaptcha) {
             return false;
+        }
+        if (!$wrapHtml) {
+            return $this->recaptcha->getHtml();
         }
         return $this->prefixHtml . $this->recaptcha->getHtml() . $this->suffixHtml;
     }
