@@ -57,6 +57,13 @@ class PAIA extends DAIA
     protected $paiaURL;
 
     /**
+     * Timeout in seconds to be used for PAIA http requests
+     *
+     * @var
+     */
+    protected $paiaTimeout = null;
+
+    /**
      * Flag to switch on/off caching for PAIA items
      *
      * @var bool
@@ -163,6 +170,11 @@ class PAIA extends DAIA
             throw new ILSException('PAIA/baseUrl configuration needs to be set.');
         }
         $this->paiaURL = $this->config['PAIA']['baseUrl'];
+
+        // use PAIA specific timeout setting for http requests if configured
+        if ((isset($this->config['PAIA']['timeout']))) {
+            $this->paiaTimeout = $this->config['PAIA']['timeout'];
+        }
 
         // do we have caching enabled for PAIA
         if (isset($this->config['PAIA']['paiaCache'])) {
@@ -1502,7 +1514,7 @@ class PAIA extends DAIA
                 $this->paiaURL . $file,
                 $postData,
                 'application/json; charset=UTF-8',
-                null,
+                $this->paiaTimeout,
                 $http_headers
             );
         } catch (\Exception $e) {
@@ -1539,7 +1551,7 @@ class PAIA extends DAIA
         try {
             $result = $this->httpService->get(
                 $this->paiaURL . $file,
-                [], null, $http_headers
+                [], $this->paiaTimeout, $http_headers
             );
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());

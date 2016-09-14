@@ -60,6 +60,13 @@ class DAIA extends AbstractBase implements
     protected $baseUrl;
 
     /**
+     * Timeout in seconds to be used for DAIA http requests
+     *
+     * @var string
+     */
+    protected $daiaTimeout = null;
+
+    /**
      * Flag to switch on/off caching for DAIA items
      *
      * @var bool
@@ -141,6 +148,10 @@ class DAIA extends AbstractBase implements
             );
         } else {
             throw new ILSException('DAIA/baseUrl configuration needs to be set.');
+        }
+        // use DAIA specific timeout setting for http requests if configured
+        if ((isset($this->config['DAIA']['timeout']))) {
+            $this->daiaTimeout = $this->config['DAIA']['timeout'];
         }
         if (isset($this->config['DAIA']['daiaResponseFormat'])) {
             $this->daiaResponseFormat = strtolower(
@@ -448,7 +459,7 @@ class DAIA extends AbstractBase implements
         try {
             $result = $this->httpService->get(
                 $this->baseUrl,
-                $params, null, $http_headers
+                $params, $this->daiaTimeout, $http_headers
             );
         } catch (\Exception $e) {
             throw new ILSException(
