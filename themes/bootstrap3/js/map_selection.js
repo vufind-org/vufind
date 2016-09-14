@@ -151,8 +151,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
             'container': 'body',
             'animation': false,
             'html': true,
-            'title': 'Records at this location:<button class="close">&times;</button>',
-            'content': pcontent
+            'title': 'Records at this location:<button class="close">&times;</button>'
           }).on('shown.bs.popover', function closePopup(e) {
             // 'aria-describedby' is the id of the current popover
             var current_popover = '#' + $(e.target).attr('aria-describedby');
@@ -161,6 +160,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
               $(element).popover('hide');
             });
           });
+          $(element).data('bs.popover').options.content=pcontent;
           $(element).popover('show');
         }
       } else {
