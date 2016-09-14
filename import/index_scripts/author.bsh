@@ -181,7 +181,7 @@ public List getAuthorsFilteredByRelator(Record record, String tagList,
  * @param relator Relator code to check
  * @return Code version, if found, or raw string if no match found.
  */
-public String mapRelatorStringToCode(relator)
+public String mapRelatorStringToCode(String relator)
 {
     String normalizedRelator = normalizeRelatorString(relator);
     return relatorSynonymLookup.containsKey(normalizedRelator)
@@ -307,7 +307,7 @@ public String[] loadRelatorConfig(String setting) {
  */
 public List normalizeRelatorAndAddSynonyms(String relator)
 {
-    newList = new ArrayList();
+    List newList = new ArrayList();
     String normalized = normalizeRelatorString(relator);
     newList.add(normalized);
     String synonyms = indexer.getConfigSetting(
@@ -331,7 +331,7 @@ public List normalizeRelatorAndAddSynonyms(String relator)
  */
 public List normalizeRelatorStringList(List stringList)
 {
-    newList = new ArrayList();
+    List newList = new ArrayList();
     for (String relator: stringList) {
         newList.addAll(normalizeRelatorAndAddSynonyms(relator));
     }
