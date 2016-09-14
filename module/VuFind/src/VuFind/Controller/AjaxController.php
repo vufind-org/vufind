@@ -1056,60 +1056,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Comment on a record.
-     *
-     * @return \Zend\Http\Response
-     */
-    protected function commentRecordAjax()
-    {
-        // Make sure comments are enabled:
-        if (!$this->commentsEnabled()) {
-            return $this->output(
-                $this->translate('Comments disabled'),
-                self::STATUS_ERROR,
-                403
-            );
-        }
-
-        $user = $this->getUser();
-        if ($user === false) {
-            return $this->output(
-                $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH,
-                401
-            );
-        }
-
-        $id = $this->params()->fromPost('id');
-        $comment = $this->params()->fromPost('comment');
-        if (empty($id) || empty($comment)) {
-            return $this->output(
-                $this->translate('bulk_error_missing'),
-                self::STATUS_ERROR,
-                400
-            );
-        }
-
-        $useCaptcha = $this->recaptcha()->active('userComments');
-        $this->recaptcha()->setErrorMode('none');
-        if (!$this->formWasSubmitted('comment', $useCaptcha)) {
-            return $this->output(
-                $this->translate('recaptcha_not_passed'),
-                self::STATUS_ERROR,
-                403
-            );
-        }
-
-        $table = $this->getTable('Resource');
-        $resource = $table->findResource(
-            $id, $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)
-        );
-        $id = $resource->addComment($comment, $user);
-
-        return $this->output($id, self::STATUS_OK);
-    }
-
-    /**
      * Delete a comment on a record.
      *
      * @return \Zend\Http\Response
