@@ -154,19 +154,24 @@ class QueryBuilder implements QueryBuilderInterface
                         $params->set('hl.q', $oldString);
                     }
                 }
-            } else {
-                if ($handler->hasDismax()) {
-                    $params->set('qf', implode(' ', $handler->getDismaxFields()));
-                    $params->set('qt', $handler->getDismaxHandler());
-                    foreach ($handler->getDismaxParams() as $param) {
-                        $params->add(reset($param), next($param));
-                    }
-                    if ($handler->hasFilterQuery()) {
-                        $params->add('fq', $handler->getFilterQuery());
-                    }
-                } else {
-                    $string = $handler->createSimpleQueryString($string);
+            } else if ($handler->hasDismax()) {
+                // If we're using extended dismax, we'll miss out on the question
+                // mark fix in createAdvancedInnerSearchString(), so we should
+                // apply it here. If other query munges arise that are valuable
+                // to both dismax and edismax, we should add a wrapper function
+                // around them and call it from here instead of this one very
+                // specific check.
+                $string = $this->fixTrailingQuestionMarks($string);
+                $params->set('qf', implode(' ', $handler->getDismaxFields()));
+                $params->set('qt', $handler->getDismaxHandler());
+                foreach ($handler->getDismaxParams() as $param) {
+                    $params->add(reset($param), next($param));
                 }
+                if ($handler->hasFilterQuery()) {
+                    $params->add('fq', $handler->getFilterQuery());
+                }
+            } else {
+                $string = $handler->createSimpleQueryString($string);
             }
         }
         $params->set('q', $string);
@@ -363,6 +368,28 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * If the query ends in a non-escaped question mark, the user may not really
+     * intend to use the question mark as a wildcard -- let's account for that
+     * possibility.
+     *
+     * @param string $string Search query to adjust
+     *
+     * @return string
+     */
+    protected function fixTrailingQuestionMarks($string)
+    {
+        if (substr($string, -1) == '?' && substr($string, -2) != '\?') {
+            // Make sure all question marks are properly escaped (first unescape
+            // any that are already escaped to prevent double-escapes, then escape
+            // all of them):
+            $strippedQuery
+                = str_replace('?', '\?', str_replace('\?', '?', $string));
+            $string = "({$string}) OR (" . $strippedQuery . ")";
+        }
+        return $string;
+    }
+
+    /**
      * Return advanced inner search string based on input and handler.
      *
      * @param string        $string  Input search string
@@ -386,17 +413,8 @@ class QueryBuilder implements QueryBuilderInterface
             return $string;
         }
 
-        // If the query ends in a non-escaped question mark, the user may not really
-        // intend to use the question mark as a wildcard -- let's account for that
-        // possibility
-        if (substr($string, -1) == '?' && substr($string, -2) != '\?') {
-            // Make sure all question marks are properly escaped (first unescape
-            // any that are already escaped to prevent double-escapes, then escape
-            // all of them):
-            $strippedQuery
-                = str_replace('?', '\?', str_replace('\?', '?', $string));
-            $string = "({$string}) OR (" . $strippedQuery . ")";
-        }
+        // Account for trailing question marks:
+        $string = $this->fixTrailingQuestionMarks($string);
 
         return $handler
             ? $handler->createAdvancedQueryString($string, false) : $string;
