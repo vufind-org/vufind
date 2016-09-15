@@ -238,7 +238,7 @@ function backgroundLoadTab(tabid) {
     return;
   }
   var newTab = getNewRecordTab(tabid);
-  $('.nav-tabs a.'+tabid).closest('.result,.record').find('.tab-content').append(newTab);
+  $('.nav-tabs a.' + tabid).closest('.result,.record').find('.tab-content').append(newTab);
   return ajaxLoadTab(newTab, tabid, false);
 }
 

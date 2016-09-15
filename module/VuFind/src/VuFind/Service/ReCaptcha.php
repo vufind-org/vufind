@@ -44,7 +44,9 @@ class ReCaptcha extends \LosReCaptcha\Service\ReCaptcha
      * This method uses the public key to fetch a recaptcha form.
      *
      * @param null|string $name Base name for recaptcha form elements
+     *
      * @return string
+     *
      * @throws \ZendService\ReCaptcha\Exception
      */
     public function getHtml($name = null)
@@ -79,6 +81,7 @@ class ReCaptcha extends \LosReCaptcha\Service\ReCaptcha
         foreach ($this->options as $key => $option) {
             $return .= ' data-' . $key . '="' . $option . '"';
         }
+        // @codingStandardsIgnoreStart
         $return .= <<<HTML
 ></div>
 <noscript>
@@ -95,7 +98,7 @@ class ReCaptcha extends \LosReCaptcha\Service\ReCaptcha
 </noscript>
 <script type="text/javascript" src="{$host}.js{$langOption}" async defer></script>
 HTML;
-
+        // @codingStandardsIgnoreEnd
         return $return;
     }
 }
