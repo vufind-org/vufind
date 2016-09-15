@@ -167,13 +167,15 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $mainSection = empty($settings[0]) ? 'MapSelection':$settings[0];
         $config = $this->configLoader->get('searches');
         if (isset($config->$mainSection)) {
-           $entries = $config->$mainSection;
-           if (isset($entries->default_coordinates)) {
-               $this->defaultCoordinates = explode(',', $entries->default_coordinates);
-           }
-           if (isset($entries->height)) {
-               $this->height = $entries->height;
-           }
+            $entries = $config->$mainSection;
+            if (isset($entries->default_coordinates)) {
+                $this->defaultCoordinates = explode(
+                    ',', $entries->default_coordinates
+                );
+            }
+            if (isset($entries->height)) {
+                $this->height = $entries->height;
+            }
         }
     }
     

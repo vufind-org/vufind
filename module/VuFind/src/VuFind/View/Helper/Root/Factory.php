@@ -217,7 +217,7 @@ class Factory
         $coords = isset($config->MapSelection->default_coordinates)
             ? $config->MapSelection->default_coordinates : false;
         return new GeoCoords($enabled, $coords);
-   }
+    }
 
     /**
      * Construct the GoogleAnalytics helper.
