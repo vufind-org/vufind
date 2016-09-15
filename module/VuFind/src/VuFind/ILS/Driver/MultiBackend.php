@@ -1426,7 +1426,7 @@ class MultiBackend extends AbstractBase
     * array or array of arrays
     * @param string $source       Source code
     * @param array  $modifyFields Fields to be modified in the array
-    * @param array  $modifyFields Fields to be ignored during recursive processing
+    * @param array  $ignoreFields Fields to be ignored during recursive processing
     *
     * @return mixed     Modified array or empty/null if that input was
     *                   empty/null
