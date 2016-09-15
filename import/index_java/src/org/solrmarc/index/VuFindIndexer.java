@@ -1575,10 +1575,9 @@ public class VuFindIndexer extends SolrIndexer
             if (hemisphere.equals("W") || hemisphere.equals("S")) {
                 coordinate *= -1;
             }
-                return coordinate;
-            } else {
-                    return null;
+            return coordinate;
         }
+        return null;
     }
 
     /**
