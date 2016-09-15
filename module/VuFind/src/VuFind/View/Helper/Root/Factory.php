@@ -212,14 +212,12 @@ class Factory
     public static function getGeoCoords(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
-        $enabled = isset($config->MapSelection->mapSearch)
-            ? $config->MapSelection->mapSearch : false;
+        $settings = $config->General->default_top_recommend->toArray();
+        $enabled = in_array('MapSelection', $settings); 
         $coords = isset($config->MapSelection->default_coordinates)
             ? $config->MapSelection->default_coordinates : false;
-        $geoField = isset($config->MapSelection->geo_field)
-            ? $config->MapSelection->geo_field : false;
-        return new GeoCoords($enabled, $coords, $geoField);
-    }
+        return new GeoCoords($enabled, $coords);
+   }
 
     /**
      * Construct the GoogleAnalytics helper.
