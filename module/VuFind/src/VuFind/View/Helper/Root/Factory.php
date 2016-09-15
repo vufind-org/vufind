@@ -213,7 +213,7 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
         $settings = $config->General->default_top_recommend->toArray();
-        $enabled = in_array('MapSelection', $settings); 
+        $enabled = in_array('MapSelection', $settings);
         $coords = isset($config->MapSelection->default_coordinates)
             ? $config->MapSelection->default_coordinates : false;
         return new GeoCoords($enabled, $coords);
