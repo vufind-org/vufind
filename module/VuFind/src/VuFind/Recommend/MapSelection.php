@@ -52,7 +52,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      *
      * @var string
      */
-    protected $geoField;
+    protected $geoField = 'bbox_geo';
     
     /**
      * Height of search map pane
@@ -97,11 +97,11 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     protected $bboxSearchCoords = [];
 
     /**
-     * Config options
+     * Configuration loader
      *
-     * @var array
+     * @var \VuFind\Config\PluginManager
      */
-    protected $configOptions = [];
+    protected $configLoader;
 
     /**
      * Solr search loader
@@ -141,12 +141,12 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     /**
      * Constructor
      *
-     * @param array                         $options from searches.ini
-     * @param \VuFind\Search\BackendManager $solr    Search interface
+     * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
+     * @param \VuFind\Search\BackendManager $solr         Search interface
      */
-    public function __construct($options, $solr)
+    public function __construct(\VuFind\Config\PluginManager $configLoader, $solr)
     {
-        $this->configOptions = $options;
+        $this->configLoader = $configLoader;
         $this->solr = $solr;
         $this->queryBuilder = $solr->getQueryBuilder();
         $this->solrConnector = $solr->getConnector();
@@ -163,18 +163,17 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      */
     public function setConfig($settings)
     {
-        $settings = $this->configOptions;
-        if (isset($settings[0])) {
-            $enabled = $settings[0];
-        }
-        if (isset($settings[1])) {
-            $this->defaultCoordinates = explode(',', $settings[1]);
-        }
-        if (isset($settings[2])) {
-            $this->geoField = $settings[2];
-        }
-        if (isset($settings[3])) {
-            $this->height = $settings[3];
+        $settings = explode(':', $settings);
+        $mainSection = empty($settings[0]) ? 'MapSelection':$settings[0];
+        $config = $this->configLoader->get('searches');
+        if (isset($config->$mainSection)) {
+           $entries = $config->$mainSection;
+           if (isset($entries->default_coordinates)) {
+               $this->defaultCoordinates = explode(',', $entries->default_coordinates);
+           }
+           if (isset($entries->height)) {
+               $this->height = $entries->height;
+           }
         }
     }
     
