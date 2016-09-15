@@ -57,10 +57,28 @@ var VuFind = (function VuFind() {
     }
   };
 
+  var _recaptchaResponse;
+  var setCaptchaResponse = function setCaptchaResponse(response) {
+    if (typeof response == 'string') {
+      _recaptchaResponse = response;
+    }
+  };
+  var getCaptchaResponse = function getCaptchaResponse() {
+    if (typeof response == 'string') {
+      var ret = _recaptchaResponse + '';
+      _recaptchaResponse = null;
+      return ret;
+    }
+    return null;
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
     path: path,
+
+    setCaptchaResponse: setCaptchaResponse,
+    getCaptchaResponse: getCaptchaResponse,
 
     addTranslations: addTranslations,
     init: init,
@@ -159,6 +177,9 @@ function phoneNumberFormHandler(numID, regionCode) {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
   }
+}
+function recaptchaCallback(response) {
+  VuFind.setCaptchaResponse(response);
 }
 
 function bulkFormHandler(event, data) {

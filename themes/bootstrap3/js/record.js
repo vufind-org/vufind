@@ -97,11 +97,9 @@ function registerAjaxCommentRecord() {
       source: recordSource
     };
     if (typeof grecaptcha !== 'undefined') {
-      try {
-        data['g-recaptcha-response'] = grecaptcha.getResponse(0);
-      } catch (e) {
-        console.error('Expected errors: placeholder element full and Invalid client ID');
-        console.error(e);
+      var savedResponse = VuFind.getCaptchaResponse();
+      if (savedResponse) {
+        data['g-recaptcha-response'] = savedResponse;
       }
     }
     $.ajax({
