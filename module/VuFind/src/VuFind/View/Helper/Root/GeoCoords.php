@@ -56,7 +56,7 @@ class GeoCoords extends \Zend\View\Helper\AbstractHelper
      *
      * @var string
      */
-    protected $geoField;
+    protected $geoField = 'bbox_geo';
 
     /**
      * Constructor
@@ -65,11 +65,10 @@ class GeoCoords extends \Zend\View\Helper\AbstractHelper
      * @param string $coords   Default coordinates
      * @param string $geoField geoField variable name
      */
-    public function __construct($enabled, $coords, $geoField)
+    public function __construct($enabled, $coords)
     {
         $this->enabled = $enabled;
         $this->coords = $coords;
-        $this->geoField = $geoField;
     }
 
     /**
