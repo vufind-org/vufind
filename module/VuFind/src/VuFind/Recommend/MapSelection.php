@@ -165,7 +165,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     {
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'MapSelection' : $settings[0];
-        $config = $this->configLoader->get('searches');
+        $iniFile = empty($settings[1]) ? 'searches' : $settings[1];
+        $config = $this->configLoader->get($iniFile);
         if (isset($config->$mainSection)) {
             $entries = $config->$mainSection;
             if (isset($entries->default_coordinates)) {
