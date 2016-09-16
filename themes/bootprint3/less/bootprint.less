@@ -3,6 +3,9 @@
 @import "icons";
 @import "search";
 
+@brand-primary: #619144; // a11y overrides @brand-primary in sass
+
+/* --- Bootstrap MODS ---*/
 body {
   background: @brand-primary;
   font-size: 13px
@@ -118,14 +121,14 @@ header .navbar {
     width: 170px;
     margin-top: 5px;
     color: transparent;
-    background-image: url(../../images/vufind_logo.png);
+    background-image: url('@{img-path}/vufind_logo.png');
     background-position: center center;
     background-repeat: no-repeat;
     background-size: contain;
     &:active,
     &:focus,
     &:hover { color: transparent; }
-    &.lang-ar { background-image: url(../../images/vufind_logo_ar.png); }
+    &.lang-ar { background-image: url('@{img-path}/vufind_logo_ar.png'); }
   }
   .navbar-nav > li > a { padding: 12px 6px; }
   .navbar-right { margin-top: 12px; }

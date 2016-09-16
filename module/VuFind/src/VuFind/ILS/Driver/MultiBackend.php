@@ -1044,7 +1044,8 @@ class MultiBackend extends AbstractBase
         if ($driver
             && $this->methodSupported($driver, 'placeILLRequest', compact($details))
         ) {
-            $details = $this->stripIdPrefixes($details, $source, ['id']);
+            // Patron is not stripped so that the correct library can be determined
+            $details = $this->stripIdPrefixes($details, $source, ['id'], ['patron']);
             return $driver->placeILLRequest($details);
         }
         throw new ILSException('No suitable backend driver found');
@@ -1425,12 +1426,13 @@ class MultiBackend extends AbstractBase
     * array or array of arrays
     * @param string $source       Source code
     * @param array  $modifyFields Fields to be modified in the array
+    * @param array  $ignoreFields Fields to be ignored during recursive processing
     *
     * @return mixed     Modified array or empty/null if that input was
     *                   empty/null
     */
     protected function stripIdPrefixes($data, $source,
-        $modifyFields = ['id', 'cat_username']
+        $modifyFields = ['id', 'cat_username'], $ignoreFields = []
     ) {
         if (!isset($data) || empty($data)) {
             return $data;
@@ -1439,6 +1441,9 @@ class MultiBackend extends AbstractBase
 
         foreach ($array as $key => $value) {
             if (is_array($value)) {
+                if (in_array($key, $ignoreFields)) {
+                    continue;
+                }
                 $array[$key] = $this->stripIdPrefixes(
                     $value, $source, $modifyFields
                 );
