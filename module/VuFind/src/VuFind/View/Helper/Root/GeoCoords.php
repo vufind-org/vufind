@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\View\Helper\Root;
+use VuFind\Search\Base\Options;
+
 /**
  * GeoCoords view helper
  *
@@ -61,28 +63,48 @@ class GeoCoords extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param bool   $enabled MapSearch enabled flag
-     * @param string $coords  Default coordinates
+     * @param string $coords Default coordinates
      */
-    public function __construct($enabled, $coords)
+    public function __construct($coords)
     {
-        $this->enabled = $enabled;
         $this->coords = $coords;
+    }
+
+    /**
+     * Check if the relevant recommendation module is enabled; if not, there is no
+     * point in generating a search link. Note that right now we are assuming it is
+     * set up as a default top recommendation; this may need to be made more
+     * flexible in future to account for more use cases.
+     *
+     * @param array $settings Recommendation settings
+     *
+     * @return bool
+     */
+    protected function recommendationEnabled($settings)
+    {
+        if (isset($settings['top'])) {
+            foreach ($settings['top'] as $setting) {
+                $parts = explode(':', $setting);
+                if (strtolower($parts[0]) === 'mapselection') {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
      * Get search URL if geo search is enabled for the specified search class ID,
      * false if disabled.
      *
-     * @param string $source Search class ID
+     * @param Options $options Search options
      *
      * @return string|bool
      */
-    public function getSearchUrl($source)
+    public function getSearchUrl(Options $options)
     {
-        // Currently, only Solr is supported; we may eventually need a more
-        // robust mechanism here.
-        if (!$this->enabled || strtolower($source) !== 'solr') {
+        // If the relevant module is disabled, bail out now:
+        if (!$this->recommendationEnabled($options->getRecommendationSettings())) {
             return false;
         }
         $urlHelper = $this->getView()->plugin('url');

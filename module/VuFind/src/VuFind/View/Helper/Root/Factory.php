@@ -212,11 +212,9 @@ class Factory
     public static function getGeoCoords(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
-        $settings = $config->General->default_top_recommend->toArray();
-        $enabled = in_array('MapSelection', $settings);
         $coords = isset($config->MapSelection->default_coordinates)
             ? $config->MapSelection->default_coordinates : false;
-        return new GeoCoords($enabled, $coords);
+        return new GeoCoords($coords);
     }
 
     /**
