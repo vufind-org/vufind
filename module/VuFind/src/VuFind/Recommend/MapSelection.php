@@ -563,7 +563,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                 }
             }
         }
-        return $centerData; 
+        return $centerData;
     }
 
     /**
