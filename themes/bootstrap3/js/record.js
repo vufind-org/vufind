@@ -96,9 +96,11 @@ function registerAjaxCommentRecord() {
       id: id,
       source: recordSource
     };
-    var recaptcha = $(form).find('.g-recaptcha');
-    if (recaptcha.length > 0) {
-      data['g-recaptcha-response'] = grecaptcha.getResponse(recaptcha.data('captchaId'));
+    if (grecaptcha) {
+      var recaptcha = $(form).find('.g-recaptcha');
+      if (recaptcha.length > 0) {
+        data['g-recaptcha-response'] = grecaptcha.getResponse(recaptcha.data('captchaId'));
+      }
     }
     $.ajax({
       type: 'POST',
