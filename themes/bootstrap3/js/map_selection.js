@@ -160,7 +160,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
               $(element).popover('hide');
             });
           });
-          $(element).data('bs.popover').options.content=pcontent;
+          $(element).data('bs.popover').options.content = pcontent;
           $(element).popover('show');
         }
       } else {

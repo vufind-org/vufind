@@ -143,7 +143,7 @@ function loadMapTab(mapData) {
               $(element).popover('destroy');
             });
           });
-          $(element).data('bs.popover').options.content=popupfeature.get('name');
+          $(element).data('bs.popover').options.content = popupfeature.get('name');
           $(element).popover('show');
         } else {
           $(element).popover('destroy');
