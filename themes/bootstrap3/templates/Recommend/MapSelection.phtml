@@ -10,6 +10,7 @@
   $urlpath = $this->url('search-results');
   $coordinates = $this->recommend->getSelectedCoordinates();
   $showSelection = true;
+  $popupTitle = $this->transEsc('map_results_label');
   if ($coordinates == null) {
     $coordinates = $this->recommend->getDefaultCoordinates();
     $showSelection = false;
@@ -18,7 +19,7 @@
   $searchParams = $this->recommend->getSearchParams();
   $params = array(json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
     json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
-    json_encode($resultsCoords));
+    json_encode($resultsCoords), json_encode($popupTitle));
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapSelection(" . $jsParams . ");";
   $addSearchOption = <<<EOF

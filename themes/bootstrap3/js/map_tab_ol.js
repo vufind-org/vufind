@@ -1,8 +1,9 @@
 /*global ol */
 /*exported loadMapTab */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
-function loadMapTab(mapData) {
+function loadMapTab(mapData, popupTitle) {
   var init = true;
+  var popupTitle = popupTitle+'<button class="close">&times;</button>';
   var srcProj = 'EPSG:4326';
   var dstProj = 'EPSG:900913';
   var osm = new ol.layer.Tile({source: new ol.source.OSM()});
@@ -134,7 +135,7 @@ function loadMapTab(mapData) {
             'container': 'body',
             'animation': false,
             'html': true,
-            'title': 'Record information:<button class="close">&times;</button>'
+            'title': popupTitle
           }).on('shown.bs.popover', function closePopup(e) {
             // 'aria-describedby' is the id of the current popover
             var current_popover = '#' + $(e.target).attr('aria-describedby');
