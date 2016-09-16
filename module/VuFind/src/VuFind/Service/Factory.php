@@ -540,7 +540,6 @@ class Factory
         }
         $translator = $sm->get('VuFind\Translator');
         $recaptcha->setOption('lang', $translator->getLocale());
-        $recaptcha->setOption('callback', 'recaptchaCallback');
 
         $httpClient = $sm->get('VuFind\Http')->createClient();
         $recaptcha->setHttpClient($httpClient);

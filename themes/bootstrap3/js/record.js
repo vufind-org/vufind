@@ -96,11 +96,9 @@ function registerAjaxCommentRecord() {
       id: id,
       source: recordSource
     };
-    if (typeof grecaptcha !== 'undefined') {
-      var savedResponse = VuFind.getCaptchaResponse();
-      if (savedResponse) {
-        data['g-recaptcha-response'] = savedResponse;
-      }
+    var recaptcha = $(form).find('.g-recaptcha');
+    if (recaptcha.length > 0) {
+      data['g-recaptcha-response'] = grecaptcha.getResponse(recaptcha.data('captchaId'));
     }
     $.ajax({
       type: 'POST',
