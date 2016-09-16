@@ -60,7 +60,15 @@ class ReCaptcha extends \LosReCaptcha\Service\ReCaptcha
             $div .= ' data-' . $key . '="' . $option . '"';
         }
         $div .= '>';
-        $regex = '/<div[^>]*id=[\'"]recaptcha_widget[\'"][^>]*>/';
-        return preg_replace($regex, $div, $html);
+        $divregex = '/<div[^>]*id=[\'"]recaptcha_widget[\'"][^>]*>/';
+
+        $urlregex = '/api.js\??([^"])/';
+        $explictRender = 'api.js?onload=recaptchaOnLoad&render=explicit&$1';
+
+        return preg_replace(
+            [$divregex, $urlregex],
+            [$div, $explictRender],
+            $html
+        );
     }
 }

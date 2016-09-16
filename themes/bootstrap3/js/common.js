@@ -178,6 +178,12 @@ function phoneNumberFormHandler(numID, regionCode) {
     $(phoneInput).siblings('.help-block.with-errors').html('');
   }
 }
+function recaptchaOnLoad() {
+  var captchas = $('.g-recaptcha:empty');
+  for (var i = 0; i < captchas.length; i++) {
+    captchas[i].dataset.captchaId = grecaptcha.render(captchas[i], captchas[i].dataset);
+  }
+}
 function recaptchaCallback(response) {
   VuFind.setCaptchaResponse(response);
 }
