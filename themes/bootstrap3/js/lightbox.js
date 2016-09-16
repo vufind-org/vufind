@@ -228,6 +228,14 @@ VuFind.register('lightbox', function Lightbox() {
     // Gather data
     var form = event.target;
     var data = $(form).serializeArray();
+    // Check for recaptcha
+    if (grecaptcha) {
+      var recaptcha = $(form).find('.g-recaptcha');
+      if (recaptcha.length > 0) {
+        data.push({ name: 'g-recaptcha-response', value: grecaptcha.getResponse(recaptcha.data('captchaId')) });
+      }
+    }
+    // Force layout
     data.push({ name: 'layout', value: 'lightbox' }); // Return in lightbox, please
     // Add submit button information
     var submit = $(_clickedButton);
