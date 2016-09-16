@@ -476,7 +476,6 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         return $centerCoord;
     }
 
-
     /**
      * Create array of geo features that are in search box
      *
