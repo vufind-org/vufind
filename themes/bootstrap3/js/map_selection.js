@@ -141,7 +141,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
           for (var j = 0; j < cFeatures.length; j++) {
             var cFeatureName = cFeatures[j].get('name');
             var cFeatureId = cFeatures[j].get('id');
-            var cFeatureContent = '<article>' +
+            var cFeatureContent = '<article class="geoItem">' +
               cFeatureName.link(homeURL + 'Record/' + cFeatureId) + '</article>';
             pcontent += cFeatureContent;
           }
