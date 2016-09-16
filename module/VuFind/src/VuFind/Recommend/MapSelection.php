@@ -496,7 +496,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $recTitle = $title;
         list($bboxW, $bboxE, $bboxN, $bboxS) = $bboxCoords;
         $centerData = [];
-        $match = []; 
+        $match = [];
         if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $recCoord, $match)) {
             // Convert coordinates to 360 degree grid
             $floats = array_map('floatval', $match);
@@ -563,7 +563,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
                 }
             }
         }
-        return $centerData;     
+        return $centerData; 
     }
 
     /**
