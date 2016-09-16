@@ -4,7 +4,7 @@
 
 function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams, showSelection, resultsCoords, popupTitle) {
   var init = true;
-  var popupTitle = popupTitle+'<button class="close">&times;</button>';
+  var pTitle = popupTitle + '<button class="close">&times;</button>';
   var srcProj = 'EPSG:4326';
   var dstProj = 'EPSG:900913';
   var osm = new ol.layer.Tile({source: new ol.source.OSM()});
@@ -152,7 +152,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
             'container': 'body',
             'animation': false,
             'html': true,
-            'title': popupTitle
+            'title': pTitle
           }).on('shown.bs.popover', function closePopup(e) {
             // 'aria-describedby' is the id of the current popover
             var current_popover = '#' + $(e.target).attr('aria-describedby');
