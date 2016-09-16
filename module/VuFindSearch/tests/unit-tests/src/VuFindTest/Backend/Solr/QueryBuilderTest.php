@@ -130,6 +130,34 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test generation with a query handler with edismax
+     *
+     * @return void
+     */
+    public function testQueryHandlerWithEdismax()
+    {
+        // Set up an array of expected inputs and outputs:
+        // @codingStandardsIgnoreStart
+        $tests = [
+            ['this?', '(this?) OR (this\?)'],// trailing question mark
+        ];
+        // @codingStandardsIgnoreEnd
+
+        $qb = new QueryBuilder(
+            [
+                'test' => ['DismaxHandler' => 'edismax', 'DismaxFields' => ['foo']]
+            ]
+        );
+        foreach ($tests as $test) {
+            list($input, $output) = $test;
+            $q = new Query($input, 'test');
+            $response = $qb->build($q);
+            $processedQ = $response->get('q');
+            $this->assertEquals($output, $processedQ[0]);
+        }
+    }
+
+    /**
      * Test that the appropriate handler gets called for a quoted search when exact
      * settings are enabled.
      *

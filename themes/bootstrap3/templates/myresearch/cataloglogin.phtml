@@ -9,13 +9,7 @@
     $offlineMode = $this->ils()->getOfflineMode();
 ?>
 <? if ($offlineMode == "ils-offline"): ?>
-  <div class="alert alert-warning">
-    <h2><?=$this->transEsc('ils_offline_title')?></h2>
-    <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
-    <p><?=$this->transEsc('ils_offline_login_message')?></p>
-    <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-    <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
-  </div>
+  <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
 <? else: ?>
   <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
   <?=$this->flashmessages()?>

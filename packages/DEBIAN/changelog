@@ -1,3 +1,9 @@
+vufind 3.1 distribution; urgency=low
+
+  * VuFind 3.1 release (see http://vufind.org/wiki/changelog for details) 
+
+ -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 26 Sep 2016 10:30:43 UTC
+
 vufind 3.0.3 distribution; urgency=low
 
   * VuFind 3.0.3 release (see http://vufind.org/wiki/changelog for details) 
