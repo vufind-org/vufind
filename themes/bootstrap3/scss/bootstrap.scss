@@ -1,10 +1,10 @@
-$fa-font-path: "fonts";
-$img-path: "../images";
-
 @import "vendor/bootstrap";
+$fa-font-path: "fonts";
 @import "vendor/font-awesome/font-awesome";
 @import "vendor/bootstrap-accessibility/bootstrap-accessibility";
 @import "vendor/a11y";
+
+$img-path: "../images";
 
 @import "components/advanced-search";
 @import "components/alphabrowse";

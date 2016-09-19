@@ -100,8 +100,13 @@ module.exports = function(grunt) {
               order: 4
             },
             {
-              pattern: '$fa-font-path: "../../../fonts" !default;',
-              replacement: '$fa-font-path: "fonts";',
+              pattern: '$fa-font-path: "../../../fonts" !default;\n',
+              replacement: '',
+              order: 4
+            },
+            {
+              pattern: '@import "vendor/font-awesome/font-awesome";',
+              replacement: '$fa-font-path: "fonts";\n@import "vendor/font-awesome/font-awesome";',
               order: 4
             },
             {

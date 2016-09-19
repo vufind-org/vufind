@@ -69,6 +69,27 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Given a colon-delimited configuration string, break it apart, making sure
+     * that URLs in the first position are not inappropriately split.
+     *
+     * @param string $current Setting to parse
+     *
+     * @return array
+     */
+    protected function parseSetting($current)
+    {
+        $parts = explode(':', $current);
+        // Special case: don't explode URLs:
+        if (($parts[0] === 'http' || $parts[0] === 'https')
+            && '//' === substr($parts[1], 0, 2)
+        ) {
+            $protocol = array_shift($parts);
+            $parts[0] = $protocol . ':' . $parts[0];
+        }
+        return $parts;
+    }
+
+    /**
      * Add meta tags to header.
      *
      * @return void
@@ -101,7 +122,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
-            $parts = explode(':', $current);
+            $parts = $this->parseSetting($current);
             $headLink()->prependStylesheet(
                 trim($parts[0]),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
@@ -112,7 +133,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // Compile and load LESS (make sure we prepend them in the appropriate order
         // theme resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getLessCss()) as $current) {
-            $parts = explode(':', $current);
+            $parts = $this->parseSetting($current);
             $headLink()->prependStylesheet(
                 $headLink()->addLessStylesheet(trim($parts[0])),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
@@ -141,7 +162,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // Load Javascript (same ordering considerations as CSS, above):
         $headScript = $this->getView()->plugin('headscript');
         foreach (array_reverse($this->container->getJs()) as $current) {
-            $parts =  explode(':', $current);
+            $parts =  $this->parseSetting($current);
             $headScript()->prependFile(
                 trim($parts[0]),
                 'text/javascript',
