@@ -65,7 +65,7 @@ class NatLibFi extends \VuFind\Content\AbstractCover
             return $ids['url'];
         } else if (isset($ids['isbn'])) {
             $isbn = $ids['isbn']->get13();
-            return 'http://siilo-kk.lib.helsinki.fi/getImage.php?query=' . $isbn
+            return 'http://s1.doria.fi/getImage.php?query=' . $isbn
                 . '&return_error=true';
         }
         return false;

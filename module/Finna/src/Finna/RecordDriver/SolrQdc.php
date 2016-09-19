@@ -122,7 +122,7 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
     public function getDescriptionURL()
     {
         if ($isbn = $this->getCleanISBN()) {
-            return 'http://siilo-kk.lib.helsinki.fi/getText.php?query=' . $isbn;
+            return 'http://s1.doria.fi/getText.php?query=' . $isbn;
         }
         return false;
     }

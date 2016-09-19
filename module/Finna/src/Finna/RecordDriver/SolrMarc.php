@@ -337,7 +337,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         }
 
         if ($isbn = $this->getCleanISBN()) {
-            return 'http://siilo-kk.lib.helsinki.fi/getText.php?query=' . $isbn;
+            return 'http://s1.doria.fi/getText.php?query=' . $isbn;
         }
         return false;
     }
@@ -1081,7 +1081,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             }
             $title .= $qualifyingInfo->getData();
         }
-        
+
         $linkTypeSetting = isset($this->mainConfig->Record->marc_links_link_types)
             ? $this->mainConfig->Record->marc_links_link_types
             : 'id,oclc,dlc,isbn,issn,title';
