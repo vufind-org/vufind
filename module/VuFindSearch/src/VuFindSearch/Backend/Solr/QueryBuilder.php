@@ -391,8 +391,11 @@ class QueryBuilder implements QueryBuilderInterface
             }
             return $s;
         };
-
-        $string = preg_replace_callback('/([^\s]+\?)(\s|$)/', $callback, $string);
+        // Use a lookahead to skip matches found within quoted phrases.
+        $lookahead = '(?=(?:[^\"]*+\"[^\"]*+\")*+[^\"]*+$)';
+        $string = preg_replace_callback(
+            '/([^\s]+\?)(\s|$)' . $lookahead . '/', $callback, $string
+        );
         return rtrim($string);
     }
 
