@@ -139,7 +139,12 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         // Set up an array of expected inputs and outputs:
         // @codingStandardsIgnoreStart
         $tests = [
-            ['this?', '(this?) OR (this\?)'],// trailing question mark
+            ['this?', '(this?) OR (this\?)'], // trailing question mark
+            ['this? that', '((this?) OR (this\?)) that'], // question mark after first word
+            ['start this? that', 'start ((this?) OR (this\?)) that'], // question mark after the middle word
+            ['start AND this? AND that', 'start AND ((this?) OR (this\?)) AND that'], // question mark with boolean operators
+            ['start t?his that', 'start t?his that'], // question mark as a wildcard in the middle of a word
+            ['start? this?', '((start?) OR (start\?)) ((this?) OR (this\?))']
         ];
         // @codingStandardsIgnoreEnd
 
