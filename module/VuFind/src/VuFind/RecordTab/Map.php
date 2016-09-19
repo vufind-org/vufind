@@ -163,11 +163,11 @@ class Map extends AbstractBase
     public function getGoogleMapMarker()
     {
         $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
-        $mapDisplayLabels = $this->getMapLabels();
         if (empty($longLat)) {
             return json_encode([]);
         }
         $markers = [];
+        $mapDisplayLabels = $this->getMapLabels();
         foreach ($longLat as $key => $value) {
             $coordval = explode(',', $value);
             $label = isset($mapDisplayLabels[$key])
