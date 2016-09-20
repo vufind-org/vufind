@@ -2253,6 +2253,53 @@ public class VuFindIndexer extends SolrIndexer
      * @param relatorConfig        The setting in author-classification.ini which
      * defines which relator terms are acceptable (or a colon-delimited list)
      * @return List result
+     */
+    public List<String> getAuthorsFilteredByRelator(Record record, String tagList,
+        String acceptWithoutRelator, String relatorConfig
+    ) {
+        // default firstOnly to false!
+        return getAuthorsFilteredByRelator(
+            record, tagList, acceptWithoutRelator, relatorConfig,
+            acceptWithoutRelator, "false", false
+        );
+    }
+
+    /**
+     * Filter values retrieved using tagList to include only those whose relator
+     * values are acceptable. Used for separating different types of authors.
+     *
+     * @param record               The record (fed in automatically)
+     * @param tagList              The field specification to read
+     * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+     * be accepted even if no relator subfield is defined
+     * @param relatorConfig        The setting in author-classification.ini which
+     * defines which relator terms are acceptable (or a colon-delimited list)
+     * @return List result
+     * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+     * should be indexed even if they are not listed in author-classification.ini.
+     */
+    public List<String> getAuthorsFilteredByRelator(Record record, String tagList,
+        String acceptWithoutRelator, String relatorConfig,
+        String acceptUnknownRelators
+    ) {
+        // default firstOnly to false!
+        return getAuthorsFilteredByRelator(
+            record, tagList, acceptWithoutRelator, relatorConfig,
+            acceptUnknownRelators, "false", false
+        );
+    }
+
+    /**
+     * Filter values retrieved using tagList to include only those whose relator
+     * values are acceptable. Used for separating different types of authors.
+     *
+     * @param record               The record (fed in automatically)
+     * @param tagList              The field specification to read
+     * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+     * be accepted even if no relator subfield is defined
+     * @param relatorConfig        The setting in author-classification.ini which
+     * defines which relator terms are acceptable (or a colon-delimited list)
+     * @return List result
      * @param acceptUnknownRelators Colon-delimited list of tags whose relators
      * should be indexed even if they are not listed in author-classification.ini.
      * @param indexRawRelators      Set to "true" to index relators raw, as found
@@ -2311,6 +2358,51 @@ public class VuFindIndexer extends SolrIndexer
             return s;
         }
         return null;
+    }
+
+    /**
+     * Filter values retrieved using tagList to include only those whose relator
+     * values are acceptable. Used for separating different types of authors.
+     *
+     * @param record                The record (fed in automatically)
+     * @param tagList               The field specification to read
+     * @param acceptWithoutRelator  Colon-delimited list of tags whose values should
+     * be accepted even if no relator subfield is defined
+     * @param relatorConfig         The setting in author-classification.ini which
+     * defines which relator terms  are acceptable (or a colon-delimited list)
+     * @return String
+     */
+    public String getFirstAuthorFilteredByRelator(Record record, String tagList,
+        String acceptWithoutRelator, String relatorConfig
+    ) {
+        return getFirstAuthorFilteredByRelator(
+            record, tagList, acceptWithoutRelator, relatorConfig,
+            acceptWithoutRelator, "false"
+        );
+    }
+
+    /**
+     * Filter values retrieved using tagList to include only those whose relator
+     * values are acceptable. Used for separating different types of authors.
+     *
+     * @param record                The record (fed in automatically)
+     * @param tagList               The field specification to read
+     * @param acceptWithoutRelator  Colon-delimited list of tags whose values should
+     * be accepted even if no relator subfield is defined
+     * @param relatorConfig         The setting in author-classification.ini which
+     * defines which relator terms  are acceptable (or a colon-delimited list)
+     * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+     * should be indexed even if they are not listed in author-classification.ini.
+     * @return String
+     */
+    public String getFirstAuthorFilteredByRelator(Record record, String tagList,
+        String acceptWithoutRelator, String relatorConfig,
+        String acceptUnknownRelators
+    ) {
+        return getFirstAuthorFilteredByRelator(
+            record, tagList, acceptWithoutRelator, relatorConfig,
+            acceptUnknownRelators, "false"
+        );
     }
 
     /**
@@ -2377,6 +2469,55 @@ public class VuFindIndexer extends SolrIndexer
         return getRelatorsFilteredByRelator(
             record, tagList, acceptWithoutRelator, relatorConfig,
             acceptUnknownRelators, indexRawRelators, false
+        );
+    }
+
+    /**
+     * Filter values retrieved using tagList to include only those whose relator
+     * values are acceptable. Used for saving relators of authors separated by different
+     * types.
+     *
+     * @param record               The record (fed in automatically)
+     * @param tagList              The field specification to read
+     * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+     * be accepted even if no relator subfield is defined
+     * @param relatorConfig        The setting in author-classification.ini which
+     * defines which relator terms are acceptable (or a colon-delimited list)
+     * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+     * should be indexed even if they are not listed in author-classification.ini.
+     * @return List result
+     */
+    public List getRelatorsFilteredByRelator(Record record, String tagList,
+        String acceptWithoutRelator, String relatorConfig,
+        String acceptUnknownRelators
+    ) {
+        // default firstOnly to false!
+        return getRelatorsFilteredByRelator(
+            record, tagList, acceptWithoutRelator, relatorConfig,
+            acceptUnknownRelators, "false", false
+        );
+    }
+
+    /**
+     * Filter values retrieved using tagList to include only those whose relator
+     * values are acceptable. Used for saving relators of authors separated by different
+     * types.
+     *
+     * @param record               The record (fed in automatically)
+     * @param tagList              The field specification to read
+     * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+     * be accepted even if no relator subfield is defined
+     * @param relatorConfig        The setting in author-classification.ini which
+     * defines which relator terms are acceptable (or a colon-delimited list)
+     * @return List result
+     */
+    public List getRelatorsFilteredByRelator(Record record, String tagList,
+        String acceptWithoutRelator, String relatorConfig
+    ) {
+        // default firstOnly to false!
+        return getRelatorsFilteredByRelator(
+            record, tagList, acceptWithoutRelator, relatorConfig,
+            acceptWithoutRelator, "false", false
         );
     }
 
@@ -2478,7 +2619,6 @@ public class VuFindIndexer extends SolrIndexer
      * should be indexed even if they are not listed in author-classification.ini.
      * @param indexRawRelators      Set to "true" to index relators raw, as found
      * in the MARC or "false" to index mapped versions.
-     * @param firstOnly            Return first result only?
      * @return List result
      */
     public List<String> getAuthorInitialsFilteredByRelator(Record record,
@@ -2496,6 +2636,50 @@ public class VuFindIndexer extends SolrIndexer
         return result;
     }
 
+    /**
+     * Filter values retrieved using tagList to include only those whose relator
+     * values are acceptable. Used for separating different types of authors.
+     *
+     * @param record               The record (fed in automatically)
+     * @param tagList              The field specification to read
+     * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+     * be accepted even if no relator subfield is defined
+     * @param relatorConfig        The setting in author-classification.ini which
+     * defines which relator terms are acceptable (or a colon-delimited list)
+     * @return List result
+     */
+    public List<String> getAuthorInitialsFilteredByRelator(Record record,
+        String tagList, String acceptWithoutRelator, String relatorConfig
+    ) {
+        return getAuthorInitialsFilteredByRelator(
+            record, tagList, acceptWithoutRelator, relatorConfig,
+            acceptWithoutRelator, "false"
+        );
+    }
+
+    /**
+     * Filter values retrieved using tagList to include only those whose relator
+     * values are acceptable. Used for separating different types of authors.
+     *
+     * @param record               The record (fed in automatically)
+     * @param tagList              The field specification to read
+     * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+     * be accepted even if no relator subfield is defined
+     * @param relatorConfig        The setting in author-classification.ini which
+     * defines which relator terms are acceptable (or a colon-delimited list)
+     * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+     * should be indexed even if they are not listed in author-classification.ini.
+     * @return List result
+     */
+    public List<String> getAuthorInitialsFilteredByRelator(Record record,
+        String tagList, String acceptWithoutRelator, String relatorConfig,
+        String acceptUnknownRelators
+    ) {
+        return getAuthorInitialsFilteredByRelator(
+            record, tagList, acceptWithoutRelator, relatorConfig,
+            acceptUnknownRelators, "false"
+        );
+    }
     /**
      * Takes a name and cuts it into initials
      * @param authorName e.g. Yeats, William Butler
