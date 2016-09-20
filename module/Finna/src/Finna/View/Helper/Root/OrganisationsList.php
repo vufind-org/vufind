@@ -65,17 +65,27 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
     protected $resultsManager;
 
     /**
+     * Organisation info service
+     *
+     * @var \Finna\OrganisationInfo\OrganisationInfo
+     */
+    protected $organisationInfo;
+
+    /**
      * Constructor
      *
-     * @param CacheManager            $cache          cache manager
-     * @param HierarchicalFacetHelper $facetHelper    facet helper
-     * @param PluginManager           $resultsManager search result manager
+     * @param CacheManager            $cache            cache manager
+     * @param HierarchicalFacetHelper $facetHelper      facet helper
+     * @param PluginManager           $resultsManager   search result manager
+     * @param OrganisationInfo        $organisationInfo organisation info service
      */
-    public function __construct($cache, $facetHelper, $resultsManager)
-    {
+    public function __construct(
+        $cache, $facetHelper, $resultsManager, $organisationInfo
+    ) {
         $this->cache = $cache;
         $this->facetHelper = $facetHelper;
         $this->resultsManager = $resultsManager;
+        $this->organisationInfo = $organisationInfo;
     }
 
     /**
@@ -115,9 +125,15 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
                                 ->formatDisplayText($displayText)
                                 ->getDisplayString();
                         }
+                        $organisationInfoId
+                            = $this->organisationInfo->getOrganisationInfoId(
+                                $item['value']
+                            );
+
                         $list[$sector][] = [
                             'name' => $displayText,
                             'link' => $link,
+                            'organisation' => $organisationInfoId
                         ];
                     }
                     usort(

@@ -169,7 +169,7 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getOrganisationInfo(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')
-            ->get('organisationInfo');
+            ->get('OrganisationInfo');
         return new OrganisationInfo($config);
     }
 
@@ -211,8 +211,9 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     {
         $locator = $sm->getServiceLocator();
         $menuConfig = $locator->get('VuFind\Config')->get('navibar');
+        $organisationInfo = $locator->get('Finna\OrganisationInfo');
 
-        return new Navibar($menuConfig);
+        return new Navibar($menuConfig, $organisationInfo);
     }
 
     /**
@@ -488,8 +489,10 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         $cache = $locator->get('VuFind\CacheManager')->getCache('object');
         $facetHelper = $locator->get('VuFind\HierarchicalFacetHelper');
         $resultsManager = $locator->get('VuFind\SearchResultsPluginManager');
-
-        return new OrganisationsList($cache, $facetHelper, $resultsManager);
+        $organisationInfo = $locator->get('Finna\OrganisationInfo');
+        return new OrganisationsList(
+            $cache, $facetHelper, $resultsManager, $organisationInfo
+        );
     }
 
     /**

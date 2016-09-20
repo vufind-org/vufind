@@ -163,6 +163,7 @@ $config = [
             'metalib' => 'Finna\Controller\MetaLibController',
             'metalibrecord' => 'Finna\Controller\MetaLibrecordController',
             'my-research' => 'Finna\Controller\MyResearchController',
+            'organisationInfo' => 'Finna\Controller\OrganisationInfoController',
             'pci' => 'Finna\Controller\PCIController',
             'primo' => 'Finna\Controller\PrimoController',
             'primorecord' => 'Finna\Controller\PrimorecordController',
@@ -419,6 +420,7 @@ $staticRoutes = [
     'Browse/Database', 'Browse/Journal',
     'LocationService/Modal',
     'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
+    'OrganisationInfo/Home',
     'PCI/Home', 'PCI/Search', 'PCI/Record'
 ];
 

@@ -5,15 +5,15 @@ finna.autocomplete = (function() {
 
     var setupAutocomplete = function () {
         $('.searchForm').on('submit', function() {
-            if ($('.autocomplete-finna').autocomplete.element !== false) {
-                $('.autocomplete-finna').autocomplete.element.hide();
+            if ($('.autocompleteFinna-finna').autocompleteFinna.element !== false) {
+                $('.autocompleteFinna-finna').autocompleteFinna.element.hide();
             }
         });
 
         // Search autocomplete
         $('.autocomplete-finna').each(function(i, op) {
             var searcher = extractClassParams(op);
-            $(op).autocomplete({
+            $(op).autocompleteFinna({
                 loadingString: VuFind.translate('loading')+'...',
                 suggestions: searcher['suggestions'] != '0',
                 handler: function(query, cb) {
@@ -65,7 +65,7 @@ finna.autocomplete = (function() {
                     if ('tab' in searcher) {
                         data.tab = searcher['tab'];
                     }
-                    $.fn.autocomplete.ajax({
+                    $.fn.autocompleteFinna.ajax({
                         url: VuFind.path + '/AJAX/JSON',
                         data: data,
                         dataType:'json',

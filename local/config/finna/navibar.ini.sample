@@ -33,6 +33,7 @@ history = 'search-history'
 
 [about_us]
 about_us = 'content-about'
+organisation = 'organisationinfo-home'
 what_is_finna = 'content-about_finna'
 
 [help]

@@ -632,6 +632,73 @@ class AjaxController extends \VuFind\Controller\AjaxController
             return $this->output('Error reading feed', self::STATUS_ERROR, 400);
         }
 
+        return $this->output($this->formatFeed($config, $feed), self::STATUS_OK);
+    }
+
+    /**
+     * Return organisation page feed content and settings in JSON format.
+     *
+     * @return mixed
+     */
+    public function getOrganisationPageFeedAjax()
+    {
+        if (null === ($id = $this->params()->fromQuery('id'))) {
+            return $this->handleError('getOrganisationPageFeed: missing feed id');
+        }
+
+        if (null === ($url = $this->params()->fromQuery('url'))) {
+            return $this->handleError('getOrganisationPageFeed: missing feed url');
+        }
+
+        $url = urldecode($url);
+        $feedService = $this->getServiceLocator()->get('Finna\Feed');
+        try {
+            $config = $this->getServiceLocator()->get('VuFind\Config')
+                ->get('rss-organisation-page');
+            $feedConfig = ['url' => $url];
+
+            if (isset($config[$id])) {
+                $feedConfig['result'] = $config[$id]->toArray();
+            } else {
+                $feedConfig['result'] = ['items' => 5];
+            }
+            $feedConfig['result']['type'] = 'list';
+            $feedConfig['result']['active'] = 1;
+
+            $feed
+                = $feedService->readFeedFromUrl(
+                    $url,
+                    $feedConfig,
+                    $this->url(), $this->getServerUrl('home')
+                );
+        } catch (\Exception $e) {
+            return $this->handleError(
+                "getOrganisationPageFeed: error reading feed from url: {$url}",
+                $e->getMessage()
+            );
+        }
+
+        if (!$feed) {
+            return $this->handleError(
+                "getOrganisationPageFeed: error reading feed from url: {$url}"
+            );
+        }
+
+        return $this->output($this->formatFeed($config, $feed), self::STATUS_OK);
+    }
+
+    /**
+     * Utility function for formatting a RSS feed.
+     *
+     * @param VuFind\Config $config Feed configuration
+     * @param array         $feed   Feed data
+     *
+     * @return array Array with keys:
+     *   html (string)    Rendered feed content
+     *   settings (array) Feed settings
+     */
+    protected function formatFeed($config, $feed)
+    {
         $channel = $feed['channel'];
         $items = $feed['items'];
         $config = $feed['config'];
@@ -716,8 +783,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
             }
         }
 
-        $res = ['html' => $html, 'settings' => $settings];
-        return $this->output($res, self::STATUS_OK);
+        return ['html' => $html, 'settings' => $settings];
     }
 
     /**
@@ -872,30 +938,58 @@ class AjaxController extends \VuFind\Controller\AjaxController
     public function getOrganisationInfoAjax()
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        if (!$consortium = $this->params()->fromQuery('consortium')) {
-            return $this->output('Missing consortium', self::STATUS_ERROR, 400);
+        if (null === ($parent = $this->params()->fromQuery('parent'))) {
+            return $this->handleError('getOrganisationInfo: missing parent');
         }
 
         $params = $this->params()->fromQuery('params');
         $session = new SessionContainer('OrganisationInfo');
-        if (isset($params['id'])) {
-            $session->id = $params['id'];
-        } else if (isset($session->id)) {
-            $params['id'] = $session->id;
+        $action = $params['action'];
+        $buildings = isset($params['buildings'])
+            ? explode(',', $params['buildings']) : null;
+
+        $key = $parent;
+        if ($action == 'details') {
+            if (!isset($params['id'])) {
+                return $this->handleError('getOrganisationInfo: missing id');
+            }
+            if (isset($params['id'])) {
+                $id = $params['id'];
+                $session[$key] = $params['id'];
+            }
+        }
+
+        if (!isset($params['id']) && isset($session[$key])) {
+            $params['id'] = $session[$key];
+        }
+
+        if ($action == 'lookup') {
+            $params['link'] = $this->params()->fromQuery('link') === '1';
+        }
+
+        $lang = $this->getServiceLocator()->get('VuFind\Translator')->getLocale();
+        $map = ['en-gb' => 'en'];
+
+        if (isset($map[$lang])) {
+            $lang = $map[$lang];
+        }
+        if (!in_array($lang, ['fi', 'sv', 'en'])) {
+            $lang = 'fi';
         }
 
         $service = $this->getServiceLocator()->get('Finna\OrganisationInfo');
         try {
-            $result = $service->query($consortium, $params);
+            $response = $service->query($parent, $params, $buildings);
         } catch (\Exception $e) {
-            return $this->output(
-                "Error reading organisation info (consortium $consortium)",
-                self::STATUS_ERROR, 400
+            return $this->handleError(
+                'getOrganisationInfo: '
+                . "error reading organisation info (parent $parent)",
+                $e->getMessage()
             );
         }
 
         $this->outputMode = 'json';
-        return $this->output($result, self::STATUS_OK);
+        return $this->output($response, self::STATUS_OK);
     }
 
     /**
@@ -1504,5 +1598,24 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         return $facetList;
+    }
+
+    /**
+     * Return an error response in JSON format and log the error message.
+     *
+     * @param string $outputMsg  Message to include in the JSON response.
+     * @param string $logMsg     Message to output to the error log.
+     * @param int    $httpStatus HTTPs status of the JSOn response.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function handleError($outputMsg, $logMsg, $httpStatus = 400)
+    {
+        $this->setLogger($this->getServiceLocator()->get('VuFind\Logger'));
+        $this->logError(
+            $outputMsg . ($logMsg ? " ({$logMsg})" : null)
+        );
+
+        return $this->output($outputMsg, self::STATUS_ERROR, $httpStatus);
     }
 }

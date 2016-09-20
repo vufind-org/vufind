@@ -1,0 +1,15 @@
+<?
+  $this->content()->setHeading($this->title);
+  $this->headTitle($this->title);
+?>
+
+<? if ($template = $this->content()->findTemplateForLng("content/Additions/organisation-page-start")): ?>
+  <?=$this->render($template);?>
+<? endif; ?>
+
+<?=$this->organisationPage($this->id, $this->buildings)?>
+
+<? if ($template = $this->content()->findTemplateForLng("content/Additions/organisation-page-end")): ?>
+  <?=$this->render('content/Additions/organisation-page-end.phtml')?>
+<? endif; ?>
+

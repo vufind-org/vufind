@@ -53,6 +53,13 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     protected $config;
 
     /**
+     * Organisation info
+     *
+     * @var Finna\OrganisationInfo\OrganisationInfo
+     */
+    protected $organisationInfo;
+
+    /**
      * Menu items
      *
      * @var Array
@@ -69,12 +76,17 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Zend\Config\Config $config Menu configuration
+     * @param Zend\Config\Config $config           Menu configuration
      * custom variables
+     * custom variables
+     * @param OrganisationInfo   $organisationInfo Organisation info
      */
-    public function __construct(\Zend\Config\Config $config)
-    {
+    public function __construct(
+        \Zend\Config\Config $config,
+        \Finna\OrganisationInfo\OrganisationInfo $organisationInfo
+    ) {
         $this->config = $config;
+        $this->organisationInfo = $organisationInfo;
     }
 
     /**
@@ -325,9 +337,14 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
         if ($url === 'browse-journal') {
             return $this->getViewHelper('browse')->isAvailable('Journal');
         }
-
+        if ($url == 'content-page' && isset($action['routeParams']['page'])) {
+            if ($action['routeParams']['page'] == 'organisation') {
+                return $this->getViewHelper('organisationInfo')->isAvailable();
+            }
+        }
         return true;
     }
+
     /**
      * Separate menu data from menu order data (__[menu]_sort__ sections).
      *

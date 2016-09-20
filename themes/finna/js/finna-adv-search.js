@@ -81,9 +81,12 @@ finna.advSearch = (function() {
       map = new L.Map(mapCanvas.get(0), {
         layers: [options.tileLayer, drawnItems],
         center: options.center,
-        zoom: options.zoom
+        zoom: options.zoom,
+        zoomControl: false
       });
       
+      finna.layout.initMap(map);
+
       FinnaMapButton = L.Control.extend({
         options: {
           position: 'bottomright'

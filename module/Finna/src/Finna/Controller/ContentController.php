@@ -84,7 +84,9 @@ class ContentController extends \VuFind\Controller\AbstractBase
             return $this->notFoundAction($this->getResponse());
         }
 
-        $view = $this->createViewModel(['page' => $page]);
+        $view = $this->createViewModel(
+            ['page' => $page, 'params' => $this->params()]
+        );
         if (method_exists($this, $action)) {
             $view = call_user_func([$this, $action], $view);
         }

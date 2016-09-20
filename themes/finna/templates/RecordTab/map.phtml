@@ -35,8 +35,10 @@ $(document).ready(function() {
   var map = new L.Map($('.map-canvas').get(0), {
     layers: [tileLayer, drawnItems],
     center: drawnItems.getBounds().getCenter(),
-    zoom: 5
+    zoom: 5,
+    zoomControl: false
   });
+  finna.layout.initMap(map);
   var onLoad = function() {
     fitZoom = map.getBoundsZoom(drawnItems.getBounds());
     map.setZoom(fitZoom <= 9 ? fitZoom - 1 : 9);

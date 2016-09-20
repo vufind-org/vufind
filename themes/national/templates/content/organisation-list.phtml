@@ -1,9 +1,11 @@
+<? $this->headScript()->appendFile('finna-organisation-list.js'); ?>
+
 <!-- START of: national - content/organisation-list.phtml -->
 <ul class="organisations">
   <? foreach($list as $item): ?>
     <li>
         <? $name = $this->escapeHtml($item['name'])?>
-        <div class="name">
+        <div class="name page-link" data-organisation="<?=$this->escapeHtml($item['organisation'])?>">
             <?=$name; ?>
         </div>
         <div class="link">

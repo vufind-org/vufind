@@ -31,26 +31,26 @@
         if (empty($day['times'])): ?>
           <li>
             <span class="day"><?=$this->translate('day-name-short-' . $day['dayName'])?></span>
-            <span class="time"><?=$this->translate('organisation-info-is-closed')?></span>
+            <span class="time"><?=$this->translate('organisation_info_is_closed')?></span>
           </li>
         <? else:
-           $cnt = 0;
-           foreach ($day['times'] as $time):
+          $cnt = 0;
+          foreach ($day['times'] as $time):
         ?>
         <? $selfServiceTime = $time['selfservice']; ?>
           <li<?=$staffTimes && !$selfServiceTime ? ' class="staff"' : ''?>>
             <span class="day">
             <? if ($cnt++ == 0): ?>
-              <?= $this->translate(!$staffTimes || $selfServiceTime ? ('day-name-short-' . $day['dayName']) : 'organisation-info-schedule-staff');?>
+               <?= $this->translate(!$staffTimes || $selfServiceTime ? ('day-name-short-' . $day['dayName']) : 'organisation_info_schedule_staff');?>
             <? elseif (!$selfServiceTime && $staffTimes): ?>
-                <?= $this->translate('organisation-info-schedule-staff');?>
+                <?= $this->translate('organisation_info-schedule_staff');?>
             <? else: ?>
                &nbsp;
             <? endif; ?>
             </span>
             <span class="time"><?= $time['opens']?> - <?= $time['closes']?></span>
           </li>
-           <? endforeach; ?>
+          <? endforeach; ?>
         <? endif; ?>
         </ul>
       </td>

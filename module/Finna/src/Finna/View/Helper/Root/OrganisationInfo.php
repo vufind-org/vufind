@@ -58,19 +58,46 @@ class OrganisationInfo extends \Zend\View\Helper\AbstractHelper
     /**
      * Returns HTML for embedding a organisation info.
      *
-     * @param string $consortium Consortium
+     * @param array $params Parameters
      *
      * @return mixed null|string
      */
-    public function __invoke($consortium)
+    public function __invoke($params = false)
     {
-        if (isset($this->config[$consortium]->consortium)
-            && $this->config->General->enabled
-        ) {
-            $params = ['consortium' => $consortium];
-            return $this->getView()->render(
-                'Helpers/organisation-info.phtml', $params
-            );
+        if (!$this->isAvailable()) {
+            return;
         }
+
+        $id = isset($params['id']) ? $params['id'] : null;
+        $buildings = isset($params['buildings']) ? $params['buildings'] : null;
+
+        if (!$id) {
+            if (!isset($this->config->General->defaultOrganisation)) {
+                return;
+            }
+            $id = $this->config->General->defaultOrganisation;
+            if (isset($this->config->General->buildings)) {
+                $buildings = $this->config->General->buildings->toArray();
+            }
+        }
+
+        return $this->getView()->render(
+            'Helpers/organisation-info.phtml', [
+               'id' => $id,
+               'buildings' => $buildings,
+               'target' => isset($params['target'])
+                  ? $params['target'] : 'widget'
+            ]
+        );
+    }
+
+    /**
+     * Check if organisation info is available
+     *
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return !empty($this->config->General->enabled);
     }
 }

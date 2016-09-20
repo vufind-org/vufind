@@ -185,12 +185,44 @@ class Feed implements \Zend\Log\LoggerAwareInterface
      */
     public function readFeed($id, $urlHelper, $viewUrl)
     {
-        if (!$result = $this->getFeedConfig($id)) {
+        if (!$config = $this->getFeedConfig($id)) {
             throw new \Exception('Error reading feed');
         }
+        return $this->processReadFeed($config, $urlHelper, $viewUrl, $id);
+    }
 
-        $config = $result['result'];
-        $url = $result['url'];
+    /**
+     * Return feed content from a URL.
+     * See readFeed for a description of the return object.
+     *
+     * @param string                         $url       Feed URL
+     * @param array                          $config    Configuration
+     * @param Zend\Mvc\Controller\Plugin\Url $urlHelper Url helper
+     * @param string                         $viewUrl   View URL
+     *
+     * @return mixed null|array
+     */
+    public function readFeedFromUrl($url, $config, $urlHelper, $viewUrl)
+    {
+        $config = new \Zend\Config\Config($config);
+        return $this->processReadFeed($config, $urlHelper, $viewUrl);
+    }
+
+    /**
+     * Utility function for processing a feed (see readFeed, readFeedFromUrl).
+     *
+     * @param array                          $feedConfig Configuration
+     * @param Zend\Mvc\Controller\Plugin\Url $urlHelper  Url helper
+     * @param string                         $viewUrl    View URL
+     * @param string                         $id         Feed id (needed when the
+     * feed content is shown on a content page or in a modal)
+     *
+     * @return mixed null|array
+     */
+    protected function processReadFeed($feedConfig, $urlHelper, $viewUrl, $id = null)
+    {
+        $config = $feedConfig['result'];
+        $url = $feedConfig['url'];
 
         $type = $config->type;
 
@@ -247,7 +279,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
             } else {
                 // Local file
                 if (!is_file($url)) {
-                    $this->logError("File $url could not be found (id $id)");
+                    $this->logError("File $url could not be found");
                     throw new \Exception('Error reading feed');
                 }
                 $channel = Reader::importFile($url);

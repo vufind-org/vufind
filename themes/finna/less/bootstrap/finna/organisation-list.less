@@ -1,5 +1,11 @@
 .organisation-info {
     padding-bottom: 20px;
+    & .loader {
+        text-align: center;
+        & .fa-spinner:before {
+            font-size: 30px;   
+        }
+    }
     & .open {
         color: green;
     }
@@ -30,10 +36,10 @@
         margin-bottom: 10px;
         font-size: 1.1em;
         & i {
-            font-size: 1.5em;
+            font-size: 1.6em;
             margin-left: 4px;
             vertical-align: middle;
-            margin-top: -3px;
+            margin-top: 0px;
             color: @link-color;
             &:hover {
                 cursor: pointer;
@@ -42,8 +48,10 @@
     }
     & .info {
         & .is-open {
+            font-size: 1.2em;
+            font-weight: bold;
             float: right;
-            margin-top: 8px;
+            margin-top: 0px;
             margin-right: 3px;
         }
         & h4 {
@@ -64,28 +72,73 @@
             width: 100%;
             max-width: 400px;
             margin-bottom: 20px;
-            & td {
-                padding: 2px 5px;
+            & div.cell {
+                display: inline-block;
                 vertical-align: top;
             }
-            & td:first-child {
-                padding-left: 5px;
+            & .day-container {
+                margin-bottom: 1px;
+                padding: 2px;
+                & .time-row {
+                    width: 100%;
+                    line-height: 1.26em;
+                    &.staff {
+                        margin-top: 1px;
+                        font-size: .94em;
+                        &:last-child {
+                            margin-bottom: 5px;  
+                        }
+                    }
+                    .date {
+                        width: 16%;
+                    }
+                    .description {
+                        width: 55%;
+                        & .info {
+                            margin-left: 5px;
+                            margin-right: 5px;
+                        }
+                        & .name-staff {
+                            color: @gray-light;
+                        }
+                    }
+                    .time-container {
+                        width: 25%;
+                        text-align: right;
+                        & .time-template {
+                            margin-right: 0px;
+                            & .period:after {
+                                content:',';   
+                            }
+                            &:last-child .period:after {
+                                content:'';   
+                            }
+                        }
+                    }
+                    &:first-of-type .name-staff {
+                        display: none;
+                    }
+                }
+                &.today {
+                    background: @gray-lighter;
+                    font-weight: bold;
+                }
             }
-            & .day {
-            }
-            & .time {
-                float: right;
-            }
-            & ul {
-                margin: 0;
-            }
-            & .today {
-                background: whitesmoke;
-                font-weight: bold;
-            }
-            & .staff {
-                display: block;
+            & .name.staff {
                 color: @gray-light;
+            }
+            & .week td {
+                font-weight: bold;
+                & i {
+                    font-size: 1.5em;
+                    margin-left: 4px;
+                    vertical-align: middle;
+                    margin-top: -3px;
+                    color: @link-color;
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
             }
         }
     }

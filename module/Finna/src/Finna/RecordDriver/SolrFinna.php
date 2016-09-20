@@ -340,6 +340,25 @@ trait SolrFinna
     }
 
     /**
+     * Get organisation info ID (Kirjastohakemisto Finna ID).
+     *
+     * @return string
+     */
+    public function getOrganisationInfoId()
+    {
+        $building = $this->getBuilding();
+        if (is_array($building)) {
+            $building = $building[0];
+        }
+
+        if (preg_match('/^0\/([a-zA-z0-9]*)\/$/', $building, $matches)) {
+            // strip leading '0/' and trailing '/' from top-level building code
+            return $matches[1];
+        }
+        return null;
+    }
+
+    /**
      * Get all the original languages associated with the record
      *
      * @return array
