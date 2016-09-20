@@ -27,6 +27,8 @@ module.exports = function(grunt) {
     return retVal;
   }
 
+  var fontAwesomePath = '"../../bootstrap3/css/fonts"';
+
   grunt.initConfig({
     // LESS compilation
     less: {
@@ -35,7 +37,7 @@ module.exports = function(grunt) {
           paths: getLoadPaths,
           compress: true,
           modifyVars: {
-            'fa-font-path': '"fonts"',
+            'fa-font-path': fontAwesomePath,
             'img-path': '"../images"'
           }
         },
@@ -106,7 +108,7 @@ module.exports = function(grunt) {
             },
             {
               pattern: '@import "vendor/font-awesome/font-awesome";',
-              replacement: '$fa-font-path: "fonts";\n@import "vendor/font-awesome/font-awesome";',
+              replacement: '$fa-font-path: ' + fontAwesomePath + ';\n@import "vendor/font-awesome/font-awesome";',
               order: 4
             },
             {

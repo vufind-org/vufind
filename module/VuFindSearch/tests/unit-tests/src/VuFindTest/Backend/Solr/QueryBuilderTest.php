@@ -102,6 +102,27 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Return array of [test query, expected result] arrays.
+     *
+     * @return array
+     */
+    protected function getQuestionTests()
+    {
+        // @codingStandardsIgnoreStart
+        return [
+            ['this?', '(this?) OR (this\?)'], // trailing question mark
+            ['this? that', '((this?) OR (this\?)) that'], // question mark after first word
+            ['start this? that', 'start ((this?) OR (this\?)) that'], // question mark after the middle word
+            ['start AND this? AND that', 'start AND ((this?) OR (this\?)) AND that'], // question mark with boolean operators
+            ['start t?his that', 'start t?his that'], // question mark as a wildcard in the middle of a word
+            ['start? this?', '((start?) OR (start\?)) ((this?) OR (this\?))'], // multiple ? terms
+            ['this? that? this?', '((this?) OR (this\?)) ((that?) OR (that\?)) ((this?) OR (this\?))'], // repeating ? term
+            ['"this? that?"', '"this? that?"'], // ? terms inside quoted phrase
+        ];
+        // @codingStandardsIgnoreEnd
+    }
+
+    /**
      * Test generation with a query handler
      *
      * @return void
@@ -109,12 +130,7 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     public function testQueryHandler()
     {
         // Set up an array of expected inputs and outputs:
-        // @codingStandardsIgnoreStart
-        $tests = [
-            ['this?', '((this?) OR (this\?))'],// trailing question mark
-        ];
-        // @codingStandardsIgnoreEnd
-
+        $tests = $this->getQuestionTests();
         $qb = new QueryBuilder(
             [
                 'test' => []
@@ -125,7 +141,7 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             $q = new Query($input, 'test');
             $response = $qb->build($q);
             $processedQ = $response->get('q');
-            $this->assertEquals($output, $processedQ[0]);
+            $this->assertEquals('(' . $output . ')', $processedQ[0]);
         }
     }
 
@@ -137,11 +153,7 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     public function testQueryHandlerWithEdismax()
     {
         // Set up an array of expected inputs and outputs:
-        // @codingStandardsIgnoreStart
-        $tests = [
-            ['this?', '(this?) OR (this\?)'],// trailing question mark
-        ];
-        // @codingStandardsIgnoreEnd
+        $tests = $this->getQuestionTests();
 
         $qb = new QueryBuilder(
             [
