@@ -297,6 +297,8 @@ $(document).ready(function commonDocReady() {
   setupOffcanvas();
   // Keyboard shortcuts in detail view
   keyboardShortcuts();
+  // Render recaptchas
+  recaptchaOnLoad();
 
   // support "jump menu" dropdown boxes
   $('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });

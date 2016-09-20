@@ -133,6 +133,8 @@ function registerAjaxCommentRecord() {
 function registerTabEvents() {
   // Logged in AJAX
   registerAjaxCommentRecord();
+  // Render recaptcha
+  recaptchaOnLoad();
   // Delete links
   $('.delete').click(function commentTabDeleteClick() {
     deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));

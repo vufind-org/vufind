@@ -102,10 +102,7 @@ VuFind.register('lightbox', function Lightbox() {
       $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
     });
     // Recaptcha
-    var modalCaptcha = $('#modal .g-recaptcha');
-    if (modalCaptcha.length && typeof grecaptcha !== 'undefined' && modalCaptcha.is(':empty')) {
-      grecaptcha.render(modalCaptcha[0], modalCaptcha[0].dataset);
-    }
+    recaptchaOnLoad();
   }
 
   var _xhr = false;

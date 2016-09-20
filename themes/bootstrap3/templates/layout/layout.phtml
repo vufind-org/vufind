@@ -187,5 +187,8 @@ JS;
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
+    <? if ($this->recaptcha()->active()): ?>
+      <script src="https://www.google.com/recaptcha/api.js?render=explicit&hl=<?=$this->layout()->userLang ?>"></script>
+    <? endif; ?>
   </body>
 </html>

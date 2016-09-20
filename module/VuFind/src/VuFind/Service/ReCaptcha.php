@@ -57,17 +57,19 @@ class ReCaptcha extends \LosReCaptcha\Service\ReCaptcha
         // Override placeholder div with richer version:
         $div = '<div class="g-recaptcha" data-sitekey="' . $this->siteKey . '"';
         foreach ($this->options as $key => $option) {
+            if ($key == 'lang') {
+                continue;
+            }
             $div .= ' data-' . $key . '="' . $option . '"';
         }
         $div .= '>';
         $divregex = '/<div[^>]*id=[\'"]recaptcha_widget[\'"][^>]*>/';
 
-        $urlregex = '/api.js\??([^"])/';
-        $explictRender = 'api.js?onload=recaptchaOnLoad&render=explicit&$1';
+        $urlregex = '|<script[^>]*></script>|';
 
         return preg_replace(
             [$divregex, $urlregex],
-            [$div, $explictRender],
+            [$div, ''],
             $html
         );
     }
