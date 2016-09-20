@@ -2214,7 +2214,7 @@ public class VuFindIndexer extends SolrIndexer
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
         HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
-        List fields = this.getFieldSetMatchingTagList(record, tagList);
+        List fields = getFieldSetMatchingTagList(record, tagList);
         Iterator fieldsIter = fields.iterator();
         if (fields != null){
             DataField authorField;
@@ -2223,7 +2223,7 @@ public class VuFindIndexer extends SolrIndexer
                 // add all author types to the result set; if we have multiple relators, repeat the authors
                 for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators)) {
                     for (String subfields : parsedTagList.get(authorField.getTag())) {
-                        String current = this.getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
+                        String current = getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
                         // TODO: we may eventually be able to use this line instead,
                         // but right now it's not handling separation between the
                         // subfields correctly, so it's commented out until that is
@@ -2431,7 +2431,7 @@ public class VuFindIndexer extends SolrIndexer
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
         HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
-        List fields = this.getFieldSetMatchingTagList(record, tagList);
+        List fields = getFieldSetMatchingTagList(record, tagList);
         Iterator fieldsIter = fields.iterator();
         if (fields != null){
             DataField authorField;
@@ -2542,7 +2542,7 @@ public class VuFindIndexer extends SolrIndexer
                     relators.append(relatorArray[i]).append(",");
                 }
             } else {
-                relators.append(this.getConfigSetting(
+                relators.append(getConfigSetting(
                     "author-classification.ini", "AuthorRoles", relatorSetting
                 )).append(",");
             }
@@ -2631,7 +2631,7 @@ public class VuFindIndexer extends SolrIndexer
         );
         List<String> result = new LinkedList<String>();
         for (String author : authors) {
-            result.add(this.processInitials(author));
+            result.add(processInitials(author));
         }
         return result;
     }
