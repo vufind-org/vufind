@@ -1906,7 +1906,7 @@ public class VuFindIndexer extends SolrIndexer
      */
     public Set<String> getValidRelators(DataField authorField,
         String[] noRelatorAllowed, String relatorConfig,
-        String acceptUnknownRelators, String indexRawRelators
+        String[] unknownRelatorAllowed, String indexRawRelators
     ) {
         // get tag number from Field
         String tag = authorField.getTag();
@@ -1926,7 +1926,7 @@ public class VuFindIndexer extends SolrIndexer
             List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
             relators.addAll(getValidRelatorsFromSubfields(subfieldE, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
             relators.addAll(getValidRelatorsFromSubfields(subfield4, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
-            if (Arrays.asList(acceptUnknownRelators).contains(tag)) {
+            if (Arrays.asList(unknownRelatorAllowed).contains(tag)) {
                 Set<String> unknown = getUnknownRelatorsFromSubfields(subfieldE);
                 if (unknown.size() == 0) {
                     unknown = getUnknownRelatorsFromSubfields(subfield4);
@@ -1988,6 +1988,7 @@ public class VuFindIndexer extends SolrIndexer
     ) {
         List<String> result = new LinkedList<String>();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
+        String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
         HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
         List fields = this.getFieldSetMatchingTagList(record, tagList);
         Iterator fieldsIter = fields.iterator();
@@ -1996,7 +1997,7 @@ public class VuFindIndexer extends SolrIndexer
             while (fieldsIter.hasNext()){
                 authorField = (DataField) fieldsIter.next();
                 // add all author types to the result set; if we have multiple relators, repeat the authors
-                for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig, acceptUnknownRelators, indexRawRelators)) {
+                for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators)) {
                     for (String subfields : parsedTagList.get(authorField.getTag())) {
                         String current = this.getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
                         // TODO: we may eventually be able to use this line instead,
@@ -2112,6 +2113,7 @@ public class VuFindIndexer extends SolrIndexer
     ) {
         List result = new LinkedList();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
+        String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
         HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
         List fields = this.getFieldSetMatchingTagList(record, tagList);
         Iterator fieldsIter = fields.iterator();
@@ -2120,7 +2122,7 @@ public class VuFindIndexer extends SolrIndexer
             while (fieldsIter.hasNext()){
                 authorField = (DataField) fieldsIter.next();
                 //add all author types to the result set
-                result.addAll(getValidRelators(authorField, noRelatorAllowed, relatorConfig, acceptUnknownRelators, indexRawRelators));
+                result.addAll(getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators));
             }
         }
         return result;
@@ -2137,11 +2139,11 @@ public class VuFindIndexer extends SolrIndexer
      * be accepted even if no relator subfield is defined
      * @param relatorConfig        The setting in author-classification.ini which
      * defines which relator terms are acceptable (or a colon-delimited list)
-     * @return List result
      * @param acceptUnknownRelators Colon-delimited list of tags whose relators
      * should be indexed even if they are not listed in author-classification.ini.
      * @param indexRawRelators      Set to "true" to index relators raw, as found
      * in the MARC or "false" to index mapped versions.
+     * @return List result
      */
     public List getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig,
