@@ -378,15 +378,25 @@ class QueryBuilder implements QueryBuilderInterface
      */
     protected function fixTrailingQuestionMarks($string)
     {
-        if (substr($string, -1) == '?' && substr($string, -2) != '\?') {
+        $multiword = preg_match('/[^\s]\s+[^\s]/', $string);
+        $callback = function ($matches) use ($multiword) {
             // Make sure all question marks are properly escaped (first unescape
             // any that are already escaped to prevent double-escapes, then escape
             // all of them):
-            $strippedQuery
-                = str_replace('?', '\?', str_replace('\?', '?', $string));
-            $string = "({$string}) OR (" . $strippedQuery . ")";
-        }
-        return $string;
+            $s = $matches[1];
+            $escaped = str_replace('?', '\?', str_replace('\?', '?', $s));
+            $s = "($s) OR ($escaped)";
+            if ($multiword) {
+                $s = "($s) ";
+            }
+            return $s;
+        };
+        // Use a lookahead to skip matches found within quoted phrases.
+        $lookahead = '(?=(?:[^\"]*+\"[^\"]*+\")*+[^\"]*+$)';
+        $string = preg_replace_callback(
+            '/([^\s]+\?)(\s|$)' . $lookahead . '/', $callback, $string
+        );
+        return rtrim($string);
     }
 
     /**
