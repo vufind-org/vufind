@@ -194,6 +194,12 @@ Subject:
 #    DismaxFields:
 #      - topic_unstemmed^150
 
+
+Coordinate:
+  DismaxFields:
+    - long_lat_display
+  DismaxHandler: edismax
+
 # This field definition is a compromise that supports both journal-level and
 # article-level data.  The disadvantage is that hits in article titles will
 # be mixed in.  If you are building a purely article-oriented index, you should
@@ -264,6 +270,7 @@ AllFields:
     - description
     - isbn
     - issn
+    - long_lat_display
   DismaxHandler: edismax
 #  ExactSettings:
 #    DismaxFields:
