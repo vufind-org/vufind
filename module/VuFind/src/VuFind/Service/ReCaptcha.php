@@ -65,11 +65,12 @@ class ReCaptcha extends \LosReCaptcha\Service\ReCaptcha
         $div .= '>';
         $divregex = '/<div[^>]*id=[\'"]recaptcha_widget[\'"][^>]*>/';
 
-        $urlregex = '|<script[^>]*></script>|';
+        $scriptRegex = '|<script[^>]*></script>|';
+        $scriptReplacement = '<script>/*form magic*/</script>';
 
         return preg_replace(
-            [$divregex, $urlregex],
-            [$div, ''],
+            [$divregex, $scriptRegex],
+            [$div, $scriptReplacement],
             $html
         );
     }
