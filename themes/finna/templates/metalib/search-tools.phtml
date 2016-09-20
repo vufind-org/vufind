@@ -10,6 +10,7 @@
           <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove"></i> <?=$this->transEsc('save_search_remove')?></a>
           <? else: ?>
           <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-plus-square"></i> <?=$this->transEsc('save_search')?></a>
+          <? endif; ?>
       <? endif; ?>
     </div>
   </div>
