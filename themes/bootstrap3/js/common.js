@@ -303,10 +303,20 @@ $(document).ready(function commonDocReady() {
 
   // Checkbox select all
   $('.checkbox-select-all').change(function selectAllCheckboxes() {
-    $(this).closest('form').find('.checkbox-select-item').prop('checked', this.checked);
+    var $form = $(this).closest('form')
+    $form.find('.checkbox-select-item').prop('checked', this.checked);
+    $('[form="'+$form.attr('id')+'"]').prop('checked', this.checked);
   });
   $('.checkbox-select-item').change(function selectAllDisable() {
-    $(this).closest('form').find('.checkbox-select-all').prop('checked', false);
+    var $form = $(this).closest('form');
+    if ($form.length === 0 && this.form) {
+      $form = $(this.form);
+    }
+    if ($form.length === 0) {
+      return;
+    }
+    $form.find('.checkbox-select-all').prop('checked', false);
+    $('.checkbox-select-all[form="'+$form.attr('id')+'"]').prop('checked', false);
   });
 
   // handle QR code links
