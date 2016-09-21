@@ -1,5 +1,5 @@
 /*global deparam, grecaptcha, syn_get_widget, userIsLoggedIn, VuFind */
-/*exported ajaxTagUpdate, recordDocReady */
+/*exported addRecordCommentCallback, ajaxTagUpdate, recordDocReady */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -57,7 +57,13 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
   });
 }
 
-function refreshCommentList($target, recordId, recordSource) {
+function addRecordCommentCallback(event, form) {
+  refreshCommentList($(form).closest('.record'));
+  $(form).find('textarea').val('');
+}
+function refreshCommentList($target, _id, _source) {
+  var recordId = _id || $target.find('.hiddenId').val();
+  var recordSource = _source || $target.find('.hiddenSource').val();
   var url = VuFind.path + '/AJAX/JSON?' + $.param({
     method: 'getRecordCommentsAsHTML',
     id: recordId,
@@ -84,57 +90,7 @@ function refreshCommentList($target, recordId, recordSource) {
   });
 }
 
-function registerAjaxCommentRecord() {
-  // Form submission
-  $('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
-    var form = this;
-    var id = form.id.value;
-    var recordSource = form.source.value;
-    var url = VuFind.path + '/AJAX/JSON?' + $.param({ method: 'commentRecord' });
-    var data = {
-      comment: form.comment.value,
-      id: id,
-      source: recordSource
-    };
-    if (typeof grecaptcha !== 'undefined') {
-      try {
-        data['g-recaptcha-response'] = grecaptcha.getResponse(0);
-      } catch (e) {
-        console.error('Expected errors: placeholder element full and Invalid client ID');
-        console.error(e);
-      }
-    }
-    $.ajax({
-      type: 'POST',
-      url: url,
-      data: data,
-      dataType: 'json'
-    })
-    .done(function addCommentDone(/*response, textStatus*/) {
-      var $tab = $(form).closest('.tab-pane');
-      refreshCommentList($tab, id, recordSource);
-      $(form).find('textarea[name="comment"]').val('');
-      $(form).find('input[type="submit"]').button('loading');
-    })
-    .fail(function addCommentFail(response, textStatus) {
-      if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
-      VuFind.lightbox.alert(response.responseJSON.data, 'danger');
-    });
-    return false;
-  });
-  // Delete links
-  $('.delete').click(function commentDeleteClick() {
-    var commentId = this.id.substr('recordComment'.length);
-    deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), commentId);
-    return false;
-  });
-  // Prevent form submit
-  return false;
-}
-
 function registerTabEvents() {
-  // Logged in AJAX
-  registerAjaxCommentRecord();
   // Delete links
   $('.delete').click(function commentTabDeleteClick() {
     deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));
@@ -240,7 +196,7 @@ function backgroundLoadTab(tabid) {
     return;
   }
   var newTab = getNewRecordTab(tabid);
-  $('.nav-tabs a.'+tabid).closest('.result,.record').find('.tab-content').append(newTab);
+  $('.nav-tabs a.' + tabid).closest('.result,.record').find('.tab-content').append(newTab);
   return ajaxLoadTab(newTab, tabid, false);
 }
 

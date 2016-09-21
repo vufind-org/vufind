@@ -133,7 +133,7 @@ function lessFacets(id) {
 function facetSessionStorage(e) {
   var source = $('#result0 .hiddenSource').val();
   var id = e.target.id;
-  var key = 'sidefacet-'+source+id;
+  var key = 'sidefacet-' + source + id;
   if (!sessionStorage.getItem(key)) {
     sessionStorage.setItem(key, document.getElementById(id).className);
   } else {
@@ -339,7 +339,7 @@ $(document).ready(function commonDocReady() {
   // Side facet status saving
   $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
     var source = $('#result0 .hiddenSource').val();
-    var storedItem = sessionStorage.getItem('sidefacet-'+source+item.id);
+    var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
     if (storedItem) {
       item.className = storedItem;
       if (item.className.indexOf('in') < 0) {

@@ -136,6 +136,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Add comment
         $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
         $this->findCss($page, 'form.comment-form .btn-primary')->click();
+        $this->findCss($page, '.modal .alert-success'); // handle modal
+        $this->findCss($page, '.modal .close')->click();
         $this->findCss($page, '.comment.row');
         // Remove comment
         $this->findCss($page, '.comment.row .delete')->click();
