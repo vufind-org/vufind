@@ -188,7 +188,7 @@ JS;
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
     <? if ($this->recaptcha()->active()): ?>
-      <?=$this->inlineScript(\Zend\View\Helper\HeadScript::FILE, "https://www.google.com/recaptcha/api.js?render=explicit&hl=" . $this->layout()->userLang, 'SET')?>
+      <?=$this->inlineScript(\Zend\View\Helper\HeadScript::FILE, "https://www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&render=explicit&hl=" . $this->layout()->userLang, 'SET')?>
     <? endif; ?>
   </body>
 </html>
