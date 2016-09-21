@@ -1,13 +1,15 @@
 <!-- START of: finna - myresearch/mylist-navi.phtml -->
 <?
   $numOfResources = $user->getNumOfResources();
-  $limitList = $this->results->getParams()->getLimitList();
   $currentLimit = 20; // default limit for favorites
-  foreach ($limitList as $limitVal => $limitData) {
-    if ($limitData['selected']) {
-      $currentLimit = $limitVal;
-      break;
-    }
+  if (isset($this->results)) {
+     $limitList = $this->results->getParams()->getLimitList();
+     foreach ($limitList as $limitVal => $limitData) {
+        if ($limitData['selected']) {
+          $currentLimit = $limitVal;
+          break;
+        }
+     }
   }
 ?>
 
