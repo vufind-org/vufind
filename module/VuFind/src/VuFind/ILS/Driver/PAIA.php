@@ -1502,7 +1502,7 @@ class PAIA extends DAIA
     protected function paiaPostRequest($file, $data_to_send, $access_token = null)
     {
         // json-encoding
-        $postData = stripslashes(json_encode($data_to_send));
+        $postData = json_encode($data_to_send);
 
         $http_headers = [];
         if (isset($access_token)) {
