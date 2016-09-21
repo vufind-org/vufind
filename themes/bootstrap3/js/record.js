@@ -1,4 +1,4 @@
-/*global deparam, grecaptcha, syn_get_widget, userIsLoggedIn, VuFind */
+/*global deparam, grecaptcha, recaptchaOnLoad, syn_get_widget, userIsLoggedIn, VuFind */
 /*exported ajaxTagUpdate, recordDocReady */
 
 /**
