@@ -1799,12 +1799,12 @@ class SolrDefault extends AbstractBase
     /**
      * Get longitude/latitude text (or false if not available).
      *
-     * @return string|bool
+     * @return array
      */
     public function getLongLat()
     {
         return isset($this->fields['long_lat'])
-            ? $this->fields['long_lat'] : false;
+            ? $this->fields['long_lat'] : [];
     }
 
     /**
@@ -1913,5 +1913,38 @@ class SolrDefault extends AbstractBase
         return $this->containerLinking
             && !empty($this->fields['hierarchy_parent_id'])
             ? $this->fields['hierarchy_parent_id'][0] : '';
+    }
+
+    /**
+     * Get the bbox-geo variable.
+     *
+     * @return array
+     */
+    public function getBbox()
+    {
+        return isset($this->fields['bbox_geo'])
+            ? $this->fields['bbox_geo'] : [];
+    }
+
+    /**
+     * Get the map display (lat/lon) coordinates
+     *
+     * @return array
+     */
+    public function getDisplayCoordinates()
+    {
+        return isset($this->fields['long_lat_display'])
+            ? $this->fields['long_lat_display'] : [];
+    }
+
+    /**
+     * Get the map display (lat/lon) labels
+     *
+     * @return array
+     */
+    public function getCoordinateLabels()
+    {
+        return isset($this->fields['long_lat_label'])
+            ? $this->fields['long_lat_label'] : [];
     }
 }
