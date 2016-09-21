@@ -65,7 +65,7 @@ public Set getUnknownRelatorsFromSubfields(List subfields)
     for (int j = 0; j < subfields.size(); j++) {
         String current = subfields.get(j).getData().trim();
         if (current.length() > 0 && isUnknownRelator(current)) {
-            System.out.println("Unknown relator: " + current);
+            indexer.getLogger().info("Unknown relator: " + current);
             relators.add(current);
         }
     }
