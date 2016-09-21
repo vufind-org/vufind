@@ -1,4 +1,4 @@
-/*global grecaptcha, VuFind */
+/*global grecaptcha, recaptchaOnLoad, VuFind */
 VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
@@ -102,10 +102,7 @@ VuFind.register('lightbox', function Lightbox() {
       $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
     });
     // Recaptcha
-    var modalCaptcha = $('#modal .g-recaptcha');
-    if (modalCaptcha.length && typeof grecaptcha !== 'undefined' && modalCaptcha.is(':empty')) {
-      grecaptcha.render(modalCaptcha[0], modalCaptcha[0].dataset);
-    }
+    recaptchaOnLoad();
   }
 
   var _xhr = false;
@@ -228,6 +225,14 @@ VuFind.register('lightbox', function Lightbox() {
     // Gather data
     var form = event.target;
     var data = $(form).serializeArray();
+    // Check for recaptcha
+    if (grecaptcha) {
+      var recaptcha = $(form).find('.g-recaptcha');
+      if (recaptcha.length > 0) {
+        data.push({ name: 'g-recaptcha-response', value: grecaptcha.getResponse(recaptcha.data('captchaId')) });
+      }
+    }
+    // Force layout
     data.push({ name: 'layout', value: 'lightbox' }); // Return in lightbox, please
     // Add submit button information
     var submit = $(_clickedButton);
@@ -271,6 +276,10 @@ VuFind.register('lightbox', function Lightbox() {
       url: $(form).attr('action') || _currentUrl,
       method: $(form).attr('method') || 'GET',
       data: data
+    }).done(function recaptchaReset() {
+      if (grecaptcha) {
+        grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
+      }
     });
 
     VuFind.modal('show');

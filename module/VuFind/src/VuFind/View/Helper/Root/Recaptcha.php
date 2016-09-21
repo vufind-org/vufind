@@ -76,7 +76,7 @@ class Recaptcha extends AbstractHelper
     public function __construct($rc, $config)
     {
         $this->recaptcha = $rc;
-        $this->active = isset($config->Captcha);
+        $this->active = isset($config->Captcha->forms);
     }
 
     /**

@@ -1,5 +1,5 @@
-/*global isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, bulkFormHandler */
+/*global grecaptcha, isPhoneNumberValid */
+/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, phoneNumberFormHandler, recaptchaOnLoad, bulkFormHandler */
 
 // IE 9< console polyfill
 window.console = window.console || {log: function polyfillLog() {}};
@@ -133,7 +133,7 @@ function lessFacets(id) {
 function facetSessionStorage(e) {
   var source = $('#result0 .hiddenSource').val();
   var id = e.target.id;
-  var key = 'sidefacet-'+source+id;
+  var key = 'sidefacet-' + source + id;
   if (!sessionStorage.getItem(key)) {
     sessionStorage.setItem(key, document.getElementById(id).className);
   } else {
@@ -158,6 +158,14 @@ function phoneNumberFormHandler(numID, regionCode) {
   } else {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
+  }
+}
+
+// Setup captchas after Google script loads
+function recaptchaOnLoad() {
+  var captchas = $('.g-recaptcha:empty');
+  for (var i = 0; i < captchas.length; i++) {
+    captchas[i].dataset.captchaId = grecaptcha.render(captchas[i], captchas[i].dataset);
   }
 }
 
@@ -339,7 +347,7 @@ $(document).ready(function commonDocReady() {
   // Side facet status saving
   $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
     var source = $('#result0 .hiddenSource').val();
-    var storedItem = sessionStorage.getItem('sidefacet-'+source+item.id);
+    var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
     if (storedItem) {
       item.className = storedItem;
       if (item.className.indexOf('in') < 0) {

@@ -1,4 +1,4 @@
-/*global deparam, grecaptcha, syn_get_widget, userIsLoggedIn, VuFind */
+/*global deparam, grecaptcha, recaptchaOnLoad, syn_get_widget, userIsLoggedIn, VuFind */
 /*exported ajaxTagUpdate, recordDocReady */
 
 /**
@@ -96,12 +96,10 @@ function registerAjaxCommentRecord() {
       id: id,
       source: recordSource
     };
-    if (typeof grecaptcha !== 'undefined') {
-      try {
-        data['g-recaptcha-response'] = grecaptcha.getResponse(0);
-      } catch (e) {
-        console.error('Expected errors: placeholder element full and Invalid client ID');
-        console.error(e);
+    if (grecaptcha) {
+      var recaptcha = $(form).find('.g-recaptcha');
+      if (recaptcha.length > 0) {
+        data['g-recaptcha-response'] = grecaptcha.getResponse(recaptcha.data('captchaId'));
       }
     }
     $.ajax({
@@ -115,6 +113,7 @@ function registerAjaxCommentRecord() {
       refreshCommentList($tab, id, recordSource);
       $(form).find('textarea[name="comment"]').val('');
       $(form).find('input[type="submit"]').button('loading');
+      grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
     })
     .fail(function addCommentFail(response, textStatus) {
       if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
@@ -135,6 +134,8 @@ function registerAjaxCommentRecord() {
 function registerTabEvents() {
   // Logged in AJAX
   registerAjaxCommentRecord();
+  // Render recaptcha
+  recaptchaOnLoad();
   // Delete links
   $('.delete').click(function commentTabDeleteClick() {
     deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));
@@ -240,7 +241,7 @@ function backgroundLoadTab(tabid) {
     return;
   }
   var newTab = getNewRecordTab(tabid);
-  $('.nav-tabs a.'+tabid).closest('.result,.record').find('.tab-content').append(newTab);
+  $('.nav-tabs a.' + tabid).closest('.result,.record').find('.tab-content').append(newTab);
   return ajaxLoadTab(newTab, tabid, false);
 }
 
