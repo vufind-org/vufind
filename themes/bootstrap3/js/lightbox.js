@@ -276,6 +276,10 @@ VuFind.register('lightbox', function Lightbox() {
       url: $(form).attr('action') || _currentUrl,
       method: $(form).attr('method') || 'GET',
       data: data
+    }).done(function recaptchaReset() {
+      if (grecaptcha) {
+        grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
+      }
     });
 
     VuFind.modal('show');
