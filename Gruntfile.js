@@ -37,8 +37,7 @@ module.exports = function(grunt) {
           paths: getLoadPaths,
           compress: true,
           modifyVars: {
-            'fa-font-path': fontAwesomePath,
-            'img-path': '"../images"'
+            'fa-font-path': fontAwesomePath
           }
         },
         files: [{
@@ -109,11 +108,6 @@ module.exports = function(grunt) {
             {
               pattern: '@import "vendor/font-awesome/font-awesome";',
               replacement: '$fa-font-path: ' + fontAwesomePath + ';\n@import "vendor/font-awesome/font-awesome";',
-              order: 4
-            },
-            {
-              pattern: '$img-path: "../../images" !default;',
-              replacement: '$img-path: "../images";',
               order: 4
             },
             { // VuFind: Bootprint fixes
