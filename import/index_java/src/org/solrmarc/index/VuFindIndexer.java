@@ -2122,8 +2122,8 @@ public class VuFindIndexer extends SolrIndexer
      * no declared relator.
      * @param relatorConfig         The setting in author-classification.ini which
      * defines which relator terms are acceptable (or a colon-delimited list)
-     * @param acceptUnknownRelators Colon-delimited list of tags whose relators
-     * should be indexed even if they are not listed in author-classification.ini.
+     * @param unknownRelatorAllowed Array of tag names whose relators should be indexed 
+     * even if they are not listed in author-classification.ini.
      * @param indexRawRelators      Set to "true" to index relators raw, as found
      * in the MARC or "false" to index mapped versions.
      * @return Set
@@ -2680,6 +2680,7 @@ public class VuFindIndexer extends SolrIndexer
             acceptUnknownRelators, "false"
         );
     }
+    
     /**
      * Takes a name and cuts it into initials
      * @param authorName e.g. Yeats, William Butler
