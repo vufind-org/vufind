@@ -605,9 +605,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     {
         $id = $this->params()->fromQuery('id', false);
         $key = $this->params()->fromQuery('key', false);
-        $type = $this->params()->fromQuery('type', false);
+        $type = $this->params()->fromQuery('type', 'alert');
 
-        if ($id === false || $key === false || $type === false) {
+        if ($id === false || $key === false) {
             throw new \Exception('Missing parameters.');
         }
 

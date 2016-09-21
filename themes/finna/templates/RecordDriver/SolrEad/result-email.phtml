@@ -3,7 +3,11 @@
   $date = substr($title, strpos($title, '('), strpos($title, ')'));
   $formats = $this->driver->getFormats();
   $format = end($formats);
-  $url = $this->serverUrl($this->recordLink()->getUrl($this->driver));
+  $url = $this->recordLink()->getUrl($this->driver);
+
+  // NOTE: use $info['baseUrl'] instead of serverUrl view helper when this template is
+  // rendered by scheduled alerts console action.
+  $url = isset($info['baseUrl']) ? ($info['baseUrl'].$url) : $this->serverUrl($url);
 ?>
 
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>

@@ -60,10 +60,12 @@ class Search extends \VuFind\Db\Row\Search
      *
      * @return mixed
      */
-    public function setSchedule($schedule, $url)
+    public function setSchedule($schedule, $url = null)
     {
         $this->finna_schedule = $schedule;
-        $this->finna_schedule_base_url = $url;
+        if ($url) {
+            $this->finna_schedule_base_url = $url;
+        }
         return $this->save();
     }
 
