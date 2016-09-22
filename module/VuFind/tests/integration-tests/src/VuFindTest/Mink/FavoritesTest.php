@@ -391,6 +391,13 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function setupBulkTest()
     {
+        $this->changeConfigs(
+            ['config' =>
+                [
+                    'Mail' => ['testOnly' => 1],
+                ],
+            ]
+        );
         // Go home
         $session = $this->getMinkSession();
         $path = '/Search/Home';
