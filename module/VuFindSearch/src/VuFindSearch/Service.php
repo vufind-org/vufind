@@ -87,8 +87,8 @@ class Service
      *
      * @param string              $backend Search backend identifier
      * @param Query\AbstractQuery $query   Search query
-     * @param integer             $offset  Search offset
-     * @param integer             $limit   Search limit
+     * @param int                 $offset  Search offset
+     * @param int                 $limit   Search limit
      * @param ParamBag            $params  Search backend parameters
      *
      * @return RecordCollectionInterface
@@ -196,7 +196,7 @@ class Service
      *
      * @param string              $backend Search backend identifier
      * @param Query\AbstractQuery $query   Search query
-     * @param integer             $limit   Search limit
+     * @param int                 $limit   Search limit
      * @param ParamBag            $params  Search backend parameters
      *
      * @return RecordCollectionInterface

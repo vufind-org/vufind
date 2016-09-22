@@ -51,8 +51,8 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     /**
      * Constructor
      *
-     * @param ThemeInfo $themeInfo Theme information service
-     * @param boolean   $plconfig  Whether or not to concatenate
+     * @param ThemeInfo   $themeInfo Theme information service
+     * @param string|bool $plconfig  Config for current application environment
      */
     public function __construct(ThemeInfo $themeInfo, $plconfig = false)
     {

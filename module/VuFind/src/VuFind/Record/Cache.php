@@ -237,7 +237,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $source Record source
      *
-     * @return boolean
+     * @return bool
      */
     public function isCachable($source)
     {

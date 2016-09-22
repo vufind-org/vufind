@@ -27,6 +27,8 @@ module.exports = function(grunt) {
     return retVal;
   }
 
+  var fontAwesomePath = '"../../bootstrap3/css/fonts"';
+
   grunt.initConfig({
     // LESS compilation
     less: {
@@ -35,8 +37,7 @@ module.exports = function(grunt) {
           paths: getLoadPaths,
           compress: true,
           modifyVars: {
-            'fa-font-path': '"fonts"',
-            'img-path': '"../images"'
+            'fa-font-path': fontAwesomePath
           }
         },
         files: [{
@@ -106,12 +107,7 @@ module.exports = function(grunt) {
             },
             {
               pattern: '@import "vendor/font-awesome/font-awesome";',
-              replacement: '$fa-font-path: "fonts";\n@import "vendor/font-awesome/font-awesome";',
-              order: 4
-            },
-            {
-              pattern: '$img-path: "../../images" !default;',
-              replacement: '$img-path: "../images";',
+              replacement: '$fa-font-path: ' + fontAwesomePath + ';\n@import "vendor/font-awesome/font-awesome";',
               order: 4
             },
             { // VuFind: Bootprint fixes

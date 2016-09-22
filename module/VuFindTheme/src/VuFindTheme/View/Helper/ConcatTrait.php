@@ -119,9 +119,9 @@ trait ConcatTrait
     /**
      * Check if config is enamled for this file type
      *
-     * @param string $config Config for current application environment
+     * @param string|bool $config Config for current application environment
      *
-     * @return boolean
+     * @return bool
      */
     protected function enabledInConfig($config)
     {

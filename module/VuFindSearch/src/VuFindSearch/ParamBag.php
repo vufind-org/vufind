@@ -82,7 +82,7 @@ class ParamBag
      * @param string $name  Parameter name
      * @param string $value Parameter value
      *
-     * @return boolean
+     * @return bool
      */
     public function contains($name, $value)
     {

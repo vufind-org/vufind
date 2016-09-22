@@ -61,8 +61,8 @@ class Record extends AbstractBase
      * Returns a set of basic statistics including total records
      * and most commonly viewed records.
      *
-     * @param integer $listLength How long the top list is
-     * @param bool    $bySource   Sort record views by source?
+     * @param int  $listLength How long the top list is
+     * @param bool $bySource   Sort record views by source?
      *
      * @return array
      */
