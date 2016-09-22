@@ -46,42 +46,42 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      * @var array
      */
     protected $defaultCoordinates = [];
-    
+
     /**
      * The geoField variable name
      *
      * @var string
      */
-    protected $geoField = 'bbox_geo';
-    
+    protected $geoField = 'location_geo';
+
     /**
      * Height of search map pane
      *
      * @var string
      */
     protected $height;
-    
+
     /**
      * Selected coordinates
      *
      * @var string
      */
     protected $selectedCoordinates = null;
-    
+
     /**
      * Search parameters
      *
      * @var string
      */
     protected $searchParams = null;
- 
+
     /**
      * Search object
      *
      * @var string
      */
     protected $searchObject;
-    
+
     /**
      * Search Results coordinates
      *
@@ -137,7 +137,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      * @var \VuFind\Search\BackendManager
      */
     protected $searchFilters;
-    
+
     /**
      * Constructor
      *
@@ -151,7 +151,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $this->queryBuilder = $solr->getQueryBuilder();
         $this->solrConnector = $solr->getConnector();
     }
-    
+
     /**
      * SetConfig
      *
@@ -179,7 +179,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
             }
         }
     }
-    
+
     /**
      * Init
      *
@@ -197,7 +197,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     public function init($params, $request)
     {
     }
-    
+
     /**
      * Process
      *
@@ -245,19 +245,19 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $this->searchFilters = $results->getParams()->getBackendParameters();
         $this->searchQuery = $results->getParams()->getQuery();
     }
-    
+
     /**
      * GetSelectedCoordinates
-     * 
+     *
      * Return coordinates selected by user
-     * 
+     *
      * @return array of floats
      */
     public function getSelectedCoordinates()
     {
         return $this->selectedCoordinates;
     }
-    
+
     /**
      * GetDefaultCoordinates
      *
@@ -269,37 +269,37 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
     {
         return $this->defaultCoordinates;
     }
-    
-    /** 
+
+    /**
      * GetHeight
-     * 
+     *
      * Return height of map in pixels
-     * 
+     *
      * @return number
      */
     public function getHeight()
     {
         return $this->height;
     }
-    
+
     /**
      * GetSearchParams
-     * 
+     *
      * Return search params without filter for geographic search
-     * 
+     *
      * @return string
      */
     public function getSearchParams()
     {
         return $this->searchParams;
     }
-    
+
     /**
      * GetSearchParams no question mark at end
      *
      * Return search params without leading question mark and colon.
-     * Copied from ResultGoogleMapAjax.php and chngd name to add NoQ.LMG 
-     * 
+     * Copied from ResultGoogleMapAjax.php and chngd name to add NoQ.LMG
+     *
      * @return string
      */
     public function getSearchParamsNoQ()
@@ -310,17 +310,18 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
 
     /**
      * GetGeoField
-     * 
+     *
      * Return Solr field to use for geographic search
-     * 
+     *
      * @return string
      */
     public function getGeoField()
     {
         return $this->geoField;
     }
+
     /**
-     * Get bbox_geo field values for all search results
+     * Get geo field values for all search results
      *
      * @return array
      */
@@ -329,24 +330,26 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $result = [];
         $params = $this->searchFilters;
         // Check to makes sure we have a geographic search
-        if (strpos($params->get('fq')[0], 'bbox_geo') !== false) {
+        if (strpos($params->get('fq')[0], $this->geoField) !== false) {
             $params->mergeWith($this->queryBuilder->build($this->searchQuery));
-            $params->set('fl', 'id, bbox_geo, title');
+            $params->set('fl', 'id, ' . $this->geoField . ', title');
             $params->set('wt', 'json');
             $params->set('rows', '10000000'); // set to return all results
             $response = json_decode($this->solrConnector->search($params));
             foreach ($response->response->docs as $current) {
-                $result[] = [$current->id, $current->bbox_geo, $current->title];
+                $result[] = [
+                    $current->id, $current->{$this->geoField}, $current->title
+                ];
             }
         }
         return $result;
     }
-    
+
     /**
      * Convert coordinates to 360 degree grid
      *
      * @param array $coordinates coordinates for conversion
-     * 
+     *
      * @return array
      */
     public function coordinatesToGrid($coordinates)
@@ -367,7 +370,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         $gridCoords = [$coordW, $coordE, $coordN, $coordS];
         return $gridCoords;
     }
-    
+
     /**
      * Convert coordinates to longitude latitude grid
      *
@@ -417,7 +420,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
      *
      * @param array $bboxCoords searchbox coordinates
      * @param array $coordinate result record coordinates
-     * 
+     *
      * @return bool
      */
     public function coordBboxIntersect($bboxCoords, $coordinate)
@@ -457,12 +460,12 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface
         }
         return $coordIntersect;
     }
-    
+
     /**
      * Calculate center point of coordinate set
      *
      * @param array $coordinate centerPoint coordinate
-     * 
+     *
      * @return array
      */
     public function calculateCenterPoint($coordinate)

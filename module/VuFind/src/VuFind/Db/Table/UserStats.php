@@ -51,9 +51,9 @@ class UserStats extends Gateway
     /**
      * Returns the list of most popular browsers with use counts
      *
-     * @param boolean $withVersions Include browser version numbers?
+     * @param bool $withVersions Include browser version numbers?
      * True = versions (Firefox 12.0) False = names only (Firefox).
-     * @param integer $limit        How many to return
+     * @param int  $limit        How many to return
      *
      * @return array
      */

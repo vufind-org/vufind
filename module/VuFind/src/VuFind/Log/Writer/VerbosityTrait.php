@@ -48,7 +48,7 @@ trait VerbosityTrait
     /**
      * Set verbosity
      *
-     * @param integer $verb verbosity setting
+     * @param int $verb verbosity setting
      *
      * @return void
      */

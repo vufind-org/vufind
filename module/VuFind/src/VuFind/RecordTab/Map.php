@@ -146,7 +146,7 @@ class Map extends AbstractBase
     public function isActive()
     {
         if ($this->mapType == 'openlayers') {
-            $geocoords = $this->getRecordDriver()->tryMethod('getBbox');
+            $geocoords = $this->getRecordDriver()->tryMethod('getGeoLocation');
             return !empty($geocoords);
         } else if ($this->mapType == 'google') {
             $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
@@ -188,14 +188,14 @@ class Map extends AbstractBase
      *
      * @return array
      */
-    public function getBboxCoords()
+    public function getGeoLocationCoords()
     {
-        $geoCoords = $this->getRecordDriver()->tryMethod('getBbox');
+        $geoCoords = $this->getRecordDriver()->tryMethod('getGeoLocation');
         if (empty($geoCoords)) {
             return [];
         }
         $coordarray = [];
-        /* Extract coordinates from bbox_geo field */
+        /* Extract coordinates from location_geo field */
         foreach ($geoCoords as $key => $value) {
             $match = [];
             if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $value, $match)) {
@@ -295,7 +295,7 @@ class Map extends AbstractBase
      */
     public function getMapTabData()
     {
-        $geoCoords = $this->getBboxCoords();
+        $geoCoords = $this->getGeoLocationCoords();
         if (empty($geoCoords)) {
             return [];
         }

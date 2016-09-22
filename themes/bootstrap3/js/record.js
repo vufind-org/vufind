@@ -113,7 +113,9 @@ function registerAjaxCommentRecord() {
       refreshCommentList($tab, id, recordSource);
       $(form).find('textarea[name="comment"]').val('');
       $(form).find('input[type="submit"]').button('loading');
-      grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
+      if (grecaptcha) {
+        grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
+      }
     })
     .fail(function addCommentFail(response, textStatus) {
       if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
