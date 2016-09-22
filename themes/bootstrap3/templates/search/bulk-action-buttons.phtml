@@ -1,6 +1,6 @@
 <? if((isset($this->showBulkOptions)  && $this->showBulkOptions)
    || (isset($this->showCartControls) && $this->showCartControls)): ?>
-  <div class="bulkActionButtons hidden-print">
+  <div class="bulkActionButtons hidden-print<?if($this->idPrefix):?> form-inline<? endif; ?>">
     <div class="checkbox">
       <label>
         <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?if($this->idPrefix):?> form="search-cart-form"<? endif; ?>/> <?=$this->transEsc('select_page')?>
