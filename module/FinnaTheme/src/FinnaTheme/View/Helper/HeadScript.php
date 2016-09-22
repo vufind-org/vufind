@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace Finna\View\Helper\Root;
+namespace FinnaTheme\View\Helper;
 use VuFindTheme\ThemeInfo;
 use Zend\Http\Request;
 
@@ -50,12 +50,13 @@ class HeadScript extends \VuFindTheme\View\Helper\HeadScript
     /**
      * Constructor
      *
-     * @param ThemeInfo $themeInfo Theme information service
-     * @param Request   $request   Request
+     * @param ThemeInfo   $themeInfo Theme information service
+     * @param string|bool $plconfig  Whether or not to concatenate
+     * @param Request     $request   Request
      */
-    public function __construct(ThemeInfo $themeInfo, Request $request)
+    public function __construct(ThemeInfo $themeInfo, $plconfig, Request $request)
     {
-        parent::__construct($themeInfo);
+        parent::__construct($themeInfo, $plconfig);
         $this->request = $request;
     }
 

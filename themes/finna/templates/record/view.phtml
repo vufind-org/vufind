@@ -99,18 +99,16 @@
  </div>
 </div>
 <div class="container">
-<div class="row record-row">
+<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> row record-row">
   <div class="col-xs-12">
       <?=$this->record($this->driver)->getToolbar()?>
   </div>
   <div class="col-sm-9">
-    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
-      <?=$this->flashmessages()?>
-      <?=$this->record($this->driver)->getMetaTags();?>
-      <?=$this->record($this->driver)->getCoreMetadata()?>
-    </div>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
+    <?=$this->flashmessages()?>
+    <?=$this->record($this->driver)->getMetaTags();?>
+    <?=$this->record($this->driver)->getCoreMetadata()?>
 
     <? // N.B. The element/class structure here is important for the ajax tabs to work properly ?>
     <div class="record-tabs">
@@ -137,7 +135,7 @@
               if (strtolower($tab) == 'details') { $tab_classes[] = 'hidden-xs'; }
             ?>
             <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-            <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?><? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?></a>
+            <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<? endif ?>><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?><? if (strtolower($tab) == 'usercomments') : ?>(<span class="count"><?= count($this->driver->getComments()) ?></span>)<? endif; ?></a>
           </li>
           <? endforeach; ?>
         </ul>

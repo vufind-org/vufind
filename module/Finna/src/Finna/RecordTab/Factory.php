@@ -67,9 +67,14 @@ class Factory
      */
     public static function getUserComments(ServiceManager $sm)
     {
-        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $enabled = !isset($cfg->Social->comments)
-            || ($cfg->Social->comments && $cfg->Social->comments !== 'disabled');
-        return new UserComments($enabled);
+        $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $useRecaptcha = isset($config->Captcha) && isset($config->Captcha->forms)
+            && (trim($config->Captcha->forms) === '*'
+            || strpos($config->Captcha->forms, 'userComments'));
+        return new UserComments(
+            'enabled' === $capabilities->getCommentSetting(),
+            $useRecaptcha
+        );
     }
 }

@@ -90,21 +90,19 @@
 </div>
 <div class="container">
 <? endif; ?>
-<div class="row record-row">
+<div class="record row record-row">
   <div class="col-xs-12">
     <?=$this->record($this->driver)->getToolbar()?>
   </div>
   <div class="col-sm-9">
-    <div class="record">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
-      <?=$this->flashmessages()?>
-      <h2 class="collection-title"><?=$this->driver->getTitle();?></h2>
-      <div class="truncate-field wide">
-        <?=implode('<br><br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
-      </div>
-      <a href="<?=$this->url('record') . urlencode($this->driver->getUniqueID()); ?>"><?=$this->transEsc('Collection Details'); ?></a>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+    <?=$this->flashmessages()?>
+    <h2 class="collection-title"><?=$this->driver->getTitle();?></h2>
+    <div class="truncate-field wide">
+      <?=implode('<br><br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
     </div>
+    <a href="<?=$this->url('record') . urlencode($this->driver->getUniqueID()); ?>"><?=$this->transEsc('Collection Details'); ?></a>
 
     <? // N.B. The element/class structure here is important for the ajax tabs to work properly ?>
     <div class="record-tabs">
@@ -127,7 +125,7 @@
               if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
             ?>
             <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-            <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" ><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?></a>
+            <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<? endif ?>><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?></a>
           </li>
           <? endforeach; ?>
         </ul>

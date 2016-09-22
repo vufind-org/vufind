@@ -27,7 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace Finna\View\Helper\Root;
+namespace FinnaTheme\View\Helper;
 use Finna\Cache\Manager;
 use VuFindTheme\ThemeInfo;
 use Zend\Http\Request;
@@ -61,14 +61,15 @@ class HeadLink extends \VuFindTheme\View\Helper\HeadLink
     /**
      * Constructor
      *
-     * @param ThemeInfo $themeInfo    Theme information service
-     * @param Request   $request      Request
-     * @param Manager   $cacheManager Cache manager
+     * @param ThemeInfo   $themeInfo    Theme information service
+     * @param string|bool $plconfig     Config for current application environment
+     * @param Request     $request      Request
+     * @param Manager     $cacheManager Cache manager
      */
-    public function __construct(ThemeInfo $themeInfo, Request $request,
+    public function __construct(ThemeInfo $themeInfo, $plconfig, Request $request,
         $cacheManager
     ) {
-        parent::__construct($themeInfo);
+        parent::__construct($themeInfo, $plconfig);
         $this->request = $request;
         $this->cacheManager = $cacheManager;
     }

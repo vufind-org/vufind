@@ -28,6 +28,22 @@ title           = "Finna"
 ; This is the default theme for non-mobile devices (or all devices if mobile_theme
 ; is disabled below)
 theme           = finna
+
+; Automatic asset minification and concatenation setting. When active, HeadScript
+; and HeadLink will concatenate and minify all viable files to reduce requests and
+; load times. This setting is off by default.
+;
+; This configuration takes the form of a semi-colon separated list of
+; environment:configuration pairs where "environment" is a possible APPLICATION_ENV
+; value (e.g. 'production' or 'development') or '*'/no prefix for all contexts.
+; Possible values for 'configuration' within each environment are 'js', 'css',
+; 'off'/false, 'on'/true/'*'. This allows global enabling/disabling of the pipeline
+; or separate configurations for different types of resources. Multiple configuration
+; values may be comma-separated -- e.g. 'js,css'.
+;
+; Example: "development:off; production:js,css"
+asset_pipeline = "production:js"
+
 ; Uncomment the following line to use a different default theme for mobile devices
 ;mobile_theme    = jquerymobile
 ; This is a comma-separated list of themes that may be accessed via the ?ui GET
@@ -834,6 +850,11 @@ skip_numeric = true
 file           = /var/log/vufind2.log:alert-5,error-3,notice
 ;email          = alerts@myuniversity.edu:alert-5,error-5
 
+; Get URL from https://YOURSLACK.slack.com/apps/manage/custom-integrations
+;slack = #channel_name:alert,error
+;slackurl = https://hooks.slack.com/services/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
+;slackname = "VuFind Log" ; username messages are posted under
+
 ; This section can be used to specify a "parent configuration" from which
 ; the current configuration file will inherit.  You can chain multiple
 ; configurations together if you wish.
@@ -1219,6 +1240,20 @@ email_subject     = "Palautetta Finnasta"
 sender_email      = "noreply@finna.fi"
 sender_name       = "Finna-palaute"
 
+; Activate Captcha validation on select forms
+; VuFind will use reCaptcha validation to prevent bots from using certain actions of
+; your instance. See http://www.google.com/recaptcha for more information on Captcha
+; and create keys for your domain.
+; You will need to provide a sslcapath in the [Http] section for your Captcha to work.
+;[Captcha]
+;siteKey  = "get your reCaptcha key at"
+;secretKey = "https://www.google.com/recaptcha/admin/create"
+; Valid theme values: dark, light
+;theme      = light
+; Valid forms values: changePassword, email, feedback, newAccount, passwordRecovery, sms, userComments
+; Use * for all supported forms
+;forms = changePassword, email, newAccount, passwordRecovery, sms
+
 ; This section allows configuration of VuFind's social features
 [Social]
 ; Tags may be "enabled" or "disabled" (default = "enabled")
@@ -1227,7 +1262,9 @@ tags = disabled
 ; This controls the maximum length of a single tag; it should correspond with the
 ; field size in the tags database table.
 max_tag_length = 64
-tags = disabled
+; This controls whether tags are case-sensitive (true) or always forced to be
+; represented as lowercase strings (false -- the default).
+case_sensitive_tags = false
 
 ; Uncomment this section and provide your API key to enable Google Analytics
 ;[GoogleAnalytics]

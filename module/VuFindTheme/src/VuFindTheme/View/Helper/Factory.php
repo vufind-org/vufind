@@ -48,7 +48,7 @@ class Factory
      *
      * @return HeadLink
      */
-    protected static function getPipelineConfig(ServiceManager $sm)
+    public static function getPipelineConfig(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $default = false;
