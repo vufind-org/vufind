@@ -11,7 +11,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
   var searchboxSource = new ol.source.Vector();
   var searchboxStyle = new ol.style.Style({
     fill: new ol.style.Fill({
-      color: [255, 0, 0, .1]
+      color: [255, 0, 0, 0.1]
     }),
     stroke: new ol.style.Stroke({
       color: [255, 0, 0, 1],
@@ -62,7 +62,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
               }),
               fill: new ol.style.Fill({
                 color: '#ffb3b3'
-              }) 
+              })
             }),
             text: new ol.style.Text({
               text: size.toString(),
@@ -70,14 +70,14 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
               fill: new ol.style.Fill({
                 color: 'black'
               })
-            }) 
+            })
           })
         ];
         styleCache[size] = style;
       }
       map.removeInteraction(draw);
       return style;
-    }   
+    }
   });
 
   $('#geo_search').show();
@@ -107,7 +107,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
         ol.proj.transform([boundingBox[2], boundingBox[1]], srcProj, dstProj),
         ol.proj.transform([boundingBox[2], boundingBox[3]], srcProj, dstProj),
         ol.proj.transform([boundingBox[0], boundingBox[3]], srcProj, dstProj)
-      ]]); 
+      ]]);
       var featureBbox = new ol.Feature({
         name: "bbox",
         geometry: newBbox
@@ -115,7 +115,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
       searchboxSource.addFeature(featureBbox);
       map.getView().fit(searchboxSource.getExtent(), map.getSize());
     }
-  
+
     //Get popup elements from webpage
     var element = document.getElementById('popup');
 
@@ -188,10 +188,10 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
           map.getTargetElement().style.cursor = 'pointer';
         } else {
           map.getTargetElement().style.cursor = 'default';
-        } 
+        }
       }
-    });  
-  } 
+    });
+  };
   function addInteraction() {
     draw = new ol.interaction.Draw ({
       source: searchboxSource,
@@ -226,7 +226,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
         north = eastsouth[1];
         south = westnorth[1];
       }
-      // Make corrections for queries that cross the dateline 
+      // Make corrections for queries that cross the dateline
       if (west > 180) {
         if (west > 360) {
           west = west - (360 * Math.floor(west / -360));
@@ -246,7 +246,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
         } else {
           west = west + 360;
         }
-      }         
+      }
       if (east > 180) {
         // Fix overlapping longitudinal query parameters
         if (east > 360) {
@@ -262,11 +262,11 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
       location.href = baseURL + searchParams + "&filter[]=" + rawFilter;
     }, this);
     map.addInteraction(draw);
-  }   
+  }
   init();
   document.getElementById("draw_box").onclick = function clearAndDrawMap() {
     map.removeInteraction(draw);
     addInteraction();
-  }  
+  };
   init = false;
 }
