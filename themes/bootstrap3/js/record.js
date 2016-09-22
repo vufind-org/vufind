@@ -79,7 +79,10 @@ function refreshCommentList($target, recordId, recordSource) {
     });
     $target.find('.comment-form input[type="submit"]').button('reset');
     if (typeof grecaptcha !== 'undefined') {
-      grecaptcha.reset();
+      var captcha = $target.find('.g-recaptcha');
+      if (captcha.length > 0) {
+        grecaptcha.reset(captcha.data('captchaId'));
+      }
     }
   });
 }
@@ -114,7 +117,10 @@ function registerAjaxCommentRecord() {
       $(form).find('textarea[name="comment"]').val('');
       $(form).find('input[type="submit"]').button('loading');
       if (typeof grecaptcha !== 'undefined') {
-        grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
+        var captcha = $(form).find('.g-recaptcha');
+        if (captcha.length > 0) {
+          grecaptcha.reset(captcha.data('captchaId'));
+        }
       }
     })
     .fail(function addCommentFail(response, textStatus) {

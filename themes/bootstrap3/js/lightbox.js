@@ -278,7 +278,10 @@ VuFind.register('lightbox', function Lightbox() {
       data: data
     }).done(function recaptchaReset() {
       if (typeof grecaptcha !== 'undefined') {
-        grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
+        var captcha = $(form).find('.g-recaptcha');
+        if (captcha.length > 0) {
+          grecaptcha.reset(captcha.data('captchaId'));
+        }
       }
     });
 
