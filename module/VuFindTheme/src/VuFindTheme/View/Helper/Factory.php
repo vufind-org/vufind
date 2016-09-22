@@ -46,7 +46,7 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return HeadLink
+     * @return string|bool
      */
     protected static function getPipelineConfig(ServiceManager $sm)
     {
