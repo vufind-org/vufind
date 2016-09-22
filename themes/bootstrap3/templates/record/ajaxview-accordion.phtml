@@ -61,18 +61,14 @@
       </div>
     </div>
   <? endif; ?>
-
   <? if (count($this->tabs) > 0): ?>
     <? foreach ($this->tabs as $tab => $obj): ?>
       <? // add current tab to breadcrumbs if applicable:
         $desc = $obj->getDescription();
         $tab_classes = array();
-        $active = false;
-        if ($this->defaultTab === strtolower($tab)) {
-          $active = !$this->ajaxTabs || !$obj->supportsAjax();
-        }
         if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
         if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+        if ($this->defaultTab === strtolower($tab)) { $tab_classes[] = 'default'; }
       ?>
       <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
         <div id="<?=strtolower($tab)?>_<?=$idSuffix?>" class="list-tab-toggle panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffix?>" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-content"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<? endif ?>>
@@ -80,7 +76,7 @@
             <a class="accordion-toggle" data-href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$desc ?></a>
           </h4>
         </div>
-        <div id="<?=strtolower($tab)?>_<?=$idSuffix?>-content" class="list-tab-content panel-collapse collapse<? if($active): ?> in<? endif; ?>"></div>
+        <div id="<?=strtolower($tab)?>_<?=$idSuffix?>-content" class="list-tab-content panel-collapse collapse<? if($this->defaultTab === strtolower($tab)): ?> in<? endif; ?>"></div>
       </div>
     <? endforeach; ?>
   <? endif; ?>
