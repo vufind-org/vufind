@@ -1797,7 +1797,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get longitude/latitude text (or false if not available).
+     * Get longitude/latitude values (or empty array if not available).
      *
      * @return array
      */
