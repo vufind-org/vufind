@@ -57,7 +57,13 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
   });
 }
 
-function refreshCommentList($target, recordId, recordSource) {
+function addRecordCommentCallback(event, form) {
+  refreshCommentList($(form).closest('.record'));
+  $(form).find('textarea').val('');
+}
+function refreshCommentList($target, _id, _source) {
+  var recordId = _id || $target.find('.hiddenId').val();
+  var recordSource = _source || $target.find('.hiddenSource').val();
   var url = VuFind.path + '/AJAX/JSON?' + $.param({
     method: 'getRecordCommentsAsHTML',
     id: recordId,
@@ -78,64 +84,10 @@ function refreshCommentList($target, recordId, recordSource) {
       return false;
     });
     $target.find('.comment-form input[type="submit"]').button('reset');
-    if (typeof grecaptcha !== 'undefined') {
-      grecaptcha.reset();
-    }
   });
-}
-
-function registerAjaxCommentRecord() {
-  // Form submission
-  $('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
-    var form = this;
-    var id = form.id.value;
-    var recordSource = form.source.value;
-    var url = VuFind.path + '/AJAX/JSON?' + $.param({ method: 'commentRecord' });
-    var data = {
-      comment: form.comment.value,
-      id: id,
-      source: recordSource
-    };
-    if (typeof grecaptcha !== 'undefined') {
-      var recaptcha = $(form).find('.g-recaptcha');
-      if (recaptcha.length > 0) {
-        data['g-recaptcha-response'] = grecaptcha.getResponse(recaptcha.data('captchaId'));
-      }
-    }
-    $.ajax({
-      type: 'POST',
-      url: url,
-      data: data,
-      dataType: 'json'
-    })
-    .done(function addCommentDone(/*response, textStatus*/) {
-      var $tab = $(form).closest('.tab-pane');
-      refreshCommentList($tab, id, recordSource);
-      $(form).find('textarea[name="comment"]').val('');
-      $(form).find('input[type="submit"]').button('loading');
-      if (typeof grecaptcha !== 'undefined') {
-        grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
-      }
-    })
-    .fail(function addCommentFail(response, textStatus) {
-      if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') { return; }
-      VuFind.lightbox.alert(response.responseJSON.data, 'danger');
-    });
-    return false;
-  });
-  // Delete links
-  $('.delete').click(function commentDeleteClick() {
-    var commentId = this.id.substr('recordComment'.length);
-    deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), commentId);
-    return false;
-  });
-  // Prevent form submit
-  return false;
 }
 
 function registerTabEvents() {
-  // Logged in AJAX
-  registerAjaxCommentRecord();
   // Render recaptcha
   recaptchaOnLoad();
   // Delete links
