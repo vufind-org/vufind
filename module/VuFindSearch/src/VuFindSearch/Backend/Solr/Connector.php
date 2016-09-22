@@ -66,7 +66,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @see self::query()
      *
-     * @var integer
+     * @var int
      */
     const MAX_GET_URL_LENGTH = 2048;
 

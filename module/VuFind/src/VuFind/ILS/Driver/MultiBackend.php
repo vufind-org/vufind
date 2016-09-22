@@ -701,8 +701,8 @@ class MultiBackend extends AbstractBase
     /**
      * Get request groups
      *
-     * @param integer $id     BIB ID
-     * @param array   $patron Patron information returned by the patronLogin
+     * @param int   $id     BIB ID
+     * @param array $patron Patron information returned by the patronLogin
      * method.
      *
      * @return array  An array of associative arrays with requestGroupId and
