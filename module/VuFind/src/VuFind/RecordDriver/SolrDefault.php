@@ -1920,10 +1920,10 @@ class SolrDefault extends AbstractBase
      *
      * @return array
      */
-    public function getBbox()
+    public function getGeoLocation()
     {
-        return isset($this->fields['bbox_geo'])
-            ? $this->fields['bbox_geo'] : [];
+        return isset($this->fields['location_geo'])
+            ? $this->fields['location_geo'] : [];
     }
 
     /**

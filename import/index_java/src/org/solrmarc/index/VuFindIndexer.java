@@ -1433,7 +1433,7 @@ public class VuFindIndexer extends SolrIndexer
      */
 
     /**
-     * Convert MARC coordinates into bbox_geo format.
+     * Convert MARC coordinates into location_geo format.
      *
      * @param  Record record
      * @return List   geo_coordinates
