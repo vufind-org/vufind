@@ -1,5 +1,5 @@
-/*global deparam, grecaptcha, recaptchaOnLoad, syn_get_widget, userIsLoggedIn, VuFind */
-/*exported ajaxTagUpdate, recordDocReady */
+/*global deparam, recaptchaOnLoad, syn_get_widget, userIsLoggedIn, VuFind */
+/*exported addRecordCommentCallback, ajaxTagUpdate, recordDocReady */
 
 /**
  * Functions and event handlers specific to record pages.

@@ -363,10 +363,10 @@ $(document).ready(function commonDocReady() {
   $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
 
   // retain filter sessionStorage
-  $('.searchFormKeepFilters').click(function() {
+  $('.searchFormKeepFilters').click(function sessionRetainFilters() {
     sessionStorage.setItem('vufind_retain_filters', this.checked);
   });
   if (sessionStorage.getItem('vufind_retain_filters')) {
-    $('.searchFormKeepFilters').prop('checked', sessionStorage.getItem('vufind_retain_filters') == 'true');
+    $('.searchFormKeepFilters').prop('checked', sessionStorage.getItem('vufind_retain_filters') === 'true');
   }
 });
