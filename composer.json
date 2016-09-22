@@ -28,7 +28,8 @@
         "zendframework/zendframework": "2.4.6",
         "zendframework/zendrest": "2.0.2",
         "zendframework/zendservice-amazon": "2.0.4",
-        "zf-commons/zfc-rbac": "2.5.2"
+        "zf-commons/zfc-rbac": "2.5.2",
+        "ghislainf/zf2-whoops": "dev-master"
     },
     "require-dev": {
         "behat/mink": "1.7.0",
