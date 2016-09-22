@@ -163,7 +163,7 @@ function phoneNumberFormHandler(numID, regionCode) {
 
 // Setup captchas after Google script loads
 function recaptchaOnLoad() {
-  if (grecaptcha) {
+  if (typeof grecaptcha !== 'undefined') {
     var captchas = $('.g-recaptcha:empty');
     for (var i = 0; i < captchas.length; i++) {
       captchas[i].dataset.captchaId = grecaptcha.render(captchas[i], captchas[i].dataset);

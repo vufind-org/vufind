@@ -226,7 +226,7 @@ VuFind.register('lightbox', function Lightbox() {
     var form = event.target;
     var data = $(form).serializeArray();
     // Check for recaptcha
-    if (grecaptcha) {
+    if (typeof grecaptcha !== 'undefined') {
       var recaptcha = $(form).find('.g-recaptcha');
       if (recaptcha.length > 0) {
         data.push({ name: 'g-recaptcha-response', value: grecaptcha.getResponse(recaptcha.data('captchaId')) });
@@ -277,7 +277,7 @@ VuFind.register('lightbox', function Lightbox() {
       method: $(form).attr('method') || 'GET',
       data: data
     }).done(function recaptchaReset() {
-      if (grecaptcha) {
+      if (typeof grecaptcha !== 'undefined') {
         grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
       }
     });

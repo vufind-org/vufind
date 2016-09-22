@@ -96,7 +96,7 @@ function registerAjaxCommentRecord() {
       id: id,
       source: recordSource
     };
-    if (grecaptcha) {
+    if (typeof grecaptcha !== 'undefined') {
       var recaptcha = $(form).find('.g-recaptcha');
       if (recaptcha.length > 0) {
         data['g-recaptcha-response'] = grecaptcha.getResponse(recaptcha.data('captchaId'));
@@ -113,7 +113,7 @@ function registerAjaxCommentRecord() {
       refreshCommentList($tab, id, recordSource);
       $(form).find('textarea[name="comment"]').val('');
       $(form).find('input[type="submit"]').button('loading');
-      if (grecaptcha) {
+      if (typeof grecaptcha !== 'undefined') {
         grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
       }
     })
