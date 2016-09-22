@@ -11,23 +11,7 @@ AllFields:
     - allfields
   DismaxParams:
     - [bq, (record_type:"Personal Name" OR record_type:"Corporate Name")^500]
-  QueryFields:
-    heading_keywords:
-      - [onephrase, 1000]
-      - [and, 750]
-      - [or, 10]
-    use_for_keywords:
-      - [onephrase, 500]
-      - [and, 400]
-      - [or, 5]
-    see_also_keywords:
-      - [onephrase, 130]
-      - [and, 100]
-      - [or, 2]
-    allfields:
-      - [onephrase, 50]
-      - [and, 10]
-      - [or, ~]
+  DismaxHandler: edismax
 
 Heading:
   DismaxFields:
@@ -36,27 +20,11 @@ Heading:
     - see_also_keywords^100
   DismaxParams:
     - [bq, (record_type:"Personal Name" OR record_type:"Corporate Name")^500]
-  QueryFields:
-    heading_keywords:
-      - [onephrase, 1000]
-      - [and, 750]
-      - [or, 10]
-    use_for_keywords:
-      - [onephrase, 500]
-      - [and, 400]
-      - [or, 5]
-    see_also_keywords:
-      - [onephrase, 130]
-      - [and, 100]
-      - [or, 2]
+  DismaxHandler: edismax
 
 MainHeading:
   DismaxFields:
     - heading_keywords^750
   DismaxParams:
     - [bq, (record_type:"Personal Name" OR record_type:"Corporate Name")^500]
-  QueryFields:
-    heading_keywords:
-      - [onephrase, 1000]
-      - [and, 750]
-      - [or, 10]
+  DismaxHandler: edismax

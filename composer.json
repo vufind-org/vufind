@@ -14,6 +14,7 @@
         "cap60552/php-sip2": "1.0.0",
         "los/losrecaptcha": "1.0.0",
         "ahand/mobileesp": "dev-master",
+        "matthiasmullie/minify": "1.3.35",
         "ocramius/proxy-manager": "1.0.2",
         "oyejorge/less.php": "1.7.0.9",
         "pear/file_marc": "1.1.2",

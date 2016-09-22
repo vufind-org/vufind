@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  RecordTabs
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Leila Gonzales <lmg@agiweb.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
@@ -33,6 +34,7 @@ namespace VuFind\RecordTab;
  * @category VuFind
  * @package  RecordTabs
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Leila Gonzales <lmg@agiweb.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
@@ -44,6 +46,20 @@ class Map extends AbstractBase
      * @var string
      */
     protected $mapType = null;
+
+    /**
+     * Should we display coordinates as part of labels?
+     *
+     * @var bool
+     */
+    protected $displayCoords = false;
+
+    /**
+     * Map labels setting from config.ini.
+     *
+     * @var string
+     */
+    protected $mapLabels = null;
 
     /**
      * Google Maps API key.
@@ -69,7 +85,14 @@ class Map extends AbstractBase
                 throw new \Exception('Google API key must be set in config.ini');
             }
             $this->googleMapApiKey = $options['googleMapApiKey'];
+        case 'openlayers':
             $this->mapType = trim(strtolower($mapType));
+            $legalOptions = ['displayCoords', 'mapLabels'];
+            foreach ($legalOptions as $option) {
+                if (isset($options[$option])) {
+                    $this->$option = $options[$option];
+                }
+            }
             break;
         }
     }
@@ -81,7 +104,7 @@ class Map extends AbstractBase
      */
     public function supportsAjax()
     {
-        // No, Google script magic required
+        // No, magic required
         return false;
     }
 
@@ -93,28 +116,6 @@ class Map extends AbstractBase
     public function getDescription()
     {
         return 'Map View';
-    }
-
-    /**
-     * Get the JSON needed to display the record on a Google map.
-     *
-     * @return string
-     */
-    public function getGoogleMapMarker()
-    {
-        $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
-        if (empty($longLat)) {
-            return json_encode([]);
-        }
-        $longLat = explode(',', $longLat);
-        $markers = [
-            [
-                'title' => (string) $this->getRecordDriver()->getBreadcrumb(),
-                'lon' => $longLat[0],
-                'lat' => $longLat[1]
-            ]
-        ];
-        return json_encode($markers);
     }
 
     /**
@@ -144,10 +145,187 @@ class Map extends AbstractBase
      */
     public function isActive()
     {
-        if ($this->mapType == 'google') {
+        if ($this->mapType == 'openlayers') {
+            $geocoords = $this->getRecordDriver()->tryMethod('getBbox');
+            return !empty($geocoords);
+        } else if ($this->mapType == 'google') {
             $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
             return !empty($longLat);
         }
         return false;
+    }
+
+    /**
+     * Get the JSON needed to display the record on a Google map.
+     *
+     * @return string
+     */
+    public function getGoogleMapMarker()
+    {
+        $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
+        if (empty($longLat)) {
+            return json_encode([]);
+        }
+        $markers = [];
+        $mapDisplayLabels = $this->getMapLabels();
+        foreach ($longLat as $key => $value) {
+            $coordval = explode(',', $value);
+            $label = isset($mapDisplayLabels[$key])
+                ? $mapDisplayLabels[$key] : '';
+            $markers[] = [
+                [
+                    'title' => $label,
+                    'lon' => $coordval[0],
+                    'lat' => $coordval[1]
+                ]
+            ];
+        }
+        return json_encode($markers);
+    }
+
+    /**
+     * Get the bbox-geo coordinates.
+     *
+     * @return array
+     */
+    public function getBboxCoords()
+    {
+        $geoCoords = $this->getRecordDriver()->tryMethod('getBbox');
+        if (empty($geoCoords)) {
+            return [];
+        }
+        $coordarray = [];
+        /* Extract coordinates from bbox_geo field */
+        foreach ($geoCoords as $key => $value) {
+            $match = [];
+            if (preg_match('/ENVELOPE\((.*),(.*),(.*),(.*)\)/', $value, $match)) {
+                $lonW = (float)$match[1];
+                $lonE = (float)$match[2];
+                $latN = (float)$match[3];
+                $latS = (float)$match[4];
+                // Display as point or polygon?
+                if (($lonE == $lonW) && ($latN == $latS)) {
+                    $shape = 2;
+                } else {
+                    $shape = 4;
+                }
+                // Coordinates ordered for ol3 display as WSEN
+                array_push($coordarray, [$lonW, $latS, $lonE, $latN, $shape]);
+            }
+        }
+        return $coordarray;
+    }
+
+    /**
+     * Get the map display coordinates.
+     *
+     * @return array
+     */
+    public function getDisplayCoords()
+    {
+        $label_coords = [];
+        $coords = $this->getRecordDriver()->tryMethod('getDisplayCoordinates');
+        foreach ($coords as $val) {
+            $coord = explode(' ', $val);
+            $labelW = $coord[0];
+            $labelE = $coord[1];
+            $labelN = $coord[2];
+            $labelS = $coord[3];
+            /* Create coordinate label for map display */
+            if (($labelW == $labelE) && ($labelN == $labelS)) {
+                $labelcoord = $labelS . ' ' . $labelE;
+            } else {
+                /* Coordinate order is min to max on lat and long axes */
+                $labelcoord = $labelS . ' ' . $labelN . ' ' .
+                $labelW . ' ' . $labelE;
+            }
+            array_push($label_coords, $labelcoord);
+        }
+        return $label_coords;
+    }
+
+    /**
+     * Get the map labels.
+     *
+     * @return array
+     */
+    public function getMapLabels()
+    {
+        $labels = [];
+        $mapLabelData = explode(':', $this->mapLabels);
+        if ($mapLabelData[0] == 'driver') {
+            $labels = $this->getRecordDriver()->tryMethod('getCoordinateLabels');
+            return $labels;
+        }
+        if ($mapLabelData[0] == 'file') {
+            $coords = $this->getRecordDriver()->tryMethod('getDisplayCoordinates');
+            /* read lookup file into array */
+            $label_lookup = [];
+            $file = \VuFind\Config\Locator::getConfigPath($mapLabelData[1]);
+            if (file_exists($file)) {
+                $fp = fopen($file, 'r');
+                while (($line = fgetcsv($fp, 0, "\t")) !== false) {
+                    if (count($line) > 1) {
+                        $label_lookup[$line[0]] = $line[1];
+                    }
+                }
+                fclose($fp);
+            }
+            $labels = [];
+            if (null !== $coords) {
+                foreach ($coords as $val) {
+                    /* Collapse spaces to make combined coordinate string to match
+                        against lookup table coordinate */
+                    $coordmatch = implode('', explode(' ', $val));
+                    /* See if coordinate string matches lookup
+                        table coordinates and if so return label */
+                    $labelname = isset($label_lookup[$coordmatch])
+                        ? $label_lookup[$coordmatch] : '';
+                    array_push($labels, $labelname);
+                }
+            }
+            return $labels;
+        }
+    }
+
+    /**
+     * Construct the map coordinates and labels array.
+     *
+     * @return array
+     */
+    public function getMapTabData()
+    {
+        $geoCoords = $this->getBboxCoords();
+        if (empty($geoCoords)) {
+            return [];
+        }
+        $mapTabData = [];
+        $mapDisplayCoords = [];
+        $mapDisplayLabels = [];
+        if ($this->displayCoords) {
+             $mapDisplayCoords = $this->getDisplayCoords();
+        }
+        if (isset($this->mapLabels)) {
+            $mapDisplayLabels = $this->getMapLabels();
+        }
+        // Pass coordinates, display coordinates, and labels
+        foreach ($geoCoords as $key => $value) {
+            $mapCoords = '';
+            $mapLabel = '';
+            if ($this->displayCoords) {
+                $mapCoords = $mapDisplayCoords[$key];
+            }
+            if (isset($this->mapLabels)) {
+                $mapLabel = $mapDisplayLabels[$key];
+            }
+            array_push(
+                $mapTabData, [
+                    $geoCoords[$key][0], $geoCoords[$key][1],
+                    $geoCoords[$key][2], $geoCoords[$key][3],
+                    $geoCoords[$key][4], $mapLabel, $mapCoords
+                    ]
+            );
+        }
+        return $mapTabData;
     }
 }

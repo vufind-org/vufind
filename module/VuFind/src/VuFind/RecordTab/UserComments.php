@@ -46,13 +46,32 @@ class UserComments extends AbstractBase
     protected $enabled;
 
     /**
+     * Is this tab enabled?
+     *
+     * @var bool
+     */
+    protected $useRecaptcha;
+
+    /**
      * Constructor
      *
      * @param bool $enabled is this tab enabled?
+     * @param bool $urc     use recaptcha?
      */
-    public function __construct($enabled = true)
+    public function __construct($enabled = true, $urc = false)
     {
         $this->enabled = $enabled;
+        $this->useRecaptcha = $urc;
+    }
+
+    /**
+     * Is Recaptcha active?
+     *
+     * @return bool
+     */
+    public function isRecaptchaActive()
+    {
+        return $this->useRecaptcha;
     }
 
     /**

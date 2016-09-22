@@ -39,6 +39,8 @@ use VuFindTheme\ThemeInfo;
  */
 class HeadScript extends \Zend\View\Helper\HeadScript
 {
+    use ConcatTrait;
+
     /**
      * Theme information service
      *
@@ -50,11 +52,23 @@ class HeadScript extends \Zend\View\Helper\HeadScript
      * Constructor
      *
      * @param ThemeInfo $themeInfo Theme information service
+     * @param boolean   $plconfig  Whether or not to concatenate
      */
-    public function __construct(ThemeInfo $themeInfo)
+    public function __construct(ThemeInfo $themeInfo, $plconfig = false)
     {
         parent::__construct();
         $this->themeInfo = $themeInfo;
+        $this->usePipeline = $this->enabledInConfig($plconfig);
+    }
+
+    /**
+     * Folder name and file extension for trait
+     *
+     * @return string
+     */
+    protected function getFileType()
+    {
+        return 'js';
     }
 
     /**
@@ -85,5 +99,59 @@ class HeadScript extends \Zend\View\Helper\HeadScript
         }
 
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
+    }
+
+    /**
+     * Returns true if file should not be included in the compressed concat file
+     * Required by ConcatTrait
+     *
+     * @param stdClass $item Script element object
+     *
+     * @return bool
+     */
+    protected function isExcludedFromConcat($item)
+    {
+        return empty($item->attributes['src'])
+            || isset($item->attributes['conditional'])
+            || strpos($item->attributes['src'], '://');
+    }
+
+    /**
+     * Get the file path from the script object
+     * Required by ConcatTrait
+     *
+     * @param stdClass $item Script element object
+     *
+     * @return string
+     */
+    protected function getResourceFilePath($item)
+    {
+        return $item->attributes['src'];
+    }
+
+    /**
+     * Set the file path of the script object
+     * Required by ConcatTrait
+     *
+     * @param stdClass $item Script element object
+     * @param string   $path New path string
+     *
+     * @return stdClass
+     */
+    protected function setResourceFilePath($item, $path)
+    {
+        $item->attributes['src'] = $path;
+        return $item;
+    }
+
+    /**
+     * Get the minifier that can handle these file types
+     * Required by ConcatTrait
+     *
+     * @return \MatthiasMullie\Minify\JS
+     */
+    protected function getMinifier()
+    {
+        return new \MatthiasMullie\Minify\JS();
     }
 }

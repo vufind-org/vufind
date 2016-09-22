@@ -90,7 +90,7 @@ class Recaptcha extends AbstractPlugin
      */
     public function setErrorMode($mode)
     {
-        if (in_array($mode, ['flash', 'throw'])) {
+        if (in_array($mode, ['flash', 'throw', 'none'])) {
             $this->errorMode = $mode;
             return true;
         }
@@ -125,7 +125,7 @@ class Recaptcha extends AbstractPlugin
             $response = false;
         }
         $captchaPassed = $response && $response->isValid();
-        if (!$captchaPassed) {
+        if (!$captchaPassed && $this->errorMode != 'none') {
             if ($this->errorMode == 'flash') {
                 $this->getController()->flashMessenger()
                     ->addMessage('recaptcha_not_passed', 'error');

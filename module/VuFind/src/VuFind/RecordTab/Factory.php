@@ -181,7 +181,7 @@ class Factory
             ? $config->Content->recordMap : null;
         $options = [];
         $optionFields = [
-            'googleMapApiKey'
+            'displayCoords', 'mapLabels', 'googleMapApiKey'
         ];
         foreach ($optionFields as $field) {
             if (isset($config->Content->$field)) {
@@ -262,6 +262,13 @@ class Factory
     public static function getUserComments(ServiceManager $sm)
     {
         $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
-        return new UserComments('enabled' === $capabilities->getCommentSetting());
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $useRecaptcha = isset($config->Captcha) && isset($config->Captcha->forms)
+            && (trim($config->Captcha->forms) === '*'
+            || strpos($config->Captcha->forms, 'userComments'));
+        return new UserComments(
+            'enabled' === $capabilities->getCommentSetting(),
+            $useRecaptcha
+        );
     }
 }

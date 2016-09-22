@@ -9,6 +9,7 @@ TAGS
 composer.lock
 composer.phar
 import/solrmarc.log
+node_modules
 
 # OS Created Files
 
@@ -44,4 +45,3 @@ local/import/import.properties
 local/import/import_auth.properties
 *.diff
 vufind.bat
-

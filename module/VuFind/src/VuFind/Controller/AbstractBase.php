@@ -637,4 +637,15 @@ class AbstractBase extends AbstractActionController
     {
         $this->followup()->clear('url');
     }
+
+    /**
+     * Get the tab configuration for this controller.
+     *
+     * @return array
+     */
+    protected function getRecordTabConfig()
+    {
+        $cfg = $this->getServiceLocator()->get('Config');
+        return $cfg['vufind']['recorddriver_tabs'];
+    }
 }
