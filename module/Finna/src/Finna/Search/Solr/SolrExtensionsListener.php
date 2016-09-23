@@ -213,11 +213,15 @@ class SolrExtensionsListener
             if (null !== $filters) {
                 foreach ($filters as $value) {
                     if (strncmp($value, '{!geofilt ', 10) == 0) {
-                        $bq = substr_replace($value, 'score=recipDistance ', 10, 0);
+                        // There may be multiple filters. Add bq for all.
                         $boosts = $params->get('bq');
                         if (null === $boosts) {
-                            $boosts = [$bq];
-                        } else {
+                            $boosts = [];
+                        }
+                        foreach (preg_split('/\s+OR\s+/', $value) as $filter) {
+                            $bq = substr_replace(
+                                $filter, 'score=recipDistance ', 10, 0
+                            );
                             $boosts[] = $bq;
                         }
                         $params->set('bq', $boosts);
