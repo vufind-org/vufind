@@ -58,8 +58,8 @@ $('#{$escField}from, #{$escField}to').change(function () {
   $('#{$escField}dateSlider').slider(
     'setValue',
     [
-      Number($('#{$escField}from').val()) <= 0 ? {$min} : Number($('#{$escField}from').val()),
-      Number($('#{$escField}to').val()) <= 0 ? {$max} : Number($('#{$escField}to').val())
+      isNaN(Number($('#{$escField}from').val())) || Number($('#{$escField}from').val()) <= 0 ? {$min} : Number($('#{$escField}from').val()),
+      isNaN(Number($('#{$escField}to').val())) || Number($('#{$escField}to').val()) <= 0 ? {$max} : Number($('#{$escField}to').val())
     ],
     true
   );
