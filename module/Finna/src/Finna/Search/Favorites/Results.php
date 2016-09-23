@@ -46,9 +46,16 @@ class Results extends \VuFind\Search\Favorites\Results
      */
     protected function performSearch()
     {
+        $sort = $this->getParams()->getSort();
+        $sortNewestAddedFirst = $sort == 'id desc';
+        if ($sortNewestAddedFirst) {
+            // Set sort option to 'id' (ascending), since we reverse the
+            // results to a descending (newest first) order (see below).
+            $this->getParams()->setSort('id');
+        }
+
         parent::performSearch();
 
-        $sort = $this->getParams()->getSort();
         // Other sort options are handled in the database, but format is language-
         // specific
         if ($sort === 'format') {
@@ -62,6 +69,9 @@ class Results extends \VuFind\Search\Favorites\Results
             }
             ksort($records);
             $this->results = array_values($records);
+        } else if ($sortNewestAddedFirst) {
+            $this->getParams()->setSort($sort);
+            $this->results = array_reverse($this->results);
         }
     }
 
