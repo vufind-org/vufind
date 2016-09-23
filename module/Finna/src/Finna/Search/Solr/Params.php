@@ -254,7 +254,8 @@ class Params extends \VuFind\Search\Solr\Params
             if (null !== $filters) {
                 foreach ($filters as $filter) {
                     if (strncmp($filter, '{!geofilt ', 10) == 0) {
-                        $result->add('sort', $this->normalizeSort($sort));
+                        $newSort[0] = $this->normalizeSort($sort);
+                        $result->set('sort', $newSort);
                         break;
                     }
                 }
