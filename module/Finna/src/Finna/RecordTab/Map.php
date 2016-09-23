@@ -189,7 +189,7 @@ class Map extends \VuFind\RecordTab\Map
             $lat = (float)$coordinates[1];
             $lon2 = (float)$coordinates[2];
             $lat2 = (float)$coordinates[3];
-            $polygon[] = [$lat, $long];
+            $polygon[] = [$lat, $lon];
             $polygon[] = [$lat, $lon2];
             $polygon[] = [$lat2, $lon2];
             $polygon[] = [$lat2, $lon];
