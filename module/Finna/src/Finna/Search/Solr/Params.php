@@ -246,6 +246,21 @@ class Params extends \VuFind\Search\Solr\Params
             $result->add('debugQuery', 'true');
         }
 
+        // Restore original sort if we have geographic filters
+        $sort = $this->normalizeSort($this->getSort());
+        $newSort = $result->get('sort');
+        if ($newSort && $newSort[0] != $sort) {
+            $filters = $result->get('fq');
+            if (null !== $filters) {
+                foreach ($filters as $filter) {
+                    if (strncmp($filter, '{!geofilt ', 10) == 0) {
+                        $result->add('sort', $this->normalizeSort($sort));
+                        break;
+                    }
+                }
+            }
+        }
+
         return $result;
     }
 
