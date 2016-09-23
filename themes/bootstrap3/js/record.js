@@ -109,7 +109,7 @@ function registerAjaxCommentRecord() {
       dataType: 'json'
     })
     .done(function addCommentDone(/*response, textStatus*/) {
-      var $tab = $(form).closest('.tab-pane');
+      var $tab = $(form).closest('.list-tab-content');
       refreshCommentList($tab, id, recordSource);
       $(form).find('textarea[name="comment"]').val('');
       $(form).find('input[type="submit"]').button('loading');
