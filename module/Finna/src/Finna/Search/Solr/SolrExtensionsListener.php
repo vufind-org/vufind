@@ -152,6 +152,7 @@ class SolrExtensionsListener
                 $this->limitHierarchicalFacets($event);
                 $this->addHiddenComponentPartFilter($event);
                 $this->handleOnlineBoolean($event);
+                $this->addGeoFilterBoost($event);
             }
         }
         return $event;
@@ -193,6 +194,51 @@ class SolrExtensionsListener
                     'fq',
                     'source_str_mv:(' . implode(' OR ', $sources) . ')'
                 );
+            }
+        }
+    }
+
+    /**
+     * Add a boost query for boosting the geo filter
+     *
+     * @param EventInterface $event Event
+     *
+     * @return void
+     */
+    protected function addGeoFilterBoost(EventInterface $event)
+    {
+        $params = $event->getParam('params');
+        if ($params) {
+            $filters = $params->get('fq');
+            if (null !== $filters) {
+                foreach ($filters as $value) {
+                    if (strncmp($value, '{!geofilt ', 10) == 0) {
+                        $bq = substr_replace($value, 'score=recipDistance ', 10, 0);
+                        $boosts = $params->get('bq');
+                        if (null === $boosts) {
+                            $boosts = [$bq];
+                        } else {
+                            $boosts[] = $bq;
+                        }
+                        $params->set('bq', $boosts);
+                        // Set also default query type since bq only works with
+                        // DisMax and eDisMax.
+                        $params->set('defType', 'edismax');
+                        // Use scoring if the query is empty and fallback sort is in
+                        // use
+                        $config = $this->serviceLocator->get('VuFind\Config');
+                        $searchConfig = $config->get($this->searchConfig);
+                        $general = $searchConfig->General;
+                        if (isset($general->empty_search_relevance_override)) {
+                            $override = $general->empty_search_relevance_override;
+                            $sort = $params->get('sort');
+                            if ($sort && $sort[0] == $override) {
+                                $sort[0] = 'score desc';
+                                $params->set('sort', $sort);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
