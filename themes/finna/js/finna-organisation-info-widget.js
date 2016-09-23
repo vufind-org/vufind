@@ -341,6 +341,8 @@ finna = $.extend(finna, {
 
             var img = holder.find('.facility-image');
             if ('pictures' in response) {
+                var imgLink = img.parent('a');
+                imgLink.attr('href', (imgLink.data('href') + '#' + id));
                 var src = response['pictures'][0].url;
                 img.show();
                 if (img.attr('src') != src) {
