@@ -114,7 +114,10 @@ header .fa.fa-bars { font-size: 21px; }
 header .navbar {
   border-radius: 5px 5px 0 0;
   padding: 0 10px;
-  .searchForm { display: none !important; }
+  &.search {
+    border-radius: 0;
+    padding-bottom: 4px;
+  }
   .navbar-brand {
     height: 65px;
     width: 170px;
@@ -136,15 +139,11 @@ header .navbar {
     .navbar-right { margin: 0; }
   }
 }
-header .searchbox {
-  background: linear-gradient(to bottom, #FFF, #EEE);
-  display: block !important;
-}
 header .searchbox .tab-content { border: 0; }
 header .searchbox .tab-content .navbar-text { margin: 5px 10px 5px 0; }
 @media (max-width: 767px) {
   header #header-collapse .navbar-right li { text-align: right; }
-  header .searchForm_type {
+  header #searchForm_type {
     margin-top: 2px;
     margin-bottom: 2px
   }
