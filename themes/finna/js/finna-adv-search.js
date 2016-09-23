@@ -97,7 +97,7 @@ finna.advSearch = (function() {
       
       finna.layout.initMap(map);
 
-      if (options.items) {
+      if (options.items.length > 0) {
         var onLoad = function() {
           var bounds = drawnItems.getBounds();
           map.fitBounds(bounds, {maxZoom: 11});
