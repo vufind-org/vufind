@@ -502,7 +502,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
      *
      * @param string $string String to test.
      *
-     * @return boolean       Does string end in punctuation?
+     * @return bool          Does string end in punctuation?
      */
     protected function isPunctuated($string)
     {

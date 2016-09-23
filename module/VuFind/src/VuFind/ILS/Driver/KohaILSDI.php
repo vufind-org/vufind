@@ -658,7 +658,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             i.copynumber as COPYNO, i.notforloan as NOTFORLOAN,
             i.itemnotes as PUBLICNOTES, b.frameworkcode as DOCTYPE,
             t.frombranch as TRANSFERFROM, t.tobranch as TRANSFERTO,
-            i.itemlost as ITEMLOST
+            i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON
             from items i join biblio b on i.biblionumber = b.biblionumber
             left outer join
                 (SELECT itemnumber, frombranch, tobranch from branchtransfers
@@ -742,7 +742,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             // If Item is Lost or Missing, provide that status
             if ($rowItem['ITEMLOST'] > 0) {
                 $available = false;
-                $duedate = '01/01/2099';
+                $duedate = $rowItem['LOSTON'];
                 $status = 'Lost/Missing';
             }
 

@@ -42,6 +42,7 @@ use VuFind\Search\Solr\HierarchicalFacetListener;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Solr\QueryBuilder;
+use VuFindSearch\Backend\Solr\SimilarBuilder;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Backend;
@@ -156,6 +157,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         $backend = new Backend($connector);
         $backend->setQueryBuilder($this->createQueryBuilder());
+        $backend->setSimilarBuilder($this->createSimilarBuilder());
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
@@ -370,6 +372,18 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $builder->setLuceneHelper($helper);
 
         return $builder;
+    }
+
+    /**
+     * Create the similar records query builder.
+     *
+     * @return SimilarBuilder
+     */
+    protected function createSimilarBuilder()
+    {
+        return new SimilarBuilder(
+            $this->config->get($this->searchConfig), $this->uniqueKey
+        );
     }
 
     /**

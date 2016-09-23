@@ -41,8 +41,8 @@ class IpAddressUtils
     /**
      * Normalize an IP address or a beginning of it to an IPv6 address
      *
-     * @param string  $ip  IP Address
-     * @param boolean $end Whether to make a partial address  an "end of range"
+     * @param string $ip  IP Address
+     * @param bool   $end Whether to make a partial address  an "end of range"
      * address
      *
      * @return string|false Packed in_addr representation if successful, false

@@ -84,7 +84,8 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    protected function makeAccount($page, $username) {
+    protected function makeAccount($page, $username)
+    {
         $this->findCss($page, '.modal-body .createAccountLink')->click();
         $this->snooze();
         $this->fillInAccountForm(
@@ -272,7 +273,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->findCss($page, '.modal .close')->click();
         // Count tags
         $this->snooze();
-        $page = $this->gotoRecord();
         $tags = $page->findAll('css', '.tagList .tag');
         $this->assertEquals(6, count($tags));
     }
