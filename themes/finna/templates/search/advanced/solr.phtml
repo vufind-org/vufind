@@ -62,7 +62,7 @@
   <div class="row">
     <div class="col-xs-12 map-container">
       <fieldset class="well map">
-        <?=$this->render('search/advanced/map.phtml', ['searchClassId' => $searchClassId])?>
+        <?=$this->render('search/advanced/map.phtml', ['searchClassId' => $searchClassId, 'saved' => $this->saved])?>
       </fieldset>
     </div>
   </div>

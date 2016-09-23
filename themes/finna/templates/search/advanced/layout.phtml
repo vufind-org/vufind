@@ -25,9 +25,10 @@
     $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
 
     $searchFilters = $this->saved->getParams()->getFilterList();
-    // Remove date range filter (search_daterange_mv) so that it does not get included
-    // in the  list of active filters
+    // Remove date range filter (search_daterange_mv) and geographic filters so that
+    // they don't get included in the list of active filters
     $searchFilters = $this->saved->getParams()->removeDateRangeFilter($searchFilters);
+    $searchFilters = $this->saved->getParams()->removeGeographicFilters($searchFilters);
     $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
   } else {
     $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
