@@ -330,7 +330,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @return string
      */
-    protected function formatCacheKey($key)
+    protected function getCacheKey($key = null)
     {
         // Override the base class formatting with Voyager-specific details
         // to ensure proper caching in a MultiBackend environment.
@@ -840,11 +840,11 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     /**
      * Get request groups
      *
-     * @param integer $bibId  BIB ID
-     * @param array   $patron Patron information returned by the patronLogin
+     * @param int   $bibId  BIB ID
+     * @param array $patron Patron information returned by the patronLogin
      * method.
      *
-     * @return array  False if request groups not in use or an array of
+     * @return array False if request groups not in use or an array of
      * associative arrays with id and name keys
      */
     public function getRequestGroups($bibId, $patron)
@@ -881,7 +881,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             }
 
             $items = [];
-            foreach ($results->hold as $hold) {
+            foreach ($results->$request as $hold) {
                 foreach ($hold->items->item as $item) {
                     $items[(string)$item->item_id] = 1;
                 }
@@ -1614,8 +1614,8 @@ EOT;
     /**
      * Check whether the given patron has the given bib record on loan.
      *
-     * @param integer $patronId Patron ID
-     * @param integer $bibId    BIB ID
+     * @param int $patronId Patron ID
+     * @param int $bibId    BIB ID
      *
      * @return bool
      */
@@ -1669,8 +1669,8 @@ EOT;
     /**
      * Check whether items exist for the given BIB ID
      *
-     * @param integer $bibId          BIB ID
-     * @param integer $requestGroupId Request group ID or null
+     * @param int $bibId          BIB ID
+     * @param int $requestGroupId Request group ID or null
      *
      * @return bool
      */
@@ -1730,8 +1730,8 @@ EOT;
     /**
      * Check whether there are items available for loan for the given BIB ID
      *
-     * @param integer $bibId          BIB ID
-     * @param integer $requestGroupId Request group ID or null
+     * @param int $bibId          BIB ID
+     * @param int $requestGroupId Request group ID or null
      *
      * @return bool
      */
@@ -3262,9 +3262,23 @@ EOT;
                 $this->sanitizePIN($details['oldPassword']), ENT_COMPAT, 'UTF-8'
             )
         );
+
         if ($oldPIN === '') {
             // Voyager requires the PIN code to be set even if it was empty
             $oldPIN = '     ';
+
+            // In this case we have to check that the user didn't previously have a
+            // PIN code since Voyager doesn't validate the 'empty' old PIN
+            $sql = "SELECT PATRON_PIN FROM {$this->dbName}.PATRON WHERE"
+                . ' PATRON_ID=:id';
+            $sqlStmt = $this->executeSQL($sql, ['id' => $patron['id']]);
+            if (!($row = $sqlStmt->fetch(PDO::FETCH_ASSOC))
+                || null !== $row['PATRON_PIN']
+            ) {
+                return [
+                    'success' => false, 'status' => 'authentication_error_invalid'
+                ];
+            }
         }
         $newPIN = trim(
             htmlspecialchars(

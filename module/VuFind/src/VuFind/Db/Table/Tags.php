@@ -26,7 +26,9 @@
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\Db\Table;
-use Zend\Db\Sql\Expression, Zend\Db\Sql\Select;
+use Zend\Db\Sql\Expression,
+    Zend\Db\Sql\Predicate\Predicate,
+    Zend\Db\Sql\Select;
 
 /**
  * Table Definition for tags
@@ -40,31 +42,51 @@ use Zend\Db\Sql\Expression, Zend\Db\Sql\Select;
 class Tags extends Gateway
 {
     /**
-     * Constructor
+     * Are tags case sensitive?
+     *
+     * @var bool
      */
-    public function __construct()
+    protected $caseSensitive;
+
+    /**
+     * Constructor
+     *
+     * @param bool $caseSensitive Are tags case sensitive?
+     */
+    public function __construct($caseSensitive = false)
     {
         parent::__construct('tags', 'VuFind\Db\Row\Tags');
+        $this->caseSensitive = $caseSensitive;
     }
 
     /**
      * Get the row associated with a specific tag string.
      *
-     * @param string $tag    Tag to look up.
-     * @param bool   $create Should we create the row if it does not exist?
+     * @param string $tag       Tag to look up.
+     * @param bool   $create    Should we create the row if it does not exist?
+     * @param bool   $firstOnly Should we return the first matching row (true)
+     * or the entire result set (in case of multiple matches)?
      *
-     * @return \VuFind\Db\Row\Tags|null Matching row if found or created, null
-     * otherwise.
+     * @return mixed Matching row/result set if found or created, null otherwise.
      */
-    public function getByText($tag, $create = true)
+    public function getByText($tag, $create = true, $firstOnly = true)
     {
-        $result = $this->select(['tag' => $tag])->current();
-        if (empty($result) && $create) {
-            $result = $this->createRow();
-            $result->tag = $tag;
-            $result->save();
+        $cs = $this->caseSensitive;
+        $callback = function ($select) use ($tag, $cs) {
+            if ($cs) {
+                $select->where->equalTo('tag', $tag);
+            } else {
+                $select->where->literal('lower(tag) = lower(?)', [$tag]);
+            }
+        };
+        $result = $this->select($callback);
+        if (count($result) == 0 && $create) {
+            $row = $this->createRow();
+            $row->tag = $cs ? $tag : mb_strtolower($tag, 'UTF8');
+            $row->save();
+            return $firstOnly ? $row : [$row];
         }
-        return $result;
+        return $firstOnly ? $result->current() : $result;
     }
 
     /**
@@ -87,18 +109,19 @@ class Tags extends Gateway
     /**
      * Get all resources associated with the provided tag query.
      *
-     * @param string $query  Search query
+     * @param string $q      Search query
      * @param string $source Record source (optional limiter)
      * @param string $sort   Resource field to sort on (optional)
      * @param int    $offset Offset for results
      * @param int    $limit  Limit for results (null for none)
+     * @param bool   $fuzzy  Are we doing an exact or fuzzy search?
      *
      * @return array
      */
-    public function fuzzyResourceSearch($query, $source = null, $sort = null,
-        $offset = 0, $limit = null
+    public function resourceSearch($q, $source = null, $sort = null,
+        $offset = 0, $limit = null, $fuzzy = true
     ) {
-        $cb = function ($select) use ($query, $source, $sort, $offset, $limit) {
+        $cb = function ($select) use ($q, $source, $sort, $offset, $limit, $fuzzy) {
             $select->columns(
                 [
                     new Expression(
@@ -117,7 +140,13 @@ class Tags extends Gateway
                 'rt.resource_id = resource.id',
                 '*'
             );
-            $select->where->literal('lower(tags.tag) like lower(?)', [$query]);
+            if ($fuzzy) {
+                $select->where->literal('lower(tags.tag) like lower(?)', [$q]);
+            } else if (!$this->caseSensitive) {
+                $select->where->literal('lower(tags.tag) = lower(?)', [$q]);
+            } else {
+                $select->where->equalTo('tags.tag', $q);
+            }
 
             if (!empty($source)) {
                 $select->where->equalTo('source', $source);
@@ -181,7 +210,9 @@ class Tags extends Gateway
                 // SELECT (do not add table prefixes)
                 $select->columns(
                     [
-                        'id', 'tag',
+                        'id',
+                        'tag' => $this->caseSensitive
+                            ? 'tag' : new Expression('lower(tag)'),
                         'cnt' => new Expression(
                             'COUNT(DISTINCT(?))', ["rt.user_id"],
                             [Expression::TYPE_IDENTIFIER]
@@ -198,9 +229,9 @@ class Tags extends Gateway
                 $select->group(['tags.id', 'tag']);
 
                 if ($sort == 'count') {
-                    $select->order(['cnt DESC', 'tags.tag']);
+                    $select->order(['cnt DESC', new Expression('lower(tags.tag)')]);
                 } else if ($sort == 'tag') {
-                    $select->order(['tags.tag']);
+                    $select->order([new Expression('lower(tags.tag)')]);
                 }
 
                 if ($limit > 0) {
@@ -210,14 +241,75 @@ class Tags extends Gateway
                     $select->where->isNotNull('rt.list_id');
                 } else if ($list === false) {
                     $select->where->isNull('rt.list_id');
-                } else if (!is_null($list)) {
+                } else if (null !== $list) {
                     $select->where->equalTo('rt.list_id', $list);
                 }
-                if (!is_null($user)) {
+                if (null !== $user) {
                     $select->where->equalTo('rt.user_id', $user);
                 }
             }
         );
+    }
+
+    /**
+     * Get a list of all tags generated by the user in favorites lists.  Note that
+     * the returned list WILL NOT include tags attached to records that are not
+     * saved in favorites lists.
+     *
+     * @param string $userId     User ID to look up.
+     * @param string $resourceId Filter for tags tied to a specific resource (null
+     * for no filter).
+     * @param int    $listId     Filter for tags tied to a specific list (null for no
+     * filter).
+     * @param string $source     Filter for tags tied to a specific record source.
+     *
+     * @return \Zend\Db\ResultSet\AbstractResultSet
+     */
+    public function getForUser($userId, $resourceId = null, $listId = null,
+        $source = DEFAULT_SEARCH_BACKEND
+    ) {
+        $callback = function ($select) use ($userId, $resourceId, $listId, $source) {
+            $select->columns(
+                [
+                    'id' => new Expression(
+                        'min(?)', ['tags.id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    'tag' => $this->caseSensitive
+                        ? 'tag' : new Expression('lower(tag)'),
+                    'cnt' => new Expression(
+                        'COUNT(DISTINCT(?))', ['rt.resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    )
+                ]
+            );
+            $select->join(
+                ['rt' => 'resource_tags'], 'tags.id = rt.tag_id', []
+            );
+            $select->join(
+                ['r' => 'resource'], 'rt.resource_id = r.id', []
+            );
+            $select->join(
+                ['ur' => 'user_resource'], 'r.id = ur.resource_id', []
+            );
+            $select->group(['tag'])->order([new Expression('lower(tag)')]);
+
+            $select->where->equalTo('ur.user_id', $userId)
+                ->equalTo('rt.user_id', $userId)
+                ->equalTo(
+                    'ur.list_id', 'rt.list_id',
+                    Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER
+                )
+                ->equalTo('r.source', $source);
+
+            if (null !== $resourceId) {
+                $select->where->equalTo('r.record_id', $resourceId);
+            }
+            if (null !== $listId) {
+                $select->where->equalTo('rt.list_id', $listId);
+            }
+        };
+        return $this->select($callback);
     }
 
     /**
@@ -264,7 +356,9 @@ class Tags extends Gateway
         $callback = function ($select) use ($sort, $limit, $extra_where) {
             $select->columns(
                 [
-                    'id', 'tag',
+                    'id',
+                    'tag' => $this->caseSensitive
+                        ? 'tag' : new Expression('lower(tag)'),
                     'cnt' => new Expression(
                         'COUNT(DISTINCT(?))', ['resource_tags.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
@@ -284,14 +378,14 @@ class Tags extends Gateway
             $select->group(['tags.id', 'tags.tag']);
             switch ($sort) {
             case 'alphabetical':
-                $select->order(['tags.tag', 'cnt DESC']);
+                $select->order([new Expression('lower(tags.tag)'), 'cnt DESC']);
                 break;
             case 'popularity':
-                $select->order(['cnt DESC', 'tags.tag']);
+                $select->order(['cnt DESC', new Expression('lower(tags.tag)')]);
                 break;
             case 'recent':
                 $select->order(
-                    ['posted DESC', 'cnt DESC', 'tags.tag']
+                    ['posted DESC', 'cnt DESC', new Expression('lower(tags.tag)')]
                 );
                 break;
             }
@@ -333,7 +427,7 @@ class Tags extends Gateway
 
     /**
      * Get a list of duplicate tags (this should never happen, but past bugs
-     * have introduced problems).
+     * and the introduction of case-insensitive tags have introduced problems).
      *
      * @return mixed
      */
@@ -342,7 +436,9 @@ class Tags extends Gateway
         $callback = function ($select) {
             $select->columns(
                 [
-                    'tag',
+                    'tag' => new Expression(
+                        'MIN(?)', ['tag'], [Expression::TYPE_IDENTIFIER]
+                    ),
                     'cnt' => new Expression(
                         'COUNT(?)', ['tag'], [Expression::TYPE_IDENTIFIER]
                     ),
@@ -351,8 +447,10 @@ class Tags extends Gateway
                     )
                 ]
             );
-            $select->group('tag');
-            $select->having->greaterThan('cnt', 1);
+            $select->group(
+                $this->caseSensitive ? 'tag' : new Expression('lower(tag)')
+            );
+            $select->having('COUNT(tag) > 1');
         };
         return $this->select($callback);
     }
@@ -399,7 +497,7 @@ class Tags extends Gateway
     protected function fixDuplicateTag($tag)
     {
         // Make sure this really is a duplicate.
-        $result = $this->select(['tag' => $tag]);
+        $result = $this->getByText($tag, false, false);
         if (count($result) < 2) {
             return;
         }

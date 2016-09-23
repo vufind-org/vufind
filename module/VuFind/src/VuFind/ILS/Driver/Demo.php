@@ -586,14 +586,7 @@ class Demo extends AbstractBase
      */
     public function getStatuses($ids)
     {
-        // Random Seed
-        srand(time());
-
-        $status = [];
-        foreach ($ids as $id) {
-            $status[] = $this->getStatus($id);
-        }
-        return $status;
+        return array_map([$this, 'getStatus'], $ids);
     }
 
     /**
@@ -1055,8 +1048,8 @@ class Demo extends AbstractBase
     /**
      * Get request groups
      *
-     * @param integer $bibId  BIB ID
-     * @param array   $patron Patron information returned by the patronLogin
+     * @param int   $bibId  BIB ID
+     * @param array $patron Patron information returned by the patronLogin
      * method.
      *
      * @return array  False if request groups not in use or an array of

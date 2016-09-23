@@ -90,7 +90,6 @@ class Record extends AbstractHelper
         $this->coverRouter = $router;
     }
 
-    
     /**
      * Render a template within a record driver folder.
      *
@@ -442,6 +441,28 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Should cover images be linked to previews (when applicable) in the provided
+     * template context?
+     *
+     * @param string $context Context of code being generated
+     *
+     * @return bool
+     */
+    protected function getPreviewCoverLinkSetting($context)
+    {
+        static $previewContexts = false;
+        if (false === $previewContexts) {
+            $previewContexts = isset($this->config->Content->linkPreviewsToCovers)
+                ? array_map(
+                    'trim',
+                    explode(',', $this->config->Content->linkPreviewsToCovers)
+                ) : ['*'];
+        }
+        return in_array('*', $previewContexts)
+            || in_array($context, $previewContexts);
+    }
+
+    /**
      * Get the rendered cover plus some useful parameters.
      *
      * @param string $context Context of code being generated
@@ -453,7 +474,8 @@ class Record extends AbstractHelper
     public function getCoverDetails($context, $default, $link = false)
     {
         $details = compact('link', 'context') + [
-            'driver' => $this->driver, 'cover' => false, 'size' => false
+            'driver' => $this->driver, 'cover' => false, 'size' => false,
+            'linkPreview' => $this->getPreviewCoverLinkSetting($context),
         ];
         $preferredSize = $this->getCoverSize($context, $default);
         if (empty($preferredSize)) {    // covers disabled entirely

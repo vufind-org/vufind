@@ -1,0 +1,39 @@
+$brand-primary: #619144;
+
+$font-size-base: 13px !default;
+
+$padding-base-vertical   : 3px !default;
+$padding-base-horizontal : 5px !default;
+$padding-large-vertical  : 8px !default;
+$padding-large-horizontal: 5px !default;
+$padding-small-vertical  : 1px !default;
+$padding-small-horizontal: 2px !default;
+$padding-xs-horizontal   : 1px !default;
+
+$border-radius-base : 3px !default;
+$border-radius-large: 5px !default;
+$border-radius-small: 2px !default;
+
+$input-border-focus: $brand-primary !default;
+
+$legend-border-color: #777 !default; // $gray-light
+
+$grid-gutter-width: 14px !default;
+
+$container-desktop      : 952px !default;
+$container-large-desktop: 952px !default;
+
+$navbar-height       : 65px !default;
+$navbar-margin-bottom: 0px !default;
+$nav-link-padding    : 5px !default;
+
+$pagination-active-bg    : #5bc0de !default; // $brand-info
+$pagination-active-border: #5bc0de !default; // $brand-info
+
+$panel-body-padding: 5px !default;
+
+$breadcrumb-padding-vertical  : 6px !default;
+$breadcrumb-padding-horizontal: 20px !default;
+$breadcrumb-bg                : #FFF !default;
+$breadcrumb-color             : #777 !default; // $gray-light
+$breadcrumb-active-color      : #333 !default; // $gray-dark
