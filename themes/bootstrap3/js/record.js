@@ -58,7 +58,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
 }
 
 function addRecordCommentCallback(event, form) {
-  refreshCommentList($(form).closest('.record'));
+  refreshCommentList($(form).closest('.tab-content'));
   $(form).find('textarea').val('');
 }
 function refreshCommentList($target, _id, _source) {
@@ -99,8 +99,7 @@ function registerTabEvents(_target) {
 
   setUpCheckRequest();
 
-  console.log('bind', $target);
-  VuFind.lightbox.bind($target.find('.tab-pane.active'));
+  VuFind.lightbox.bind($target);
 }
 
 function ajaxLoadTab($newTab, tabid, setHash) {
@@ -128,7 +127,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
   })
   .done(function ajaxLoadTabDone(data) {
     $newTab.html(data);
-    registerTabEvents();
+    registerTabEvents($newTab);
     if (typeof syn_get_widget === "function") {
       syn_get_widget();
     }
