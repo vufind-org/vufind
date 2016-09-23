@@ -87,18 +87,20 @@ function refreshCommentList($target, _id, _source) {
   });
 }
 
-function registerTabEvents() {
+function registerTabEvents(_target) {
+  var $target = _target || $(document.body);
   // Render recaptcha
   recaptchaOnLoad();
   // Delete links
-  $('.delete').click(function commentTabDeleteClick() {
+  $target.find('.delete').click(function commentTabDeleteClick() {
     deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));
     return false;
   });
 
   setUpCheckRequest();
 
-  VuFind.lightbox.bind('.tab-pane.active');
+  console.log('bind', $target);
+  VuFind.lightbox.bind($target.find('.tab-pane.active'));
 }
 
 function ajaxLoadTab($newTab, tabid, setHash) {
