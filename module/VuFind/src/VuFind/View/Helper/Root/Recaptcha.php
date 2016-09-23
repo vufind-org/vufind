@@ -92,8 +92,8 @@ class Recaptcha extends AbstractHelper
     /**
      * Generate <div> with ReCaptcha from render.
      *
-     * @param boolean $useRecaptcha Boolean of active state, for compact templating
-     * @param boolean $wrapHtml     Include prefix and suffix?
+     * @param bool $useRecaptcha Boolean of active state, for compact templating
+     * @param bool $wrapHtml     Include prefix and suffix?
      *
      * @return string $html
      */
@@ -111,7 +111,7 @@ class Recaptcha extends AbstractHelper
     /**
      * Return whether Captcha is active in the config
      *
-     * @return boolean
+     * @return bool
      */
     public function active()
     {

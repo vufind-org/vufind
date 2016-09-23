@@ -120,8 +120,8 @@ class Solr extends AbstractBase
     /**
      * Returns browser usage statistics
      *
-     * @param bool    $version    Include the version numbers in the list
-     * @param integer $listLength How many items to return
+     * @param bool $version    Include the version numbers in the list
+     * @param int  $listLength How many items to return
      *
      * @return array
      */

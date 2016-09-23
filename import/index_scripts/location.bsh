@@ -19,7 +19,7 @@ private static final Pattern HDMSHDD_PATTERN = Pattern.compile("^([eEwWnNsS])(\\
 private static final Pattern PMDD_PATTERN = Pattern.compile("^([+-])(\\d+(\\.\\d+)?)");
 
 /**
- * Convert MARC coordinates into bbox_geo format.
+ * Convert MARC coordinates into location_geo format.
  *
  * @param  Record record
  * @return List   geo_coordinates

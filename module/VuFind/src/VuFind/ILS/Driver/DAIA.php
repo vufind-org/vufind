@@ -90,7 +90,7 @@ class DAIA extends AbstractBase implements
     /**
      * Flag to enable multiple DAIA-queries
      *
-     * @var boolean
+     * @var bool
      */
     protected $multiQuery = false;
 

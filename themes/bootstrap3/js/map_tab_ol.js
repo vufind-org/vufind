@@ -19,11 +19,11 @@ function loadMapTab(mapData, popupTitle) {
   });
   var polyStyle = new ol.style.Style({
     fill: new ol.style.Fill({
-      color: [200, 0, 0, .1]
+      color: [200, 0, 0, 0.1]
     }),
     stroke: new ol.style.Stroke({
       color: 'red',
-      width: 2 
+      width: 2
     })
   });
 
@@ -85,9 +85,9 @@ function loadMapTab(mapData, popupTitle) {
         });
         polyFeature.setStyle(polyStyle);
         vectorSource.addFeature(polyFeature);
-      }   
+      }
     }
-    var vectorLayer = new ol.layer.Vector({ 
+    var vectorLayer = new ol.layer.Vector({
       source: vectorSource,
       renderBuffer: 500
     });
@@ -167,7 +167,7 @@ function loadMapTab(mapData, popupTitle) {
         }
       });
     }
-  }
+  };
   init();
   init = false;
 }

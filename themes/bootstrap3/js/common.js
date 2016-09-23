@@ -163,9 +163,11 @@ function phoneNumberFormHandler(numID, regionCode) {
 
 // Setup captchas after Google script loads
 function recaptchaOnLoad() {
-  var captchas = $('.g-recaptcha:empty');
-  for (var i = 0; i < captchas.length; i++) {
-    captchas[i].dataset.captchaId = grecaptcha.render(captchas[i], captchas[i].dataset);
+  if (typeof grecaptcha !== 'undefined') {
+    var captchas = $('.g-recaptcha:empty');
+    for (var i = 0; i < captchas.length; i++) {
+      captchas[i].dataset.captchaId = grecaptcha.render(captchas[i], captchas[i].dataset);
+    }
   }
 }
 
@@ -359,4 +361,12 @@ $(document).ready(function commonDocReady() {
   });
   $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
   $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
+
+  // retain filter sessionStorage
+  $('.searchFormKeepFilters').click(function() {
+    sessionStorage.setItem('vufind_retain_filters', this.checked);
+  });
+  if (sessionStorage.getItem('vufind_retain_filters')) {
+    $('.searchFormKeepFilters').prop('checked', sessionStorage.getItem('vufind_retain_filters') == 'true');
+  }
 });

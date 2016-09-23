@@ -58,7 +58,7 @@ class GeoCoords extends \Zend\View\Helper\AbstractHelper
      *
      * @var string
      */
-    protected $geoField = 'bbox_geo';
+    protected $geoField = 'location_geo';
 
     /**
      * Constructor
