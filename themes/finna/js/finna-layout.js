@@ -1,4 +1,4 @@
-/*global VuFind,checkSaveStatuses*/
+/*global VuFind,checkSaveStatuses,action*/
 finna.layout = (function() {
     var initMap = function(map) {
         // Add zoom control with translated tooltips
@@ -638,7 +638,7 @@ finna.layout = (function() {
         return;
       }
       document.addEventListener('VuFind.lightbox.login', function(e) {
-        if (!e.detail.formUrl.match(/catalogLogin/) && !e.detail.formUrl.match(/\Save/) && !e.detail.formUrl.match(/%2[fF]Save/)) {
+        if (typeof action !== 'undefined' && action == 'home' && !e.detail.formUrl.match(/catalogLogin/) && !e.detail.formUrl.match(/\Save/) && !e.detail.formUrl.match(/%2[fF]Save/)) {
           window.location.href = VuFind.path + '/MyResearch/Home';
           e.preventDefault();
         }
