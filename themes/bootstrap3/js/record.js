@@ -164,7 +164,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     urlroot = '/' + chunks[3] + '/' + chunks[4];
   } else {
     // standard case -- VuFind has its own path under site:
-    var pathInUrl = urlWithoutFragment.indexOf(path);
+    var pathInUrl = urlWithoutFragment.indexOf(path, urlWithoutFragment.indexOf('//') + 2);
     var parts = urlWithoutFragment.substring(pathInUrl + path.length + 1).split('/');
     urlroot = '/' + parts[0] + '/' + parts[1];
   }
