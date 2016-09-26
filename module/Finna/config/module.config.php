@@ -431,16 +431,18 @@ $routeGenerator->addStaticRoutes($config, $staticRoutes);
 // API routes
 $config['router']['routes']['searchApi'] = [
     'type' => 'Zend\Mvc\Router\Http\Literal',
+    'verb' => 'get,post,options',
     'options' => [
         'route'    => '/api/search',
         'defaults' => [
             'controller' => 'SearchApi',
             'action'     => 'search',
         ]
-    ]
+    ],
 ];
 $config['router']['routes']['searchApiv1'] = [
     'type' => 'Zend\Mvc\Router\Http\Literal',
+    'verb' => 'get,post,options',
     'options' => [
         'route'    => '/v1/search',
         'defaults' => [

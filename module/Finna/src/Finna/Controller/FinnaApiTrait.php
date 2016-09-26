@@ -96,6 +96,9 @@ trait FinnaApiTrait
         if ($httpCode !== null) {
             $response->setStatusCode($httpCode);
         }
+        if (null === $data) {
+            return $response;
+        }
         $output = $data;
         if (!isset($output['status'])) {
             $output['status'] = $status;

@@ -29,6 +29,7 @@ namespace Finna\Controller;
 
 use VuFind\I18n\TranslatableString;
 use Finna\RecordDriver\SolrQdc;
+use Zend\Mvc\MvcEvent;
 
 /**
  * SearchApiController Class
@@ -165,6 +166,33 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'images',
         'imageRights'
     ];
+
+    /**
+     * Execute the request
+     *
+     * @param  MvcEvent $e
+     * @return mixed
+     * @throws Exception\DomainException
+     */
+    public function onDispatch(MvcEvent $e)
+    {
+        // Add CORS headers and handle OPTIONS requests. This is a simplistic
+        // approach since we allow any origin. For more complete CORS handling
+        // a module like zfr-cors could be used.
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Access-Control-Allow-Origin: *');
+        $request = $this->getRequest();
+        if ($request->getMethod() == 'OPTIONS') {
+            $headers->addHeaderLine(
+                'Access-Control-Allow-Methods', 'GET, POST, OPTIONS'
+            );
+            $headers->addHeaderLine('Access-Control-Max-Age', '86400');
+
+            return $this->output(null, 204);
+        }
+        return parent::onDispatch($e);
+    }
 
     /**
      * Record action
