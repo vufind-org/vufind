@@ -274,6 +274,29 @@ trait VoyagerFinna
     }
 
     /**
+     * Protected support method to take an array of status strings and determine
+     * whether or not this indicates an available item.  Returns an array with
+     * two keys: 'available', the boolean availability status, and 'otherStatuses',
+     * every status code found other than "Not Charged" - for use with
+     * pickStatus().
+     *
+     * @param array $statusArray The status codes to analyze.
+     *
+     * @return array             Availability and other status information.
+     */
+    protected function determineAvailability($statusArray)
+    {
+        $result = parent::determineAvailability($statusArray);
+        // Treat non-charged items that have hold requests as available
+        if (!$result['available'] && in_array('Not Charged', $statusArray)
+            && in_array('Hold Request', $statusArray)
+        ) {
+            $result['available'] = true;
+        }
+        return $result;
+    }
+
+    /**
      * Protected support method for getHolding.
      *
      * @param array  $data   Item Data

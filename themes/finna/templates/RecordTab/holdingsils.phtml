@@ -296,6 +296,9 @@
           <? if ($row['availability']): ?>
             <? /* Begin Available Items (Holds) */ ?>
             <span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> <?=$this->transEsc(isset($row['availabilityInfo']['displayText']) ? 'status_' . $row['availabilityInfo']['displayText'] : 'Available')?><link property="availability" href="http://schema.org/InStock" /></span>
+            <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
+              <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
+            <? endif; ?>
             <div class="pull-right">
             <? if (!$journal): ?>
               <? if (!$block && isset($row['link']) && $row['link'] && $holdsAllowed): ?>
