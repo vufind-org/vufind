@@ -170,7 +170,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Execute the request
      *
-     * @param  MvcEvent $e Event
+     * @param MvcEvent $e Event
      *
      * @return mixed
      * @throws Exception\DomainException
