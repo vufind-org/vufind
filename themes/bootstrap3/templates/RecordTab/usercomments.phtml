@@ -19,8 +19,6 @@
         <textarea name="comment" class="form-control" rows="3" required></textarea><br/>
         <? if ($this->tab->isRecaptchaActive()): ?>
           <?=$this->recaptcha()->html(true, false) ?><br/>
-        <? else: ?>
-          <script>/* workaround for nested form bug */</script>
         <? endif; ?>
         <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
       <? else: ?>
