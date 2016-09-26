@@ -371,4 +371,14 @@ $(document).ready(function commonDocReady() {
   });
   $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
   $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
+
+  // retain filter sessionStorage
+  $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {
+    sessionStorage.setItem('vufind_retain_filters', this.checked ? 'true' : 'false');
+  });
+  if (sessionStorage.getItem('vufind_retain_filters')) {
+    var state = (sessionStorage.getItem('vufind_retain_filters') === 'true');
+    $('.searchFormKeepFilters').prop('checked', state);
+    $('.applied-filter').prop('checked', state);
+  }
 });
