@@ -9,9 +9,9 @@
             <input type="hidden" name="tag" value="<?=$this->escapeHtmlAttr($tag['tag'])?>"/>
             <button type="submit" class="badge" onClick="ajaxTagUpdate(this, '<?=$this->escapeHtmlAttr($tag['tag'])?>', <?=$is_me ? 'true' : 'false' ?>);return false;"><?=$this->escapeHtml($tag['cnt']) ?>
             <? if($is_me): ?>
-              <i class="fa fa-close"></i>
+              <i class="fa fa-close" title="<?=$this->transEsc('delete_tag') ?>"></i>
             <? else: ?>
-              <i class="fa fa-plus"></i>
+              <i class="fa fa-plus" title="<?=$this->transEsc('Add Tag') ?>"></i>
             <? endif; ?>
             </button>
           </form>

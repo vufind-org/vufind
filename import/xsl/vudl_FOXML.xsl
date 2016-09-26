@@ -13,7 +13,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 -->
 <xsl:stylesheet version="1.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -387,6 +387,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
                     <xsl:for-each select="$DC//dc:creator">
                         <xsl:if test="normalize-space()">
                             <field name="author">
+                                <xsl:value-of select="normalize-space()"/>
+                            </field>
+                            <!-- use first author value for sorting -->
+                            <xsl:if test="position()=1">
+                                <field name="author_sort">
+                                    <xsl:value-of select="normalize-space()"/>
+                                </field>
+                            </xsl:if>
+                        </xsl:if>
+                    </xsl:for-each>
+                </xsl:if>
+
+                <xsl:if test="$DC//dc:contributor">
+                    <xsl:for-each select="$DC//dc:contributor">
+                        <xsl:if test="normalize-space()">
+                            <field name="author2">
                                 <xsl:value-of select="normalize-space()"/>
                             </field>
                         </xsl:if>

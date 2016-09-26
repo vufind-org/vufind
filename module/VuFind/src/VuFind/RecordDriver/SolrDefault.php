@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -1797,14 +1797,14 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get longitude/latitude text (or false if not available).
+     * Get longitude/latitude values (or empty array if not available).
      *
-     * @return string|bool
+     * @return array
      */
     public function getLongLat()
     {
         return isset($this->fields['long_lat'])
-            ? $this->fields['long_lat'] : false;
+            ? $this->fields['long_lat'] : [];
     }
 
     /**
@@ -1913,5 +1913,38 @@ class SolrDefault extends AbstractBase
         return $this->containerLinking
             && !empty($this->fields['hierarchy_parent_id'])
             ? $this->fields['hierarchy_parent_id'][0] : '';
+    }
+
+    /**
+     * Get the bbox-geo variable.
+     *
+     * @return array
+     */
+    public function getGeoLocation()
+    {
+        return isset($this->fields['location_geo'])
+            ? $this->fields['location_geo'] : [];
+    }
+
+    /**
+     * Get the map display (lat/lon) coordinates
+     *
+     * @return array
+     */
+    public function getDisplayCoordinates()
+    {
+        return isset($this->fields['long_lat_display'])
+            ? $this->fields['long_lat_display'] : [];
+    }
+
+    /**
+     * Get the map display (lat/lon) labels
+     *
+     * @return array
+     */
+    public function getCoordinateLabels()
+    {
+        return isset($this->fields['long_lat_label'])
+            ? $this->fields['long_lat_label'] : [];
     }
 }

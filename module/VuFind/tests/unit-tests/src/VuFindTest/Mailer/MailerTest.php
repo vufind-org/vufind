@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -28,6 +28,7 @@
 namespace VuFindTest\Mailer;
 use VuFind\Mailer\Mailer;
 use Zend\Mail\Address;
+use Zend\Mail\AddressList;
 
 /**
  * Mailer Test Class
@@ -64,7 +65,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testSendWithAddressObject()
+    public function testSendWithAddressObjectInSender()
     {
         $callback = function ($message) {
             $fromString = $message->getFrom()->current()->toString();
@@ -78,6 +79,49 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $address = new Address('from@example.com', 'Sender TextName');
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', $address, 'subject', 'body');
+    }
+
+    /**
+     * Test sending an email using an address object for the To field.
+     *
+     * @return void
+     */
+    public function testSendWithAddressObjectInRecipient()
+    {
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
+                && '<from@example.com>' == $message->getFrom()->current()->toString()
+                && 'body' == $message->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $address = new Address('to@example.com', 'Recipient TextName');
+        $mailer = new Mailer($transport);
+        $mailer->send($address, 'from@example.com', 'subject', 'body');
+    }
+
+    /**
+     * Test sending an email using an address list object for the To field.
+     *
+     * @return void
+     */
+    public function testSendWithAddressListObjectInRecipient()
+    {
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
+                && '<from@example.com>' == $message->getFrom()->current()->toString()
+                && 'body' == $message->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $list = new AddressList();
+        $list->add(new Address('to@example.com', 'Recipient TextName'));
+        $mailer = new Mailer($transport);
+        $mailer->send($list, 'from@example.com', 'subject', 'body');
     }
 
     /**

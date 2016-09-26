@@ -37,6 +37,12 @@
   // Enable bulk options if appropriate:
   $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
 
+  // Load Javascript only if list view parameter is NOT full:
+  if ($this->params->getOptions()->getListViewOption() != "full") {
+    $this->headScript()->appendFile("record.js");
+    $this->headScript()->appendFile("embedded_record.js");
+  }
+
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
   $this->headScript()->appendFile("check_save_statuses.js");
@@ -56,6 +62,7 @@
           <?=$this->transEsc("Showing")?>
           <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
           <? if (!isset($this->skipTotalCount)): ?>
+            <? $this->layout()->srmessage = $this->transEsc('result_count', ['%%count%%' => $this->localizedNumber($recordTotal)]); ?>
             <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
           <? endif; ?>
           <? if (isset($this->overrideSearchHeading)): ?>
@@ -86,7 +93,8 @@
         <? if (isset($this->overrideEmptyMessage)): ?>
           <?=$this->overrideEmptyMessage?>
         <? else: ?>
-          <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+          <? $this->layout()->srmessage = $this->transEsc('nohit_prefix') . ' - ' . $this->escapeHtml($lookfor) . ' - ' . $this->transEsc('nohit_suffix'); ?>
+          <?=$this->layout()->srmessage ?>
         <? endif; ?>
       </p>
       <? if (isset($this->parseError)): ?>
@@ -110,18 +118,18 @@
 
       <div class="searchtools hidden-print">
         <strong><?=$this->transEsc('Search Tools')?>:</strong>
-        <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+        <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell" aria-hidden="true"></i> <?=$this->transEsc('Get RSS Feed')?></a>
         &mdash;
         <a href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>">
-          <i class="fa fa-envelope"></i> <?=$this->transEsc('Email this Search')?>
+          <i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Email this Search')?>
         </a>
         <? if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
           &mdash;
           <? if (is_numeric($this->results->getSearchId())): ?>
             <? if ($this->results->isSavedSearch()): ?>
-              <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove"></i> <?=$this->transEsc('save_search_remove')?></a>
+              <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc('save_search_remove')?></a>
             <? else: ?>
-              <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-save"></i> <?=$this->transEsc('save_search')?></a>
+              <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc('save_search')?></a>
             <? endif; ?>
           <? endif; ?>
         <? endif; ?>

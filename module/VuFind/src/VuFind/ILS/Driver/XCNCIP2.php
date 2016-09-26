@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -45,7 +45,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Is this a consortium? Default: false
      *
-     * @var boolean
+     * @var bool
      */
     protected $consortium = false;
 
@@ -1757,6 +1757,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (!is_null($patron_agency_id)) {
             $ret .=
                    '<ns1:InitiationHeader>' .
+                        '<ns1:FromAgencyId>' .
+                            '<ns1:AgencyId>' .
+                                htmlspecialchars($patron_agency_id) .
+                            '</ns1:AgencyId>' .
+                        '</ns1:FromAgencyId>' .
                         '<ns1:ToAgencyId>' .
                             '<ns1:AgencyId>' .
                                 htmlspecialchars($patron_agency_id) .

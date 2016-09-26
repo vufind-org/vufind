@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordTabs
@@ -93,6 +93,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         array $config
     ) {
         return $this->getConfigByClass($driver, $config, 'tabs', []);
+    }
+
+    /**
+     * Get an array of tabs names configured to load via AJAX in the background
+     *
+     * @param AbstractRecordDriver $driver Record driver
+     * @param array                $config Tab configuration (associative array
+     * including 'tabs' array mapping driver class => tab service name)
+     *
+     * @return array
+     */
+    public function getBackgroundTabNames(AbstractRecordDriver $driver,
+        array $config
+    ) {
+        return $this->getConfigByClass($driver, $config, 'backgroundLoadedTabs', []);
     }
 
     /**

@@ -53,8 +53,8 @@
         <?
             $url = $this->currentPath() . $this->escapeHtmlAttr(
                 '?inst=' . urlencode($record->getInstructorId())
-                . '&course=' . urlencode($record->getCourseId())
-                . '&dept=' . urlencode($record->getDepartmentId())
+                . '&amp;course=' . urlencode($record->getCourseId())
+                . '&amp;dept=' . urlencode($record->getDepartmentId())
             );
         ?>
         <tr>

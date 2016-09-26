@@ -37,3 +37,16 @@
   color: #999;
   text-decoration: none;
 }
+
+.record .format::after { content: ", "; }
+.result .record .format::after,
+.record .format:last-child::after { content: ""; }
+
+.marc-row-LEADER,
+.marc-row-006,
+.marc-row-007,
+.marc-row-008 {
+  white-space: pre-wrap;
+}
+
+.comment-form textarea.form-control { display: block; }

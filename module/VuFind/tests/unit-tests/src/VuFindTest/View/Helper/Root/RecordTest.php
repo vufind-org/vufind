@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -208,23 +208,6 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test getController.
-     *
-     * @return void
-     */
-    public function testGetController()
-    {
-        // Default (Solr) case:
-        $driver = new \VuFindTest\RecordDriver\TestHarness();
-        $record = $this->getRecord($driver);
-        $this->assertEquals('Record', $record->getController());
-
-        // Custom source case:
-        $driver->setSourceIdentifier('Foo');
-        $this->assertEquals('Foorecord', $record->getController());
-    }
-
-    /**
      * Test getPreviews.
      *
      * @return void
@@ -401,7 +384,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         // Hard-coded thumbnail:
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(['Thumbnail' => ['bar' => 'baz']]);
-        $record = $this->getRecord($driver, [], null, 'cover-show');
+        $record = $this->getRecord($driver);
         $this->assertEquals('http://foo/bar?bar=baz', $record->getThumbnail());
     }
 
@@ -535,6 +518,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->getMockResolver()));
         $config = is_array($config) ? new \Zend\Config\Config($config) : $config;
         $record = new Record($config);
+        $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar'));
         $record->setView($view);
         return $record->__invoke($driver);
     }

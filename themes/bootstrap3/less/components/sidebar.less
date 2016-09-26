@@ -35,12 +35,11 @@ label.list-group-item {
   border-radius: 0;
 }
 .list-group-item.title {font-weight: bold;}
-.list-group-item, .badge {
-  i.fa {
-    cursor: inherit;
-  }
-}
 .sidebar .facet a {text-decoration: none;}
+.sidebar .format {
+  &:extend(.label);
+  &:extend(.label-info);
+}
 .top-row .applied {
   font-weight: bold;
   &:hover {
@@ -50,3 +49,5 @@ label.list-group-item {
     }
   }
 }
+
+.full-facet-list { margin-top: 1rem; }

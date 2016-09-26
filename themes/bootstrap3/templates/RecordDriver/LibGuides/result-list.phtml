@@ -1,10 +1,12 @@
 <?
   $url = $this->driver->getUniqueId();
 ?>
-<div class="listentry col-xs-11">
-  <div class="resultItemLine1">
-    <a href="<?=$this->escapeHtmlAttr($url)?>" class="title">
-      <?=$this->record($this->driver)->getTitleHtml()?>
-    </a>
+<div class="media">
+  <div class="media-body">
+    <div class="resultItemLine1">
+      <a href="<?=$this->escapeHtmlAttr($url)?>" class="title">
+        <?=$this->record($this->driver)->getTitleHtml()?>
+      </a>
+    </div>
   </div>
 </div>

@@ -6,7 +6,7 @@
   foreach (isset($filters['Other']) ? $filters['Other'] : array() as $filter) {
     $filter['urlPart'] = $filter['field'] . ':' . $filter['value'];
     $filterList[] = $filter;
-    $filterString .= '&' . urlencode('filter[]') .  '=' . urlencode($filter['urlPart']);
+    $filterString .= '&amp;' . urlencode('filter[]') .  '=' . urlencode($filter['urlPart']);
   }
 ?>
 
@@ -42,7 +42,7 @@
         $removalUrl = $this->url('collections-home') . '?from=' . urlencode($from);
         foreach ($filterList as $current) {
           if ($current['urlPart'] != $filter['urlPart']) {
-            $removalUrl .= '&' . urlencode('filter[]') .  '=' . urlencode($current['urlPart']);
+            $removalUrl .= '&amp;' . urlencode('filter[]') .  '=' . urlencode($current['urlPart']);
           }
         }
       ?>

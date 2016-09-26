@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Base
@@ -367,7 +367,7 @@ class Params implements ServiceLocatorAwareInterface
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return boolean True if search settings were found, false if not.
+     * @return bool True if search settings were found, false if not.
      */
     protected function initBasicSearch($request)
     {
@@ -512,14 +512,16 @@ class Params implements ServiceLocatorAwareInterface
     {
         // Check for a view parameter in the url.
         $view = $request->get('view');
-        $validViews = $this->getOptions()->getViewOptions();
+        $validViews = array_keys($this->getOptions()->getViewOptions());
         if ($view == 'rss') {
             // RSS is a special case that does not require config validation
             $this->setView('rss');
-        } else if (!empty($view) && in_array($view, array_keys($validViews))) {
+        } else if (!empty($view) && in_array($view, $validViews)) {
             // make sure the url parameter is a valid view
             $this->setView($view);
-        } else if (!empty($this->lastView)) {
+        } else if (!empty($this->lastView)
+            && in_array($this->lastView, $validViews)
+        ) {
             // if there is nothing in the URL, see if we had a previous value
             // injected based on session information.
             $this->setView($this->lastView);
@@ -1685,15 +1687,20 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Translate a string if a translator is available.
+     * Translate a string (or string-castable object)
      *
-     * @param string $msg Message to translate
+     * @param string|object|array $target  String to translate or an array of text
+     * domain and string to translate
+     * @param array               $tokens  Tokens to inject into the translated
+     * string
+     * @param string              $default Default value to use if no translation is
+     * found (null for no default).
      *
      * @return string
      */
-    public function translate($msg)
+    public function translate($target, $tokens = [], $default = null)
     {
-        return $this->getOptions()->translate($msg);
+        return $this->getOptions()->translate($target, $tokens, $default);
     }
 
     /**

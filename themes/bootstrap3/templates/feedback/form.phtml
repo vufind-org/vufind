@@ -1,29 +1,28 @@
 <h2><?=$this->transEsc("Send us your feedback!")?></h2>
+<?=$this->flashmessages() ?>
 <form class="form-horizontal" name="feedback" method="post" action="<?=$this->url('feedback-email')?>">
-  <input type="hidden" id="formSuccess" value="<?=$this->transEsc("Form Submitted!")?>"/>
-  <input type="hidden" id="feedbackSuccess" value="<?=$this->transEsc("Thank you for your feedback.")?>"/>
-  <input type="hidden" id="feedbackFailure" value="<?=$this->transEsc("An error has occurred")?>"/>
   <div class="form-group">
     <label class="col-sm-3 control-label" for="name"><?=$this->transEsc("feedback_name")?></label>
     <div class="col-sm-9">
-      <input type="text" id="name" name="name" class="form-control"/>
+      <input type="text" id="name" name="name" value="<?=$this->escapeHtmlAttr(isset($name) ? $name : '')?>" class="form-control"/>
     </div>
   </div>
   <div class="form-group">
     <label class="col-sm-3 control-label" for="email"><?=$this->transEsc("Email")?></label>
     <div class="col-sm-9">
-      <input type="email" id="email" name="email" class="form-control"/>
+      <input type="email" id="email" name="email" value="<?=$this->escapeHtmlAttr(isset($email) ? $email : '')?>" class="form-control" required/>
     </div>
   </div>
   <div class="form-group">
     <label class="col-sm-3 control-label" for="comments"><?=$this->transEsc("Comments")?></label>
     <div class="col-sm-9">
-      <textarea id="comments" name="comments" class="form-control"></textarea>
+      <textarea id="comments" name="comments" class="form-control" required><?=$this->escapeHtml(isset($comments) ? $comments : '')?></textarea>
     </div>
   </div>
+  <?=$this->recaptcha()->html($this->useRecaptcha) ?>
   <div class="form-group">
     <div class="col-sm-9 col-sm-offset-3">
-      <input type="submit" class="btn btn-primary" value="<?=$this->transEsc("Send")?>" />
+      <input type="submit" name="submit" class="btn btn-primary" value="<?=$this->transEsc("Send")?>" />
     </div>
   </div>
 </form>

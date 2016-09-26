@@ -5,13 +5,24 @@
   } else {
     $user_id = false;
   }
+
+  $formatRoles = function ($roles) {
+    if (count($roles) == 0) {
+      return '';
+    }
+    $that = $this;
+    $translate = function ($str) use ($that) {
+      return $that->transEsc('CreatorRoles::' . $str);
+    };
+    return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
+  };
 ?>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <? $QRCode = $this->record($this->driver)->getQRCode("core");
      $cover = $this->record($this->driver)->getCover('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
      $preview = $this->record($this->driver)->getPreviews(); ?>
   <? if ($QRCode || $cover || $preview): ?>
-  <div class="col-sm-3">
+  <div class="col-sm-3 img-col">
     <div class="text-center">
       <? /* Display thumbnail if appropriate: */ ?>
       <? if($cover): ?>
@@ -33,7 +44,7 @@
     <? if ($preview): ?><?=$preview?><? endif; ?>
   </div>
 
-  <div class="col-sm-9">
+  <div class="col-sm-9 info-col">
   <? else: ?>
   <div class="col-sm-12">
   <? endif; ?>
@@ -100,7 +111,7 @@
         <tr>
           <th><?=$this->transEsc(count($authors['main']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
           <td>
-            <? $i = 0; foreach ($authors['main'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?></span><? endforeach; ?>
+            <? $i = 0; foreach ($authors['main'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><?=$formatRoles($roles)?></span><? endforeach; ?>
           </td>
         </tr>
       <? endif; ?>
@@ -109,7 +120,7 @@
         <tr>
           <th><?=$this->transEsc(count($authors['corporate']) > 1 ? 'Corporate Author' : 'Corporate Authors')?>: </th>
           <td>
-            <? $i = 0; foreach ($authors['corporate'] as $corporate => $roles): ?><?=($i++ == 0)?'':', '?><span property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $corporate)?>"><?=$this->escapeHtml($corporate)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?></span><? endforeach; ?>
+            <? $i = 0; foreach ($authors['corporate'] as $corporate => $roles): ?><?=($i++ == 0)?'':', '?><span property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $corporate)?>"><?=$this->escapeHtml($corporate)?></a><?=$formatRoles($roles)?></span><? endforeach; ?>
           </td>
         </tr>
       <? endif; ?>
@@ -118,12 +129,12 @@
         <tr>
           <th><?=$this->transEsc('Other Authors')?>: </th>
           <td>
-            <? $i = 0; foreach ($authors['secondary'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><? if (count($roles) > 0): ?> (<? $j = 0; foreach ($roles as $role): ?><?=($j++ == 0)?'':', '?><?=$this->transEsc("CreatorRoles::" . $role)?><? endforeach; ?>)<? endif; ?></span><? endforeach; ?>
+            <? $i = 0; foreach ($authors['secondary'] as $author => $roles): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a><?=$formatRoles($roles)?></span><? endforeach; ?>
           </td>
         </tr>
       <? endif; ?>
 
-      <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+      <? if (count($this->driver->getFormats()) > 0): ?>
         <tr>
           <th><?=$this->transEsc('Format')?>: </th>
           <td><?=$this->record($this->driver)->getFormatList()?></td>
@@ -265,7 +276,7 @@
           <th><?=$this->transEsc('Tags')?>: </th>
           <td>
             <a class="tag-record btn btn-link pull-right flip" href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" data-lightbox>
-              <i class="fa fa-plus"></i> <?=$this->transEsc('Add Tag')?>
+              <i class="fa fa-plus" aria-hidden="true"></i> <?=$this->transEsc('Add Tag')?>
             </a>
             <?=$this->context($this)->renderInContext('record/taglist', array('tagList'=>$tagList, 'loggedin'=>$loggedin)) ?>
           </td>

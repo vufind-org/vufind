@@ -19,27 +19,27 @@
       </div>
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <button type="submit" class="btn btn-default" name="saveCart" title="<?=$this->transEsc('bookbag_save')?>" value="1">
-          <i class="fa fa-save"></i>
+          <i class="fa fa-save" aria-hidden="true"></i>
           <?=$this->transEsc('Save')?>
         </button>
       <? endif; ?>
       <button type="submit" class="btn btn-default" name="email" title="<?=$this->transEsc('bookbag_email')?>" value="1">
-        <i class="fa fa-envelope-o"></i>
+        <i class="fa fa-envelope-o" aria-hidden="true"></i>
         <?=$this->transEsc('Email')?>
       </button>
       <? $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
         <button type="submit" class="btn btn-default" name="export" title="<?=$this->transEsc('bookbag_export')?>" value="1">
-          <i class="fa fa-list-alt"></i>
+          <i class="fa fa-list-alt" aria-hidden="true"></i>
           <?=$this->transEsc('Export')?>
         </button>
       <? endif; ?>
       <button type="submit" class="btn btn-default dropdown-toggle" name="print" title="<?=$this->transEsc('print_selected')?>" value="1">
-        <i class="fa fa-print"></i>
+        <i class="fa fa-print" aria-hidden="true"></i>
         <?=$this->transEsc('Print')?>
       </button>
       <div class="btn-group" id="cartDelete">
         <button type="submit" name="delete" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-delete-label" value="1">
-          <i class="fa fa-trash"></i>
+          <i class="fa fa-trash" aria-hidden="true"></i>
           <?=$this->transEsc('Delete')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
@@ -49,7 +49,7 @@
       </div>
       <div class="btn-group">
         <button type="submit" class="btn btn-default dropdown-toggle" name="empty" data-toggle="dropdown" id="cart-empty-label" value="1">
-          <i class="fa fa-close"></i>
+          <i class="fa fa-close" aria-hidden="true"></i>
           <?=$this->transEsc('Empty Book Bag')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">

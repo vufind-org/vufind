@@ -10,18 +10,21 @@ else
   JAVA="java"
 fi
 
-if [ "$SOLR_HOME" ]
+if [ -z "$VUFIND_HOME" ]
 then
-  SOLR_HOME="$SOLR_HOME"
-else
-  SOLR_HOME="`dirname $0`/solr"
+  VUFIND_HOME=`dirname $0`
+fi
+
+if [ -z "$SOLR_HOME" ]
+then
+  SOLR_HOME="$VUFIND_HOME/solr/vufind"
 fi
 
 set -e
 set -x
 
 cd "`dirname $0`/import"
-CLASSPATH="browse-indexing.jar:${SOLR_HOME}/vufind/jars/*:${SOLR_HOME}/vendor/contrib/analysis-extras/lib/*:${SOLR_HOME}/vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
+CLASSPATH="browse-indexing.jar:${SOLR_HOME}/jars/*:${SOLR_HOME}/../vendor/contrib/analysis-extras/lib/*:${SOLR_HOME}/../vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
 
 # make index work with replicated index
 # current index is stored in the last line of index.properties
@@ -45,9 +48,9 @@ function locate_index
     eval $targetVar="$indexDir/$subDir"
 }
 
-locate_index "bib_index" "${SOLR_HOME}/vufind/biblio"
-locate_index "auth_index" "${SOLR_HOME}/vufind/authority"
-index_dir="${SOLR_HOME}/vufind/alphabetical_browse"
+locate_index "bib_index" "${SOLR_HOME}/biblio"
+locate_index "auth_index" "${SOLR_HOME}/authority"
+index_dir="${SOLR_HOME}/alphabetical_browse"
 
 mkdir -p "$index_dir"
 

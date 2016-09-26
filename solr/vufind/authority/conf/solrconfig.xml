@@ -145,7 +145,7 @@
     </listener>
     -->
     <!-- A postOptimize event is fired only after every optimize command, useful
-         in conjunction with index distribution to only distribute optimized indicies 
+         in conjunction with index distribution to only distribute optimized indices
     <listener event="postOptimize" class="solr.RunExecutableListener">
       <str name="exe">snapshooter</str>
       <str name="dir">solr/bin</str>
@@ -313,7 +313,7 @@
             (and validation against If-Modified-Since requests) will all be
             relative to when the current Searcher was opened.
             You can change it to lastModFrom="dirLastMod" if you want the
-            value to exactly corrispond to when the physical index was last
+            value to exactly correspond to when the physical index was last
             modified.
                
             etagSeed="..." is an option you can change to force the ETag
@@ -390,7 +390,7 @@
    
    Search components are registered to SolrCore and used by Search Handlers
    
-   By default, the following components are avaliable:
+   By default, the following components are available:
     
    <searchComponent name="query"     class="org.apache.solr.handler.component.QueryComponent" />
    <searchComponent name="facet"     class="org.apache.solr.handler.component.FacetComponent" />

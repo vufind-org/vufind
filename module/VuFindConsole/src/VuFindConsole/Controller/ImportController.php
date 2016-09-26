@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -88,8 +88,7 @@ class ImportController extends AbstractBase
             );
             Console::writeLine("");
             Console::writeLine(
-                "Note: See vudl.properties and ojs.properties "
-                . "for configuration examples."
+                "Note: See ojs.properties for configuration examples."
             );
             return $this->getFailureResponse();
         }

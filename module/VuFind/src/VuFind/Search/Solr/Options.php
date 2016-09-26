@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Solr
@@ -38,6 +38,16 @@ namespace VuFind\Search\Solr;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    /**
+     * Available sort options for facets
+     *
+     * @var array
+     */
+    protected $facetSortOptions = [
+        'count' => 'sort_count',
+        'index' => 'sort_alphabetic'
+    ];
+
     /**
      * Hierarchical facets
      *
@@ -142,6 +152,10 @@ class Options extends \VuFind\Search\Base\Options
         } else {
             $this->viewOptions = ['list' => 'List'];
         }
+        // Load list view for result (controls AJAX embedding vs. linking)
+        if (isset($searchSettings->List->view)) {
+            $this->listviewOption = $searchSettings->List->view;
+        }
 
         // Load facet preferences
         $facetSettings = $configLoader->get($this->facetsIni);
@@ -182,6 +196,13 @@ class Options extends \VuFind\Search\Base\Options
         $config = $configLoader->get('config');
         if (isset($config->Spelling->enabled)) {
             $this->spellcheck = $config->Spelling->enabled;
+        }
+
+        // Turn on first/last navigation if configured:
+        if (isset($config->Record->first_last_navigation)
+            && $config->Record->first_last_navigation
+        ) {
+            $this->firstlastNavigation = true;
         }
 
         // Turn on highlighting if the user has requested highlighting or snippet
@@ -248,6 +269,16 @@ class Options extends \VuFind\Search\Base\Options
     public function getAdvancedSearchAction()
     {
         return 'search-advanced';
+    }
+
+    /**
+     * Return the route name for the search results action.
+     *
+     * @return string
+     */
+    public function getFacetListAction()
+    {
+        return 'search-facetlist';
     }
 
     /**

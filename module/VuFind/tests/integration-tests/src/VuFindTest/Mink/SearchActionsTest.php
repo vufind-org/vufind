@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -199,6 +199,165 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
             'test', $this->findAndAssertLink($page, 'test')->getText()
         );
     }
+
+    /**
+     * Helper function for facets lists
+     *
+     * @param \Behat\Mink\Element\Element $page            Mink page object
+     * @param int                         $limit           Configured lightbox length
+     * @param bool                        $exclusionActive Is facet exclusion on?
+     *
+     * @return void
+     */
+    protected function facetListProcedure($page, $limit, $exclusionActive = false)
+    {
+        $this->snooze();
+        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $this->assertEquals($limit, count($items));
+        $excludes = $page
+            ->findAll('css', '#modal #facet-list-count .badge .fa-times');
+        $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
+        // more
+        $this->findCss($page, '#modal .js-facet-next-page')->click();
+        $this->snooze();
+        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $this->assertEquals($limit * 2, count($items));
+        $this->assertEquals(
+            'Weird IDs 9 '
+            . 'Fiction 7 '
+            . 'The Study Of P|pes 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 '
+            . 'The Study of "Important" Things 1 '
+            . 'The Study of %\'s? 1 '
+            . 'The Study of +\'s? 1 '
+            . 'The Study of @Twitter #test 1 '
+            . 'more ...',
+            $this->findCss($page, '#modal #facet-list-count')->getText()
+        );
+        $excludes = $page
+            ->findAll('css', '#modal #facet-list-count .badge .fa-times');
+        $this->assertEquals($exclusionActive ? $limit * 2 : 0, count($excludes));
+
+        // sort by title
+        $this->findCss($page, '[data-sort="index"]')->click();
+        $this->snooze();
+        $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
+        $this->assertEquals($limit, count($items)); // reset number of items
+        $this->assertEquals(
+            'Fiction 7 '
+            . 'The Study Of P|pes 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 '
+            . 'The Study of "Important" Things 1 '
+            . 'more ...',
+            $this->findCss($page, '#modal #facet-list-index')->getText()
+        );
+        $excludes = $page
+            ->findAll('css', '#modal #facet-list-index .badge .fa-times');
+        $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
+        // sort by index again
+        $this->findCss($page, '[data-sort="count"]')->click();
+        $this->snooze();
+        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $this->assertEquals($limit * 2, count($items)); // maintain number of items
+        // When exclusion is active, the result count is outside of the link tag:
+        $expectedLinkText = $exclusionActive ? 'Weird IDs' : 'Weird IDs 9';
+        $weirdIDs = $this->findAndAssertLink(
+            $page->findById('modal'), $expectedLinkText
+        );
+        $this->assertEquals($expectedLinkText, $weirdIDs->getText());
+        // apply US facet
+        $weirdIDs->click();
+        $this->snooze();
+    }
+
+    /**
+     * Test expanding facets into the lightbox
+     *
+     * @return void
+     */
+    public function testFacetLightbox()
+    {
+        $limit = 4;
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => true,
+                        'lightboxLimit' => $limit
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the geographic facet
+        $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
+        $genreMore->click();
+        $this->facetListProcedure($page, $limit);
+        $genreMore->click();
+        $this->findCss($page, '#modal .js-facet-item.active')->click();
+        // remove facet
+        $this->snooze();
+        $this->assertNull($page->find('css', '.list-group.filters'));
+    }
+
+    /**
+     * Test expanding facets into the lightbox
+     *
+     * @return void
+     */
+    public function testFacetLightboxMoreSetting()
+    {
+        $limit = 4;
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => 'more',
+                        'lightboxLimit' => $limit
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the geographic facet
+        $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
+        $genreMore->click();
+        $this->findCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]')->click();
+        $this->facetListProcedure($page, $limit);
+        $genreMore->click();
+        $this->findCss($page, '.narrowGroupHidden-genre_facet[data-lightbox]')->click();
+        $this->findCss($page, '#modal .js-facet-item.active')->click();
+        // remove facet
+        $this->snooze();
+        $this->assertNull($page->find('css', '.list-group.filters'));
+    }
+
+    /**
+     * Test that exclusion works properly deep in lightbox results.
+     *
+     * @return void
+     */
+    public function testFacetLightboxExclusion()
+    {
+        $limit = 4;
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => true,
+                        'lightboxLimit' => $limit,
+                        'exclude' => '*',
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the geographic facet
+        $genreMore = $this->findCss($page, '#more-narrowGroupHidden-genre_facet');
+        $genreMore->click();
+        $this->facetListProcedure($page, $limit, true);
+        $this->assertEquals(1, count($page->find('css', '.list-group.filters')));
+   }
 
     /**
      * Standard teardown method.

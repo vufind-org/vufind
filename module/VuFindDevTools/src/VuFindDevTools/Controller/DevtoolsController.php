@@ -89,7 +89,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     public function languageAction()
     {
         // Test languages with no local overrides and no fallback:
-        $loader = new ExtendedIni([APPLICATION_PATH  . '/languages']);
+        $loader = new ExtendedIni([APPLICATION_PATH . '/languages']);
         $helper = new LanguageHelper($loader, $this->getConfig());
         return $helper->getAllDetails($this->params()->fromQuery('main', 'en'));
     }

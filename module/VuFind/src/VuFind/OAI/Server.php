@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  OAI_Server
@@ -596,7 +596,8 @@ class Server
 
         // Get non-deleted records from the Solr index:
         $result = $this->listRecordsGetNonDeleted(
-            $from, $until, $solrOffset, $solrLimit, $params['set']
+            $from, $until, $solrOffset, $solrLimit,
+            isset($params['set']) ? $params['set'] : ''
         );
         $nonDeletedCount = $result->getResultTotal();
         $format = $params['metadataPrefix'];

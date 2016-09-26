@@ -33,7 +33,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
         <?=$openUrl->renderTemplate()?><br />
       <? endif; ?>
       <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
-        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
         <br/>
       <? endforeach; ?>
     <? endif; ?>

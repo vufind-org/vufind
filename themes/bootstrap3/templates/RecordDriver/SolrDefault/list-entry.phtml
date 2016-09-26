@@ -9,177 +9,192 @@
     $list_id = null;
     $user_id = $this->user ? $this->user->id : null;
   }
-?>
-<div class="row result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
-  <? $cover=$this->record($this->driver)->getCover('list-entry', 'small', $this->recordLink()->getUrl($this->driver)); ?>
-  <? if ($cover): ?>
-  <div class="col-xs-2 left">
-  <? else: ?>
-  <div class="col-xs-1 left">
-  <? endif ?>
-    <label class="pull-left flip"><?=$this->record($this->driver)->getCheckbox() ?></label>
-    <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
-  <? if ($cover): ?>
-    <?=$cover ?>
-  </div>
-  <div class="col-xs-6 middle">
-  <? else: ?>
-  </div>
-  <div class="col-xs-7 middle">
-  <? endif ?>
-
-    <div class="resultItemLine1">
-      <? $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
-      <? if (!$missing): ?><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><? endif; ?>
-        <?=$this->record($this->driver)->getTitleHtml()?>
-      <? if (!$missing): ?></a><? endif; ?>
+  // Thumbnail
+  $coverDetails = $this->record($this->driver)->getCoverDetails('list-entry', 'medium', $this->recordLink()->getUrl($this->driver));
+  $cover = $coverDetails['html'];
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('list');
+  if ($cover):
+    ob_start(); ?>
+    <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+      <?=$cover ?>
     </div>
+    <? $thumbnail = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+<? endif; ?>
+<div class="result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId"/>
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($source) ?>" class="hiddenSource"/>
+  <div class="checkbox hidden-print">
+    <label><?=$this->record($this->driver)->getCheckbox()?></label>
+  </div>
+  <div class="media">
+    <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+      <?=$thumbnail ?>
+    <? endif; ?>
+    <div class="media-body">
+      <div class="row short-view">
+        <div class="col-sm-8">
+          <div class="resultItemLine1">
+            <? $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
+            <? if (!$missing): ?><a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>"><? endif; ?>
+              <span class="title"><?=$this->record($this->driver)->getTitleHtml()?></span>
+            <? if (!$missing): ?></a><? endif; ?>
+          </div>
 
-    <div class="resultItemLine2">
-      <? if($this->driver->isCollection()): ?>
-        <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
-      <? else: ?>
-        <? $summAuthors = $this->driver->getPrimaryAuthors(); if (!empty($summAuthors)): ?>
-          <?=$this->transEsc('by')?>
-          <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
-            <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?=$this->escapeHtml($summAuthor)?></a><?=($i + 1 < $authorCount ? ';' : '') ?>
-          <? endforeach; ?>
-        <? endif; ?>
+          <div class="resultItemLine2">
+            <? if($this->driver->isCollection()): ?>
+              <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+            <? else: ?>
+              <? $summAuthors = $this->driver->getPrimaryAuthors(); if (!empty($summAuthors)): ?>
+                <?=$this->transEsc('by')?>
+                <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
+                  <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?=$this->escapeHtml($summAuthor)?></a><?=($i + 1 < $authorCount ? ';' : '') ?>
+                <? endforeach; ?>
+              <? endif; ?>
 
-        <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
-        <? if (!empty($journalTitle)): ?>
-          <?=!empty($summAuthor) ? '<br/>' : ''?>
-          <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)) . '">' . $this->highlight($journalTitle) . '</a>';?>
-          <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
-        <? elseif (!empty($summDate)): ?>
-          <?=!empty($summAuthor) ? '<br/>' : ''?>
-          <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
-        <? endif; ?>
-        <? $summInCollection = $this->driver->getContainingCollections(); if (false && !empty($summInCollection)): ?>
-          <? foreach ($summInCollection as $collId => $collText): ?>
-            <div>
-              <b><?=$this->transEsc("in_collection_label")?></b>
-              <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
-                <?=$this->escapeHtml($collText)?>
-              </a>
+              <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
+              <? if (!empty($journalTitle)): ?>
+                <?=!empty($summAuthor) ? '<br/>' : ''?>
+                <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)) . '">' . $this->highlight($journalTitle) . '</a>';?>
+                <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
+              <? elseif (!empty($summDate)): ?>
+                <?=!empty($summAuthor) ? '<br/>' : ''?>
+                <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
+              <? endif; ?>
+              <? $summInCollection = $this->driver->getContainingCollections(); if (false && !empty($summInCollection)): ?>
+                <? foreach ($summInCollection as $collId => $collText): ?>
+                  <div>
+                    <b><?=$this->transEsc("in_collection_label")?></b>
+                    <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+                      <?=$this->escapeHtml($collText)?>
+                    </a>
+                  </div>
+                <? endforeach; ?>
+              <? endif; ?>
+            <? endif; ?>
+          </div>
+
+          <div class="last">
+            <? if(!$this->driver->isCollection()) {
+                if ($snippet = $this->driver->getHighlightedSnippet()) {
+                  if (!empty($snippet['caption'])) {
+                    echo '<strong>' . $this->transEsc($snippet['caption']) . ':</strong> ';
+                  }
+                  if (!empty($snippet['snippet'])) {
+                    echo '<span class="quotestart">&#8220;</span>...' . $this->highlight($snippet['snippet']) . '...<span class="quoteend">&#8221;</span><br/>';
+                  }
+                }
+              } ?>
+
+            <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
+                null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
+                $user_id, 'tag'
+               ) : array();
+            ?>
+            <? if (count($listTags) > 0): ?>
+              <strong><?=$this->transEsc('Your Tags')?>:</strong>
+              <? foreach ($listTags as $tag): ?>
+                <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a>
+              <? endforeach; ?>
+              <br/>
+            <? endif; ?>
+            <? $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
+            <? if (count($listNotes) > 0): ?>
+              <strong><?=$this->transEsc('Notes')?>:</strong>
+              <? if (count($listNotes) > 1): ?><br/><? endif; ?>
+              <? foreach ($listNotes as $note): ?>
+                <?=$this->escapeHtml($note)?><br/>
+              <? endforeach; ?>
+            <? endif; ?>
+
+            <? if (count($this->lists) > 0): ?>
+                <strong><?=$this->transEsc('Saved in')?>:</strong>
+                <? $i=0;foreach($this->lists as $current): ?>
+                    <a href="<?=$this->url('userList', array('id' => $current->id))?>"><?=$this->escapeHtml($current->title)?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
+                <? endforeach; ?>
+                <br/>
+            <? endif; ?>
+
+            <div class="callnumAndLocation ajax-availability hidden">
+              <? if ($this->driver->supportsAjaxStatus()): ?>
+                <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
+                <span class="callnumber ajax-availability hidden">
+                  <?=$this->transEsc('Loading')?>...<br/>
+                </span>
+                <strong><?=$this->transEsc('Located')?>:</strong>
+                <span class="location ajax-availability hidden">
+                  <?=$this->transEsc('Loading')?>...
+                </span>
+                <div class="locationDetails"></div>
+              <? else: ?>
+                <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+                  <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
+                <? endif; ?>
+              <? endif; ?>
             </div>
-          <? endforeach; ?>
-        <? endif; ?>
-      <? endif; ?>
-    </div>
 
-    <div class="last">
-    <? if(!$this->driver->isCollection()) {
-        if ($snippet = $this->driver->getHighlightedSnippet()) {
-          if (!empty($snippet['caption'])) {
-            echo '<strong>' . $this->transEsc($snippet['caption']) . ':</strong> ';
-          }
-          if (!empty($snippet['snippet'])) {
-            echo '<span class="quotestart">&#8220;</span>...' . $this->highlight($snippet['snippet']) . '...<span class="quoteend">&#8221;</span><br/>';
-          }
-        }
-      } ?>
+            <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
+                  but even if we don't plan to display the link, we still want to get the $openUrl
+                  value for use in generating a COinS (Z3988) tag -- see bottom of file.
+                */
+              $openUrl = $this->openUrl($this->driver, 'results');
+              $openUrlActive = $openUrl->isActive();
+              // Account for replace_other_urls setting
+              $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 
-    <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
-        null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
-        $user_id, 'tag'
-       ) : array();
-    ?>
-    <? if (count($listTags) > 0): ?>
-      <strong><?=$this->transEsc('Your Tags')?>:</strong>
-      <? foreach ($listTags as $tag): ?>
-        <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a>
-      <? endforeach; ?>
-      <br/>
-    <? endif; ?>
-    <? $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
-    <? if (count($listNotes) > 0): ?>
-      <strong><?=$this->transEsc('Notes')?>:</strong>
-      <? if (count($listNotes) > 1): ?><br/><? endif; ?>
-      <? foreach ($listNotes as $note): ?>
-        <?=$this->escapeHtml($note)?><br/>
-      <? endforeach; ?>
-    <? endif; ?>
+              if ($openUrlActive || !empty($urls)):
+            ?>
+              <? if ($openUrlActive): ?>
+                <br/>
+                <?=$openUrl->renderTemplate()?>
+              <? endif;?>
 
-    <? if (count($this->lists) > 0): ?>
-        <strong><?=$this->transEsc('Saved in')?>:</strong>
-        <? $i=0;foreach($this->lists as $current): ?>
-            <a href="<?=$this->url('userList', array('id' => $current->id))?>"><?=$this->escapeHtml($current->title)?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
-        <? endforeach; ?>
-        <br/>
-    <? endif; ?>
-      <div class="callnumAndLocation">
-        <? if ($this->driver->supportsAjaxStatus()): ?>
-          <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
-          <span class="callnumber ajax-availability hidden">
-            <?=$this->transEsc('Loading')?>...
-          </span><br class="hideIfDetailed"/>
-          <strong><?=$this->transEsc('Located')?>:</strong>
-          <span class="location ajax-availability hidden">
-            <?=$this->transEsc('Loading')?>...
-          </span>
-          <div class="locationDetails hidden"></div>
-        <? else: ?>
-          <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
-            <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
-          <? endif; ?>
-        <? endif; ?>
+              <? if (!is_array($urls)) { $urls = array(); }
+                if(!$this->driver->isCollection()):
+                  foreach ($urls as $current): ?>
+                    <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+                  <? endforeach; ?>
+                <? endif; ?>
+              <? endif; ?>
+            <br/>
+
+            <?=$this->record($this->driver)->getFormatList() ?>
+
+            <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
+              <span class="status ajax-availability hidden"><?=$this->transEsc('Loading')?>...</span>
+              <br/><br/>
+            <? endif; ?>
+            <?=$this->record($this->driver)->getPreviews()?>
+          </div>
+        </div>
+
+        <div class="col-sm-4 right">
+          <i class="fa fa-fw fa-edit" aria-hidden="true"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
+          <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
+            $deleteUrl = null === $list_id
+                ? $this->url('myresearch-favorites')
+                : $this->url('userList', array('id' => $list_id));
+            $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
+
+            $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);
+          ?>
+          <div class="dropdown">
+            <i class="fa fa-fw fa-trash-o" aria-hidden="true"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
+              <?=$this->transEsc('Delete') ?>
+            </a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
+              <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeJs($id) ?>','source':'<?=$this->escapeJs($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+              <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
+            </ul>
+          </div>
+
+          <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+        </div>
       </div>
-
-      <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
-            but even if we don't plan to display the link, we still want to get the $openUrl
-            value for use in generating a COinS (Z3988) tag -- see bottom of file.
-          */
-        $openUrl = $this->openUrl($this->driver, 'results');
-        $openUrlActive = $openUrl->isActive();
-        // Account for replace_other_urls setting
-        $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
-
-        if ($openUrlActive || !empty($urls)):
-      ?>
-        <? if ($openUrlActive): ?>
-          <br/>
-          <?=$openUrl->renderTemplate()?>
-        <? endif;?>
-
-        <? if (!is_array($urls)) { $urls = array(); }
-          if(!$this->driver->isCollection()):
-            foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
-            <? endforeach; ?>
-          <? endif; ?>
-        <? endif; ?>
-      <br/>
-      <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
-
-      <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
-        <span class="status ajax-availability hidden"><?=$this->transEsc('Loading')?>...</span>
-        <br/><br/>
-      <? endif; ?>
-      <?=$this->record($this->driver)->getPreviews()?>
     </div>
-  </div>
-
-  <div class="col-xs-2 right">
-    <i class="fa fa-fw fa-edit"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
-    <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
-      $deleteUrl = null === $list_id
-          ? $this->url('myresearch-favorites')
-          : $this->url('userList', array('id' => $list_id));
-      $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
-
-      $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);
-    ?>
-    <div class="dropdown">
-      <i class="fa fa-fw fa-trash-o"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
-        <?=$this->transEsc('Delete') ?>
-      </a>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
-        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeJs($id) ?>','source':'<?=$this->escapeJs($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-        <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
-      </ul>
-    </div>
-
-    <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+    <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+      <?=$thumbnail ?>
+    <? endif; ?>
   </div>
 </div>

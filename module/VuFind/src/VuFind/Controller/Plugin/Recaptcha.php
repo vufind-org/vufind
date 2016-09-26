@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -90,7 +90,7 @@ class Recaptcha extends AbstractPlugin
      */
     public function setErrorMode($mode)
     {
-        if (in_array($mode, ['flash', 'throw'])) {
+        if (in_array($mode, ['flash', 'throw', 'none'])) {
             $this->errorMode = $mode;
             return true;
         }
@@ -110,7 +110,7 @@ class Recaptcha extends AbstractPlugin
     /**
      * Pull the captcha field from POST and check them for accuracy
      *
-     * @return boolean
+     * @return bool
      */
     public function validate()
     {
@@ -125,7 +125,7 @@ class Recaptcha extends AbstractPlugin
             $response = false;
         }
         $captchaPassed = $response && $response->isValid();
-        if (!$captchaPassed) {
+        if (!$captchaPassed && $this->errorMode != 'none') {
             if ($this->errorMode == 'flash') {
                 $this->getController()->flashMessenger()
                     ->addMessage('recaptcha_not_passed', 'error');
@@ -141,7 +141,7 @@ class Recaptcha extends AbstractPlugin
      *
      * @param string $domain The specific config term are we checking; ie. "sms"
      *
-     * @return boolean
+     * @return bool
      */
     public function active($domain = false)
     {

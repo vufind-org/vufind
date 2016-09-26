@@ -11,7 +11,7 @@
       <? foreach ($tagFilterList as $filter): ?>
         <? $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value']); ?>
         <a class="list-group-item active" href="<?=$removeLink?>">
-          <span class="pull-right flip"><i class="fa fa-minus-circle"></i></span>
+          <span class="pull-right flip"><i class="fa fa-minus-circle" aria-hidden="true"></i></span>
           <?=$this->escapeHtml($filter['displayText'])?>
         </a>
       <? endforeach; ?>

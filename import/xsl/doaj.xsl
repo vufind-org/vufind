@@ -68,6 +68,12 @@
                             <field name="author">
                                 <xsl:value-of select="normalize-space()"/>
                             </field>
+                            <!-- use first author value for sorting -->
+                            <xsl:if test="position()=1">
+                                <field name="author_sort">
+                                    <xsl:value-of select="normalize-space()"/>
+                                </field>
+                            </xsl:if>
                         </xsl:if>
                     </xsl:for-each>
                 </xsl:if>

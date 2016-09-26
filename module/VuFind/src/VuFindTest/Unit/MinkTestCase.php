@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\Unit;
-use Behat\Mink\Driver\ZombieDriver, Behat\Mink\Session,
+use Behat\Mink\Driver\Selenium2Driver, Behat\Mink\Session,
     Behat\Mink\Element\Element,
     VuFind\Config\Locator as ConfigLocator,
     VuFind\Config\Writer as ConfigWriter;
@@ -75,7 +75,6 @@ abstract class MinkTestCase extends DbTestCase
     {
         foreach ($configs as $file => $settings) {
             $this->changeConfigFile($file, $settings, in_array($file, $replace));
-            $this->modifiedConfigs[] = $file;
         }
     }
 
@@ -93,14 +92,17 @@ abstract class MinkTestCase extends DbTestCase
     {
         $file = $configName . '.ini';
         $local = ConfigLocator::getLocalConfigPath($file, null, true);
-        if (file_exists($local)) {
-            // File exists? Make a backup!
-            copy($local, $local . '.bak');
-        } else {
-            // File doesn't exist? Make a baseline version.
-            copy(ConfigLocator::getBaseConfigPath($file), $local);
-        }
+        if (!in_array($configName, $this->modifiedConfigs)) {
+            if (file_exists($local)) {
+                // File exists? Make a backup!
+                copy($local, $local . '.bak');
+            } else {
+                // File doesn't exist? Make a baseline version.
+                copy(ConfigLocator::getBaseConfigPath($file), $local);
+            }
 
+            $this->modifiedConfigs[] = $configName;
+        }
         // If we're replacing the existing file, wipe it out now:
         if ($replace) {
             file_put_contents($local, '');
@@ -116,31 +118,6 @@ abstract class MinkTestCase extends DbTestCase
     }
 
     /**
-     * Are we using the Zombie.js driver?
-     *
-     * @return bool
-     */
-    protected function isZombieDriver()
-    {
-        return getenv('VUFIND_MINK_DRIVER') !== 'selenium';
-    }
-
-    /**
-     * Assert an HTTP status code (if supported).
-     *
-     * @param int $code Expected status code.
-     *
-     * @return void
-     */
-    protected function assertHttpStatus($code)
-    {
-        // This assertion is not supported by Selenium.
-        if ($this->isZombieDriver()) {
-            $this->assertEquals(200, $this->getMinkSession()->getStatusCode());
-        }
-    }
-
-    /**
      * Sleep if necessary.
      *
      * @param int $secs Seconds to sleep
@@ -149,14 +126,11 @@ abstract class MinkTestCase extends DbTestCase
      */
     protected function snooze($secs = 1)
     {
-        // Sleep is not necessary for Zombie.js.
-        if (!$this->isZombieDriver()) {
-            $snoozeMultiplier = intval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
-            if ($snoozeMultiplier < 1) {
-                $snoozeMultiplier = 1;
-            }
-            sleep($secs * $snoozeMultiplier);
+        $snoozeMultiplier = intval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
+        if ($snoozeMultiplier < 1) {
+            $snoozeMultiplier = 1;
         }
+        sleep($secs * $snoozeMultiplier);
     }
 
     /**
@@ -168,22 +142,19 @@ abstract class MinkTestCase extends DbTestCase
      */
     protected function checkVisibility(Element $element)
     {
-        // Zombie.js does not support visibility checks; just assume true.
-        return $this->isZombieDriver() ? true : $element->isVisible();
+        return $element->isVisible();
     }
 
     /**
      * Get the Mink driver, initializing it if necessary.
      *
-     * @return ZombieDriver
+     * @return Selenium2Driver
      */
     protected function getMinkDriver()
     {
-        return !$this->isZombieDriver()
-            ? new \Behat\Mink\Driver\Selenium2Driver('firefox')
-            : new ZombieDriver(
-                new \Behat\Mink\Driver\NodeJS\Server\ZombieServer()
-            );
+        $env = getenv('VUFIND_SELENIUM_BROWSER');
+        $browser = $env ? $env : 'firefox';
+        return new Selenium2Driver($browser);
     }
 
     /**
@@ -249,6 +220,7 @@ abstract class MinkTestCase extends DbTestCase
                 rename($backup, $local);
             }
         }
+        $this->modifiedConfigs = [];
     }
 
     /**
@@ -310,12 +282,9 @@ abstract class MinkTestCase extends DbTestCase
      */
     public function setUp()
     {
-        // Give up if we're not running in CI or Zombie.js is unavailable:
+        // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
             return $this->markTestSkipped('Continuous integration not running.');
-        }
-        if (strlen(getenv('NODE_PATH')) == 0) {
-            return $this->markTestSkipped('NODE_PATH setting missing.');
         }
 
         // Reset the modified configs list.

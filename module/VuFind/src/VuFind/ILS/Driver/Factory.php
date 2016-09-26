@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -65,7 +65,27 @@ class Factory
      */
     public static function getDAIA(ServiceManager $sm)
     {
-        return new DAIA(
+        $daia = new DAIA(
+            $sm->getServiceLocator()->get('VuFind\DateConverter')
+        );
+
+        $daia->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+
+        return $daia;
+    }
+
+    /**
+     * Factory for LBS4 driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return LBS4
+     */
+    public static function getLBS4(ServiceManager $sm)
+    {
+        return new LBS4(
             $sm->getServiceLocator()->get('VuFind\DateConverter')
         );
     }
@@ -140,6 +160,39 @@ class Factory
     public static function getNoILS(ServiceManager $sm)
     {
         return new NoILS($sm->getServiceLocator()->get('VuFind\RecordLoader'));
+    }
+
+    /**
+     * Factory for PAIA driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return PAIA
+     */
+    public static function getPAIA(ServiceManager $sm)
+    {
+        $paia = new PAIA(
+            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+            $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
+
+        $paia->setCacheStorage(
+            $sm->getServiceLocator()->get('VuFind\CacheManager')->getCache('object')
+        );
+
+        return $paia;
+    }
+
+    /**
+     * Factory for KohaILSDI driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return KohaILSDI
+     */
+    public static function getKohaILSDI(ServiceManager $sm)
+    {
+        return new KohaILSDI($sm->getServiceLocator()->get('VuFind\DateConverter'));
     }
 
     /**

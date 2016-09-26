@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Statistics
@@ -62,8 +62,8 @@ class Search extends AbstractBase
      * Returns a set of basic statistics including total searches,
      * number of empty searches and most popular search terms.
      *
-     * @param integer $listLength Number of top searches to return
-     * @param bool    $bySource   Separate searches by search source?
+     * @param int  $listLength Number of top searches to return
+     * @param bool $bySource   Separate searches by search source?
      *
      * @return array
      */

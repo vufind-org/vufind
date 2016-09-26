@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILSdrivers
@@ -701,8 +701,8 @@ class MultiBackend extends AbstractBase
     /**
      * Get request groups
      *
-     * @param integer $id     BIB ID
-     * @param array   $patron Patron information returned by the patronLogin
+     * @param int   $id     BIB ID
+     * @param array $patron Patron information returned by the patronLogin
      * method.
      *
      * @return array  An array of associative arrays with requestGroupId and
@@ -1044,7 +1044,8 @@ class MultiBackend extends AbstractBase
         if ($driver
             && $this->methodSupported($driver, 'placeILLRequest', compact($details))
         ) {
-            $details = $this->stripIdPrefixes($details, $source, ['id']);
+            // Patron is not stripped so that the correct library can be determined
+            $details = $this->stripIdPrefixes($details, $source, ['id'], ['patron']);
             return $driver->placeILLRequest($details);
         }
         throw new ILSException('No suitable backend driver found');
@@ -1178,7 +1179,7 @@ class MultiBackend extends AbstractBase
         }
         if (!$source) {
             try {
-                $patron = $this->ilsAuth->storedCatalogLogin();
+                $patron = $this->ilsAuth->getStoredCatalogCredentials();
                 if ($patron && isset($patron['cat_username'])) {
                     $source = $this->getSource($patron['cat_username']);
                 }
@@ -1425,12 +1426,13 @@ class MultiBackend extends AbstractBase
     * array or array of arrays
     * @param string $source       Source code
     * @param array  $modifyFields Fields to be modified in the array
+    * @param array  $ignoreFields Fields to be ignored during recursive processing
     *
     * @return mixed     Modified array or empty/null if that input was
     *                   empty/null
     */
     protected function stripIdPrefixes($data, $source,
-        $modifyFields = ['id', 'cat_username']
+        $modifyFields = ['id', 'cat_username'], $ignoreFields = []
     ) {
         if (!isset($data) || empty($data)) {
             return $data;
@@ -1439,6 +1441,9 @@ class MultiBackend extends AbstractBase
 
         foreach ($array as $key => $value) {
             if (is_array($value)) {
+                if (in_array($key, $ignoreFields)) {
+                    continue;
+                }
                 $array[$key] = $this->stripIdPrefixes(
                     $value, $source, $modifyFields
                 );

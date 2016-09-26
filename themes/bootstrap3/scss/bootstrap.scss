@@ -1,0 +1,146 @@
+@import "vendor/bootstrap";
+$fa-font-path: "../../bootstrap3/css/fonts";
+@import "vendor/font-awesome/font-awesome";
+@import "vendor/bootstrap-accessibility/bootstrap-accessibility";
+@import "vendor/a11y";
+
+$fa-font-path: "../../../../../../themes/bootstrap3/css/fonts" !default;
+
+@import "components/advanced-search";
+@import "components/alphabrowse";
+@import "components/autocomplete";
+@import "components/icons";
+@import "components/js-tree";
+@import "components/lightbox";
+@import "components/offcanvas";
+@import "components/record";
+@import "components/search";
+@import "components/sidebar";
+@import "components/similar-carousel";
+@import "components/sliders";
+
+.alert.alert-info a {text-decoration: underline;}
+.btn.disabled {
+  &:active,
+  &:focus,
+  &:hover {color: #000;}
+}
+header .dropdown form { display: none; }
+.list-unstyled {margin: 0;}
+.highlight,mark {
+  background: lighten(#FF0, 20%);
+  padding: .1em .2em;
+}
+.icon-bar {background-color: #888;}
+img {max-width: 100%;}
+.popover {width: 250px;}
+.sub-breadcrumb {
+  padding: 5px 10px;
+  white-space: nowrap;
+  li {display: inline-block;}
+  li + li:before {
+    padding-left: 5px;
+    padding-right: 5px;
+    color: $breadcrumb-color;
+    content: "#{$breadcrumb-separator}\00a0";
+  }
+}
+.tab-content {padding: 4px;}
+
+@media (max-width: 991px) {
+  header .container.navbar {margin-bottom: 0;}
+  .searchForm {margin-top: 0;}
+}
+@media (min-width: 768px) {
+  h2 {
+    font-size: 23px;
+    font-weight: normal;
+  }
+  h3 {
+    font-size: 20px;
+    font-weight: normal;
+  }
+  .form-control { max-width: 400px; }
+}
+@media (max-width: 767px) {
+  h2 { font-size: 20px; }
+  h3 { font-size: 16px; }
+  .searchForm {padding-top: 0;}
+}
+
+/* --- Form Errors --- */
+.has-error {margin-bottom: 0;}
+.sms-error {@extend .has-error;}
+.help-block.with-errors {
+  margin: 0;
+  padding-top: $padding-base-vertical;
+  padding-bottom: $padding-base-vertical;
+  &:empty {padding: 0;}
+}
+
+/* --- Badges - blend the links in --- */
+.badge a {color: #fff;}
+
+/* --- Browse --- */
+.browse.list-group .list-group-item {
+  word-wrap: break-word;
+  &.view-record {
+    padding: 2px 4px;
+    font-size: 85%;
+    text-align: right;
+    border-top: 0;
+  }
+}
+
+/* --- Cart --- */
+.cart-controls .checkbox {
+  line-height: 2.5em;
+  padding-right: 1em;
+}
+
+/* --- PubDateVis --- */
+#dateVisColorSettings {
+  background-color: #fff; // background of box
+  fill: rgb(234,234,234); // fillColor
+  outline-color: #c38835; // selection color
+  stroke: $brand-primary; // color
+}
+
+/* --- Table wrapping to prevent horizontal overflow --- */
+.table {
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+
+/* --- Visualization View --- */
+.node {
+  position: absolute;
+  box-sizing: content-box;
+  margin: -1px;
+  overflow: hidden;
+  font: 10px sans-serif;
+  line-height: 12px;
+  border: 1px solid white;
+}
+.node div {margin-top: 0px;}
+.toplevel {border: 2px solid black;}
+.node .label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  min-height: 1px;
+  padding: 2px 4px;
+  font-size: 85%;
+  background-color: rgba(0,0,0,.5);
+  border-radius: 0;
+  text-shadow: none;
+}
+.notalabel {color: #000;}
+#viz-instructions {padding-top: 600px;}
+
+span[class^="services-"], span[class*=" services-"] span::before {
+  content: ", ";
+}
+span[class^="services-"], span[class*=" services-"] span:first-of-type::before {
+  content: "";
+}

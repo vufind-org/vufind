@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Service
@@ -213,6 +213,20 @@ class Factory
             ? $config->Cookies->domain
             : null;
         return new \VuFind\Cookie\CookieManager($_COOKIE, $path, $domain, $secure);
+    }
+
+    /**
+     * Construct the cover router.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Cover\Router
+     */
+    public static function getCoverRouter(ServiceManager $sm)
+    {
+        $base = $sm->get('ControllerPluginManager')->get('url')
+            ->fromRoute('cover-show');
+        return new \VuFind\Cover\Router($base);
     }
 
     /**
@@ -518,7 +532,7 @@ class Factory
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $recaptcha = new \LosReCaptcha\Service\ReCaptcha(
+        $recaptcha = new \VuFind\Service\ReCaptcha(
             $siteKey, $secretKey, ['ssl' => true]
         );
         if (isset($config->Captcha->theme)) {
@@ -859,7 +873,7 @@ class Factory
         // Set up the ExtendedIni plugin:
         $config = $sm->get('VuFind\Config')->get('config');
         $pathStack = [
-            APPLICATION_PATH  . '/languages',
+            APPLICATION_PATH . '/languages',
             LOCAL_OVERRIDE_DIR . '/languages'
         ];
         $fallbackLocales = $config->Site->language == 'en'

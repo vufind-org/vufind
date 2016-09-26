@@ -3,47 +3,119 @@ import org.marc4j.marc.DataField;
 import org.solrmarc.index.UpdateDateTracker;
 import org.ini4j.Ini;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Map;
 
 // define the base level indexer so that its methods can be called from the script.
 // note that the SolrIndexer code will set this value before the script methods are called.
 org.solrmarc.index.SolrIndexer indexer = null;
 
+HashMap relatorSynonymLookup = new HashMap();
+Set knownRelators = new LinkedHashSet();
+
 /**
- * Check if a particular Datafield meets the specified relator requirements.
- * @param authorField      Field to analyze
- * @param noRelatorAllowed Array of tag names which are allowed to be used with
- * no declared relator.
- * @param relatorConfig    The setting in author-classification.ini which
- * defines which relator terms are acceptable (or a colon-delimited list)
- * @return Boolean
+ * Extract all valid relator terms from a list of subfields using a whitelist.
+ * @param subfields        List of subfields to check
+ * @param permittedRoles   Whitelist to check against
+ * @param indexRawRelators Should we index relators raw, as found
+ * in the MARC (true) or index mapped versions (false)?
+ * @return Set of valid relator terms
  */
-public Boolean authorHasAppropriateRelator(DataField authorField,
-    String[] noRelatorAllowed, String relatorConfig
+public Set getValidRelatorsFromSubfields(List subfields, List permittedRoles, Boolean indexRawRelators)
+{
+    Set relators = new LinkedHashSet();
+    for (int j = 0; j < subfields.size(); j++) {
+        String raw = subfields.get(j).getData();
+        String current = normalizeRelatorString(raw);
+        if (permittedRoles.contains(current)) {
+            relators.add(indexRawRelators ? raw : mapRelatorStringToCode(current));
+        }
+    }
+    return relators;
+}
+
+/**
+ * Is this relator term unknown to author-classification.ini?
+ * @param current relator to check
+ * @return True if unknown
+ */
+public Boolean isUnknownRelator(String current)
+{
+    // If we haven't loaded known relators yet, do so now:
+    if (knownRelators.size() == 0) {
+        Map all = indexer.getConfigSection("author-classification.ini", "RelatorSynonyms");
+        for (String key : all.keySet()) {
+            knownRelators.add(normalizeRelatorString(key));
+            for (String synonym: all.get(key).split("\\|")) {
+                knownRelators.add(normalizeRelatorString(synonym));
+            }
+        }
+    }
+    return !knownRelators.contains(normalizeRelatorString(current));
+}
+
+/**
+ * Extract all valid relator terms from a list of subfields using a whitelist.
+ * @param subfields      List of subfields to check
+ * @return Set of valid relator terms
+ */
+public Set getUnknownRelatorsFromSubfields(List subfields)
+{
+    Set relators = new LinkedHashSet();
+    for (int j = 0; j < subfields.size(); j++) {
+        String current = subfields.get(j).getData().trim();
+        if (current.length() > 0 && isUnknownRelator(current)) {
+            indexer.getLogger().info("Unknown relator: " + current);
+            relators.add(current);
+        }
+    }
+    return relators;
+}
+
+/**
+ * Extract all values that meet the specified relator requirements.
+ * @param authorField           Field to analyze
+ * @param noRelatorAllowed      Array of tag names which are allowed to be used with
+ * no declared relator.
+ * @param relatorConfig         The setting in author-classification.ini which
+ * defines which relator terms are acceptable (or a colon-delimited list)
+ * @param unknownRelatorAllowed Array of tag names whose relators should be indexed
+ * even if they are not listed in author-classification.ini.
+ * @param indexRawRelators      Set to "true" to index relators raw, as found
+ * in the MARC or "false" to index mapped versions.
+ * @return Set
+ */
+public Set getValidRelators(DataField authorField,
+    String[] noRelatorAllowed, String relatorConfig,
+    String[] unknownRelatorAllowed, String indexRawRelators
 ) {
     // get tag number from Field
     String tag = authorField.getTag();
-    List subfieldE = normalizeRelatorSubfieldList(authorField.getSubfields('e'));
-    List subfield4 = normalizeRelatorSubfieldList(authorField.getSubfields('4'));
+    List subfieldE = authorField.getSubfields('e');
+    List subfield4 = authorField.getSubfields('4');
+
+    Set relators = new LinkedHashSet();
 
     // if no relator is found, check to see if the current tag is in the "no
     // relator allowed" list.
     if (subfieldE.size() == 0 && subfield4.size() == 0) {
-        return Arrays.asList(noRelatorAllowed).contains(tag);
-    }
-
-    // If we got this far, we need to figure out what type of relation they have
-    List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
-    for (int j = 0; j < subfield4.size(); j++) {
-        if (permittedRoles.contains(subfield4.get(j).getData())) {
-            return true;
+        if (Arrays.asList(noRelatorAllowed).contains(tag)) {
+            relators.add("");
+        }
+    } else {
+        // If we got this far, we need to figure out what type of relation they have
+        List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
+        relators.addAll(getValidRelatorsFromSubfields(subfieldE, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
+        relators.addAll(getValidRelatorsFromSubfields(subfield4, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
+        if (Arrays.asList(unknownRelatorAllowed).contains(tag)) {
+            Set unknown = getUnknownRelatorsFromSubfields(subfieldE);
+            if (unknown.size() == 0) {
+                unknown = getUnknownRelatorsFromSubfields(subfield4);
+            }
+            relators.addAll(unknown);
         }
     }
-    for (int j = 0; j < subfieldE.size(); j++) {
-        if (permittedRoles.contains(subfieldE.get(j).getData())) {
-            return true;
-        }
-    }
-    return false;
+    return relators;
 }
 
 /**
@@ -84,14 +156,20 @@ public HashMap getParsedTagList(String tagList)
  * be accepted even if no relator subfield is defined
  * @param relatorConfig        The setting in author-classification.ini which
  * defines which relator terms are acceptable (or a colon-delimited list)
+ * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+ * should be indexed even if they are not listed in author-classification.ini.
+ * @param indexRawRelators      Set to "true" to index relators raw, as found
+ * in the MARC or "false" to index mapped versions.
  * @param firstOnly            Return first result only?
  * @return List result
  */
 public List getAuthorsFilteredByRelator(Record record, String tagList,
-    String acceptWithoutRelator, String relatorConfig, Boolean firstOnly
+    String acceptWithoutRelator, String relatorConfig,
+    String acceptUnknownRelators, String indexRawRelators, Boolean firstOnly
 ) {
     List result = new LinkedList();
     String[] noRelatorAllowed = acceptWithoutRelator.split(":");
+    String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
     HashMap parsedTagList = getParsedTagList(tagList);
     List fields = indexer.getFieldSetMatchingTagList(record, tagList);
     Iterator fieldsIter = fields.iterator();
@@ -99,8 +177,8 @@ public List getAuthorsFilteredByRelator(Record record, String tagList,
         DataField authorField;
         while (fieldsIter.hasNext()){
             authorField = (DataField) fieldsIter.next();
-            //add all author types to the result set
-            if (authorHasAppropriateRelator(authorField, noRelatorAllowed, relatorConfig)) {
+            // add all author types to the result set; if we have multiple relators, repeat the authors
+            for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators)) {
                 for (String subfields : parsedTagList.get(authorField.getTag())) {
                     String current = indexer.getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
                     // TODO: we may eventually be able to use this line instead,
@@ -138,7 +216,8 @@ public List getAuthorsFilteredByRelator(Record record, String tagList,
 ) {
     // default firstOnly to false!
     return getAuthorsFilteredByRelator(
-        record, tagList, acceptWithoutRelator, relatorConfig, false
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptWithoutRelator, "false", false
     );
 }
 
@@ -152,18 +231,135 @@ public List getAuthorsFilteredByRelator(Record record, String tagList,
  * be accepted even if no relator subfield is defined
  * @param relatorConfig        The setting in author-classification.ini which
  * defines which relator terms are acceptable (or a colon-delimited list)
+ * @return List result
+ * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+ * should be indexed even if they are not listed in author-classification.ini.
+ */
+public List getAuthorsFilteredByRelator(Record record, String tagList,
+    String acceptWithoutRelator, String relatorConfig,
+    String acceptUnknownRelators
+) {
+    // default firstOnly to false!
+    return getAuthorsFilteredByRelator(
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptUnknownRelators, "false", false
+    );
+}
+
+/**
+ * Filter values retrieved using tagList to include only those whose relator
+ * values are acceptable. Used for separating different types of authors.
+ *
+ * @param record               The record (fed in automatically)
+ * @param tagList              The field specification to read
+ * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+ * be accepted even if no relator subfield is defined
+ * @param relatorConfig        The setting in author-classification.ini which
+ * defines which relator terms are acceptable (or a colon-delimited list)
+ * @return List result
+ * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+ * should be indexed even if they are not listed in author-classification.ini.
+ * @param indexRawRelators      Set to "true" to index relators raw, as found
+ * in the MARC or "false" to index mapped versions.
+ */
+public List getAuthorsFilteredByRelator(Record record, String tagList,
+    String acceptWithoutRelator, String relatorConfig,
+    String acceptUnknownRelators, String indexRawRelators
+) {
+    // default firstOnly to false!
+    return getAuthorsFilteredByRelator(
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptUnknownRelators, indexRawRelators, false
+    );
+}
+
+/**
+ * If the provided relator is included in the synonym list, convert it back to
+ * a code (for better standardization/translation).
+ *
+ * @param relator Relator code to check
+ * @return Code version, if found, or raw string if no match found.
+ */
+public String mapRelatorStringToCode(String relator)
+{
+    String normalizedRelator = normalizeRelatorString(relator);
+    return relatorSynonymLookup.containsKey(normalizedRelator)
+        ? relatorSynonymLookup.get(normalizedRelator) : relator;
+}
+
+/**
+ * Filter values retrieved using tagList to include only those whose relator
+ * values are acceptable. Used for separating different types of authors.
+ *
+ * @param record                The record (fed in automatically)
+ * @param tagList               The field specification to read
+ * @param acceptWithoutRelator  Colon-delimited list of tags whose values should
+ * be accepted even if no relator subfield is defined
+ * @param relatorConfig         The setting in author-classification.ini which
+ * defines which relator terms  are acceptable (or a colon-delimited list)
+ * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+ * should be indexed even if they are not listed in author-classification.ini.
+ * @param indexRawRelators      Set to "true" to index relators raw, as found
+ * in the MARC or "false" to index mapped versions.
  * @return String
  */
 public String getFirstAuthorFilteredByRelator(Record record, String tagList,
-    String acceptWithoutRelator, String relatorConfig
+    String acceptWithoutRelator, String relatorConfig,
+    String acceptUnknownRelators, String indexRawRelators
 ) {
     List result = getAuthorsFilteredByRelator(
-        record, tagList, acceptWithoutRelator, relatorConfig, true
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptUnknownRelators, indexRawRelators, true
     );
     for (String s : result) {
         return s;
     }
     return null;
+}
+
+/**
+ * Filter values retrieved using tagList to include only those whose relator
+ * values are acceptable. Used for separating different types of authors.
+ *
+ * @param record                The record (fed in automatically)
+ * @param tagList               The field specification to read
+ * @param acceptWithoutRelator  Colon-delimited list of tags whose values should
+ * be accepted even if no relator subfield is defined
+ * @param relatorConfig         The setting in author-classification.ini which
+ * defines which relator terms  are acceptable (or a colon-delimited list)
+ * @return String
+ */
+public String getFirstAuthorFilteredByRelator(Record record, String tagList,
+    String acceptWithoutRelator, String relatorConfig
+) {
+    return getFirstAuthorFilteredByRelator(
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptWithoutRelator, "false"
+    );
+}
+
+/**
+ * Filter values retrieved using tagList to include only those whose relator
+ * values are acceptable. Used for separating different types of authors.
+ *
+ * @param record                The record (fed in automatically)
+ * @param tagList               The field specification to read
+ * @param acceptWithoutRelator  Colon-delimited list of tags whose values should
+ * be accepted even if no relator subfield is defined
+ * @param relatorConfig         The setting in author-classification.ini which
+ * defines which relator terms  are acceptable (or a colon-delimited list)
+ * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+ * should be indexed even if they are not listed in author-classification.ini.
+ * @return String
+ */
+public String getFirstAuthorFilteredByRelator(Record record, String tagList,
+    String acceptWithoutRelator, String relatorConfig,
+    String acceptUnknownRelators
+) {
+    return getFirstAuthorFilteredByRelator(
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptUnknownRelators, "false"
+    );
 }
 
 /**
@@ -177,15 +373,20 @@ public String getFirstAuthorFilteredByRelator(Record record, String tagList,
  * be accepted even if no relator subfield is defined
  * @param relatorConfig        The setting in author-classification.ini which
  * defines which relator terms are acceptable (or a colon-delimited list)
+ * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+ * should be indexed even if they are not listed in author-classification.ini.
+ * @param indexRawRelators      Set to "true" to index relators raw, as found
+ * in the MARC or "false" to index mapped versions.
  * @param firstOnly            Return first result only?
  * @return List result
  */
 public List getRelatorsFilteredByRelator(Record record, String tagList,
-    String acceptWithoutRelator, String relatorConfig, Boolean firstOnly,
-    String defaultRelator
+    String acceptWithoutRelator, String relatorConfig,
+    String acceptUnknownRelators, String indexRawRelators, Boolean firstOnly
 ) {
     List result = new LinkedList();
     String[] noRelatorAllowed = acceptWithoutRelator.split(":");
+    String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
     HashMap parsedTagList = getParsedTagList(tagList);
     List fields = indexer.getFieldSetMatchingTagList(record, tagList);
     Iterator fieldsIter = fields.iterator();
@@ -194,33 +395,64 @@ public List getRelatorsFilteredByRelator(Record record, String tagList,
         while (fieldsIter.hasNext()){
             authorField = (DataField) fieldsIter.next();
             //add all author types to the result set
-            if (authorHasAppropriateRelator(authorField, noRelatorAllowed, relatorConfig)) {
-                List subfieldE = normalizeRelatorSubfieldList(authorField.getSubfields('e'));
-                List subfield4 = normalizeRelatorSubfieldList(authorField.getSubfields('4'));
-    
-                // get the first non-empty subfield
-                String relator = defaultRelator;
-
-                // try subfield E first
-                for (int j = 0; j < subfieldE.size(); j++) {
-                    if (!subfieldE.get(j).getData().isEmpty()) {
-                        relator = subfieldE.get(j).getData();
-                        continue;
-                    }
-                }
-                // try subfield 4 now and overwrite relator as subfield 4 is most important
-                for (int j = 0; j < subfield4.size(); j++) {
-                    if (!subfield4.get(j).getData().isEmpty()) {
-                        relator = subfield4.get(j).getData();
-                        continue;
-                    }
-                }
-
-                result.add(relator);
-            }
+            result.addAll(getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators));
         }
     }
     return result;
+}
+
+/**
+ * Filter values retrieved using tagList to include only those whose relator
+ * values are acceptable. Used for saving relators of authors separated by different
+ * types.
+ *
+ * @param record               The record (fed in automatically)
+ * @param tagList              The field specification to read
+ * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+ * be accepted even if no relator subfield is defined
+ * @param relatorConfig        The setting in author-classification.ini which
+ * defines which relator terms are acceptable (or a colon-delimited list)
+ * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+ * should be indexed even if they are not listed in author-classification.ini.
+ * @param indexRawRelators      Set to "true" to index relators raw, as found
+ * in the MARC or "false" to index mapped versions.
+ * @return List result
+ */
+public List getRelatorsFilteredByRelator(Record record, String tagList,
+    String acceptWithoutRelator, String relatorConfig,
+    String acceptUnknownRelators, String indexRawRelators
+) {
+    // default firstOnly to false!
+    return getRelatorsFilteredByRelator(
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptUnknownRelators, indexRawRelators, false
+    );
+}
+
+/**
+ * Filter values retrieved using tagList to include only those whose relator
+ * values are acceptable. Used for saving relators of authors separated by different
+ * types.
+ *
+ * @param record               The record (fed in automatically)
+ * @param tagList              The field specification to read
+ * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+ * be accepted even if no relator subfield is defined
+ * @param relatorConfig        The setting in author-classification.ini which
+ * defines which relator terms are acceptable (or a colon-delimited list)
+ * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+ * should be indexed even if they are not listed in author-classification.ini.
+ * @return List result
+ */
+public List getRelatorsFilteredByRelator(Record record, String tagList,
+    String acceptWithoutRelator, String relatorConfig,
+    String acceptUnknownRelators
+) {
+    // default firstOnly to false!
+    return getRelatorsFilteredByRelator(
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptUnknownRelators, "false", false
+    );
 }
 
 /**
@@ -241,7 +473,8 @@ public List getRelatorsFilteredByRelator(Record record, String tagList,
 ) {
     // default firstOnly to false!
     return getRelatorsFilteredByRelator(
-        record, tagList, acceptWithoutRelator, relatorConfig, false, ""
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptWithoutRelator, "false", false
     );
 }
 
@@ -253,7 +486,7 @@ public List getRelatorsFilteredByRelator(Record record, String tagList,
  * @param setting Setting to load from .ini or colon-delimited list.
  * @return String[]
  */
-public String[] loadRelatorConfig(String setting) {
+public String[] loadRelatorConfig(String setting){
     StringBuilder relators = new StringBuilder();
 
     // check for pipe-delimited string
@@ -276,36 +509,43 @@ public String[] loadRelatorConfig(String setting) {
 }
 
 /**
- * Normalizes the strings in a list.
+ * Normalizes a relator string and returns a list containing the normalized
+ * relator plus any configured synonyms.
  *
- * @param stringList List of strings to be normalized
- * @return stringList Normalized List of strings 
+ * @param relator Relator term to normalize
+ * @return List of strings
  */
-public List normalizeRelatorStringList(List stringList)
+public List normalizeRelatorAndAddSynonyms(String relator)
 {
-    for (int j = 0; j < stringList.size(); j++) {
-        stringList.set(
-            j,
-            normalizeRelatorString(stringList.get(j))
-        );
+    List newList = new ArrayList();
+    String normalized = normalizeRelatorString(relator);
+    newList.add(normalized);
+    String synonyms = indexer.getConfigSetting(
+        "author-classification.ini", "RelatorSynonyms", relator
+    );
+    if (null != synonyms && synonyms.length() > 0) {
+        for (String synonym: synonyms.split("\\|")) {
+            String normalizedSynonym = normalizeRelatorString(synonym);
+            relatorSynonymLookup.put(normalizedSynonym, relator);
+            newList.add(normalizedSynonym);
+        }
     }
-    return stringList;
+    return newList;
 }
 
 /**
- * Normalizes the strings in a list of subfields.
+ * Normalizes the strings in a list.
  *
- * @param subfieldList List of subfields to be normalized
- * @return subfieldList Normalized List of subfields
+ * @param stringList List of strings to be normalized
+ * @return Normalized List of strings 
  */
-public List normalizeRelatorSubfieldList(List subfieldList)
+public List normalizeRelatorStringList(List stringList)
 {
-    for (int j = 0; j < subfieldList.size(); j++) {
-        subfieldList.get(j).setData(
-            normalizeRelatorString(subfieldList.get(j).getData())
-        );
+    List newList = new ArrayList();
+    for (String relator: stringList) {
+        newList.addAll(normalizeRelatorAndAddSynonyms(relator));
     }
-    return subfieldList;
+    return newList;
 }
 
 /**
@@ -332,18 +572,70 @@ public String normalizeRelatorString(String string)
  * be accepted even if no relator subfield is defined
  * @param relatorConfig        The setting in author-classification.ini which
  * defines which relator terms are acceptable (or a colon-delimited list)
- * @param firstOnly            Return first result only?
+ * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+ * should be indexed even if they are not listed in author-classification.ini.
+ * @param indexRawRelators      Set to "true" to index relators raw, as found
+ * in the MARC or "false" to index mapped versions.
  * @return List result
  */
-public List getAuthorInitialsFilteredByRelator(Record record, String tagList,
-    String acceptWithoutRelator, String relatorConfig
+public List getAuthorInitialsFilteredByRelator(Record record,
+    String tagList, String acceptWithoutRelator, String relatorConfig,
+    String acceptUnknownRelators, String indexRawRelators
 ) {
-    List authors = getAuthorsFilteredByRelator(record, tagList, acceptWithoutRelator, relatorConfig);
+    List authors = getAuthorsFilteredByRelator(
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptUnknownRelators, indexRawRelators
+    );
     List result = new LinkedList();
     for (String author : authors) {
-        result.add(this.processInitials(author));
+        result.add(processInitials(author));
     }
     return result;
+}
+
+/**
+ * Filter values retrieved using tagList to include only those whose relator
+ * values are acceptable. Used for separating different types of authors.
+ *
+ * @param record               The record (fed in automatically)
+ * @param tagList              The field specification to read
+ * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+ * be accepted even if no relator subfield is defined
+ * @param relatorConfig        The setting in author-classification.ini which
+ * defines which relator terms are acceptable (or a colon-delimited list)
+ * @return List result
+ */
+public List getAuthorInitialsFilteredByRelator(Record record,
+    String tagList, String acceptWithoutRelator, String relatorConfig
+) {
+    return getAuthorInitialsFilteredByRelator(
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptWithoutRelator, "false"
+    );
+}
+
+/**
+ * Filter values retrieved using tagList to include only those whose relator
+ * values are acceptable. Used for separating different types of authors.
+ *
+ * @param record               The record (fed in automatically)
+ * @param tagList              The field specification to read
+ * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+ * be accepted even if no relator subfield is defined
+ * @param relatorConfig        The setting in author-classification.ini which
+ * defines which relator terms are acceptable (or a colon-delimited list)
+ * @param acceptUnknownRelators Colon-delimited list of tags whose relators
+ * should be indexed even if they are not listed in author-classification.ini.
+ * @return List result
+ */
+public List getAuthorInitialsFilteredByRelator(Record record,
+    String tagList, String acceptWithoutRelator, String relatorConfig,
+    String acceptUnknownRelators
+) {
+    return getAuthorInitialsFilteredByRelator(
+        record, tagList, acceptWithoutRelator, relatorConfig,
+        acceptUnknownRelators, "false"
+    );
 }
 
 /**
@@ -375,9 +667,9 @@ public String processInitials(String authorName) {
         if (name.length() > 0) {
             String initial = name.substring(0,1);
             // if there is a hyphenated name, use both initials
-            if (name.indexOf('-') > 0) {
-                int pos = name.indexOf('-');
-                String extra = name.substring(pos+1,pos+2);
+            int pos = name.indexOf('-');
+            if (pos > 0 && pos < name.length() - 1) {
+                String extra = name.substring(pos+1, pos+2);
                 initial = initial + " " + extra;
             }
             result += " " + initial; 

@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -1055,7 +1055,7 @@ class SolrMarc extends SolrDefault
     {
         if ($this->hasILS()) {
             $biblioLevel = strtolower($this->getBibliographicLevel());
-            if ("monograph" == $biblioLevel || strstr("part", $biblioLevel)) {
+            if ("monograph" == $biblioLevel || strstr($biblioLevel, "part")) {
                 if ($this->ils->getTitleHoldsMode() != "disabled") {
                     return $this->titleHoldLogic->getHold($this->getUniqueID());
                 }

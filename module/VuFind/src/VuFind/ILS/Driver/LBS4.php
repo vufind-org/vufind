@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -36,9 +36,19 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class LBS4 extends AbstractBase implements TranslatorAwareInterface
+class LBS4 extends DAIA implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $converter Date converter
+     */
+    public function __construct(\VuFind\Date\Converter $converter)
+    {
+        $this->dateConverter = $converter;
+    }
 
     /**
      * Database connection
@@ -79,6 +89,8 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      */
     public function init()
     {
+        parent::init(); // initialize DAIA parent
+
         if (isset($this->config['Catalog']['opaciln'])) {
             $this->opaciln = $this->config['Catalog']['opaciln'];
         }
@@ -88,11 +100,9 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         if (isset($this->config['Catalog']['opcloan'])) {
             $this->opcloan = $this->config['Catalog']['opcloan'];
         }
-        if (function_exists("sybase_pconnect")
-            && isset($this->config['Catalog']['database'])
-        ) {
+        if (isset($this->config['Catalog']['database'])) {
             putenv("SYBASE=" . $this->config['Catalog']['sybpath']);
-            $this->db = sybase_pconnect(
+            $this->db = sybase_connect(
                 $this->config['Catalog']['sybase'],
                 $this->config['Catalog']['username'],
                 $this->config['Catalog']['password']
@@ -117,352 +127,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     public function getConfig($function, $params = null)
     {
         return isset($this->config[$function]) ? $this->config[$function] : false;
-    }
-
-    /**
-     * Get Status
-     *
-     * This is responsible for retrieving the status information of a certain
-     * record.
-     *
-     * @param string $ppn The record id to retrieve the holdings for
-     *
-     * @throws ILSException
-     * @return mixed     On success, an associative array with the following keys:
-     * ppn, availability (boolean), status, location, reserve, callnumber.
-     */
-    public function getStatus($ppn)
-    {
-        $sybid = substr($ppn, 0, -1); //strip checksum
-        $sql = "select o.loan_indication, o.signature, v.loan_status"
-             . " from ous_copy_cache o, volume v"
-             . " where o.iln=" . $this->opaciln
-             . " and o.ppn=" . $sybid
-             . " and o.epn *= v.epn"; //outer join
-        try {
-            $sqlStmt = sybase_query($sql);
-            $number = 0;
-            while ($row = sybase_fetch_row($sqlStmt)) {
-                $number++;
-                $loan_indi  = $row[0];
-                $label = substr($row[1], 4);
-                $locid = substr($row[1], 0, 3);
-                $location = $this->translate($this->opaciln . "/" . $locid);
-                $loan_status  = $row[2];
-
-                $reserve = 'N';
-                $status = $this->getStatusText($loan_indi, $loan_status);
-                $available = true;
-
-                if ($loan_indi == 7) {
-                    $available = false; //not for loan
-                } else if ($loan_indi == 8) {
-                    $available = false; //missed items
-                } else if ($loan_indi == 9) {
-                    $available = false; //not ready yet
-                }
-                if ($loan_status == 5) {
-                    $available = false;
-                } else if ($loan_status == 4) {
-                    $available = false;
-                }
-
-                $holding[] = [
-                    'id'             => $ppn,
-                    'availability'   => $available,
-                    'status'         => $status,
-                    'location'       => $location,
-                    'reserve'        => $reserve,
-                    'callnumber'     => $label,
-                ];
-            }
-        } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
-        }
-        return $holding;
-    }
-
-    /**
-     * Get status text
-     *
-     * @param string $indi   Indicator value
-     * @param string $status status as retrieved from db
-     *
-     * @return string the message to be displayed
-     */
-    protected function getStatusText($indi, $status)
-    {
-        if ($indi == 0 && $status == 0) {
-            $text = 'Available';
-        } else if ($indi == 0 && $status == 4) {
-            $text = 'On Reserve';
-        } else if ($indi == 0 && $status == 5) {
-            $text = 'Checked Out';
-        } else if ($indi == 3) {
-            $text = 'Presence';
-        } else {
-            $text = 'Not Available';
-        }
-        return $text;
-    }
-
-    /**
-     * Get Holding
-     *
-     * This is responsible for retrieving the holding information of a certain
-     * record.
-     *
-     * @param string $ppn    The record id to retrieve the holdings for
-     * @param array  $patron Patron data
-     *
-     * @return array         On success, an associative array with the following
-     * keys: id, availability (boolean), status, location, reserve, callnumber,
-     * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getHolding($ppn, array $patron = null)
-    {
-        $sybid = substr($ppn, 0, -1); //strip checksum
-        $sql = "select o.epn, o.loan_indication"
-             . ", v.volume_bar, v.loan_status"
-             . ", v.volume_number, o.signature"
-             . ", o.holding, o.type_of_material_copy"
-             . " from ous_copy_cache o, volume v, titles_copy t"
-             . " where o.iln=" . $this->opaciln
-             . " and o.ppn=" . $sybid
-             . " and o.epn *= v.epn"//outer join
-             . " and t.epn = o.epn"
-             . " and t.iln = o.iln"
-             . " and t.fno = o.fno"
-             . " order by o.signature";
-        try {
-            $sqlStmt = sybase_query($sql);
-            $holding = [];
-            while ($row = sybase_fetch_row($sqlStmt)) {
-                $epn   = $row[0];
-                $loan_indi  = (string)$row[1];
-                $volbar = $row[2];
-                $loan_status = (string)$row[3];
-                $volnum = $row[4];
-
-                //library location identifier is a callnumber prefix
-                $locid = substr($row[5], 0, 3);
-
-                //suppress multiple callnumbers, comma separated items
-                $callnumber = current(explode(',', substr($row[5], 4)));
-
-                if ($locid != '') {
-                    $location = $this->opaciln . "/" . $locid;
-                }
-                if ($row[6] != '') {
-                    $summary = [$row[6]];
-                }
-                $material = $row[7];
-
-                $check = false;
-                $reserve = 'N';
-                $is_holdable = false;
-
-                $storage = $this->getStorage($loan_indi, $locid, $callnumber);
-                $status = $this->getStatusText($loan_indi, $loan_status);
-                $note = $this->getNote($loan_indi, $locid, $callnumber);
-
-                if (empty($storage)) {
-                    $check = $this->checkHold($loan_indi, $material);
-                } else if (empty($volbar)) {
-                    $volbar = $locid;
-                }
-
-                $available = true;
-                if ($loan_status == '') {
-                    $available = false;
-                } else if ($loan_status == 4) {
-                    $available = false;
-                    $reserve = 'Y';
-                } else if ($loan_status == 5) {
-                    $available = false;
-                    $duedate = $this->getLoanexpire($volnum);
-                    $is_holdable = true;
-                } else if ($loan_indi > 6) {
-                    $available = false;
-                }
-
-                $holding[] = [
-                    'id'             => $ppn,
-                    'availability'   => $available,
-                    'status'         => $status,
-                    'location'       => $location,
-                    'reserve'        => $reserve,
-                    'callnumber'     => $callnumber,
-                    'duedate'        => $duedate,
-                    'number'         => $volbar,
-                    'barcode'        => $volbar,
-                    'notes'          => [$note],
-                    'summary'        => $summary,
-                    'is_holdable'    => $is_holdable,
-                    'item_id'        => $epn,
-                    'check'          => $check,
-                    'storageRetrievalRequestLink' => $storage,
-                    'checkStorageRetrievalRequest' => !empty($storage),
-                    'material'       => $material,
-                ];
-            }
-        } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
-        }
-        return $holding;
-    }
-
-    /**
-     * Test whether holds needs to be checked
-     *
-     * @param string $loanindi The loan indicator
-     * @param string $material The material code
-     *
-     * @return bool
-     */
-    protected function checkHold($loanindi, $material)
-    {
-        if ($loanindi == 0) {
-            if (substr($material, 0, 2) == 'Ab') {
-                return true;
-            }
-        } else if ($loanindi == 3) {
-            return true;
-        } else if ($loanindi == 6) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Get Notes
-     *
-     * This is responsible for retrieving library specific
-     * notes for a record. You may want to override this.
-     *
-     * @param string $loanind    The library loan indicator
-     * @param string $locid      The library location identifier
-     * @param array  $callnumber The callnumber of the item
-     *
-     * @return string On success, a string to be displayed near the item
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    protected function getNote($loanind, $locid, $callnumber)
-    {
-        if ($loanind == 0 && $locid == '000') {
-            $note = $this->translate("Textbook Collection");
-        } else if ($loanind == 1) {
-            $note = $this->translate("Short loan");//Short time loan?
-        } else if ($loanind == 2) {
-            $note = "Interlibrary Loan";
-        } else if ($loanind == 3) {
-            $note = $this->translate("Presence");
-        } else if ($loanind == 8) {
-            $note = $this->translate("Missed");
-        } else if ($loanind == 9) {
-            $note = $this->translate("In Progress");
-        }
-        return $note;
-    }
-
-    /**
-     * Get Storage
-     *
-     * This is responsible for retrieving library specific
-     * storage urls if available, i.e. bibmap links.
-     *
-     * You may want to override this.
-     *
-     * @param string $locid      The library location identifier
-     * @param array  $callnumber The callnumber of the item
-     *
-     * @return string On success, a url string to be displayed as
-     * storage link.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    protected function getStorage($locid, $callnumber)
-    {
-        return false;
-    }
-
-    /**
-     * Get Loanexpire
-     *
-     * This is responsible for retrieving loan expiration dates
-     * for an item.
-     *
-     * @param string $vol The volume number
-     *
-     * @return string On success, a string to be displayed as
-     *                loan expiration date.
-     */
-    protected function getLoanexpire($vol)
-    {
-        $sql = "select expiry_date_loan from loans_requests"
-             . " where volume_number=" . $vol . "";
-        try {
-            $sqlStmt = sybase_query($sql);
-            $result = false;
-            if ($row = sybase_fetch_row($sqlStmt)) {
-                $result = $row[0];
-            }
-            if ($result) {
-                return substr($result, 0, 12);
-            }
-        } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
-        }
-        return false;
-    }
-
-    /**
-     * Get Hold Link
-     *
-     * The goal for this method is to return a URL to a "place hold" web page on
-     * the ILS OPAC. This is used for ILSs that do not support an API or method
-     * to place Holds.
-     *
-     * @param string $id      The id of the bib record
-     * @param array  $details Item details from getHoldings return array
-     *
-     * @return string         URL to ILS's OPAC's place hold screen.
-     */
-    public function getHoldLink($id, $details)
-    {
-        if (isset($details['item_id'])) {
-            $epn = $details['item_id'];
-            $hold = $this->opcloan . "?MTR=mon"
-                        . "&BES=" . $this->opacfno
-                        . "&EPN=" . $this->prfz($epn);
-            return $hold;
-        }
-        return $this->opcloan . "?MTR=mon" . "&BES=" . $this->opacfno
-               . "&EPN=" . $this->prfz($id);
-    }
-
-    /**
-     * Get Statuses
-     *
-     * This is responsible for retrieving the status information for a
-     * collection of records.
-     *
-     * @param array $ids The array of record ids to retrieve the status for
-     *
-     * @throws ILSException
-     * @return array       An array of getStatus() return values on success.
-     */
-    public function getStatuses($ids)
-    {
-        $items = [];
-        foreach ($ids as $id) {
-            $items[] = $this->getStatus($id);
-        }
-        return $items;
     }
 
     /**

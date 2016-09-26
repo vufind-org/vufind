@@ -62,7 +62,7 @@
                     </field>
                 </xsl:if>
 
-                <!-- Article endPage !! Only enable this part of the code if you have defined "container_end_page" in  ./solr/biblio/conf/schema.xml -> <field name="container_end_page" type="text" indexed="true" stored="true"/> !!
+                <!-- Article endPage !! Only enable this part of the code if you have defined "container_end_page" in  ./solr/vufind/biblio/conf/schema.xml -> <field name="container_end_page" type="text" indexed="true" stored="true"/> !!
 
                 <xsl:if test="//nlm:lpage[normalize-space()]">
                         <field name="container_end_page">
@@ -134,11 +134,17 @@
 
                 <!-- AUTHOR -->
                 <xsl:for-each select="//nlm:contrib[@contrib-type='author']/nlm:name">
-                        <xsl:if test="normalize-space()">
-                            <field name="author">
-                                <xsl:value-of select="nlm:surname[normalize-space()]" />, <xsl:value-of select="nlm:given-names[normalize-space()]" />
+                    <xsl:if test="normalize-space()">
+                        <field name="author">
+                            <xsl:value-of select="nlm:surname[normalize-space()]" />, <xsl:value-of select="nlm:given-names[normalize-space()]" />
+                        </field>
+                        <!-- use first author value for sorting -->
+                        <xsl:if test="position()=1">
+                            <field name="author_sort">
+                                <xsl:value-of select="normalize-space()"/>
                             </field>
                         </xsl:if>
+                    </xsl:if>
                 </xsl:for-each>
 
                 <!-- TITLE -->

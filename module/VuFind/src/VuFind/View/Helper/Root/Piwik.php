@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  View_Helpers
@@ -60,14 +60,45 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected $customVars;
 
     /**
+     * Request object
+     *
+     * @var Zend\Http\PhpEnvironment\Request
+     */
+    protected $request;
+
+    /**
+     * Router object
+     *
+     * @var Zend\Mvc\Router\Http\RouteMatch
+     */
+    protected $router;
+
+    /**
+     * Whether the tracker was initialized from lightbox.
+     *
+     * @var bool
+     */
+    protected $lightbox;
+
+    /**
+     * Additional parameters
+     *
+     * @var array
+     */
+    protected $params;
+
+    /**
      * Constructor
      *
-     * @param string|bool $url        Piwik address (false if disabled)
-     * @param int         $siteId     Piwik site ID
-     * @param bool        $customVars Whether to track additional information in
-     * custom variables
+     * @param string|bool                      $url        Piwik address
+     * (false if disabled)
+     * @param int                              $siteId     Piwik site ID
+     * @param bool                             $customVars Whether to track
+     * additional information in custom variables
+     * @param Zend\Mvc\Router\Http\RouteMatch  $router     Request
+     * @param Zend\Http\PhpEnvironment\Request $request    Request
      */
-    public function __construct($url, $siteId, $customVars)
+    public function __construct($url, $siteId, $customVars, $router, $request)
     {
         $this->url = $url;
         if ($url && substr($url, -1) != '/') {
@@ -75,22 +106,34 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         }
         $this->siteId = $siteId;
         $this->customVars = $customVars;
+        $this->router = $router;
+        $this->request = $request;
     }
 
     /**
      * Returns Piwik code (if active) or empty string if not.
      *
+     * @param array $params Parameters
+     *
      * @return string
      */
-    public function __invoke()
+    public function __invoke($params = null)
     {
         if (!$this->url) {
             return '';
         }
 
-        if ($results = $this->getSearchResults()) {
+        $this->params = $params;
+        if (isset($this->params['lightbox'])) {
+            $this->lightbox = $this->params['lightbox'];
+        }
+
+        $results = $this->getSearchResults();
+        if ($results && ($combinedResults = $this->getCombinedSearchResults())) {
+            $code = $this->trackCombinedSearch($results, $combinedResults);
+        } elseif ($results) {
             $code = $this->trackSearch($results);
-        } else if ($recordDriver = $this->getRecordDriver()) {
+        } elseif ($recordDriver = $this->getRecordDriver()) {
             $code = $this->trackRecordPage($recordDriver);
         } else {
             $code = $this->trackPageView();
@@ -109,11 +152,35 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function trackSearch($results)
     {
-        $customVars = $this->getSearchCustomVars($results);
+        $customVars = $this->lightbox
+            ? $this->getLightboxCustomVars()
+            : $this->getSearchCustomVars($results);
 
         $code = $this->getOpeningTrackingCode();
         $code .= $this->getCustomVarsCode($customVars);
         $code .= $this->getTrackSearchCode($results);
+        $code .= $this->getClosingTrackingCode();
+
+        return $code;
+    }
+
+    /**
+     * Track a Combined Search
+     *
+     * @param VuFind\Search\Base\Results $results         Search Results
+     * @param array                      $combinedResults Combined Search Results
+     *
+     * @return string Tracking Code
+     */
+    protected function trackCombinedSearch($results, $combinedResults)
+    {
+        $customVars = $this->lightbox
+            ? $this->getLightboxCustomVars()
+            : $this->getSearchCustomVars($results);
+
+        $code = $this->getOpeningTrackingCode();
+        $code .= $this->getCustomVarsCode($customVars);
+        $code .= $this->getTrackCombinedSearchCode($results, $combinedResults);
         $code .= $this->getClosingTrackingCode();
 
         return $code;
@@ -128,7 +195,9 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function trackRecordPage($recordDriver)
     {
-        $customVars = $this->getRecordPageCustomVars($recordDriver);
+        $customVars = $this->lightbox
+            ? $this->getLightboxCustomVars()
+            : $this->getRecordPageCustomVars($recordDriver);
 
         $code = $this->getOpeningTrackingCode();
         $code .= $this->getCustomVarsCode($customVars);
@@ -145,7 +214,9 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function trackPageView()
     {
-        $customVars = $this->getGenericCustomVars();
+        $customVars = $this->lightbox
+            ? $this->getLightboxCustomVars()
+            : $this->getGenericCustomVars();
 
         $code = $this->getOpeningTrackingCode();
         $code .= $this->getCustomVarsCode($customVars);
@@ -172,6 +243,25 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
                 if (is_a($results, 'VuFind\Search\Base\Results')) {
                     return $results;
                 }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get Combined Search Results if on a Results Page
+     *
+     * @return array|null Array of search results or null if not on a combined search
+     * page
+     */
+    protected function getCombinedSearchResults()
+    {
+        $viewModel = $this->getView()->plugin('view_model');
+        $children = $viewModel->getCurrent()->getChildren();
+        if (isset($children[0])) {
+            $results = $children[0]->getVariable('combinedResults');
+            if (is_array($results)) {
+                return $results;
             }
         }
         return null;
@@ -271,6 +361,16 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get Custom Variables for lightbox actions
+     *
+     * @return array Associative array of custom variables
+     */
+    protected function getLightboxCustomVars()
+    {
+        return [];
+    }
+
+    /**
      * Get Custom Variables for a Generic Page View
      *
      * @return array Associative array of custom variables
@@ -294,10 +394,31 @@ function initVuFindPiwikTracker(){
 
     VuFindPiwikTracker.setSiteId({$this->siteId});
     VuFindPiwikTracker.setTrackerUrl('{$this->url}piwik.php');
-    VuFindPiwikTracker.setCustomUrl(location.protocol + '//'
-        + location.host + location.pathname);
+    VuFindPiwikTracker.setCustomUrl('{$this->getCustomUrl()}');
 
 EOT;
+    }
+
+    /**
+     * Get the custom URL of the Tracking Code
+     *
+     * @return string URL
+     */
+    protected function getCustomUrl()
+    {
+        $path = $this->request->getUri()->getPath();
+        $routeMatch = $this->router->match($this->request);
+        if ($routeMatch
+            && $routeMatch->getMatchedRouteName() == 'vufindrecord-ajaxtab'
+        ) {
+            // Replace 'AjaxTab' with tab name in record page URLs
+            $replace = 'AjaxTab';
+            $tab = $this->request->getPost('tab');
+            if (null !== ($pos = strrpos($path, $replace))) {
+                $path = substr_replace($path, $tab, $pos, $pos + strlen($replace));
+            }
+        }
+        return $path;
     }
 
     /**
@@ -363,10 +484,48 @@ EOT;
         $searchTerms = $escape($params->getDisplayQuery());
         $searchType = $escape($params->getSearchType());
         $resultCount = $results->getResultTotal();
+        $backendId = $results->getOptions()->getSearchClassId();
 
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
-    VuFindPiwikTracker.trackSiteSearch('$searchTerms', '$searchType', $resultCount);
+    VuFindPiwikTracker.trackSiteSearch(
+        '$backendId|$searchTerms', '$searchType', $resultCount
+    );
+
+EOT;
+    }
+
+    /**
+     * Get Site Search Tracking Code for Combined Search
+     *
+     * @param VuFind\Search\Base\Results $results         Search results
+     * @param array                      $combinedResults Combined Search Results
+     *
+     * @return string JavaScript Code Fragment
+     */
+    protected function getTrackCombinedSearchCode($results, $combinedResults)
+    {
+        $escape = $this->getView()->plugin('escapeHtmlAttr');
+        $params = $results->getParams();
+        $searchTerms = $escape($params->getDisplayQuery());
+        $searchType = $escape($params->getSearchType());
+        $resultCount = 0;
+        foreach ($combinedResults as $currentSearch) {
+            if ($currentSearch['ajax']) {
+                // Some results fetched via ajax, so report that we don't know the
+                // result count.
+                $resultCount = 'false';
+                break;
+            }
+            $resultCount += $currentSearch['view']->results
+                ->getResultTotal();
+        }
+
+        // Use trackSiteSearch *instead* of trackPageView in searches
+        return <<<EOT
+    VuFindPiwikTracker.trackSiteSearch(
+        'Combined|$searchTerms', '$searchType', $resultCount
+    );
 
 EOT;
     }
