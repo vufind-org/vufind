@@ -122,7 +122,7 @@ VuFind.register('cart', function Cart() {
   }
 
   var _cartNotificationTimeout = false;
-  function _registerUpdate($form) {
+  function _registerUpdate() {
     var $form = $('form[name="bulkActionForm"]');
     $("#updateCart, #bottom_updateCart").unbind('click').click(function cartUpdate() {
       var elId = this.id;
@@ -179,7 +179,7 @@ VuFind.register('cart', function Cart() {
         var $parent = $(this).parent();
         $parent.find('.cart-add.correct,.cart-remove.correct').removeClass('correct hidden');
         $parent.find('.cart-add').click(function cartAddClick() {
-          if(addItem(currentId, currentSource)) {
+          if (addItem(currentId, currentSource)) {
             $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
           }
         });
