@@ -438,6 +438,7 @@ $config = [
                 ],
                 'invokables' => [
                     'alphabrowselink' => 'VuFind\Recommend\AlphaBrowseLink',
+                    'doi' => 'VuFind\Recommend\DOI',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
                     'libraryh3lp' => 'VuFind\Recommend\Libraryh3lp',
