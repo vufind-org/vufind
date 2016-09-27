@@ -1212,7 +1212,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             foreach ($info->messageServices->messageService as $service) {
                 $methods = [];
                 $serviceType = $service->serviceType;
-                $numOfDays = $service->nofDays->value;
+                $numOfDays = isset($service->nofDays->value)
+                    ? $service->nofDays->value : 'none';
                 $active = $service->isActive === 'yes';
 
                 $sendMethods = $this->objectToArray($service->sendMethods);
@@ -1331,7 +1332,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
         foreach ($loans as $loan) {
             $title = $loan->catalogueRecord->title;
-            if ($loan->note) {
+            if (!empty($loan->note)) {
                 $title .= ' (' . $loan->note . ')';
             }
 
@@ -1580,44 +1581,46 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $username = $renewDetails['patron']['cat_username'];
         $password = $renewDetails['patron']['cat_password'];
 
-        foreach ($renewDetails['details'] as $id) {
-            $function = 'RenewLoans';
-            $functionResult = 'renewLoansResponse';
+        $function = 'RenewLoans';
+        $functionResult = 'renewLoansResponse';
 
-            $conf = [
-                'arenaMember' => $this->arenaMember,
-                'user' => $username,
-                'password' => $password,
-                'language' => 'en',
-                'loans' => [$id]
-            ];
+        $conf = [
+            'arenaMember' => $this->arenaMember,
+            'user' => $username,
+            'password' => $password,
+            'language' => 'en',
+            'loans' => $renewDetails['details']
+        ];
 
-            $result = $this->doSOAPRequest(
-                $this->loans_wsdl, $function, $functionResult, $username,
-                ['renewLoansRequest' => $conf]
-            );
+        $result = $this->doSOAPRequest(
+            $this->loans_wsdl, $function, $functionResult, $username,
+            ['renewLoansRequest' => $conf]
+        );
 
-            $statusAWS = $result->$functionResult->status;
+        $statusAWS = $result->$functionResult->status;
 
-            if ($statusAWS->type != 'ok') {
-                $message
-                    = $this->handleError($function, $statusAWS->message, $username);
-                if ($message == 'ils_connection_failed') {
-                    throw new ILSException('ils_offline_status');
-                }
+        if ($statusAWS->type != 'ok') {
+            $message
+                = $this->handleError($function, $statusAWS->message, $username);
+            if ($message == 'ils_connection_failed') {
+                throw new ILSException('ils_offline_status');
             }
+        }
 
-            $status
-                = trim($result->$functionResult->loans->loan->loanStatus->status);
+        $loans = $this->objectToArray($result->$functionResult->loans->loan);
+
+        foreach ($loans as $loan) {
+            $id = $loan->id;
+            $status = $loan->loanStatus->status;
             $success = $status === 'isRenewedToday';
 
             $results['details'][$id] = [
                 'success' => $success,
                 'status' => $success ? 'Loan renewed' : 'Renewal failed',
-                'sysMessage' => $status,
+                'sysMessage' => $this->mapStatus($status),
                 'item_id' => $id,
                 'new_date' => $this->formatDate(
-                    $result->$functionResult->loans->loan->loanDueDate
+                    $loan->loanDueDate
                 ),
                 'new_time' => ''
             ];
