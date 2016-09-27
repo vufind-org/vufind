@@ -139,7 +139,6 @@ CREATE TABLE `session` (
   `data` text,
   `last_used` int(12) NOT NULL DEFAULT '0',
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
-  `external_session_id` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `session_id` (`session_id`),
   KEY `last_used` (`last_used`)
