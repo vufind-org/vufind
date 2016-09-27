@@ -71,7 +71,7 @@
       <? if ($serviceURLs = $this->driver->getServiceURLs()): ?>
         <div class="recordURLs">
           <? foreach ($serviceURLs as $current): ?>
-            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate($this->driver->getDataSource() . '_' . $current['desc'], null, $this->translate($current['desc'])))?></a>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate($this->driver->getDataSource() . '_' . $current['desc'], null, $this->translate($current['desc'])))?></a>
           <? endforeach; ?>
         </div>
       <? endif; ?>
