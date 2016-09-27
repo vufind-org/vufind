@@ -95,7 +95,7 @@ class CacheDecorator implements ReaderInterface
      *
      * @param string $string String
      *
-     * @return array|boolean
+     * @return array|bool
      */
     public function fromString($string)
     {

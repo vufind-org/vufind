@@ -102,8 +102,8 @@ class File extends AbstractBase
     /**
      * Convert data array to XML
      *
-     * @param array   $data Associative array of data
-     * @param integer $tab  How far the string should be indented with tabs
+     * @param array $data Associative array of data
+     * @param int   $tab  How far the string should be indented with tabs
      *
      * @return string
      */

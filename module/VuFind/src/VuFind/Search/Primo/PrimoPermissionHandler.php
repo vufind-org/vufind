@@ -94,7 +94,7 @@ class PrimoPermissionHandler
      *
      * @param string $code Code to approve against config file
      *
-     * @return boolean
+     * @return bool
      */
     public function instCodeExists($code)
     {
@@ -118,7 +118,7 @@ class PrimoPermissionHandler
     /**
      * Check if the user has permission
      *
-     * @return boolean
+     * @return bool
      */
     public function hasPermission()
     {

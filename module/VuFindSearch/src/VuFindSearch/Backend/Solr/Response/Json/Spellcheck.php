@@ -161,7 +161,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @param string $term Term to check
      *
-     * @return boolean
+     * @return bool
      */
     protected function contains($term)
     {

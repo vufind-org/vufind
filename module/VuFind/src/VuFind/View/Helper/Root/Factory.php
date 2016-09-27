@@ -203,6 +203,21 @@ class Factory
     }
 
     /**
+     * Construct the GeoCoords helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return GeoCoords
+     */
+    public static function getGeoCoords(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
+        $coords = isset($config->MapSelection->default_coordinates)
+            ? $config->MapSelection->default_coordinates : false;
+        return new GeoCoords($coords);
+    }
+
+    /**
      * Construct the GoogleAnalytics helper.
      *
      * @param ServiceManager $sm Service manager.
