@@ -178,6 +178,11 @@ VuFind.register('cart', function Cart() {
         $parent.find('.cart-add').click(function cartAddClick() {
           if(addItem(currentId, currentSource)) {
             $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
+          } else {
+            $parent.popover({content: VuFind.translate('bookbagFull')});
+            setTimeout(function recordCartFullHide() {
+              $parent.popover('hide');
+            }, 5000);
           }
         });
         $parent.find('.cart-remove').click(function cartRemoveClick() {
