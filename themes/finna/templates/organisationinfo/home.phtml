@@ -31,11 +31,12 @@
      }
   }
 
+  $consortiumInfo = $this->consortiumInfo ? 1 : 0;
   $setupJS = <<<JS
 $(document).ready(function() {
    finna.organisationInfoPage.init({
       id: "{$this->id}",
-      consortiumInfo: {$this->consortiumInfo},
+      consortiumInfo: {$consortiumInfo},
       buildings: "{$this->buildings}"
    });
 });

@@ -570,8 +570,6 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
             = $this->config->General->url . '/' . $action
             . '?' . http_build_query($params);
 
-        error_log($url);
-
         $cacheDir = $this->cacheManager->getCache('organisation-info')
             ->getOptions()->getCacheDir();
 

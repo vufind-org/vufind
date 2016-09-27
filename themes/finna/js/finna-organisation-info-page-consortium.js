@@ -121,10 +121,12 @@ finna = $.extend(finna, {
                     }
                 }
                 if (!usageRights) {
-                    initSectorUsageInfo(parent, function(info) {
-                        if (info) {
-                            usageHolder.find('.fa-spinner').remove();
-                            usageHolder.find('.no-info').removeClass('hide').after($('<p/>').html(info));
+                    initSectorUsageInfo(parent, function(success, info) {
+                        usageHolder.find('.fa-spinner').remove();
+                        var noInfo = usageHolder.find('.no-info');
+                        noInfo.removeClass('hide');
+                        if (success && info) {
+                            noInfo.after($('<p/>').html(info));
                         }
                     });
                 }
@@ -185,7 +187,9 @@ finna = $.extend(finna, {
                             sector = '1/lib/uni/';
                         }
                         var usageInfo = VuFind.translate('usageInfo-' + sector);
-                        callback(finna.common.decodeHtml(usageInfo));
+                        callback(true, finna.common.decodeHtml(usageInfo));
+                    } else {
+                        callback(false);
                     }
                 })
                 .fail(function(response, textStatus, err) {

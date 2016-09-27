@@ -31,7 +31,7 @@ finna.organisationInfoPage = (function() {
 
                     // if theres only one service point, hide searchbox and ignore initSearch
                     if (cnt == 1) {
-                        holder.find('.office-search .searchbox-office').hide();
+                        holder.find('.office-search .searchbox-office,.show-all').hide();
                     } else {
                         // IE opens Delay initing autocomplete menu to prevent IE from opening it automatically at
                         initSearch();
@@ -40,7 +40,7 @@ finna.organisationInfoPage = (function() {
                         .attr('placeholder', VuFind.translate('organisationInfoAutocomplete').replace('%%count%%', cnt))
                         .focus().blur();
 
-                    if (typeof id != 'undefined') {
+                    if (typeof id != 'undefined' && id) {
                         updateSelectedOrganisation(id);
                     }
                 } else {
@@ -429,6 +429,8 @@ finna.organisationInfoPage = (function() {
      */
     var init = function(options) {
         holder = $('section[role="main"]');
+
+        setOfficeInformationLoader(false);
 
         parent = finna.common.getField(options, 'id');
         consortiumInfo = finna.common.getField(options, 'consortiumInfo') === 1;
