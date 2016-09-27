@@ -55,11 +55,13 @@ $(document).ready(function() {
 });
 
 $('#{$escField}from, #{$escField}to').change(function () {
+  var fromValue = $('#{$escField}from').val();
+  var toValue = $('#{$escField}to').val();
   $('#{$escField}dateSlider').slider(
     'setValue',
     [
-      isNaN(Number($('#{$escField}from').val())) || Number($('#{$escField}from').val()) <= 0 ? {$min} : Number($('#{$escField}from').val()),
-      isNaN(Number($('#{$escField}to').val())) || Number($('#{$escField}to').val()) <= 0 ? {$max} : Number($('#{$escField}to').val())
+      isNaN(Number(fromValue)) || Number(fromValue) <= 0 ? {$min} : Number(fromValue),
+      isNaN(Number(toValue)) || Number(toValue) <= 0 ? {$max} : Number(toValue)
     ],
     true
   );
