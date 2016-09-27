@@ -354,6 +354,7 @@ trait VoyagerFinna
                 }
             }
         }
+        $data['lost'] = in_array('Lost--Library Applied', $sqlRow['STATUS_ARRAY']);
         return $data;
     }
 

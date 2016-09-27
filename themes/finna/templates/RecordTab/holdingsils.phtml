@@ -163,9 +163,9 @@
       if ($row['availability']) {
         ++$available;
       }
-      if ($row['duedate']) {
+      if ($row['duedate'] && empty($row['lost'])) {
         $date = strtotime($row['duedate']);
-        if (!$firstDueDate || $date < $firstDueDate) {
+        if ((!$firstDueDate || abs(time() - $date) < abs(time() - $firstDueDate))) {
           $firstDueDate = $date;
           $firstDueStr = $row['duedate'];
         }
@@ -297,7 +297,7 @@
             <? /* Begin Available Items (Holds) */ ?>
             <span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> <?=$this->transEsc(isset($row['availabilityInfo']['displayText']) ? 'status_' . $row['availabilityInfo']['displayText'] : 'Available')?><link property="availability" href="http://schema.org/InStock" /></span>
             <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
-              <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
+              &ndash; <span class="small"><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
             <? endif; ?>
             <div class="pull-right">
             <? if (!$journal): ?>
@@ -320,7 +320,7 @@
               &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>
             <? endif; ?>
             <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
-              <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
+              &ndash; <span class="small"><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
             <? endif; ?>
             <? if (!$journal && !$block && isset($row['link']) && $row['link'] && $holdsAllowed): ?>
               <div class="pull-right">
