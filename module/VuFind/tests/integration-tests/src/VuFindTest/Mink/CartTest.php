@@ -188,6 +188,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // Open the cart and empty it:
         $this->openCartLightbox($page);
+        $this->snooze();
 
         return $page;
     }
@@ -251,6 +252,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     {
         $cartSelectAll = $page->find('css', '.modal-dialog .checkbox-select-all');
         $cartSelectAll->check();
+        $this->snooze();
     }
 
     /**
