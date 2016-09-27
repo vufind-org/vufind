@@ -56,6 +56,7 @@ VuFind.register('cart', function Cart() {
     } else {
       $('#cartItems .full').addClass('hidden');
     }
+  }
 
   function addItem(id, _source) {
     var source = _source || VuFind.defaultSearchBackend;
@@ -175,7 +176,7 @@ VuFind.register('cart', function Cart() {
         var $parent = $(this).parent();
         $parent.find('.cart-add.correct,.cart-remove.correct').removeClass('correct hidden');
         $parent.find('.cart-add').click(function cartAddClick() {
-          if (addItem(currentId, currentSource)) {
+          if(addItem(currentId, currentSource)) {
             $parent.find('.cart-add,.cart-remove').toggleClass('hidden');
           }
         });
