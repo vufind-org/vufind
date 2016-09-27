@@ -40,14 +40,13 @@ use Zend\Stdlib\ResponseInterface as Response;
  */
 class ShibbolethLogoutNotificationController extends AbstractBase
 {
-    use ApiControllerTrait;
-
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->accessPermission = 'access.api.ShibbolethLogoutNotification';
+        $this->accessDeniedBehavior = 'exception';
     }
 
     /**
