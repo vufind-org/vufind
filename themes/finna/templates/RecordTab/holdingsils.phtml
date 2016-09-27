@@ -163,7 +163,7 @@
       if ($row['availability']) {
         ++$available;
       }
-      if ($row['duedate'] && empty($row['lost'])) {
+      if ($row['duedate'] && empty($row['ignoreDueDate'])) {
         $date = strtotime($row['duedate']);
         if ((!$firstDueDate || abs(time() - $date) < abs(time() - $firstDueDate))) {
           $firstDueDate = $date;
