@@ -74,6 +74,13 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     protected $defaultPickUpLocation;
 
     /**
+     * Regional hold
+     *
+     * @var Boolean
+     */
+    protected $regionalHold = false;
+
+    /**
      * Arena Member code of the institution
      *
      * @var string
@@ -300,11 +307,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         $this->defaultPickUpLocation
-            = (isset($this->config['Holds']['defaultPickUpLocation']))
+            = isset($this->config['Holds']['defaultPickUpLocation'])
             ? $this->config['Holds']['defaultPickUpLocation'] : false;
         if ($this->defaultPickUpLocation == '0') {
             $this->defaultPickUpLocation = false;
         }
+
+        $this->regionalHold = isset($this->config['Holds']['regionalHold'])
+          ? $this->config['Holds']['regionalHold'] : false;
 
         if (isset($this->config['Debug']['durationLogPrefix'])) {
             $this->durationLogPrefix = $this->config['Debug']['durationLogPrefix'];
@@ -374,7 +384,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             'language' => $this->getLanguage(),
             'country' => 'FI',
             'reservationEntities' => $id,
-            'reservationType' => 'normal'
+            'reservationType' => $this->regionalHold ? 'regional' : 'normal'
         ];
 
         $result = $this->doSOAPRequest(
