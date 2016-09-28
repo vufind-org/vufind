@@ -207,6 +207,16 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
+     * StreetSearch action.
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function streetSearchAction()
+    {
+        return $this->createViewModel();
+    }
+
+    /**
      * Handler for database and journal browse actions.
      *
      * @param string $type Browse type
