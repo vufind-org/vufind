@@ -789,7 +789,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
         if ($statusAWS->type != 'ok') {
             $message = $this->handleError($function, $statusAWS->message, $id);
-            if ($message == 'catalog_connection_failed') {
+            if ($message == 'ils_connection_failed') {
                 throw new ILSException('ils_offline_holdings_message');
             }
             return [];
@@ -1328,7 +1328,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
         if ($statusAWS->type != 'ok') {
             $message = $this->handleError($function, $statusAWS->message, $username);
-            if ($message == 'catalog_connection_failed') {
+            if ($message == 'ils_connection_failed') {
                 throw new ILSException($message);
             }
             return [];
@@ -1418,7 +1418,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
         if ($statusAWS->type != 'ok') {
             $message = $this->handleError($function, $statusAWS->message, $username);
-            if ($message == 'catalog_connection_failed') {
+            if ($message == 'ils_connection_failed') {
                 throw new ILSException($message);
             }
             return [];
@@ -1494,7 +1494,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
         if ($statusAWS->type != 'ok') {
             $message = $this->handleError($function, $statusAWS->message, $username);
-            if ($message == 'catalog_connection_failed') {
+            if ($message == 'ils_connection_failed') {
                 throw new ILSException($message);
             }
             return [];
@@ -1878,6 +1878,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 "$function Response: "
                 . $this->formatXML($client->__getLastResponse())
             );
+        }
+
+        if (!isset($result->$functionResult->status)) {
+            throw new ILSException('ils_offline_status');
         }
 
         return $result;
