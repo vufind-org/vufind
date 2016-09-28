@@ -290,6 +290,34 @@ function keyboardShortcuts() {
   }
 }
 
+/**
+ * Setup facets
+ * @returns {undefined}
+ */
+function setupFacets() {
+  // Advanced facets
+  $('.facetOR').click(function facetBlocking() {
+    $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
+    window.location.assign($(this).attr('href'));
+  });
+
+  // Side facet status saving
+  $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
+    var source = $('#result0 .hiddenSource').val();
+    var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
+    if (storedItem) {
+      item.className = storedItem;
+      if (item.className.indexOf('in') < 0) {
+        $(item).siblings('.title').addClass('collapsed');
+      } else {
+        $(item).siblings('.title').removeClass('collapsed');
+      }
+    }
+  });
+  $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
+  $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
+}
+
 $(document).ready(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -340,28 +368,8 @@ $(document).ready(function commonDocReady() {
     $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
   }
 
-  // Advanced facets
-  $('.facetOR').click(function facetBlocking() {
-    $(this).closest('.collapse').html('<div class="list-group-item">' + VuFind.translate('loading') + '...</div>');
-    window.location.assign($(this).attr('href'));
-  });
-
-  // Side facet status saving
-  $('.facet.list-group .collapse').each(function openStoredFacets(index, item) {
-    var source = $('#result0 .hiddenSource').val();
-    var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
-    if (storedItem) {
-      item.className = storedItem;
-      if (item.className.indexOf('in') < 0) {
-        $(item).siblings('.title').addClass('collapsed');
-      } else {
-        $(item).siblings('.title').removeClass('collapsed');
-      }
-    }
-  });
-  $('.facet.list-group .collapse').on('shown.bs.collapse', facetSessionStorage);
-  $('.facet.list-group .collapse').on('hidden.bs.collapse', facetSessionStorage);
-
+  setupFacets();
+  
   // retain filter sessionStorage
   $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {
     sessionStorage.setItem('vufind_retain_filters', this.checked ? 'true' : 'false');
