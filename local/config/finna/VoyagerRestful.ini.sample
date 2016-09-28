@@ -293,6 +293,9 @@ indexes = "868az"
 ; Extra texts for the holdings display. These are run through translation, may 
 ; contain HTML and %%recordId%% may be used as a placeholder for the BIB ID.
 ;extra_texts[] = fennica_viola_access_rights_html 
+; A colon-separated list of item statuses that are ignored when the first due date
+; is being calculated.
+ignore_due_date_in_statuses = "Lost--Library Applied:Lost--System Applied:Missing:At bindery:Cataloging review"
 
 ; Settings for controlling how loans are displayed
 [Loans]
