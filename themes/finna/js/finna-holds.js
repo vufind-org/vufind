@@ -27,9 +27,9 @@ finna.changeHolds = (function() {
                 })
                 .done(function(response) {
                     $.each(response.data.locations, function() {
-                        var item = $('<li id="pickupLocationItem" class="pickupLocationItem" role="menuitem"></li>')
+                        var item = $('<li class="pickupLocationItem" role="menuitem"></li>')
                             .data('locationId', this.locationID).data('locationDisplay', this.locationDisplay).data('requestId', requestId).data('hold', hold).click(submitHandler);
-                        var text = $('<a href="#" ></a>').text(this.locationDisplay);
+                        var text = $('<a></a>').text(this.locationDisplay);
                         item.append(text);
                         pickupLocations.append(item);
                     });
@@ -43,7 +43,8 @@ finna.changeHolds = (function() {
             }
         });
         
-        var submitHandler = function() {  
+        var submitHandler = function() {
+            $().dropdown('toggle');
             var selected = $(this);           
             var requestId = selected.data('requestId');
             var locationId = selected.data('locationId');
