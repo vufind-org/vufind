@@ -307,10 +307,10 @@ function setupFacets() {
     var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
     if (storedItem) {
       item.className = storedItem;
-      if (item.className.indexOf('in') < 0) {
-        $(item).siblings('.title').addClass('collapsed');
+      if ($(item).hasClass('in')) {
+        $(item).collapse('show');
       } else {
-        $(item).siblings('.title').removeClass('collapsed');
+        $(item).collapse('hide');
       }
     }
   });
