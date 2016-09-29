@@ -6,12 +6,13 @@ finna.StreetSearch = (function() {
 
     var doStreetSearch = function() {
         progressContainer.removeClass('hidden');
+        progressContainer.find('.fa-spinner').removeClass('hidden');
         terminate = false;
         startButton.addClass('hidden'); 
 
         info(VuFind.translate('street_search_checking_for_geolocation'));
 
-        if (navigator.geolocation) {
+        if ('geolocation' in navigator) {
             info(VuFind.translate('street_search_geolocation_available'));
             navigator.geolocation.getCurrentPosition(reverseGeocode, geoLocationError, { timeout: 10000, maximumAge: 10000 });
         } else {
@@ -30,9 +31,12 @@ finna.StreetSearch = (function() {
    
     var geoLocationError = function(error) {
         if (!getPositionSuccess) {
-            errorString = 'street_search_other_error';
+            errorString = 'street_search_geolocation_other_error';
             if (error) {
                 switch(error.code) {
+                    case error.POSITION_UNAVAILABLE:
+                        errorString = 'street_search_geolocation_position_unavailable';
+                        break;
                     case error.PERMISSION_DENIED:
                         errorString = 'street_search_geolocation_inactive';
                         break;
@@ -108,8 +112,10 @@ finna.StreetSearch = (function() {
     };
 
     var info = function(message, stopped, keepPrevious) {
-        if (typeof stop !== 'undefined' && stopped) {
+        if (typeof stopped !== 'undefined' && stopped) {
             terminateButton.addClass('hidden');
+            progressContainer.find('.fa-spinner').addClass('hidden');
+            startButton.removeClass('hidden'); 
         }
         if (typeof keepPrevious === 'undefined' || !keepPrevious) {
             progressContainer.find('.info').empty();
