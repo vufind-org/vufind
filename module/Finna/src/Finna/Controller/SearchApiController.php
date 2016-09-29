@@ -78,6 +78,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         'fullRecord' => ['method' => 'getRecordFullRecord'],
         'generalNotes' => 'getGeneralNotes',
         'genres' => 'getGenres',
+        'geoLocations' => 'getGeoLocations',
         'hierarchicalPlaceNames' => 'getHierarchicalPlaceNames',
         'hierarchyParentId' => 'getHierarchyParentId',
         'hierarchyParentTitle' => 'getHierarchyParentTitle',
