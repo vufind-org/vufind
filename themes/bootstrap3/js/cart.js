@@ -51,7 +51,7 @@ VuFind.register('cart', function Cart() {
   function updateCount() {
     var items = VuFind.cart.getFullItems();
     $('#cartItems strong').html(items.length);
-    if (items.length === parseInt(VuFind.translate('bookbagMax'))) {
+    if (items.length === parseInt(VuFind.translate('bookbagMax'), 10)) {
       $('#cartItems .full').removeClass('hidden');
     } else {
       $('#cartItems .full').addClass('hidden');
@@ -62,7 +62,7 @@ VuFind.register('cart', function Cart() {
     var source = _source || VuFind.defaultSearchBackend;
     var cartItems = _getItems();
     var cartSources = _getSources();
-    if (cartItems.length >= parseInt(VuFind.translate('bookbagMax'))) {
+    if (cartItems.length >= parseInt(VuFind.translate('bookbagMax'), 10)) {
       return false;
     }
     var sIndex = cartSources.indexOf(source);
@@ -142,7 +142,7 @@ VuFind.register('cart', function Cart() {
           var added = updated.length - orig.length;
           var inCart = selected.length - added;
           msg += added + " " + VuFind.translate('itemsAddBag');
-          if (updated.length >= parseInt(VuFind.translate('bookbagMax'))) {
+          if (updated.length >= parseInt(VuFind.translate('bookbagMax'), 10)) {
             msg += "<br/>" + VuFind.translate('bookbagFull');
           }
           if (inCart > 0 && orig.length > 0) {
