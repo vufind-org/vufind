@@ -98,6 +98,8 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'util deletes' => 'Tool for deleting Solr records',
             'util expire_searches' => 'Database search table cleanup',
             'util expire_sessions' => 'Database session table cleanup',
+            'util expire_external_sessions'
+                => 'Database external_session table cleanup',
             'util index_reserves' => 'Solr reserves indexer',
             'util optimize' => 'Solr optimize tool',
             'util sitemap' => 'XML sitemap generator',
