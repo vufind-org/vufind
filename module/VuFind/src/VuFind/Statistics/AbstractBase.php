@@ -178,8 +178,8 @@ abstract class AbstractBase
     /**
      * Returns a count and most used list
      *
-     * @param integer $listLength How long the top list is
-     * @param bool    $bySource   Sort data by source?
+     * @param int  $listLength How long the top list is
+     * @param bool $bySource   Sort data by source?
      *
      * @return mixed
      */

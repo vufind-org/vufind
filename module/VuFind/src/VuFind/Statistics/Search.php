@@ -62,8 +62,8 @@ class Search extends AbstractBase
      * Returns a set of basic statistics including total searches,
      * number of empty searches and most popular search terms.
      *
-     * @param integer $listLength Number of top searches to return
-     * @param bool    $bySource   Separate searches by search source?
+     * @param int  $listLength Number of top searches to return
+     * @param bool $bySource   Separate searches by search source?
      *
      * @return array
      */

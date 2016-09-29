@@ -97,8 +97,8 @@ class Backend extends AbstractBackend
      * Perform a search and return record collection.
      *
      * @param AbstractQuery $query  Search query
-     * @param integer       $offset Search offset
-     * @param integer       $limit  Search limit
+     * @param int           $offset Search offset
+     * @param int           $limit  Search limit
      * @param ParamBag      $params Search backend parameters
      *
      * @return RecordCollectionInterface
@@ -123,7 +123,7 @@ class Backend extends AbstractBackend
      * Get Random records
      *
      * @param AbstractQuery $query  Search query
-     * @param integer       $limit  Search limit
+     * @param int           $limit  Search limit
      * @param ParamBag      $params Search backend parameters
      *
      * @return RecordCollectionInterface

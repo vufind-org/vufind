@@ -63,6 +63,13 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
     protected $accessPermission = false;
 
     /**
+     * Behavior when access is denied. Valid values are 'promptLogin' and 'exception'
+     *
+     * @var string
+     */
+    protected $accessDeniedBehavior = 'promptLogin';
+
+    /**
      * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
@@ -72,7 +79,6 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
     public function validateAccessPermission(MvcEvent $e)
     {
         if ($this->accessPermission) {
-            $exceptionDescription = 'Access denied.';
             $pm = $this->getPermissionManager();
             // Make sure the current user has permission to access the module:
             if ($pm->permissionRuleExists($this->accessPermission) !== false
@@ -80,50 +86,49 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
             ) {
                 $pdm = $this->getPermissionDeniedManager();
                 $dl = $pdm->getActionLogic($this->accessPermission);
-                if (isset($dl['exceptionMessage'])) {
-                    $exceptionDescription = $dl['exceptionMessage'];
+                if (!is_array($dl)) {
+                    $dl = [];
                 }
-                if (isset($dl['action'])) {
-                    switch ($dl['action']) {
-                    case 'promptlogin':
-                        $e->setResponse($this->forceLogin(null, [], false));
-                        break;
-                    case 'showMessage':
-                        $this->flashMessenger()->addMessage(
-                            $this->translate($dl['value']), 'error'
-                        );
-                        $e->setResponse(
-                            $this->redirect()->toRoute('error-permissiondenied')
-                        );
-                        break;
-                    case 'exception':
-                        if (isset($dl['value'])
-                            && class_exists($dl['value'])
-                        ) {
-                            $exception = new $dl['value']($exceptionDescription);
-                            if (is_a($exception, 'Exception')) {
-                                $this->logError(
-                                    "Custom Exception: "
-                                    . $dl['value'] . "(" . $exceptionDescription
-                                    . ")"
-                                );
-                                throw $exception;
-                            }
-                        }
-                        // Do not break; if the if-clause is not true,
-                        // just continue with default section
-                    default:
-                        $this->logError(
-                            "Default Exception: ForbiddenException with message: "
-                            . $exceptionDescription
-                        );
-                        throw new ForbiddenException($exceptionDescription);
-                        break;
-                    }
-                } else if ($dl === false) {
-                    // if we have no behavior rules,
-                    // prompt for login as a default behavior
+                if (!isset($dl['action'])) {
+                    $dl['action'] = $this->accessDeniedBehavior;
+                }
+                $exceptionDescription = isset($dl['exceptionMessage'])
+                    ? $dl['exceptionMessage'] : 'Access denied.';
+                switch (strtolower($dl['action'])) {
+                case 'promptlogin':
                     $e->setResponse($this->forceLogin(null, [], false));
+                    break;
+                case 'showmessage':
+                    $this->flashMessenger()->addMessage(
+                        $this->translate($dl['value']), 'error'
+                    );
+                    $e->setResponse(
+                        $this->redirect()->toRoute('error-permissiondenied')
+                    );
+                    break;
+                case 'exception':
+                    if (isset($dl['value'])
+                        && class_exists($dl['value'])
+                    ) {
+                        $exception = new $dl['value']($exceptionDescription);
+                        if (is_a($exception, 'Exception')) {
+                            $this->logError(
+                                "Custom Exception: "
+                                . $dl['value'] . "(" . $exceptionDescription
+                                . ")"
+                            );
+                            throw $exception;
+                        }
+                    }
+                    // Do not break; if the if-clause is not true,
+                    // just continue with default section
+                default:
+                    $this->logError(
+                        "Default Exception: ForbiddenException with message: "
+                        . $exceptionDescription
+                    );
+                    throw new ForbiddenException($exceptionDescription);
+                    break;
                 }
             }
         }
@@ -532,10 +537,10 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
      * Check to see if a form was submitted from its post value
      * Also validate the Captcha, if it's activated
      *
-     * @param string  $submitElement Name of the post field of the submit button
-     * @param boolean $useRecaptcha  Are we using captcha in this situation?
+     * @param string $submitElement Name of the post field of the submit button
+     * @param bool   $useRecaptcha  Are we using captcha in this situation?
      *
-     * @return boolean
+     * @return bool
      */
     protected function formWasSubmitted($submitElement = 'submit',
         $useRecaptcha = false
@@ -708,5 +713,16 @@ class AbstractBase extends AbstractActionController implements LoggerAwareInterf
     protected function clearFollowupUrl()
     {
         $this->followup()->clear('url');
+    }
+
+    /**
+     * Get the tab configuration for this controller.
+     *
+     * @return array
+     */
+    protected function getRecordTabConfig()
+    {
+        $cfg = $this->getServiceLocator()->get('Config');
+        return $cfg['vufind']['recorddriver_tabs'];
     }
 }

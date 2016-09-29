@@ -840,11 +840,11 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     /**
      * Get request groups
      *
-     * @param integer $bibId  BIB ID
-     * @param array   $patron Patron information returned by the patronLogin
+     * @param int   $bibId  BIB ID
+     * @param array $patron Patron information returned by the patronLogin
      * method.
      *
-     * @return array  False if request groups not in use or an array of
+     * @return array False if request groups not in use or an array of
      * associative arrays with id and name keys
      */
     public function getRequestGroups($bibId, $patron)
@@ -1614,8 +1614,8 @@ EOT;
     /**
      * Check whether the given patron has the given bib record on loan.
      *
-     * @param integer $patronId Patron ID
-     * @param integer $bibId    BIB ID
+     * @param int $patronId Patron ID
+     * @param int $bibId    BIB ID
      *
      * @return bool
      */
@@ -1669,8 +1669,8 @@ EOT;
     /**
      * Check whether items exist for the given BIB ID
      *
-     * @param integer $bibId          BIB ID
-     * @param integer $requestGroupId Request group ID or null
+     * @param int $bibId          BIB ID
+     * @param int $requestGroupId Request group ID or null
      *
      * @return bool
      */
@@ -1730,8 +1730,8 @@ EOT;
     /**
      * Check whether there are items available for loan for the given BIB ID
      *
-     * @param integer $bibId          BIB ID
-     * @param integer $requestGroupId Request group ID or null
+     * @param int $bibId          BIB ID
+     * @param int $requestGroupId Request group ID or null
      *
      * @return bool
      */

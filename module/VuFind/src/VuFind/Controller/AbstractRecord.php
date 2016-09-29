@@ -614,14 +614,15 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Get the tab configuration for this controller.
+     * Alias to getRecordTabConfig for backward compatibility.
+     *
+     * @deprecated use getRecordTabConfig instead
      *
      * @return array
      */
     protected function getTabConfiguration()
     {
-        $cfg = $this->getServiceLocator()->get('Config');
-        return $cfg['vufind']['recorddriver_tabs'];
+        return $this->getRecordTabConfig();
     }
 
     /**
@@ -635,11 +636,14 @@ class AbstractRecord extends AbstractBase
         $request = $this->getRequest();
         $rtpm = $this->getServiceLocator()->get('VuFind\RecordTabPluginManager');
         $details = $rtpm->getTabDetailsForRecord(
-            $driver, $this->getTabConfiguration(), $request,
+            $driver, $this->getRecordTabConfig(), $request,
             $this->fallbackDefaultTab
         );
         $this->allTabs = $details['tabs'];
         $this->defaultTab = $details['default'] ? $details['default'] : false;
+        $this->backgroundTabs = $rtpm->getBackgroundTabNames(
+            $driver, $this->getRecordTabConfig()
+        );
     }
 
     /**
@@ -667,6 +671,19 @@ class AbstractRecord extends AbstractBase
             $this->loadTabDetails();
         }
         return $this->allTabs;
+    }
+
+    /**
+     * Get names of tabs to be loaded in the background.
+     *
+     * @return array
+     */
+    protected function getBackgroundTabs()
+    {
+        if (null === $this->backgroundTabs) {
+            $this->loadTabDetails();
+        }
+        return $this->backgroundTabs;
     }
 
     /**
@@ -709,6 +726,7 @@ class AbstractRecord extends AbstractBase
         $view->tabs = $this->getAllTabs();
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
+        $view->backgroundTabs = $this->getBackgroundTabs();
         $view->loadInitialTabWithAjax
             = isset($config->Site->loadInitialTabWithAjax)
             ? (bool) $config->Site->loadInitialTabWithAjax : false;

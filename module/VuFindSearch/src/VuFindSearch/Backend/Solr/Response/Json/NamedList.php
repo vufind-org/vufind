@@ -132,7 +132,7 @@ class NamedList implements Countable, Iterator
     /**
      * Return true if the iterator is at a valid position.
      *
-     * @return boolean
+     * @return bool
      */
     public function valid()
     {

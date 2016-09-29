@@ -244,7 +244,7 @@ class HierarchicalFacetHelper
      *
      * @param array $list Facet list
      *
-     * @return boolean Whether any items are applied (for recursive calls)
+     * @return bool Whether any items are applied (for recursive calls)
      */
     protected function updateAppliedChildrenStatus($list)
     {

@@ -57,6 +57,36 @@ $config = [
                         'action'     => 'Home',
                     ]
                 ]
+            ],
+            'soap-shibboleth-logout-notification-handler' => [
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => [
+                    'route' => '/soap/shiblogout',
+                    'defaults' => [
+                        'controller' => 'ShibbolethLogoutNotification',
+                        'action' => 'index'
+                    ]
+                ],
+                'child_routes' => [
+                    'get' => [
+                        'type' => 'method',
+                        'options' => [
+                            'verb' => 'get',
+                            'defaults' => [
+                                'action' => 'get'
+                            ],
+                        ],
+                    ],
+                    'post' => [
+                        'type' => 'method',
+                        'options' => [
+                            'verb' => 'post',
+                            'defaults' => [
+                                'action' => 'post'
+                            ]
+                        ]
+                    ]
+                ]
             ]
         ],
     ],
@@ -98,6 +128,7 @@ $config = [
             'qrcode' => 'VuFind\Controller\QRCodeController',
             'records' => 'VuFind\Controller\RecordsController',
             'search' => 'VuFind\Controller\SearchController',
+            'shibbolethlogoutnotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
             'tag' => 'VuFind\Controller\TagController',
@@ -227,17 +258,18 @@ $config = [
         ],
         // PostgreSQL sequence mapping
         'pgsql_seq_mapping'  => [
-            'comments'       => ['id', 'comments_id_seq'],
-            'oai_resumption' => ['id', 'oai_resumption_id_seq'],
-            'record'         => ['id', 'record_id_seq'],
-            'resource'       => ['id', 'resource_id_seq'],
-            'resource_tags'  => ['id', 'resource_tags_id_seq'],
-            'search'         => ['id', 'search_id_seq'],
-            'session'        => ['id', 'session_id_seq'],
-            'tags'           => ['id', 'tags_id_seq'],
-            'user'           => ['id', 'user_id_seq'],
-            'user_list'      => ['id', 'user_list_id_seq'],
-            'user_resource'  => ['id', 'user_resource_id_seq'],
+            'comments'         => ['id', 'comments_id_seq'],
+            'external_session' => ['id', 'external_session_id_seq'],
+            'oai_resumption'   => ['id', 'oai_resumption_id_seq'],
+            'record'           => ['id', 'record_id_seq'],
+            'resource'         => ['id', 'resource_id_seq'],
+            'resource_tags'    => ['id', 'resource_tags_id_seq'],
+            'search'           => ['id', 'search_id_seq'],
+            'session'          => ['id', 'session_id_seq'],
+            'tags'             => ['id', 'tags_id_seq'],
+            'user'             => ['id', 'user_id_seq'],
+            'user_list'        => ['id', 'user_list_id_seq'],
+            'user_resource'    => ['id', 'user_resource_id_seq'],
         ],
         // This section contains service manager configurations for all VuFind
         // pluggable components:
@@ -249,13 +281,13 @@ $config = [
                     'facebook' => 'VuFind\Auth\Factory::getFacebook',
                     'ils' => 'VuFind\Auth\Factory::getILS',
                     'multiils' => 'VuFind\Auth\Factory::getMultiILS',
+                    'shibboleth' => 'VuFind\Auth\Factory::getShibboleth'
                 ],
                 'invokables' => [
                     'cas' => 'VuFind\Auth\CAS',
                     'database' => 'VuFind\Auth\Database',
                     'ldap' => 'VuFind\Auth\LDAP',
                     'multiauth' => 'VuFind\Auth\MultiAuth',
-                    'shibboleth' => 'VuFind\Auth\Shibboleth',
                     'sip2' => 'VuFind\Auth\SIP2',
                 ],
                 'aliases' => [
@@ -346,6 +378,7 @@ $config = [
                 'invokables' => [
                     'changetracker' => 'VuFind\Db\Table\ChangeTracker',
                     'comments' => 'VuFind\Db\Table\Comments',
+                    'externalsession' => 'VuFind\Db\Table\ExternalSession',
                     'oairesumption' => 'VuFind\Db\Table\OaiResumption',
                     'record' => 'VuFind\Db\Table\Record',
                     'search' => 'VuFind\Db\Table\Search',
@@ -391,6 +424,7 @@ $config = [
                     'lbs4' => 'VuFind\ILS\Driver\Factory::getLBS4',
                     'multibackend' => 'VuFind\ILS\Driver\Factory::getMultiBackend',
                     'noils' => 'VuFind\ILS\Driver\Factory::getNoILS',
+                    'paia' => 'VuFind\ILS\Driver\Factory::getPAIA',
                     'kohailsdi' => 'VuFind\ILS\Driver\Factory::getKohaILSDI',
                     'unicorn' => 'VuFind\ILS\Driver\Factory::getUnicorn',
                     'voyager' => 'VuFind\ILS\Driver\Factory::getVoyager',
@@ -423,6 +457,7 @@ $config = [
                     'europeanaresults' => 'VuFind\Recommend\Factory::getEuropeanaResults',
                     'expandfacets' => 'VuFind\Recommend\Factory::getExpandFacets',
                     'favoritefacets' => 'VuFind\Recommend\Factory::getFavoriteFacets',
+                    'mapselection' => 'VuFind\Recommend\Factory::getMapSelection',
                     'resultgooglemapajax' => 'VuFind\Recommend\Factory::getResultGoogleMapAjax',
                     'sidefacets' => 'VuFind\Recommend\Factory::getSideFacets',
                     'randomrecommend' => 'VuFind\Recommend\Factory::getRandomRecommend',
@@ -438,6 +473,7 @@ $config = [
                 ],
                 'invokables' => [
                     'alphabrowselink' => 'VuFind\Recommend\AlphaBrowseLink',
+                    'doi' => 'VuFind\Recommend\DOI',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
                     'libraryh3lp' => 'VuFind\Recommend\Libraryh3lp',
@@ -611,6 +647,8 @@ $config = [
         // driver is not defined here, it will inherit configuration from a configured
         // parent class.  The defaultTab setting may be used to specify the default
         // active tab; if null, the value from the relevant .ini file will be used.
+        // You can also specify which tabs are loaded in the background when arriving
+        // at a record tabs view with backgroundLoadedTabs as a list of tab indexes.
         'recorddriver_tabs' => [
             'VuFind\RecordDriver\EDS' => [
                 'tabs' => [
@@ -655,6 +693,7 @@ $config = [
                     'Details' => 'StaffViewArray',
                 ],
                 'defaultTab' => null,
+                // 'backgroundLoadedTabs' => ['UserComments', 'Details']
             ],
             'VuFind\RecordDriver\SolrMarc' => [
                 'tabs' => [
