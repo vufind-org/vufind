@@ -110,6 +110,9 @@ function registerAjaxCommentRecord() {
     })
     .done(function addCommentDone(/*response, textStatus*/) {
       var $tab = $(form).closest('.list-tab-content');
+      if (!$tab.length) {
+        $tab = $(form).closest('.tab-pane');
+      }
       refreshCommentList($tab, id, recordSource);
       $(form).find('textarea[name="comment"]').val('');
       $(form).find('input[type="submit"]').button('loading');
@@ -161,7 +164,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     urlroot = '/' + chunks[3] + '/' + chunks[4];
   } else {
     // standard case -- VuFind has its own path under site:
-    var pathInUrl = urlWithoutFragment.indexOf(path);
+    var pathInUrl = urlWithoutFragment.indexOf(path, urlWithoutFragment.indexOf('//') + 2);
     var parts = urlWithoutFragment.substring(pathInUrl + path.length + 1).split('/');
     urlroot = '/' + parts[0] + '/' + parts[1];
   }
