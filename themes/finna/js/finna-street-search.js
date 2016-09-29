@@ -31,8 +31,10 @@ finna.StreetSearch = (function() {
    
     var geoLocationError = function(error) {
         if (!getPositionSuccess) {
-            errorString = 'street_search_geolocation_other_error';
+            var errorString = 'street_search_geolocation_other_error';
+            var additionalInfo = '';
             if (error) {
+                additionalInfo = error.message;
                 switch(error.code) {
                     case error.POSITION_UNAVAILABLE:
                         errorString = 'street_search_geolocation_position_unavailable';
@@ -48,7 +50,11 @@ finna.StreetSearch = (function() {
                         break;
                 }
             }
-            info(VuFind.translate(errorString), 1);
+            errorString = VuFind.translate(errorString);
+            if (additionalInfo) {
+                errorString += ' -- ' + additionalInfo;
+            }
+            info(errorString, 1);
         }
     };
 
