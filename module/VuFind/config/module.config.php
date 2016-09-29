@@ -57,6 +57,36 @@ $config = [
                         'action'     => 'Home',
                     ]
                 ]
+            ],
+            'soap-shibboleth-logout-notification-handler' => [
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => [
+                    'route' => '/soap/shiblogout',
+                    'defaults' => [
+                        'controller' => 'ShibbolethLogoutNotification',
+                        'action' => 'index'
+                    ]
+                ],
+                'child_routes' => [
+                    'get' => [
+                        'type' => 'method',
+                        'options' => [
+                            'verb' => 'get',
+                            'defaults' => [
+                                'action' => 'get'
+                            ],
+                        ],
+                    ],
+                    'post' => [
+                        'type' => 'method',
+                        'options' => [
+                            'verb' => 'post',
+                            'defaults' => [
+                                'action' => 'post'
+                            ]
+                        ]
+                    ]
+                ]
             ]
         ],
     ],
@@ -98,6 +128,7 @@ $config = [
             'qrcode' => 'VuFind\Controller\QRCodeController',
             'records' => 'VuFind\Controller\RecordsController',
             'search' => 'VuFind\Controller\SearchController',
+            'shibbolethlogoutnotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
             'tag' => 'VuFind\Controller\TagController',
@@ -225,17 +256,18 @@ $config = [
         ],
         // PostgreSQL sequence mapping
         'pgsql_seq_mapping'  => [
-            'comments'       => ['id', 'comments_id_seq'],
-            'oai_resumption' => ['id', 'oai_resumption_id_seq'],
-            'record'         => ['id', 'record_id_seq'],
-            'resource'       => ['id', 'resource_id_seq'],
-            'resource_tags'  => ['id', 'resource_tags_id_seq'],
-            'search'         => ['id', 'search_id_seq'],
-            'session'        => ['id', 'session_id_seq'],
-            'tags'           => ['id', 'tags_id_seq'],
-            'user'           => ['id', 'user_id_seq'],
-            'user_list'      => ['id', 'user_list_id_seq'],
-            'user_resource'  => ['id', 'user_resource_id_seq'],
+            'comments'         => ['id', 'comments_id_seq'],
+            'external_session' => ['id', 'external_session_id_seq'],
+            'oai_resumption'   => ['id', 'oai_resumption_id_seq'],
+            'record'           => ['id', 'record_id_seq'],
+            'resource'         => ['id', 'resource_id_seq'],
+            'resource_tags'    => ['id', 'resource_tags_id_seq'],
+            'search'           => ['id', 'search_id_seq'],
+            'session'          => ['id', 'session_id_seq'],
+            'tags'             => ['id', 'tags_id_seq'],
+            'user'             => ['id', 'user_id_seq'],
+            'user_list'        => ['id', 'user_list_id_seq'],
+            'user_resource'    => ['id', 'user_resource_id_seq'],
         ],
         // This section contains service manager configurations for all VuFind
         // pluggable components:
@@ -247,13 +279,13 @@ $config = [
                     'facebook' => 'VuFind\Auth\Factory::getFacebook',
                     'ils' => 'VuFind\Auth\Factory::getILS',
                     'multiils' => 'VuFind\Auth\Factory::getMultiILS',
+                    'shibboleth' => 'VuFind\Auth\Factory::getShibboleth'
                 ],
                 'invokables' => [
                     'cas' => 'VuFind\Auth\CAS',
                     'database' => 'VuFind\Auth\Database',
                     'ldap' => 'VuFind\Auth\LDAP',
                     'multiauth' => 'VuFind\Auth\MultiAuth',
-                    'shibboleth' => 'VuFind\Auth\Shibboleth',
                     'sip2' => 'VuFind\Auth\SIP2',
                 ],
                 'aliases' => [
@@ -344,6 +376,7 @@ $config = [
                 'invokables' => [
                     'changetracker' => 'VuFind\Db\Table\ChangeTracker',
                     'comments' => 'VuFind\Db\Table\Comments',
+                    'externalsession' => 'VuFind\Db\Table\ExternalSession',
                     'oairesumption' => 'VuFind\Db\Table\OaiResumption',
                     'record' => 'VuFind\Db\Table\Record',
                     'search' => 'VuFind\Db\Table\Search',
