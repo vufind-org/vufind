@@ -477,7 +477,8 @@ finna.layout = (function() {
         if ($('.result-view-grid')[0] != null && isTouchDevice()) {
             $('.result-view-grid').addClass('touch-device');
         }
-    }
+    };
+    
     var initImageCheck = function() {
         $(".image-popup-trigger img").each(function() {
             $(this).one("load",function() {
@@ -523,7 +524,7 @@ finna.layout = (function() {
         }
         holder.find('select.jumpMenu').unbind('change').change(function() { $(this).closest('form').submit(); });
         holder.find('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });
-    }
+    };
 
     var initSecondaryLoginField = function(labels, topClass) {
         $('#login_target').change(function() {
@@ -538,7 +539,7 @@ finna.layout = (function() {
                 group.show();
             }
         }).change();
-    }
+    };
 
     var initSideFacets = function() {
         var $container = $('.side-facets-container');
@@ -554,12 +555,13 @@ finna.layout = (function() {
             initToolTips($('.sidebar'));
             initMobileNarrowSearch();
             VuFind.lightbox.bind($('.sidebar'));
+            initCollapsedFacetMemory();
         })
         .fail(function() {
             $container.find('.facet-load-indicator').addClass('hidden');
             $container.find('.facet-load-failed').removeClass('hidden');
         });
-    }
+    };
 
     var initPiwikPopularSearches = function() {
         var $container = $('.piwik-popular-searches');
@@ -575,7 +577,7 @@ finna.layout = (function() {
             $container.find('.load-indicator').addClass('hidden');
             $container.find('.load-failed').removeClass('hidden');
         });
-    }
+    };
 
     var initAutoScrollTouch = function() {
       if (!navigator.userAgent.match(/iemobile/i) && isTouchDevice() && $(window).width() < 1025) {
@@ -631,7 +633,7 @@ finna.layout = (function() {
             }
         });
       });
-    }
+    };
 
     var initLoginRedirect = function() {
       if (!document.addEventListener) {
@@ -643,7 +645,7 @@ finna.layout = (function() {
           e.preventDefault();
         }
       });
-    }
+    };
 
     var initLoadMasonry = function() {
       var ie = detectIe();
