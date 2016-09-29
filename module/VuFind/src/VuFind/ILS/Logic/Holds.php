@@ -113,6 +113,7 @@ class Holds
      */
     protected function formatHoldings($holdings)
     {
+        $flags = ['blocked' => false];
         $retVal = [];
 
         // Handle purchase history alongside other textual fields
@@ -129,6 +130,14 @@ class Holds
             ];
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
+                if ((isset($item['addLink']) && $item['addLink'] === 'block')
+                    || (isset($item['addStorageRetrievalRequestLink'])
+                    && $item['addStorageRetrievalRequestLink'] === 'block')
+                    || (isset($item['addILLRequestLink'])
+                    && $item['addILLRequestLink'] === 'block')
+                ) {
+                    $flags['blocked'] = true;
+                }
                 foreach ($textFieldNames as $fieldName) {
                     if (in_array($fieldName, ['notes', 'holdings_notes'])) {
                         if (empty($item[$fieldName])) {
@@ -159,7 +168,7 @@ class Holds
             }
         }
 
-        return $retVal;
+        return ['flags' => $flags, 'holdings' => $retVal];
     }
 
     /**
@@ -262,13 +271,13 @@ class Holds
                             // If the hold is blocked, link to an error page
                             // instead of the hold form:
                             $copy['link'] = $copy['addLink'] === 'block'
-                                ? $this->getBlockedDetails($copy)
+                                ? false
                                 : $this->getRequestDetails(
                                     $copy, $holdConfig['HMACKeys'], 'Hold'
                                 );
                             // If we are unsure whether hold options are available,
                             // set a flag so we can check later via AJAX:
-                            $copy['check'] = $copy['addLink'] == 'check';
+                            $copy['check'] = $copy['addLink'] === 'check';
                         }
                     }
 
@@ -403,8 +412,7 @@ class Holds
                     // If the request is blocked, link to an error page
                     // instead of the form:
                     if ($copy['addStorageRetrievalRequestLink'] === 'block') {
-                        $copy['storageRetrievalRequestLink']
-                            = $this->getBlockedStorageRetrievalRequestDetails($copy);
+                        $copy['storageRetrievalRequestLink'] = false;
                     } else {
                         $copy['storageRetrievalRequestLink']
                             = $this->getRequestDetails(
@@ -458,8 +466,7 @@ class Holds
                     // If the request is blocked, link to an error page
                     // instead of the form:
                     if ($copy['addILLRequestLink'] === 'block') {
-                        $copy['ILLRequestLink']
-                            = $this->getBlockedILLRequestDetails($copy);
+                        $copy['ILLRequestLink'] = false;
                     } else {
                         $copy['ILLRequestLink']
                             = $this->getRequestDetails(
@@ -512,53 +519,6 @@ class Holds
             'source' => isset($details['source'])
                 ? $details['source'] : DEFAULT_SEARCH_BACKEND,
             'query' => $queryString, 'anchor' => "#tabnav"
-        ];
-    }
-
-    /**
-     * Returns a URL to display a "blocked hold" message.
-     *
-     * @param array $holdDetails An array of item data
-     *
-     * @return array             Details for generating URL
-     */
-    protected function getBlockedDetails($holdDetails)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedHold', 'record' => $holdDetails['id']
-        ];
-    }
-
-    /**
-     * Returns a URL to display a "blocked storage retrieval request" message.
-     *
-     * @param array $details An array of item data
-     *
-     * @return array         Details for generating URL
-     */
-    protected function getBlockedStorageRetrievalRequestDetails($details)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedStorageRetrievalRequest',
-            'record' => $details['id']
-        ];
-    }
-
-    /**
-     * Returns a URL to display a "blocked ILL request" message.
-     *
-     * @param array $details An array of item data
-     *
-     * @return array         Details for generating URL
-     */
-    protected function getBlockedILLRequestDetails($details)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedILLRequest',
-            'record' => $details['id']
         ];
     }
 
