@@ -22,7 +22,7 @@ function checkRequestIsValid(element, requestType) {
   })
   .done(function checkValidDone(response) {
     if (response.data.status) {
-      $(element).removeClass('disabled')
+      $(element)
         .attr('title', response.data.msg)
         .html('<i class="fa fa-flag" aria-hidden="true"></i>&nbsp;' + response.data.msg);
     } else {

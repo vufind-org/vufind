@@ -259,13 +259,13 @@ class Holds
                     if ($holdConfig) {
                         // Is this copy holdable / linkable
                         if (isset($copy['addLink']) && $copy['addLink']) {
-                            // If the hold is blocked, link to an error page
-                            // instead of the hold form:
-                            $copy['link'] = $copy['addLink'] === 'block'
-                                ? $this->getBlockedDetails($copy)
-                                : $this->getRequestDetails(
-                                    $copy, $holdConfig['HMACKeys'], 'Hold'
-                                );
+                            // If the hold is blocked, skip:
+                            if ($copy['addLink'] === 'block') {
+                                continue;
+                            }
+                            $copy['link'] = $this->getRequestDetails(
+                                $copy, $holdConfig['HMACKeys'], 'Hold'
+                            );
                             // If we are unsure whether hold options are available,
                             // set a flag so we can check later via AJAX:
                             $copy['check'] = $copy['addLink'] == 'check';
@@ -400,19 +400,15 @@ class Holds
                 if (isset($copy['addStorageRetrievalRequestLink'])
                     && $copy['addStorageRetrievalRequestLink']
                 ) {
-                    // If the request is blocked, link to an error page
-                    // instead of the form:
+                    // If the hold is blocked, skip:
                     if ($copy['addStorageRetrievalRequestLink'] === 'block') {
-                        $copy['storageRetrievalRequestLink']
-                            = $this->getBlockedStorageRetrievalRequestDetails($copy);
-                    } else {
-                        $copy['storageRetrievalRequestLink']
-                            = $this->getRequestDetails(
-                                $copy,
-                                $requestConfig['HMACKeys'],
-                                'StorageRetrievalRequest'
-                            );
+                        continue;
                     }
+                    $copy['storageRetrievalRequestLink'] = $this->getRequestDetails(
+                        $copy,
+                        $requestConfig['HMACKeys'],
+                        'StorageRetrievalRequest'
+                    );
                     // If we are unsure whether request options are
                     // available, set a flag so we can check later via AJAX:
                     $copy['checkStorageRetrievalRequest']
@@ -455,19 +451,15 @@ class Holds
                 if (isset($copy['addILLRequestLink'])
                     && $copy['addILLRequestLink']
                 ) {
-                    // If the request is blocked, link to an error page
-                    // instead of the form:
+                    // If the hold is blocked, skip:
                     if ($copy['addILLRequestLink'] === 'block') {
-                        $copy['ILLRequestLink']
-                            = $this->getBlockedILLRequestDetails($copy);
-                    } else {
-                        $copy['ILLRequestLink']
-                            = $this->getRequestDetails(
-                                $copy,
-                                $requestConfig['HMACKeys'],
-                                'ILLRequest'
-                            );
+                        continue;
                     }
+                    $copy['ILLRequestLink'] = $this->getRequestDetails(
+                        $copy,
+                        $requestConfig['HMACKeys'],
+                        'ILLRequest'
+                    );
                     // If we are unsure whether request options are
                     // available, set a flag so we can check later via AJAX:
                     $copy['checkILLRequest']
@@ -512,53 +504,6 @@ class Holds
             'source' => isset($details['source'])
                 ? $details['source'] : DEFAULT_SEARCH_BACKEND,
             'query' => $queryString, 'anchor' => "#tabnav"
-        ];
-    }
-
-    /**
-     * Returns a URL to display a "blocked hold" message.
-     *
-     * @param array $holdDetails An array of item data
-     *
-     * @return array             Details for generating URL
-     */
-    protected function getBlockedDetails($holdDetails)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedHold', 'record' => $holdDetails['id']
-        ];
-    }
-
-    /**
-     * Returns a URL to display a "blocked storage retrieval request" message.
-     *
-     * @param array $details An array of item data
-     *
-     * @return array         Details for generating URL
-     */
-    protected function getBlockedStorageRetrievalRequestDetails($details)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedStorageRetrievalRequest',
-            'record' => $details['id']
-        ];
-    }
-
-    /**
-     * Returns a URL to display a "blocked ILL request" message.
-     *
-     * @param array $details An array of item data
-     *
-     * @return array         Details for generating URL
-     */
-    protected function getBlockedILLRequestDetails($details)
-    {
-        // Build Params
-        return [
-            'action' => 'BlockedILLRequest',
-            'record' => $details['id']
         ];
     }
 

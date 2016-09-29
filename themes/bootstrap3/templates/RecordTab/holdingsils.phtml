@@ -87,10 +87,6 @@
       $check = isset($row['check']) && $row['check'];
       $checkStorageRetrievalRequest = isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest'];
       $checkILLRequest = isset($row['checkILLRequest']) && $row['checkILLRequest'];
-      // AJAX block record?
-      $block = !$check && isset($row['addLink']) && $row['addLink'] === 'block';
-      $blockStorageRetrievalRequest = !$checkStorageRetrievalRequest && isset($row['addStorageRetrievalRequestLink']) && $row['addStorageRetrievalRequestLink'] === 'block';
-      $blockILLRequest = !$checkILLRequest && isset($row['addILLRequestLink']) && $row['addILLRequestLink'] === 'block';
     ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
       <tr vocab="http://schema.org/" typeof="Offer">
@@ -105,14 +101,14 @@
           <? else: ?>
             <? if ($row['availability']): ?>
               <? /* Begin Available Items (Holds) */ ?>
-               <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
-              <? if (!$block && isset($row['link']) && $row['link']): ?>
+              <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
+              <? if (isset($row['link']) && $row['link']): ?>
                 <a class="<?=$check ? 'checkRequest ' : ''?>placehold" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
               <? endif; ?>
-              <? if (!$blockStorageRetrievalRequest && isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
+              <? if (isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
                 <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
               <? endif; ?>
-              <? if (!$blockILLRequest && isset($row['ILLRequestLink']) && $row['ILLRequestLink']): ?>
+              <? if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']): ?>
                 <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
               <? endif; ?>
             <? else: ?>
@@ -125,7 +121,7 @@
               <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
                 <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
               <? endif; ?>
-              <? if (!$block && isset($row['link']) && $row['link']): ?>
+              <? if (isset($row['link']) && $row['link']): ?>
                 <a class="<?=$check ? 'checkRequest' : ''?> placehold" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
               <? endif; ?>
             <? endif; ?>
