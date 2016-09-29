@@ -357,7 +357,37 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
         $genreMore->click();
         $this->facetListProcedure($page, $limit, true);
         $this->assertEquals(1, count($page->find('css', '.list-group.filters')));
-   }
+    }
+
+    /**
+     * Test that exclusion works properly deep in lightbox results.
+     *
+     * @return void
+     */
+    public function testHierarchicalFacets()
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results' => [
+                        'hierarchical_facet_str_mv' => 'hierarchy'
+                    ],
+                    'SpecialFacets' => [
+                        'hierarchical[]' => 'hierarchical_facet_str_mv'
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('');
+        $this->findCss($page, '#j1_1.jstree-closed .jstree-icon');
+        $session = $this->getMinkSession();
+        $session->executeScript("$('#j1_1.jstree-closed .jstree-icon').click();");
+        $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
+        $this->findCss($page, '#j1_2 a')->click();
+        $filter = $this->findCss($page, '.filters .list-group-item.active');
+        $this->assertEquals('hierarchy: 1/level1a/level2a/', $filter->getText());
+        $this->findCss($page, '#j1_2 .fa-check');
+    }
 
     /**
      * Standard teardown method.
