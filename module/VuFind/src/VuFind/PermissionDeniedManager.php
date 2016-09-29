@@ -50,9 +50,9 @@ class PermissionDeniedManager
     /**
      * Default action for denied permissions.
      *
-     * @var String $defaultAction Defaults to 'promptlogin'
+     * @var String $defaultAction Defaults to 'promptLogin'
      */
-    protected $defaultAction = 'promptlogin';
+    protected $defaultAction = 'promptLogin';
 
     /**
      * Constructor

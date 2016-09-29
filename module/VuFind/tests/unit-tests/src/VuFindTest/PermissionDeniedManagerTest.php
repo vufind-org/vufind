@@ -58,7 +58,7 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
             'permissionDeniedAction' => "showTemplate:action_translatable_test"
         ],
         'permissionDeniedLogin' => [
-            'permissionDeniedAction' => "promptlogin"
+            'permissionDeniedAction' => "promptLogin"
         ],
         'permissionDeniedException' => [
             'permissionDeniedAction' => "exception:ForbiddenException:exception_message"
@@ -125,7 +125,7 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
     public function testEmptyConfig()
     {
         $expected = [
-            'action' => 'promptlogin'
+            'action' => 'promptLogin'
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
@@ -142,7 +142,7 @@ class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
     public function testNonExistentConfig()
     {
         $expected = [
-            'action' => 'promptlogin'
+            'action' => 'promptLogin'
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 

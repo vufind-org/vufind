@@ -60,7 +60,7 @@ class LinkDisplayTest  extends \VuFindTest\Unit\ViewHelperTestCase
             'permissionDeniedAction' => "showTemplate:action_translatable_test"
         ],
         'permissionDeniedLogin' => [
-            'permissionDeniedAction' => "promptlogin"
+            'permissionDeniedAction' => "promptLogin"
         ],
         'permissionDeniedException' => [
             'permissionDeniedAction' => "exception:ForbiddenException:exception_message"
