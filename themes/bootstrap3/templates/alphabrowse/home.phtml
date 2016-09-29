@@ -1,20 +1,20 @@
 <?
   $this->headTitle($this->translate('Browse the Collection Alphabetically'));
   $this->layout()->breadcrumbs = '<a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a>';
-  $baseQuery = array('source' => $this->source, 'from' => $this->from);
+  $baseQuery = ['source' => $this->source, 'from' => $this->from];
 ?>
 
 <? /* LOAD THE LINK INFORMATION INTO $pageLinks, similar to smarty's {capture} */ ?>
 <? ob_start(); ?>
   <ul class="pager">
     <? if (isset($this->prevpage)): ?>
-      <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->prevpage))))?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
+      <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->prevpage]]))?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
     <? else: ?>
       <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
     <? endif; ?>
 
     <? if (isset($this->nextpage)): ?>
-      <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->nextpage))))?>"><?=$this->transEsc('Next')?> &raquo;</a></li>
+      <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->nextpage]]))?>"><?=$this->transEsc('Next')?> &raquo;</a></li>
     <? else: ?>
       <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
     <? endif; ?>
@@ -76,7 +76,7 @@
                 <?=$this->transEsc('Use instead') ?>:
                 <ul>
                   <? foreach ($item['useInstead'] as $heading): ?>
-                  <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
+                  <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => ['from' => $heading] + $baseQuery]))?>"><?=$this->escapeHtml($heading)?></a></li>
                   <? endforeach; ?>
                 </ul>
               </div>
@@ -87,7 +87,7 @@
                 <?=$this->transEsc('See also') ?>:
                 <ul>
                   <? foreach ($item['seeAlso'] as $heading): ?>
-                  <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
+                  <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => ['from' => $heading] + $baseQuery]))?>"><?=$this->escapeHtml($heading)?></a></li>
                   <? endforeach; ?>
                 </ul>
               </div>
@@ -106,7 +106,7 @@
           <? foreach ($this->extras as $extraName): ?>
             <td>
               <?
-                $extraDisplayArray = array();
+                $extraDisplayArray = [];
                 foreach ($item['extras'][$extraName] as $j => $e):
                   $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
                 endforeach;
