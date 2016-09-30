@@ -233,11 +233,6 @@ function recordDocReady() {
       return true;
     }
     var tabid = this.className;
-    // close all map popups if not on Map tab
-    var popup = document.getElementById('popup');
-    if (this.className != "map") {
-      $(popup).popover('destroy');
-    }
     var $top = $(this).closest('.record-tabs');
     // if we're flagged to skip AJAX for this tab, we need special behavior:
     if ($li.hasClass('noajax')) {
