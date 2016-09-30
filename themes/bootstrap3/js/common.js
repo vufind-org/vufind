@@ -250,7 +250,6 @@ function setupAutocomplete() {
 
 /**
  * Handle arrow keys to jump to next record
- * @returns {undefined}
  */
 function keyboardShortcuts() {
   var $searchform = $('.searchForm_lookfor');
@@ -292,7 +291,6 @@ function keyboardShortcuts() {
 
 /**
  * Setup facets
- * @returns {undefined}
  */
 function setupFacets() {
   // Advanced facets
