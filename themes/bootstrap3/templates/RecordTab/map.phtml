@@ -5,7 +5,7 @@
   $this->headLink()->appendStylesheet('vendor/ol/ol.css');
   $mapTabData = $this->tab->getMapTabData();
   $popupTitle = $this->transEsc('map_results_label');
-  $params = array(json_encode($mapTabData), json_encode($popupTitle));
+  $params = [json_encode($mapTabData), json_encode($popupTitle)];
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapTab(" . $jsParams . ");"; ?>
   <div id="wrap" style="width: 674px; height: 479px">

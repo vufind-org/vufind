@@ -6,7 +6,7 @@
       <br />
       <?=$this->transEsc('email_multiple_recipients_note')?>
       <? if ($this->maxRecipients > 1): ?>
-        <?=$this->transEsc('email_maximum_recipients_note', array('%%max%%' => $this->maxRecipients))?>
+        <?=$this->transEsc('email_maximum_recipients_note', ['%%max%%' => $this->maxRecipients])?>
       <? endif; ?>
     <? endif; ?>
   </div>

@@ -11,7 +11,7 @@
 
     <?=$this->flashmessages()?>
 
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
@@ -158,6 +158,6 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
-    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'storageRetrievalRequests'))?>
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'storageRetrievalRequests'])?>
   </div>
 </div>

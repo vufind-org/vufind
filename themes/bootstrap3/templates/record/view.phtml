@@ -70,7 +70,7 @@
           <? foreach ($this->tabs as $tab => $obj): ?>
             <? // add current tab to breadcrumbs if applicable:
               $desc = $obj->getDescription();
-              $tab_classes = array();
+              $tab_classes = [];
               if (0 === strcasecmp($this->activeTab, $tab)) {
                 if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
                   $tab_classes[] = 'active';

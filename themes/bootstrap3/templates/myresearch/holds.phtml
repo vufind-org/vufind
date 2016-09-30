@@ -12,7 +12,7 @@
 
     <?=$this->flashmessages()?>
 
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
@@ -145,7 +145,7 @@
             <? if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
               <div class="text-success"><?=$this->transEsc("hold_available") ?></div>
             <? elseif (isset($ilsDetails['in_transit']) && $ilsDetails['in_transit']): ?>
-              <div class="text-success"><?=$this->transEsc('request_in_transit') . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], array(), $ilsDetails['in_transit']) : '') ?></div>
+              <div class="text-success"><?=$this->transEsc('request_in_transit') . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], [], $ilsDetails['in_transit']) : '') ?></div>
             <? elseif (isset($ilsDetails['position'])): ?>
               <p><strong><?=$this->transEsc("hold_queue_position") ?>:</strong> <?=$this->escapeHtml($ilsDetails['position']) ?></p>
             <? endif; ?>
@@ -163,6 +163,6 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
-    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'holds'))?>
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'holds'])?>
   </div>
 </div>
