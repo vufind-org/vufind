@@ -798,8 +798,10 @@ class AjaxController extends \VuFind\Controller\AjaxController
         if (null === ($id = $this->params()->fromQuery('id'))) {
             return $this->output('Missing feed id', self::STATUS_ERROR, 400);
         }
-        $num = $this->params()->fromQuery('num', 0);
-
+        $element = urldecode($this->params()->fromQuery('element'));
+        if (!$element) {
+            $element = 0;
+        }
         $feedService = $this->getServiceLocator()->get('Finna\Feed');
         try {
             $feed
@@ -820,20 +822,28 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $modal = $feed['modal'];
         $contentPage = $feed['contentPage'] && !$modal;
 
-        $result = false;
-        if (isset($items[$num])) {
-            $result['item'] = $items[$num];
+        $result = ['channel' =>
+            ['title' => $channel->getTitle(), 'link' => $channel->getLink()]
+        ];
+        $numeric = is_numeric($element);
+        if ($numeric) {
+            $element = (int)$element;
+            if (isset($items[$element])) {
+                $result['item'] = $items[$element];
+            }
+        } else {
+            foreach ($items as $item) {
+                if ($item['id'] === $element) {
+                    $result['item'] = $item;
+                    break;
+                }
+            }
         }
 
         if ($contentPage && !empty($items)) {
-            $baseUrl = $this->url()->fromRoute('feed-content-page', ['page' => $id]);
-            $titles = [];
-            foreach ($items as $item) {
-                $titles[] = $item['title'];
-            }
             $result['navigation'] = $this->getViewRenderer()->partial(
                 'feedcontent/navigation',
-                ['baseUrl' => $baseUrl, 'items' => $titles, 'num' => $num]
+                ['items' => $items, 'element' => $element, 'numeric' => $numeric]
             );
         }
 

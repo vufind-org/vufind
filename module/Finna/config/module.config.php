@@ -61,10 +61,9 @@ $config = [
             'feed-content-page' => [
                 'type'    => 'Zend\Mvc\Router\Http\Segment',
                 'options' => [
-                    'route'    => '/FeedContent/[:page]/[:element]',
+                    'route'    => '/FeedContent[/:page][/:element]',
                     'constraints' => [
-                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'element'     => '[0-9]*'
+                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]*'
                     ],
                     'defaults' => [
                         'controller' => 'Feedcontentpage',

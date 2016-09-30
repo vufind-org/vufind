@@ -2,7 +2,7 @@
 finna.contentFeed = (function() {
     var loadFeed = function(container, modal) {
         var id = container.data('feed');
-        var num = container.data('num');
+        var element = container.data('element');
 
         var contentHolder = container.find('.holder');
         // Append spinner
@@ -10,7 +10,7 @@ finna.contentFeed = (function() {
         contentHolder.find('.fa-spin').fadeOut(0).delay(1000).fadeIn(100);
 
         var url = VuFind.path + '/AJAX/JSON';
-        var params = {method: 'getContentFeed', id: id, num: num};
+        var params = {method: 'getContentFeed', id: id, element: element};
 
         $.getJSON(url, params)
         .done(function(response) {
@@ -29,9 +29,12 @@ finna.contentFeed = (function() {
                         container.find('.date').css('display', 'inline-block');
                     }
                 } else {
-                    contentHolder.empty().append(
-                        $('<div/>').addClass('error').text(VuFind.translate('error_occurred'))
-                    );
+                    var err = $('<div/>').addClass('alert alert-danger');
+                    err.append($('<p/>').text(VuFind.translate('rss_article_not_found')));
+                    err.append($('<a/>')
+                       .attr('href', data.channel.link)
+                       .text(VuFind.translate('rss_article_channel_link').replace('%title%', data.channel.title)));
+                    contentHolder.empty().append(err);
                 }
 
                 if (!modal) {
