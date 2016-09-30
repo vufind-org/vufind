@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Db_Table
@@ -44,6 +44,8 @@ use Zend\Db\TableGateway\Feature;
  */
 class Search extends Gateway
 {
+    use ExpirationTrait;
+
     /**
      * Constructor
      */
@@ -267,5 +269,29 @@ class Search extends Gateway
         $row->session_id = $sessionId;
         $row->search_object = serialize(new minSO($newSearch));
         $row->save();
+    }
+
+    /**
+     * Update the select statement to find records to delete.
+     *
+     * @param Select $select  Select clause
+     * @param int    $daysOld Age in days of an "expired" record.
+     * @param int    $idFrom  Lowest id of rows to delete.
+     * @param int    $idTo    Highest id of rows to delete.
+     *
+     * @return void
+     */
+    protected function expirationCallback($select, $daysOld, $idFrom = null,
+        $idTo = null
+    ) {
+        $expireDate = date('Y-m-d H:i:s', time() - $daysOld * 24 * 60 * 60);
+        $where = $select->where->lessThan('created', $expireDate)
+            ->equalTo('saved', 0);
+        if (null !== $idFrom) {
+            $where->and->greaterThanOrEqualTo('id', $idFrom);
+        }
+        if (null !== $idTo) {
+            $where->and->lessThanOrEqualTo('id', $idTo);
+        }
     }
 }

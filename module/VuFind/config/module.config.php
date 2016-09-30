@@ -57,6 +57,36 @@ $config = [
                         'action'     => 'Home',
                     ]
                 ]
+            ],
+            'soap-shibboleth-logout-notification-handler' => [
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => [
+                    'route' => '/soap/shiblogout',
+                    'defaults' => [
+                        'controller' => 'ShibbolethLogoutNotification',
+                        'action' => 'index'
+                    ]
+                ],
+                'child_routes' => [
+                    'get' => [
+                        'type' => 'method',
+                        'options' => [
+                            'verb' => 'get',
+                            'defaults' => [
+                                'action' => 'get'
+                            ],
+                        ],
+                    ],
+                    'post' => [
+                        'type' => 'method',
+                        'options' => [
+                            'verb' => 'post',
+                            'defaults' => [
+                                'action' => 'post'
+                            ]
+                        ]
+                    ]
+                ]
             ]
         ],
     ],
@@ -98,6 +128,7 @@ $config = [
             'qrcode' => 'VuFind\Controller\QRCodeController',
             'records' => 'VuFind\Controller\RecordsController',
             'search' => 'VuFind\Controller\SearchController',
+            'shibbolethlogoutnotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
             'tag' => 'VuFind\Controller\TagController',
@@ -140,6 +171,7 @@ $config = [
             'VuFind\ContentExcerptsPluginManager' => 'VuFind\Service\Factory::getContentExcerptsPluginManager',
             'VuFind\ContentReviewsPluginManager' => 'VuFind\Service\Factory::getContentReviewsPluginManager',
             'VuFind\CookieManager' => 'VuFind\Service\Factory::getCookieManager',
+            'VuFind\Cover\Router' => 'VuFind\Service\Factory::getCoverRouter',
             'VuFind\DateConverter' => 'VuFind\Service\Factory::getDateConverter',
             'VuFind\DbAdapter' => 'VuFind\Service\Factory::getDbAdapter',
             'VuFind\DbAdapterFactory' => 'VuFind\Service\Factory::getDbAdapterFactory',
@@ -224,17 +256,18 @@ $config = [
         ],
         // PostgreSQL sequence mapping
         'pgsql_seq_mapping'  => [
-            'comments'       => ['id', 'comments_id_seq'],
-            'oai_resumption' => ['id', 'oai_resumption_id_seq'],
-            'record'         => ['id', 'record_id_seq'],
-            'resource'       => ['id', 'resource_id_seq'],
-            'resource_tags'  => ['id', 'resource_tags_id_seq'],
-            'search'         => ['id', 'search_id_seq'],
-            'session'        => ['id', 'session_id_seq'],
-            'tags'           => ['id', 'tags_id_seq'],
-            'user'           => ['id', 'user_id_seq'],
-            'user_list'      => ['id', 'user_list_id_seq'],
-            'user_resource'  => ['id', 'user_resource_id_seq'],
+            'comments'         => ['id', 'comments_id_seq'],
+            'external_session' => ['id', 'external_session_id_seq'],
+            'oai_resumption'   => ['id', 'oai_resumption_id_seq'],
+            'record'           => ['id', 'record_id_seq'],
+            'resource'         => ['id', 'resource_id_seq'],
+            'resource_tags'    => ['id', 'resource_tags_id_seq'],
+            'search'           => ['id', 'search_id_seq'],
+            'session'          => ['id', 'session_id_seq'],
+            'tags'             => ['id', 'tags_id_seq'],
+            'user'             => ['id', 'user_id_seq'],
+            'user_list'        => ['id', 'user_list_id_seq'],
+            'user_resource'    => ['id', 'user_resource_id_seq'],
         ],
         // This section contains service manager configurations for all VuFind
         // pluggable components:
@@ -246,13 +279,13 @@ $config = [
                     'facebook' => 'VuFind\Auth\Factory::getFacebook',
                     'ils' => 'VuFind\Auth\Factory::getILS',
                     'multiils' => 'VuFind\Auth\Factory::getMultiILS',
+                    'shibboleth' => 'VuFind\Auth\Factory::getShibboleth'
                 ],
                 'invokables' => [
                     'cas' => 'VuFind\Auth\CAS',
                     'database' => 'VuFind\Auth\Database',
                     'ldap' => 'VuFind\Auth\LDAP',
                     'multiauth' => 'VuFind\Auth\MultiAuth',
-                    'shibboleth' => 'VuFind\Auth\Shibboleth',
                     'sip2' => 'VuFind\Auth\SIP2',
                 ],
                 'aliases' => [
@@ -335,18 +368,19 @@ $config = [
                 'abstract_factories' => ['VuFind\Db\Table\PluginFactory'],
                 'factories' => [
                     'resource' => 'VuFind\Db\Table\Factory::getResource',
+                    'resourcetags' => 'VuFind\Db\Table\Factory::getResourceTags',
+                    'tags' => 'VuFind\Db\Table\Factory::getTags',
                     'user' => 'VuFind\Db\Table\Factory::getUser',
                     'userlist' => 'VuFind\Db\Table\Factory::getUserList',
                 ],
                 'invokables' => [
                     'changetracker' => 'VuFind\Db\Table\ChangeTracker',
                     'comments' => 'VuFind\Db\Table\Comments',
+                    'externalsession' => 'VuFind\Db\Table\ExternalSession',
                     'oairesumption' => 'VuFind\Db\Table\OaiResumption',
                     'record' => 'VuFind\Db\Table\Record',
-                    'resourcetags' => 'VuFind\Db\Table\ResourceTags',
                     'search' => 'VuFind\Db\Table\Search',
                     'session' => 'VuFind\Db\Table\Session',
-                    'tags' => 'VuFind\Db\Table\Tags',
                     'userresource' => 'VuFind\Db\Table\UserResource',
                     'userstats' => 'VuFind\Db\Table\UserStats',
                     'userstatsfields' => 'VuFind\Db\Table\UserStatsFields',
@@ -388,6 +422,7 @@ $config = [
                     'lbs4' => 'VuFind\ILS\Driver\Factory::getLBS4',
                     'multibackend' => 'VuFind\ILS\Driver\Factory::getMultiBackend',
                     'noils' => 'VuFind\ILS\Driver\Factory::getNoILS',
+                    'paia' => 'VuFind\ILS\Driver\Factory::getPAIA',
                     'kohailsdi' => 'VuFind\ILS\Driver\Factory::getKohaILSDI',
                     'unicorn' => 'VuFind\ILS\Driver\Factory::getUnicorn',
                     'voyager' => 'VuFind\ILS\Driver\Factory::getVoyager',
@@ -420,6 +455,8 @@ $config = [
                     'europeanaresults' => 'VuFind\Recommend\Factory::getEuropeanaResults',
                     'expandfacets' => 'VuFind\Recommend\Factory::getExpandFacets',
                     'favoritefacets' => 'VuFind\Recommend\Factory::getFavoriteFacets',
+                    'mapselection' => 'VuFind\Recommend\Factory::getMapSelection',
+                    'resultgooglemapajax' => 'VuFind\Recommend\Factory::getResultGoogleMapAjax',
                     'sidefacets' => 'VuFind\Recommend\Factory::getSideFacets',
                     'randomrecommend' => 'VuFind\Recommend\Factory::getRandomRecommend',
                     'summonbestbets' => 'VuFind\Recommend\Factory::getSummonBestBets',
@@ -434,6 +471,7 @@ $config = [
                 ],
                 'invokables' => [
                     'alphabrowselink' => 'VuFind\Recommend\AlphaBrowseLink',
+                    'doi' => 'VuFind\Recommend\DOI',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
                     'libraryh3lp' => 'VuFind\Recommend\Libraryh3lp',
@@ -441,7 +479,6 @@ $config = [
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
                     'removefilters' => 'VuFind\Recommend\RemoveFilters',
-                    'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
                     'spellingsuggestions' => 'VuFind\Recommend\SpellingSuggestions',
                     'summonbestbetsdeferred' => 'VuFind\Recommend\SummonBestBetsDeferred',
                     'summondatabasesdeferred' => 'VuFind\Recommend\SummonDatabasesDeferred',
@@ -608,6 +645,8 @@ $config = [
         // driver is not defined here, it will inherit configuration from a configured
         // parent class.  The defaultTab setting may be used to specify the default
         // active tab; if null, the value from the relevant .ini file will be used.
+        // You can also specify which tabs are loaded in the background when arriving
+        // at a record tabs view with backgroundLoadedTabs as a list of tab indexes.
         'recorddriver_tabs' => [
             'VuFind\RecordDriver\EDS' => [
                 'tabs' => [
@@ -652,6 +691,7 @@ $config = [
                     'Details' => 'StaffViewArray',
                 ],
                 'defaultTab' => null,
+                // 'backgroundLoadedTabs' => ['UserComments', 'Details']
             ],
             'VuFind\RecordDriver\SolrMarc' => [
                 'tabs' => [
@@ -706,6 +746,7 @@ $config = [
                 'ipRegEx' => 'VuFind\Role\PermissionProvider\Factory::getIpRegEx',
                 'serverParam' => 'VuFind\Role\PermissionProvider\Factory::getServerParam',
                 'shibboleth' => 'VuFind\Role\PermissionProvider\Factory::getShibboleth',
+                'user' => 'VuFind\Role\PermissionProvider\Factory::getUser',
                 'username' => 'VuFind\Role\PermissionProvider\Factory::getUsername',
             ],
             'invokables' => [
@@ -769,10 +810,10 @@ $staticRoutes = [
     'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable',
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',
-    'Search/Advanced', 'Search/Email', 'Search/History', 'Search/Home',
-    'Search/NewItem', 'Search/OpenSearch', 'Search/Reserves', 'Search/Results',
-    'Search/Suggest',
-    'Summon/Advanced', 'Summon/Home', 'Summon/Search',
+    'Search/Advanced', 'Search/Email', 'Search/FacetList', 'Search/History',
+    'Search/Home', 'Search/NewItem', 'Search/OpenSearch', 'Search/Reserves',
+    'Search/Results', 'Search/Suggest',
+    'Summon/Advanced', 'Summon/FacetList', 'Summon/Home', 'Summon/Search',
     'Tag/Home',
     'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixDuplicateTags',
     'Upgrade/FixConfig', 'Upgrade/FixDatabase', 'Upgrade/FixMetadata',

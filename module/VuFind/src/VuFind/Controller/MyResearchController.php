@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException,
+    VuFind\Exception\Forbidden as ForbiddenException,
     VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
@@ -295,7 +296,7 @@ class MyResearchController extends AbstractBase
         $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
         $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
         if (empty($row)) {
-            throw new \Exception('Access denied.');
+            throw new ForbiddenException('Access denied.');
         }
         $row->saved = $saved ? 1 : 0;
         $row->user_id = $userId;
@@ -312,7 +313,7 @@ class MyResearchController extends AbstractBase
         // Fail if saved searches are disabled.
         $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
         if ($check->getSavedSearchSetting() === 'disabled') {
-            throw new \Exception('Saved searches disabled.');
+            throw new ForbiddenException('Saved searches disabled.');
         }
 
         $user = $this->getUser();
@@ -643,7 +644,7 @@ class MyResearchController extends AbstractBase
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            throw new \Exception('Lists disabled');
+            throw new ForbiddenException('Lists disabled');
         }
 
         // Check for "delete item" request; parameter may be in GET or POST depending
@@ -775,7 +776,7 @@ class MyResearchController extends AbstractBase
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            throw new \Exception('Lists disabled');
+            throw new ForbiddenException('Lists disabled');
         }
 
         // User must be logged in to edit list:
@@ -816,7 +817,7 @@ class MyResearchController extends AbstractBase
     {
         // Fail if lists are disabled:
         if (!$this->listsEnabled()) {
-            throw new \Exception('Lists disabled');
+            throw new ForbiddenException('Lists disabled');
         }
 
         // Get requested list ID:

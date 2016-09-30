@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -57,6 +57,24 @@ abstract class AbstractBase implements SaveHandlerInterface,
      * @var \Zend\Config\Config
      */
     protected $config = null;
+
+    /**
+     * Whether writes are disabled, i.e. any changes to the session are not written
+     * to the storage
+     *
+     * @var bool
+     */
+    protected $writesDisabled = false;
+
+    /**
+     * Disable session writing, i.e. make it read-only
+     *
+     * @return void
+     */
+    public function disableWrites()
+    {
+        $this->writesDisabled = true;
+    }
 
     /**
      * Set configuration.
@@ -115,8 +133,10 @@ abstract class AbstractBase implements SaveHandlerInterface,
      */
     public function destroy($sess_id)
     {
-        $table = $this->getTable('Search');
-        $table->destroySession($sess_id);
+        $searchTable = $this->getTable('Search');
+        $searchTable->destroySession($sess_id);
+        $sessionTable = $this->getTable('ExternalSession');
+        $sessionTable->destroySession($sess_id);
         return true;
     }
 
@@ -145,4 +165,30 @@ abstract class AbstractBase implements SaveHandlerInterface,
         // Something to keep in mind though.
         return true;
     }
+
+    /**
+     * Write function that is called when session data is to be saved.
+     *
+     * @param string $sess_id The current session ID
+     * @param string $data    The session data to write
+     *
+     * @return bool
+     */
+    public function write($sess_id, $data)
+    {
+        if ($this->writesDisabled) {
+            return true;
+        }
+        return $this->saveSession($sess_id, $data);
+    }
+
+    /**
+     * A function that is called internally when session data is to be saved.
+     *
+     * @param string $sess_id The current session ID
+     * @param string $data    The session data to write
+     *
+     * @return bool
+     */
+    abstract protected function saveSession($sess_id, $data);
 }

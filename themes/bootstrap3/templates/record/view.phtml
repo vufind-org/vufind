@@ -21,10 +21,18 @@
 <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
   <ul class="pager hidden-print">
     <? if ($this->scrollData['previousRecord']): ?>
+      <? if ($this->scrollData['firstRecord']): ?>
+        <li>
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['firstRecord'])?>" title="<?=$this->transEsc('First Search Result')?>" rel="nofollow">&laquo; <?=$this->transEsc('First')?></a>
+        </li>
+      <? endif; ?>
       <li>
         <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>" rel="nofollow">&laquo; <?=$this->transEsc('Prev')?></a>
       </li>
     <? else: ?>
+      <? if ($this->scrollData['firstRecord']): ?>
+        <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('First')?></a></li>
+      <? endif; ?>
       <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
     <? endif; ?>
     #<?=$this->localizedNumber($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->localizedNumber($this->scrollData['resultTotal']) . ' ' . $this->transEsc('results') ?>
@@ -32,22 +40,28 @@
       <li>
         <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>" rel="nofollow"><?=$this->transEsc('Next')?> &raquo;</a>
       </li>
-    <? else: ?>
+      <? if ($this->scrollData['lastRecord']): ?>
+        <li>
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" title="<?=$this->transEsc('Last Search Result')?>" rel="nofollow"><?=$this->transEsc('Last')?> &raquo;</a>
+        </li>
+      <? endif; ?>
+     <? else: ?>
       <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
+      <? if ($this->scrollData['lastRecord']): ?>
+        <li class="disabled"><a href="#"><?=$this->transEsc('Last')?> &raquo;</a></li>
+      <? endif; ?>
     <? endif; ?>
   </ul>
 <? endif; ?>
 
 <?=$this->record($this->driver)->getToolbar()?>
 
-<div class="row">
+<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> row">
   <div class="<?=$this->layoutClass('mainbody')?>">
-    <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
-      <?=$this->flashmessages()?>
-      <?=$this->record($this->driver)->getCoreMetadata()?>
-    </div>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
+    <?=$this->flashmessages()?>
+    <?=$this->record($this->driver)->getCoreMetadata()?>
 
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
@@ -56,7 +70,7 @@
           <? foreach ($this->tabs as $tab => $obj): ?>
             <? // add current tab to breadcrumbs if applicable:
               $desc = $obj->getDescription();
-              $tab_classes = array();
+              $tab_classes = [];
               if (0 === strcasecmp($this->activeTab, $tab)) {
                 if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
                   $tab_classes[] = 'active';
@@ -69,7 +83,7 @@
               if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
             ?>
             <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-              <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+              <a class="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<? endif ?>><?=$this->transEsc($desc)?></a>
             </li>
           <? endforeach; ?>
         </ul>

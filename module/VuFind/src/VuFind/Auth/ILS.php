@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Authentication
@@ -140,7 +140,7 @@ class ILS extends AbstractBase
         try {
             return false !== $this->getCatalog()->checkFunction(
                 'changePassword',
-                ['patron' => $this->getLoggedInPatron()]
+                ['patron' => $this->authenticator->getStoredCatalogCredentials()]
             );
         } catch (ILSException $e) {
             return false;
@@ -155,7 +155,13 @@ class ILS extends AbstractBase
     public function getPasswordPolicy()
     {
         $policy = $this->getCatalog()->getPasswordPolicy($this->getLoggedInPatron());
-        return $policy !== false ? $policy : parent::getPasswordPolicy();
+        if ($policy === false) {
+            return parent::getPasswordPolicy();
+        }
+        if (isset($policy['pattern']) && empty($policy['hint'])) {
+            $policy['hint'] = $this->getCannedPasswordPolicyHint($policy['pattern']);
+        }
+        return $policy;
     }
 
     /**
@@ -267,7 +273,7 @@ class ILS extends AbstractBase
      *
      * @throws AuthException
      *
-     * @return array Patron
+     * @return array|null Patron or null if no credentials exist
      */
     protected function getLoggedInPatron()
     {

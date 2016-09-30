@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search
@@ -66,7 +66,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @see self::query()
      *
-     * @var integer
+     * @var int
      */
     const MAX_GET_URL_LENGTH = 2048;
 
@@ -185,23 +185,20 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     /**
      * Return records similar to a given record specified by id.
      *
-     * Uses MoreLikeThis Request Handler
+     * Uses MoreLikeThis Request Component or MoreLikeThis Handler
      *
-     * @param string   $id     Id of given record
+     * @param string   $id     ID of given record (not currently used, but
+     * retained for backward compatibility / extensibility).
      * @param ParamBag $params Parameters
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function similar($id, ParamBag $params = null)
+    public function similar($id, ParamBag $params)
     {
-        $params = $params ?: new ParamBag();
-        $params
-            ->set('q', sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"')));
-        $params->set('qt', 'morelikethis');
-
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-
         return $this->query($handler, $params);
     }
 

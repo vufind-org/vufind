@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Tests
@@ -65,6 +65,21 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Get a reference to a standard search results page.
+     *
+     * @param string $id Record ID to load.
+     *
+     * @return Element
+     */
+    protected function getRecordPage($id)
+    {
+        $session = $this->getMinkSession();
+        $path = '/Record/' . urlencode($id);
+        $session->visit($this->getVuFindUrl() . $path);
+        return $session->getPage();
+    }
+
+    /**
      * Click the "add to cart" button with nothing selected; fail if this does
      * not display an appropriate message.
      *
@@ -84,6 +99,34 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
                 $this->assertEquals(
                     'No items were selected. '
                     . 'Please click on a checkbox next to an item and try again.',
+                    $content->getText()
+                );
+                return;
+            }
+        }
+        $this->fail('Too many retries on check for error message.');
+    }
+
+    /**
+     * Click the "add to cart" button with duplicate IDs selected; fail if this does
+     * not display an appropriate message.
+     *
+     * @param Element $page       Page element
+     * @param Element $updateCart Add to cart button
+     *
+     * @return void
+     */
+    protected function tryAddingDuplicatesToCart(Element $page, Element $updateCart)
+    {
+        // This test is a bit timing-sensitive, so introduce a retry loop before
+        // completely failing.
+        for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
+            $updateCart->click();
+            $content = $page->find('css', '.popover-content');
+            if (is_object($content)) {
+                $this->assertEquals(
+                    '0 item(s) added to your Book Bag 2 item(s) are either '
+                    . 'already in your Book Bag or could not be added',
                     $content->getText()
                 );
                 return;
@@ -128,23 +171,16 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return Element
      */
-    protected function setUpGenericCartTest()
+    protected function setUpGenericCartTest($extraConfigs = [])
     {
         // Activate the cart:
-        $this->changeConfigs(
-            ['config' =>
-                [
-                    'Site' => ['showBookBag' => true, 'theme' => 'bootprint3'],
-                    'Mail' => ['testOnly' => 1],
-                ],
-            ]
-        );
+        $extraConfigs['config']['Site'] = ['showBookBag' => true];
+        $this->changeConfigs($extraConfigs);
 
         $page = $this->getSearchResultsPage();
 
         // Click "add" without selecting anything.
         $updateCart = $this->findCss($page, '#updateCart');
-        $this->tryAddingNothingToCart($page, $updateCart);
 
         // Now actually select something:
         $this->addCurrentPageToCart($page, $updateCart);
@@ -152,6 +188,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // Open the cart and empty it:
         $this->openCartLightbox($page);
+        $this->snooze();
 
         return $page;
     }
@@ -215,7 +252,122 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     {
         $cartSelectAll = $page->find('css', '.modal-dialog .checkbox-select-all');
         $cartSelectAll->check();
+        $this->snooze();
     }
+
+    /**
+     * Test that adding nothing to the cart triggers an appropriate message.
+     *
+     * @return void
+     */
+    public function testAddingNothing()
+    {
+        // Activate the cart:
+        $this->changeConfigs(['config' => ['Site' => ['showBookBag' => true]]]);
+
+        $page = $this->getSearchResultsPage();
+
+        // Click "add" without selecting anything.
+        $updateCart = $this->findCss($page, '#updateCart');
+        $this->tryAddingNothingToCart($page, $updateCart);
+    }
+
+    /**
+     * Test that adding the same records to the cart multiple times triggers an
+     * appropriate message.
+     *
+     * @return void
+     */
+    public function testAddingDuplicates()
+    {
+         // Activate the cart:
+        $this->changeConfigs(['config' => ['Site' => ['showBookBag' => true]]]);
+
+        $page = $this->getSearchResultsPage();
+
+        // Now select the same things twice:
+        $updateCart = $this->findCss($page, '#updateCart');
+        $this->addCurrentPageToCart($page, $updateCart);
+        $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
+        $this->tryAddingDuplicatesToCart($page, $updateCart);
+        $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
+   }
+
+    /**
+     * Test that the cart limit is enforced from search results.
+     *
+     * @return void
+     */
+    public function testOverfillingCart()
+    {
+         // Activate the cart:
+        $this->changeConfigs(
+            ['config' => ['Site' => ['showBookBag' => true, 'bookBagMaxSize' => 1]]]
+        );
+
+        $page = $this->getSearchResultsPage();
+
+        // Now select the same things twice:
+        $updateCart = $this->findCss($page, '#updateCart');
+        $this->addCurrentPageToCart($page, $updateCart);
+        $this->assertEquals('1', $this->findCss($page, '#cartItems strong')->getText());
+   }
+
+    /**
+     * Test that the cart limit is enforced from record pages.
+     *
+     * @return void
+     */
+    public function testOverfillingCartFromRecordPage()
+    {
+         // Activate the cart:
+        $this->changeConfigs(
+            ['config' => ['Site' => ['showBookBag' => true, 'bookBagMaxSize' => 1]]]
+        );
+
+        $page = $this->getRecordPage('testsample1');
+
+        // Test that we can toggle the cart item back and forth:
+        $cartItems = $this->findCss($page, '#cartItems');
+        $add = $this->findCss($page, '.cart-add');
+        $remove = $this->findCss($page, '.cart-remove');
+        $add->click();
+        $this->assertEquals('1 items (Full)', $cartItems->getText());
+        $remove->click();
+        $this->assertEquals('0 items', $cartItems->getText());
+        $add->click();
+        $this->assertEquals('1 items (Full)', $cartItems->getText());
+
+        // Now move to another page and try to add a second item -- it should
+        // not be added due to cart limit:
+        $page = $this->getRecordPage('testsample2');
+        $cartItems = $this->findCss($page, '#cartItems');
+        $add = $this->findCss($page, '.cart-add');
+        $add->click();
+        $this->assertEquals('1 items (Full)', $cartItems->getText());
+   }
+
+    /**
+     * Test that the record "add to cart" button functions.
+     *
+     * @return void
+     */
+    public function testAddingMultipleRecordsFromRecordPage()
+    {
+         // Activate the cart:
+        $this->changeConfigs(
+            ['config' => ['Site' => ['showBookBag' => true]]]
+        );
+
+        // Test that we can add multiple records:
+        for ($x = 1; $x <= 3; $x++) {
+            $page = $this->getRecordPage('testsample' . $x);
+            $this->findCss($page, '.cart-add')->click();
+            $this->assertEquals(
+                $x . ' items', $this->findCss($page, '#cartItems')->getText()
+            );
+        }
+   }
 
     /**
      * Test that we can put items in the cart and then remove them with the
@@ -282,7 +434,9 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testCartEmail()
     {
-        $page = $this->setUpGenericCartTest();
+        $page = $this->setUpGenericCartTest(
+            ['config' => ['Mail' => ['testOnly' => 1]]]
+        );
         $button = $this->findCss($page, '.cart-controls button[name=email]');
 
         // First try clicking without selecting anything:
@@ -383,8 +537,51 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
+        $this->snooze();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
+    }
+
+    /**
+     * Test that the export control works when redirecting to a third-party site.
+     *
+     * @return void
+     */
+    public function testCartExportToThirdParty()
+    {
+        $page = $this->setUpGenericCartTest(
+            [
+                'config' => [
+                    'Export' => [
+                        'Google' => 'record,bulk',
+                    ],
+                ],
+                'export' => [
+                    'Google' => [
+                        'requiredMethods[]' => 'getTitle',
+                        'redirectUrl' => 'https://www.google.com',
+                        'headers[]' => 'Content-type: text/plain; charset=utf-8',
+                    ],
+                ],
+            ]
+        );
+        $button = $this->findCss($page, '.cart-controls button[name=export]');
+
+        // Go to export option list:
+        $this->selectAllItemsInCart($page);
+        $button->click();
+
+        // Select EndNote option
+        $select = $this->findCss($page, '#format');
+        $select->selectOption('Google');
+
+        // Do the export:
+        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit->click();
+        $this->snooze();
+        $this->assertEquals(
+            'https://www.google.com/', $this->getMinkSession()->getCurrentUrl()
+        );
     }
 
     /**

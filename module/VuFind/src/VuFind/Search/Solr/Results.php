@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Search_Solr
@@ -294,11 +294,13 @@ class Results extends \VuFind\Search\Base\Results
      * may be useful for very large amounts of facets that can break the JSON parse
      * method because of PHP out of memory exceptions (default = -1, no limit).
      * @param string $facetSort    A facet sort value to use (null to retain current)
+     * @param int    $page         1 based. Offsets results by limit.
+     * @param bool   $ored         Whether or not facet is an OR facet or not
      *
-     * @return array an array with the facet values for each index field
+     * @return array list facet values for each index field with label and more bool
      */
-    public function getFullFieldFacets($facetfields, $removeFilter = true,
-        $limit = -1, $facetSort = null
+    public function getPartialFieldFacets($facetfields, $removeFilter = true,
+        $limit = -1, $facetSort = null, $page = null, $ored = false
     ) {
         $clone = clone($this);
         $params = $clone->getParams();
@@ -306,11 +308,17 @@ class Results extends \VuFind\Search\Base\Results
         // Manipulate facet settings temporarily:
         $params->resetFacetConfig();
         $params->setFacetLimit($limit);
+        if (null !== $page && $limit != -1) {
+            $offset = ($page - 1) * $limit;
+            $params->setFacetOffset($offset);
+            // Return limit plus one so we know there's another page
+            $params->setFacetLimit($limit + 1);
+        }
         if (null !== $facetSort) {
             $params->setFacetSort($facetSort);
         }
         foreach ($facetfields as $facetName) {
-            $params->addFacet($facetName);
+            $params->addFacet($facetName, null, $ored);
 
             // Clear existing filters for the selected field if necessary:
             if ($removeFilter) {
@@ -335,8 +343,15 @@ class Results extends \VuFind\Search\Base\Results
 
         // Reformat into a hash:
         foreach ($result as $key => $value) {
-            unset($result[$key]);
-            $result[$key]['data'] = $value;
+            // Detect next page and crop results if necessary
+            $more = false;
+            if (isset($page) && count($value['list']) > 0
+                && count($value['list']) == $limit + 1
+            ) {
+                $more = true;
+                array_pop($value['list']);
+            }
+            $result[$key] = ['more' => $more, 'data' => $value];
         }
 
         // Send back data:

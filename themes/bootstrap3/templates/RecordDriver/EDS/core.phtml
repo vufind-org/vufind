@@ -9,7 +9,7 @@
     $restrictedView = empty($accessLevel) ? false : true;
 ?>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-  <div class="col-sm-3">
+  <div class="col-sm-3 img-col">
     <? if ($thumb): ?>
         <img src="<?=$this->escapeHtmlAttr($thumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
     <? else: ?>
@@ -47,7 +47,7 @@
       <? endif; ?>
     </div>
   </div>
-  <div class="col-sm-9">
+  <div class="col-sm-9 info-col">
     <h3 property="name"><?=$this->driver->getTitle()?></h3>
 
     <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">

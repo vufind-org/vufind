@@ -15,7 +15,7 @@
   <? if (!empty($this->containingLists)): ?>
     <p><?=$this->transEsc('This item is already part of the following list/lists') ?>:
     <? foreach ($this->containingLists as $i=>$list): ?>
-      <a href="<?=$this->url('userList', array('id' => $list['id'])) ?>"><?=$this->escapeHtml($list['title'])?></a><? if($i<count($this->containingLists)-1): ?>, <? endif; ?>
+      <a href="<?=$this->url('userList', ['id' => $list['id']]) ?>" data-lightbox-ignore><?=$this->escapeHtml($list['title'])?></a><? if($i<count($this->containingLists)-1): ?>, <? endif; ?>
     <? endforeach; ?>
     </p><hr/>
   <? endif; ?>
@@ -40,7 +40,7 @@
       <? endif; ?>
       </select>
     <? endif; ?>
-      <a class="btn btn-link" id="make-list" href="<?=$this->url('editList', array('id' => 'NEW'))?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordSource=<?=urlencode($this->driver->getSourceIdentifier())?>"><?=$showLists ? $this->transEsc('or create a new list') : $this->transEsc('Create a List'); ?></a>
+      <a class="btn btn-link" id="make-list" href="<?=$this->url('editList', ['id' => 'NEW'])?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordSource=<?=urlencode($this->driver->getSourceIdentifier())?>"><?=$showLists ? $this->transEsc('or create a new list') : $this->transEsc('Create a List'); ?></a>
     </div>
   </div>
 

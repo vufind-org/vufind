@@ -1,8 +1,9 @@
 @import "vendor/bootstrap/bootstrap";
 @import "vendor/font-awesome/font-awesome";
-@fa-font-path: "../../../fonts";
 @import "vendor/bootstrap-accessibility/bootstrap-accessibility";
 @import "vendor/a11y";
+
+@fa-font-path: "../../../../../../themes/bootstrap3/css/fonts";
 
 @import "components/advanced-search";
 @import "components/alphabrowse";
@@ -23,6 +24,7 @@
   &:focus,
   &:hover {color: #000;}
 }
+header .dropdown form { display: none; }
 .list-unstyled {margin: 0;}
 .highlight,mark {
   background: lighten(#FF0, 20%);

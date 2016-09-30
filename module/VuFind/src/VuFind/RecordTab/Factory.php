@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -177,8 +177,18 @@ class Factory
     public static function getMap(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $enabled = isset($config->Content->recordMap);
-        return new Map($enabled);
+        $mapType = isset($config->Content->recordMap)
+            ? $config->Content->recordMap : null;
+        $options = [];
+        $optionFields = [
+            'displayCoords', 'mapLabels', 'googleMapApiKey'
+        ];
+        foreach ($optionFields as $field) {
+            if (isset($config->Content->$field)) {
+                $options[$field] = $config->Content->$field;
+            }
+        }
+        return new Map($mapType, $options);
     }
 
     /**
@@ -252,6 +262,13 @@ class Factory
     public static function getUserComments(ServiceManager $sm)
     {
         $capabilities = $sm->getServiceLocator()->get('VuFind\AccountCapabilities');
-        return new UserComments('enabled' === $capabilities->getCommentSetting());
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $useRecaptcha = isset($config->Captcha) && isset($config->Captcha->forms)
+            && (trim($config->Captcha->forms) === '*'
+            || strpos($config->Captcha->forms, 'userComments'));
+        return new UserComments(
+            'enabled' === $capabilities->getCommentSetting(),
+            $useRecaptcha
+        );
     }
 }

@@ -22,7 +22,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -586,14 +586,7 @@ class Demo extends AbstractBase
      */
     public function getStatuses($ids)
     {
-        // Random Seed
-        srand(time());
-
-        $status = [];
-        foreach ($ids as $id) {
-            $status[] = $this->getStatus($id);
-        }
-        return $status;
+        return array_map([$this, 'getStatus'], $ids);
     }
 
     /**
@@ -1055,8 +1048,8 @@ class Demo extends AbstractBase
     /**
      * Get request groups
      *
-     * @param integer $bibId  BIB ID
-     * @param array   $patron Patron information returned by the patronLogin
+     * @param int   $bibId  BIB ID
+     * @param array $patron Patron information returned by the patronLogin
      * method.
      *
      * @return array  False if request groups not in use or an array of
@@ -1949,10 +1942,9 @@ class Demo extends AbstractBase
             ];
         }
         if ($function == 'changePassword') {
-            return [
-                'minLength' => 4,
-                'maxLength' => 20
-            ];
+            return isset($this->config['changePassword'])
+                ? $this->config['changePassword']
+                : ['minLength' => 4, 'maxLength' => 20];
         }
         return [];
     }

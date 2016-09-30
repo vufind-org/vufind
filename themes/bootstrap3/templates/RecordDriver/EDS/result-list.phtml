@@ -11,7 +11,7 @@
   <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtml($coverDetails['size'])?>">
     <? if ($coverDetails['cover']): ?>
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
-      <img src="<?=$this->escapeHtmlAttr($coverDetails['cover'])?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <img src="<?=$this->escapeHtmlAttr($coverDetails['cover'])?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
       </a>
     <? else: ?>
       <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
@@ -23,11 +23,11 @@
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
 <div class="media<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
-  <? if ($thumbnailAlignment == 'left'): ?>
+  <? if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
   <? endif; ?>
   <div class="media-body">
-    <div class="row">
+    <div class="row short-view">
       <div class="col-sm-8 middle">
         <? $items = $this->driver->getItems();
           if (isset($items) && !empty($items)):
@@ -35,7 +35,7 @@
               if (!empty($item)): ?>
                 <div class="resultItemLine1">
                   <? if('Ti' == $item['Group']): ?>
-                    <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title _record_link" >
+                    <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull _record_link"  data-view="<?=$this->params->getOptions()->getListViewOption()?>">
                     <?=$item['Data']?> </a>
                   <? else:?>
                     <p>
@@ -131,7 +131,7 @@
       </div>
     </div>
   </div>
-  <? if ($thumbnailAlignment == 'right'): ?>
+  <? if ($thumbnail && $thumbnailAlignment == 'right'): ?>
     <?=$thumbnail ?>
   <? endif; ?>
 </div>

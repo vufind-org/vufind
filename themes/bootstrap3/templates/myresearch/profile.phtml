@@ -17,16 +17,16 @@
     <h2><?=$this->transEsc('Your Profile')?></h2>
     <?=$this->flashmessages();?>
 
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
 
     <table class="table table-striped">
       <?
         echo $this->renderArray(
           $arrTemplate, $this->profile,
-          array(
+          [
             $this->transEsc('First Name') => 'firstname',
             $this->transEsc('Last Name') => 'lastname'
-          )
+          ]
         );
        ?>
       <? if ($showHomeLibForm): ?>
@@ -39,7 +39,7 @@
           <form id="profile_form" class="form-inline" method="post">
             <select id="home_library" name="home_library" class="form-control">
               <? foreach ($this->pickup as $lib): ?>
-                <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
+                <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?></option>
               <? endforeach; ?>
             </select>
             <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Save')?>" />
@@ -49,7 +49,7 @@
       <?
         echo $this->renderArray(
           $arrTemplate, $this->profile,
-          array(
+          [
             $this->transEsc('Address') . ' 1' => 'address1',
             $this->transEsc('Address') . ' 2' => 'address2',
             $this->transEsc('Zip') => 'zip',
@@ -57,13 +57,13 @@
             $this->transEsc('Country') => 'country',
             $this->transEsc('Phone Number') => 'phone',
             $this->transEsc('Group') => 'group'
-          )
+          ]
         );
       ?>
     </table>
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
-    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'profile'))?>
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile'])?>
   </div>
 </div>
