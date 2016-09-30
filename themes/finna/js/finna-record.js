@@ -98,18 +98,32 @@ finna.record = (function() {
         });
     };
 
+    var setupHoldingsTab = function() {
+        initHoldingsControls();
+        setUpCheckRequest();
+        finna.layout.initLocationService();
+        finna.layout.initJumpMenus($('.holdings-tab'));
+        VuFind.lightbox.bind($('.holdings-tab'));
+    };
+    
+    var initRecordNaviHashUpdate = function() {
+        $(window).on('hashchange', function() {
+            $('.record-view-header .pager a').each(function(i, a) {
+                a.hash = window.location.hash;
+            }); 
+        });
+        $(window).on('hashchange');
+    }
+    
+    var init = function() {
+        initDescription();
+        initRecordNaviHashUpdate();
+    };
+
     var my = {
         checkRequestsAreValid: checkRequestsAreValid,
-        init: function() {
-            initDescription();
-        },
-        setupHoldingsTab: function() {
-            initHoldingsControls();
-            setUpCheckRequest();
-            finna.layout.initLocationService();
-            finna.layout.initJumpMenus($('.holdings-tab'));
-            VuFind.lightbox.bind($('.holdings-tab'));
-        }
+        init: init,
+        setupHoldingsTab: setupHoldingsTab
     };
 
     return my;
