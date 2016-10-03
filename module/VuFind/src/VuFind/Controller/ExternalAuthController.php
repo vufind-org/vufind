@@ -89,7 +89,8 @@ class ExternalAuthController extends AbstractBase
      * @return string EZproxy URL
      *
      * @throws \Exception
-     * @see https://www.oclc.org/support/services/ezproxy/documentation/usr/ticket/php.en.html
+     * @see    https://www.oclc.org/support/services/ezproxy/documentation/usr
+     * /ticket/php.en.html
      */
     protected function createEzproxyTicketUrl($user, $url)
     {
