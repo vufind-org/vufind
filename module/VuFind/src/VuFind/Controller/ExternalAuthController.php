@@ -40,6 +40,11 @@ namespace VuFind\Controller;
  */
 class ExternalAuthController extends AbstractBase
 {
+    /**
+     * Permission from permissions.ini required for EZProxy authorization.
+     *
+     * @var string
+     */
     protected $ezproxyRequiredPermission = 'ezproxy.authorized';
 
     /**
