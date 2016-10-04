@@ -337,10 +337,8 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
         if ($url === 'browse-journal') {
             return $this->getViewHelper('browse')->isAvailable('Journal');
         }
-        if ($url == 'content-page' && isset($action['routeParams']['page'])) {
-            if ($action['routeParams']['page'] == 'organisation') {
-                return $this->getViewHelper('organisationInfo')->isAvailable();
-            }
+        if ($url === 'organisationinfo-home') {
+            return $this->getViewHelper('organisationInfo')->isAvailable();
         }
         return true;
     }
