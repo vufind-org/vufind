@@ -74,39 +74,82 @@ class SearchSpecsReader
     {
         // Load data if it is not already in the object's cache:
         if (!isset($this->searchSpecs[$filename])) {
-            // Connect to searchspecs cache:
-            $cache = (null !== $this->cacheManager)
-                ? $this->cacheManager->getCache('searchspecs') : false;
-
-            // Determine full configuration file path:
-            $fullpath = Locator::getBaseConfigPath($filename);
-            $local = Locator::getLocalConfigPath($filename);
-
-            // Generate cache key:
-            $cacheKey = $filename . '-'
-                . (file_exists($fullpath) ? filemtime($fullpath) : 0);
-            if (!empty($local)) {
-                $cacheKey .= '-local-' . filemtime($local);
-            }
-            $cacheKey = md5($cacheKey);
-
-            // Generate data if not found in cache:
-            if ($cache === false || !($results = $cache->getItem($cacheKey))) {
-                $results = file_exists($fullpath)
-                    ? Yaml::parse(file_get_contents($fullpath)) : [];
-                if (!empty($local)) {
-                    $localResults = Yaml::parse(file_get_contents($local));
-                    foreach ($localResults as $key => $value) {
-                        $results[$key] = $value;
-                    }
-                }
-                if ($cache !== false) {
-                    $cache->setItem($cacheKey, $results);
-                }
-            }
-            $this->searchSpecs[$filename] = $results;
+            $this->searchSpecs[$filename] = $this->getFromPaths(
+                Locator::getBaseConfigPath($filename),
+                Locator::getLocalConfigPath($filename)
+            );
         }
 
         return $this->searchSpecs[$filename];
+    }
+
+    /**
+     * Given core and local filenames, retrieve the searchspecs data.
+     *
+     * @param string $defaultFile Full path to file containing default YAML
+     * @param string $customFile  Full path to file containing local customizations
+     * (may be null if no local file exists).
+     *
+     * @return array
+     */
+    protected function getFromPaths($defaultFile, $customFile = null)
+    {
+        // Connect to searchspecs cache:
+        $cache = (null !== $this->cacheManager)
+            ? $this->cacheManager->getCache('searchspecs') : false;
+
+        // Generate cache key:
+        $cacheKey = basename($defaultFile) . '-'
+            . (file_exists($defaultFile) ? filemtime($defaultFile) : 0);
+        if (!empty($customFile)) {
+            $cacheKey .= '-local-' . filemtime($customFile);
+        }
+        $cacheKey = md5($cacheKey);
+
+        // Generate data if not found in cache:
+        if ($cache === false || !($results = $cache->getItem($cacheKey))) {
+            $results = $this->parseYaml($customFile, $defaultFile);
+            if ($cache !== false) {
+                $cache->setItem($cacheKey, $results);
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Process a YAML file (and its parent, if necessary).
+     *
+     * @param string $file          YAML file to load (will evaluate to empty array
+     * if file does not exist).
+     * @param string $defaultParent Parent YAML file from which $file should
+     * inherit (unless overridden by a specific directive in $file). None by
+     * default.
+     *
+     * @return array
+     */
+    protected function parseYaml($file, $defaultParent = null)
+    {
+        // First load current file:
+        $results = (!empty($file) && file_exists($file))
+            ? Yaml::parse(file_get_contents($file)) : [];
+
+        // Override default parent with explicitly-defined parent, if present:
+        if (isset($results['@parent_yaml'])) {
+            $defaultParent = $results['@parent_yaml'];
+            // Swallow the directive after processing it:
+            unset($results['@parent_yaml']);
+        }
+
+        // Now load in missing sections from parent, if applicable:
+        if (null !== $defaultParent) {
+            foreach ($this->parseYaml($defaultParent) as $section => $contents) {
+                if (!isset($results[$section])) {
+                    $results[$section] = $contents;
+                }
+            }
+        }
+
+        return $results;
     }
 }

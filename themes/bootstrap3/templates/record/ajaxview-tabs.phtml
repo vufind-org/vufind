@@ -33,7 +33,7 @@
   <? foreach ($this->tabs as $tab => $obj): ?>
     <? // add current tab to breadcrumbs if applicable:
       $desc = $obj->getDescription();
-      $tab_classes = array();
+      $tab_classes = [];
       if ($this->defaultTab === strtolower($tab)) {
         if (!$this->ajaxTabs || !$obj->supportsAjax()) {
           $tab_classes[] = 'active';
@@ -43,7 +43,7 @@
       if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
     ?>
     <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-      <a id="<?=strtolower($tab)?>_<?=$idSuffix?>" class="list-tab-toggle" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-content"><?=$this->transEsc($desc)?></a>
+      <a id="<?=strtolower($tab)?>_<?=$idSuffix?>" class="list-tab-toggle" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffix?>-content"<? if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<? endif ?>><?=$this->transEsc($desc)?></a>
     </li>
   <? endforeach; ?>
 </ul>

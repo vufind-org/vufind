@@ -69,12 +69,12 @@
     </a>
     <? $lists = $user->getLists() ?>
     <? foreach ($lists as $list): ?>
-        <a href="<?=$this->url('userList', array('id' => $list['id']))?>" class="list-group-item<?=$this->active == 'list' . $list['id'] ? ' active' : ''?>">
+        <a href="<?=$this->url('userList', ['id' => $list['id']])?>" class="list-group-item<?=$this->active == 'list' . $list['id'] ? ' active' : ''?>">
           <?=$this->escapeHtml($list['title'])?>
           <span class="badge"><?=$list->cnt?></span>
         </a>
     <? endforeach; ?>
-    <a href="<?=$this->url('editList', array('id'=>'NEW'))?>" class="list-group-item">
+    <a href="<?=$this->url('editList', ['id'=>'NEW'])?>" class="list-group-item">
       <i class="fa fa-fw fa-plus" aria-hidden="true"></i> <?=$this->transEsc('Create a List') ?>
     </a>
   </div>

@@ -126,7 +126,7 @@ class BackendManager implements SharedListenerAggregateInterface
      *
      * @param string $name Backend name
      *
-     * @return boolean
+     * @return bool
      */
     public function has($name)
     {

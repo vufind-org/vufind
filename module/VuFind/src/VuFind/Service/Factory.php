@@ -544,7 +544,7 @@ class Factory
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $recaptcha = new \LosReCaptcha\Service\ReCaptcha(
+        $recaptcha = new \VuFind\Service\ReCaptcha(
             $siteKey, $secretKey, ['ssl' => true]
         );
         if (isset($config->Captcha->theme)) {

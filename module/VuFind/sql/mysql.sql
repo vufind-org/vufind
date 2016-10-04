@@ -146,6 +146,23 @@ CREATE TABLE `session` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `external_session`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `external_session` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `session_id` varchar(128) NOT NULL,
+  `external_session_id` varchar(255) NOT NULL,
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `session_id` (`session_id`),
+  KEY `external_session_id` (`external_session_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `tags`
 --
 
@@ -155,7 +172,7 @@ CREATE TABLE `tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tag` varchar(64) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

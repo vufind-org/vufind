@@ -1,0 +1,39 @@
+/* crhallberg/autocomplete.js 0.14 */
+$autocomplete-item-bg   : #fff !default;
+$autocomplete-active-bg : $brand-primary !default;
+$autocomplete-hover-bg  : lighten($brand-primary, 60%) !default;
+$autocomplete-border    : lightgray !default;
+$autocomplete-secondary : darkgray !default; // item description
+
+.autocomplete-results {
+  position: absolute;
+  margin: 0;
+  margin-top: 2px;
+  padding: 0;
+  border: 1px solid $autocomplete-border;
+  background-color: $autocomplete-item-bg;
+  border-radius: $border-radius-base;
+  overflow: hidden;
+  z-index: 50;
+
+  .item {
+    display: block;
+    margin: 0;
+    padding: .75rem 1.25rem;
+    border-bottom: 1px solid $autocomplete-border;
+    cursor: pointer;
+
+    &:last-child { border: 0; }
+    &:hover { background-color: $autocomplete-hover-bg; }
+    &.loading { background-color: $autocomplete-item-bg; }
+    &.selected {
+      background-color: $autocomplete-active-bg;
+      color: contrast($autocomplete-active-bg);
+    }
+
+    small {
+      display: block;
+      color: $autocomplete-secondary;
+    }
+  }
+}

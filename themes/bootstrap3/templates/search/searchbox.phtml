@@ -56,6 +56,9 @@
     <? if ($advSearch): ?>
       <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
     <? endif; ?>
+    <? if ($geoUrl = $this->geocoords()->getSearchUrl($options)) : ?>
+        <a href="<?=$geoUrl ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
+    <? endif; ?>
 
     <? $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>
       <?
@@ -70,8 +73,8 @@
     <? endif; ?>
     <?
       $filterDetails = $this->searchbox()->getFilterDetails(
-          isset($this->filterList) && is_array($this->filterList) ? $this->filterList : array(),
-          isset($this->checkboxFilters) && is_array($this->checkboxFilters) ? $this->checkboxFilters : array()
+          isset($this->filterList) && is_array($this->filterList) ? $this->filterList : [],
+          isset($this->checkboxFilters) && is_array($this->checkboxFilters) ? $this->checkboxFilters : []
       );
     ?>
     <? if ((isset($hasDefaultsApplied) && $hasDefaultsApplied) || !empty($filterDetails)): ?>

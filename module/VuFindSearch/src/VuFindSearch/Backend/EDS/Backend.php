@@ -102,7 +102,7 @@ class Backend extends AbstractBackend
     /**
      * Whether or not to use IP Authentication for communication with the EDS API
      *
-     * @var boolean
+     * @var bool
      */
     protected $ipAuth = false;
 
@@ -187,8 +187,8 @@ class Backend extends AbstractBackend
      * Perform a search and return record collection.
      *
      * @param AbstractQuery $query  Search query
-     * @param integer       $offset Search offset
-     * @param integer       $limit  Search limit
+     * @param int           $offset Search offset
+     * @param int           $limit  Search limit
      * @param ParamBag      $params Search backend parameters
      *
      *@return \VuFindSearch\Response\RecordCollectionInterface
@@ -468,7 +468,7 @@ class Backend extends AbstractBackend
      * Obtain the session token from the Session container. If it doesn't exist,
      * generate a new one.
      *
-     * @param boolean $isInvalid If a session token is invalid, generate a new one
+     * @param bool $isInvalid If a session token is invalid, generate a new one
      * regardless of what is in the session container
      *
      * @return string

@@ -1,4 +1,4 @@
-/*global VuFind */
+/*global grecaptcha, recaptchaOnLoad, VuFind */
 VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
@@ -101,6 +101,8 @@ VuFind.register('lightbox', function Lightbox() {
     $('#modal').find('.checkbox-select-item').change(function lbSelectAllDisable() {
       $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
     });
+    // Recaptcha
+    recaptchaOnLoad();
   }
 
   var _xhr = false;
@@ -159,8 +161,8 @@ VuFind.register('lightbox', function Lightbox() {
         }
         _update(content);
       })
-      .fail(function lbAjaxFail() {
-        showAlert(VuFind.translate('error_occurred'), 'danger');
+      .fail(function lbAjaxFail(deferred, errorType, msg) {
+        showAlert(VuFind.translate('error_occurred') + '<br/>' + msg, 'danger');
       });
     return _xhr;
   }
@@ -223,6 +225,14 @@ VuFind.register('lightbox', function Lightbox() {
     // Gather data
     var form = event.target;
     var data = $(form).serializeArray();
+    // Check for recaptcha
+    if (typeof grecaptcha !== 'undefined') {
+      var recaptcha = $(form).find('.g-recaptcha');
+      if (recaptcha.length > 0) {
+        data.push({ name: 'g-recaptcha-response', value: grecaptcha.getResponse(recaptcha.data('captchaId')) });
+      }
+    }
+    // Force layout
     data.push({ name: 'layout', value: 'lightbox' }); // Return in lightbox, please
     // Add submit button information
     var submit = $(_clickedButton);
@@ -248,8 +258,9 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // onclose behavior
     if ('string' === typeof $(form).data('lightboxOnclose')) {
-      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(ev) {
-        _evalCallback($(form).data('lightboxOnclose'), ev);
+      document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(e) {
+        this.removeEventListener('VuFind.lightbox.closed', arguments.callee);
+        _evalCallback($(form).data('lightboxOnclose'), e, form);
       }, false);
     }
     // Loading
@@ -265,6 +276,10 @@ VuFind.register('lightbox', function Lightbox() {
       url: $(form).attr('action') || _currentUrl,
       method: $(form).attr('method') || 'GET',
       data: data
+    }).done(function recaptchaReset() {
+      if (typeof grecaptcha !== 'undefined') {
+        grecaptcha.reset($(form).find('.g-recaptcha').data('captchaId'));
+      }
     });
 
     VuFind.modal('show');

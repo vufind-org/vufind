@@ -1,0 +1,99 @@
+.hierarchy-tree {
+  /* jsTree arrows */
+  .jstree-ocl:before {
+    float: left;
+    width: 10px;
+    padding: 0;
+    margin-left: -10px;
+    font-family: 'FontAwesome';
+    font-style: normal;
+    font-weight: normal;
+    cursor: pointer;
+    text-decoration: inherit;
+    speak: none;
+  }
+  .jstree-open > .jstree-ocl:before {content: "\f0d7";}
+  .jstree-closed > .jstree-ocl:before {content: "\f0da";}
+  .jstree-leaf > .jstree-ocl:before {content: " ";}
+  .jstree-icon {
+    width: 16px;
+    color: #000;
+  }
+  .jstree-anchor {
+    padding: 2px 5px;
+    white-space: nowrap;
+  }
+  .jstree-container-ul,
+  .jstree-children {
+    padding-left: 16px;
+  }
+  .jstree-initial-node {display: none;}
+  .jstree-clicked {
+    color: $list-group-active-color;
+    background-color: $list-group-active-bg;
+    .jstree-icon {
+      color: #fff;
+    }
+  }
+  .jstree-search a {
+    font-style: italic;
+    color: #8b0000 ;
+    font-weight: bold;
+  }
+}
+
+/* --- Record --- */
+#hierarchyTreeHolder {
+  overflow-x: hidden;
+  border-right: 1px solid $gray-lighter;
+}
+#hierarchyTree .currentHierarchy > a,
+#hierarchyTree .currentRecord a {
+  font-weight: bold;
+  color: #000;
+}
+
+/* --- Facets --- */
+.facet .jstree-ocl:before {
+  float: left;
+  width: 10px;
+  padding: 0;
+  margin-left: -10px;
+  font-family: 'FontAwesome';
+  font-weight: normal;
+  font-style: normal;
+  text-decoration:inherit;
+  cursor: pointer;
+  speak: none;
+}
+.facet .jstree-default {
+  & .jstree-open > .jstree-ocl:before {content: "\f0d7";}
+  & .jstree-closed > .jstree-ocl:before {content: "\f0da";}
+  & .jstree-leaf > .jstree-ocl:before {content: " ";}
+}
+/* facet list styling */
+.jstree-facet li span.main {
+  display: block;
+  padding-left: 1px; /* Fix Firefox cutting the checkboxes */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.jstree-facet .jstree-container-ul {
+  padding: 0;
+  & > li.active,
+  & > li.active a.jstree-anchor {
+    background-color: #265680;
+    color: #fff;
+  }
+}
+li.jstree-facet,
+li.jstree-node {
+  list-style: none;
+}
+li.jstree-facet .badge {cursor: text;}
+li.jstree-facet ul {padding-left: 20px;}
+
+.list-group.facet .jstree-node.list-group-item { padding-left: 19px; }
+.list-group.facet .jstree-icon::before { margin-left: -12px; }
+.list-group.facet .jstree-facet li span.main { padding: 1px; }

@@ -98,6 +98,8 @@
     <fieldType name="date" class="solr.TrieDateField" sortMissingLast="true" omitNorms="true" precisionStep="6"/>
     <fieldType name="random" class="solr.RandomSortField" indexed="true" />
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
+    <!-- add geo field to handle geographic search and display capabilities -->
+    <fieldType name="geo" class="solr.SpatialRecursivePrefixTreeFieldType" distErrPct="0.025" maxDistErr="0.000009" distanceUnits="degrees" />
   </types>
  <fields>
    <!-- Required by Solr 4.x -->
@@ -187,7 +189,11 @@
    <field name="era" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="era_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <field name="illustrated" type="string" indexed="true" stored="true" multiValued="false"/>
-   <field name="long_lat" type="textFacet" indexed="true" stored="true" multiValued="false"/>
+   <!-- Used for geographic map display -->
+   <!-- long_lat only used for Google Maps display of point features -->
+   <field name="long_lat" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+   <field name="long_lat_display" type="text" indexed="true" stored="true" multiValued="true"/>
+   <field name="long_lat_label" type="string" indexed="false" stored="true" multiValued="true"/>
    <!-- Container fields (i.e. for describing journal containing an article) -->
    <field name="container_title" type="text" indexed="true" stored="true"/>
    <field name="container_volume" type="text" indexed="true" stored="true"/>
@@ -225,6 +231,8 @@
    <dynamicField name="*_txtP_mv" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_random" type="random" />
    <dynamicField name="*_boolean" type="boolean" indexed="true" stored="true"/>
+   <!-- add geo field to handle geographic search and display capabilities -->
+   <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="true" />
  </fields>
  <uniqueKey>id</uniqueKey>
  <defaultSearchField>allfields</defaultSearchField>

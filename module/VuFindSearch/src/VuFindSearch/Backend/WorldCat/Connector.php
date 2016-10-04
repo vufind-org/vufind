@@ -121,8 +121,8 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * Execute a search.
      *
      * @param ParamBag $params Parameters
-     * @param integer  $offset Search offset
-     * @param integer  $limit  Search limit
+     * @param int      $offset Search offset
+     * @param int      $limit  Search limit
      *
      * @return string
      */
