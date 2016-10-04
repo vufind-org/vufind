@@ -17,9 +17,9 @@
   }
   $height = $this->recommend->getHeight();
   $searchParams = $this->recommend->getSearchParams();
-  $params = array(json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
+  $params = [json_encode($geoField), json_encode($coordinates), json_encode($urlpath),
     json_encode($baseUrl), json_encode($searchParams), json_encode($showSelection),
-    json_encode($resultsCoords), json_encode($popupTitle));
+    json_encode($resultsCoords), json_encode($popupTitle)];
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapSelection(" . $jsParams . ");";
   $addSearchOption = <<<EOF

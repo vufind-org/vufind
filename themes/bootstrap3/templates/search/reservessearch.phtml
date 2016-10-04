@@ -65,7 +65,7 @@
         </tr>
       <? endforeach; ?>
       </table>
-      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
     <? endif; ?>
   </div>
 

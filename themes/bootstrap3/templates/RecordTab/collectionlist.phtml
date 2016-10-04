@@ -5,7 +5,7 @@
   // Get search results
   $results = $this->tab->getResults();
   $params = $this->tab->getParams();
-  $searchDetails = array('results' => $results, 'params' => $params, 'indexStart' => 1);
+  $searchDetails = ['results' => $results, 'params' => $params, 'indexStart' => 1];
 ?>
 <? if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
   <? foreach ($results->getRecommendations('top') as $current): ?>
@@ -25,9 +25,9 @@
     </div>
   </div>
   <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
-    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + array('idPrefix' => ''))?>
+    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
     <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
-    <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $results))?>
+    <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $results])?>
   </form>
 <? else: ?>
   <?=$this->transEsc('collection_empty')?>
