@@ -50,12 +50,12 @@ class ChannelsController extends AbstractBase
         $view = $this->createViewModel();
 
         $loader = $this->getRecordLoader();
-        $record = $loader->load(
-            $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
-        );
+        $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $record = $loader->load($this->params()->fromQuery('id'), $source);
 
-        $providerIds = ['similaritems', 'facets'];
+        $config = $this->getConfig('channels');
+        $providerIds = isset($config->{"source.$source"}->record)
+            ? $config->{"source.$source"}->record->toArray() : [];
         $view->channels = [];
         $token = $this->params()->fromQuery('channelToken');
         foreach ($this->getChannelProviderArray($providerIds) as $provider) {
@@ -84,7 +84,9 @@ class ChannelsController extends AbstractBase
         $searchClassId = $this->params()
             ->fromQuery('source', DEFAULT_SEARCH_BACKEND);
 
-        $providerIds = ['facets', 'similaritems'];
+        $config = $this->getConfig('channels');
+        $providerIds = isset($config->{"source.$searchClassId"}->search)
+            ? $config->{"source.$searchClassId"}->search->toArray() : [];
         $providers = $this->getChannelProviderArray($providerIds);
 
         $callback = function ($runner, $params, $searchClassId) use ($providers) {

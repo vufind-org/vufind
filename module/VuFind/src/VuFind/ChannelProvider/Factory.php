@@ -50,9 +50,13 @@ class Factory
      */
     public static function getFacets(ServiceManager $sm)
     {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('channels');
+        $options = isset($config->{'provider.Facets'})
+            ? $config->{'provider.Facets'}->toArray() : [];
         $helper = new Facets(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-            $sm->getServiceLocator()->get('ControllerPluginManager')->get('url')
+            $sm->getServiceLocator()->get('ControllerPluginManager')->get('url'),
+            $options
         );
         $helper->setCoverRouter(
             $sm->getServiceLocator()->get('VuFind\Cover\Router')
@@ -69,10 +73,14 @@ class Factory
      */
     public static function getSimilarItems(ServiceManager $sm)
     {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('channels');
+        $options = isset($config->{'provider.SimilarItems'})
+            ? $config->{'provider.SimilarItems'}->toArray() : [];
         $helper = new SimilarItems(
             $sm->getServiceLocator()->get('VuFind\Search'),
             $sm->getServiceLocator()->get('ControllerPluginManager')->get('url'),
-            $sm->getServiceLocator()->get('VuFind\RecordRouter')
+            $sm->getServiceLocator()->get('VuFind\RecordRouter'),
+            $options
         );
         $helper->setCoverRouter(
             $sm->getServiceLocator()->get('VuFind\Cover\Router')

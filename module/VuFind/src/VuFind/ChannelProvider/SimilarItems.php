@@ -84,16 +84,23 @@ class SimilarItems extends AbstractChannelProvider
     /**
      * Constructor
      *
-     * @param \VuFindSearch\Service $search Search service
-     * @param Url                   $url    URL helper
-     * @param RecordRouter          $router Record router
+     * @param \VuFindSearch\Service $search  Search service
+     * @param Url                   $url     URL helper
+     * @param RecordRouter          $router  Record router
+     * @param array                 $options Settings (optional)
      */
     public function __construct(\VuFindSearch\Service $search, Url $url,
-        RecordRouter $router
+        RecordRouter $router, array $options = []
     ) {
         $this->searchService = $search;
         $this->url = $url;
         $this->recordRouter = $router;
+        if (isset($options['channelSize'])) {
+            $this->channelSize = $options['channelSize'];
+        }
+        if (isset($options['maxRecordsToExamine'])) {
+            $this->maxRecordsToExamine = $options['maxRecordsToExamine'];
+        }
     }
 
     /**

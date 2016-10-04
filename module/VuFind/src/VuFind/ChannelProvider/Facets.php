@@ -83,13 +83,24 @@ class Facets extends AbstractChannelProvider
     /**
      * Constructor
      *
-     * @param ResultsManager $rm  Results manager
-     * @param Url            $url URL helper
+     * @param ResultsManager $rm      Results manager
+     * @param Url            $url     URL helper
+     * @param array          $options Settings (optional)
      */
-    public function __construct(ResultsManager $rm, Url $url)
+    public function __construct(ResultsManager $rm, Url $url, array $options = [])
     {
         $this->resultsManager = $rm;
         $this->url = $url;
+        if (isset($options['fields'])) {
+            $this->fields = $options['fields'];
+        }
+        if (isset($options['maxFieldsToSuggest'])) {
+            $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'];
+        }
+        if (isset($options['maxValuesToSuggestPerField'])) {
+            $this->maxValuesToSuggestPerField
+                = $options['maxValuesToSuggestPerField'];
+        }
     }
 
     /**
