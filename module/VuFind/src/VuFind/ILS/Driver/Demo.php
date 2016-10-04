@@ -302,33 +302,17 @@ class Demo extends AbstractBase
     }
 
     /**
-     * Are holds/recalls blocked?
+     * Check whether the patron is blocked from placing requests (holds/ILL/SRR).
      *
-     * @return bool
-     */
-    protected function checkRequestBlock()
-    {
-        return $this->isFailing(__METHOD__, 10);
-    }
-
-    /**
-     * Are ILL requests blocked?
+     * @param array $patron Patron data from patronLogin().
      *
-     * @return bool
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
      */
-    protected function checkILLRequestBlock()
+    public function getRequestBlocks($patron)
     {
-        return $this->isFailing(__METHOD__, 10);
-    }
-
-    /**
-     * Are storage retrieval requests blocked?
-     *
-     * @return bool
-     */
-    protected function checkStorageRetrievalRequestBlock()
-    {
-        return $this->isFailing(__METHOD__, 10);
+        return $this->isFailing(__METHOD__, 10)
+            ? ['simulated request block'] : false;
     }
 
     /**
@@ -359,16 +343,12 @@ class Demo extends AbstractBase
             'callnumber'   => $this->getFakeCallNum(),
             'duedate'      => '',
             'is_holdable'  => true,
-            'addLink'      => $patron
-                ? $this->checkRequestBlock() ? 'block' : true : false,
+            'addLink'      => $patron ? true : false,
             'level'        => 'copy',
             'storageRetrievalRequest' => 'auto',
-            'addStorageRetrievalRequestLink' => $patron
-                ? $this->checkStorageRetrievalRequestBlock() ? 'block' : 'check'
-                : false,
+            'addStorageRetrievalRequestLink' => $patron ? 'check' : false,
             'ILLRequest'   => 'auto',
-            'addILLRequestLink' => $patron
-                ? $this->checkILLRequestBlock() ? 'block' : 'check' : false,
+            'addILLRequestLink' => $patron ? 'check' : false,
             'services'     => $status == 'Available' ? $this->getFakeServices() : []
         ];
     }
