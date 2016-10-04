@@ -189,6 +189,8 @@ function ajaxLoadTab($newTab, tabid, setHash) {
     }
     if (typeof setHash == 'undefined' || setHash) {
       window.location.hash = tabid;
+    } else {
+      removeHashFromLocation();
     }
   });
   return false;
@@ -270,6 +272,15 @@ function applyRecordTabHash() {
   }
 }
 
+function removeHashFromLocation() {
+  if (window.history.replaceState) {
+    var href = window.location.href.split('#');
+    window.history.replaceState({}, document.title, href[0]);  
+  } else {
+    window.location.hash = '#';  
+  }
+}
+
 $(window).on('hashchange', applyRecordTabHash);
 
 function recordDocReady() {
@@ -299,7 +310,11 @@ function recordDocReady() {
     $(this).tab('show');
     if ($top.find('.' + tabid + '-tab').length > 0) {
       $top.find('.' + tabid + '-tab').addClass('active');
-      window.location.hash = tabid;
+      if ($(this).parent().hasClass('initiallyActive')) {
+        removeHashFromLocation();
+      } else {
+        window.location.hash = tabid;
+      }
       return false;
     } else {
       var newTab = getNewRecordTab(tabid).addClass('active');

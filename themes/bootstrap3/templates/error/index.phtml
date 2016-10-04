@@ -16,10 +16,10 @@
 </div>
 
 <? if ($this->showInstallLink): ?>
-  <h2><a href="<?=$this->url('install-home')?>"><?=$this->transEsc('auto_configure_title', array(), 'Auto Configure')?></a></h2>
-  <?=$this->transEsc('auto_configure_description', array(), 'If this is a new installation, you may be able to fix the error using VuFind\'s Auto Configure tool.')?>
+  <h2><a href="<?=$this->url('install-home')?>"><?=$this->transEsc('auto_configure_title', [], 'Auto Configure')?></a></h2>
+  <?=$this->transEsc('auto_configure_description', [], 'If this is a new installation, you may be able to fix the error using VuFind\'s Auto Configure tool.')?>
   <h2><a href="<?=$this->url('upgrade-home')?>"><?=$this->transEsc('Upgrade VuFind')?></a></h2>
-  <?=$this->transEsc('upgrade_description', array(), 'If you are upgrading a previous VuFind version, you can load your old settings with this tool.')?>
+  <?=$this->transEsc('upgrade_description', [], 'If you are upgrading a previous VuFind version, you can load your old settings with this tool.')?>
 <? endif; ?>
 
 <? if (isset($this->display_exceptions) && $this->display_exceptions): ?>

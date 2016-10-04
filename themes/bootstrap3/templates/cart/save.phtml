@@ -11,7 +11,7 @@
 <?=$this->flashmessages()?>
 
 <form class="form-horizontal" method="post" action="<?=$this->url('cart-save')?>" name="bulkSave">
-  <? $idParams = array(); ?>
+  <? $idParams = []; ?>
   <? foreach ($this->records as $current): ?>
     <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getSourceIdentifier() . '|' . $current->getUniqueId()) ?>
     <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>" />
@@ -48,7 +48,7 @@
           <option value=""><?=$this->transEsc('My Favorites') ?></option>
         <? endif; ?>
       </select>
-      <a class="btn btn-link" id="make-list"  href="<?=$this->url('editList', array('id' => 'NEW')) . '?' . implode('&amp;', $idParams) ?>"><?=$this->transEsc('or create a new list'); ?></a>
+      <a class="btn btn-link" id="make-list"  href="<?=$this->url('editList', ['id' => 'NEW']) . '?' . implode('&amp;', $idParams) ?>"><?=$this->transEsc('or create a new list'); ?></a>
     </div>
   </div>
 

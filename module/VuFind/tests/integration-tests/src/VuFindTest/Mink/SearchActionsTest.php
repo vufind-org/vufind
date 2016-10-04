@@ -360,7 +360,27 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
-     * Test that exclusion works properly deep in lightbox results.
+     * Support method to click a hierarchical facet.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function clickHierarchyFacet($page)
+    {
+        $this->findCss($page, '#j1_1.jstree-closed .jstree-icon');
+        $session = $this->getMinkSession();
+        $session->executeScript("$('#j1_1.jstree-closed .jstree-icon').click();");
+        $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
+        $this->findCss($page, '#j1_2 a')->click();
+        $this->snooze();
+        $filter = $this->findCss($page, '.filters .list-group-item.active');
+        $this->assertEquals('hierarchy: 1/level1a/level2a/', $filter->getText());
+        $this->findCss($page, '#j1_2 .fa-check');
+    }
+
+    /**
+     * Test that hierarchy facets work properly.
      *
      * @return void
      */
@@ -378,15 +398,46 @@ class SearchActionsTest extends \VuFindTest\Unit\MinkTestCase
                 ]
             ]
         );
-        $page = $this->performSearch('');
-        $this->findCss($page, '#j1_1.jstree-closed .jstree-icon');
-        $session = $this->getMinkSession();
-        $session->executeScript("$('#j1_1.jstree-closed .jstree-icon').click();");
-        $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
-        $this->findCss($page, '#j1_2 a')->click();
-        $filter = $this->findCss($page, '.filters .list-group-item.active');
-        $this->assertEquals('hierarchy: 1/level1a/level2a/', $filter->getText());
-        $this->findCss($page, '#j1_2 .fa-check');
+        $page = $this->performSearch('building:"hierarchy.mrc"');
+        $this->clickHierarchyFacet($page);
+    }
+
+    /**
+     * Test that we can persist uncollapsed state of collapsed facets
+     *
+     * @return void
+     */
+    public function testCollapseStatePersistence()
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results' => [
+                        'hierarchical_facet_str_mv' => 'hierarchy'
+                    ],
+                    'Results_Settings' => [
+                        'collapsedFacets' => '*'
+                    ],
+                    'SpecialFacets' => [
+                        'hierarchical[]' => 'hierarchical_facet_str_mv'
+                    ]
+                ]
+            ]
+        );
+        $page = $this->performSearch('building:"hierarchy.mrc"');
+        // Uncollapse format so we can check if it is still open after reload:
+        $this->findCss($page, '#side-panel-format .collapsed')->click();
+        // Uncollapse hierarchical facet so we can click it:
+        $this->findCss($page, '#side-panel-hierarchical_facet_str_mv .collapsed')->click();
+        $this->clickHierarchyFacet($page);
+
+        // We have now reloaded the page. Let's toggle format off and on to confirm
+        // that it was opened, and let's also toggle building on to confirm that
+        // it was not alread opened.
+        $this->findCss($page, '#side-panel-format .title')->click(); // off
+        $this->snooze(); // wait for animation
+        $this->findCss($page, '#side-panel-format .collapsed')->click(); // on
+        $this->findCss($page, '#side-panel-building .collapsed')->click(); // on
     }
 
     /**

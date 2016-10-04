@@ -33,7 +33,7 @@
       </div>
     </div>
   <? else: ?>
-    <? $keys = is_array($this->carriers) ? array_keys($this->carriers) : array(); ?>
+    <? $keys = is_array($this->carriers) ? array_keys($this->carriers) : []; ?>
     <input type="hidden" name="provider" value="<?=isset($keys[0]) ? $keys[0] : ''?>" />
   <? endif; ?>
   <?=$this->recaptcha()->html($this->useRecaptcha) ?>

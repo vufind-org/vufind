@@ -112,6 +112,7 @@ $config = [
             'eit' => 'VuFind\Controller\EITController',
             'eitrecord' => '\VuFind\Controller\EITrecordController',
             'error' => 'VuFind\Controller\ErrorController',
+            'externalauth' => 'VuFind\Controller\ExternalAuthController',
             'feedback' => 'VuFind\Controller\FeedbackController',
             'help' => 'VuFind\Controller\HelpController',
             'hierarchy' => 'VuFind\Controller\HierarchyController',

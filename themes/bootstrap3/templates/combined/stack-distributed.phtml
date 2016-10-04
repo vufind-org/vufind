@@ -1,8 +1,8 @@
 <div class="row">
   <? $span = floor(12/$columns); ?>
   <? $sectionCount = count($this->combinedResults); ?>
-  <? $keys = array(); ?>
-  <? $searches = array(); ?>
+  <? $keys = []; ?>
+  <? $searches = []; ?>
   <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
     <? $keys[] = $searchClassId; ?>
     <? $searches[] = $currentSearch; ?>
@@ -15,7 +15,7 @@
         <? $currentSearch = $searches[$columnIndex]; ?>
         <? if ((!isset($currentSearch['ajax']) || !$currentSearch['ajax']) && isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty'] && $currentSearch['view']->results->getResultTotal() == 0) { $columnIndex += $columns; continue; } ?>
           <?
-            $viewParams = array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch);
+            $viewParams = ['searchClassId' => $searchClassId, 'currentSearch' => $currentSearch];
             // Enable cart if appropriate:
             $viewParams['showCartControls'] = $this->supportsCartOptions[$columnIndex] && $this->showCartControls;
             // Enable bulk options if appropriate:
