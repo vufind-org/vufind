@@ -467,7 +467,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 // No defaultPickupLocation is defined in config 
                 // AND no pickupLocations are defined either
                 if (isset($holdDetails['item_id']) && (empty($holdDetails['level'])
-                    || $holdDetails['level'] == 'item' )) {
+                    || $holdDetails['level'] == 'item' )
+                ) {
                     // We try to get the actual branchcode the item is found at
                     $item_id = $holdDetails['item_id'];
                     $sql = "SELECT homebranch
@@ -482,7 +483,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                             throw new ILSException($e->getMessage());
                     }
                 } elseif (!empty($holdDetails['level']) 
-                    && $holdDetails['level'] == 'title' ) {
+                    && $holdDetails['level'] == 'title' 
+                ) {
                     // We try to get the actual branchcodes the title is found at
                     $id = $holdDetails['id'];
                     $sql = "SELECT DISTINCT homebranch
