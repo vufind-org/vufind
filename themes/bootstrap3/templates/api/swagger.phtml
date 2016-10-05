@@ -23,6 +23,15 @@
                     }
 <? $lng = ob_get_contents(); ?>
 <? ob_end_clean(); ?>
+<? ob_start(); ?>
+                    {
+                        "name": "callback",
+                        "in": "query",
+                        "description": "A callback that can be used for JSONP",
+                        "type": "string"
+                    }
+<? $callback = ob_get_contents(); ?>
+<? ob_end_clean(); ?>
 {
     "swagger": "2.0",
     "info": {
@@ -58,7 +67,8 @@
                         }
                     },
 <?=$field ?>,
-<?=$lng ?>
+<?=$lng ?>,
+<?=$callback ?>
                 ],
                 "tags": [
                     "Record"
@@ -154,7 +164,8 @@
                         "maximum": 100,
                         "default": 20
                     },
-<?=$lng ?>
+<?=$lng ?>,
+<?=$callback ?>
                 ],
                 "tags": [
                     "Search"
