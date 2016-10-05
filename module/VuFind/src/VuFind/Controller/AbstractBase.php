@@ -59,6 +59,13 @@ class AbstractBase extends AbstractActionController
     protected $accessPermission = false;
 
     /**
+     * Behavior when access is denied. Valid values are 'promptLogin' and 'exception'
+     *
+     * @var string
+     */
+    protected $accessDeniedBehavior = 'promptLogin';
+
+    /**
      * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
@@ -71,9 +78,11 @@ class AbstractBase extends AbstractActionController
         if ($this->accessPermission
             && !$this->getAuthorizationService()->isGranted($this->accessPermission)
         ) {
-            if (!$this->getUser()) {
-                $e->setResponse($this->forceLogin(null, [], false));
-                return;
+            if ($this->accessDeniedBehavior == 'promptLogin') {
+                if (!$this->getUser()) {
+                    $e->setResponse($this->forceLogin(null, [], false));
+                    return;
+                }
             }
             throw new ForbiddenException('Access denied.');
         }

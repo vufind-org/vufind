@@ -3,17 +3,17 @@
   $this->headTitle($this->translate('VuFind Administration - Home'));
 
   // Set up map of core name => label
-  $coreLabels = array(
+  $coreLabels = [
     'biblio' => $this->translate('Bibliographic Index'),
     'authority' => $this->translate('Authority Index'),
     'stats' => $this->translate('Usage Statistics Index')
-  );
+  ];
 ?>
 
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h2><?=$this->transEsc('VuFind Administration')?></h2>
-    <? $cores = is_object($this->xml) ? $this->xml->xpath('/response/lst[@name="status"]/lst') : array(); ?>
+    <? $cores = is_object($this->xml) ? $this->xml->xpath('/response/lst[@name="status"]/lst') : []; ?>
     <? foreach ($cores as $core): ?>
       <? $coreName = (string)$core['name']; ?>
       <? $coreLabel = isset($coreLabels[$coreName]) ? $coreLabels[$coreName] : ucwords($coreName) . ' Index'; ?>
