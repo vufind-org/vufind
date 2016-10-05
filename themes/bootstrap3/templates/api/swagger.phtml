@@ -9,13 +9,24 @@
                         "items": {
                             "type": "string"
                         }
-                    },
+                    }
 <? $field = ob_get_contents(); ?>
+<? ob_end_clean(); ?>
+<? ob_start(); ?>
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "description": "Language for returned translated strings",
+                        "type": "string",
+                        "enum": [<?=implode(', ', array_map(function ($v) { return '"' . addslashes($v) . '"'; }, array_keys($this->config->Languages->toArray()))) ?>],
+                        "default": "<?=addslashes($this->config->Site->language) ?>"
+                    }
+<? $lng = ob_get_contents(); ?>
 <? ob_end_clean(); ?>
 {
     "swagger": "2.0",
     "info": {
-        "title": "<?=$this->title ?>",
+        "title": "<?=$this->config->Site->title ?>",
         "version": "<?=$this->version ?>"
     },
     "basePath": "<?=rtrim($this->url('home'), '/') ?>/api/v1",
@@ -46,13 +57,8 @@
                             "type": "string"
                         }
                     },
-<?=$field ?>
-                    {
-                        "name": "lng",
-                        "in": "query",
-                        "description": "Language for returned translated strings",
-                        "type": "string"
-                    }
+<?=$field ?>,
+<?=$lng ?>
                 ],
                 "tags": [
                     "Record"
@@ -92,7 +98,7 @@
                         "required": false,
                         "type": "string"
                     },
-<?=$field ?>
+<?=$field ?>,
                     {
                         "name": "filter[]",
                         "in": "query",
@@ -148,12 +154,7 @@
                         "maximum": 100,
                         "default": 20
                     },
-                    {
-                        "name": "lng",
-                        "in": "query",
-                        "description": "Language for returned translated strings.",
-                        "type": "string"
-                    }
+<?=$lng ?>
                 ],
                 "tags": [
                     "Search"

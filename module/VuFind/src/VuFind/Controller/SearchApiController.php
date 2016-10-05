@@ -541,20 +541,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         return isset($rawData['fullrecord']) ? $rawData['fullrecord'] : null;
     }
 
-    protected function getRecordFieldSpec()
-    {
-        $fields = array_map(
-            function ($item) {
-                if (isset($item['method'])) {
-                    unset($item['method']);
-                }
-                return $item;
-            },
-            $this->recordFields
-        );
-        return $fields;
-    }
-
     /**
      * Get record identifier
      *

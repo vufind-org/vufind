@@ -617,7 +617,7 @@ trait ApiTrait
         $searchConfig = $this->getConfig($options->getSearchIni());
         $facetConfig = $this->getConfig($options->getFacetsIni());
         $params = [
-            'title' => $config->Site->title,
+            'config' => $config,
             'version' => \VuFind\Config\Version::getBuildVersion(),
             'recordFields' => $this->getRecordFieldSpec(),
             'defaultRecordFields' => $this->defaultRecordFields,
@@ -625,7 +625,7 @@ trait ApiTrait
                 ? $facetConfig->Results->toArray() : [],
             'sortFields' => isset($searchConfig->Sorting)
                 ? $searchConfig->Sorting->toArray() : [],
-            'defaultSort' => $searchConfig->General->default_sort
+            'defaultSort' => $searchConfig->General->default_sort,
         ];
         $json = $this->getViewRenderer()->render(
             'api/swagger', $params
@@ -649,6 +649,25 @@ trait ApiTrait
             'prettyPrint', $request->getPost('prettyPrint', false)
         );
         $this->outputMode = empty($this->jsonpCallback) ? 'json' : 'jsonp';
+    }
+
+    /**
+     * Return record field specs for the Swagger specification
+     *
+     * @return array
+     */
+    protected function getRecordFieldSpec()
+    {
+        $fields = array_map(
+            function ($item) {
+                if (isset($item['method'])) {
+                    unset($item['method']);
+                }
+                return $item;
+            },
+            $this->recordFields
+        );
+        return $fields;
     }
 
     /**
