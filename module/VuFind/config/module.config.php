@@ -129,6 +129,7 @@ $config = [
             'qrcode' => 'VuFind\Controller\QRCodeController',
             'records' => 'VuFind\Controller\RecordsController',
             'search' => 'VuFind\Controller\SearchController',
+            'searchapi' => 'VuFind\Controller\SearchApiController',
             'shibbolethlogoutnotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
@@ -829,6 +830,41 @@ $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
+
+// API routes
+$config['router']['routes']['searchApiHome'] = [
+    'type' => 'Zend\Mvc\Router\Http\Segment',
+    'verb' => 'get,post,options',
+    'options' => [
+        'route'    => '/api[/v1]',
+        'defaults' => [
+            'controller' => 'SearchApi',
+            'action'     => 'index',
+        ]
+    ]
+];
+$config['router']['routes']['searchApiv1'] = [
+    'type' => 'Zend\Mvc\Router\Http\Literal',
+    'verb' => 'get,post,options',
+    'options' => [
+        'route'    => '/api/v1/search',
+        'defaults' => [
+            'controller' => 'SearchApi',
+            'action'     => 'search',
+        ]
+    ]
+];
+$config['router']['routes']['searchApiRecordv1'] = [
+    'type' => 'Zend\Mvc\Router\Http\Literal',
+    'verb' => 'get,post,options',
+    'options' => [
+        'route'    => '/api/v1/record',
+        'defaults' => [
+            'controller' => 'SearchApi',
+            'action'     => 'record',
+        ]
+    ]
+];
 
 // Add the home route last
 $config['router']['routes']['home'] = [
