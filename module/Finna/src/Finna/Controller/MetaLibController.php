@@ -157,7 +157,9 @@ class MetaLibController extends \VuFind\Controller\AbstractSearch
 
         list($isIrd, $set) = $this->getMetaLibSet($params->getMetaLibSearchSet());
         $view->currentSet = $set;
-        $session = new SessionContainer('MetaLib');
+        $session = new SessionContainer(
+            'MetaLib', $this->getServiceLocator()->get('VuFind\SessionManager')
+        );
         if ($isIrd) {
             $metalib
                 = $this->getServiceLocator()->get('VuFind\Search\BackendManager')

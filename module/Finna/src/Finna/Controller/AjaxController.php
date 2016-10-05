@@ -953,7 +953,10 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         $params = $this->params()->fromQuery('params');
-        $session = []; //new SessionContainer('OrganisationInfo');
+        $session = new SessionContainer(
+            'OrganisationInfo',
+            $this->getServiceLocator()->get('VuFind\SessionManager')
+        );
         $action = $params['action'];
         $buildings = isset($params['buildings'])
             ? explode(',', $params['buildings']) : null;

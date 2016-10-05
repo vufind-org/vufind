@@ -80,7 +80,10 @@ trait OnlinePaymentControllerTrait
      */
     protected function getOnlinePaymentSession()
     {
-        return new SessionContainer('OnlinePayment');
+        return new SessionContainer(
+            'OnlinePayment',
+            $this->getServiceLocator()->get('VuFind\SessionManager')
+        );
     }
 
     /**

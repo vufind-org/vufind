@@ -132,6 +132,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      * @param MetaLibSearch        $table        Table for cached search results
      * @param AuthorizationService $auth         Authorization service
      * @param array                $sets         MetaLib search sets
+     * @param SessionContainer     $session      Session
      * @param LuceneSyntaxHelper   $luceneHelper Lucene syntax helper
      */
     public function __construct(
@@ -139,6 +140,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         HttpClient $client,
         MetaLibSearch $table, AuthorizationService $auth,
         $sets,
+        $session,
         LuceneSyntaxHelper $luceneHelper = null
     ) {
         $this->inst = $institution;
@@ -150,7 +152,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $this->table = $table;
         $this->auth = $auth;
         $this->sets = $sets;
-        $this->session = new SessionContainer('MetaLib');
+        $this->session = $session;
     }
 
     /**

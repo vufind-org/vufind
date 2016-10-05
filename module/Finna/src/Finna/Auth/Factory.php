@@ -149,6 +149,9 @@ class Factory extends \VuFind\Auth\Factory
      */
     public static function getShibboleth(ServiceManager $sm)
     {
-        return new Shibboleth($sm->get('VuFind\SessionManager'));
+        $container = new \Zend\Session\Container(
+            'Shibboleth', $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
+        return new Shibboleth($container);
     }
 }

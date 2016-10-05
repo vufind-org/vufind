@@ -27,8 +27,7 @@
  */
 namespace Finna\Db\Row;
 use VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Exception\MissingField as MissingFieldException,
-    Zend\Session\Container as SessionContainer;
+    VuFind\Exception\MissingField as MissingFieldException;
 
 /**
  * Row Definition for user_list

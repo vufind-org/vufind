@@ -204,10 +204,10 @@ $config = [
                 'factories' => [
                     'ils' => 'Finna\Auth\Factory::getILS',
                     'multiils' => 'Finna\Auth\Factory::getMultiILS',
+                    'shibboleth' => 'Finna\Auth\Factory::getShibboleth'
                 ],
                 'invokables' => [
-                    'mozillapersona' => 'Finna\Auth\MozillaPersona',
-                    'shibboleth' => 'Finna\Auth\Shibboleth',
+                    'mozillapersona' => 'Finna\Auth\MozillaPersona'
                 ],
             ],
             'autocomplete' => [
