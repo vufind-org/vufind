@@ -43,9 +43,10 @@ finna = $.extend(finna, {
             });
 
             if (!found) {
-                id = 'service_point' in data.consortium.finna
-                    ? data.consortium.finna.service_point
-                    : id = menu.find('li input').eq(0).val();
+                id = finna.common.getField(data.consortium.finna, 'service_point');
+                if (!id) {
+                    id = menu.find('li input').eq(0).val();
+                }
             }
             menuInput.val(id);
             var menuItem = holder.find('.organisation ul.dropdown-menu li');
