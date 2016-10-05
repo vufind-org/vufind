@@ -287,8 +287,10 @@ trait VoyagerFinna
     protected function determineAvailability($statusArray)
     {
         $result = parent::determineAvailability($statusArray);
-        // Treat non-charged items that have hold requests as available
-        if (!$result['available'] && in_array('Not Charged', $statusArray)
+        // Treat non-charged items that have 'Hold Request' as the only other status
+        // as available.
+        if (!$result['available'] && count($statusArray) == 2
+            && in_array('Not Charged', $statusArray)
             && in_array('Hold Request', $statusArray)
         ) {
             $result['available'] = true;
