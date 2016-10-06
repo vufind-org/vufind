@@ -1,4 +1,39 @@
 /*global getUrlRoot, htmlEncode, VuFind */
+
+function bindChannelAddMenu(scope) {
+  $(scope).find('.channel-add-menu .dropdown-menu a').click(function selectAddedChannel(e) {
+    $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
+      $(e.target).closest('.channel').after(data);
+      $('[data-token="' + e.target.dataset.token + '"]').remove();
+      $('.channel').each(setupChannelSlider);
+    });
+    return false;
+  });
+  $(scope).find('.channel-add-menu .add-btn').click(function addChannels(e) {
+    var links = $(e.target).closest('.channel-add-menu').find('.dropdown-menu a');
+    for (var i = 0; i < links.length && i < 2; i++) {
+      links[i].click();
+    }
+  });
+}
+
+function setupChannelSlider(i, op) {
+  if (VuFind.slider(op)) {
+    $(op).find('.thumb').each(function (i, op) {
+      var img = $(op).find('img');
+      $(op).css('background-image', 'url('+img.attr('src')+')');
+      img.remove();
+    });
+    $('.channel-add-menu[data-group="' +op.dataset.group+ '"]')
+      .clone()
+      .removeAttr('data-group')
+      .addClass('pull-right')
+      .removeClass('hidden')
+      .appendTo($(op).find('.slider-menu'));
+    bindChannelAddMenu(op);
+  }
+}
+
 $(document).ready(function channelReady() {
   // truncate long titles and add hover
   $('.channel-record').dotdotdot({
@@ -8,18 +43,12 @@ $(document).ready(function channelReady() {
       }
     }
   });
-  $('.channel').flickity({
-    cellAlign: 'left',
-    contain: true,
-    freeScroll: true,
-    pageDots: false
-  });
-  $('.channel-record').click(function channelRecord() { return false; });
+  $('.channel').each(setupChannelSlider);
   $('.channel').on('dragStart', function channelDrag() {
     $('[aria-describedby]').popover('hide');
   });
-  $('.channel').on('staticClick', function channelPopover(event, pointer, cellElement/*, cellIndex*/) {
-    var record = $(cellElement);
+  $('.channel-record').click(function channelRecord(event) {
+    var record = $(event.delegateTarget);
     if (record.data('popover')) {
       if (record.attr('aria-describedby')) {
         record.popover('hide');
@@ -56,25 +85,6 @@ $(document).ready(function channelReady() {
         record.popover('show');
       });
     }
-  });
-
-  $('.channel-add-menu .dropdown-menu a').click(function selectAddedChannel(e) {
-    $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
-      $(e.target).closest('.channel-add-menu').before(data);
-      $(e.target).remove();
-      $('.channel').flickity({
-        cellAlign: 'left',
-        contain: true,
-        freeScroll: true,
-        pageDots: false
-      });
-    });
     return false;
-  });
-  $('.channel-add-menu .add-btn').click(function addChannels(e) {
-    var links = $(e.target).parent().find('.dropdown-menu a');
-    for (var i = 0; i < links.length && i < 2; i++) {
-      links[i].click();
-    }
   });
 });

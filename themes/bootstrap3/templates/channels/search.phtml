@@ -1,9 +1,16 @@
+<? $this->headLink()->appendStylesheet('channel-slider.css'); ?>
+<? $this->headScript()->appendFile('channel-slider.js'); ?>
 <? $this->headScript()->appendFile('channels.js'); ?>
-<? $this->headScript()->appendFile('vendor/flickity.pkgd.min.js'); ?>
 <? $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js'); ?>
-<? $this->headLink()->appendStylesheet('vendor/flickity.min.css'); ?>
 <? $insideButton = false; ?>
 <? foreach ($channels as $key=>$channel): ?>
+  <?
+    $groupId = $channel['providerId'];
+    if ($channel['providerId'] === 'facets') {
+      $groupId = explode('|', $channel['token']);
+      $groupId = explode(':', $groupId[1])[0];
+    }
+  ?>
   <? if (isset($channel['contents'])): ?>
     <? if ($insideButton): ?>
         </ul>
@@ -24,18 +31,18 @@
       <h2><?=$this->escapeHtml($channel['title'])?></h2>
     </div>
     <? $channelID = 'channel-' . $key; ?>
-    <div id="<?=$channelID ?>" class="channel" style="clear:both">
+    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>">
       <!-- Wrapper for slides -->
       <? foreach ($channel['contents'] as $item): ?>
-        <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
-          <div class="img" style="background-image:url(<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>)"></div>
+        <a href="<?=$this->recordLink()->getUrl("{$item['source']}|{$item['id']}")?>" class="channel-record slide" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>">
+          <div class="thumb"><img src="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"/></div>
           <?=$this->escapeHtml($item['title'])?>
         </a>
       <? endforeach; ?>
     </div>
   <? elseif (isset($channel['token'])): ?>
     <? if (!$insideButton): ?>
-      <div class="channel-add-menu btn-group">
+      <div class="channel-add-menu btn-group hidden" data-group="<?=$groupId ?>">
         <button type="button" class="add-btn btn btn-default">Add more channels like this</button>
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span class="caret"></span>
@@ -44,6 +51,6 @@
         <ul class="dropdown-menu">
       <? $insideButton = true; ?>
     <? endif; ?>
-    <li><a href="?channelProvider=<?=urlencode($channel['providerId']) ?>&amp;channelToken=<?=urlencode($channel['token']) ?>&amp;layout=lightbox"><?=$this->escapeHtml($channel['title'])?></a></li>
+    <li><a href="?channelProvider=<?=urlencode($channel['providerId']) ?>&amp;channelToken=<?=urlencode($channel['token']) ?>&amp;layout=lightbox" data-token="<?=$channel['token'] ?>"><?=$this->escapeHtml($channel['title'])?></a></li>
   <? endif; ?>
 <? endforeach; ?>

@@ -141,7 +141,10 @@ function getUrlRoot(url) {
     urlroot = '/' + chunks[3] + '/' + chunks[4];
   } else {
     // standard case -- VuFind has its own path under site:
-    var pathInUrl = urlWithoutFragment.indexOf(VuFind.path, urlWithoutFragment.indexOf('//') + 2);
+    var slashSlash = urlWithoutFragment.indexOf('//');
+    var pathInUrl = slashSlash > -1
+      ? urlWithoutFragment.indexOf(VuFind.path, slashSlash + 2)
+      : urlWithoutFragment.indexOf(VuFind.path);
     var parts = urlWithoutFragment.substring(pathInUrl + VuFind.path.length + 1).split('/');
     urlroot = '/' + parts[0] + '/' + parts[1];
   }
@@ -384,7 +387,7 @@ $(document).ready(function commonDocReady() {
   }
 
   setupFacets();
-  
+
   // retain filter sessionStorage
   $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {
     sessionStorage.setItem('vufind_retain_filters', this.checked ? 'true' : 'false');

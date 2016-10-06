@@ -236,26 +236,27 @@ class Facets extends AbstractChannelProvider
             'title' => $title,
             'providerId' => $this->providerId,
         ];
+        $retVal['token'] = $this->getToken($filter, $title);
         if ($tokenOnly) {
-            $retVal['token'] = $this->getToken($filter, $title);
-        } else {
-            $newResults = clone($results);
-            $params = $newResults->getParams();
-
-            // Determine the filter for the current channel, and add it:
-            $params->addFilter($filter);
-
-            $query = $newResults->getUrlQuery()->addFilter($filter);
-            $retVal['searchUrl'] = $this->url
-                ->fromRoute($params->getOptions()->getSearchAction()) . $query;
-            $retVal['channelsUrl'] = $this->url->fromRoute('channels-search')
-                . $query . '&source=' . urlencode($params->getSearchClassId());
-
-            // Run the search and convert the results into a channel:
-            $newResults->performAndProcessSearch();
-            $retVal['contents']
-                = $this->summarizeRecordDrivers($newResults->getResults());
+            return $retVal;
         }
+
+        $newResults = clone($results);
+        $params = $newResults->getParams();
+
+        // Determine the filter for the current channel, and add it:
+        $params->addFilter($filter);
+
+        $query = $newResults->getUrlQuery()->addFilter($filter);
+        $retVal['searchUrl'] = $this->url
+            ->fromRoute($params->getOptions()->getSearchAction()) . $query;
+        $retVal['channelsUrl'] = $this->url->fromRoute('channels-search')
+            . $query . '&source=' . urlencode($params->getSearchClassId());
+
+        // Run the search and convert the results into a channel:
+        $newResults->performAndProcessSearch();
+        $retVal['contents']
+            = $this->summarizeRecordDrivers($newResults->getResults());
         return $retVal;
     }
 
