@@ -7,15 +7,15 @@
       <span class="heading"><?=$this->transEsc('Description')?></span>
       (<?=$this->escapeHtml(trim($this->userPublicName($this->list_username)))?>):
     </p>
-    <p class="note-rows">
+    <div class="note-rows">
       <?
       $note = implode('', $notes);
       if ($this->params->getView() == 'list') {
-        $note = preg_replace("/\r\n|\r|\n/",'<br />', $this->escapeHtml($note));
+        $note = $this->markdown()->toHtml($note);
       }
       echo $note
       ?>
-    </p>
+    </div>
   </div>
 <? endif; ?>
 <!-- END of: finna - list/list-notes.phtml -->

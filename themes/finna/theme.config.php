@@ -43,6 +43,7 @@ return array(
         'invokables' => array(
             'checkboxFacetCounts' =>
                 'Finna\View\Helper\Root\CheckboxFacetCounts',
+            'markdown' => 'Finna\View\Helper\Root\Markdown',
             'resultfeed' => 'Finna\View\Helper\Root\ResultFeed',
             'search' => 'Finna\View\Helper\Root\Search',
             'streetSearch' => 'Finna\View\Helper\Root\StreetSearch',

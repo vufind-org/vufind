@@ -92,7 +92,7 @@
         padding-right: 0;
         padding-bottom: 0;
         border: 1px solid @gray-lighter;
-        box-shadow: 0px 15px 30px -25px @gray;
+        box-shadow: 10px 15px 30px -25px @gray;
         & #profile_form {
             margin-top: 10px;   
         }
@@ -361,11 +361,36 @@
     & .list-title {
          margin-bottom: 0px;   
     }
-    & .list-title, .list-description, .resource-note, .add-new-list {
+    
+    & .markdown.edit {
+        & .CodeMirror {
+            height: 300px;
+        }
+        & .markdown-preview {
+            padding: 10px;
+            background: #fafafa;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid @gray-lighter;
+            & .preview {
+                position: absolute;
+                right: 40px;
+                background-color: white;
+                padding: 3px 9px;
+            }
+        }
+    }
+    & .markdown .editable {
+        padding: 5px;
+        & > p {
+            margin: 0;
+        }
+    }
+    
+    & .list-title, .list-description:not(.edit), .resource-note:not(.edit), .add-new-list {
             border: 1px solid transparent;
             display: inline-block;
             padding: 5px;
-            transition: all 0.2s linear;
             width: ~"-webkit-calc(100% - 30px)";
             width: ~"-moz-calc(100% - 30px)";
             width: ~"calc(100% - 30px)";
@@ -395,12 +420,34 @@
                 }
             }
         }
+        & .markdown-preview {
+            display: none;
+        }
+    }
+    & .list-description.markdown, .resource-note.markdown {
+        padding: 0;
+        & .fa {
+            margin-top: 7px;
+            margin-right: 5px;
+        }
+    }
+    & .list-title.disable {
+        &:hover, &:active, &:focus {
+            border: 1px solid transparent;
+            cursor: initial;
+        }
+    }
+    .markdown.edit > .fa-pen {
+        display: none;
     }
     & .list-title i.fa-pen {
         margin-bottom: -22px; 
     }
     & .list-description i.fa-pen {
         margin-bottom: -12px;   
+    }
+    & .list-description h1 {
+        display: inherit;
     }
     & .resource-note i.fa-pen {
         margin-bottom: -18px;   

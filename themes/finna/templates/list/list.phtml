@@ -19,7 +19,7 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
       <div class="row">
         <div class="col-sm-12 col-md-10 col-lg-9">
           <div class="public-list-desc col-xs-12 col-sm-8">
-            <div class="truncate-field" data-rows="5"><p><?=$this->escapeHtml($list->description) ?></p></div>
+            <?=$this->markdown()->toHtml($list->description) ?>
           </div>
           <div class="public-list-info col-xs-12 col-sm-4">
             <div>
@@ -53,7 +53,6 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_')) ?>
     </form>
 </div>
-</div>
 <div class="container-fluid pagination-background">
   <div class="container">
     <div class="col-xs-12 text-center">
@@ -61,6 +60,9 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
     </div>
   </div>
 </div>
+<? // NOTE: insert extra closing div here to make the RSS-link container 100% wide ?> 
+</div>
+
 <div class="container-fluid searchtools-background">
   <div class="container">
     <div class="row">
@@ -70,5 +72,5 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
       </div>
     </div>
   </div>
-</div>
+<? // NOTE: leave out a closing div to compensate for the one added above ?>
 <!-- END of: finna - list/list.phtml -->

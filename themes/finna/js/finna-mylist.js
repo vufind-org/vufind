@@ -2,20 +2,17 @@
 finna.myList = (function() {
 
     var addNewListLabel = null;
+    var editor = null;
+    var editableSettings = {'minWidth': 200, 'addToHeight': 100};
+    var save = false;
 
     // This is duplicated in image-popup.js to avoid dependency
     var getActiveListId = function() {
         return $('input[name="listID"]').val();
     };
 
-    var processHTMLforSave = function(html) {
-        html = html.replace(/\&lt;/g, '<');
-        html = html.replace(/\&gt;/g, '>');
-        html = html.replace(/<br class="newline">/g, '\n');
-        return html;
-    };
-
     var updateList = function(params, callback, type) {
+        save = true;
         var spinner = null;
 
         var listParams = {
@@ -25,7 +22,7 @@ finna.myList = (function() {
         };
 
         if (type != 'add-list') {
-            var description = processHTMLforSave($('.list-description span').html());
+            var description = $('.list-description .editable').data('markdown');
             if (description == VuFind.translate('add_list_description')) {
                 listParams['desc'] = '';
             } else {
@@ -70,16 +67,20 @@ finna.myList = (function() {
             if (callback != null) {
                 callback(data.data);
             }
+            save = false;
         })
         .fail(function() {
             toggleErrorMessage(true);
+            save = false;
         });
     };
 
     var updateListResource = function(params, input, row) {
+        save = true;
         toggleErrorMessage(false);
 
-        var spinner = input.next('.fa');
+        var parent = input.closest('.myresearch-notes');
+        var spinner = parent.find('.fa-pen');
         toggleSpinner(spinner, true);
 
         $.ajax({
@@ -94,14 +95,18 @@ finna.myList = (function() {
             }
 
             var hasNotes = params.notes != '';
-            input.closest('.myresearch-notes').find('.note-info').toggleClass('hide', !hasNotes);
+            parent.find('.note-info').toggleClass('hide', !hasNotes);
             input.data('empty', hasNotes == '' ? '1' : '0');
             if (!hasNotes) {
                 input.text(VuFind.translate('add_note'));
             }
+            toggleTitleEditable(true);
+            save = false;
         })
         .fail(function() {
             toggleErrorMessage(true);
+            toggleTitleEditable(true);
+            save = false;
         });
     };
 
@@ -164,13 +169,14 @@ finna.myList = (function() {
     };
 
     var listDescriptionChanged = function() {
-        var description = $('.list-description span');
+        var description = $('.list-description .editable');
         if (description.html() == '') {
             description.data('empty', '1');
             description.html(VuFind.translate('add_list_description'));
         } else {
             description.data('empty', '0');
         }
+        toggleTitleEditable(true);
     };
 
     var newListAdded = function(data) {
@@ -190,6 +196,39 @@ finna.myList = (function() {
         } else {
             buttons.removeClass('fixed');
         }
+    };
+
+
+    var toggleTitleEditable = function(mode) {
+        var target = $('.list-title span');
+        var currentTitle;
+        if (mode) {
+            // list title
+            var titleCallback = {
+                start: function(e) {
+                    if (editor) {
+                        // Close active editor
+                        $(document).trigger('click');
+                        return;
+                    }
+                    currentTitle = target.find('input').val();
+                },
+                finish: function(e) {
+                    if (typeof(e) === 'undefined' || !e.cancel) {
+                        if (e.value == '') {
+                            target.text(currentTitle);
+                            return false;
+                        } else {
+                            updateList({title: e.value}, refreshLists, 'title');
+                        }
+                    }
+                }
+            };
+            target.editable({action: 'click', triggers: [target, $('.list-title i')]}, titleCallback, editableSettings);
+        } else {
+            target.replaceWith(target.clone());
+        }
+        $('.list-title').toggleClass('disable', !mode);
     };
 
     var initEditComponents = function() {
@@ -213,36 +252,11 @@ finna.myList = (function() {
         var settings = {'minWidth': 200, 'addToHeight': 100};
 
         if (!isDefaultList) {
-            // list title
-            var titleCallback = {
-                'finish': function(e) {
-                    if (typeof(e) === 'undefined' || !e.cancel) {
-                        updateList({}, refreshLists, 'title');
-                    }
-                }
-            };
-            var target = $('.list-title span');
-            target.editable({action: 'click', triggers: [target, $('.list-title i')]}, titleCallback, settings);
+            toggleTitleEditable(true);
 
-            // list description
-            var descCallback = {
-                'start': function(e) {
-                    if (e.target.data('empty') == '1') {
-                        e.target.find('textarea').val('');
-                    }
-                },
-                'finish': function(e) {
-                    if (typeof(e) === 'undefined' || !e.cancel) {
-                        if (e.value == '' && e.target.data('empty') == '1') {
-                            e.target.text(VuFind.translate('add_list_description'));
-                            return;
-                        }
-                        updateList({}, listDescriptionChanged, 'desc');
-                    }
-                }
-            };
-            target = $('.list-description span');
-            target.editable({type: 'textarea', action: 'click', triggers: [target, $('.list-description i')]}, descCallback, settings);
+            initEditableMarkdownField($('.list-description'), function(markdown) {
+                updateList({}, listDescriptionChanged, 'desc');
+            });
 
             // list visibility
             $(".list-visibility input[type='radio']").unbind('change').change(function() {
@@ -303,39 +317,20 @@ finna.myList = (function() {
             }
         };
         target = $('.add-new-list .name');
-        target.editable({action: 'click', triggers: [target, $('.add-new-list .icon')]}, newListCallBack, settings);
+        target.editable({action: 'click', triggers: [target, $('.add-new-list .icon')]}, newListCallBack, editableSettings);
 
-        // list resource notes
-        var resourceNotesCallback = {
-            'start': function(e) {
-                if (e.target.data('empty') == '1') {
-                    e.target.find('textarea').val('');
-                }
-            },
-            'finish': function(e) {
-                if (typeof(e) === 'undefined' || !e.cancel) {
-                    if (e.value == '' && e.target.data('empty') == '1') {
-                        e.target.text(VuFind.translate('add_note'));
-                        return;
-                    }
-
-                    var row = e.target.closest('.myresearch-row');
-                    var id = row.find('.hiddenId').val();
-                    var listId = getActiveListId();
-                    var notes = processHTMLforSave(e.target.html());
-                    updateListResource(
-                        {'id': id, 'listId': listId, 'notes': notes},
-                        e.target
-                    );
-                }
-            }
-        };
         $('.myresearch-row').each(function(ind, obj) {
-            var target = $(obj).find('.myresearch-notes .resource-note span');
-            target.editable(
-                {action: 'click', type: 'textarea', triggers: [target, target.next('.icon')]},
-                resourceNotesCallback, settings
-            );
+            var target = $(obj).find('.myresearch-notes .resource-note');
+            initEditableMarkdownField(target, function(markdown) {
+                var row = target.closest('.myresearch-row');
+                var id = row.find('.hiddenId').val();
+                var listId = getActiveListId();
+
+                updateListResource(
+                    {'id': id, 'listId': listId, 'notes': markdown},
+                    target.find('> div')
+                );
+            });
         });
 
         // add resource to list
@@ -352,6 +347,93 @@ finna.myList = (function() {
                 return VuFind.translate('loading') + '...';
             }
         };
+    };
+
+    var initEditableMarkdownField = function(element, callback) {
+        element.find('.editable').unbind('click').click(function(e) {
+            if (save) {
+                // Do not open the editor when save is in progress.
+                return;
+            }
+
+            if (!editor && e.target.nodeName == 'A') {
+                // Do not open the editor when a link within the editable area was clicked.
+                e.stopPropagation();
+                return;
+            }
+
+            if (editor) {
+                // Close active editor
+                $(document).trigger('click');
+                return;
+            }
+
+            toggleTitleEditable(false);
+
+            element.toggleClass('edit', true);
+            var container = element.find('.editable');
+
+            var textArea = $('<textarea/>');
+            var currentVal = null;
+            currentVal = container.data('markdown');
+            textArea.text(decodeURIComponent(currentVal));
+            container.hide();
+            textArea.insertAfter(container);
+            if (editor) {
+                editor = null;
+            }
+
+            var editorSettings = {
+                autoDownloadFontAwesome: false,
+                autofocus: true,
+                element: textArea[0],
+                hideIcons: ['preview', 'side-by-side', 'guide', 'fullscreen'],
+                spellChecker: false,
+                status: false
+            };
+
+            editor = new SimpleMDE(editorSettings);
+            currentVal = editor.value();
+
+
+            editor.codemirror.on("change", function(){
+                var html = SimpleMDE.prototype.markdown(editor.value());
+                preview.find('.data').html(html);
+            });
+
+            // Preview
+            var html = SimpleMDE.prototype.markdown(editor.value());
+            $('.markdown-preview').remove();
+            var preview = $('<div/>').addClass('markdown-preview')
+                    .html($('<div/>').addClass('data').html(html));
+            $('<div/>').addClass('preview').text(VuFind.translate('preview').toUpperCase()).prependTo(preview);
+            preview.appendTo(element);
+
+            // Close editor and save when user clicks outside the editor
+            $(document).one('click', function() {
+                var markdown = editor.value();
+                var html = SimpleMDE.prototype.markdown(markdown);
+
+                editor.toTextArea();
+                editor = null;
+                element.toggleClass('edit', false).find('textarea').remove();
+
+                container.show();
+                container.data('markdown', markdown);
+                container.data('empty', (markdown.length == 0 ? '1' : '0'));
+                container.html(html);
+
+                preview.remove();
+
+                callback(markdown);
+            });
+
+            // Prevent clicks within the editor area to
+            // bubble up and close the editor.
+            element.closest('.markdown').unbind('click').click(function() {
+                return false;
+            });
+        });
     };
 
     var toggleErrorMessage = function(mode) {
@@ -379,7 +461,7 @@ finna.myList = (function() {
     var my = {
         init: function() {
             initEditComponents();
-        },
+        }
     };
 
     return my;

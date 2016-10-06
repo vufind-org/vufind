@@ -135,7 +135,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $params = $this->getRequest()->getPost('params', null);
         $required = ['id', 'title'];
         foreach ($required as $param) {
-            if (!isset($params[$param])) {
+            if (!isset($params[$param]) || empty($params[$param])) {
                 return $this->output(
                     "Missing parameter '$param'", self::STATUS_ERROR, 400
                 );
