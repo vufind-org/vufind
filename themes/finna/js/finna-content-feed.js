@@ -3,6 +3,7 @@ finna.contentFeed = (function() {
     var loadFeed = function(container, modal) {
         var id = container.data('feed');
         var element = container.data('element');
+        var feedUrl = container.data('feed-url');
 
         var contentHolder = container.find('.holder');
         // Append spinner
@@ -11,6 +12,9 @@ finna.contentFeed = (function() {
 
         var url = VuFind.path + '/AJAX/JSON';
         var params = {method: 'getContentFeed', id: id, element: element};
+        if (feedUrl) {
+            params['feedUrl'] = feedUrl;
+        }
 
         $.getJSON(url, params)
         .done(function(response) {

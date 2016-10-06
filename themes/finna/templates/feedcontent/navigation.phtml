@@ -5,8 +5,13 @@
     $selected = $numeric
       ? $element === $cnt
       : $element === $item['id'];
+
+    $link = $item['link'];
+    if ($this->feedUrl) {
+       $link .= '?feedUrl=' . $this->escapeHtmlAttr($this->feedUrl);
+    }
   ?>
-  <li><?= !$selected ? ('<a href="' . $item['link'] . '">' . $this->escapeHtml($item['title']) . '</a>') : $this->escapeHtml($item['title']) ?></li>
+  <li><?= !$selected ? ('<a href="' . $link . '">' . $this->escapeHtml($item['title']) . '</a>') : $this->escapeHtml($item['title']) ?></li>
   <? $cnt++; ?>
 <?endforeach;?>
 </ul>

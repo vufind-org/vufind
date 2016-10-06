@@ -195,6 +195,7 @@ class Feed implements \Zend\Log\LoggerAwareInterface
      * Return feed content from a URL.
      * See readFeed for a description of the return object.
      *
+     * @param string                         $id        Feed id
      * @param string                         $url       Feed URL
      * @param array                          $config    Configuration
      * @param Zend\Mvc\Controller\Plugin\Url $urlHelper Url helper
@@ -202,10 +203,10 @@ class Feed implements \Zend\Log\LoggerAwareInterface
      *
      * @return mixed null|array
      */
-    public function readFeedFromUrl($url, $config, $urlHelper, $viewUrl)
+    public function readFeedFromUrl($id, $url, $config, $urlHelper, $viewUrl)
     {
         $config = new \Zend\Config\Config($config);
-        return $this->processReadFeed($config, $urlHelper, $viewUrl);
+        return $this->processReadFeed($config, $urlHelper, $viewUrl, $id);
     }
 
     /**

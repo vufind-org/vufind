@@ -23,7 +23,7 @@ JS;
 
 <?=$this->headScript()?>
 <div class="row">
-  <div class="col-<?= $this->modal ? 'xs-12' : 'sm-9'?> feed-content" data-feed="<?=$this->escapeHtmlAttr($this->feed)?>" data-element="<?=$this->escapeHtmlAttr($this->element)?>">
+  <div class="col-<?= $this->modal ? 'xs-12' : 'sm-9'?> feed-content" data-feed="<?=$this->escapeHtmlAttr($this->feed)?>" data-element="<?=$this->escapeHtmlAttr($this->element)?>" data-feed-url="<?=$this->escapeHtmlAttr($this->feedUrl)?>">
 
   <? if ($this->modal): ?>
     <div class="date"><?=$this->transEsc('Published');?>: <span></span></div>

@@ -53,7 +53,10 @@ class FeedContentController extends ContentController
         $routeMatch = $event->getRouteMatch();
         $page = strtolower($routeMatch->getParam('page'));
         $element = $routeMatch->getParam('element');
-        $rssConfig = $this->getServiceLocator()->get('VuFind\Config')->get('rss');
+        $feedUrl = $this->params()->fromQuery('feedUrl', false);
+        $rssConfig = $this->getServiceLocator()->get('VuFind\Config')->get(
+            $feedUrl ? 'rss-organisation-page' : 'rss'
+        );
 
         if (!isset($rssConfig[$page])) {
             return $this->notFoundAction($this->getResponse());
@@ -64,7 +67,7 @@ class FeedContentController extends ContentController
         
         return $this->createViewModel(
             ['page' => 'feed-content', 'feed' => $page,
-            'element' => $element, 'modal' => $modal]
+             'element' => $element, 'modal' => $modal, 'feedUrl' => $feedUrl]
         );
     }
 }

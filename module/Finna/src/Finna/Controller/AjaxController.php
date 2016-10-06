@@ -667,6 +667,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
             $feed
                 = $feedService->readFeedFromUrl(
+                    $id,
                     $url,
                     $feedConfig,
                     $this->url(), $this->getServerUrl('home')
@@ -684,20 +685,25 @@ class AjaxController extends \VuFind\Controller\AjaxController
             );
         }
 
-        return $this->output($this->formatFeed($config, $feed), self::STATUS_OK);
+        return $this->output(
+            $this->formatFeed($config, $feed, $url), self::STATUS_OK
+        );
     }
 
     /**
      * Utility function for formatting a RSS feed.
      *
-     * @param VuFind\Config $config Feed configuration
-     * @param array         $feed   Feed data
+     * @param VuFind\Config $config  Feed configuration
+     * @param array         $feed    Feed data
+     * @param string        $feedUrl Feed URL (needed for organisation page
+     * RSS-feeds where the feed URL is passed to the FeedContentController as
+     * an URL parameter.
      *
      * @return array Array with keys:
      *   html (string)    Rendered feed content
      *   settings (array) Feed settings
      */
-    protected function formatFeed($config, $feed)
+    protected function formatFeed($config, $feed, $feedUrl = false)
     {
         $channel = $feed['channel'];
         $items = $feed['items'];
@@ -729,7 +735,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
             'items' => $items,
             'touchDevice' => $touchDevice,
             'images' => $images,
-            'modal' => $modal
+            'modal' => $modal,
+            'feedUrl' => $feedUrl
         ];
 
         if (isset($config->title)) {
@@ -802,12 +809,19 @@ class AjaxController extends \VuFind\Controller\AjaxController
         if (!$element) {
             $element = 0;
         }
+        $feedUrl = $this->params()->fromQuery('feedUrl');
         $feedService = $this->getServiceLocator()->get('Finna\Feed');
         try {
-            $feed
-                = $feedService->readFeed(
+            if ($feedUrl) {
+                $config = $this->getOrganisationFeedConfig($id, $feedUrl);
+                $feed = $feedService->readFeedFromUrl(
+                    $id, $feedUrl, $config, $this->url(), $this->getServerUrl('home')
+                );
+            } else {
+                $feed = $feedService->readFeed(
                     $id, $this->url(), $this->getServerUrl('home')
                 );
+            }
         } catch (\Exception $e) {
             return $this->output($e->getMessage(), self::STATUS_ERROR, 400);
         }
@@ -843,11 +857,39 @@ class AjaxController extends \VuFind\Controller\AjaxController
         if ($contentPage && !empty($items)) {
             $result['navigation'] = $this->getViewRenderer()->partial(
                 'feedcontent/navigation',
-                ['items' => $items, 'element' => $element, 'numeric' => $numeric]
+                [
+                   'items' => $items, 'element' => $element, 'numeric' => $numeric,
+                   'feedUrl' => $feedUrl
+                ]
             );
         }
 
         return $this->output($result, self::STATUS_OK);
+    }
+
+    /**
+     * Return configuration settings for organisation page
+     * RSS-feed sections (news, events).
+     *
+     * @param string $id  Section
+     * @param string $url Feed URL
+     *
+     * @return array settings
+     */
+    protected function getOrganisationFeedConfig($id, $url)
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')
+            ->get('rss-organisation-page');
+        $feedConfig = ['url' => $url];
+
+        if (isset($config[$id])) {
+            $feedConfig['result'] = $config[$id]->toArray();
+        } else {
+            $feedConfig['result'] = ['items' => 5];
+        }
+        $feedConfig['result']['type'] = 'list';
+        $feedConfig['result']['active'] = 1;
+        return $feedConfig;
     }
 
     /**
