@@ -471,7 +471,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 ) {
                     // We try to get the actual branchcode the item is found at
                     $item_id = $holdDetails['item_id'];
-                    $sql = "SELECT homebranch
+                    $sql = "SELECT holdingbranch
                             FROM items
                             WHERE itemnumber=($item_id)";
                     try {
@@ -487,14 +487,14 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 ) {
                     // We try to get the actual branchcodes the title is found at
                     $id = $holdDetails['id'];
-                    $sql = "SELECT DISTINCT homebranch
+                    $sql = "SELECT DISTINCT holdingbranch
                             FROM items
                             WHERE biblionumber=($id)";
                     try {
                         $sqlSt = $this->db->prepare($sql);
                         $sqlSt->execute();
                         foreach ($sqlSt->fetchAll() as $row) {
-                            $this->pickupEnableBranchcodes[] = $row['homebranch'];
+                            $this->pickupEnableBranchcodes[] = $row['holdingbranch'];
                         }
                     } catch (PDOException $e) {
                             $this->debug('Connection failed: ' . $e->getMessage());
