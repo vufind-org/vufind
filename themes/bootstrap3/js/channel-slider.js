@@ -1,8 +1,12 @@
 VuFind.register('slider', function VuFindSlider() {
   return function SliderFactory(el) {
     return (function Slider() {
+      // Elements
       var _container; // Entire element
       var _slider;    // Moving, too-wide element
+      var _leftbtn;
+      var _rightbtn;
+      // Data
       var _slidePositions;
       var _xpos = 0;
       var _targetx = 0;
@@ -18,12 +22,10 @@ VuFind.register('slider', function VuFindSlider() {
       var _addMenu = function _addMenu() {
         var menu = $('<nav class="slider-menu"></nav>');
         var group = $('<div class="btn-group"></div>');
-        var leftbtn = $('<button class="btn btn-default"><i class="fa fa-arrow-left"></i></button>');
-        var rightbtn = $('<button class="btn btn-default"><i class="fa fa-arrow-right"></i></button>');
-        leftbtn.click(pageLeft);
-        rightbtn.click(pageRight);
-        group.append(leftbtn);
-        group.append(rightbtn);
+        _leftbtn = $('<button class="btn btn-default" disabled><i class="fa fa-arrow-left"></i></button>').click(pageLeft);
+        _rightbtn = $('<button class="btn btn-default"><i class="fa fa-arrow-right"></i></button>').click(pageRight);
+        group.append(_leftbtn);
+        group.append(_rightbtn);
         menu.append(group);
         _container.append(menu);
       };
@@ -55,13 +57,21 @@ VuFind.register('slider', function VuFindSlider() {
         _targetx = Math.max(0, Math.min(newpos, maxpos));
         _animate();
         // If we're running into the end, we need a new current
-        if (_targetx == maxpos) {
+        if (_targetx === maxpos) {
+          _leftbtn.removeAttr('disabled');
+          _rightbtn.attr('disabled', 1);
           for (var i = 0; i < _slidePositions.length; i++) {
             if (_slidePositions[i].left >= maxpos) {
               _current = i + 1;
               break;
             }
           }
+        } else if (_targetx === 0) {
+          _leftbtn.attr('disabled', 1);
+          _rightbtn.removeAttr('disabled');
+        } else {
+          _leftbtn.removeAttr('disabled');
+          _rightbtn.removeAttr('disabled');
         }
       };
       var _animate = function _animate() {
@@ -89,6 +99,7 @@ VuFind.register('slider', function VuFindSlider() {
         _moveToClosest(_xpos + _container.width());
       };
 
+      /* --- Setup --- */
       if (typeof el.dataset.slider !== 'undefined') {
         return false;
       }
