@@ -981,6 +981,10 @@ class OrganisationInfo implements \Zend\Log\LoggerAwareInterface
                 $scheduleData['today'] = true;
             }
 
+            if ($info) {
+                $scheduleData['info'] = $info;
+            }
+
             $schedules[] = $scheduleData;
 
             if ($today) {
