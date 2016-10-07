@@ -173,7 +173,8 @@ class SearchController extends \VuFind\Controller\SearchController
     {
         $params = $this->parseOpenURL();
         $hiddenFilters = $this->getRequest()->getQuery(
-            'hiddenFilters', $this->getRequest()->getPost('hiddenFilters')
+            'vufind_hidden_filters',
+            $this->getRequest()->getPost('vufind_hidden_filters')
         );
         $results = $this->processOpenURL($params, $hiddenFilters);
 
