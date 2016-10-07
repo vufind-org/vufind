@@ -52,7 +52,9 @@ class ApiController extends \VuFind\Controller\AbstractBase
     /**
      * Add an API controller to the list of available controllers
      *
-     * @param Zend\Mvc\Controller\AbstractActionController $controller
+     * @param Zend\Mvc\Controller\AbstractActionController $controller API Controller
+     *
+     * @return void
      */
     public function addApi($controller)
     {

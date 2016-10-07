@@ -158,7 +158,8 @@ trait ApiTrait
         } elseif ($this->outputMode == 'jsonp') {
             $headers->addHeaderLine('Content-type', 'application/javascript');
             $response->setContent(
-                $this->jsonpCallback . '(' . json_encode($output, $jsonOptions) . ');'
+                $this->jsonpCallback . '(' . json_encode($output, $jsonOptions)
+                . ');'
             );
             return $response;
         } else {

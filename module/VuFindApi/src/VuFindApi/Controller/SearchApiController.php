@@ -103,8 +103,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $params = $results->getParams();
         $params->activateAllFacets();
 
-        //$searchConfig = $this->getConfig($options->getSearchIni());
-        //$facetConfig = $this->getConfig($options->getFacetsIni());
         $viewParams = [
             'config' => $config,
             'version' => \VuFind\Config\Version::getBuildVersion(),
@@ -388,17 +386,16 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      * @return array
      */
     protected function buildResultFacets($request, Results $results,
-        $requestedFacets, $hierarchicalFacets, $filters = false
+        $hierarchicalFacets
     ) {
-        if ($results->getResultTotal() == 0 || !$requestedFacets) {
+        if ($results->getResultTotal() == 0 || empty($request['facet'])) {
             return [];
         }
 
-        $requestedFacets = isset($request['facet']) ? $request['facet'] : [];
+        $requestedFacets = $request['facet'];
         $filters = $this->buildFacetFilters($request);
-
-        $translate = $this->getViewRenderer()->plugin('translate');
         $facets = $results->getFacetList();
+        $translate = $this->getViewRenderer()->plugin('translate');
 
         // Get requested hierarchical facets
         $requestedHierarchicalFacets = array_intersect(
