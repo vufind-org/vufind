@@ -316,6 +316,20 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    public function getAccountBlocks($patron)
+    {
+        return $this->isFailing(__METHOD__, 10)
+            ? ['simulated account block'] : false;
+    }
+
+    /**
      * Generates a random, fake holding array
      *
      * @param string $id     set id
