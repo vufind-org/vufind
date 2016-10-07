@@ -1,3 +1,4 @@
+/*global VuFind */
 VuFind.register('slider', function VuFindSlider() {
   return function SliderFactory(el) {
     return (function Slider() {
@@ -36,9 +37,9 @@ VuFind.register('slider', function VuFindSlider() {
         // Grab slide positions
         var slides = _slider.find('.slide');
         var farLeft = slides[0].getBoundingClientRect().left;
-        _slidePositions = slides.map(function(i, op) {
+        _slidePositions = slides.map(function slidePositionsMap(i, op) {
           var box = op.getBoundingClientRect();
-          if (i == 0) {
+          if (i === 0) {
             return {
               left: 0,
               right: box.width
@@ -53,7 +54,7 @@ VuFind.register('slider', function VuFindSlider() {
         _slider.css('width', _slidePositions[_slidePositions.length - 1].right + 100);
       };
       var _move = function _move(newpos) {
-        var maxpos =_slidePositions[_slidePositions.length - 1].right - _container.width() + 10;
+        var maxpos = _slidePositions[_slidePositions.length - 1].right - _container.width() + 10;
         _targetx = Math.max(0, Math.min(newpos, maxpos));
         _animate();
         // If we're running into the end, we need a new current
@@ -84,7 +85,7 @@ VuFind.register('slider', function VuFindSlider() {
         _slider.css('left', 0 - Math.round(_xpos));
       };
       var _moveToClosest = function _moveToClosest(threshold) {
-        for (var i=0; i<_slidePositions.length; i++) {
+        for (var i = 0; i < _slidePositions.length; i++) {
           if (_slidePositions[i].right >= threshold) {
             _current = i;
             _move(_slidePositions[i].left);
@@ -112,8 +113,7 @@ VuFind.register('slider', function VuFindSlider() {
       // Adjust width
       _adjustWidth();
 
-      var _touchX =null;
-      var _diffX;
+      var _touchX = null;
       var _sliderDragStart = function _sliderDragStart(e) {
         _touchX = e.clientX || e.originalEvent.touches[0].clientX;
       };
@@ -123,7 +123,7 @@ VuFind.register('slider', function VuFindSlider() {
         }
         var x = e.clientX || e.originalEvent.touches[0].clientX;
         var diffX = _touchX - x;
-        if (Math.abs(diffX) > 100) {
+        if (Math.abs(diffX) > 150) {
           if (diffX < 0) {
             pageLeft();
           } else {

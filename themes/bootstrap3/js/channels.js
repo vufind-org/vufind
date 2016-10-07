@@ -19,12 +19,12 @@ function bindChannelAddMenu(scope) {
 
 function setupChannelSlider(i, op) {
   if (VuFind.slider(op)) {
-    $(op).find('.thumb').each(function (i, op) {
-      var img = $(op).find('img');
-      $(op).css('background-image', 'url('+img.attr('src')+')');
+    $(op).find('.thumb').each(function thumbnailBackgrounds(index, thumb) {
+      var img = $(thumb).find('img');
+      $(thumb).css('background-image', 'url(' + img.attr('src') + ')');
       img.remove();
     });
-    $('.channel-add-menu[data-group="' +op.dataset.group+ '"]')
+    $('.channel-add-menu[data-group="' + op.dataset.group + '"]')
       .clone()
       .removeAttr('data-group')
       .addClass('pull-right')
