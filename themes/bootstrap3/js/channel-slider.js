@@ -134,8 +134,10 @@ VuFind.register('slider', function VuFindSlider() {
       };
       _slider.on('mousedown', _sliderDragStart);
       _slider.on('mousemove', _sliderDragMove);
+      _slider.on('mouseup', function mouseup() { _touchX = null });
       _slider.on('touchstart', _sliderDragStart);
       _slider.on('touchmove', _sliderDragMove);
+      _slider.on('touchend', function touchend() { _touchX = null });
 
       return true;
     })();
