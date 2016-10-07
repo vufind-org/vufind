@@ -98,9 +98,10 @@
                     {
                         "name": "type",
                         "in": "query",
-                        "description": "Search type",
+                        "description": "Search type. The following search types are available:\n- <?=implode('\n- ', array_map(addslashes, array_keys($this->searchTypes))) ?>",
                         "required": false,
-                        "type": "string"
+                        "type": "string",
+                        "default": "<?=addslashes($this->defaultSearchType) ?>"
                     },
 <?=$field ?>,
                     {
@@ -116,7 +117,7 @@
                     {
                         "name": "facet[]",
                         "in": "query",
-                        "description": "Fields to facet on. Repeat for every field. <? if ($this->facetConfig): ?>At least following fields are available for faceting (there may be additional facetable index fields not published here):\n- <?=implode('\n- ', array_map(addslashes, array_keys($this->facetConfig))) ?><? endif; ?>",
+                        "description": "Fields to facet on. Repeat for every field. <? if ($this->facetConfig): ?>At least the following fields are available for faceting (there may be additional facetable index fields not published here):\n- <?=implode('\n- ', array_map(addslashes, array_keys($this->facetConfig))) ?><? endif; ?>",
                         "type": "array",
                         "collectionFormat": "multi",
                         "items": {

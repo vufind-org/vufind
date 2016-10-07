@@ -108,6 +108,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $viewParams = [
             'config' => $config,
             'version' => \VuFind\Config\Version::getBuildVersion(),
+            'searchTypes' => $options->getBasicHandlers(),
+            'defaultSearchType' => $options->getDefaultHandler(),
             'recordFields' => $this->getRecordFieldSpec(),
             'defaultFields' => $this->defaultRecordFields,
             'facetConfig' => $params->getFacetConfig(),
