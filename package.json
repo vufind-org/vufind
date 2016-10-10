@@ -21,6 +21,6 @@
     "grunt-contrib-watch": "~0.6.1"
   },
   "scripts": {
-    "postinstall": "rm -rf public/swagger-ui; cp -r node_modules/swagger-ui/dist public/swagger-ui; sed -i .orig \"s/defaultModelRendering: 'schema'/defaultModelRendering: 'model'/\" public/swagger-ui/index.html; sed -i .orig 's/url = \".*\"/url = \"..\\/..\\/api\\/v1\\?swagger\"/' public/swagger-ui/index.html"
+    "postinstall": "rm -rf public/swagger-ui; cp -r node_modules/swagger-ui/dist public/swagger-ui; sed -i.orig \"s/defaultModelRendering: 'schema'/defaultModelRendering: 'model'/\" public/swagger-ui/index.html; sed -i.orig 's/url = \".*\"/url = \"..\\/..\\/api\\/v1\\?swagger\"/' public/swagger-ui/index.html"
   }
 }
