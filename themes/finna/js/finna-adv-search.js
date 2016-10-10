@@ -67,7 +67,7 @@ finna.advSearch = (function() {
       L.drawLocal.draw.handlers.circle.radius = VuFind.translate('radiusPrefix');
 
       var defaults = {
-        tileLayer: L.tileLayer('http://map-api.finna.fi/v1/rendered/{z}/{x}/{y}.png', {
+        tileLayer: L.tileLayer('//map-api.finna.fi/v1/rendered/{z}/{x}/{y}.png', {
           maxZoom: 18,
           tileSize: 256,
           attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
