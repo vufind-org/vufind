@@ -1,7 +1,7 @@
 {
   "name": "vufind",
   "version": "3.1.0",
-  "description": "Dev tools to handle css preprocessing, js magic, compression and Swagger UI for the API",
+  "description": "Dev tools to handle css preprocessing, js magic, and compression",
   "repository": {
     "type": "git",
     "url": "http://github.com/vufind-org/vufind"
