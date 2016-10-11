@@ -107,9 +107,6 @@ class Params extends \VuFind\Search\Base\Params
         if (isset($config->LegacyFields)) {
             $this->facetAliases = $config->LegacyFields->toArray();
         }
-        if (isset($config->ExtraFacetLabels)) {
-            $this->extraFacetLabels = $config->ExtraFacetLabels->toArray();
-        }
         if (isset($config->Results_Settings->facet_limit_by_field)) {
             foreach ($config->Results_Settings->facet_limit_by_field as $k => $v) {
                 $this->facetLimitByField[$k] = $v;
