@@ -78,7 +78,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
         if (null === $this->getRequest()->getQuery('swagger')) {
             $urlHelper = $this->getViewRenderer()->plugin('url');
             $base = rtrim($urlHelper('home'), '/');
-            $url = "$base/swagger-ui/index.html?url="
+            $url = "$base/swagger-ui/?url="
                 . urlencode("$base/api?swagger");
             return $this->redirect()->toUrl($url);
         }

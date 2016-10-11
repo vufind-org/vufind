@@ -14,13 +14,9 @@
     "grunt-sass": "^1.0.0",
     "grunt-contrib-less": "1.3.0",
     "grunt-less-to-sass": "0.0.10",
-    "jit-grunt": "^0.9.1",
-    "swagger-ui": "^2.2.5"
+    "jit-grunt": "^0.9.1"
   },
   "devDependencies": {
     "grunt-contrib-watch": "~0.6.1"
   },
-  "scripts": {
-    "postinstall": "rm -rf public/swagger-ui; cp -r node_modules/swagger-ui/dist public/swagger-ui; sed -i.orig \"s/defaultModelRendering: 'schema'/defaultModelRendering: 'model'/\" public/swagger-ui/index.html; sed -i.orig 's/url = \".*\"/url = \"..\\/..\\/api\\/v1\\?swagger\"/' public/swagger-ui/index.html"
-  }
 }
