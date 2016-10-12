@@ -91,7 +91,7 @@
                     {
                         "name": "lookfor",
                         "in": "query",
-                        "description": "Search terms. May be a single term, multiple words or a complex query containing boolean operators (AND, OR, NOT), quotes etc. Terms may also be prefixed with a field name (e.g. author:smith)",
+                        "description": "Search terms. May be a single term, multiple words or a complex query containing boolean operators (AND, OR, NOT), quotes etc. Terms may also be prefixed with a field name (e.g. author:smith) to target only that field (see also type parameter).",
                         "required": false,
                         "type": "string"
                     },
@@ -127,7 +127,7 @@
                     {
                         "name": "facetFilter[]",
                         "in": "query",
-                        "description": "Faceting result filters. Contains regular expressions that the facet must match for it to be returned. Format for a facet filter is field:regexp.",
+                        "description": "Faceting result filters. Contains regular expressions that the facet must match for it to be returned. The result will include the matched facet items and for hierarchical facets any ancestor values.\nFormat for a facet filter is field:regexp.\n\n'AND' filtering is used by default. 'OR' or 'NOT' filtering can be used by prepending the field with '~' (OR) or '-' (NOT).\n\n**N.B.**The filtered facet needs to be present in the list of returned facets (facet[] parameter).",
                         "type": "array",
                         "collectionFormat": "multi",
                         "items": {
@@ -253,6 +253,10 @@
                 "href": {
                     "description": "The current search with the facet added as a filter",
                     "type": "string"
+                },
+                "isApplied": {
+                    "description": "True if if the facet is in use in the filter parameter of the query",
+                    "type": "boolean"
                 },
                 "children": {
                     "description": "For hierarchical facets, any child facets",
