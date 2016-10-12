@@ -27,7 +27,7 @@
                 left: position.left,
                 minWidth: input.width(),
                 maxWidth: Math.max(input.width(), input.closest('form').width()),
-                zIndex: 50
+                zIndex: 1100
             });
         }
 
