@@ -1,3 +1,18 @@
+@organisation-info-max-w: 400px;
+.organisation-info.with-details {
+    & .info {
+        & .opening-times-week {
+            max-width: @organisation-info-max-w;
+        }
+        & h4 {
+            max-width: @organisation-info-max-w;
+        }
+    }
+    & .week-navi-holder {
+        max-width: @organisation-info-max-w;
+    }
+}
+
 .organisation-info {
     padding-bottom: 20px;
     & .loader {
@@ -14,7 +29,7 @@
     }
     & .row:not(.content) h2 {
         @media (max-width: @screen-xs-max) {
-            max-width: 400px;
+            max-width: @organisation-info-max-w;
             text-align: left;
         }
         text-align: center;
@@ -30,11 +45,13 @@
         font-weight: normal;
     }
     & .week-navi-holder {
-        max-width: 400px;
         text-align: center;
         font-weight: bold;
         margin-bottom: 10px;
         font-size: 1.1em;
+        @media (max-width: @screen-sm-max) {
+            max-width: @organisation-info-max-w;
+        }
         & i {
             font-size: 1.6em;
             margin-left: 4px;
@@ -57,7 +74,7 @@
         & h4 {
             margin-bottom: 5px;
             @media (max-width: @screen-sm-max) {
-                max-width: 400px;
+                max-width: @organisation-info-max-w;
             }
         }
         & .schedules {
@@ -70,8 +87,10 @@
         & .opening-times-week {
             font-size: 1.1em;
             width: 100%;
-            max-width: 400px;
             margin-bottom: 20px;
+            @media (max-width: @screen-sm-max) {
+                max-width: @organisation-info-max-w;
+            }
             & div.cell {
                 display: inline-block;
                 vertical-align: top;
@@ -164,6 +183,9 @@
     }
     & .schedules-info {
         margin-bottom: 10px;
+        @media (max-width: @screen-sm-max) {
+            max-width: @organisation-info-max-w;
+        }
     }
     & .btn {
         background: @link-color;

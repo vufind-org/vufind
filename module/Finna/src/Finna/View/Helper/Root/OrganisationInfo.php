@@ -81,12 +81,17 @@ class OrganisationInfo extends \Zend\View\Helper\AbstractHelper
             }
         }
 
+        $showDetails
+            = !isset($this->config->OpeningTimesWidget->details)
+            || $this->config->OpeningTimesWidget->details;
+
         return $this->getView()->render(
             'Helpers/organisation-info.phtml', [
                'id' => $id,
                'buildings' => $buildings,
                'target' => isset($params['target'])
-                  ? $params['target'] : 'widget'
+                   ? $params['target'] : 'widget',
+               'showDetails' => $showDetails
             ]
         );
     }

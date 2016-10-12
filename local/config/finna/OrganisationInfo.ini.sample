@@ -51,6 +51,9 @@ attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap<
 
 [OpeningTimesWidget]
 
+; Show details (pictures, links, services etc)
+details = true
+
 ; Map of services displayed in the opening times widget
 services[wifi] = "55871,55519,55621,55377,55696,55328,55799,55339,55620,55318,55376,55575,55290,55584,55717,55304"
 services[print] = "55355,55752,55856,55848,55628,55805,55375,55549,55342,55327,55332,55333,55749"

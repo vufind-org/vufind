@@ -2,7 +2,7 @@
   $this->headScript()->appendFile("finna-organisation-info.js");
   $this->headScript()->appendFile("finna-organisation-info-widget.js");
 ?>
-<div class="organisation-info" data-parent="<?=$this->escapeHtmlAttr($this->id)?>" data-target="<?=$this->escapeHtmlAttr($this->target)?>" data-init="<?=$this->target == 'widget' ? '1' : '0'?>"<?=!empty($this->buildings) ? (' data-buildings="' . implode(',', $this->buildings) . '"') : ''?>>
+<div class="organisation-info<?=$this->showDetails ? ' with-details' : ''?>" data-parent="<?=$this->escapeHtmlAttr($this->id)?>" data-target="<?=$this->escapeHtmlAttr($this->target)?>" data-init="<?=$this->target == 'widget' ? '1' : '0'?>"<?=!empty($this->buildings) ? (' data-buildings="' . implode(',', $this->buildings) . '"') : ''?>>
 <? if ($this->target == 'widget'): ?>
   <div class="row">
     <div class="col-xs-12">
@@ -15,7 +15,7 @@
     </div>
   </div>
   <div class="row content hide">
-    <div class="col-md-8 col-lg-7 col-xs-12 info">
+    <div class="<?=$this->showDetails ? 'col-md-8 col-lg-7 col-xs-12 ' : ''?>info">
       <h4>
         <div class="organisation-dropdown-holder">
           <div name="organisation" class="organisation dropdown">
@@ -60,7 +60,7 @@
         <div class="mobile-schedules info-element"></div>
       </div>
       <div class="schedules-info info-element"></div>
-<? if ($this->target == 'widget'): ?>
+<? if ($this->target == 'widget' && $this->showDetails): ?>
     </div>
     <div class="col-md-4 col-lg-5 col-xs-12">
       <a href="#" data-href="<?=$this->escapeHtmlAttr($this->url('organisationinfo-home'))?>" class="facility details"><img src="<?=$this->imageLink('noCover2.gif')?>" alt="" class="facility-image"></a>
