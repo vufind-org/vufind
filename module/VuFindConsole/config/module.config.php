@@ -8,12 +8,24 @@ $config = [
             'harvest' => 'VuFindConsole\Controller\HarvestController',
             'import' => 'VuFindConsole\Controller\ImportController',
             'language' => 'VuFindConsole\Controller\LanguageController',
+            'redirect' => 'VuFindConsole\Controller\RedirectController',
             'util' => 'VuFindConsole\Controller\UtilController',
         ],
     ],
     'console' => [
         'router'  => [
-          'router_class'  => 'VuFindConsole\Mvc\Router\ConsoleRouter',
+            'routes'  => [
+                'default-route' => [
+                    'type' => 'catchall',
+                    'options' => [
+                        'route' => '',
+                        'defaults' => [
+                            'controller' => 'redirect',
+                            'action' => 'consoledefault',
+                        ],
+                    ],
+                ],
+            ],
         ],
     ],
     'view_manager' => [
