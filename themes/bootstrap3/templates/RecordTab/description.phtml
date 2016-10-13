@@ -5,6 +5,24 @@
     // Grab clean ISBN for convenience:
     $isbn = $this->driver->getCleanISBN();
 ?>
+
+<?
+    $description = $this->Description($this->driver)->getItems();
+?>
+<? if (!empty($description)): ?>
+    <? foreach ($description as $itemName => $itemValue): ?>
+      <div class='col-xs-12 rds-dl'>
+         <div class="col-xs-12 col-md-5 col-lg-4 rds-dl-head <?=$itemName?>">
+            <?=$this->translate($itemName) ?>
+         </div>
+         <div class="col-xs-12 col-md-7 col-lg-8 rds-dl-panel">
+            <?= $itemValue ?>
+         </div>
+      </div>
+    <? endforeach; /* end foreach description */ ?>
+<? endif; ?>
+
+
 <table class="table table-striped" summary="<?=$this->transEsc('Description')?>">
   <? $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
     <? $contentDisplayed = true; ?>

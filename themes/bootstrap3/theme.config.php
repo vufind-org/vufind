@@ -31,6 +31,7 @@ return array(
             'recaptcha' => 'VuFind\View\Helper\Bootstrap3\Factory::getRecaptcha',
         ),
         'invokables' => array(
+            'description' => 'VuFind\View\Helper\Bootstrap3\Description',
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search'
         )
