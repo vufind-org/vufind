@@ -1,6 +1,6 @@
 # VuFind Road Map
 
-## v4.0
+## v4.0 ([Milestone](https://github.com/vufind-org/vufind/milestone/4))
 
 ### System Requirements
 - PHP 5.6
