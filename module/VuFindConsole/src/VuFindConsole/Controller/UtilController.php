@@ -108,26 +108,14 @@ class UtilController extends AbstractBase
         ini_set('memory_limit', '50M');
         ini_set('max_execution_time', '3600');
 
-        $this->consoleOpts->setOptions(
-            [\Zend\Console\Getopt::CONFIG_CUMULATIVE_PARAMETERS => true]
-        );
-        $this->consoleOpts->addRules(
-            [
-                'h|help' => 'Get help',
-                'd-s' => 'Delimiter',
-                't-s' => 'Template',
-                'f-s' => 'File',
-            ]
-        );
+        $request = $this->getRequest();
 
-        if ($this->consoleOpts->getOption('h')
-            || $this->consoleOpts->getOption('help')
-        ) {
+        if ($request->getParam('h') || $request->getParam('help')) {
             return $this->indexReservesHelp();
-        } elseif ($file = $this->consoleOpts->getOption('f')) {
+        } elseif ($file = $request->getParam('f')) {
             try {
-                $delimiter = ($d = $this->consoleOpts->getOption('d')) ? $d : ',';
-                $template = ($t = $this->consoleOpts->getOption('t')) ? $t : null;
+                $delimiter = $request->getParam('d', ',');
+                $template = $request->getParam('t');
                 $reader = new \VuFind\Reserves\CsvReader(
                     $file, $delimiter, $template
                 );
@@ -138,9 +126,9 @@ class UtilController extends AbstractBase
             } catch (\Exception $e) {
                 return $this->indexReservesHelp($e->getMessage());
             }
-        } elseif ($this->consoleOpts->getOption('d')) {
+        } elseif ($request->getParam('d')) {
             return $this->indexReservesHelp('-d is meaningless without -f');
-        } elseif ($this->consoleOpts->getOption('t')) {
+        } elseif ($request->getParam('t')) {
             return $this->indexReservesHelp('-t is meaningless without -f');
         } else {
             try {
@@ -662,12 +650,12 @@ class UtilController extends AbstractBase
      */
     public function cssbuilderAction()
     {
-        $argv = $this->consoleOpts->getRemainingArgs();
+        $opts = new \Zend\Console\Getopt([]);
         $compiler = new \VuFindTheme\LessCompiler(true);
         $cacheManager = $this->getServiceLocator()->get('VuFind\CacheManager');
         $cacheDir = $cacheManager->getCacheDir() . 'less/';
         $compiler->setTempPath($cacheDir);
-        $compiler->compile($argv);
+        $compiler->compile(array_unique($opts->getRemainingArgs()));
         return $this->getSuccessResponse();
     }
 

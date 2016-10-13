@@ -56,7 +56,7 @@ $routes = [
     'util/expire_external_sessions' => 'util expire_external_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/expire_searches' => 'util expire_searches [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
     'util/expire_sessions' => 'util expire_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
-    // util/indexReserves relies on default-route because it uses short, value-bearing flags
+    'util/index_reserves' => 'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
     'util/optimize' => 'util optimize [<core>]',
     'util/sitemap' => 'util sitemap',
     'util/suppressed' => 'util suppressed [--help|-h] [--authorities]',
