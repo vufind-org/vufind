@@ -82,10 +82,13 @@ class RedirectController extends \Zend\Mvc\Controller\AbstractActionController
         $action = array_shift($argv);
 
         // In case later scripts are displaying $argv[0] for the script name,
-        // let's push the full invocation into that position. We want to eliminate
-        // the $controller and $action values as separate parts of the array since
-        // they'll confuse subsequent command line processing logic.
-        array_unshift($argv, "$script $controller $action");
+        // let's push the full invocation into that position when index.php is
+        // used. We want to eliminate the $controller and $action values as separate
+        // parts of the array since they'll confuse subsequent parameter processing.
+        if (substr($script, -9) === 'index.php') {
+            $script .= " $controller $action";
+        }
+        array_unshift($argv, $script);
         $argc -= 2;
 
         try {
