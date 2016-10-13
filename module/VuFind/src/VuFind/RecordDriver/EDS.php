@@ -578,8 +578,9 @@ class EDS extends SolrDefault
      * The latter two params are only for internal use (recursion)
      *  
      * @param array $arrayKeys Key path to the needed value
-     * @param int $level only used for recursion
-     * @param array $fields only used for recursion
+     * @param int   $level     only used for recursion
+     * @param array $fields    only used for recursion
+      * 
      * @return array|string
      */
     public function getFieldRecursive($arrayKeys, $level = 0, $fields = null) 
@@ -602,6 +603,8 @@ class EDS extends SolrDefault
     }
     
     /**
+     * Get title of containing record
+     * 
      * @return string
      */
     public function getContainerTitle()
@@ -621,6 +624,8 @@ class EDS extends SolrDefault
 
     }
     /**
+     * Get issue of containing record
+     * 
      * @return string
      */
     public function getContainerIssue()
@@ -646,6 +651,8 @@ class EDS extends SolrDefault
         return '';
     }
     /**
+     * Get volume of containing record
+     * 
      * @return string
      */
     public function getContainerVolume()
@@ -672,6 +679,8 @@ class EDS extends SolrDefault
     }
     
     /**
+     * Get ISSNs (of containing record)
+     * 
      * @return array
      */
     public function getISSNs()
@@ -689,11 +698,13 @@ class EDS extends SolrDefault
         
         $identifiers = $this->getFieldRecursive($arrayKeys);  
         if (is_array($identifiers)) {
+            
             foreach ($identifiers as $key => $data) {
-                if (isset($data['Type']) && isset($data['Value']) &&
-                        strtolower($data['Type']) == 'issn-print') 
-                {
-                $issns[] = $data['Value'];
+                
+                if (isset($data['Type']) && isset($data['Value']) 
+                    && strtolower($data['Type']) == 'issn-print'
+                ) {
+                    $issns[] = $data['Value'];
                 }
             }            
         }
@@ -702,6 +713,8 @@ class EDS extends SolrDefault
     }   
         
     /**
+     * Get year of containing record
+     * 
      * @return string
      */
     public function getContainerYear()
@@ -721,6 +734,8 @@ class EDS extends SolrDefault
     }
     
     /**
+     * Get year of containing record
+     * 
      * @return string
      */
     public function getContainerPages()
