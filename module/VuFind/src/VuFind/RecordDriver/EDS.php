@@ -567,7 +567,179 @@ class EDS extends SolrDefault
      */
     public function exportDisabled($format)
     {
-        // EDS is not export-friendly; disable all formats.
-        return true;
+        // at the moment we only support RIS
+        return strtolower($format) != 'ris';
+    }
+    
+     /**
+     * This method can fetch fields out of the deeply nested RecordInfo array. 
+     * many fields are here in a more readable and atomic format
+     * 
+     * The latter two params are only for internal use (recursion)
+     *  
+     * @param array $arrayKeys Key path to the needed value
+     * @param int $level only used for recursion
+     * @param array $fields only used for recursion
+     * @return array|string
+     */
+    public function getFieldRecursive($arrayKeys, $level = 0, $fields = null) 
+    {
+
+        if (!$fields) {
+            $fields = $this->fields;
+        }
+        if (isset($fields[$arrayKeys[$level]])) {
+            $newFields = $fields[$arrayKeys[$level]];
+            $level++;                
+            if ($level < count($arrayKeys)) {
+                return $this->getFieldRecursive($arrayKeys, $level, $newFields);     
+            } else {
+                // end of recursion
+                return $newFields;
+            }  
+        }
+        return '';  
+    }
+    
+    /**
+     * @return string
+     */
+    public function getContainerTitle()
+    {
+        $arrayKeys = [
+            'RecordInfo',
+            'BibRecord',
+            'BibRelationships',
+            'IsPartOfRelationships',
+            0,
+            'BibEntity',
+            'Titles',
+            0,
+            'TitleFull' 
+        ];
+        return $this->getFieldRecursive($arrayKeys);        
+
+    }
+    /**
+     * @return string
+     */
+    public function getContainerIssue()
+    {
+        $arrayKeys = [
+            'RecordInfo',
+            'BibRecord',
+            'BibRelationships',
+            'IsPartOfRelationships',
+            0,
+            'BibEntity',
+            'Numbering',
+        ];
+        
+        $numbering = $this->getFieldRecursive($arrayKeys);   
+        if (is_array($numbering)) {
+            foreach ($numbering as $key => $data) {
+                if (isset($data['Type']) && strtolower($data['Type']) == 'issue') {
+                    return isset($data['Value']) ? $data['Value'] : '';
+                }
+            }            
+        }
+        return '';
+    }
+    /**
+     * @return string
+     */
+    public function getContainerVolume()
+    {
+        $arrayKeys = [
+            'RecordInfo',
+            'BibRecord',
+            'BibRelationships',
+            'IsPartOfRelationships',
+            0,
+            'BibEntity',
+            'Numbering',
+        ];
+        
+        $numbering = $this->getFieldRecursive($arrayKeys);     
+        if (is_array($numbering)) {
+            foreach ($numbering as $key => $data) {
+                if (isset($data['Type']) && strtolower($data['Type']) == 'volume') {
+                    return isset($data['Value']) ? $data['Value'] : '';
+                }
+            }            
+        }
+        return '';
+    }
+    
+    /**
+     * @return array
+     */
+    public function getISSNs()
+    {
+        $issns = parent::getIssns();
+        $arrayKeys = [
+            'RecordInfo',
+            'BibRecord',
+            'BibRelationships',
+            'IsPartOfRelationships',
+            0,
+            'BibEntity',
+            'Identifiers',
+        ];
+        
+        $identifiers = $this->getFieldRecursive($arrayKeys);  
+        if (is_array($identifiers)) {
+            foreach ($identifiers as $key => $data) {
+                if (isset($data['Type']) && isset($data['Value']) &&
+                        strtolower($data['Type']) == 'issn-print') 
+                {
+                $issns[] = $data['Value'];
+                }
+            }            
+        }
+        return $issns;
+        
+    }   
+        
+    /**
+     * @return string
+     */
+    public function getContainerYear()
+    {
+        $arrayKeys = [
+            'RecordInfo',
+            'BibRecord',
+            'BibRelationships',
+            'IsPartOfRelationships',
+            0,
+            'BibEntity',
+            'Dates',
+            '0',
+            'Y'
+        ];
+        return $this->getFieldRecursive($arrayKeys);        
+    }
+    
+    /**
+     * @return string
+     */
+    public function getContainerPages()
+    {
+        $arrayKeys = [
+            'RecordInfo',
+            'BibRecord',
+            'BibEntity',
+            'PhysicalDescription',
+            'Pagination',            
+            
+        ];
+        $pages = '';
+        $pagination = $this->getFieldRecursive($arrayKeys);  
+        if (isset($pagination['StartPage'])) {
+            $pages = $pagination['StartPage'];
+        }
+        // TODO add end page parsing
+        return $pages;
+        
     }
 }

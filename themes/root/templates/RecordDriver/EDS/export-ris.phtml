@@ -1,0 +1,108 @@
+<?
+$items = $this->driver->getItems();
+$pubType = strtolower($this->driver->getPubType());
+
+switch ($pubType) {
+    case 'academic journal': $type = 'JOUR';
+        break;
+    case 'report': $type = 'REPT';
+        break;
+    case 'aook': $type = 'BOOK';
+        break;
+    case 'article': $type = 'JOUR';
+        break;
+    case 'ebook': $type = 'EBOOK';
+        break;
+    case 'periodical': $type = 'MGZN';
+        break;
+    case 'dissertation/thesis': $type = 'THES';
+        break;
+    default: $type = 'GEN';   
+   
+}
+echo 'TY  - '.$type."\r\n";
+
+
+// Map Ebsco Labels to RIS fields
+// simple fields first
+$mapping = [
+    'Title'             => 'TI',
+    'Publication Year'  => 'PY',
+    'Language'          => 'LA',
+    'Abstract'          => 'AB',
+    'ISBN'              => 'SN',
+    'ISSN'              => 'SN',
+];
+foreach ($items as $item) {
+    if (isset($item['Label']) && isset($item['Data']) 
+        && array_key_exists($item['Label'], $mapping)) 
+    {
+        // replace html line breaks 
+        $data = preg_replace('/<br *\/*>/', '; ', $item['Data']);
+        echo $mapping[$item['Label']]. '  - '.strip_tags($data)."\r\n";
+    }
+}
+
+// now, we fetch the more complex fields
+$urls = [];
+foreach ($items as $item) {
+    $label = isset($item['Label']) ? $item['Label'] : '';
+    $data = isset($item['Data']) ? strip_tags($item['Data']) : '';
+    if (!empty($data) && !empty($label)){
+        if ($label == 'Su' || $label == 'Subjects' || $label == 'Subject Terms') {
+            $keywords = explode(',', $data);
+            foreach ($keywords as $keyword) {
+                $keyword = trim(str_replace('*', '', $keyword));
+                echo 'KW  - '.ucwords(strtolower($keyword))."\r\n";
+            }
+        } else if ($label == 'Source' && strpos($data, 'http') !== FALSE){
+            $urls[] = strip_tags($item['Data']);
+        } else if ($label == 'Source' && strpos($data, 'http') === FALSE) {
+            echo 'OP  - '.strip_tags($item['Data'])."\r\n";
+        } else if ($label == 'Access URL') {
+            $url = strip_tags($data);
+            
+            // crop multiple urls in one string
+            $pos = strlen($url);
+            if ($tmp = strpos($data, 'http', 5) > 5) {
+                $pos = $tmp;
+            } 
+            $urls[] = substr($url, 0, $pos);
+        } 
+    }
+}
+$authors = array_unique($this->driver->getPrimaryAuthors());
+if (isset($authors[0]))
+    echo 'AU  - '.ucwords(strtolower($authors[0]))."\r\n";
+if (isset($authors[1]))
+    echo 'A2  - '.ucwords(strtolower($authors[1]))."\r\n";
+if (isset($authors[2]))
+    echo 'A3  - '.ucwords(strtolower($authors[2]))."\r\n";
+if (isset($authors[3]))
+    echo 'A4  - '.ucwords(strtolower($authors[3]))."\r\n";
+    
+    
+// finally print out all found urls, separated by semicolon. 
+if (count($urls) > 0) {
+    echo 'UR  - '.implode(';', $urls)."\r\n";
+}
+$containerTitle = $this->driver->getContainerTitle(); if (strlen($containerTitle) > 0) {
+    echo 'T2  - '.$containerTitle."\r\n";
+}
+$issn = $this->driver->getCLEANISSN(); if (strlen($issn) > 0) {
+    echo 'SN  - '.$issn."\r\n";
+}
+$containerVolume = $this->driver->getContainerVolume(); if (strlen($containerVolume) > 0) {
+    echo 'VL  - '.$containerVolume."\r\n";
+}
+$containerIssue = $this->driver->getContainerIssue(); if (strlen($containerIssue) > 0) {
+    echo 'IS  - '.$containerIssue."\r\n";
+}
+$containerPages = $this->driver->getContainerPages(); if (strlen($containerPages) > 0) {
+    echo 'SP  - '.$containerPages."\r\n";
+}
+
+
+// End of Record:
+echo "ER  -\r\n\r\n";
+?>
