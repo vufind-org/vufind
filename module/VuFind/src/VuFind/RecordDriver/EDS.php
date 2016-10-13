@@ -578,11 +578,12 @@ class EDS extends SolrDefault
      * The latter two params are only for internal use (recursion)
      *  
      * @param array $arrayKeys Key path to the needed value
-     * @param int $level only used for recursion
-     * @param array $fields only used for recursion
+     * @param int   $level     only used for recursion
+     * @param array $fields    only used for recursion
+      * 
      * @return array|string
      */
-    public function getFieldRecursive($arrayKeys, $level = 0, $fields = null) 
+    public function getFieldRecursive($arrayKeys, $level = 0, $fields = null)
     {
 
         if (!$fields) {
@@ -590,18 +591,20 @@ class EDS extends SolrDefault
         }
         if (isset($fields[$arrayKeys[$level]])) {
             $newFields = $fields[$arrayKeys[$level]];
-            $level++;                
+            $level++;
             if ($level < count($arrayKeys)) {
-                return $this->getFieldRecursive($arrayKeys, $level, $newFields);     
+                return $this->getFieldRecursive($arrayKeys, $level, $newFields);
             } else {
                 // end of recursion
                 return $newFields;
-            }  
+            }
         }
-        return '';  
+        return '';
     }
     
     /**
+     * Get title of containing record
+     * 
      * @return string
      */
     public function getContainerTitle()
@@ -615,12 +618,14 @@ class EDS extends SolrDefault
             'BibEntity',
             'Titles',
             0,
-            'TitleFull' 
+            'TitleFull'
         ];
-        return $this->getFieldRecursive($arrayKeys);        
+        return $this->getFieldRecursive($arrayKeys);
 
     }
     /**
+     * Get issue of containing record
+     * 
      * @return string
      */
     public function getContainerIssue()
@@ -635,17 +640,19 @@ class EDS extends SolrDefault
             'Numbering',
         ];
         
-        $numbering = $this->getFieldRecursive($arrayKeys);   
+        $numbering = $this->getFieldRecursive($arrayKeys);
         if (is_array($numbering)) {
             foreach ($numbering as $key => $data) {
                 if (isset($data['Type']) && strtolower($data['Type']) == 'issue') {
                     return isset($data['Value']) ? $data['Value'] : '';
                 }
-            }            
+            }
         }
         return '';
     }
     /**
+     * Get volume of containing record
+     * 
      * @return string
      */
     public function getContainerVolume()
@@ -660,18 +667,20 @@ class EDS extends SolrDefault
             'Numbering',
         ];
         
-        $numbering = $this->getFieldRecursive($arrayKeys);     
+        $numbering = $this->getFieldRecursive($arrayKeys);
         if (is_array($numbering)) {
             foreach ($numbering as $key => $data) {
                 if (isset($data['Type']) && strtolower($data['Type']) == 'volume') {
                     return isset($data['Value']) ? $data['Value'] : '';
                 }
-            }            
+            }
         }
         return '';
     }
     
     /**
+     * Get ISSNs (of containing record)
+     * 
      * @return array
      */
     public function getISSNs()
@@ -687,21 +696,25 @@ class EDS extends SolrDefault
             'Identifiers',
         ];
         
-        $identifiers = $this->getFieldRecursive($arrayKeys);  
+        $identifiers = $this->getFieldRecursive($arrayKeys);
         if (is_array($identifiers)) {
+            
             foreach ($identifiers as $key => $data) {
-                if (isset($data['Type']) && isset($data['Value']) &&
-                        strtolower($data['Type']) == 'issn-print') 
-                {
-                $issns[] = $data['Value'];
+                
+                if (isset($data['Type']) && isset($data['Value'])
+                    && strtolower($data['Type']) == 'issn-print'
+                ) {
+                    $issns[] = $data['Value'];
                 }
-            }            
+            }
         }
         return $issns;
         
-    }   
+    }
         
     /**
+     * Get year of containing record
+     * 
      * @return string
      */
     public function getContainerYear()
@@ -717,10 +730,12 @@ class EDS extends SolrDefault
             '0',
             'Y'
         ];
-        return $this->getFieldRecursive($arrayKeys);        
+        return $this->getFieldRecursive($arrayKeys);
     }
     
     /**
+     * Get year of containing record
+     * 
      * @return string
      */
     public function getContainerPages()
@@ -730,11 +745,11 @@ class EDS extends SolrDefault
             'BibRecord',
             'BibEntity',
             'PhysicalDescription',
-            'Pagination',            
+            'Pagination',
             
         ];
         $pages = '';
-        $pagination = $this->getFieldRecursive($arrayKeys);  
+        $pagination = $this->getFieldRecursive($arrayKeys);
         if (isset($pagination['StartPage'])) {
             $pages = $pagination['StartPage'];
         }
