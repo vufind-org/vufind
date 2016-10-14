@@ -54,7 +54,8 @@ VuFind.register('embedded', function embedded() {
       urlroot = source.charAt(0).toUpperCase() + source.slice(1).toLowerCase() + 'Record';
     }
     if (!$tab.hasClass('loaded')) {
-      $('#' + tabid + '-content').html(
+      var $tabContent = $('#' + tabid + '-content');
+      $tabContent.html(
         '<i class="fa fa-spinner fa-spin"></i> ' + VuFind.translate('loading') + '...'
       );
       var tab = tabid.split('_');
@@ -66,10 +67,10 @@ VuFind.register('embedded', function embedded() {
         success: function ajaxTabSuccess(data) {
           var html = data.trim();
           if (html.length > 0) {
-            $('#' + tabid + '-content').html(html);
-            registerTabEvents();
+            $tabContent.html(html);
+            registerTabEvents($tabContent);
           } else {
-            $('#' + tabid + '-content').html(VuFind.translate('collection_empty'));
+            $tabContent.html(VuFind.translate('collection_empty'));
           }
           if (typeof syn_get_widget === 'function') {
             syn_get_widget();
