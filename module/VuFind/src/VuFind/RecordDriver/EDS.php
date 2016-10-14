@@ -583,7 +583,7 @@ class EDS extends SolrDefault
       * 
      * @return array|string
      */
-    public function getFieldRecursive($arrayKeys, $level = 0, $fields = null)
+    protected function getFieldRecursive($arrayKeys, $level = 0, $fields = null)
     {
 
         if (!$fields) {
