@@ -1,5 +1,5 @@
 /**
- * crhallberg/autocomplete.js 0.15.1
+ * crhallberg/autocomplete.js 0.16.1
  * ~ @crhallberg
  */
 (function autocomplete( $ ) {
@@ -87,6 +87,19 @@
     align(input);
   }
 
+  function handleResults(input, term, data) {
+    var cid = input.data('cache-id');
+    cache[cid][term] = data;
+    if (data.length === 0) {
+      hide();
+    } else {
+      createList(data, input);
+    }
+  }
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+  function escapeRegExp(string){
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+  }
   function search(input) {
     if (xhr) { xhr.abort(); }
     if (input.val().length >= options.minLength) {
@@ -101,14 +114,17 @@
         } else {
           createList(cache[cid][term], input);
         }
+      } else if (typeof options.static !== 'undefined') {
+        var regex = new RegExp(escapeRegExp(input.val()), 'i');
+        handleResults(input, term, options.static.filter(function staticFilter(_item) {
+          var content = typeof _item === 'string'
+            ? _item
+            : _item.label || _item.value;
+          return content.match(regex);
+        }));
       } else {
         options.handler(input, function achandlerCallback(data) {
-          cache[cid][term] = data;
-          if (data.length === 0) {
-            hide();
-          } else {
-            createList(data, input);
-          }
+          handleResults(input, term, data);
         });
       }
       input.data('selected', -1);
@@ -253,8 +269,8 @@
           cache[cid] = {};
         }
         return input;
-      } else if ('undefined' == typeof settings.handler) {
-        console.error('handler function not provided for autocomplete');
+      } else if (typeof settings.handler === 'undefined' && typeof settings.static === 'undefined') {
+        console.error('Neither handler function nor static result list provided for autocomplete');
         return this;
       } else {
         options = $.extend( {}, options, settings );
