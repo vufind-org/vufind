@@ -450,12 +450,28 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Is SMS enabled?
+     *
+     * @return bool
+     */
+    protected function smsEnabled()
+    {
+        $check = $this->getServiceLocator()->get('VuFind\AccountCapabilities');
+        return $check->getSmsSetting() !== 'disabled';
+    }
+
+    /**
      * SMS action - Allows the SMS form to appear.
      *
      * @return \Zend\View\Model\ViewModel
      */
     public function smsAction()
     {
+        // Make sure comments are enabled:
+        if (!$this->smsEnabled()) {
+            throw new ForbiddenException('SMS disabled');
+        }
+
         // Retrieve the record driver:
         $driver = $this->loadRecord();
 
