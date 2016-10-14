@@ -50,6 +50,7 @@ return array(
             'localizedNumber' => 'VuFind\View\Helper\Root\LocalizedNumber',
             'printms' => 'VuFind\View\Helper\Root\Printms',
             'recommend' => 'VuFind\View\Helper\Root\Recommend',
+            'recorddataformatter' => 'VuFind\View\Helper\Root\RecordDataFormatter',
             'renderarray' => 'VuFind\View\Helper\Root\RenderArray',
             'resultfeed' => 'VuFind\View\Helper\Root\ResultFeed',
             'sortfacetlist' => 'VuFind\View\Helper\Root\SortFacetList',
