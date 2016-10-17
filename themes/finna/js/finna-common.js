@@ -19,6 +19,7 @@ finna.common = (function() {
         }
         $(window).keypress(function(e) {
             if (e && (!$(e.target).is('input, textarea, select')) 
+                  && !$(e.target).hasClass('dropdown-toggle') // Bootstrap dropdown
                   && !$('#modal').is(':visible') 
                   && (e.which >= 48) // Start from normal input keys
                   && !(e.metaKey || e.ctrlKey || e.altKey)
