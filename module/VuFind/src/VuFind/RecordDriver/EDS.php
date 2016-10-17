@@ -38,12 +38,20 @@ namespace VuFind\RecordDriver;
  */
 class EDS extends SolrDefault
 {
+    const ITERATE = 'Iterate';
     /**
      * Document types that are treated as PDF links.
      *
      * @var array
      */
     protected $pdfTypes = ['ebook-pdf', 'pdflink'];
+    
+    protected $prioritizedFields  = [
+        'Languages' => [
+            ['RecordInfo', 'BibRecord', 'BibEntity', 'Languages', 0, 'Text'],
+            ['Items', 1, 'Languages', 'Data']
+        ]
+    ];
 
     /**
      * Return the unique identifier of this record within the Solr index;
@@ -603,6 +611,27 @@ class EDS extends SolrDefault
     }
     
     /**
+     * Tries to get a piece of information from different locations, configured
+     * in the prioritizedFields property. 
+     * 
+     * @param string $method array key from $this-prioritizedFields
+     * 
+     * @return string
+     */
+    protected function prioritizedFields($method) 
+    {
+        $result = '';
+        if (isset($this->prioritizedFields[$method])) {
+            foreach ($this->prioritizedFields[$method] as $prio => $arrayKeys) {
+                if (empty($result)) {
+                    $result = $this->getFieldRecursive($arrayKeys);
+                }
+            }           
+        }
+        return $result;
+    }
+    
+    /**
      * Get title of containing record
      * 
      * @return string
@@ -756,5 +785,15 @@ class EDS extends SolrDefault
         // TODO add end page parsing
         return $pages;
         
+    }
+    
+    /**
+     * Get record languages
+     * 
+     * @return array
+     */
+    public function getLanguages() 
+    {
+        return explode(',', $this->prioritizedFields('Languages'));
     }
 }
