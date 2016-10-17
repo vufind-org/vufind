@@ -626,6 +626,7 @@ class EDS extends SolrDefault
                     $result = $this->getFieldRecursive($arrayKeys);
                 }
             }
+
         }
         return $result;
     }
