@@ -617,7 +617,7 @@ class EDS extends SolrDefault
      * 
      * @return string
      */
-    protected function prioritizedFields($method)
+    protected function prioritizedFields($method) 
     {
         $result = '';
         if (isset($this->prioritizedFields[$method])) {
@@ -625,7 +625,7 @@ class EDS extends SolrDefault
                 if (empty($result)) {
                     $result = $this->getFieldRecursive($arrayKeys);
                 }
-            }
+            }           
         }
         return $result;
     }
@@ -791,7 +791,7 @@ class EDS extends SolrDefault
      * 
      * @return array
      */
-    public function getLanguages()
+    public function getLanguages() 
     {
         return explode(',', $this->prioritizedFields('Languages'));
     }
