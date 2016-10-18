@@ -15,7 +15,7 @@
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
       'search/searchbox.phtml',
-      array(
+      [
         'lookfor' => $lookfor,
         'searchIndex' => $this->params->getSearchHandler(),
         'searchType' => $this->params->getSearchType(),
@@ -28,7 +28,7 @@
         'savedSearches' => $this->layout()->savedTabs,
         'ignoreHiddenFiltersInRequest' => isset($this->ignoreHiddenFiltersInRequest) ? $this->ignoreHiddenFiltersInRequest : false,
         'ignoreHiddenFilterMemory' => isset($this->ignoreHiddenFilterMemory) ? $this->ignoreHiddenFilterMemory : false,
-      )
+      ]
   );
 
   // Set up breadcrumbs:
@@ -42,7 +42,7 @@
     // Set up Finna Main Header:
     $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
         'search/header.phtml',
-        array(
+        [
           'results' => $this->results,
           'params' => $this->params,
           'lookfor' => $lookfor,
@@ -53,7 +53,7 @@
           'recordsFound' => $this->results->getResultTotal() > 0,
           'searchType' => $this->params->getsearchType(),
           'lookfor' => $lookfor
-        )
+        ]
      );
   }
 
@@ -97,7 +97,7 @@
         </div>
         <? endif; ?>
         <div<?= !$browse ? ' class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8"' : ' class="col-xs-12"' ?>>
-            <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results, 'label' => $browse ? "browse_extended_" . ucfirst($browse) : 'Showing'))?>
+            <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $browse ? "browse_extended_" . ucfirst($browse) : 'Showing'])?>
         </div>
         <? $this->layout()->srmessage = $this->translate('Showing') . ' ' . $this->results->getStartRecord() . ' - ' . $this->results->getEndRecord() . " / $recordTotal"; ?>
     </div>
@@ -136,10 +136,10 @@
     <? else: ?>
     <div class="row">
       <form class="form-inline col-xs-12" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
-        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
          <?= $this->authorizationNote($searchClassId) ?>
         <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
-        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_'])?>
       </form>
     </div>
     <? endif; ?>
@@ -163,7 +163,7 @@
 </div>
 <? // Close the container div opened in layout: ?>
 </div>
-<? $pagination = $this->paginationControl($this->results->getPaginator()->setPageRange(5), 'Sliding', 'search/pagination.phtml', array('results' => $this->results)); if (trim($pagination)): ?>
+<? $pagination = $this->paginationControl($this->results->getPaginator()->setPageRange(5), 'Sliding', 'search/pagination.phtml', ['results' => $this->results]); if (trim($pagination)): ?>
 <div class="container-fluid pagination-background">
   <div class="container">
     <div class="row">

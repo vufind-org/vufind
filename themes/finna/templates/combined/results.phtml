@@ -12,7 +12,7 @@
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
     'search/searchbox.phtml',
-    array(
+    [
       'lookfor' => $lookfor,
       'searchIndex' => $this->params->getSearchHandler(),
       'searchType' => $this->params->getSearchType(),
@@ -23,7 +23,7 @@
       'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
       'selectedShards' => $this->params->getSelectedShards(),
       'savedSearches' => $this->layout()->savedTabs
-    )
+    ]
   );
 
   // Create shortcut to combined results (since $this->results may get overwritten in processing below):
@@ -58,15 +58,15 @@
       <? endforeach; ?>
     </div>
   <? endif; ?>
-  <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
+  <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
   <?
-    $viewParams = array(
+    $viewParams = [
       'searchClassId' => $searchClassId,
       'combinedResults' => $this->combinedResults,
       'supportsCartOptions' => $this->supportsCartOptions,
       'showCartControls' => $this->showCartControls,
       'showBulkOptions' => $this->showBulkOptions
-    );
+    ];
   ?>
   <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
   <? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
@@ -82,12 +82,12 @@
   // Set up Finna Main Header:
    $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
       'search/header.phtml',
-      array(
+      [
         'results' => $combinedResults,
         'params' => $combinedResults->getParams(),
         'lookfor' => $combinedResults->getParams()->getDisplayQuery(),
         'recordsFound' => true // This might not be true, but we don't really know
-      )
+      ]
   );
 
 ?>

@@ -1,14 +1,14 @@
 <!-- START of: finna - content/content.phtml -->
 <div class="row">
 <div class="col-xs-12">
-    <?= $this->context($this)->renderInContext('content/' . $page . '.phtml', array()); ?>
+    <?= $this->context($this)->renderInContext('content/' . $page . '.phtml', []); ?>
 </div>
 <?
   $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
       'content/header.phtml',
-      array(
+      [
         'heading' => $this->content()->getHeading(),
-      )
+      ]
   );
 ?>
 </div>

@@ -12,7 +12,7 @@
   $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
 
   // Set up myresearch menu
-  $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'));
+  $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => isset($list) ? 'list' . $list['id'] : 'favorites']);
 
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'Favorites';
@@ -79,7 +79,7 @@
           <?=$this->render('search/controls/limit.phtml')?>
         </div>
         <div class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8">
-          <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results))?>
+          <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results])?>
         </div>
       </div>
     </div>
@@ -87,7 +87,7 @@
   <div class="row">
     <div class="col-xs-12">
       <form class="form" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox>
-        <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account, 'lists' => $lists))?>
+        <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account, 'lists' => $lists])?>
         <? foreach ($this->results->getResults() as $i=>$current): ?>
           <?=$this->record($current)->getListEntry($list, $user)?>
         <? endforeach; ?>
@@ -100,7 +100,7 @@
     <div class="search-controls row">
       <div class="col-xs-12 text-center">
         <hr>
-        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results))?>
+        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results])?>
       </div>
     </div>
     <? endif;?>
@@ -108,7 +108,7 @@
   </div>
   <div class="col-sm-3 col-sm-pull-9 sidebar mylist-bar">
   <? if ($this->userlist()->getMode() !== 'disabled' && $user = $this->auth()->isLoggedIn()): ?>
-  <?= $this->partial('myresearch/mylist-navi.phtml', array('user' => $user, 'isDefaultList' => $isDefaultList, 'activeId' => $activeId, 'activePublic' => $activePublic, 'lists' => $lists, 'results' => $this->results)); ?>
+  <?= $this->partial('myresearch/mylist-navi.phtml', ['user' => $user, 'isDefaultList' => $isDefaultList, 'activeId' => $activeId, 'activePublic' => $activePublic, 'lists' => $lists, 'results' => $this->results]); ?>
   <? endif ?>
   </div>
 </div>

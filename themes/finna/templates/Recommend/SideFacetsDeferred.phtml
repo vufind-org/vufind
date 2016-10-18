@@ -53,7 +53,7 @@
 ?>
   <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$html ?></div>
 <? endif; ?>
-<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
+<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
 <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
 <?
     $queryHandler = 'AllFields';

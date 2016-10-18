@@ -10,7 +10,7 @@
         <div class="cover-wrapper">
           <? /* Display thumbnail if appropriate: */ ?>
           <? if ($img): ?>
-            <?= $img->render('record', array('small' => array('w' => 50, 'h' => 50), 'medium' => array('w' => 1200, 'h' => 1200))) ?>
+            <?= $img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
           <? endif;?>
           <? /* Display qrcode if appropriate: */ ?>
           <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
@@ -145,7 +145,7 @@
         <? if (isset($abstracts[$this->layout()->userLang])): ?>
             <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
           <? else: ?>
-            <?=implode('<br><br>', array_map(array($this, 'escapeHtml'), $abstracts))?>
+            <?=implode('<br><br>', array_map([$this, 'escapeHtml'], $abstracts))?>
           <? endif; ?>
         </p>
       </div>
@@ -298,7 +298,7 @@
       <tr class="recordComponentParts">
         <th><?=$this->transEsc('child_records')?>: </th>
         <td>
-          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('child_record_count', array('%%count%%' => $childRecordCount))?></a>
+          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('child_record_count', ['%%count%%' => $childRecordCount])?></a>
         </td>
       </tr>
       <? endif; ?>
@@ -327,7 +327,7 @@
         <tr class="recordTOC">
           <th><?=$this->transEsc('Table of Contents')?>:</th>
           <td>
-            <?=implode('<br>', array_map(array($this, 'escapeHtml'), $toc))?>
+            <?=implode('<br>', array_map([$this, 'escapeHtml'], $toc))?>
           </td>
         </tr>
       <? endif; ?>

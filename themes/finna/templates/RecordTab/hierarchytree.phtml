@@ -12,7 +12,7 @@
      'SET'
   );
   $this->jsTranslations()->addStrings(
-    array('showTree' => 'hierarchy_show_tree', 'hideTree' => 'hierarchy_hide_tree')
+    ['showTree' => 'hierarchy_show_tree', 'hideTree' => 'hierarchy_hide_tree']
   );
   $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/jsTree/jstree.min.js');
   $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'hierarchyTree.js');

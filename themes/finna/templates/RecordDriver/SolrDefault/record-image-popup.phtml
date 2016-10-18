@@ -38,7 +38,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
                 <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
               <? endif; ?>
               <? if ($results = $this->driver->getSubjectDates() && !isset($dates[0])): ?>
-                <?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?>
+                <?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?>
               <? endif; ?>
               </div>
             <? endif; ?>
@@ -48,7 +48,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
       <? if (count($results)): ?>
         <div class="building">
         <? foreach($results as $index => $institution): ?>
-          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", array(), $this->translate($institution))?>
+          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", [], $this->translate($institution))?>
         <? endforeach; ?>
         </div>
       <? endif ?>
@@ -131,7 +131,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
             <? endif ?>
             <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
               <p><?= $this->translate('Image Rights Default') ?>
-              <p><a href="<?= $this->url('content-page', array('page' => 'terms_conditions')) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
+              <p><a href="<?= $this->url('content-page', ['page' => 'terms_conditions']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
             <? endif; ?>
           </div>
           <div class="less-link copyright-link"><a data-mode="0" href=""><?= $this->translate('show_less') ?><i class="fa fa-arrow-up"></i></a></div>

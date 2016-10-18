@@ -42,7 +42,7 @@
             <? foreach ($summInCollection as $collId => $collText): ?>
               <div>
                 <b><?=$this->transEsc("in_collection_label")?></b>
-                <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+                <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
                   <?=$this->escapeHtml($collText)?>
                 </a>
               </div>
@@ -72,14 +72,14 @@
         $i = 0;
         foreach ($dedupData as $source => $current) {
           if (++$i == 1) {
-            ?><span class="currentSource"><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc("source_$source", array(), $source)?></a></span><?
+            ?><span class="currentSource"><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc("source_$source", [], $source)?></a></span><?
           } else {
             if ($i == 2) {
               ?> <span class="otherSources">(<?=$this->transEsc('Other Sources')?>: <?
             } else {
               ?>, <?
             }
-            ?><a href="<?=$this->recordLink()->getUrl($current['id'])?>"><?=$this->transEsc("source_$source", array(), $source)?></a><?
+            ?><a href="<?=$this->recordLink()->getUrl($current['id'])?>"><?=$this->transEsc("source_$source", [], $source)?></a><?
           }
         }
         if ($i > 1) {
@@ -146,7 +146,7 @@
       <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
         <?
           // Add JS Variables for QrCode
-          $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
+          $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
         <span class="hidden-xs">
           <i class="fa fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>

@@ -4,7 +4,7 @@
   $this->headTitle($this->translate('Storage Retrieval Requests'));
 
   // Set up myresearch menu
-  $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'storageRetrievalRequests'));
+  $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'storageRetrievalRequests']);
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Storage Retrieval Requests') . '</li>';
@@ -15,10 +15,10 @@
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <? if (!$this->translationEmpty('storage_requests_instructions_html')): ?><p class="no-content-message"><?=$this->transEsc('storage_requests_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
-    <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
+    <?=$this->partial('myresearch/borrowing-block.phtml', ['profile' => $this->profile]); ?>
     <div class="useraccount-header"><?=$this->transEsc('Storage Retrieval Requests') ?>
      (<?=count($this->recordList);?>)
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
     <? if (isset($this->noSupport)): ?>
       <? if ($user->getLibraryCards()->count() > 1): ?>
         <div class="support-notice">

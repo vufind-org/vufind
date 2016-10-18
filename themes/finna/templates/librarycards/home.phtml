@@ -4,7 +4,7 @@
     $this->headTitle($this->translate('Library Cards'));
 
     // Set up menu
-    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'librarycards'));
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'librarycards']);
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Library Cards') . '</li>';

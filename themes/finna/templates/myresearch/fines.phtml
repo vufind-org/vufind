@@ -4,7 +4,7 @@
     $this->headTitle($this->translate('My Fines'));
 
     // Set up myresearch menu
-    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'fines'));
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'fines']);
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Fines') . '</li>';
@@ -24,8 +24,8 @@
 
     <? if (!$this->translationEmpty('fines_instructions_html')): ?><p class="no-content-message"><?=$this->translate('fines_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
-    <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
-    <div class="useraccount-header"><?=$this->transEsc('Your Fines')?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
+    <?=$this->partial('myresearch/borrowing-block.phtml', ['profile' => $this->profile]); ?>
+    <div class="useraccount-header"><?=$this->transEsc('Your Fines')?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
     <br>
     <? if (isset($this->noSupport)): ?>
       <? if ($user->getLibraryCards()->count() > 1): ?>

@@ -106,13 +106,13 @@
   <?
     $viewType = in_array('list', array_keys($params->getViewList()))
       ? 'list' : $params->getView();
-    $viewParams = array(
+    $viewParams = [
       'results' => $results,
       'params' => $params,
       'showCartControls' => $this->showCartControls,
       'showBulkOptions' => $this->showBulkOptions,
       'searchClassId' => $searchClassId
-    );
+    ];
   ?>
   <?= $this->authorizationNote($searchClassId) ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>

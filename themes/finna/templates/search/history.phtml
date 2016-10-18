@@ -7,7 +7,7 @@
 
   // Set up myresearch menu
   if ($saveSupported && $this->auth()->isLoggedIn()):
-    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'history'));
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'history']);
   else:
     $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1>' . $this->transEsc("history_saved_searches") . '</h1></div>';
   endif;
@@ -30,12 +30,12 @@
     <?=$this->flashmessages();?>
     <? if ($saveSupported && !empty($this->saved)): ?>
       <h2><?=$this->transEsc("history_saved_searches")?></h2>
-      <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => true));?>
+      <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => true]);?>
     <? endif; ?>
 
     <h2><?=$this->transEsc("history_recent_searches")?></h2>
     <? if (!empty($this->unsaved)): ?>
-      <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => false));?>
+      <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
       <p class="text-right"><a href="?purge=true"><i class="fa fa-button fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_purge")?></a></p>
       <br/>
     <? else: ?>

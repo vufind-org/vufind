@@ -6,9 +6,9 @@ $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
 // Set up Finna Main Header:
 $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
     'list/header.phtml',
-    array(
+    [
         'lookfor' => $list->title,
-    )
+    ]
 );
 $this->headScript()->appendFile("finna-item-status.js");
 $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1");
@@ -41,22 +41,22 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
               <?=$this->render('search/controls/limit.phtml')?>
           </div>
           <div class="col-sm-5 col-md-3 col-sm-pull-7 col-md-pull-9">
-              <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results)) ?>
+              <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results]) ?>
           </div>
       </div>
     </div>
 </div>
 <div class="row public-list-view results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
     <form class="form-inline col-sm-12 col-md-10 col-lg-9" method="post" name="bulkActionForm" action="<?= $this->url('cart-home') ?>">
-        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => '')) ?>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => '']) ?>
         <?=$this->render('search/list-' . $this->params->getView() . '.phtml') ?>
-        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_')) ?>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_']) ?>
     </form>
 </div>
 <div class="container-fluid pagination-background">
   <div class="container">
     <div class="col-xs-12 text-center">
-      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results])?>
     </div>
   </div>
 </div>

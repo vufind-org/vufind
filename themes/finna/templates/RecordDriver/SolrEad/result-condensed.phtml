@@ -5,7 +5,7 @@
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   if ($img):
     ob_start(); ?>
-    <?=$img->render('list', array('medium' => array('w' => 300, 'h' => 300))) ?>
+    <?=$img->render('list', ['medium' => ['w' => 300, 'h' => 300]]) ?>
     <? $thumbnail = ob_get_contents(); ?>
   <? ob_end_clean(); ?>
 <? endif;?>
@@ -31,7 +31,7 @@
         <div class="resultHierarchyLinks">
           <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
           <? if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
-          <?=implode(', ', array_map(function($str) { return $this->escapeHtml($this->translate("source_$str", array(), $str)); }, $this->driver->getInstitutions())); ?>
+          <?=implode(', ', array_map(function($str) { return $this->escapeHtml($this->translate("source_$str", [], $str)); }, $this->driver->getInstitutions())); ?>
         </div>
       </div>
     </div>
@@ -87,7 +87,7 @@
         <? endif; ?>
       <div class="summary">
       <? if($this->driver->isCollection()): ?>
-        <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+        <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
       <? else: ?>
         <? $authors = $this->driver->tryMethod('getAuthorsWithRoles'); if (!empty($authors)): ?>
           <? $author = $authors[0]; ?>
@@ -136,7 +136,7 @@
       <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
         <?
           // Add JS Variables for QrCode
-          $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
+          $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
         <div class="hidden-xs">
           <i class="fa fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>

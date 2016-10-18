@@ -120,8 +120,8 @@
     <? endif; ?>
     <?
       $filterDetails = $this->searchbox()->getFilterDetails(
-          isset($this->filterList) && is_array($this->filterList) ? $this->filterList : array(),
-          isset($this->checkboxFilters) && is_array($this->checkboxFilters) ? $this->checkboxFilters : array()
+          isset($this->filterList) && is_array($this->filterList) ? $this->filterList : [],
+          isset($this->checkboxFilters) && is_array($this->checkboxFilters) ? $this->checkboxFilters : []
       );
     ?>
      <? $defaultFilterState = $this->hasDefaultsApplied || $options->getRetainFilterSetting() || !$defaultSortApplied ? ' checked="checked"' : ''; ?>

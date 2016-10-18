@@ -4,7 +4,7 @@
     $this->headTitle($this->translate('Interlibrary Loan Requests'));
 
     // Set up myresearch menu
-    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'ILLRequests'));
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'ILLRequests']);
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
@@ -16,11 +16,11 @@
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <? if (!$this->translationEmpty('ill_requests_instructions_html')): ?><p class="no-content-message"><?=$this->transEsc('ill_requests_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
-    <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
+    <?=$this->partial('myresearch/borrowing-block.phtml', ['profile' => $this->profile]); ?>
     <div class="useraccount-header">
     <?=$this->transEsc('Interlibrary Loan Requests') ?>
     (<?=count($this->recordList);?>)
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
     <? if (isset($this->noSupport)): ?>
       <? if ($user->getLibraryCards()->count() > 1): ?>
         <div class="support-notice">
@@ -164,7 +164,7 @@
             <? endif; ?>
 
             <? if (isset($ilsDetails['in_transit']) && $ilsDetails['in_transit']): ?>
-              <div class="text-success"><?=$this->transEsc("request_in_transit") . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], array(), $ilsDetails['in_transit']) : '') ?></div>
+              <div class="text-success"><?=$this->transEsc("request_in_transit") . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], [], $ilsDetails['in_transit']) : '') ?></div>
             <? endif; ?>
             <? if (isset($ilsDetails['processed']) && $ilsDetails['processed']): ?>
               <div class="alert alert-success"><?=$this->transEsc("ill_request_processed") . (is_string($ilsDetails['processed']) ? ': ' . $ilsDetails['processed'] : '') ?></div>

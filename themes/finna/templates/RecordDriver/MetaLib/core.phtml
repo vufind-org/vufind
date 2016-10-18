@@ -205,7 +205,7 @@
       <tr>
         <th><?=$this->transEsc('child_records')?>: </th>
         <td>
-          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('child_record_count', array('%%count%%' => $childRecordCount))?></a>
+          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('child_record_count', ['%%count%%' => $childRecordCount])?></a>
         </td>
       </tr>
       <? endif; ?>
@@ -440,7 +440,7 @@
     </tr>
   <? endif; ?>
 
-  <? $authorNotes = empty($isbn) ? array() : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
+  <? $authorNotes = empty($isbn) ? [] : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
     <? $contentDisplayed = true; ?>
     <tr>
       <th><?=$this->transEsc('Author Notes')?>: </th>

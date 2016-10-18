@@ -1,8 +1,8 @@
 <?php
-return array(
+return [
     'extends' => 'bootstrap3',
-    'helpers' => array(
-        'factories' => array(
+    'helpers' => [
+        'factories' => [
             'authorizationNote' => 'Finna\View\Helper\Root\Factory::getAuthorizationNote',
             'autocomplete' => 'Finna\View\Helper\Root\Factory::getAutocomplete',
             'browse' => 'Finna\View\Helper\Root\Factory::getBrowse',
@@ -39,8 +39,8 @@ return array(
             'systemMessages' => 'Finna\View\Helper\Root\Factory::getSystemMessages',
             'translation' => 'Finna\View\Helper\Root\Factory::getTranslation',
             'proxyurl' => 'Finna\View\Helper\Root\Factory::getProxyUrl',
-        ),
-        'invokables' => array(
+        ],
+        'invokables' => [
             'checkboxFacetCounts' =>
                 'Finna\View\Helper\Root\CheckboxFacetCounts',
             'markdown' => 'Finna\View\Helper\Root\Markdown',
@@ -50,9 +50,9 @@ return array(
             'translationEmpty' => 'Finna\View\Helper\Root\TranslationEmpty',
             'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl',
             'userPublicName' => 'Finna\View\Helper\Root\UserPublicName',
-        )
-    ),
-    'css' => array(
+        ]
+    ],
+    'css' => [
         'vendor/dataTables.bootstrap.min.css',
         'vendor/magnific-popup.min.css',
         'dataTables.bootstrap.custom.css',
@@ -60,8 +60,8 @@ return array(
         'vendor/bootstrap-multiselect.min.css',
         'vendor/bootstrap-datepicker3.min.css',
         'finna.css'
-    ),
-    'js' => array(
+    ],
+    'js' => [
         'vendor/event-stub.js:lt IE 9',
         'finna.js',
         'finna-autocomplete.js',
@@ -83,9 +83,9 @@ return array(
         'vendor/jquery.touchSwipe.min.js',
         'vendor/bootstrap-multiselect.min.js',
         'vendor/gauge.min.js'
-    ),
-    'less' => array(
+    ],
+    'less' => [
         'active' => false
-    ),
+    ],
     'favicon' => 'favicon.ico',
-);
+];

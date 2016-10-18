@@ -10,7 +10,7 @@
         <div class="cover-wrapper">
           <? /* Display thumbnail if appropriate: */ ?>
           <? if ($img): ?>
-            <?= $img->render('record', array('small' => array('w' => 50, 'h' => 50), 'medium' => array('w' => 1200, 'h' => 1200))) ?>
+            <?= $img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
           <? endif;?>
           <? /* Display qrcode if appropriate: */ ?>
           <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>

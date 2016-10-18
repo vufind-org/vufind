@@ -5,7 +5,7 @@
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   if ($img):
     ob_start(); ?>
-    <?=$img->render('list', array('medium' => array('w' => 300, 'h' => 300))) ?>
+    <?=$img->render('list', ['medium' => ['w' => 300, 'h' => 300]]) ?>
     <? $thumbnail = ob_get_contents(); ?>
   <? ob_end_clean(); ?>
 <? endif;?>
@@ -30,12 +30,12 @@
         <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
         <? if ($results = $this->driver->getInstitutions()): ?>
           <? foreach($results as $index => $institution): ?>
-          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", array(), $this->translate($institution))?>
+          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", [], $this->translate($institution))?>
           <? endforeach; ?>
         <? endif; ?>
 
         <? if ($this->driver->isCollection()): ?>
-          <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+          <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
         <? else: ?>
           <? $authors = $this->driver->tryMethod('getAuthorsWithRoles'); if (!empty($authors)): ?>
             <? $author = $authors[0]; ?>
@@ -76,7 +76,7 @@
       <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
         <?
           // Add JS Variables for QrCode
-          $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
+          $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
         <div class="hidden-xs">
           <i class="fa fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>

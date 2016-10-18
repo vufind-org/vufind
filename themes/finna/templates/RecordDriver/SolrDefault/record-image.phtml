@@ -6,9 +6,9 @@ $images = null;
 if (count($allImages)) {
   $images = $allImages;
 } else if ($largeImage) {
-  $images = array(array('small' => $smallImage, 'medium' => $mediumImage, 'large' => $largeImage));
+  $images = [['small' => $smallImage, 'medium' => $mediumImage, 'large' => $largeImage]];
 }
-$imageData = array('images' => $images, 'type' => $type);
+$imageData = ['images' => $images, 'type' => $type];
 ?>
 
 <?= $this->partial('RecordDriver/SolrDefault/record-image-navi.phtml', $imageData) ?>

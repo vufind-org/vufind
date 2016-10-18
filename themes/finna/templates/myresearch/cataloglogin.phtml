@@ -4,7 +4,7 @@
 
     // Set up myresearch menu
     if (empty($this->layout()->finnaMainTabs)) {
-        $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => $this->requestedAction));
+        $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => $this->requestedAction]);
     }
 
     // Set up breadcrumbs:
@@ -83,6 +83,6 @@ EOT;
 
   <? if (($user = $this->auth()->isLoggedIn()) && count($user->getLibraryCards()) > 1): ?>
     <h3><?=$this->transEsc('catalog_login_change_card_heading') ?></h3>
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user, 'displaySelected' => false, 'label' => 'catalog_login_change_card_label'))?>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'displaySelected' => false, 'label' => 'catalog_login_change_card_label'])?>
   <? endif; ?>
 <? endif; ?>

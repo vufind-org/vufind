@@ -24,7 +24,7 @@
   </div>
   <div class="col-xs-2 col-sm-2 text-center">
     <? $img = $this->recordImage($this->record($this->driver))?>
-    <?= $img->render('list', array('medium' => array('w' => 250))) ?>
+    <?= $img->render('list', ['medium' => ['w' => 250]]) ?>
   </div>
   <div class="col-xs-8 col-sm-9">
     <div class="resultItemLine1">
@@ -36,7 +36,7 @@
     <div class="record-authors">
       <?=$this->record($this->driver)->getFormatList() ?><br/>
       <? if($this->driver->isCollection()): ?>
-        <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
+        <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
       <? else: ?>
         <?
           $highlight = true;
@@ -63,7 +63,7 @@
         ?>
         <? if (!empty($journalTitle)): ?>
           <?=!empty($summAuthors) ? '' : ''?>
-          <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)) . '">' . $this->highlight($journalTitle) . '</a>';?>
+          <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle)) . '">' . $this->highlight($journalTitle) . '</a>';?>
           <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
         <? elseif (!empty($summDate)): ?>
           <?=!empty($summAuthors) ? '' : ''?>
@@ -75,7 +75,7 @@
           <? foreach ($summInCollection as $collId => $collText): ?>
             <div>
               <b><?=$this->transEsc("in_collection_label")?></b>
-              <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+              <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
                 <?=$this->escapeHtml($collText)?>
               </a>
             </div>
@@ -99,7 +99,7 @@
     <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
         null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
         $user_id, 'tag'
-       ) : array();
+       ) : [];
     ?>
     <? if (count($listTags) > 0): ?>
       <strong><?=$this->transEsc('Your Tags')?>:</strong>
@@ -139,7 +139,7 @@
     <div class="saved-lists">
       <strong><?=$this->transEsc('Saved in')?>:</strong>
       <? $i=0;foreach($this->lists as $current): ?>
-        <a href="<?=$this->url('userList', array('id' => $current->id))?>"><?=$this->escapeHtml($current->title)?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
+        <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
       <? endforeach; ?>
       <br/>
     </div>
@@ -156,7 +156,7 @@
     <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
       $deleteUrl = null === $list_id
           ? $this->url('myresearch-favorites')
-          : $this->url('userList', array('id' => $list_id));
+          : $this->url('userList', ['id' => $list_id]);
       $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
 
       $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);

@@ -6,7 +6,7 @@
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   if ($img):
     ob_start(); ?>
-    <?=$img->render('list', array('medium' => array('w' => 300, 'h' => 300))) ?>
+    <?=$img->render('list', ['medium' => ['w' => 300, 'h' => 300]]) ?>
     <? $thumbnail = ob_get_contents(); ?>
   <? ob_end_clean(); ?>
 <? endif;?>
@@ -42,7 +42,7 @@
         <div class="resultHierarchyLinks">
           <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
           <? if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
-          <?=implode(', ', array_map(function($str) { return $this->escapeHtml($this->translate("source_$str", array(), $str)); }, $this->driver->getInstitutions())); ?>
+          <?=implode(', ', array_map(function($str) { return $this->escapeHtml($this->translate("source_$str", [], $str)); }, $this->driver->getInstitutions())); ?>
           <? if ($origination = $this->driver->getOrigination()): ?>
             <br/><span class="archive-label"><?=$this->transEsc('Archive Origination')?>:</span>
             <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($origination)?>%22&amp;type=Author"><?=$this->escapeHtml($origination)?></a>
@@ -91,14 +91,14 @@
         $i = 0;
         foreach ($dedupData as $source => $current) {
           if (++$i == 1) {
-            ?><span class="currentSource"><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc("source_$source", array(), $source)?></a></span><?
+            ?><span class="currentSource"><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc("source_$source", [], $source)?></a></span><?
           } else {
             if ($i == 2) {
               ?> <span class="otherSources">(<?=$this->transEsc('Other Sources')?>: <?
             } else {
               ?>, <?
             }
-            ?><a href="<?=$this->recordLink()->getUrl($current['id'])?>"><?=$this->transEsc("source_$source", array(), $source)?></a><?
+            ?><a href="<?=$this->recordLink()->getUrl($current['id'])?>"><?=$this->transEsc("source_$source", [], $source)?></a><?
           }
         }
         if ($i > 1) {
@@ -157,7 +157,7 @@
       <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
         <?
           // Add JS Variables for QrCode
-          $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
+          $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
         <div class="hidden-xs">
           <i class="fa fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>

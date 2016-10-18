@@ -5,7 +5,7 @@
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   if ($img):
     ob_start(); ?>
-    <?=$img->render('list', array('medium' => array('w' => 250))) ?>
+    <?=$img->render('list', ['medium' => ['w' => 250]]) ?>
     <? $thumbnail = ob_get_contents(); ?>
   <? ob_end_clean(); ?>
 <? endif;?>
@@ -71,7 +71,7 @@
                     }
                   }
                   if ($parentLink === false) {
-                    $parentLink = $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle));
+                    $parentLink = $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle));
                   }
                 ?>
                 <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $parentLink . '">' . $this->highlight($journalTitle) . '</a>';?>
@@ -131,7 +131,7 @@
             <? foreach ($summInCollection as $collId => $collText): ?>
               <div>
                 <b><?=$this->transEsc("in_collection_label")?></b>
-                <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+                <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
                   <?=$this->escapeHtml($collText)?>
                 </a>
               </div>
@@ -143,7 +143,7 @@
           <? if (isset($abstracts[$this->layout()->userLang])): ?>
               <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
             <? else: ?>
-              <?=implode('', array_map(array($this, 'escapeHtml'), $abstracts))?>
+              <?=implode('', array_map([$this, 'escapeHtml'], $abstracts))?>
             <? endif; ?>
           </p>
         </div>
@@ -183,7 +183,7 @@
       <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
         <?
           // Add JS Variables for QrCode
-          $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
+          $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
         <div class="hidden-xs">
           <i class="fa fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>

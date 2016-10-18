@@ -7,7 +7,7 @@
         <div class="cover-wrapper">
           <? /* Display thumbnail if appropriate: */ ?>
           <? $img = $this->recordImage($this->record($this->driver))?>
-          <?= $img->render('record', array('small' => array('w' => 50, 'h' => 50), 'medium' => array('w' => 1200, 'h' => 1200))) ?>
+          <?= $img->render('record', ['small' => ['w' => 50, 'h' => 50], 'medium' => ['w' => 1200, 'h' => 1200]]) ?>
           <? /* Display qrcode if appropriate: */ ?>
           <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
           <? if($QRCode): ?>
@@ -37,7 +37,7 @@
             <? endif ?>
             <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
               <p><?= $this->translate('Image Rights Default') ?>
-              <p><a href="<?= $this->url('content-page', array('page' => 'terms_conditions')) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
+              <p><a href="<?= $this->url('content-page', ['page' => 'terms_conditions']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
             <? endif; ?>
           </div>
         </div>
@@ -72,7 +72,7 @@
     <h3 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
     <? if ($results = $this->driver->getAlternativeTitles()): ?>
       <div class="recordAltTitles record-alt-titles">
-        <?=implode('<br>', array_map(array($this, 'escapeHtml'), $results))?>
+        <?=implode('<br>', array_map([$this, 'escapeHtml'], $results))?>
       </div>
     <? endif; ?>
 
@@ -86,7 +86,7 @@
             <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
           <? endif; ?>
           <? if (($results = $this->driver->getSubjectDates()) && !isset($dates[0])): ?>
-            <?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?>
+            <?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?>
           <? endif; ?>
         </div>
       <? endif; ?>
@@ -153,28 +153,28 @@
       <? if ($results = $this->driver->getSubjectDetails()): ?>
       <tr class="recordSubjects">
         <th><?=$this->transEsc('Subject Detail')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
+        <td><?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?></td>
       </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->getSubjectPlaces()): ?>
       <tr class="recordSubjects">
         <th><?=$this->transEsc('Subject Place')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
+        <td><?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?></td>
       </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->getSubjectDates()): ?>
       <tr class="recordSubjects">
         <th><?=$this->transEsc('Subject Date')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
+        <td><?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?></td>
       </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->getSubjectActors()): ?>
       <tr class="recordSubjects">
         <th><?=$this->transEsc('Subject Actor')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
+        <td><?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?></td>
       </tr>
       <? endif; ?>
 
@@ -183,7 +183,7 @@
         <th><?=$this->transEsc('Organisation')?>:</th>
         <td>
         <? foreach($results as $index => $institution): ?>
-          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", array(), $this->translate($institution))?>
+          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", [], $this->translate($institution))?>
         <? endforeach; ?>
         </td>
       </tr>
@@ -192,42 +192,42 @@
       <? if ($results = $this->driver->getCollections()): ?>
       <tr class="recordCollection">
         <th><?=$this->transEsc('Collection')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
+        <td><?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?></td>
       </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->getIdentifier()): ?>
       <tr class="recordIdentifier">
         <th><?=$this->transEsc('Inventory ID')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
+        <td><?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?></td>
       </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->getMeasurements()): ?>
       <tr class="recordMeasurements">
         <th><?=$this->transEsc('Measurements')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
+        <td><?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?></td>
       </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->getInscriptions()): ?>
       <tr class="recordInscriptions">
         <th><?=$this->transEsc('Inscriptions')?>:</th>
-        <td><div class="truncate-field"><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></div></td>
+        <td><div class="truncate-field"><?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?></div></td>
       </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->getFormatClassifications()): ?>
       <tr class="recordClassifications">
         <th><?=$this->transEsc('Other Classification')?>:</th>
-        <td><div class="truncate-field"><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></div></td>
+        <td><div class="truncate-field"><?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?></div></td>
       </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->getLocalIdentifiers()): ?>
       <tr class="recordIdentifiers">
         <th><?=$this->transEsc('Other ID')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
+        <td><?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?></td>
       </tr>
       <? endif; ?>
 
@@ -243,10 +243,10 @@
             <? if (!empty($event['date'])): ?><?=$this->escapeHtml($event['date'])?><br/><? elseif ($event['type'] != 'käyttö' && $event['type'] != 'näyttely'): ?> <?=$this->transEsc('undated')?><? endif; ?>
             <? if (!empty($event['method'])): ?><?=$this->escapeHtml($event['method'])?><br/><? endif; ?>
             <? if (!empty($event['materials'])): ?>
-              <?=implode('<br/>', array_map(array($this, 'escapeHtml'), $event['materials']))?><br/>
+              <?=implode('<br/>', array_map([$this, 'escapeHtml'], $event['materials']))?><br/>
             <? endif; ?>
             <? if (!empty($event['places'])): ?>
-              <?=implode('<br/>', array_map(array($this, 'escapeHtml'), $event['places']))?><br/>
+              <?=implode('<br/>', array_map([$this, 'escapeHtml'], $event['places']))?><br/>
             <? endif; ?>
             <? if (!empty($event['culture'])): ?><?=$this->escapeHtml($event['culture'])?><br/><? endif; ?>
             <? if (!empty($event['actors'])): ?>

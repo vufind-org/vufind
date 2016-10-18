@@ -52,7 +52,7 @@
 ?>
   <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$html ?></div>
 <? endif; ?>
-<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
+<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
 <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
 <? $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <? $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
@@ -175,7 +175,7 @@
             <div class="row">
               <div class="col-sm-12">
                 <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter" class="form-inline">
-                  <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
+                  <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$title}:.*/"])?>
                   <label for="<?=$this->escapeHtmlAttr($title)?>from"><?=$this->transEsc('new_items_from')?></label>
                   <input type="text" class="form-control form-inline date-picker-field" autocomplete="off" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" maxlength="10" size="10" value="<?=$this->escapeHtmlAttr($this->dateTime()->convertToDisplayDate('Y-m-d', $newItemsFacets[$title]['date'])) ?>" placeholder="<?=$this->dateTime()->getDisplayDateFormat() ?>">
                   <button class="btn btn-primary btn-default date-picker-button" type="submit" value=""><i class="fa fa-search"></i><span class="sr-only"><?=$this->transEsc('Search');?></span></button>
@@ -226,7 +226,7 @@ echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
         <? elseif (isset($rangeFacets[$title])): ?>
           <div class="list-group-item">
             <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter">
-              <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
+              <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$title}:.*/"])?>
               <input type="hidden" name="<?=$this->escapeHtmlAttr($rangeFacets[$title]['type'])?>range[]" value="<?=$this->escapeHtmlAttr($title)?>"/>
               <div class="row">
                 <? $extraInputAttribs = ($rangeFacets[$title]['type'] == 'date') ? 'maxlength="4" ' : ''; ?>

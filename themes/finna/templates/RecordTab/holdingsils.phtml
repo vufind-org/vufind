@@ -75,7 +75,7 @@
       <div class="clearfix"></div>
     <? elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
-        <?=$this->translate("hold_profile_html", array('%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true'))?>
+        <?=$this->translate("hold_profile_html", ['%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true'])?>
       </div>
     <? endif; ?>
   <? endif; ?>
@@ -92,7 +92,7 @@
 <? endif; ?>
 <? if ($holdsAllowed): ?>
   <div class="place-hold-wrapper text-right hidden-print">
-  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn(), 'label' => 'Library Card')); ?>
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn(), 'label' => 'Library Card']); ?>
   <? if ($illRequestLink): ?>
     <a class="expandedCheckILLRequest placeILLRequest btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('ill_request_place_text') . ': ' . $this->driver->getTitle()) ?>"><?=$this->transEsc("ill_request_check_text")?></a>
   <? endif; ?>
@@ -217,7 +217,7 @@
        $callnumbers[] = ['callNo' => $callNo, 'collection' => $collection, 'location' => $location];
     }
     $dialogTitle = ': ' . $this->driver->getTitle();
-    $titleLocation = $this->transEsc('location_' . $holding['location'], array(), $holding['location']);
+    $titleLocation = $this->transEsc('location_' . $holding['location'], [], $holding['location']);
     if ($titleLocation) {
         $dialogTitle .= " - $titleLocation";
     }
@@ -235,7 +235,7 @@
   <? endif; ?>
   <div class="holdings-container-heading row">
     <div class="location col-sm-6 col-xs-6">
-      <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>" aria-hidden="true"></i> <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
+      <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>" aria-hidden="true"></i> <?=$this->transEsc('location_' . $holding['location'], [], $holding['location'])?>
       <? if ($this->holdingsSettings()->showDetailsAfterLocationGroup()): ?>
         <div class="details"><?=$this->partial('RecordTab/holdings-details.phtml', ['holdingId' => $holdingId, 'holding' => $holding, 'heading' => true]);?></div>
       <? endif; ?>

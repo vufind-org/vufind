@@ -24,7 +24,7 @@
     <? foreach ($lists as $list): ?>
     <? $active = ($list->id === $activeId); ?>
     <li>
-      <a href="<?= $active ? '#' : $this->url('userList', array('id' => $list['id']))?>?limit=<?=$currentLimit;?>" class="list-group-item<?=$list && $active ? ' active' : ''?>">
+      <a href="<?= $active ? '#' : $this->url('userList', ['id' => $list['id']])?>?limit=<?=$currentLimit;?>" class="list-group-item<?=$list && $active ? ' active' : ''?>">
         <? if ($list['public']): ?>
         <i class="fa fa-public public-favorite-list pull-left"></i>
         <? endif; ?>
@@ -38,7 +38,7 @@
       </a>
       <? if ($active): ?>
       <? $url = $this->serverUrl() . $this->url('home') . 'List/' . $list['id']; ?>
-      <?= $this->partial('myresearch/list-visibility.phtml', array('listUrl' => $url, 'public' => $list['public'])); ?>
+      <?= $this->partial('myresearch/list-visibility.phtml', ['listUrl' => $url, 'public' => $list['public']]); ?>
       <? endif; ?>
     </li>
     <? endforeach; ?>

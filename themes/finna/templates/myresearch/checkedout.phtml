@@ -4,7 +4,7 @@
     $this->headTitle($this->translate('Checked Out Items'));
 
     // Set up myresearch menu
-    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'checkedout'));
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'checkedout']);
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Checked Out Items') . '</li>';
@@ -15,11 +15,11 @@
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <? if (!$this->translationEmpty('checked_out_instructions_html')): ?><p class="no-content-message"><?=$this->translate('checked_out_instructions_html')?></p><? endif; ?>
     <?=$this->flashmessages()?>
-    <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
+    <?=$this->partial('myresearch/borrowing-block.phtml', ['profile' => $this->profile]); ?>
     <div class="useraccount-header">
     <?=$this->transEsc('Your Checked Out Items')?>
     (<?=count($this->transactions);?>)
-    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
     <? if (isset($this->noSupport)): ?>
       <? if ($user->getLibraryCards()->count() > 1): ?>
         <div class="support-notice">
@@ -146,12 +146,12 @@
               <a href="<?=$this->escapeHtmlAttr($ilsDetails['renew_link'])?>"><?=$this->transEsc('renew_item')?></a>
             <? endif; ?>
             <? if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
-              <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], array(), $ilsDetails['institution_name'])?></strong>
+              <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], [], $ilsDetails['institution_name'])?></strong>
               <br />
             <? endif; ?>
 
             <? if (!empty($ilsDetails['borrowingLocation'])): ?>
-              <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], array(), $ilsDetails['borrowingLocation'])?>
+              <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], [], $ilsDetails['borrowingLocation'])?>
               <br />
             <? endif; ?>
 
