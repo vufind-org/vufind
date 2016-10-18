@@ -55,11 +55,11 @@ class Voyager extends AbstractBase
     }
 
     /**
-     * Database connection
+     * Lazily instantiated database connection. Use getDb() to access it.
      *
      * @var Oci8
      */
-    protected $db;
+    protected $lazyDb;
 
     /**
      * Name of database
@@ -138,41 +138,54 @@ class Voyager extends AbstractBase
         // Define Database Name
         $this->dbName = $this->config['Catalog']['database'];
 
-        // Based on the configuration file, use either "SID" or "SERVICE_NAME"
-        // to connect (correct value varies depending on Voyager's Oracle setup):
-        $connectType = isset($this->config['Catalog']['connect_with_sid']) &&
-            $this->config['Catalog']['connect_with_sid'] ?
-            'SID' : 'SERVICE_NAME';
-
-        $tns = '(DESCRIPTION=' .
-                 '(ADDRESS_LIST=' .
-                   '(ADDRESS=' .
-                     '(PROTOCOL=TCP)' .
-                     '(HOST=' . $this->config['Catalog']['host'] . ')' .
-                     '(PORT=' . $this->config['Catalog']['port'] . ')' .
-                   ')' .
-                 ')' .
-                 '(CONNECT_DATA=' .
-                   "({$connectType}={$this->config['Catalog']['service']})" .
-                 ')' .
-               ')';
-        try {
-            $this->db = new Oci8(
-                "oci:dbname=$tns;charset=US_ASCII",
-                $this->config['Catalog']['user'],
-                $this->config['Catalog']['password']
-            );
-            $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            $this->error(
-                "PDO Connection failed ($this->dbName): " . $e->getMessage()
-            );
-            throw new ILSException($e->getMessage());
-        }
-
         $this->useHoldingsSortGroups
             = isset($this->config['Holdings']['use_sort_groups'])
             ? $this->config['Holdings']['use_sort_groups'] : true;
+    }
+
+    /**
+     * Initialize database connection if necessary and return it.
+     *
+     * @throws ILSException
+     * @return \PDO
+     */
+    protected function getDb()
+    {
+        if (null === $this->lazyDb) {
+            // Based on the configuration file, use either "SID" or "SERVICE_NAME"
+            // to connect (correct value varies depending on Voyager's Oracle setup):
+            $connectType = isset($this->config['Catalog']['connect_with_sid']) &&
+                $this->config['Catalog']['connect_with_sid'] ?
+                'SID' : 'SERVICE_NAME';
+
+            $tns = '(DESCRIPTION=' .
+                     '(ADDRESS_LIST=' .
+                       '(ADDRESS=' .
+                         '(PROTOCOL=TCP)' .
+                         '(HOST=' . $this->config['Catalog']['host'] . ')' .
+                         '(PORT=' . $this->config['Catalog']['port'] . ')' .
+                       ')' .
+                     ')' .
+                     '(CONNECT_DATA=' .
+                       "({$connectType}={$this->config['Catalog']['service']})" .
+                     ')' .
+                   ')';
+            try {
+                $this->lazyDb = new Oci8(
+                    "oci:dbname=$tns;charset=US_ASCII",
+                    $this->config['Catalog']['user'],
+                    $this->config['Catalog']['password']
+                );
+                $this->lazyDb
+                    ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            } catch (PDOException $e) {
+                $this->error(
+                    "PDO Connection failed ($this->dbName): " . $e->getMessage()
+                );
+                throw new ILSException($e->getMessage());
+            }
+        }
+        return $this->lazyDb;
     }
 
     /**
@@ -2446,7 +2459,7 @@ class Voyager extends AbstractBase
             list(, $caller) = debug_backtrace(false);
             $this->debugSQL($caller['function'], $sql, $bind);
         }
-        $sqlStmt = $this->db->prepare($sql);
+        $sqlStmt = $this->getDb()->prepare($sql);
         $sqlStmt->execute($bind);
 
         return $sqlStmt;
