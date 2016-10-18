@@ -73,7 +73,9 @@ class EDS extends SolrDefault
         ],
         'ISSNs' => [
             ['RecordInfo','BibRecord','BibRelationships','IsPartOfRelationships',0,'BibEntity','Identifiers'],
-            ['Items', 'ISSN']
+        ],
+        'ISBNs' => [
+            ['RecordInfo','BibRecord','BibRelationships','IsPartOfRelationships',0,'BibEntity','Identifiers'],
         ],
     ];
 
@@ -731,8 +733,29 @@ class EDS extends SolrDefault
             
             foreach ($identifiers as $key => $data) {
                 
+                $type = strtolower($data['Type']);
                 if (isset($data['Type']) && isset($data['Value'])
-                    && strtolower($data['Type']) == 'issn-print'
+                    && ($type == 'issn-print' || $type == 'issn-electronic')
+                ) {
+                    $issns[] = $data['Value'];
+                }
+            }
+        }
+        return $issns;
+    }
+    
+    public function getISBNs()
+    {
+        $isbns = parent::getIssns();
+       
+        $identifiers = $this->prioritizedFields('ISBNs');
+        if (is_array($identifiers)) {
+            
+            foreach ($identifiers as $key => $data) {
+                
+                $type = strtolower($data['Type']);
+                if (isset($data['Type']) && isset($data['Value'])
+                    && ($type == 'isbn-print' || $type == 'isbn-electronic')
                 ) {
                     $issns[] = $data['Value'];
                 }
@@ -778,4 +801,36 @@ class EDS extends SolrDefault
     {
         return explode(',', $this->prioritizedFields('Languages'));
     }
+    
+    /**
+     * Returns an array of formats based on publication type. 
+     * 
+     * @return array
+     */
+    public function getFormats()
+    {
+        $formats = [];
+        $pubType = $this->getPubType();
+        switch ($pubType) {
+            case 'academic journal': $formats[] = 'Journal';
+                break;
+            case 'report': $formats[] = 'Report';
+                break;
+            case 'aook': $formats[] = 'Book';
+                break;
+            case 'article': $formats[] = 'Journal';
+                break;
+            case 'ebook': $formats[] = 'EBook';
+                break;
+            case 'periodical': $formats[] = 'Magazine';
+                break;
+            case 'dissertation/thesis': $formats[] = 'Thesis';
+                break;
+            default: $formats[] = 'Generic';
+
+        }
+        return $formats;
+    }
+    
+
 }
