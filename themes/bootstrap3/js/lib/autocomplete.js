@@ -93,10 +93,6 @@
       createList(data, input);
     }
   }
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-  function escapeRegExp(string){
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-  }
   function search(input) {
     if (xhr) { xhr.abort(); }
     if (input.val().length >= options.minLength) {
@@ -118,7 +114,7 @@
         var matches = options.static.filter(function staticFilter(_item) {
           return _item.match.match(term);
         });
-        if (typeof options.staticSort === 'functions') {
+        if (typeof options.staticSort === 'function') {
           matches.sort(options.staticSort);
         } else {
           matches.sort(function defaultStaticSort(a, b) {
