@@ -761,7 +761,7 @@ class EDS extends SolrDefault
                 }
             }
         }
-        return $issns;
+        return $issns;        
         
     }
         
