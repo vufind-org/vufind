@@ -167,4 +167,18 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
         );
     }
+
+    /**
+     * Construct the Shibboleth plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Shibboleth
+     */
+    public static function getShibboleth(ServiceManager $sm)
+    {
+        return new Shibboleth(
+            $sm->getServiceLocator()->get('VuFind\SessionManager')
+        );
+    }
 }
