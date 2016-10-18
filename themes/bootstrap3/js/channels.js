@@ -1,4 +1,4 @@
-/*global getUrlRoot, htmlEncode, VuFind */
+/*global ChannelSlider, getUrlRoot, htmlEncode, VuFind */
 
 function bindChannelAddMenu(scope) {
   $(scope).find('.channel-add-menu .dropdown-menu a').click(function selectAddedChannel(e) {
